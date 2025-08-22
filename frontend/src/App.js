@@ -3036,6 +3036,106 @@ const Orders = () => {
   );
 };
 
+// Dynamic CMS Page Component
+const CMSPage = () => {
+  const { slug } = useParams();
+  const [pageContent, setPageContent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchPageContent();
+  }, [slug]);
+
+  const fetchPageContent = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axios.get(`${API}/cms/pages/${slug}`);
+      setPageContent(response.data);
+    } catch (error) {
+      console.error('Failed to fetch page content:', error);
+      setError('Page not found');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !pageContent) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Page Not Found</h1>
+            <p className="text-gray-600 mb-8">The page you're looking for doesn't exist.</p>
+            <Link 
+              to="/" 
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg transition-colors"
+            >
+              Go Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        <article className="bg-white rounded-lg shadow-sm p-8">
+          <header className="mb-8">
+            <h1 
+              className="text-4xl font-bold mb-4"
+              style={{
+                color: window.catalogoSettings?.h1_color || '#1f2937',
+                fontSize: window.catalogoSettings?.h1_size || '2.5rem'
+              }}
+            >
+              {pageContent.title}
+            </h1>
+            {pageContent.meta_description && (
+              <p className="text-lg text-gray-600">{pageContent.meta_description}</p>
+            )}
+          </header>
+          
+          <div 
+            className="prose prose-lg max-w-none"
+            style={{
+              fontFamily: window.catalogoSettings?.global_font_family || 'Inter'
+            }}
+            dangerouslySetInnerHTML={{ __html: pageContent.content }}
+          />
+          
+          {pageContent.updated_at && (
+            <footer className="mt-8 pt-8 border-t border-gray-200">
+              <p className="text-sm text-gray-500">
+                Last updated: {new Date(pageContent.updated_at).toLocaleDateString()}
+              </p>
+            </footer>
+          )}
+        </article>
+      </main>
+    </div>
+  );
+};
+
 // Main App Component
 function App() {
   // Very targeted branding removal
