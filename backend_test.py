@@ -18,13 +18,15 @@ class MarketplaceAPITester:
         self.created_page_slug = None
         self.created_nav_id = None
 
-    def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
+    def run_test(self, name, method, endpoint, expected_status, data=None, headers=None, use_admin_token=False):
         """Run a single API test"""
         url = f"{self.api_url}/{endpoint}"
         test_headers = {'Content-Type': 'application/json'}
         
-        if self.token:
-            test_headers['Authorization'] = f'Bearer {self.token}'
+        # Use admin token if specified, otherwise use regular token
+        token_to_use = self.admin_token if use_admin_token else self.token
+        if token_to_use:
+            test_headers['Authorization'] = f'Bearer {token_to_use}'
         
         if headers:
             test_headers.update(headers)
@@ -38,6 +40,8 @@ class MarketplaceAPITester:
                 response = requests.get(url, headers=test_headers, timeout=10)
             elif method == 'POST':
                 response = requests.post(url, json=data, headers=test_headers, timeout=10)
+            elif method == 'PUT':
+                response = requests.put(url, json=data, headers=test_headers, timeout=10)
             elif method == 'DELETE':
                 response = requests.delete(url, headers=test_headers, timeout=10)
 
