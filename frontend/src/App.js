@@ -1686,7 +1686,7 @@ const AdminPanel = () => {
       // Refresh the main website settings as well
       const settingsResponse = await axios.get(`${API}/cms/settings`);
       const settings = settingsResponse.data;
-      window.catalogoSettings = settings;
+      window.cataloroSettings = settings;
       
       // Apply updated settings to the main website immediately
       if (settings.site_name) {
