@@ -240,6 +240,21 @@ backend:
         agent: "testing"
         comment: "TESTED: All branding changes verified successfully. Default site_name is now 'Cataloro', hero_subtitle contains 'Cataloro' instead of 'Catalogo', no 'Catalogo' references found in default settings. Admin panel functionality works correctly with new branding. All core marketplace functionality remains unaffected by branding changes. GET /cms/settings returns proper default values with 'Cataloro' branding."
 
+  - task: "Logo Upload Functionality"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Implemented logo upload endpoint POST /admin/cms/upload-logo with PNG validation, file size limits, admin authentication, and file storage in uploads directory"
+      - working: true
+        agent: "testing"
+        comment: "TESTED: Comprehensive logo upload functionality testing completed with 8/8 tests passed (100% success rate). ✅ Admin authentication required (403 without admin token), ✅ PNG file validation (rejects JPG with 400 error), ✅ File size validation (rejects 6MB files, accepts smaller files), ✅ Successful PNG upload with proper response, ✅ Logo URL correctly stored in site settings (header_logo_url, header_logo_alt fields), ✅ Logo fields returned in public GET /cms/settings endpoint, ✅ Uploads directory properly created and files accessible via static serving, ✅ Old logo files properly replaced when new logo uploaded. All validation, authentication, data storage, and file management aspects working perfectly."
+
 frontend:
   - task: "Authentication Pages (Login/Register)"
     implemented: true
