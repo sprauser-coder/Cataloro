@@ -224,6 +224,26 @@ async def get_admin_user(current_user: User = Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
 
+async def generate_user_id():
+    """Generate next sequential user ID"""
+    # Find the highest user_id number
+    users = await db.users.find({"user_id": {"$regex": "^USER\\d+$"}}).to_list(length=None)
+    
+    if not users:
+        return "USER001"
+    
+    # Extract numbers from user_ids and find the maximum
+    max_num = 0
+    for user in users:
+        user_id = user.get('user_id', '')
+        if user_id.startswith('USER') and user_id[4:].isdigit():
+            num = int(user_id[4:])
+            max_num = max(max_num, num)
+    
+    # Return next sequential ID
+    next_num = max_num + 1
+    return f"USER{next_num:03d}"
+
 def prepare_for_mongo(data):
     if isinstance(data, dict):
         for key, value in data.items():
