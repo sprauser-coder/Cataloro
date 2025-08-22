@@ -892,6 +892,16 @@ def main():
         tester.test_branding_admin_panel_functionality,
         tester.test_branding_core_functionality_unaffected,
         
+        # Logo Upload Tests
+        tester.test_logo_upload_without_admin_auth,
+        tester.test_logo_upload_valid_png,
+        tester.test_logo_upload_invalid_format,
+        tester.test_logo_upload_file_too_large,
+        tester.test_logo_url_in_site_settings,
+        tester.test_logo_fields_in_public_settings,
+        tester.test_uploads_directory_creation,
+        tester.test_old_logo_file_cleanup,
+        
         # Cleanup Tests
         tester.test_delete_page,
         tester.test_delete_navigation_item,
