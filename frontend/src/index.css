@@ -107,3 +107,25 @@ div[style*="position: fixed"][style*="bottom"][style*="right"] {
 [id*="emergent"] {
   display: none !important;
 }
+
+/* More specific targeting for branding elements */
+div[style*="position:fixed"][style*="bottom:"] {
+  display: none !important;
+}
+
+div[style*="z-index"][style*="position: fixed"] {
+  display: none !important;
+}
+
+/* Target elements with specific positioning */
+*[style*="position: fixed"][style*="bottom: 20px"],
+*[style*="position: fixed"][style*="bottom: 10px"],
+*[style*="position: fixed"][style*="right: 20px"],
+*[style*="position: fixed"][style*="right: 10px"] {
+  display: none !important;
+}
+
+/* Global override for any bottom-right positioned elements */
+body > div:last-child[style*="position: fixed"] {
+  display: none !important;
+}
