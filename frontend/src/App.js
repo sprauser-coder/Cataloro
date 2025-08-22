@@ -360,7 +360,7 @@ const Home = () => {
       setLoading(true);
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
-      if (selectedCategory) params.append('category', selectedCategory);
+      if (selectedCategory && selectedCategory !== 'all') params.append('category', selectedCategory);
       if (listingType) params.append('listing_type', listingType);
       
       const response = await axios.get(`${API}/listings?${params}`);
