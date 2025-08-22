@@ -3267,6 +3267,8 @@ function App() {
                 <AdminPanel />
               </ProtectedRoute>
             } />
+            {/* Dynamic CMS Pages Route */}
+            <Route path="/:slug" element={<CMSPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </BrowserRouter>
