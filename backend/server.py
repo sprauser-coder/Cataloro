@@ -1026,9 +1026,13 @@ async def create_default_admin():
     # Hash password
     hashed_password = hash_password(admin_data['password'])
     
+    # Generate user ID
+    user_id = await generate_user_id()
+    
     # Create admin user
     user_dict = admin_data.copy()
     del user_dict['password']
+    user_dict['user_id'] = user_id
     admin_user = User(**user_dict)
     
     user_doc = prepare_for_mongo(admin_user.dict())
@@ -1036,7 +1040,46 @@ async def create_default_admin():
     
     await db.users.insert_one(user_doc)
     
-    return {"message": "Default admin created", "email": "admin@marketplace.com", "password": "admin123"}
+    return {"message": "Default admin created", "email": "admin@marketplace.com", "password": "admin123", "user_id": user_id}
+
+@api_router.post("/admin/generate-user-ids")
+async def generate_missing_user_ids(admin: User = Depends(get_admin_user)):
+    """Generate user IDs for existing users who don't have them"""
+    # Find users without user_id or with empty user_id
+    users_without_ids = await db.users.find({
+        "$or": [
+            {"user_id": {"$exists": False}},
+            {"user_id": ""},
+            {"user_id": None}
+        ]
+    }).to_list(length=None)
+    
+    updated_count = 0
+    generated_ids = []
+    
+    for user_doc in users_without_ids:
+        # Generate new user ID
+        new_user_id = await generate_user_id()
+        
+        # Update the user
+        result = await db.users.update_one(
+            {"id": user_doc["id"]},
+            {"$set": {"user_id": new_user_id}}
+        )
+        
+        if result.modified_count > 0:
+            updated_count += 1
+            generated_ids.append({
+                "email": user_doc.get("email", "Unknown"),
+                "username": user_doc.get("username", "Unknown"),
+                "user_id": new_user_id
+            })
+    
+    return {
+        "message": f"Generated user IDs for {updated_count} users",
+        "updated_count": updated_count,
+        "generated_ids": generated_ids
+    }
 
 # ===========================
 # CMS ROUTES
