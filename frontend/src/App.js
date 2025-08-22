@@ -267,7 +267,7 @@ const Auth = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: error.response?.data?.detail || "Something went wrong",
+        description: formatErrorMessage(error, "Something went wrong"),
         variant: "destructive"
       });
     }
