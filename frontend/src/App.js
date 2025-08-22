@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
 import './App.css';
-import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from './components/ui/button';
 import { Input } from './components/ui/input';
@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './components/ui/dialog';
 import { useToast } from './hooks/use-toast';
 import { Toaster } from './components/ui/toaster';
-import { Search, ShoppingCart, User, Plus, Heart, Star, Clock, DollarSign, Package, Eye, Gavel } from 'lucide-react';
+import { Search, ShoppingCart, User, Plus, Heart, Star, Clock, DollarSign, Package, Eye, Gavel, Trash2, Edit, MapPin } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -37,10 +37,8 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      // Set default authorization header
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
-      // Try to get user info from token
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         const savedUser = localStorage.getItem('user');
@@ -337,6 +335,7 @@ const Home = () => {
   const [listingType, setListingType] = useState('');
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCategories();
@@ -481,7 +480,7 @@ const Home = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {listings.map((listing) => (
-              <Card key={listing.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
+              <Card key={listing.id} className="hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => navigate(`/listing/${listing.id}`)}>
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img
                     src={listing.images?.[0] || 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'}
@@ -525,15 +524,10 @@ const Home = () => {
                   
                   <div className="flex items-center justify-between">
                     <Badge variant="secondary">{listing.category}</Badge>
-                    <span className="text-sm text-gray-500">{listing.location}</span>
-                  </div>
-                  
-                  <div className="mt-3 pt-3 border-t">
-                    <Link to={`/listing/${listing.id}`}>
-                      <Button className="w-full">
-                        View Details
-                      </Button>
-                    </Link>
+                    <span className="text-sm text-gray-500 flex items-center">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      {listing.location}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -545,7 +539,752 @@ const Home = () => {
           <div className="text-center py-12">
             <Package className="h-16 w-16 mx-auto text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No items found</h3>
-            <p className="text-gray-500">Try adjusting your search or filters</p>
+            <p className="text-gray-500 mb-4">Try adjusting your search or filters</p>
+            <Button onClick={() => navigate('/sell')} className="bg-gradient-to-r from-indigo-600 to-purple-600">
+              <Plus className="h-4 w-4 mr-2" />
+              List Your First Item
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Listing Detail Component
+const ListingDetail = () => {
+  const { id } = useParams();
+  const [listing, setListing] = useState(null);
+  const [bids, setBids] = useState([]);
+  const [bidAmount, setBidAmount] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchListing();
+    fetchBids();
+  }, [id]);
+
+  const fetchListing = async () => {
+    try {
+      const response = await axios.get(`${API}/listings/${id}`);
+      setListing(response.data);
+    } catch (error) {
+      console.error('Error fetching listing:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch listing details",
+        variant: "destructive"
+      });
+      navigate('/');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchBids = async () => {
+    try {
+      const response = await axios.get(`${API}/listings/${id}/bids`);
+      setBids(response.data);
+    } catch (error) {
+      console.error('Error fetching bids:', error);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      await axios.post(`${API}/cart`, {
+        listing_id: id,
+        quantity: quantity
+      });
+      toast({
+        title: "Added to cart!",
+        description: "Item has been added to your cart"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to add to cart",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handlePlaceBid = async () => {
+    try {
+      await axios.post(`${API}/bids`, {
+        listing_id: id,
+        amount: parseFloat(bidAmount)
+      });
+      setBidAmount('');
+      fetchListing();
+      fetchBids();
+      toast({
+        title: "Bid placed!",
+        description: "Your bid has been placed successfully"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to place bid",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleBuyNow = async () => {
+    try {
+      await axios.post(`${API}/orders`, {
+        listing_id: id,
+        quantity: quantity,
+        shipping_address: user?.address || "Please update your address"
+      });
+      toast({
+        title: "Order placed!",
+        description: "Your order has been placed successfully"
+      });
+      navigate('/orders');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to place order",
+        variant: "destructive"
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="flex justify-center items-center h-96">
+          <div className="animate-pulse">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!listing) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="text-center py-12">Listing not found</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Images */}
+          <div>
+            <img
+              src={listing.images?.[0] || 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'}
+              alt={listing.title}
+              className="w-full h-96 object-cover rounded-lg"
+            />
+          </div>
+
+          {/* Details */}
+          <div>
+            <div className="mb-4">
+              <Badge variant={listing.listing_type === 'auction' ? 'destructive' : 'default'} className="mb-2">
+                {listing.listing_type === 'auction' ? 'Auction' : 'Buy Now'}
+              </Badge>
+              <h1 className="text-3xl font-bold mb-2">{listing.title}</h1>
+              <p className="text-gray-600">{listing.description}</p>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
+              {listing.listing_type === 'fixed_price' ? (
+                <>
+                  <div className="text-3xl font-bold text-green-600 mb-4">
+                    ${listing.price?.toFixed(2)}
+                  </div>
+                  <div className="mb-4">
+                    <Label htmlFor="quantity">Quantity</Label>
+                    <Input
+                      id="quantity"
+                      type="number"
+                      min="1"
+                      max={listing.quantity}
+                      value={quantity}
+                      onChange={(e) => setQuantity(parseInt(e.target.value))}
+                      className="mt-1 w-24"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Button onClick={handleBuyNow} className="w-full bg-green-600 hover:bg-green-700">
+                      Buy Now
+                    </Button>
+                    <Button onClick={handleAddToCart} variant="outline" className="w-full">
+                      Add to Cart
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="mb-4">
+                    <div className="text-xl font-semibold">
+                      Current Bid: ${listing.current_bid?.toFixed(2) || listing.starting_bid?.toFixed(2)}
+                    </div>
+                    {listing.auction_end_time && (
+                      <div className="text-sm text-gray-500">
+                        Ends: {new Date(listing.auction_end_time).toLocaleDateString()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="mb-4">
+                    <Label htmlFor="bid">Your Bid ($)</Label>
+                    <Input
+                      id="bid"
+                      type="number"
+                      value={bidAmount}
+                      onChange={(e) => setBidAmount(e.target.value)}
+                      className="mt-1"
+                      placeholder="Enter bid amount"
+                    />
+                  </div>
+                  <Button onClick={handlePlaceBid} className="w-full">
+                    Place Bid
+                  </Button>
+                  {listing.buyout_price && (
+                    <Button onClick={handleBuyNow} variant="outline" className="w-full mt-2">
+                      Buy Now - ${listing.buyout_price.toFixed(2)}
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h3 className="font-semibold mb-4">Item Details</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Condition:</span>
+                  <span>{listing.condition}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Category:</span>
+                  <span>{listing.category}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Location:</span>
+                  <span>{listing.location}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Shipping:</span>
+                  <span>${listing.shipping_cost?.toFixed(2) || 'Free'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bid History for Auctions */}
+        {listing.listing_type === 'auction' && bids.length > 0 && (
+          <div className="mt-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Bid History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {bids.slice(0, 5).map((bid) => (
+                    <div key={bid.id} className="flex justify-between items-center py-2 border-b">
+                      <span>${bid.amount.toFixed(2)}</span>
+                      <span className="text-sm text-gray-500">
+                        {new Date(bid.timestamp).toLocaleDateString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Sell Component
+const Sell = () => {
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    category: '',
+    listing_type: 'fixed_price',
+    price: '',
+    starting_bid: '',
+    buyout_price: '',
+    condition: 'New',
+    quantity: 1,
+    location: '',
+    shipping_cost: '',
+    auction_duration_hours: 24
+  });
+  const [categories, setCategories] = useState([]);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API}/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const data = { ...formData };
+      if (data.price) data.price = parseFloat(data.price);
+      if (data.starting_bid) data.starting_bid = parseFloat(data.starting_bid);
+      if (data.buyout_price) data.buyout_price = parseFloat(data.buyout_price);
+      if (data.shipping_cost) data.shipping_cost = parseFloat(data.shipping_cost);
+      if (data.auction_duration_hours) data.auction_duration_hours = parseInt(data.auction_duration_hours);
+
+      const response = await axios.post(`${API}/listings`, data);
+      toast({
+        title: "Listing created!",
+        description: "Your item has been listed successfully"
+      });
+      navigate(`/listing/${response.data.id}`);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to create listing",
+        variant: "destructive"
+      });
+    }
+  };
+
+  if (user?.role === 'buyer') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-2xl mx-auto px-4 py-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">Seller Account Required</h2>
+          <p className="text-gray-600">You need to be registered as a seller to create listings.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Create New Listing</CardTitle>
+            <CardDescription>List your item for sale on the marketplace</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  required
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  required
+                  className="mt-1"
+                  rows={4}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="condition">Condition</Label>
+                  <Select value={formData.condition} onValueChange={(value) => setFormData({...formData, condition: value})}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="New">New</SelectItem>
+                      <SelectItem value="Like New">Like New</SelectItem>
+                      <SelectItem value="Good">Good</SelectItem>
+                      <SelectItem value="Fair">Fair</SelectItem>
+                      <SelectItem value="Poor">Poor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label>Listing Type</Label>
+                <Tabs value={formData.listing_type} onValueChange={(value) => setFormData({...formData, listing_type: value})}>
+                  <TabsList className="grid w-full grid-cols-2 mt-1">
+                    <TabsTrigger value="fixed_price">Fixed Price</TabsTrigger>
+                    <TabsTrigger value="auction">Auction</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+
+              {formData.listing_type === 'fixed_price' ? (
+                <div>
+                  <Label htmlFor="price">Price ($)</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={(e) => setFormData({...formData, price: e.target.value})}
+                    required
+                    className="mt-1"
+                  />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="starting_bid">Starting Bid ($)</Label>
+                    <Input
+                      id="starting_bid"
+                      type="number"
+                      step="0.01"
+                      value={formData.starting_bid}
+                      onChange={(e) => setFormData({...formData, starting_bid: e.target.value})}
+                      required
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="buyout_price">Buy Now Price ($ - Optional)</Label>
+                    <Input
+                      id="buyout_price"
+                      type="number"
+                      step="0.01"
+                      value={formData.buyout_price}
+                      onChange={(e) => setFormData({...formData, buyout_price: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="auction_duration">Auction Duration (Hours)</Label>
+                    <Select value={formData.auction_duration_hours.toString()} onValueChange={(value) => setFormData({...formData, auction_duration_hours: parseInt(value)})}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1 Hour</SelectItem>
+                        <SelectItem value="6">6 Hours</SelectItem>
+                        <SelectItem value="12">12 Hours</SelectItem>
+                        <SelectItem value="24">1 Day</SelectItem>
+                        <SelectItem value="72">3 Days</SelectItem>
+                        <SelectItem value="168">7 Days</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="quantity">Quantity</Label>
+                  <Input
+                    id="quantity"
+                    type="number"
+                    min="1"
+                    value={formData.quantity}
+                    onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value)})}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="shipping_cost">Shipping Cost ($)</Label>
+                  <Input
+                    id="shipping_cost"
+                    type="number"
+                    step="0.01"
+                    value={formData.shipping_cost}
+                    onChange={(e) => setFormData({...formData, shipping_cost: e.target.value})}
+                    placeholder="0.00 for free shipping"
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData({...formData, location: e.target.value})}
+                  required
+                  className="mt-1"
+                />
+              </div>
+
+              <Button type="submit" className="w-full bg-gradient-to-r from-indigo-600 to-purple-600">
+                Create Listing
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+// Cart Component
+const Cart = () => {
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  const fetchCart = async () => {
+    try {
+      const response = await axios.get(`${API}/cart`);
+      setCartItems(response.data);
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeFromCart = async (itemId) => {
+    try {
+      await axios.delete(`${API}/cart/${itemId}`);
+      fetchCart();
+      toast({
+        title: "Item removed",
+        description: "Item has been removed from your cart"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove item from cart",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const calculateTotal = () => {
+    return cartItems.reduce((total, item) => {
+      return total + (item.listing.price * item.cart_item.quantity);
+    }, 0);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="flex justify-center items-center h-96">
+          Loading cart...
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+        
+        {cartItems.length === 0 ? (
+          <div className="text-center py-12">
+            <ShoppingCart className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
+            <p className="text-gray-500 mb-4">Start shopping to add items to your cart</p>
+            <Button onClick={() => navigate('/')} className="bg-gradient-to-r from-indigo-600 to-purple-600">
+              Continue Shopping
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="space-y-4">
+                {cartItems.map((item) => (
+                  <Card key={item.cart_item.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center space-x-4">
+                        <img
+                          src={item.listing.images?.[0] || 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'}
+                          alt={item.listing.title}
+                          className="w-20 h-20 object-cover rounded"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{item.listing.title}</h3>
+                          <p className="text-gray-600 text-sm">{item.listing.condition}</p>
+                          <div className="flex items-center justify-between mt-2">
+                            <span className="font-bold text-lg">${item.listing.price.toFixed(2)}</span>
+                            <div className="flex items-center space-x-2">
+                              <span>Qty: {item.cart_item.quantity}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFromCart(item.cart_item.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Order Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>Subtotal:</span>
+                      <span>${calculateTotal().toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-lg border-t pt-2">
+                      <span>Total:</span>
+                      <span>${calculateTotal().toFixed(2)}</span>
+                    </div>
+                  </div>
+                  <Button className="w-full mt-4 bg-green-600 hover:bg-green-700">
+                    Proceed to Checkout
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Orders Component
+const Orders = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get(`${API}/orders`);
+      setOrders(response.data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="flex justify-center items-center h-96">
+          Loading orders...
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8">My Orders</h1>
+        
+        {orders.length === 0 ? (
+          <div className="text-center py-12">
+            <Package className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
+            <p className="text-gray-500 mb-4">Your order history will appear here</p>
+            <Button onClick={() => navigate('/')} className="bg-gradient-to-r from-indigo-600 to-purple-600">
+              Start Shopping
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {orders.map((orderData) => (
+              <Card key={orderData.order.id}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="font-semibold text-lg">{orderData.listing?.title}</h3>
+                      <p className="text-gray-600">Order #{orderData.order.id}</p>
+                      <p className="text-sm text-gray-500">
+                        Placed on {new Date(orderData.order.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Badge variant={orderData.order.status === 'completed' ? 'default' : 'secondary'}>
+                      {orderData.order.status}
+                    </Badge>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600">Quantity</p>
+                      <p className="font-semibold">{orderData.order.quantity}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Total Amount</p>
+                      <p className="font-semibold">${orderData.order.total_amount.toFixed(2)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Seller</p>
+                      <p className="font-semibold">{orderData.seller?.full_name}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         )}
       </div>
@@ -565,6 +1304,26 @@ function App() {
               <ProtectedRoute>
                 <Home />
               </ProtectedRoute>  
+            } />
+            <Route path="/listing/:id" element={
+              <ProtectedRoute>
+                <ListingDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/sell" element={
+              <ProtectedRoute>
+                <Sell />
+              </ProtectedRoute>
+            } />
+            <Route path="/cart" element={
+              <ProtectedRoute>
+                <Cart />
+              </ProtectedRoute>
+            } />
+            <Route path="/orders" element={
+              <ProtectedRoute>
+                <Orders />
+              </ProtectedRoute>
             } />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
