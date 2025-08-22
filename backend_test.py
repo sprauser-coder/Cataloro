@@ -464,13 +464,14 @@ class MarketplaceAPITester:
         return self.run_test("Delete Navigation Item", "DELETE", f"admin/cms/navigation/{self.created_nav_id}", 200, use_admin_token=True)
 
 def main():
-    print("🚀 Starting Marketplace API Tests")
-    print("=" * 50)
+    print("🚀 Starting Marketplace API Tests (Including CMS)")
+    print("=" * 60)
     
     tester = MarketplaceAPITester()
     
-    # Test sequence
+    # Test sequence - Core marketplace tests first, then CMS tests
     test_methods = [
+        # Core API Tests
         tester.test_root_endpoint,
         tester.test_categories,
         tester.test_user_registration,
@@ -488,6 +489,30 @@ def main():
         tester.test_create_review,
         tester.test_get_user_reviews,
         tester.test_place_bid,
+        
+        # Admin Setup
+        tester.test_create_default_admin,
+        tester.test_admin_login,
+        
+        # CMS Admin Tests
+        tester.test_get_site_settings,
+        tester.test_update_site_settings,
+        tester.test_get_all_pages,
+        tester.test_create_page,
+        tester.test_get_page_content,
+        tester.test_update_page_content,
+        tester.test_get_navigation,
+        tester.test_create_navigation_item,
+        tester.test_update_navigation_item,
+        
+        # Public CMS Tests
+        tester.test_get_public_site_settings,
+        tester.test_get_public_page_content,
+        tester.test_get_public_navigation,
+        
+        # Cleanup Tests
+        tester.test_delete_page,
+        tester.test_delete_navigation_item,
     ]
     
     print(f"Running {len(test_methods)} tests...\n")
@@ -500,9 +525,9 @@ def main():
             print(f"❌ Test failed with exception: {str(e)}")
     
     # Print final results
-    print("\n" + "=" * 50)
+    print("\n" + "=" * 60)
     print("📊 TEST RESULTS")
-    print("=" * 50)
+    print("=" * 60)
     print(f"Tests run: {tester.tests_run}")
     print(f"Tests passed: {tester.tests_passed}")
     print(f"Tests failed: {tester.tests_run - tester.tests_passed}")
