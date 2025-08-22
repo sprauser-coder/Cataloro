@@ -1161,6 +1161,25 @@ async def create_page(page_data: dict, admin: User = Depends(get_admin_user)):
     page = PageContent(**page_data)
     page_doc = prepare_for_mongo(page.dict())
     await db.page_content.insert_one(page_doc)
+    
+    # Auto-add to navigation if enabled
+    settings = await db.site_settings.find_one({})
+    if not settings or settings.get('auto_add_pages_to_menu', True):
+        # Get current max order
+        nav_items = await db.navigation.find({}).to_list(length=None)
+        max_order = max([item.get('order', 0) for item in nav_items]) if nav_items else 0
+        
+        # Create navigation item
+        nav_item = NavigationItem(
+            label=page.title,
+            url=f"/{page.page_slug}",
+            order=max_order + 1,
+            is_visible=page.is_published,
+            target="_self"
+        )
+        nav_doc = prepare_for_mongo(nav_item.dict())
+        await db.navigation.insert_one(nav_doc)
+    
     return {"message": "Page created successfully", "page": page}
 
 @api_router.put("/admin/cms/pages/{page_slug}")
@@ -1176,6 +1195,19 @@ async def update_page_content(page_slug: str, page_data: dict, admin: User = Dep
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Page not found")
     
+    # Update navigation item if it exists
+    nav_update_data = {}
+    if 'title' in page_data:
+        nav_update_data['label'] = page_data['title']
+    if 'is_published' in page_data:
+        nav_update_data['is_visible'] = page_data['is_published']
+    
+    if nav_update_data:
+        await db.navigation.update_one(
+            {"url": f"/{page_slug}"},
+            {"$set": nav_update_data}
+        )
+    
     return {"message": "Page updated successfully"}
 
 @api_router.delete("/admin/cms/pages/{page_slug}")
@@ -1186,7 +1218,39 @@ async def delete_page(page_slug: str, admin: User = Depends(get_admin_user)):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Page not found")
     
+    # Also delete from navigation
+    await db.navigation.delete_one({"url": f"/{page_slug}"})
+    
     return {"message": "Page deleted successfully"}
+
+@api_router.post("/admin/cms/sync-navigation")
+async def sync_navigation_with_pages(admin: User = Depends(get_admin_user)):
+    """Sync navigation items with existing pages"""
+    pages = await db.page_content.find({"is_published": True}).to_list(length=None)
+    existing_nav = await db.navigation.find({}).to_list(length=None)
+    
+    # Get existing navigation URLs
+    existing_urls = {item.get('url') for item in existing_nav}
+    
+    # Add missing pages to navigation
+    added_count = 0
+    max_order = max([item.get('order', 0) for item in existing_nav]) if existing_nav else 0
+    
+    for page_doc in pages:
+        page_url = f"/{page_doc['page_slug']}"
+        if page_url not in existing_urls:
+            nav_item = NavigationItem(
+                label=page_doc['title'],
+                url=page_url,
+                order=max_order + added_count + 1,
+                is_visible=True,
+                target="_self"
+            )
+            nav_doc = prepare_for_mongo(nav_item.dict())
+            await db.navigation.insert_one(nav_doc)
+            added_count += 1
+    
+    return {"message": f"Added {added_count} pages to navigation", "added_count": added_count}
 
 # Navigation Management
 @api_router.get("/admin/cms/navigation")
