@@ -348,9 +348,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "User Authentication System"
     - "Authentication Pages (Login/Register)"
     - "Home Page with Search and Listings"
+    - "Product Detail Page"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
