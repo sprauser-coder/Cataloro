@@ -475,15 +475,24 @@ const Home = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+      {/* Dynamic Hero Section */}
+      <div className="text-white" style={getHeroStyle()}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
-            <h1 className="text-5xl font-bold mb-6">
-              Discover Amazing Deals
+            <h1 
+              className="text-5xl font-bold mb-6"
+              style={{
+                color: siteSettings?.hero_text_color || '#ffffff',
+                fontSize: siteSettings?.h1_size || '3rem'
+              }}
+            >
+              {heroTitle}
             </h1>
-            <p className="text-xl mb-8 opacity-90">
-              Buy and sell with confidence on Catalogo - your trusted marketplace for amazing deals
+            <p 
+              className="text-xl mb-8 opacity-90"
+              style={{color: siteSettings?.hero_subtitle_color || '#f1f5f9'}}
+            >
+              {heroSubtitle}
             </p>
             
             {/* Search Bar */}
