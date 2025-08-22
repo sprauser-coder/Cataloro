@@ -1303,6 +1303,76 @@ async def delete_navigation_item(nav_id: str, admin: User = Depends(get_admin_us
     
     return {"message": "Navigation item deleted successfully"}
 
+# Logo Upload Endpoints
+@api_router.post("/admin/cms/upload-logo")
+async def upload_logo(
+    logo_type: str = "header",  # header, footer, favicon
+    file: UploadFile = File(...),
+    admin: User = Depends(get_admin_user)
+):
+    """Upload logo file (PNG only)"""
+    
+    # Validate file type
+    if not file.content_type == "image/png":
+        raise HTTPException(status_code=400, detail="Only PNG files are allowed")
+    
+    # Validate file size (max 5MB)
+    file_size = 0
+    content = await file.read()
+    file_size = len(content)
+    
+    if file_size > 5 * 1024 * 1024:  # 5MB limit
+        raise HTTPException(status_code=400, detail="File size too large. Maximum 5MB allowed")
+    
+    # Generate unique filename
+    file_extension = ".png"
+    unique_filename = f"{logo_type}_logo_{uuid.uuid4().hex}{file_extension}"
+    file_path = UPLOAD_DIR / unique_filename
+    
+    # Save file
+    try:
+        with open(file_path, "wb") as buffer:
+            buffer.write(content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
+    
+    # Update site settings with new logo URL
+    logo_url = f"/uploads/{unique_filename}"
+    
+    # Get current settings
+    current_settings = await db.site_settings.find_one({})
+    if not current_settings:
+        # Create default settings if none exist
+        default_settings = SiteSettings()
+        current_settings = default_settings.dict()
+    
+    # Update the appropriate logo field
+    if logo_type == "header":
+        current_settings["header_logo_url"] = logo_url
+        
+        # Remove old logo file if it exists
+        old_logo_url = current_settings.get("header_logo_url")
+        if old_logo_url and old_logo_url.startswith("/uploads/"):
+            old_file_path = UPLOAD_DIR / old_logo_url.split("/")[-1]
+            if old_file_path.exists():
+                try:
+                    old_file_path.unlink()
+                except Exception:
+                    pass  # Ignore errors when deleting old files
+    
+    # Update settings in database
+    await db.site_settings.replace_one(
+        {},
+        current_settings,
+        upsert=True
+    )
+    
+    return {
+        "message": "Logo uploaded successfully",
+        "logo_url": logo_url,
+        "logo_type": logo_type
+    }
+
 # Public CMS Endpoints (for frontend)
 @api_router.get("/cms/settings")
 async def get_public_site_settings():
