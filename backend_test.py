@@ -1198,6 +1198,18 @@ def main():
         tester.test_uploads_directory_creation,
         tester.test_old_logo_file_cleanup,
         
+        # Listing Image Upload Tests
+        tester.test_listing_image_upload_without_auth,
+        tester.test_listing_image_upload_valid_png,
+        tester.test_listing_image_upload_valid_jpeg,
+        tester.test_listing_image_upload_invalid_format,
+        tester.test_listing_image_upload_file_too_large,
+        tester.test_listing_image_upload_with_admin_token,
+        tester.test_create_listing_with_uploaded_images,
+        tester.test_get_listings_returns_image_urls,
+        tester.test_get_listing_detail_returns_images,
+        tester.test_uploaded_listing_images_accessible,
+        
         # Cleanup Tests
         tester.test_delete_page,
         tester.test_delete_navigation_item,
