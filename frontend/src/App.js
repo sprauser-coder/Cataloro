@@ -1900,6 +1900,405 @@ const AdminPanel = () => {
               </Card>
             )}
           </TabsContent>
+
+          {/* Content Management Tab */}
+          <TabsContent value="cms">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Content Management</CardTitle>
+                    <CardDescription>Manage pages and content</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold">Pages</h3>
+                      <Button 
+                        onClick={() => {
+                          const newPage = {
+                            page_slug: prompt('Enter page slug (e.g., about, terms):'),
+                            title: prompt('Enter page title:'),
+                            content: '<p>New page content...</p>',
+                            is_published: true,
+                            meta_description: ''
+                          };
+                          if (newPage.page_slug && newPage.title) {
+                            createPage(newPage);
+                          }
+                        }}
+                      >
+                        Create New Page
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      {pages.map((page) => (
+                        <div key={page.id} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div>
+                            <h4 className="font-semibold">{page.title}</h4>
+                            <p className="text-sm text-gray-600">/{page.page_slug}</p>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <Badge variant={page.is_published ? 'default' : 'secondary'}>
+                                {page.is_published ? 'Published' : 'Draft'}
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedPage(page);
+                                setEditingContent(page.content);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => deletePage(page.page_slug)}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {selectedPage && (
+                      <div className="mt-6 p-4 border rounded-lg bg-gray-50">
+                        <h4 className="font-semibold mb-4">Editing: {selectedPage.title}</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Content (HTML)</label>
+                            <textarea
+                              className="w-full h-64 p-3 border rounded-md"
+                              value={editingContent}
+                              onChange={(e) => setEditingContent(e.target.value)}
+                              placeholder="Enter HTML content..."
+                            />
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button
+                              onClick={() => {
+                                updatePage(selectedPage.page_slug, {
+                                  ...selectedPage,
+                                  content: editingContent
+                                });
+                                setSelectedPage(null);
+                                setEditingContent('');
+                              }}
+                            >
+                              Save Changes
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setSelectedPage(null);
+                                setEditingContent('');
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Site Settings Tab */}
+          <TabsContent value="settings">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : siteSettings ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Site Settings</CardTitle>
+                  <CardDescription>Configure your marketplace settings</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Site Name</label>
+                        <input
+                          type="text"
+                          className="w-full p-2 border rounded-md"
+                          value={siteSettings.site_name}
+                          onChange={(e) => setSiteSettings({...siteSettings, site_name: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Site Tagline</label>
+                        <input
+                          type="text"
+                          className="w-full p-2 border rounded-md"
+                          value={siteSettings.site_tagline}
+                          onChange={(e) => setSiteSettings({...siteSettings, site_tagline: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Hero Title</label>
+                      <input
+                        type="text"
+                        className="w-full p-2 border rounded-md"
+                        value={siteSettings.hero_title}
+                        onChange={(e) => setSiteSettings({...siteSettings, hero_title: e.target.value})}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
+                      <textarea
+                        className="w-full p-2 border rounded-md"
+                        rows="3"
+                        value={siteSettings.hero_subtitle}
+                        onChange={(e) => setSiteSettings({...siteSettings, hero_subtitle: e.target.value})}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Features</label>
+                        <div className="space-y-2">
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={siteSettings.show_hero_section}
+                              onChange={(e) => setSiteSettings({...siteSettings, show_hero_section: e.target.checked})}
+                              className="mr-2"
+                            />
+                            Show Hero Section
+                          </label>
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={siteSettings.show_categories}
+                              onChange={(e) => setSiteSettings({...siteSettings, show_categories: e.target.checked})}
+                              className="mr-2"
+                            />
+                            Show Categories
+                          </label>
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={siteSettings.show_auctions}
+                              onChange={(e) => setSiteSettings({...siteSettings, show_auctions: e.target.checked})}
+                              className="mr-2"
+                            />
+                            Enable Auctions
+                          </label>
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={siteSettings.enable_cart}
+                              onChange={(e) => setSiteSettings({...siteSettings, enable_cart: e.target.checked})}
+                              className="mr-2"
+                            />
+                            Enable Shopping Cart
+                          </label>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">User Permissions</label>
+                        <div className="space-y-2">
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={siteSettings.allow_user_registration}
+                              onChange={(e) => setSiteSettings({...siteSettings, allow_user_registration: e.target.checked})}
+                              className="mr-2"
+                            />
+                            Allow User Registration
+                          </label>
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={siteSettings.enable_reviews}
+                              onChange={(e) => setSiteSettings({...siteSettings, enable_reviews: e.target.checked})}
+                              className="mr-2"
+                            />
+                            Enable Reviews
+                          </label>
+                        </div>
+                        <div className="mt-4">
+                          <label className="block text-sm font-medium mb-2">Max Images per Listing</label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="10"
+                            className="w-full p-2 border rounded-md"
+                            value={siteSettings.max_images_per_listing}
+                            onChange={(e) => setSiteSettings({...siteSettings, max_images_per_listing: parseInt(e.target.value)})}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Button
+                      onClick={() => updateSiteSettings(siteSettings)}
+                      className="w-full"
+                    >
+                      Save Settings
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : null}
+          </TabsContent>
+
+          {/* Appearance Tab */}
+          <TabsContent value="appearance">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : siteSettings ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Appearance Settings</CardTitle>
+                  <CardDescription>Customize your marketplace colors and theme</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Primary Color</label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="color"
+                            value={siteSettings.primary_color}
+                            onChange={(e) => setSiteSettings({...siteSettings, primary_color: e.target.value})}
+                            className="w-12 h-10 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={siteSettings.primary_color}
+                            onChange={(e) => setSiteSettings({...siteSettings, primary_color: e.target.value})}
+                            className="flex-1 p-2 border rounded-md font-mono"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Secondary Color</label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="color"
+                            value={siteSettings.secondary_color}
+                            onChange={(e) => setSiteSettings({...siteSettings, secondary_color: e.target.value})}
+                            className="w-12 h-10 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={siteSettings.secondary_color}
+                            onChange={(e) => setSiteSettings({...siteSettings, secondary_color: e.target.value})}
+                            className="flex-1 p-2 border rounded-md font-mono"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Accent Color</label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="color"
+                            value={siteSettings.accent_color}
+                            onChange={(e) => setSiteSettings({...siteSettings, accent_color: e.target.value})}
+                            className="w-12 h-10 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={siteSettings.accent_color}
+                            onChange={(e) => setSiteSettings({...siteSettings, accent_color: e.target.value})}
+                            className="flex-1 p-2 border rounded-md font-mono"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Background Color</label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="color"
+                            value={siteSettings.background_color}
+                            onChange={(e) => setSiteSettings({...siteSettings, background_color: e.target.value})}
+                            className="w-12 h-10 border rounded"
+                          />
+                          <input
+                            type="text"
+                            value={siteSettings.background_color}
+                            onChange={(e) => setSiteSettings({...siteSettings, background_color: e.target.value})}
+                            className="flex-1 p-2 border rounded-md font-mono"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium mb-4">Color Preview</h4>
+                      <div className="flex items-center space-x-4">
+                        <div 
+                          className="w-16 h-16 rounded-lg flex items-center justify-center text-white font-bold"
+                          style={{backgroundColor: siteSettings.primary_color}}
+                        >
+                          Primary
+                        </div>
+                        <div 
+                          className="w-16 h-16 rounded-lg flex items-center justify-center text-white font-bold"
+                          style={{backgroundColor: siteSettings.secondary_color}}
+                        >
+                          Secondary
+                        </div>
+                        <div 
+                          className="w-16 h-16 rounded-lg flex items-center justify-center text-white font-bold"
+                          style={{backgroundColor: siteSettings.accent_color}}
+                        >
+                          Accent
+                        </div>
+                        <div 
+                          className="w-16 h-16 rounded-lg flex items-center justify-center border"
+                          style={{backgroundColor: siteSettings.background_color}}
+                        >
+                          BG
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                      <Button
+                        onClick={() => updateSiteSettings(siteSettings)}
+                        className="flex-1"
+                      >
+                        Save Appearance
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setSiteSettings({
+                            ...siteSettings,
+                            primary_color: '#6366f1',
+                            secondary_color: '#8b5cf6',
+                            accent_color: '#ef4444',
+                            background_color: '#f8fafc'
+                          });
+                        }}
+                      >
+                        Reset to Default
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : null}
+          </TabsContent>
         </Tabs>
       </div>
     </div>
