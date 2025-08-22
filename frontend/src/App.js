@@ -124,7 +124,7 @@ const Header = () => {
     window.addEventListener('cataloroNavigationLoaded', handleNavigationUpdate);
     
     return () => {
-      window.removeEventListener('catalogoNavigationLoaded', handleNavigationUpdate);
+      window.removeEventListener('cataloroNavigationLoaded', handleNavigationUpdate);
     };
   }, [user]);
 
