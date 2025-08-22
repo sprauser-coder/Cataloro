@@ -109,8 +109,8 @@ const Header = () => {
       if (window.cataloroNavigation) {
         setCustomNavigation(window.cataloroNavigation);
       }
-      if (window.catalogoSettings) {
-        setSiteSettings(window.catalogoSettings);
+      if (window.cataloroSettings) {
+        setSiteSettings(window.cataloroSettings);
       }
     };
     
