@@ -220,7 +220,7 @@ const Auth = () => {
               {isLogin ? 'Welcome Back' : 'Join Catalogo'}
             </CardTitle>
             <CardDescription>
-              {isLogin ? 'Sign in to your account' : 'Create your account to start buying and selling'}
+              {isLogin ? 'Sign in to your account' : 'Create your account and start trading on Catalogo'}
             </CardDescription>
           </CardHeader>
           
