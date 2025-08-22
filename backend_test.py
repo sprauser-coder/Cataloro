@@ -879,7 +879,7 @@ class MarketplaceAPITester:
             png_data, 
             "test_listing.png", 
             "image/png", 
-            401,  # Should fail with 401 Unauthorized
+            403,  # Should fail with 403 Forbidden (FastAPI returns 403 for "Not authenticated")
             use_admin_token=False
         )
         
