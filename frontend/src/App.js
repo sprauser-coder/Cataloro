@@ -133,6 +133,11 @@ const Header = () => {
             <Link to="/orders" className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
               My Orders
             </Link>
+            {user?.role === 'admin' && (
+              <Link to="/admin" className="text-red-600 hover:text-red-800 font-medium transition-colors">
+                Admin Panel
+              </Link>
+            )}
           </nav>
 
           <div className="flex items-center space-x-4">
