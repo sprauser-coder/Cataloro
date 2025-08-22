@@ -932,6 +932,77 @@ const Sell = () => {
     }
   };
 
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Error",
+        description: "Please select an image file",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "Error",
+        description: "File size too large. Maximum 10MB allowed",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check if we already have 3 images
+    if (uploadedImages.length >= 3) {
+      toast({
+        title: "Error",
+        description: "Maximum 3 images allowed per listing",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post(`${API}/listings/upload-image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Add the uploaded image URL to our array
+      setUploadedImages(prev => [...prev, response.data.image_url]);
+
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully",
+      });
+
+      // Clear the file input
+      event.target.value = '';
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to upload image",
+        variant: "destructive"
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (indexToRemove) => {
+    setUploadedImages(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
