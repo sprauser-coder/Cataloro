@@ -50,7 +50,6 @@
         
         // Dashboard tabs
         $('.tab-btn').on('click', switchTab);
-        $('#create-listing-btn').on('click', showCreateListingForm);
     }
 
     // Authentication Functions
