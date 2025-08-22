@@ -1373,6 +1373,47 @@ async def upload_logo(
         "logo_type": logo_type
     }
 
+# Listing Image Upload Endpoints
+@api_router.post("/listings/upload-image")
+async def upload_listing_image(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    """Upload image for listings (PNG, JPG, JPEG only)"""
+    
+    # Validate file type
+    allowed_types = ["image/png", "image/jpeg", "image/jpg"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Only PNG and JPEG files are allowed")
+    
+    # Validate file size (max 10MB for listing images)
+    file_size = 0
+    content = await file.read()
+    file_size = len(content)
+    
+    if file_size > 10 * 1024 * 1024:  # 10MB limit
+        raise HTTPException(status_code=400, detail="File size too large. Maximum 10MB allowed")
+    
+    # Generate unique filename
+    file_extension = ".png" if file.content_type == "image/png" else ".jpg"
+    unique_filename = f"listing_{uuid.uuid4().hex}{file_extension}"
+    file_path = UPLOAD_DIR / unique_filename
+    
+    # Save file
+    try:
+        with open(file_path, "wb") as buffer:
+            buffer.write(content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
+    
+    # Return the image URL
+    image_url = f"/uploads/{unique_filename}"
+    
+    return {
+        "message": "Image uploaded successfully",
+        "image_url": image_url
+    }
+
 # Public CMS Endpoints (for frontend)
 @api_router.get("/cms/settings")
 async def get_public_site_settings():
