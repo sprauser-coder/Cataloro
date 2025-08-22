@@ -3104,8 +3104,8 @@ const CMSPage = () => {
             <h1 
               className="text-4xl font-bold mb-4"
               style={{
-                color: window.catalogoSettings?.h1_color || '#1f2937',
-                fontSize: window.catalogoSettings?.h1_size || '2.5rem'
+                color: window.cataloroSettings?.h1_color || '#1f2937',
+                fontSize: window.cataloroSettings?.h1_size || '2.5rem'
               }}
             >
               {pageContent.title}
