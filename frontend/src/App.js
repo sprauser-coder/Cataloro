@@ -121,7 +121,7 @@ const Header = () => {
       setCustomNavigation(event.detail);
     };
     
-    window.addEventListener('catalogoNavigationLoaded', handleNavigationUpdate);
+    window.addEventListener('cataloroNavigationLoaded', handleNavigationUpdate);
     
     return () => {
       window.removeEventListener('catalogoNavigationLoaded', handleNavigationUpdate);
