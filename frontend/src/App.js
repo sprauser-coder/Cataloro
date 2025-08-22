@@ -1645,6 +1645,64 @@ const AdminPanel = () => {
     }
   };
 
+  const handleLogoUpload = async (event, logoType) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type === 'image/png') {
+      toast({
+        title: "Error",
+        description: "Please select a PNG file",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Error",
+        description: "File size too large. Maximum 5MB allowed",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('logo_type', logoType);
+
+      const response = await axios.post(`${API}/admin/cms/upload-logo?logo_type=${logoType}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Update site settings with new logo URL
+      setSiteSettings(prev => ({
+        ...prev,
+        [`${logoType}_logo_url`]: response.data.logo_url
+      }));
+
+      toast({
+        title: "Success",
+        description: `${logoType.charAt(0).toUpperCase() + logoType.slice(1)} logo uploaded successfully`,
+      });
+
+      // Clear the file input
+      event.target.value = '';
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.detail || "Failed to upload logo",
+        variant: "destructive"
+      });
+    }
+  };
+
   const fetchPages = async () => {
     try {
       setLoading(true);
