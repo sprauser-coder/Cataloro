@@ -47,7 +47,6 @@
         // Cart
         $(document).on('click', '.add-to-cart', addToCart);
         $(document).on('click', '.remove-from-cart', removeFromCart);
-        $('#checkout-btn').on('click', checkout);
         
         // Dashboard tabs
         $('.tab-btn').on('click', switchTab);
