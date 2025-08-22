@@ -272,9 +272,13 @@ async def register(user_data: UserCreate):
     # Hash password
     hashed_password = hash_password(user_data.password)
     
+    # Generate user ID
+    user_id = await generate_user_id()
+    
     # Create user
     user_dict = user_data.dict()
     del user_dict['password']
+    user_dict['user_id'] = user_id
     user = User(**user_dict)
     
     user_doc = prepare_for_mongo(user.dict())
