@@ -657,6 +657,7 @@ class AdminStats(BaseModel):
 
 class UserManagement(BaseModel):
     id: str
+    user_id: str
     email: str
     username: str
     full_name: str
