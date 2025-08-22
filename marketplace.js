@@ -12,7 +12,7 @@
         
         // Check if user is logged in
         if (authToken) {
-            loadUserData();
+            updateCartCount();
         }
     });
 
