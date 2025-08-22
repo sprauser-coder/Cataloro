@@ -2023,30 +2023,208 @@ const AdminPanel = () => {
               <div className="flex justify-center py-8">Loading...</div>
             ) : (
               <div className="space-y-6">
+                {/* Hero Section Customization */}
+                {siteSettings && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Hero Section Customization</CardTitle>
+                      <CardDescription>Customize the main hero/search section appearance and content</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {/* Hero Text Content */}
+                        <div className="grid grid-cols-1 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Hero Title</label>
+                            <input
+                              type="text"
+                              className="w-full p-3 border rounded-md"
+                              value={siteSettings.hero_title}
+                              onChange={(e) => setSiteSettings({...siteSettings, hero_title: e.target.value})}
+                              placeholder="e.g., Discover Amazing Deals"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
+                            <textarea
+                              className="w-full p-3 border rounded-md"
+                              rows="3"
+                              value={siteSettings.hero_subtitle}
+                              onChange={(e) => setSiteSettings({...siteSettings, hero_subtitle: e.target.value})}
+                              placeholder="e.g., Buy and sell with confidence on Catalogo"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Background Settings */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Background Type</label>
+                            <select
+                              className="w-full p-2 border rounded-md"
+                              value={siteSettings.hero_background_type}
+                              onChange={(e) => setSiteSettings({...siteSettings, hero_background_type: e.target.value})}
+                            >
+                              <option value="solid">Solid Color</option>
+                              <option value="gradient">Gradient</option>
+                            </select>
+                          </div>
+                          
+                          {siteSettings.hero_background_type === 'solid' ? (
+                            <div>
+                              <label className="block text-sm font-medium mb-2">Background Color</label>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="color"
+                                  value={siteSettings.hero_background_color}
+                                  onChange={(e) => setSiteSettings({...siteSettings, hero_background_color: e.target.value})}
+                                  className="w-12 h-10 border rounded"
+                                />
+                                <input
+                                  type="text"
+                                  value={siteSettings.hero_background_color}
+                                  onChange={(e) => setSiteSettings({...siteSettings, hero_background_color: e.target.value})}
+                                  className="flex-1 p-2 border rounded-md font-mono"
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <div>
+                                <label className="block text-sm font-medium mb-2">Gradient Start Color</label>
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="color"
+                                    value={siteSettings.hero_background_gradient_start}
+                                    onChange={(e) => setSiteSettings({...siteSettings, hero_background_gradient_start: e.target.value})}
+                                    className="w-12 h-10 border rounded"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={siteSettings.hero_background_gradient_start}
+                                    onChange={(e) => setSiteSettings({...siteSettings, hero_background_gradient_start: e.target.value})}
+                                    className="flex-1 p-2 border rounded-md font-mono"
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-2">Gradient End Color</label>
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="color"
+                                    value={siteSettings.hero_background_gradient_end}
+                                    onChange={(e) => setSiteSettings({...siteSettings, hero_background_gradient_end: e.target.value})}
+                                    className="w-12 h-10 border rounded"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={siteSettings.hero_background_gradient_end}
+                                    onChange={(e) => setSiteSettings({...siteSettings, hero_background_gradient_end: e.target.value})}
+                                    className="flex-1 p-2 border rounded-md font-mono"
+                                  />
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Text Colors */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Hero Title Color</label>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="color"
+                                value={siteSettings.hero_text_color}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_text_color: e.target.value})}
+                                className="w-12 h-10 border rounded"
+                              />
+                              <input
+                                type="text"
+                                value={siteSettings.hero_text_color}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_text_color: e.target.value})}
+                                className="flex-1 p-2 border rounded-md font-mono"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Hero Subtitle Color</label>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="color"
+                                value={siteSettings.hero_subtitle_color}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_subtitle_color: e.target.value})}
+                                className="w-12 h-10 border rounded"
+                              />
+                              <input
+                                type="text"
+                                value={siteSettings.hero_subtitle_color}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_subtitle_color: e.target.value})}
+                                className="flex-1 p-2 border rounded-md font-mono"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Hero Preview */}
+                        <div className="p-6 rounded-lg border" style={{
+                          background: siteSettings.hero_background_type === 'gradient' 
+                            ? `linear-gradient(135deg, ${siteSettings.hero_background_gradient_start} 0%, ${siteSettings.hero_background_gradient_end} 100%)`
+                            : siteSettings.hero_background_color,
+                          color: siteSettings.hero_text_color,
+                          textAlign: 'center'
+                        }}>
+                          <h1 className="text-4xl font-bold mb-4" style={{color: siteSettings.hero_text_color}}>
+                            {siteSettings.hero_title}
+                          </h1>
+                          <p className="text-xl" style={{color: siteSettings.hero_subtitle_color}}>
+                            {siteSettings.hero_subtitle}
+                          </p>
+                        </div>
+
+                        <Button
+                          onClick={() => updateSiteSettings(siteSettings)}
+                          className="w-full"
+                        >
+                          Save Hero Section Changes
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 <Card>
                   <CardHeader>
-                    <CardTitle>Content Management</CardTitle>
-                    <CardDescription>Manage pages and content</CardDescription>
+                    <CardTitle>Page Management</CardTitle>
+                    <CardDescription>Manage pages and automatically add them to navigation</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-lg font-semibold">Pages</h3>
-                      <Button 
-                        onClick={() => {
-                          const newPage = {
-                            page_slug: prompt('Enter page slug (e.g., about, terms):'),
-                            title: prompt('Enter page title:'),
-                            content: '<p>New page content...</p>',
-                            is_published: true,
-                            meta_description: ''
-                          };
-                          if (newPage.page_slug && newPage.title) {
-                            createPage(newPage);
-                          }
-                        }}
-                      >
-                        Create New Page
-                      </Button>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          onClick={syncNavigationWithPages}
+                        >
+                          Sync Navigation
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            const newPage = {
+                              page_slug: prompt('Enter page slug (e.g., about, terms):'),
+                              title: prompt('Enter page title:'),
+                              content: '<p>New page content...</p>',
+                              is_published: true,
+                              meta_description: ''
+                            };
+                            if (newPage.page_slug && newPage.title) {
+                              createPage(newPage);
+                            }
+                          }}
+                        >
+                          Create New Page
+                        </Button>
+                      </div>
                     </div>
                     
                     <div className="space-y-4">
@@ -2059,6 +2237,7 @@ const AdminPanel = () => {
                               <Badge variant={page.is_published ? 'default' : 'secondary'}>
                                 {page.is_published ? 'Published' : 'Draft'}
                               </Badge>
+                              <Badge variant="outline">Auto-added to menu</Badge>
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -2091,7 +2270,7 @@ const AdminPanel = () => {
                           <div>
                             <label className="block text-sm font-medium mb-2">Content (HTML)</label>
                             <textarea
-                              className="w-full h-64 p-3 border rounded-md"
+                              className="w-full h-64 p-3 border rounded-md font-mono"
                               value={editingContent}
                               onChange={(e) => setEditingContent(e.target.value)}
                               placeholder="Enter HTML content..."
