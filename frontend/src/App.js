@@ -566,7 +566,13 @@ const Home = () => {
               <Card key={listing.id} className="hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => navigate(`/listing/${listing.id}`)}>
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img
-                    src={listing.images?.[0] || 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'}
+                    src={
+                      listing.images?.[0] 
+                        ? (listing.images[0].startsWith('/uploads/') 
+                            ? `${API}${listing.images[0]}` 
+                            : listing.images[0])
+                        : 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'
+                    }
                     alt={listing.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
