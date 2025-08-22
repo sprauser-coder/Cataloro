@@ -84,3 +84,26 @@ code {
     @apply bg-background text-foreground;
     }
 }
+
+/* Hide the "Made with Emergent" branding */
+[data-emergent-branding] {
+  display: none !important;
+}
+
+/* Alternative selectors to hide Emergent branding */
+div[style*="position: fixed"][style*="bottom"][style*="right"] {
+  display: none !important;
+}
+
+/* Target any element containing "Made with Emergent" text */
+*:has-text("Made with Emergent") {
+  display: none !important;
+}
+
+/* Hide elements with Emergent-related classes or IDs */
+.emergent-branding,
+#emergent-branding,
+[class*="emergent"],
+[id*="emergent"] {
+  display: none !important;
+}
