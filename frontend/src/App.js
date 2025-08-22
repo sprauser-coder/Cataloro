@@ -913,6 +913,8 @@ const Sell = () => {
     auction_duration_hours: 24
   });
   const [categories, setCategories] = useState([]);
+  const [uploadedImages, setUploadedImages] = useState([]); // Array to store uploaded image URLs
+  const [uploading, setUploading] = useState(false); // Loading state for image uploads
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
