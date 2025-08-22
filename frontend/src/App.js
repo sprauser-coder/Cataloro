@@ -2171,7 +2171,7 @@ const AdminPanel = () => {
                               rows="3"
                               value={siteSettings.hero_subtitle}
                               onChange={(e) => setSiteSettings({...siteSettings, hero_subtitle: e.target.value})}
-                              placeholder="e.g., Buy and sell with confidence on Catalogo"
+                              placeholder="e.g., Buy and sell with confidence on Cataloro"
                             />
                           </div>
                         </div>
