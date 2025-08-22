@@ -1681,7 +1681,52 @@ const AdminPanel = () => {
         title: "Success",
         description: "Site settings updated successfully"
       });
-      fetchSiteSettings();
+      await fetchSiteSettings();
+      
+      // Refresh the main website settings as well
+      const settingsResponse = await axios.get(`${API}/cms/settings`);
+      const settings = settingsResponse.data;
+      window.catalogoSettings = settings;
+      
+      // Apply updated settings to the main website immediately
+      if (settings.site_name) {
+        document.title = `${settings.site_name} - ${settings.site_tagline}`;
+      }
+      
+      if (settings.global_font_family) {
+        document.body.style.fontFamily = settings.global_font_family;
+      }
+      
+      // Apply CSS custom properties for immediate visual update
+      const root = document.documentElement;
+      root.style.setProperty('--primary-color', settings.primary_color || '#6366f1');
+      root.style.setProperty('--secondary-color', settings.secondary_color || '#8b5cf6');
+      root.style.setProperty('--accent-color', settings.accent_color || '#ef4444');
+      root.style.setProperty('--background-color', settings.background_color || '#f8fafc');
+      
+      // Hero section colors
+      root.style.setProperty('--hero-bg-start', settings.hero_background_gradient_start || '#667eea');
+      root.style.setProperty('--hero-bg-end', settings.hero_background_gradient_end || '#764ba2');
+      root.style.setProperty('--hero-text-color', settings.hero_text_color || '#ffffff');
+      root.style.setProperty('--hero-subtitle-color', settings.hero_subtitle_color || '#f1f5f9');
+      
+      // Typography
+      root.style.setProperty('--h1-size', settings.h1_size || '3rem');
+      root.style.setProperty('--h2-size', settings.h2_size || '2.25rem');
+      root.style.setProperty('--h3-size', settings.h3_size || '1.875rem');
+      root.style.setProperty('--h4-size', settings.h4_size || '1.5rem');
+      root.style.setProperty('--h5-size', settings.h5_size || '1.25rem');
+      root.style.setProperty('--h1-color', settings.h1_color || '#1f2937');
+      root.style.setProperty('--h2-color', settings.h2_color || '#374151');
+      root.style.setProperty('--h3-color', settings.h3_color || '#4b5563');
+      root.style.setProperty('--h4-color', settings.h4_color || '#6b7280');
+      root.style.setProperty('--h5-color', settings.h5_color || '#9ca3af');
+      
+      // Trigger a page refresh to apply all changes
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+      
     } catch (error) {
       toast({
         title: "Error",
