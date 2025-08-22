@@ -3118,7 +3118,7 @@ const CMSPage = () => {
           <div 
             className="prose prose-lg max-w-none"
             style={{
-              fontFamily: window.catalogoSettings?.global_font_family || 'Inter'
+              fontFamily: window.cataloroSettings?.global_font_family || 'Inter'
             }}
             dangerouslySetInnerHTML={{ __html: pageContent.content }}
           />
