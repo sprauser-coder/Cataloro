@@ -722,6 +722,7 @@ async def get_all_users(admin: User = Depends(get_admin_user)):
         
         result.append(UserManagement(
             id=user.id,
+            user_id=user.user_id or "Not Generated",
             email=user.email,
             username=user.username,
             full_name=user.full_name,
