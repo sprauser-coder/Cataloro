@@ -1151,7 +1151,7 @@ async def get_public_page_content(page_slug: str):
 async def get_public_navigation():
     """Get public navigation items"""
     nav_items = await db.navigation.find({"is_visible": True}).sort("order", 1).to_list(length=None)
-    return [parse_from_mongo(item) for item in nav_items]
+    return [NavigationItem(**parse_from_mongo(item)).dict() for item in nav_items]
 
 # Include the router in the main app
 app.include_router(api_router)
