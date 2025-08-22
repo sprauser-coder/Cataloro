@@ -1775,10 +1775,83 @@ const AdminPanel = () => {
                   <CardDescription>View and manage all platform users</CardDescription>
                 </CardHeader>
                 <CardContent>
+                  {/* Bulk Actions */}
+                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-medium mb-3">Bulk Actions & System Tools</h4>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={generateMissingUserIds}
+                      >
+                        Generate User IDs
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={selectAllUsers}
+                      >
+                        {selectedUsers.length === users.length ? 'Deselect All' : 'Select All'}
+                      </Button>
+                      {selectedUsers.length > 0 && (
+                        <>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={bulkBlockUsers}
+                          >
+                            Block Selected ({selectedUsers.length})
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={bulkUnblockUsers}
+                          >
+                            Unblock Selected ({selectedUsers.length})
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={bulkDeleteUsers}
+                          >
+                            Delete Selected ({selectedUsers.length})
+                          </Button>
+                        </>
+                      )}
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={bulkDeactivateAll}
+                      >
+                        Deactivate All Users
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={bulkActivateAll}
+                      >
+                        Activate All Users
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={deleteAllNonAdminUsers}
+                      >
+                        ⚠️ Delete All Non-Admin
+                      </Button>
+                    </div>
+                  </div>
+                  
                   <div className="space-y-4">
                     {users.map((user) => (
                       <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div className="flex-1">
+                        <div className="flex items-center space-x-4">
+                          <input
+                            type="checkbox"
+                            checked={selectedUsers.includes(user.id)}
+                            onChange={(e) => handleUserSelection(user.id, e.target.checked)}
+                            className="w-4 h-4"
+                          />
                           <div className="flex items-center space-x-4">
                             <Avatar>
                               <AvatarFallback>{user.full_name.charAt(0)}</AvatarFallback>
@@ -1799,6 +1872,13 @@ const AdminPanel = () => {
                             <p>Orders: {user.total_orders}</p>
                             <p>Listings: {user.total_listings}</p>
                           </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => resetUserPassword(user.id)}
+                          >
+                            Reset Password
+                          </Button>
                           {user.is_blocked ? (
                             <Button
                               variant="outline"
