@@ -1768,6 +1768,7 @@ const AdminPanel = () => {
                             <div>
                               <h3 className="font-semibold">{user.full_name}</h3>
                               <p className="text-sm text-gray-600">{user.email}</p>
+                              <p className="text-xs text-gray-500">ID: {user.user_id}</p>
                               <div className="flex items-center space-x-2 mt-1">
                                 <Badge variant="outline">{user.role}</Badge>
                                 {user.is_blocked && <Badge variant="destructive">Blocked</Badge>}
