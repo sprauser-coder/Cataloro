@@ -20,6 +20,7 @@ class MarketplaceAPITester:
         self.admin_token = None
         self.created_page_slug = None
         self.created_nav_id = None
+        self.uploaded_logo_url = None
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None, use_admin_token=False):
         """Run a single API test"""
