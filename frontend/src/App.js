@@ -770,13 +770,53 @@ const ListingDetail = () => {
       <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Images */}
+          {/* Images Gallery */}
           <div>
-            <img
-              src={listing.images?.[0] || 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'}
-              alt={listing.title}
-              className="w-full h-96 object-cover rounded-lg"
-            />
+            {listing.images && listing.images.length > 0 ? (
+              <div className="space-y-4">
+                {/* Main Image */}
+                <img
+                  src={
+                    listing.images[0].startsWith('/uploads/') 
+                      ? `${API}${listing.images[0]}` 
+                      : listing.images[0]
+                  }
+                  alt={listing.title}
+                  className="w-full h-96 object-cover rounded-lg"
+                />
+                
+                {/* Thumbnail Gallery */}
+                {listing.images.length > 1 && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {listing.images.slice(1).map((image, index) => (
+                      <img
+                        key={index}
+                        src={
+                          image.startsWith('/uploads/') 
+                            ? `${API}${image}` 
+                            : image
+                        }
+                        alt={`${listing.title} ${index + 2}`}
+                        className="w-full h-24 object-cover rounded cursor-pointer hover:opacity-75"
+                        onClick={() => {
+                          // You can implement image switching functionality here
+                          const mainImg = document.querySelector('.main-listing-image');
+                          if (mainImg) {
+                            mainImg.src = image.startsWith('/uploads/') ? `${API}${image}` : image;
+                          }
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <img
+                src="https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85"
+                alt={listing.title}
+                className="w-full h-96 object-cover rounded-lg"
+              />
+            )}
           </div>
 
           {/* Details */}
