@@ -613,6 +613,10 @@ class SiteSettings(BaseModel):
     hero_title: str = Field(default="Discover Amazing Deals")
     hero_subtitle: str = Field(default="Buy and sell with confidence on Cataloro - your trusted marketplace for amazing deals")
     
+    # Logo Settings
+    header_logo_url: Optional[str] = Field(default=None)  # Main header logo
+    header_logo_alt: str = Field(default="Cataloro Logo")  # Alt text for header logo
+    
     # Color Settings
     primary_color: str = Field(default="#6366f1")  # indigo-600
     secondary_color: str = Field(default="#8b5cf6")  # purple-600
