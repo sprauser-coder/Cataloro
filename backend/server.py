@@ -576,6 +576,267 @@ async def get_categories():
 async def root():
     return {"message": "Marketplace API"}
 
+# ===========================
+# ADMIN ROUTES
+# ===========================
+
+# Admin Models
+class AdminStats(BaseModel):
+    total_users: int
+    active_users: int
+    blocked_users: int
+    total_listings: int
+    active_listings: int
+    total_orders: int
+    total_revenue: float
+
+class UserManagement(BaseModel):
+    id: str
+    email: str
+    username: str
+    full_name: str
+    role: str
+    is_blocked: bool
+    created_at: datetime
+    total_orders: Optional[int] = 0
+    total_listings: Optional[int] = 0
+
+class ListingManagement(BaseModel):
+    id: str
+    title: str
+    seller_id: str
+    seller_name: str
+    price: Optional[float]
+    status: str
+    created_at: datetime
+    views: int
+    category: str
+
+# Admin Analytics Endpoints
+@api_router.get("/admin/stats", response_model=AdminStats)
+async def get_admin_stats(admin: User = Depends(get_admin_user)):
+    """Get platform statistics"""
+    # Count users
+    total_users = await db.users.count_documents({})
+    active_users = await db.users.count_documents({"is_blocked": False})
+    blocked_users = await db.users.count_documents({"is_blocked": True})
+    
+    # Count listings
+    total_listings = await db.listings.count_documents({})
+    active_listings = await db.listings.count_documents({"status": "active"})
+    
+    # Count orders and revenue
+    total_orders = await db.orders.count_documents({})
+    orders = await db.orders.find({}).to_list(length=None)
+    total_revenue = sum(order.get('total_amount', 0) for order in orders)
+    
+    return AdminStats(
+        total_users=total_users,
+        active_users=active_users,
+        blocked_users=blocked_users,
+        total_listings=total_listings,
+        active_listings=active_listings,
+        total_orders=total_orders,
+        total_revenue=total_revenue
+    )
+
+# Admin User Management
+@api_router.get("/admin/users", response_model=List[UserManagement])
+async def get_all_users(admin: User = Depends(get_admin_user)):
+    """Get all users for admin management"""
+    users = await db.users.find({}).to_list(length=None)
+    
+    result = []
+    for user_doc in users:
+        user = User(**parse_from_mongo(user_doc))
+        
+        # Count user's orders and listings
+        orders_count = await db.orders.count_documents({"buyer_id": user.id})
+        listings_count = await db.listings.count_documents({"seller_id": user.id})
+        
+        result.append(UserManagement(
+            id=user.id,
+            email=user.email,
+            username=user.username,
+            full_name=user.full_name,
+            role=user.role,
+            is_blocked=user.is_blocked,
+            created_at=user.created_at,
+            total_orders=orders_count,
+            total_listings=listings_count
+        ))
+    
+    return result
+
+@api_router.put("/admin/users/{user_id}/block")
+async def block_user(user_id: str, admin: User = Depends(get_admin_user)):
+    """Block a user"""
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"is_blocked": True}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "User blocked successfully"}
+
+@api_router.put("/admin/users/{user_id}/unblock")
+async def unblock_user(user_id: str, admin: User = Depends(get_admin_user)):
+    """Unblock a user"""
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"is_blocked": False}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "User unblocked successfully"}
+
+@api_router.delete("/admin/users/{user_id}")
+async def delete_user(user_id: str, admin: User = Depends(get_admin_user)):
+    """Delete a user and all associated data"""
+    # Delete user's listings
+    await db.listings.delete_many({"seller_id": user_id})
+    
+    # Delete user's cart items
+    await db.cart_items.delete_many({"user_id": user_id})
+    
+    # Delete user's bids
+    await db.bids.delete_many({"bidder_id": user_id})
+    
+    # Delete user's reviews
+    await db.reviews.delete_many({"$or": [{"reviewer_id": user_id}, {"reviewed_user_id": user_id}]})
+    
+    # Delete user's orders (keep for seller records, just mark as deleted)
+    await db.orders.update_many(
+        {"$or": [{"buyer_id": user_id}, {"seller_id": user_id}]},
+        {"$set": {"user_deleted": True}}
+    )
+    
+    # Finally delete the user
+    result = await db.users.delete_one({"id": user_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "User and all associated data deleted successfully"}
+
+# Admin Listing Management
+@api_router.get("/admin/listings", response_model=List[ListingManagement])
+async def get_all_listings(admin: User = Depends(get_admin_user)):
+    """Get all listings for admin management"""
+    listings = await db.listings.find({}).sort("created_at", -1).to_list(length=None)
+    
+    result = []
+    for listing_doc in listings:
+        listing = ProductListing(**parse_from_mongo(listing_doc))
+        
+        # Get seller info
+        seller = await db.users.find_one({"id": listing.seller_id})
+        seller_name = seller.get('full_name', 'Unknown') if seller else 'Unknown'
+        
+        result.append(ListingManagement(
+            id=listing.id,
+            title=listing.title,
+            seller_id=listing.seller_id,
+            seller_name=seller_name,
+            price=listing.price or listing.current_bid,
+            status=listing.status,
+            created_at=listing.created_at,
+            views=listing.views,
+            category=listing.category
+        ))
+    
+    return result
+
+@api_router.delete("/admin/listings/{listing_id}")
+async def delete_listing(listing_id: str, admin: User = Depends(get_admin_user)):
+    """Delete a listing"""
+    # Also delete associated bids and cart items
+    await db.bids.delete_many({"listing_id": listing_id})
+    await db.cart_items.delete_many({"listing_id": listing_id})
+    
+    result = await db.listings.delete_one({"id": listing_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    
+    return {"message": "Listing deleted successfully"}
+
+@api_router.put("/admin/listings/{listing_id}/status")
+async def update_listing_status(
+    listing_id: str, 
+    status: ListingStatus, 
+    admin: User = Depends(get_admin_user)
+):
+    """Update listing status"""
+    result = await db.listings.update_one(
+        {"id": listing_id},
+        {"$set": {"status": status}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    
+    return {"message": f"Listing status updated to {status}"}
+
+# Admin Order Management
+@api_router.get("/admin/orders")
+async def get_all_orders(admin: User = Depends(get_admin_user)):
+    """Get all orders for admin management"""
+    orders = await db.orders.find({}).sort("created_at", -1).to_list(length=None)
+    
+    result = []
+    for order_doc in orders:
+        order = Order(**parse_from_mongo(order_doc))
+        
+        # Get buyer and seller info
+        buyer = await db.users.find_one({"id": order.buyer_id})
+        seller = await db.users.find_one({"id": order.seller_id})
+        listing = await db.listings.find_one({"id": order.listing_id})
+        
+        result.append({
+            "order": order,
+            "buyer": User(**parse_from_mongo(buyer)) if buyer else None,
+            "seller": User(**parse_from_mongo(seller)) if seller else None,
+            "listing": ProductListing(**parse_from_mongo(listing)) if listing else None
+        })
+    
+    return result
+
+# Create default admin user
+@api_router.post("/admin/create-default-admin")
+async def create_default_admin():
+    """Create default admin user - only works if no admin exists"""
+    existing_admin = await db.users.find_one({"role": "admin"})
+    if existing_admin:
+        raise HTTPException(status_code=400, detail="Admin user already exists")
+    
+    admin_data = {
+        "email": "admin@marketplace.com",
+        "username": "admin",
+        "password": "admin123",
+        "full_name": "System Administrator",
+        "role": "admin"
+    }
+    
+    # Hash password
+    hashed_password = hash_password(admin_data['password'])
+    
+    # Create admin user
+    user_dict = admin_data.copy()
+    del user_dict['password']
+    admin_user = User(**user_dict)
+    
+    user_doc = prepare_for_mongo(admin_user.dict())
+    user_doc['password'] = hashed_password
+    
+    await db.users.insert_one(user_doc)
+    
+    return {"message": "Default admin created", "email": "admin@marketplace.com", "password": "admin123"}
+
 # Include the router in the main app
 app.include_router(api_router)
 
