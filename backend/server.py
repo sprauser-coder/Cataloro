@@ -612,10 +612,35 @@ class SiteSettings(BaseModel):
     site_tagline: str = Field(default="Your trusted marketplace for amazing deals")
     hero_title: str = Field(default="Discover Amazing Deals")
     hero_subtitle: str = Field(default="Buy and sell with confidence on Catalogo - your trusted marketplace for amazing deals")
+    
+    # Color Settings
     primary_color: str = Field(default="#6366f1")  # indigo-600
     secondary_color: str = Field(default="#8b5cf6")  # purple-600
     accent_color: str = Field(default="#ef4444")  # red-500
     background_color: str = Field(default="#f8fafc")  # slate-50
+    
+    # Hero Section Customization
+    hero_background_type: str = Field(default="gradient")  # "solid", "gradient"
+    hero_background_color: str = Field(default="#6366f1")  # Primary color
+    hero_background_gradient_start: str = Field(default="#667eea")
+    hero_background_gradient_end: str = Field(default="#764ba2")
+    hero_text_color: str = Field(default="#ffffff")
+    hero_subtitle_color: str = Field(default="#f1f5f9")  # Light gray
+    
+    # Typography Settings
+    global_font_family: str = Field(default="Inter")  # "Inter", "Roboto", "Open Sans", "Poppins", etc.
+    h1_size: str = Field(default="3rem")  # 48px
+    h2_size: str = Field(default="2.25rem")  # 36px  
+    h3_size: str = Field(default="1.875rem")  # 30px
+    h4_size: str = Field(default="1.5rem")  # 24px
+    h5_size: str = Field(default="1.25rem")  # 20px
+    h1_color: str = Field(default="#1f2937")  # gray-800
+    h2_color: str = Field(default="#374151")  # gray-700
+    h3_color: str = Field(default="#4b5563")  # gray-600
+    h4_color: str = Field(default="#6b7280")  # gray-500
+    h5_color: str = Field(default="#9ca3af")  # gray-400
+    
+    # Feature Toggles
     show_hero_section: bool = Field(default=True)
     show_categories: bool = Field(default=True)
     show_auctions: bool = Field(default=True)
@@ -624,6 +649,7 @@ class SiteSettings(BaseModel):
     enable_reviews: bool = Field(default=True)
     enable_cart: bool = Field(default=True)
     max_images_per_listing: int = Field(default=5)
+    auto_add_pages_to_menu: bool = Field(default=True)
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class PageContent(BaseModel):
