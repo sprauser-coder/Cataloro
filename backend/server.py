@@ -1145,7 +1145,7 @@ async def get_public_page_content(page_slug: str):
     page = await db.page_content.find_one({"page_slug": page_slug, "is_published": True})
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
-    return parse_from_mongo(page)
+    return PageContent(**parse_from_mongo(page)).dict()
 
 @api_router.get("/cms/navigation")
 async def get_public_navigation():
