@@ -580,7 +580,47 @@ async def root():
 # ADMIN ROUTES
 # ===========================
 
-# Admin Models
+# CMS Models
+class SiteSettings(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    site_name: str = Field(default="Catalogo")
+    site_tagline: str = Field(default="Your trusted marketplace for amazing deals")
+    hero_title: str = Field(default="Discover Amazing Deals")
+    hero_subtitle: str = Field(default="Buy and sell with confidence on Catalogo - your trusted marketplace for amazing deals")
+    primary_color: str = Field(default="#6366f1")  # indigo-600
+    secondary_color: str = Field(default="#8b5cf6")  # purple-600
+    accent_color: str = Field(default="#ef4444")  # red-500
+    background_color: str = Field(default="#f8fafc")  # slate-50
+    show_hero_section: bool = Field(default=True)
+    show_categories: bool = Field(default=True)
+    show_auctions: bool = Field(default=True)
+    show_buy_now: bool = Field(default=True)
+    allow_user_registration: bool = Field(default=True)
+    enable_reviews: bool = Field(default=True)
+    enable_cart: bool = Field(default=True)
+    max_images_per_listing: int = Field(default=5)
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class PageContent(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    page_slug: str  # 'home', 'about', 'terms', etc.
+    title: str
+    content: str  # HTML content
+    is_published: bool = Field(default=True)
+    meta_description: str = Field(default="")
+    custom_css: str = Field(default="")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class NavigationItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    label: str
+    url: str
+    order: int = Field(default=0)
+    is_visible: bool = Field(default=True)
+    parent_id: Optional[str] = None
+    target: str = Field(default="_self")  # _self, _blank
+
 class AdminStats(BaseModel):
     total_users: int
     active_users: int
