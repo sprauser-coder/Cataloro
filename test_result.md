@@ -255,6 +255,21 @@ backend:
         agent: "testing"
         comment: "TESTED: Comprehensive logo upload functionality testing completed with 8/8 tests passed (100% success rate). ✅ Admin authentication required (403 without admin token), ✅ PNG file validation (rejects JPG with 400 error), ✅ File size validation (rejects 6MB files, accepts smaller files), ✅ Successful PNG upload with proper response, ✅ Logo URL correctly stored in site settings (header_logo_url, header_logo_alt fields), ✅ Logo fields returned in public GET /cms/settings endpoint, ✅ Uploads directory properly created and files accessible via static serving, ✅ Old logo files properly replaced when new logo uploaded. All validation, authentication, data storage, and file management aspects working perfectly."
 
+  - task: "Listing Image Upload Functionality"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Implemented listing image upload endpoint POST /listings/upload-image with PNG/JPEG validation, 10MB file size limit, user authentication, and file storage in uploads directory"
+      - working: true
+        agent: "testing"
+        comment: "TESTED: Comprehensive listing image upload functionality testing completed with 10/10 tests passed (100% success rate). ✅ User authentication required (403 without token), ✅ PNG and JPEG file validation (accepts PNG/JPEG, rejects GIF with 400 error), ✅ File size validation (rejects 11MB files, accepts smaller files), ✅ Both regular users and admin users can upload images, ✅ Successful uploads return proper image_url, ✅ Listings can be created with uploaded images in images array, ✅ GET /listings returns listings with proper image URLs, ✅ Listing detail endpoints return image data correctly, ✅ Uploads directory works correctly for listing images, ✅ Uploaded images are accessible via HTTP static serving. All file upload validation, authentication, integration with listings system, and file management aspects working perfectly."
+
 frontend:
   - task: "Authentication Pages (Login/Register)"
     implemented: true
