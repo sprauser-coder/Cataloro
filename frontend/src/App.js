@@ -1012,6 +1012,9 @@ const Sell = () => {
       if (data.buyout_price) data.buyout_price = parseFloat(data.buyout_price);
       if (data.shipping_cost) data.shipping_cost = parseFloat(data.shipping_cost);
       if (data.auction_duration_hours) data.auction_duration_hours = parseInt(data.auction_duration_hours);
+      
+      // Add uploaded images to the listing data
+      data.images = uploadedImages;
 
       const response = await axios.post(`${API}/listings`, data);
       toast({
