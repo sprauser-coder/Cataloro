@@ -144,7 +144,15 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <Package className="h-8 w-8 text-indigo-600" />
+            {siteSettings?.header_logo_url ? (
+              <img 
+                src={`${API}${siteSettings.header_logo_url}`} 
+                alt={siteSettings.header_logo_alt || 'Logo'} 
+                className="h-8 w-auto object-contain"
+              />
+            ) : (
+              <Package className="h-8 w-8 text-indigo-600" />
+            )}
             <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               {siteName}
             </span>
