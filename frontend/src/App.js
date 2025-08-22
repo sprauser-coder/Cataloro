@@ -3206,7 +3206,7 @@ function App() {
         root.style.setProperty('--h5-color', settings.h5_color || '#9ca3af');
         
         // Store settings globally for components to use
-        window.catalogoSettings = settings;
+        window.cataloroSettings = settings;
         
       } catch (error) {
         console.error('Failed to load CMS settings:', error);
