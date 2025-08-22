@@ -1413,7 +1413,13 @@ const Cart = () => {
                     <CardContent className="p-4">
                       <div className="flex items-center space-x-4">
                         <img
-                          src={item.listing.images?.[0] || 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'}
+                          src={
+                            item.listing.images?.[0] 
+                              ? (item.listing.images[0].startsWith('/uploads/') 
+                                  ? `${API}${item.listing.images[0]}` 
+                                  : item.listing.images[0])
+                              : 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'
+                          }
                           alt={item.listing.title}
                           className="w-20 h-20 object-cover rounded"
                         />
