@@ -896,7 +896,7 @@ const Sell = () => {
         <Card>
           <CardHeader>
             <CardTitle>Create New Listing</CardTitle>
-            <CardDescription>List your item for sale on the marketplace</CardDescription>
+            <CardDescription>List your item on Catalogo and reach thousands of potential buyers</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
