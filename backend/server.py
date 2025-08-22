@@ -40,6 +40,7 @@ class UserRole(str, Enum):
     BUYER = "buyer"
     SELLER = "seller"
     BOTH = "both"
+    ADMIN = "admin"
 
 class ListingType(str, Enum):
     FIXED_PRICE = "fixed_price"
