@@ -3,6 +3,9 @@ import sys
 import json
 from datetime import datetime, timedelta
 import time
+import io
+import os
+from pathlib import Path
 
 class MarketplaceAPITester:
     def __init__(self, base_url="https://cataloro-admin.preview.emergentagent.com"):
