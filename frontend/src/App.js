@@ -95,12 +95,37 @@ const ProtectedRoute = ({ children }) => {
 const Header = () => {
   const { user, logout } = useAuth();
   const [cartCount, setCartCount] = useState(0);
+  const [customNavigation, setCustomNavigation] = useState([]);
+  const [siteSettings, setSiteSettings] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
       fetchCartCount();
     }
+    
+    // Load navigation and settings from global state or fetch
+    const loadHeaderData = () => {
+      if (window.catalogoNavigation) {
+        setCustomNavigation(window.catalogoNavigation);
+      }
+      if (window.catalogoSettings) {
+        setSiteSettings(window.catalogoSettings);
+      }
+    };
+    
+    loadHeaderData();
+    
+    // Listen for navigation updates
+    const handleNavigationUpdate = (event) => {
+      setCustomNavigation(event.detail);
+    };
+    
+    window.addEventListener('catalogoNavigationLoaded', handleNavigationUpdate);
+    
+    return () => {
+      window.removeEventListener('catalogoNavigationLoaded', handleNavigationUpdate);
+    };
   }, [user]);
 
   const fetchCartCount = async () => {
@@ -112,6 +137,8 @@ const Header = () => {
     }
   };
 
+  const siteName = siteSettings?.site_name || 'Catalogo';
+
   return (
     <header className="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -119,7 +146,7 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2">
             <Package className="h-8 w-8 text-indigo-600" />
             <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Catalogo
+              {siteName}
             </span>
           </Link>
           
@@ -133,6 +160,17 @@ const Header = () => {
             <Link to="/orders" className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
               My Orders
             </Link>
+            {/* Dynamic Navigation from CMS */}
+            {customNavigation.map((navItem) => (
+              <Link
+                key={navItem.id}
+                to={navItem.url}
+                className="text-gray-700 hover:text-indigo-600 font-medium transition-colors"
+                target={navItem.target}
+              >
+                {navItem.label}
+              </Link>
+            ))}
             {user?.role === 'admin' && (
               <Link to="/admin" className="text-red-600 hover:text-red-800 font-medium transition-colors">
                 Catalogo Admin
