@@ -326,6 +326,16 @@
         container.html(html);
     }
 
+    function loadUserListings() {
+        // Placeholder for loading user listings
+        $('#user-listings').html('<p>My listings functionality coming soon...</p>');
+    }
+
+    function loadUserProfile() {
+        // Placeholder for loading user profile
+        $('#user-profile').html('<p>Profile settings coming soon...</p>');
+    }
+
     // Utility Functions
     function apiRequest(endpoint, method = 'GET', data = null) {
         const url = marketplace_ajax.api_base_url + endpoint;
