@@ -377,12 +377,18 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [listingType, setListingType] = useState('');
   const [loading, setLoading] = useState(true);
+  const [siteSettings, setSiteSettings] = useState(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchCategories();
     fetchListings();
+    
+    // Load site settings for dynamic content
+    if (window.catalogoSettings) {
+      setSiteSettings(window.catalogoSettings);
+    }
   }, []);
 
   useEffect(() => {
