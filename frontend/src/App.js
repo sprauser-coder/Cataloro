@@ -1217,6 +1217,8 @@ const AdminPanel = () => {
   const [listings, setListings] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -1266,6 +1268,7 @@ const AdminPanel = () => {
       setLoading(true);
       const response = await axios.get(`${API}/admin/users`);
       setUsers(response.data);
+      setSelectedUsers([]);
     } catch (error) {
       toast({
         title: "Error",
@@ -1343,6 +1346,25 @@ const AdminPanel = () => {
     }
   };
 
+  const resetUserPassword = async (userId) => {
+    if (!confirm('Are you sure you want to reset this user\'s password? They will receive a temporary password.')) return;
+    
+    try {
+      const response = await axios.put(`${API}/admin/users/${userId}/reset-password`);
+      toast({
+        title: "Password Reset",
+        description: `New temporary password: ${response.data.temporary_password}`,
+        duration: 10000
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to reset password",
+        variant: "destructive"
+      });
+    }
+  };
+
   const deleteListing = async (listingId) => {
     if (!confirm('Are you sure you want to delete this listing?')) return;
     
@@ -1357,6 +1379,151 @@ const AdminPanel = () => {
       toast({
         title: "Error",
         description: "Failed to delete listing",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleUserSelection = (userId, isSelected) => {
+    if (isSelected) {
+      setSelectedUsers([...selectedUsers, userId]);
+    } else {
+      setSelectedUsers(selectedUsers.filter(id => id !== userId));
+    }
+  };
+
+  const selectAllUsers = () => {
+    if (selectedUsers.length === users.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(users.map(user => user.id));
+    }
+  };
+
+  const bulkBlockUsers = async () => {
+    if (selectedUsers.length === 0) return;
+    if (!confirm(`Block ${selectedUsers.length} selected users?`)) return;
+    
+    try {
+      await axios.put(`${API}/admin/users/bulk-block`, selectedUsers);
+      toast({
+        title: "Success",
+        description: `Blocked ${selectedUsers.length} users`
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to block users",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const bulkUnblockUsers = async () => {
+    if (selectedUsers.length === 0) return;
+    if (!confirm(`Unblock ${selectedUsers.length} selected users?`)) return;
+    
+    try {
+      await axios.put(`${API}/admin/users/bulk-unblock`, selectedUsers);
+      toast({
+        title: "Success",
+        description: `Unblocked ${selectedUsers.length} users`
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to unblock users",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const bulkDeleteUsers = async () => {
+    if (selectedUsers.length === 0) return;
+    if (!confirm(`⚠️ PERMANENTLY DELETE ${selectedUsers.length} users and ALL their data? This cannot be undone!`)) return;
+    
+    try {
+      await axios.delete(`${API}/admin/users/bulk-delete`, { data: selectedUsers });
+      toast({
+        title: "Success",
+        description: `Deleted ${selectedUsers.length} users and their data`
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete users",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const bulkDeactivateAll = async () => {
+    if (!confirm('⚠️ DEACTIVATE ALL USERS (except admins)? This will block all regular users from accessing the platform.')) return;
+    
+    try {
+      const response = await axios.put(`${API}/admin/users/bulk-deactivate-all`);
+      toast({
+        title: "Bulk Deactivation Complete",
+        description: response.data.message
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to deactivate users",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const bulkActivateAll = async () => {
+    if (!confirm('Activate ALL users on the platform?')) return;
+    
+    try {
+      const response = await axios.put(`${API}/admin/users/bulk-activate-all`);
+      toast({
+        title: "Bulk Activation Complete",
+        description: response.data.message
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to activate users",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deleteAllNonAdminUsers = async () => {
+    const confirmText = "DELETE ALL NON-ADMIN USERS";
+    const userConfirm = prompt(`⚠️ DANGER: This will PERMANENTLY DELETE ALL non-admin users and their data!\n\nType "${confirmText}" to confirm:`);
+    
+    if (userConfirm !== confirmText) {
+      toast({
+        title: "Operation Cancelled",
+        description: "Confirmation text did not match"
+      });
+      return;
+    }
+    
+    try {
+      const response = await axios.delete(`${API}/admin/users/delete-all-non-admin`);
+      toast({
+        title: "⚠️ BULK DELETE COMPLETED",
+        description: `${response.data.users_deleted} users and all their data deleted`,
+        variant: "destructive",
+        duration: 8000
+      });
+      fetchUsers();
+      fetchStats();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete all users",
         variant: "destructive"
       });
     }
