@@ -73,6 +73,49 @@ class MarketplaceAPITester:
             print(f"❌ Failed - Error: {str(e)}")
             return False, {}
 
+    def run_file_upload_test(self, name, endpoint, file_data, file_name, content_type, expected_status, use_admin_token=False):
+        """Run a file upload test"""
+        url = f"{self.api_url}/{endpoint}"
+        
+        # Use admin token if specified, otherwise use regular token
+        token_to_use = self.admin_token if use_admin_token else self.token
+        headers = {}
+        if token_to_use:
+            headers['Authorization'] = f'Bearer {token_to_use}'
+
+        self.tests_run += 1
+        print(f"\n🔍 Testing {name}...")
+        print(f"   URL: {url}")
+        
+        try:
+            files = {'file': (file_name, file_data, content_type)}
+            data = {'logo_type': 'header'}  # Default logo type
+            
+            response = requests.post(url, files=files, data=data, headers=headers, timeout=10)
+
+            success = response.status_code == expected_status
+            if success:
+                self.tests_passed += 1
+                print(f"✅ Passed - Status: {response.status_code}")
+                try:
+                    response_data = response.json()
+                    if isinstance(response_data, dict) and len(str(response_data)) < 200:
+                        print(f"   Response: {response_data}")
+                except:
+                    print(f"   Response: {response.text[:100]}...")
+            else:
+                print(f"❌ Failed - Expected {expected_status}, got {response.status_code}")
+                print(f"   Error: {response.text[:200]}")
+
+            return success, response.json() if response.text and response.text.strip() else {}
+
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Failed - Network Error: {str(e)}")
+            return False, {}
+        except Exception as e:
+            print(f"❌ Failed - Error: {str(e)}")
+            return False, {}
+
     def test_root_endpoint(self):
         """Test root API endpoint"""
         return self.run_test("Root API Endpoint", "GET", "", 200)
