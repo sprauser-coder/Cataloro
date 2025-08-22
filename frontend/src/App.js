@@ -173,7 +173,7 @@ const Header = () => {
             ))}
             {user?.role === 'admin' && (
               <Link to="/admin" className="text-red-600 hover:text-red-800 font-medium transition-colors">
-                Catalogo Admin
+                Cataloro Admin
               </Link>
             )}
           </nav>
