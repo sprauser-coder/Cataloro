@@ -434,6 +434,97 @@ class MarketplaceAPITester:
         """Test getting public site settings"""
         return self.run_test("Get Public Site Settings", "GET", "cms/settings", 200)
 
+    # ===========================
+    # BRANDING TESTS - CATALORO
+    # ===========================
+
+    def test_branding_default_site_name(self):
+        """Test that default site_name is 'Cataloro'"""
+        success, response = self.run_test("Check Default Site Name", "GET", "cms/settings", 200)
+        if success and 'site_name' in response:
+            site_name = response['site_name']
+            if site_name == "Cataloro":
+                print(f"✅ Branding Test Passed - Site name is correctly set to: {site_name}")
+                return True
+            else:
+                print(f"❌ Branding Test Failed - Expected 'Cataloro', got: {site_name}")
+                return False
+        else:
+            print("❌ Branding Test Failed - Could not retrieve site_name from response")
+            return False
+
+    def test_branding_default_hero_subtitle(self):
+        """Test that default hero_subtitle contains 'Cataloro' instead of 'Catalogo'"""
+        success, response = self.run_test("Check Default Hero Subtitle", "GET", "cms/settings", 200)
+        if success and 'hero_subtitle' in response:
+            hero_subtitle = response['hero_subtitle']
+            if "Cataloro" in hero_subtitle and "Catalogo" not in hero_subtitle:
+                print(f"✅ Branding Test Passed - Hero subtitle correctly contains 'Cataloro': {hero_subtitle}")
+                return True
+            elif "Catalogo" in hero_subtitle:
+                print(f"❌ Branding Test Failed - Hero subtitle still contains old 'Catalogo' branding: {hero_subtitle}")
+                return False
+            else:
+                print(f"❌ Branding Test Failed - Hero subtitle doesn't contain 'Cataloro': {hero_subtitle}")
+                return False
+        else:
+            print("❌ Branding Test Failed - Could not retrieve hero_subtitle from response")
+            return False
+
+    def test_branding_no_catalogo_references(self):
+        """Test that there are no 'Catalogo' references in default settings"""
+        success, response = self.run_test("Check No Catalogo References", "GET", "cms/settings", 200)
+        if success:
+            # Convert response to string and check for any "Catalogo" references
+            response_str = json.dumps(response).lower()
+            if "catalogo" in response_str:
+                print(f"❌ Branding Test Failed - Found 'Catalogo' references in settings: {response}")
+                return False
+            else:
+                print("✅ Branding Test Passed - No 'Catalogo' references found in default settings")
+                return True
+        else:
+            print("❌ Branding Test Failed - Could not retrieve settings")
+            return False
+
+    def test_branding_admin_panel_functionality(self):
+        """Test that admin panel still works with new branding"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin branding test - no admin token")
+            return False
+            
+        # Test admin site settings access
+        success, response = self.run_test("Admin Panel Branding Test", "GET", "admin/cms/settings", 200, use_admin_token=True)
+        if success and 'site_name' in response:
+            site_name = response['site_name']
+            if site_name == "Cataloro":
+                print(f"✅ Admin Branding Test Passed - Admin panel shows correct branding: {site_name}")
+                return True
+            else:
+                print(f"❌ Admin Branding Test Failed - Admin panel shows incorrect branding: {site_name}")
+                return False
+        else:
+            print("❌ Admin Branding Test Failed - Could not access admin settings")
+            return False
+
+    def test_branding_core_functionality_unaffected(self):
+        """Test that core marketplace functionality is unaffected by branding changes"""
+        # Test that we can still get listings (core functionality)
+        success1, _ = self.run_test("Core Functionality Test - Listings", "GET", "listings", 200)
+        
+        # Test that we can still get categories (core functionality)  
+        success2, _ = self.run_test("Core Functionality Test - Categories", "GET", "categories", 200)
+        
+        # Test that root endpoint still works
+        success3, _ = self.run_test("Core Functionality Test - Root", "GET", "", 200)
+        
+        if success1 and success2 and success3:
+            print("✅ Core Functionality Test Passed - All core endpoints working after branding change")
+            return True
+        else:
+            print("❌ Core Functionality Test Failed - Some core endpoints not working after branding change")
+            return False
+
     def test_get_public_page_content(self):
         """Test getting public page content"""
         if not self.created_page_slug:
