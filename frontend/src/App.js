@@ -737,7 +737,7 @@ const ListingDetail = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: error.response?.data?.detail || "Failed to place bid",
+        description: formatErrorMessage(error, "Failed to place bid"),
         variant: "destructive"
       });
     }
