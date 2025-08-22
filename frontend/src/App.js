@@ -1751,7 +1751,12 @@ const AdminPanel = () => {
         title: "Navigation Synced",
         description: response.data.message
       });
-      fetchNavigation();
+      await fetchNavigation();
+      
+      // Refresh the main website navigation as well
+      const navResponse = await axios.get(`${API}/cms/navigation`);
+      window.catalogoNavigation = navResponse.data;
+      window.dispatchEvent(new CustomEvent('catalogoNavigationLoaded', { detail: navResponse.data }));
     } catch (error) {
       toast({
         title: "Error", 
