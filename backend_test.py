@@ -821,6 +821,302 @@ class MarketplaceAPITester:
             return False
 
     # ===========================
+    # LISTING IMAGE UPLOAD TESTS
+    # ===========================
+
+    def run_listing_image_upload_test(self, name, file_data, file_name, content_type, expected_status, use_admin_token=False):
+        """Run a listing image upload test"""
+        url = f"{self.api_url}/listings/upload-image"
+        
+        # Use admin token if specified, otherwise use regular token
+        token_to_use = self.admin_token if use_admin_token else self.token
+        headers = {}
+        if token_to_use:
+            headers['Authorization'] = f'Bearer {token_to_use}'
+
+        self.tests_run += 1
+        print(f"\n🔍 Testing {name}...")
+        print(f"   URL: {url}")
+        
+        try:
+            files = {'file': (file_name, file_data, content_type)}
+            
+            response = requests.post(url, files=files, headers=headers, timeout=10)
+
+            success = response.status_code == expected_status
+            if success:
+                self.tests_passed += 1
+                print(f"✅ Passed - Status: {response.status_code}")
+                try:
+                    response_data = response.json()
+                    if isinstance(response_data, dict) and len(str(response_data)) < 200:
+                        print(f"   Response: {response_data}")
+                except:
+                    print(f"   Response: {response.text[:100]}...")
+            else:
+                print(f"❌ Failed - Expected {expected_status}, got {response.status_code}")
+                print(f"   Error: {response.text[:200]}")
+
+            return success, response.json() if response.text and response.text.strip() else {}
+
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Failed - Network Error: {str(e)}")
+            return False, {}
+        except Exception as e:
+            print(f"❌ Failed - Error: {str(e)}")
+            return False, {}
+
+    def test_listing_image_upload_without_auth(self):
+        """Test listing image upload without authentication (should fail)"""
+        png_data = self.create_test_png_file()
+        
+        # Temporarily clear token to test without auth
+        original_token = self.token
+        self.token = None
+        
+        success, response = self.run_listing_image_upload_test(
+            "Listing Image Upload Without Auth", 
+            png_data, 
+            "test_listing.png", 
+            "image/png", 
+            401,  # Should fail with 401 Unauthorized
+            use_admin_token=False
+        )
+        
+        # Restore token
+        self.token = original_token
+        return success
+
+    def test_listing_image_upload_valid_png(self):
+        """Test uploading a valid PNG for listing"""
+        if not self.token:
+            print("⚠️  Skipping valid PNG listing upload - no user token")
+            return False
+            
+        png_data = self.create_test_png_file()
+        success, response = self.run_listing_image_upload_test(
+            "Valid PNG Listing Image Upload", 
+            png_data, 
+            "test_listing.png", 
+            "image/png", 
+            200,
+            use_admin_token=False
+        )
+        
+        # Store the image URL for later tests
+        if success and 'image_url' in response:
+            if not hasattr(self, 'uploaded_listing_images'):
+                self.uploaded_listing_images = []
+            self.uploaded_listing_images.append(response['image_url'])
+            print(f"   Uploaded listing image URL: {response['image_url']}")
+            
+        return success
+
+    def test_listing_image_upload_valid_jpeg(self):
+        """Test uploading a valid JPEG for listing"""
+        if not self.token:
+            print("⚠️  Skipping valid JPEG listing upload - no user token")
+            return False
+            
+        jpg_data = self.create_test_jpg_file()
+        success, response = self.run_listing_image_upload_test(
+            "Valid JPEG Listing Image Upload", 
+            jpg_data, 
+            "test_listing.jpg", 
+            "image/jpeg", 
+            200,
+            use_admin_token=False
+        )
+        
+        # Store the image URL for later tests
+        if success and 'image_url' in response:
+            if not hasattr(self, 'uploaded_listing_images'):
+                self.uploaded_listing_images = []
+            self.uploaded_listing_images.append(response['image_url'])
+            print(f"   Uploaded listing image URL: {response['image_url']}")
+            
+        return success
+
+    def test_listing_image_upload_invalid_format(self):
+        """Test uploading invalid format for listing (should fail)"""
+        if not self.token:
+            print("⚠️  Skipping invalid format test - no user token")
+            return False
+            
+        # Create fake GIF data
+        gif_data = b'GIF89a\x01\x00\x01\x00\x00\x00\x00!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x04\x01\x00;'
+        success, response = self.run_listing_image_upload_test(
+            "Invalid Format (GIF) Listing Upload", 
+            gif_data, 
+            "test_listing.gif", 
+            "image/gif", 
+            400,  # Should fail with 400 Bad Request
+            use_admin_token=False
+        )
+        return success
+
+    def test_listing_image_upload_file_too_large(self):
+        """Test uploading file larger than 10MB for listing (should fail)"""
+        if not self.token:
+            print("⚠️  Skipping large file test - no user token")
+            return False
+            
+        # Create an 11MB PNG file
+        large_png_data = self.create_test_png_file(size_mb=11)
+        success, response = self.run_listing_image_upload_test(
+            "Large File (11MB) Listing Upload", 
+            large_png_data, 
+            "large_listing.png", 
+            "image/png", 
+            400,  # Should fail with 400 Bad Request
+            use_admin_token=False
+        )
+        return success
+
+    def test_listing_image_upload_with_admin_token(self):
+        """Test that admin users can also upload listing images"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin listing upload - no admin token")
+            return False
+            
+        png_data = self.create_test_png_file()
+        success, response = self.run_listing_image_upload_test(
+            "Admin User Listing Image Upload", 
+            png_data, 
+            "admin_listing.png", 
+            "image/png", 
+            200,
+            use_admin_token=True
+        )
+        
+        # Store the image URL for later tests
+        if success and 'image_url' in response:
+            if not hasattr(self, 'uploaded_listing_images'):
+                self.uploaded_listing_images = []
+            self.uploaded_listing_images.append(response['image_url'])
+            print(f"   Admin uploaded listing image URL: {response['image_url']}")
+            
+        return success
+
+    def test_create_listing_with_uploaded_images(self):
+        """Test creating a listing with uploaded images"""
+        if not self.token:
+            print("⚠️  Skipping listing with images - no auth token")
+            return False
+            
+        if not hasattr(self, 'uploaded_listing_images') or not self.uploaded_listing_images:
+            print("⚠️  Skipping listing with images - no uploaded images")
+            return False
+            
+        listing_data = {
+            "title": "Test Product with Uploaded Images",
+            "description": "This listing uses uploaded images from the image upload endpoint",
+            "category": "Electronics",
+            "images": self.uploaded_listing_images[:2],  # Use first 2 uploaded images
+            "listing_type": "fixed_price",
+            "price": 149.99,
+            "condition": "New",
+            "quantity": 1,
+            "location": "Test City",
+            "shipping_cost": 7.99
+        }
+        
+        success, response = self.run_test("Create Listing with Uploaded Images", "POST", "listings", 200, listing_data)
+        if success and 'id' in response:
+            self.created_listing_with_images_id = response['id']
+            print(f"   Created listing with images ID: {self.created_listing_with_images_id}")
+            print(f"   Images in listing: {response.get('images', [])}")
+        return success
+
+    def test_get_listings_returns_image_urls(self):
+        """Test that GET /listings returns proper image URLs"""
+        success, response = self.run_test("Get Listings with Image URLs", "GET", "listings", 200)
+        
+        if success and isinstance(response, list):
+            # Look for listings with images
+            listings_with_images = [listing for listing in response if listing.get('images')]
+            
+            if listings_with_images:
+                print(f"   Found {len(listings_with_images)} listings with images")
+                # Check first listing with images
+                first_listing = listings_with_images[0]
+                images = first_listing.get('images', [])
+                print(f"   Sample listing images: {images[:2]}")  # Show first 2 images
+                
+                # Verify images are URLs (start with /uploads/ or http)
+                valid_urls = all(img.startswith('/uploads/') or img.startswith('http') for img in images)
+                if valid_urls:
+                    print("✅ All image URLs are properly formatted")
+                    return True
+                else:
+                    print("❌ Some image URLs are not properly formatted")
+                    return False
+            else:
+                print("⚠️  No listings with images found - this may be expected")
+                return True  # Not a failure if no images exist
+        
+        return success
+
+    def test_get_listing_detail_returns_images(self):
+        """Test that listing detail endpoint returns image data correctly"""
+        if not hasattr(self, 'created_listing_with_images_id') or not self.created_listing_with_images_id:
+            print("⚠️  Skipping listing detail image test - no listing with images")
+            return False
+            
+        success, response = self.run_test("Get Listing Detail with Images", "GET", f"listings/{self.created_listing_with_images_id}", 200)
+        
+        if success and 'images' in response:
+            images = response['images']
+            print(f"   Listing detail images: {images}")
+            
+            # Verify images are URLs
+            if images:
+                valid_urls = all(img.startswith('/uploads/') or img.startswith('http') for img in images)
+                if valid_urls:
+                    print("✅ Listing detail returns properly formatted image URLs")
+                    return True
+                else:
+                    print("❌ Listing detail image URLs are not properly formatted")
+                    return False
+            else:
+                print("⚠️  No images in listing detail - this may be expected")
+                return True
+        
+        return success
+
+    def test_uploaded_listing_images_accessible(self):
+        """Test that uploaded listing images are accessible via HTTP"""
+        if not hasattr(self, 'uploaded_listing_images') or not self.uploaded_listing_images:
+            print("⚠️  Skipping image accessibility test - no uploaded images")
+            return False
+            
+        # Test first uploaded image
+        image_url = self.uploaded_listing_images[0]
+        full_url = f"{self.base_url}{image_url}"
+        
+        self.tests_run += 1
+        print(f"\n🔍 Testing Listing Image Accessibility...")
+        print(f"   URL: {full_url}")
+        
+        try:
+            response = requests.get(full_url, timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                self.tests_passed += 1
+                print(f"✅ Passed - Listing image accessible")
+                print(f"   Content-Type: {response.headers.get('content-type', 'unknown')}")
+                print(f"   File size: {len(response.content)} bytes")
+            else:
+                print(f"❌ Failed - Listing image not accessible, status: {response.status_code}")
+                
+            return success
+            
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Failed - Network Error: {str(e)}")
+            return False
+
+    # ===========================
     # CLEANUP TESTS
     # ===========================
 
