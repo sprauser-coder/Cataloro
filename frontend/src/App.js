@@ -422,7 +422,7 @@ const Home = () => {
               Discover Amazing Deals
             </h1>
             <p className="text-xl mb-8 opacity-90">
-              Buy and sell with confidence on our marketplace
+              Buy and sell with confidence on Catalogo - your trusted marketplace for amazing deals
             </p>
             
             {/* Search Bar */}
