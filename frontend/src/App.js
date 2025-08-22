@@ -386,8 +386,8 @@ const Home = () => {
     fetchListings();
     
     // Load site settings for dynamic content
-    if (window.catalogoSettings) {
-      setSiteSettings(window.catalogoSettings);
+    if (window.cataloroSettings) {
+      setSiteSettings(window.cataloroSettings);
     }
   }, []);
 
