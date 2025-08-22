@@ -211,7 +211,17 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     user = await db.users.find_one({"id": user_id})
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
+    
+    # Check if user is blocked
+    if user.get('is_blocked', False):
+        raise HTTPException(status_code=403, detail="Account has been blocked")
+    
     return User(**user)
+
+async def get_admin_user(current_user: User = Depends(get_current_user)):
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return current_user
 
 def prepare_for_mongo(data):
     if isinstance(data, dict):
