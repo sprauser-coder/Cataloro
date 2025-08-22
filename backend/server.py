@@ -1013,6 +1013,146 @@ async def create_default_admin():
     
     return {"message": "Default admin created", "email": "admin@marketplace.com", "password": "admin123"}
 
+# ===========================
+# CMS ROUTES
+# ===========================
+
+# Site Settings Management
+@api_router.get("/admin/cms/settings")
+async def get_site_settings(admin: User = Depends(get_admin_user)):
+    """Get current site settings"""
+    settings = await db.site_settings.find_one({})
+    if not settings:
+        # Create default settings
+        default_settings = SiteSettings()
+        settings_doc = prepare_for_mongo(default_settings.dict())
+        await db.site_settings.insert_one(settings_doc)
+        return default_settings
+    return SiteSettings(**parse_from_mongo(settings))
+
+@api_router.put("/admin/cms/settings")
+async def update_site_settings(settings_data: dict, admin: User = Depends(get_admin_user)):
+    """Update site settings"""
+    settings_data['updated_at'] = datetime.now(timezone.utc)
+    
+    # Update or create settings
+    result = await db.site_settings.update_one(
+        {},
+        {"$set": settings_data},
+        upsert=True
+    )
+    
+    return {"message": "Site settings updated successfully"}
+
+# Page Content Management
+@api_router.get("/admin/cms/pages")
+async def get_all_pages(admin: User = Depends(get_admin_user)):
+    """Get all pages"""
+    pages = await db.page_content.find({}).to_list(length=None)
+    return [PageContent(**parse_from_mongo(page)) for page in pages]
+
+@api_router.get("/admin/cms/pages/{page_slug}")
+async def get_page_content(page_slug: str, admin: User = Depends(get_admin_user)):
+    """Get specific page content"""
+    page = await db.page_content.find_one({"page_slug": page_slug})
+    if not page:
+        raise HTTPException(status_code=404, detail="Page not found")
+    return PageContent(**parse_from_mongo(page))
+
+@api_router.post("/admin/cms/pages")
+async def create_page(page_data: dict, admin: User = Depends(get_admin_user)):
+    """Create new page"""
+    page = PageContent(**page_data)
+    page_doc = prepare_for_mongo(page.dict())
+    await db.page_content.insert_one(page_doc)
+    return {"message": "Page created successfully", "page": page}
+
+@api_router.put("/admin/cms/pages/{page_slug}")
+async def update_page_content(page_slug: str, page_data: dict, admin: User = Depends(get_admin_user)):
+    """Update page content"""
+    page_data['updated_at'] = datetime.now(timezone.utc)
+    
+    result = await db.page_content.update_one(
+        {"page_slug": page_slug},
+        {"$set": page_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Page not found")
+    
+    return {"message": "Page updated successfully"}
+
+@api_router.delete("/admin/cms/pages/{page_slug}")
+async def delete_page(page_slug: str, admin: User = Depends(get_admin_user)):
+    """Delete page"""
+    result = await db.page_content.delete_one({"page_slug": page_slug})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Page not found")
+    
+    return {"message": "Page deleted successfully"}
+
+# Navigation Management
+@api_router.get("/admin/cms/navigation")
+async def get_navigation(admin: User = Depends(get_admin_user)):
+    """Get navigation items"""
+    nav_items = await db.navigation.find({}).sort("order", 1).to_list(length=None)
+    return [NavigationItem(**parse_from_mongo(item)) for item in nav_items]
+
+@api_router.post("/admin/cms/navigation")
+async def create_navigation_item(nav_data: dict, admin: User = Depends(get_admin_user)):
+    """Create navigation item"""
+    nav_item = NavigationItem(**nav_data)
+    nav_doc = prepare_for_mongo(nav_item.dict())
+    await db.navigation.insert_one(nav_doc)
+    return {"message": "Navigation item created successfully", "item": nav_item}
+
+@api_router.put("/admin/cms/navigation/{nav_id}")
+async def update_navigation_item(nav_id: str, nav_data: dict, admin: User = Depends(get_admin_user)):
+    """Update navigation item"""
+    result = await db.navigation.update_one(
+        {"id": nav_id},
+        {"$set": nav_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Navigation item not found")
+    
+    return {"message": "Navigation item updated successfully"}
+
+@api_router.delete("/admin/cms/navigation/{nav_id}")
+async def delete_navigation_item(nav_id: str, admin: User = Depends(get_admin_user)):
+    """Delete navigation item"""
+    result = await db.navigation.delete_one({"id": nav_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Navigation item not found")
+    
+    return {"message": "Navigation item deleted successfully"}
+
+# Public CMS Endpoints (for frontend)
+@api_router.get("/cms/settings")
+async def get_public_site_settings():
+    """Get public site settings"""
+    settings = await db.site_settings.find_one({})
+    if not settings:
+        return SiteSettings().dict()
+    return parse_from_mongo(settings)
+
+@api_router.get("/cms/pages/{page_slug}")
+async def get_public_page_content(page_slug: str):
+    """Get public page content"""
+    page = await db.page_content.find_one({"page_slug": page_slug, "is_published": True})
+    if not page:
+        raise HTTPException(status_code=404, detail="Page not found")
+    return parse_from_mongo(page)
+
+@api_router.get("/cms/navigation")
+async def get_public_navigation():
+    """Get public navigation items"""
+    nav_items = await db.navigation.find({"is_visible": True}).sort("order", 1).to_list(length=None)
+    return [parse_from_mongo(item) for item in nav_items]
+
 # Include the router in the main app
 app.include_router(api_router)
 
