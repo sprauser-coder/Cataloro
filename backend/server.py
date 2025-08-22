@@ -694,6 +694,142 @@ async def unblock_user(user_id: str, admin: User = Depends(get_admin_user)):
     
     return {"message": "User unblocked successfully"}
 
+@api_router.put("/admin/users/{user_id}/reset-password")
+async def reset_user_password(user_id: str, admin: User = Depends(get_admin_user)):
+    """Reset user password to a temporary password"""
+    import secrets
+    import string
+    
+    # Generate temporary password
+    temp_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+    hashed_temp_password = hash_password(temp_password)
+    
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"password": hashed_temp_password}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "Password reset successfully", "temporary_password": temp_password}
+
+@api_router.put("/admin/users/bulk-block")
+async def bulk_block_users(user_ids: List[str], admin: User = Depends(get_admin_user)):
+    """Block multiple users"""
+    result = await db.users.update_many(
+        {"id": {"$in": user_ids}},
+        {"$set": {"is_blocked": True}}
+    )
+    
+    return {"message": f"Blocked {result.modified_count} users successfully"}
+
+@api_router.put("/admin/users/bulk-unblock")
+async def bulk_unblock_users(user_ids: List[str], admin: User = Depends(get_admin_user)):
+    """Unblock multiple users"""
+    result = await db.users.update_many(
+        {"id": {"$in": user_ids}},
+        {"$set": {"is_blocked": False}}
+    )
+    
+    return {"message": f"Unblocked {result.modified_count} users successfully"}
+
+@api_router.put("/admin/users/bulk-deactivate-all")
+async def bulk_deactivate_all_users(admin: User = Depends(get_admin_user)):
+    """Deactivate all users except admins"""
+    result = await db.users.update_many(
+        {"role": {"$ne": "admin"}},
+        {"$set": {"is_blocked": True}}
+    )
+    
+    return {"message": f"Deactivated {result.modified_count} users (admins excluded)"}
+
+@api_router.put("/admin/users/bulk-activate-all")
+async def bulk_activate_all_users(admin: User = Depends(get_admin_user)):
+    """Activate all users"""
+    result = await db.users.update_many(
+        {},
+        {"$set": {"is_blocked": False}}
+    )
+    
+    return {"message": f"Activated {result.modified_count} users"}
+
+@api_router.delete("/admin/users/bulk-delete")
+async def bulk_delete_users(user_ids: List[str], admin: User = Depends(get_admin_user)):
+    """Delete multiple users and their data"""
+    deleted_count = 0
+    
+    for user_id in user_ids:
+        # Skip if trying to delete admin
+        user = await db.users.find_one({"id": user_id})
+        if user and user.get('role') == 'admin':
+            continue
+            
+        # Delete user's listings
+        await db.listings.delete_many({"seller_id": user_id})
+        
+        # Delete user's cart items
+        await db.cart_items.delete_many({"user_id": user_id})
+        
+        # Delete user's bids
+        await db.bids.delete_many({"bidder_id": user_id})
+        
+        # Delete user's reviews
+        await db.reviews.delete_many({"$or": [{"reviewer_id": user_id}, {"reviewed_user_id": user_id}]})
+        
+        # Mark orders as deleted (keep for seller records)
+        await db.orders.update_many(
+            {"$or": [{"buyer_id": user_id}, {"seller_id": user_id}]},
+            {"$set": {"user_deleted": True}}
+        )
+        
+        # Delete the user
+        result = await db.users.delete_one({"id": user_id})
+        if result.deleted_count > 0:
+            deleted_count += 1
+    
+    return {"message": f"Deleted {deleted_count} users and all associated data"}
+
+@api_router.delete("/admin/users/delete-all-non-admin")
+async def delete_all_non_admin_users(admin: User = Depends(get_admin_user)):
+    """Delete all non-admin users and their data - DANGEROUS OPERATION"""
+    # Get all non-admin users
+    non_admin_users = await db.users.find({"role": {"$ne": "admin"}}).to_list(length=None)
+    user_ids = [user['id'] for user in non_admin_users]
+    
+    if not user_ids:
+        return {"message": "No non-admin users to delete"}
+    
+    # Delete all user data
+    listings_deleted = await db.listings.delete_many({"seller_id": {"$in": user_ids}})
+    cart_deleted = await db.cart_items.delete_many({"user_id": {"$in": user_ids}})
+    bids_deleted = await db.bids.delete_many({"bidder_id": {"$in": user_ids}})
+    reviews_deleted = await db.reviews.delete_many({
+        "$or": [
+            {"reviewer_id": {"$in": user_ids}}, 
+            {"reviewed_user_id": {"$in": user_ids}}
+        ]
+    })
+    
+    # Mark orders as deleted
+    orders_updated = await db.orders.update_many(
+        {"$or": [{"buyer_id": {"$in": user_ids}}, {"seller_id": {"$in": user_ids}}]},
+        {"$set": {"user_deleted": True}}
+    )
+    
+    # Delete all non-admin users
+    users_deleted = await db.users.delete_many({"role": {"$ne": "admin"}})
+    
+    return {
+        "message": f"BULK DELETE COMPLETED",
+        "users_deleted": users_deleted.deleted_count,
+        "listings_deleted": listings_deleted.deleted_count,
+        "cart_items_deleted": cart_deleted.deleted_count,
+        "bids_deleted": bids_deleted.deleted_count,
+        "reviews_deleted": reviews_deleted.deleted_count,
+        "orders_marked_deleted": orders_updated.modified_count
+    }
+
 @api_router.delete("/admin/users/{user_id}")
 async def delete_user(user_id: str, admin: User = Depends(get_admin_user)):
     """Delete a user and all associated data"""
