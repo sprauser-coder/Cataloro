@@ -277,6 +277,192 @@ class MarketplaceAPITester:
         # For this test, we consider 404 as expected behavior
         return True
 
+    def test_admin_login(self):
+        """Test admin login"""
+        admin_data = {
+            "email": "admin@marketplace.com",
+            "password": "admin123"
+        }
+        
+        success, response = self.run_test("Admin Login", "POST", "auth/login", 200, admin_data)
+        if success and 'access_token' in response:
+            self.admin_token = response['access_token']
+            print(f"   Admin login successful: {response['user']['full_name']}")
+        return success
+
+    def test_create_default_admin(self):
+        """Test creating default admin (may fail if already exists)"""
+        success, response = self.run_test("Create Default Admin", "POST", "admin/create-default-admin", 200)
+        # This might fail with 400 if admin already exists, which is fine
+        if not success and "already exists" in str(response):
+            print("   Admin already exists - this is expected")
+            return True
+        return success
+
+    # ===========================
+    # CMS ADMIN TESTS
+    # ===========================
+
+    def test_get_site_settings(self):
+        """Test getting site settings"""
+        if not self.admin_token:
+            print("⚠️  Skipping site settings test - no admin token")
+            return False
+        return self.run_test("Get Site Settings", "GET", "admin/cms/settings", 200, use_admin_token=True)
+
+    def test_update_site_settings(self):
+        """Test updating site settings"""
+        if not self.admin_token:
+            print("⚠️  Skipping update site settings - no admin token")
+            return False
+            
+        settings_data = {
+            "site_name": "Test Marketplace",
+            "site_tagline": "Testing CMS functionality",
+            "hero_title": "Welcome to Test Site",
+            "hero_subtitle": "This is a test of the CMS system",
+            "primary_color": "#3b82f6",
+            "secondary_color": "#10b981",
+            "show_hero_section": True,
+            "show_categories": True,
+            "allow_user_registration": True
+        }
+        
+        return self.run_test("Update Site Settings", "PUT", "admin/cms/settings", 200, settings_data, use_admin_token=True)
+
+    def test_get_all_pages(self):
+        """Test getting all pages"""
+        if not self.admin_token:
+            print("⚠️  Skipping get all pages - no admin token")
+            return False
+        return self.run_test("Get All Pages", "GET", "admin/cms/pages", 200, use_admin_token=True)
+
+    def test_create_page(self):
+        """Test creating a new page"""
+        if not self.admin_token:
+            print("⚠️  Skipping create page - no admin token")
+            return False
+            
+        timestamp = datetime.now().strftime('%H%M%S')
+        self.created_page_slug = f"test-page-{timestamp}"
+        
+        page_data = {
+            "page_slug": self.created_page_slug,
+            "title": f"Test Page {timestamp}",
+            "content": "<h1>Test Page Content</h1><p>This is a test page created by the API test suite.</p>",
+            "is_published": True,
+            "meta_description": "Test page for CMS functionality",
+            "custom_css": "body { background-color: #f0f0f0; }"
+        }
+        
+        success, response = self.run_test("Create Page", "POST", "admin/cms/pages", 200, page_data, use_admin_token=True)
+        if success:
+            print(f"   Created page slug: {self.created_page_slug}")
+        return success
+
+    def test_get_page_content(self):
+        """Test getting specific page content"""
+        if not self.admin_token or not self.created_page_slug:
+            print("⚠️  Skipping get page content - no admin token or page slug")
+            return False
+        return self.run_test("Get Page Content", "GET", f"admin/cms/pages/{self.created_page_slug}", 200, use_admin_token=True)
+
+    def test_update_page_content(self):
+        """Test updating page content"""
+        if not self.admin_token or not self.created_page_slug:
+            print("⚠️  Skipping update page content - no admin token or page slug")
+            return False
+            
+        updated_data = {
+            "title": "Updated Test Page",
+            "content": "<h1>Updated Content</h1><p>This page has been updated via API test.</p>",
+            "is_published": True,
+            "meta_description": "Updated test page description"
+        }
+        
+        return self.run_test("Update Page Content", "PUT", f"admin/cms/pages/{self.created_page_slug}", 200, updated_data, use_admin_token=True)
+
+    def test_get_navigation(self):
+        """Test getting navigation items"""
+        if not self.admin_token:
+            print("⚠️  Skipping get navigation - no admin token")
+            return False
+        return self.run_test("Get Navigation", "GET", "admin/cms/navigation", 200, use_admin_token=True)
+
+    def test_create_navigation_item(self):
+        """Test creating navigation item"""
+        if not self.admin_token:
+            print("⚠️  Skipping create navigation - no admin token")
+            return False
+            
+        timestamp = datetime.now().strftime('%H%M%S')
+        nav_data = {
+            "label": f"Test Nav {timestamp}",
+            "url": f"/test-nav-{timestamp}",
+            "order": 10,
+            "is_visible": True,
+            "target": "_self"
+        }
+        
+        success, response = self.run_test("Create Navigation Item", "POST", "admin/cms/navigation", 200, nav_data, use_admin_token=True)
+        if success and 'item' in response:
+            self.created_nav_id = response['item']['id']
+            print(f"   Created navigation ID: {self.created_nav_id}")
+        return success
+
+    def test_update_navigation_item(self):
+        """Test updating navigation item"""
+        if not self.admin_token or not self.created_nav_id:
+            print("⚠️  Skipping update navigation - no admin token or nav ID")
+            return False
+            
+        updated_nav_data = {
+            "label": "Updated Test Nav",
+            "url": "/updated-test-nav",
+            "order": 5,
+            "is_visible": True,
+            "target": "_blank"
+        }
+        
+        return self.run_test("Update Navigation Item", "PUT", f"admin/cms/navigation/{self.created_nav_id}", 200, updated_nav_data, use_admin_token=True)
+
+    # ===========================
+    # PUBLIC CMS TESTS
+    # ===========================
+
+    def test_get_public_site_settings(self):
+        """Test getting public site settings"""
+        return self.run_test("Get Public Site Settings", "GET", "cms/settings", 200)
+
+    def test_get_public_page_content(self):
+        """Test getting public page content"""
+        if not self.created_page_slug:
+            print("⚠️  Skipping public page content - no created page")
+            return False
+        return self.run_test("Get Public Page Content", "GET", f"cms/pages/{self.created_page_slug}", 200)
+
+    def test_get_public_navigation(self):
+        """Test getting public navigation"""
+        return self.run_test("Get Public Navigation", "GET", "cms/navigation", 200)
+
+    # ===========================
+    # CLEANUP TESTS
+    # ===========================
+
+    def test_delete_page(self):
+        """Test deleting a page"""
+        if not self.admin_token or not self.created_page_slug:
+            print("⚠️  Skipping delete page - no admin token or page slug")
+            return False
+        return self.run_test("Delete Page", "DELETE", f"admin/cms/pages/{self.created_page_slug}", 200, use_admin_token=True)
+
+    def test_delete_navigation_item(self):
+        """Test deleting navigation item"""
+        if not self.admin_token or not self.created_nav_id:
+            print("⚠️  Skipping delete navigation - no admin token or nav ID")
+            return False
+        return self.run_test("Delete Navigation Item", "DELETE", f"admin/cms/navigation/{self.created_nav_id}", 200, use_admin_token=True)
+
 def main():
     print("🚀 Starting Marketplace API Tests")
     print("=" * 50)
