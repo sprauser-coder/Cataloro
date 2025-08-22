@@ -84,3 +84,23 @@ code {
     @apply bg-background text-foreground;
     }
 }
+
+/* Very specific targeting for Emergent branding only */
+/* Target only bottom-right fixed elements that contain "Made with Emergent" text */
+div[style*="position: fixed"][style*="bottom"][style*="right"]:has-text("Made with Emergent") {
+  display: none !important;
+}
+
+/* Alternative specific selectors for the branding badge */
+[data-emergent-branding="true"] {
+  display: none !important;
+}
+
+/* Target small fixed positioned elements in bottom-right that are likely branding */
+div[style*="position: fixed"][style*="bottom: 20px"][style*="right: 20px"][style*="font-size: 12px"] {
+  display: none !important;
+}
+
+div[style*="position: fixed"][style*="bottom: 10px"][style*="right: 10px"][style*="font-size: 12px"] {
+  display: none !important;
+}
