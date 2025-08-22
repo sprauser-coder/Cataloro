@@ -1,0 +1,47 @@
+CATALORO MARKETPLACE WORDPRESS PLUGIN
+=====================================
+
+INSTALLATION INSTRUCTIONS:
+==========================
+
+1. Create a new folder on your computer called: cataloro-marketplace
+
+2. Inside that folder, create these 3 files with the exact content shown below:
+
+   📁 cataloro-marketplace/
+   ├── 📄 cataloro-marketplace.php
+   ├── 📄 marketplace.js  
+   └── 📄 marketplace.css
+
+3. Zip the entire "cataloro-marketplace" folder
+
+4. In WordPress Admin:
+   - Go to Plugins → Add New → Upload Plugin
+   - Upload your zip file
+   - Activate the plugin
+
+5. The plugin will automatically create these pages:
+   - /marketplace/ (Home page)
+   - /marketplace-login/ (Login/Register)
+   - /marketplace-products/ (Product listings)
+   - /marketplace-cart/ (Shopping cart)
+   - /marketplace-dashboard/ (User dashboard)
+
+6. You can then edit these pages with Elementor to customize the design!
+
+IMPORTANT:
+==========
+- Your API backend is at: https://www.app.cataloro.com/api
+- The plugin will connect automatically once DNS propagates
+- All marketplace functionality will work through WordPress
+
+SUPPORT:
+========
+If you need help, the plugin creates shortcodes you can use anywhere:
+- [marketplace_home] - Main marketplace page
+- [marketplace_login] - Login/register form
+- [marketplace_products] - Product listings
+- [marketplace_cart] - Shopping cart
+- [marketplace_dashboard] - User dashboard
+
+The files content is in the next text files...
