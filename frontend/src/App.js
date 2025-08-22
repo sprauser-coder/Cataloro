@@ -19,6 +19,25 @@ import { Search, ShoppingCart, User, Plus, Heart, Star, Clock, DollarSign, Packa
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Utility function to format error messages
+const formatErrorMessage = (error, fallbackMessage) => {
+  if (error.response?.data?.detail) {
+    if (Array.isArray(error.response.data.detail)) {
+      // Multiple validation errors
+      return error.response.data.detail.map(err => 
+        `${err.loc ? err.loc.join('.') + ': ' : ''}${err.msg}`
+      ).join(', ');
+    } else if (typeof error.response.data.detail === 'string') {
+      // Single string error
+      return error.response.data.detail;
+    } else {
+      // Single validation error object
+      return error.response.data.detail.msg || "Validation error";
+    }
+  }
+  return fallbackMessage;
+};
+
 // Auth Context
 const AuthContext = createContext();
 
