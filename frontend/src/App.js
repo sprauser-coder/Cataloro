@@ -1077,6 +1077,67 @@ const Sell = () => {
                 />
               </div>
 
+              {/* Image Upload Section */}
+              <div>
+                <Label>Product Images (up to 3)</Label>
+                <div className="mt-2 space-y-4">
+                  {/* Upload Button */}
+                  {uploadedImages.length < 3 && (
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                        className="hidden"
+                        id="image-upload"
+                      />
+                      <label
+                        htmlFor="image-upload"
+                        className={`inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer ${
+                          uploading ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        {uploading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600 mr-2"></div>
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Image ({uploadedImages.length}/3)
+                          </>
+                        )}
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">PNG, JPG, JPEG files only, max 10MB each</p>
+                    </div>
+                  )}
+
+                  {/* Image Preview Grid */}
+                  {uploadedImages.length > 0 && (
+                    <div className="grid grid-cols-3 gap-4">
+                      {uploadedImages.map((imageUrl, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={`${API}${imageUrl}`}
+                            alt={`Upload ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-lg border"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="category">Category</Label>
