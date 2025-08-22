@@ -1817,7 +1817,7 @@ const AdminPanel = () => {
       
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Catalogo Admin Panel</h1>
+          <h1 className="text-3xl font-bold mb-2">Cataloro Admin Panel</h1>
           <p className="text-gray-600">Manage users, listings, and monitor platform activity</p>
         </div>
 
