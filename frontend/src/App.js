@@ -137,7 +137,7 @@ const Header = () => {
     }
   };
 
-  const siteName = siteSettings?.site_name || 'Catalogo';
+  const siteName = siteSettings?.site_name || 'Cataloro';
 
   return (
     <header className="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
