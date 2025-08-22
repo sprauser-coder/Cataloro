@@ -3466,9 +3466,37 @@ function App() {
           document.title = `${settings.site_name} - ${settings.site_tagline}`;
         }
         
-        // Apply global font family
+        // Apply global font family using CSS custom properties with higher specificity
         if (settings.global_font_family) {
           document.body.style.fontFamily = settings.global_font_family;
+          // Set CSS custom property for global font family
+          root.style.setProperty('--global-font-family', settings.global_font_family);
+          
+          // Create or update dynamic style element for font family override
+          let fontStyleElement = document.getElementById('global-font-style');
+          if (!fontStyleElement) {
+            fontStyleElement = document.createElement('style');
+            fontStyleElement.id = 'global-font-style';
+            document.head.appendChild(fontStyleElement);
+          }
+          
+          // CSS with high specificity to override Tailwind classes
+          fontStyleElement.textContent = `
+            /* Global font family override with high specificity */
+            * {
+              font-family: ${settings.global_font_family}, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
+            }
+            
+            /* Ensure headings use the global font family */
+            h1, h2, h3, h4, h5, h6, .text-3xl, .text-2xl, .text-xl, .text-lg, .font-bold, .font-semibold, .font-medium {
+              font-family: ${settings.global_font_family}, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
+            }
+            
+            /* Specific overrides for common Tailwind text classes */
+            .prose, .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+              font-family: ${settings.global_font_family}, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
+            }
+          `;
         }
         
         // Apply CSS custom properties for dynamic theming
