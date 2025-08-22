@@ -611,7 +611,7 @@ class SiteSettings(BaseModel):
     site_name: str = Field(default="Cataloro")
     site_tagline: str = Field(default="Your trusted marketplace for amazing deals")
     hero_title: str = Field(default="Discover Amazing Deals")
-    hero_subtitle: str = Field(default="Buy and sell with confidence on Catalogo - your trusted marketplace for amazing deals")
+    hero_subtitle: str = Field(default="Buy and sell with confidence on Cataloro - your trusted marketplace for amazing deals")
     
     # Color Settings
     primary_color: str = Field(default="#6366f1")  # indigo-600
