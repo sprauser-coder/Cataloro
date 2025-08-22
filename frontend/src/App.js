@@ -1219,6 +1219,11 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
+  const [siteSettings, setSiteSettings] = useState(null);
+  const [pages, setPages] = useState([]);
+  const [navigation, setNavigation] = useState([]);
+  const [selectedPage, setSelectedPage] = useState(null);
+  const [editingContent, setEditingContent] = useState('');
   const { user } = useAuth();
   const { toast } = useToast();
 
