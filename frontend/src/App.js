@@ -1953,7 +1953,7 @@ const AdminPanel = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: error.response?.data?.detail || "Failed to upload logo",
+        description: formatErrorMessage(error, "Failed to upload logo"),
         variant: "destructive"
       });
     }
