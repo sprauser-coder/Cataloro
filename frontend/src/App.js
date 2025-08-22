@@ -2942,6 +2942,75 @@ function App() {
     return () => clearTimeout(timeout);
   }, []);
 
+  // Load CMS data on app startup
+  useEffect(() => {
+    const loadCMSData = async () => {
+      try {
+        // Fetch site settings for main website
+        const settingsResponse = await axios.get(`${API}/cms/settings`);
+        const settings = settingsResponse.data;
+        
+        // Apply site settings to document
+        if (settings.site_name) {
+          document.title = `${settings.site_name} - ${settings.site_tagline}`;
+        }
+        
+        // Apply global font family
+        if (settings.global_font_family) {
+          document.body.style.fontFamily = settings.global_font_family;
+        }
+        
+        // Apply CSS custom properties for dynamic theming
+        const root = document.documentElement;
+        root.style.setProperty('--primary-color', settings.primary_color || '#6366f1');
+        root.style.setProperty('--secondary-color', settings.secondary_color || '#8b5cf6');
+        root.style.setProperty('--accent-color', settings.accent_color || '#ef4444');
+        root.style.setProperty('--background-color', settings.background_color || '#f8fafc');
+        
+        // Hero section colors
+        root.style.setProperty('--hero-bg-start', settings.hero_background_gradient_start || '#667eea');
+        root.style.setProperty('--hero-bg-end', settings.hero_background_gradient_end || '#764ba2');
+        root.style.setProperty('--hero-text-color', settings.hero_text_color || '#ffffff');
+        root.style.setProperty('--hero-subtitle-color', settings.hero_subtitle_color || '#f1f5f9');
+        
+        // Typography
+        root.style.setProperty('--h1-size', settings.h1_size || '3rem');
+        root.style.setProperty('--h2-size', settings.h2_size || '2.25rem');
+        root.style.setProperty('--h3-size', settings.h3_size || '1.875rem');
+        root.style.setProperty('--h4-size', settings.h4_size || '1.5rem');
+        root.style.setProperty('--h5-size', settings.h5_size || '1.25rem');
+        root.style.setProperty('--h1-color', settings.h1_color || '#1f2937');
+        root.style.setProperty('--h2-color', settings.h2_color || '#374151');
+        root.style.setProperty('--h3-color', settings.h3_color || '#4b5563');
+        root.style.setProperty('--h4-color', settings.h4_color || '#6b7280');
+        root.style.setProperty('--h5-color', settings.h5_color || '#9ca3af');
+        
+        // Store settings globally for components to use
+        window.catalogoSettings = settings;
+        
+      } catch (error) {
+        console.error('Failed to load CMS settings:', error);
+      }
+      
+      try {
+        // Fetch navigation for main website
+        const navResponse = await axios.get(`${API}/cms/navigation`);
+        const navigation = navResponse.data;
+        
+        // Store navigation globally for header component to use
+        window.catalogoNavigation = navigation;
+        
+        // Trigger a custom event to notify components that navigation is loaded
+        window.dispatchEvent(new CustomEvent('catalogoNavigationLoaded', { detail: navigation }));
+        
+      } catch (error) {
+        console.error('Failed to load navigation:', error);
+      }
+    };
+    
+    loadCMSData();
+  }, []);
+
   return (
     <AuthProvider>
       <div className="App">
