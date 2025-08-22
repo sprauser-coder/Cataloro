@@ -1035,9 +1035,29 @@ const Sell = () => {
       event.target.value = '';
 
     } catch (error) {
+      console.error('Image upload error:', error.response?.data);
+      
+      let errorMessage = "Failed to upload image";
+      
+      // Handle FastAPI validation errors
+      if (error.response?.data?.detail) {
+        if (Array.isArray(error.response.data.detail)) {
+          // Multiple validation errors
+          errorMessage = error.response.data.detail.map(err => 
+            `${err.loc ? err.loc.join('.') + ': ' : ''}${err.msg}`
+          ).join(', ');
+        } else if (typeof error.response.data.detail === 'string') {
+          // Single string error
+          errorMessage = error.response.data.detail;
+        } else {
+          // Single validation error object
+          errorMessage = error.response.data.detail.msg || "Validation error";
+        }
+      }
+      
       toast({
         title: "Error",
-        description: error.response?.data?.detail || "Failed to upload image",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
