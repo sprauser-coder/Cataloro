@@ -715,7 +715,7 @@ const ListingDetail = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: error.response?.data?.detail || "Failed to add to cart",
+        description: formatErrorMessage(error, "Failed to add to cart"),
         variant: "destructive"
       });
     }
