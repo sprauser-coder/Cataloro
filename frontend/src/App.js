@@ -454,6 +454,23 @@ const Home = () => {
     return `${minutes}m`;
   };
 
+  // Dynamic hero section style based on CMS settings
+  const getHeroStyle = () => {
+    if (!siteSettings) return {};
+    
+    const baseStyle = {
+      background: siteSettings.hero_background_type === 'gradient' 
+        ? `linear-gradient(135deg, ${siteSettings.hero_background_gradient_start} 0%, ${siteSettings.hero_background_gradient_end} 100%)`
+        : siteSettings.hero_background_color,
+      color: siteSettings.hero_text_color
+    };
+    
+    return baseStyle;
+  };
+
+  const heroTitle = siteSettings?.hero_title || 'Discover Amazing Deals';
+  const heroSubtitle = siteSettings?.hero_subtitle || 'Buy and sell with confidence on Catalogo - your trusted marketplace for amazing deals';
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
