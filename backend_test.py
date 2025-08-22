@@ -601,6 +601,13 @@ def main():
         tester.test_get_public_page_content,
         tester.test_get_public_navigation,
         
+        # Branding Tests - Cataloro
+        tester.test_branding_default_site_name,
+        tester.test_branding_default_hero_subtitle,
+        tester.test_branding_no_catalogo_references,
+        tester.test_branding_admin_panel_functionality,
+        tester.test_branding_core_functionality_unaffected,
+        
         # Cleanup Tests
         tester.test_delete_page,
         tester.test_delete_navigation_item,
