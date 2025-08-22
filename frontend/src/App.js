@@ -217,7 +217,7 @@ const Auth = () => {
               <Package className="h-8 w-8 text-white" />
             </div>
             <CardTitle className="text-2xl font-bold">
-              {isLogin ? 'Welcome Back' : 'Join MarketPlace'}
+              {isLogin ? 'Welcome Back' : 'Join Catalogo'}
             </CardTitle>
             <CardDescription>
               {isLogin ? 'Sign in to your account' : 'Create your account to start buying and selling'}
