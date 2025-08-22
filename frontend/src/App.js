@@ -1295,32 +1295,6 @@ const Orders = () => {
 
 // Main App Component
 function App() {
-  // Remove Emergent branding on component mount
-  useEffect(() => {
-    const removeBranding = () => {
-      // Remove elements containing "Made with Emergent"
-      const brandingElements = document.querySelectorAll('*');
-      brandingElements.forEach(element => {
-        if (element.textContent && element.textContent.includes('Made with Emergent')) {
-          element.style.display = 'none';
-        }
-        // Also check for common branding element patterns
-        const style = window.getComputedStyle(element);
-        if (style.position === 'fixed' && 
-            (style.bottom === '20px' || style.bottom === '10px') && 
-            (style.right === '20px' || style.right === '10px')) {
-          element.style.display = 'none';
-        }
-      });
-    };
-
-    // Run immediately and then periodically
-    removeBranding();
-    const interval = setInterval(removeBranding, 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <AuthProvider>
       <div className="App">
