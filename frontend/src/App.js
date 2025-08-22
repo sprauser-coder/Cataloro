@@ -3218,10 +3218,10 @@ function App() {
         const navigation = navResponse.data;
         
         // Store navigation globally for header component to use
-        window.catalogoNavigation = navigation;
+        window.cataloroNavigation = navigation;
         
-        // Trigger a custom event to notify components that navigation is loaded
-        window.dispatchEvent(new CustomEvent('catalogoNavigationLoaded', { detail: navigation }));
+        // Trigger custom event to notify components of navigation update
+        window.dispatchEvent(new CustomEvent('cataloroNavigationLoaded', { detail: navigation }));
         
       } catch (error) {
         console.error('Failed to load navigation:', error);
