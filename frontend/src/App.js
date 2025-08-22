@@ -1540,6 +1540,24 @@ const AdminPanel = () => {
     }
   };
 
+  const generateMissingUserIds = async () => {
+    try {
+      const response = await axios.post(`${API}/admin/generate-user-ids`);
+      toast({
+        title: "User IDs Generated",
+        description: response.data.message,
+        duration: 5000
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate user IDs",
+        variant: "destructive"
+      });
+    }
+  };
+
   // CMS Functions
   const fetchSiteSettings = async () => {
     try {
