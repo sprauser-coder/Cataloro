@@ -60,6 +60,7 @@ class OrderStatus(str, Enum):
 # Models
 class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str = Field(default="")  # Auto-generated friendly ID like USER001
     email: EmailStr
     username: str
     full_name: str
