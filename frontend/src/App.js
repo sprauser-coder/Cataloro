@@ -106,8 +106,8 @@ const Header = () => {
     
     // Load navigation and settings from global state or fetch
     const loadHeaderData = () => {
-      if (window.catalogoNavigation) {
-        setCustomNavigation(window.catalogoNavigation);
+      if (window.cataloroNavigation) {
+        setCustomNavigation(window.cataloroNavigation);
       }
       if (window.catalogoSettings) {
         setSiteSettings(window.catalogoSettings);
