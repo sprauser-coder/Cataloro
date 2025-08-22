@@ -1540,6 +1540,122 @@ const AdminPanel = () => {
     }
   };
 
+  // CMS Functions
+  const fetchSiteSettings = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/admin/cms/settings`);
+      setSiteSettings(response.data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch site settings",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPages = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/admin/cms/pages`);
+      setPages(response.data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch pages",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchNavigation = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/cms/navigation`);
+      setNavigation(response.data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch navigation",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const updateSiteSettings = async (settingsData) => {
+    try {
+      await axios.put(`${API}/admin/cms/settings`, settingsData);
+      toast({
+        title: "Success",
+        description: "Site settings updated successfully"
+      });
+      fetchSiteSettings();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update site settings",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const createPage = async (pageData) => {
+    try {
+      await axios.post(`${API}/admin/cms/pages`, pageData);
+      toast({
+        title: "Success",
+        description: "Page created successfully"
+      });
+      fetchPages();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create page",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const updatePage = async (pageSlug, pageData) => {
+    try {
+      await axios.put(`${API}/admin/cms/pages/${pageSlug}`, pageData);
+      toast({
+        title: "Success",
+        description: "Page updated successfully"
+      });
+      fetchPages();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update page",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deletePage = async (pageSlug) => {
+    if (!confirm('Are you sure you want to delete this page?')) return;
+    
+    try {
+      await axios.delete(`${API}/admin/cms/pages/${pageSlug}`);
+      toast({
+        title: "Success",
+        description: "Page deleted successfully"
+      });
+      fetchPages();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete page",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
