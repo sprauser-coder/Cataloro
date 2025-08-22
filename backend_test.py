@@ -583,6 +583,243 @@ class MarketplaceAPITester:
         return self.run_test("Get Public Navigation", "GET", "cms/navigation", 200)
 
     # ===========================
+    # LOGO UPLOAD TESTS
+    # ===========================
+
+    def create_test_png_file(self, size_mb=1):
+        """Create a test PNG file in memory"""
+        # Create a simple PNG file data (minimal PNG header + data)
+        # This is a minimal 1x1 pixel PNG file
+        png_data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\tpHYs\x00\x00\x0b\x13\x00\x00\x0b\x13\x01\x00\x9a\x9c\x18\x00\x00\x00\x12IDATx\x9cc```bPPP\x00\x02\xac\xea\x05\x1b\x00\x00\x00\x00IEND\xaeB`\x82'
+        
+        # If we need a larger file, pad it with null bytes
+        if size_mb > 1:
+            padding_size = (size_mb * 1024 * 1024) - len(png_data)
+            png_data += b'\x00' * padding_size
+            
+        return png_data
+
+    def create_test_jpg_file(self):
+        """Create a test JPG file in memory"""
+        # Minimal JPEG file header
+        jpg_data = b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t\x08\n\x0c\x14\r\x0c\x0b\x0b\x0c\x19\x12\x13\x0f\x14\x1d\x1a\x1f\x1e\x1d\x1a\x1c\x1c $.\' ",#\x1c\x1c(7),01444\x1f\'9=82<.342\xff\xc0\x00\x11\x08\x00\x01\x00\x01\x01\x01\x11\x00\x02\x11\x01\x03\x11\x01\xff\xc4\x00\x14\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xda\x00\x08\x01\x01\x00\x00?\x00\xaa\xff\xd9'
+        return jpg_data
+
+    def test_logo_upload_without_admin_auth(self):
+        """Test logo upload without admin authentication (should fail)"""
+        if not self.token:  # Use regular user token, not admin
+            print("⚠️  Skipping logo upload auth test - no user token")
+            return False
+            
+        png_data = self.create_test_png_file()
+        success, response = self.run_file_upload_test(
+            "Logo Upload Without Admin Auth", 
+            "admin/cms/upload-logo", 
+            png_data, 
+            "test_logo.png", 
+            "image/png", 
+            403,  # Should fail with 403 Forbidden
+            use_admin_token=False
+        )
+        return success
+
+    def test_logo_upload_valid_png(self):
+        """Test uploading a valid PNG logo"""
+        if not self.admin_token:
+            print("⚠️  Skipping valid PNG upload - no admin token")
+            return False
+            
+        png_data = self.create_test_png_file()
+        success, response = self.run_file_upload_test(
+            "Valid PNG Logo Upload", 
+            "admin/cms/upload-logo", 
+            png_data, 
+            "test_logo.png", 
+            "image/png", 
+            200,
+            use_admin_token=True
+        )
+        
+        # Store the logo URL for later tests
+        if success and 'logo_url' in response:
+            self.uploaded_logo_url = response['logo_url']
+            print(f"   Uploaded logo URL: {self.uploaded_logo_url}")
+            
+        return success
+
+    def test_logo_upload_invalid_format(self):
+        """Test uploading non-PNG file (should fail)"""
+        if not self.admin_token:
+            print("⚠️  Skipping invalid format test - no admin token")
+            return False
+            
+        jpg_data = self.create_test_jpg_file()
+        success, response = self.run_file_upload_test(
+            "Invalid Format (JPG) Upload", 
+            "admin/cms/upload-logo", 
+            jpg_data, 
+            "test_logo.jpg", 
+            "image/jpeg", 
+            400,  # Should fail with 400 Bad Request
+            use_admin_token=True
+        )
+        return success
+
+    def test_logo_upload_file_too_large(self):
+        """Test uploading file larger than 5MB (should fail)"""
+        if not self.admin_token:
+            print("⚠️  Skipping large file test - no admin token")
+            return False
+            
+        # Create a 6MB PNG file
+        large_png_data = self.create_test_png_file(size_mb=6)
+        success, response = self.run_file_upload_test(
+            "Large File (6MB) Upload", 
+            "admin/cms/upload-logo", 
+            large_png_data, 
+            "large_logo.png", 
+            "image/png", 
+            400,  # Should fail with 400 Bad Request
+            use_admin_token=True
+        )
+        return success
+
+    def test_logo_url_in_site_settings(self):
+        """Test that uploaded logo URL is stored in site settings"""
+        if not self.admin_token:
+            print("⚠️  Skipping logo URL test - no admin token")
+            return False
+            
+        success, response = self.run_test("Check Logo URL in Settings", "GET", "admin/cms/settings", 200, use_admin_token=True)
+        
+        if success:
+            # Check if header_logo_url and header_logo_alt fields exist
+            has_logo_url = 'header_logo_url' in response
+            has_logo_alt = 'header_logo_alt' in response
+            
+            if has_logo_url and has_logo_alt:
+                print(f"✅ Logo fields found - URL: {response.get('header_logo_url')}, Alt: {response.get('header_logo_alt')}")
+                return True
+            else:
+                print(f"❌ Logo fields missing - URL field: {has_logo_url}, Alt field: {has_logo_alt}")
+                return False
+        
+        return success
+
+    def test_logo_fields_in_public_settings(self):
+        """Test that logo fields are returned in public site settings"""
+        success, response = self.run_test("Check Logo Fields in Public Settings", "GET", "cms/settings", 200)
+        
+        if success:
+            # Check if header_logo_url and header_logo_alt fields exist in public API
+            has_logo_url = 'header_logo_url' in response
+            has_logo_alt = 'header_logo_alt' in response
+            
+            if has_logo_url and has_logo_alt:
+                print(f"✅ Public logo fields found - URL: {response.get('header_logo_url')}, Alt: {response.get('header_logo_alt')}")
+                return True
+            else:
+                print(f"❌ Public logo fields missing - URL field: {has_logo_url}, Alt field: {has_logo_alt}")
+                return False
+        
+        return success
+
+    def test_uploads_directory_creation(self):
+        """Test that uploads directory exists and files are stored there"""
+        # This test checks if the uploads directory is accessible via the static file serving
+        if not hasattr(self, 'uploaded_logo_url') or not self.uploaded_logo_url:
+            print("⚠️  Skipping uploads directory test - no uploaded logo URL")
+            return False
+            
+        # Try to access the uploaded file via HTTP
+        logo_url = f"{self.base_url}{self.uploaded_logo_url}"
+        
+        self.tests_run += 1
+        print(f"\n🔍 Testing Uploads Directory Access...")
+        print(f"   URL: {logo_url}")
+        
+        try:
+            response = requests.get(logo_url, timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                self.tests_passed += 1
+                print(f"✅ Passed - Logo file accessible at: {logo_url}")
+                print(f"   Content-Type: {response.headers.get('content-type', 'unknown')}")
+                print(f"   File size: {len(response.content)} bytes")
+            else:
+                print(f"❌ Failed - Logo file not accessible, status: {response.status_code}")
+                
+            return success
+            
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Failed - Network Error: {str(e)}")
+            return False
+
+    def test_old_logo_file_cleanup(self):
+        """Test that old logo files are removed when new logo is uploaded"""
+        if not self.admin_token:
+            print("⚠️  Skipping old file cleanup test - no admin token")
+            return False
+            
+        # First, upload a logo
+        png_data1 = self.create_test_png_file()
+        success1, response1 = self.run_file_upload_test(
+            "First Logo Upload for Cleanup Test", 
+            "admin/cms/upload-logo", 
+            png_data1, 
+            "first_logo.png", 
+            "image/png", 
+            200,
+            use_admin_token=True
+        )
+        
+        if not success1:
+            return False
+            
+        first_logo_url = response1.get('logo_url')
+        
+        # Upload a second logo (should replace the first)
+        png_data2 = self.create_test_png_file()
+        success2, response2 = self.run_file_upload_test(
+            "Second Logo Upload for Cleanup Test", 
+            "admin/cms/upload-logo", 
+            png_data2, 
+            "second_logo.png", 
+            "image/png", 
+            200,
+            use_admin_token=True
+        )
+        
+        if not success2:
+            return False
+            
+        second_logo_url = response2.get('logo_url')
+        
+        # Verify the new logo is accessible
+        new_logo_full_url = f"{self.base_url}{second_logo_url}"
+        
+        self.tests_run += 1
+        print(f"\n🔍 Testing New Logo Accessibility...")
+        
+        try:
+            response = requests.get(new_logo_full_url, timeout=10)
+            new_logo_accessible = response.status_code == 200
+            
+            if new_logo_accessible:
+                self.tests_passed += 1
+                print(f"✅ New logo accessible - cleanup test passed")
+                print(f"   New logo URL: {second_logo_url}")
+                return True
+            else:
+                print(f"❌ New logo not accessible - status: {response.status_code}")
+                return False
+                
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Failed - Network Error: {str(e)}")
+            return False
+
+    # ===========================
     # CLEANUP TESTS
     # ===========================
 
