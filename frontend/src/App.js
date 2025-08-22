@@ -1295,6 +1295,30 @@ const Orders = () => {
 
 // Main App Component
 function App() {
+  // Very targeted branding removal
+  useEffect(() => {
+    const removeBrandingOnly = () => {
+      // Only target elements that specifically contain "Made with Emergent"
+      const allElements = document.querySelectorAll('*');
+      allElements.forEach(element => {
+        if (element.textContent && element.textContent.includes('Made with Emergent')) {
+          const style = window.getComputedStyle(element);
+          // Only hide if it's positioned fixed in bottom-right (typical for branding)
+          if (style.position === 'fixed' && 
+              (style.bottom === '20px' || style.bottom === '10px') && 
+              (style.right === '20px' || style.right === '10px')) {
+            element.style.display = 'none';
+          }
+        }
+      });
+    };
+
+    // Run after a short delay to let the page load
+    const timeout = setTimeout(removeBrandingOnly, 1000);
+    
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <AuthProvider>
       <div className="App">
