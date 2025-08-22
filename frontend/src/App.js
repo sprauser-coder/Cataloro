@@ -1655,20 +1655,18 @@ const AdminPanel = () => {
     }
   };
 
-  const deletePage = async (pageSlug) => {
-    if (!confirm('Are you sure you want to delete this page?')) return;
-    
+  const syncNavigationWithPages = async () => {
     try {
-      await axios.delete(`${API}/admin/cms/pages/${pageSlug}`);
+      const response = await axios.post(`${API}/admin/cms/sync-navigation`);
       toast({
-        title: "Success",
-        description: "Page deleted successfully"
+        title: "Navigation Synced",
+        description: response.data.message
       });
-      fetchPages();
+      fetchNavigation();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to delete page",
+        title: "Error", 
+        description: "Failed to sync navigation",
         variant: "destructive"
       });
     }
