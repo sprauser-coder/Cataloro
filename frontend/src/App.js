@@ -782,7 +782,7 @@ const ListingDetail = () => {
                       : listing.images[0]
                   }
                   alt={listing.title}
-                  className="w-full h-96 object-cover rounded-lg"
+                  className="w-full h-96 object-cover rounded-lg main-listing-image"
                 />
                 
                 {/* Thumbnail Gallery */}
