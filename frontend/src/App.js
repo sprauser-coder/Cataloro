@@ -1204,7 +1204,405 @@ const Cart = () => {
   );
 };
 
-// Orders Component
+// Admin Panel Component
+const AdminPanel = () => {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [stats, setStats] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [listings, setListings] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  // Check if user is admin
+  if (user?.role !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-2xl mx-auto px-4 py-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+          <p className="text-gray-600">You need admin privileges to access this page.</p>
+        </div>
+      </div>
+    );
+  }
+
+  useEffect(() => {
+    if (activeTab === 'dashboard') {
+      fetchStats();
+    } else if (activeTab === 'users') {
+      fetchUsers();
+    } else if (activeTab === 'listings') {
+      fetchListings();
+    } else if (activeTab === 'orders') {
+      fetchOrders();
+    }
+  }, [activeTab]);
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/admin/stats`);
+      setStats(response.data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch statistics",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/admin/users`);
+      setUsers(response.data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch users",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchListings = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/admin/listings`);
+      setListings(response.data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch listings",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/admin/orders`);
+      setOrders(response.data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch orders",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const blockUser = async (userId) => {
+    try {
+      await axios.put(`${API}/admin/users/${userId}/block`);
+      toast({
+        title: "Success",
+        description: "User blocked successfully"
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to block user",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const unblockUser = async (userId) => {
+    try {
+      await axios.put(`${API}/admin/users/${userId}/unblock`);
+      toast({
+        title: "Success",
+        description: "User unblocked successfully"
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to unblock user",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deleteListing = async (listingId) => {
+    if (!confirm('Are you sure you want to delete this listing?')) return;
+    
+    try {
+      await axios.delete(`${API}/admin/listings/${listingId}`);
+      toast({
+        title: "Success",
+        description: "Listing deleted successfully"
+      });
+      fetchListings();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete listing",
+        variant: "destructive"
+      });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Admin Panel</h1>
+          <p className="text-gray-600">Manage users, listings, and monitor platform activity</p>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="listings">Listings</TabsTrigger>
+            <TabsTrigger value="orders">Orders</TabsTrigger>
+          </TabsList>
+
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : stats ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600">Total Users</p>
+                        <p className="text-2xl font-bold">{stats.total_users}</p>
+                      </div>
+                      <User className="h-8 w-8 text-blue-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600">Active Listings</p>
+                        <p className="text-2xl font-bold">{stats.active_listings}</p>
+                      </div>
+                      <Package className="h-8 w-8 text-green-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600">Total Orders</p>
+                        <p className="text-2xl font-bold">{stats.total_orders}</p>
+                      </div>
+                      <ShoppingCart className="h-8 w-8 text-purple-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600">Total Revenue</p>
+                        <p className="text-2xl font-bold">${stats.total_revenue.toFixed(2)}</p>
+                      </div>
+                      <DollarSign className="h-8 w-8 text-yellow-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600">Blocked Users</p>
+                        <p className="text-2xl font-bold text-red-600">{stats.blocked_users}</p>
+                      </div>
+                      <Badge className="h-8 w-8 text-red-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : null}
+          </TabsContent>
+
+          {/* Users Tab */}
+          <TabsContent value="users">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>User Management</CardTitle>
+                  <CardDescription>View and manage all platform users</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {users.map((user) => (
+                      <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-4">
+                            <Avatar>
+                              <AvatarFallback>{user.full_name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <h3 className="font-semibold">{user.full_name}</h3>
+                              <p className="text-sm text-gray-600">{user.email}</p>
+                              <div className="flex items-center space-x-2 mt-1">
+                                <Badge variant="outline">{user.role}</Badge>
+                                {user.is_blocked && <Badge variant="destructive">Blocked</Badge>}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="text-sm text-gray-500">
+                            <p>Orders: {user.total_orders}</p>
+                            <p>Listings: {user.total_listings}</p>
+                          </div>
+                          {user.is_blocked ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => unblockUser(user.id)}
+                            >
+                              Unblock
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => blockUser(user.id)}
+                            >
+                              Block
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Listings Tab */}
+          <TabsContent value="listings">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Listing Management</CardTitle>
+                  <CardDescription>View and manage all platform listings</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {listings.map((listing) => (
+                      <div key={listing.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{listing.title}</h3>
+                          <p className="text-sm text-gray-600">by {listing.seller_name}</p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <Badge variant="outline">{listing.category}</Badge>
+                            <Badge variant={listing.status === 'active' ? 'default' : 'secondary'}>
+                              {listing.status}
+                            </Badge>
+                            <span className="text-sm text-gray-500">Views: {listing.views}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <div className="text-right">
+                            <p className="font-semibold">${listing.price?.toFixed(2)}</p>
+                            <p className="text-sm text-gray-500">
+                              {new Date(listing.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => deleteListing(listing.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Orders Tab */}
+          <TabsContent value="orders">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Order Management</CardTitle>
+                  <CardDescription>View all platform orders</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {orders.map((orderData) => (
+                      <div key={orderData.order.id} className="p-4 border rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-semibold">Order #{orderData.order.id}</h3>
+                          <Badge variant={orderData.order.status === 'completed' ? 'default' : 'secondary'}>
+                            {orderData.order.status}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-600">Buyer</p>
+                            <p>{orderData.buyer?.full_name}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600">Seller</p>
+                            <p>{orderData.seller?.full_name}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600">Amount</p>
+                            <p className="font-semibold">${orderData.order.total_amount.toFixed(2)}</p>
+                          </div>
+                        </div>
+                        {orderData.listing && (
+                          <p className="text-sm text-gray-600 mt-2">
+                            Item: {orderData.listing.title}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
