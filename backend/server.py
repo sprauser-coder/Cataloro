@@ -68,6 +68,7 @@ class User(BaseModel):
     address: Optional[str] = None
     rating: float = Field(default=0.0)
     total_reviews: int = Field(default=0)
+    is_blocked: bool = Field(default=False)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     is_active: bool = Field(default=True)
 
