@@ -2644,7 +2644,33 @@ const AdminPanel = () => {
                 <CardContent>
                   <div className="space-y-4">
                     {listings.map((listing) => (
-                      <div key={listing.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={listing.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                        {/* Listing Image */}
+                        <div className="flex-shrink-0">
+                          {listing.images && listing.images.length > 0 ? (
+                            <img
+                              src={listing.images[0].startsWith('/uploads/') 
+                                ? `${BACKEND_URL}${listing.images[0]}` 
+                                : listing.images[0]
+                              }
+                              alt={listing.title}
+                              className="w-16 h-16 object-cover rounded-lg border"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <div 
+                            className={`w-16 h-16 bg-gray-100 rounded-lg border flex items-center justify-center ${
+                              listing.images && listing.images.length > 0 ? 'hidden' : 'flex'
+                            }`}
+                          >
+                            <Package className="h-6 w-6 text-gray-400" />
+                          </div>
+                        </div>
+                        
+                        {/* Listing Details */}
                         <div className="flex-1">
                           <h3 className="font-semibold">{listing.title}</h3>
                           <p className="text-sm text-gray-600">by {listing.seller_name}</p>
@@ -2656,6 +2682,8 @@ const AdminPanel = () => {
                             <span className="text-sm text-gray-500">Views: {listing.views}</span>
                           </div>
                         </div>
+                        
+                        {/* Price and Actions */}
                         <div className="flex items-center space-x-4">
                           <div className="text-right">
                             <p className="font-semibold">€{listing.price?.toFixed(2)}</p>
