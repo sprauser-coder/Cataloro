@@ -1790,6 +1790,76 @@ class BulkDeleteRequest(BaseModel):
     """Bulk delete model"""
     listing_ids: List[str]
 
+# ===========================
+# NOTIFICATION SYSTEM (Phase 3C)
+# ===========================
+
+class NotificationType(str, Enum):
+    ORDER_RECEIVED = "order_received"
+    ORDER_APPROVED = "order_approved"
+    ORDER_REJECTED = "order_rejected"
+    ORDER_COMPLETED = "order_completed"
+    LISTING_SOLD = "listing_sold"
+    PAYMENT_RECEIVED = "payment_received"
+    MESSAGE_RECEIVED = "message_received"
+
+class Notification(BaseModel):
+    """Notification model"""
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    notification_type: NotificationType
+    title: str
+    message: str
+    data: Optional[Dict[str, Any]] = None  # Additional data (order_id, listing_id, etc.)
+    read: bool = Field(default=False)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ConnectionManager:
+    """WebSocket connection manager for real-time notifications"""
+    
+    def __init__(self):
+        self.active_connections: Dict[str, WebSocket] = {}
+    
+    async def connect(self, websocket: WebSocket, user_id: str):
+        """Accept new WebSocket connection"""
+        await websocket.accept()
+        self.active_connections[user_id] = websocket
+        print(f"User {user_id} connected to notifications")
+    
+    def disconnect(self, user_id: str):
+        """Remove WebSocket connection"""
+        if user_id in self.active_connections:
+            del self.active_connections[user_id]
+            print(f"User {user_id} disconnected from notifications")
+    
+    async def send_personal_notification(self, user_id: str, notification: dict):
+        """Send notification to specific user"""
+        if user_id in self.active_connections:
+            try:
+                await self.active_connections[user_id].send_json(notification)
+                return True
+            except Exception as e:
+                print(f"Failed to send notification to {user_id}: {e}")
+                # Remove stale connection
+                self.disconnect(user_id)
+                return False
+        return False
+    
+    async def broadcast_notification(self, notification: dict, exclude_user_id: Optional[str] = None):
+        """Broadcast notification to all connected users"""
+        for user_id, connection in self.active_connections.items():
+            if exclude_user_id and user_id == exclude_user_id:
+                continue
+            try:
+                await connection.send_json(notification)
+            except Exception as e:
+                print(f"Failed to broadcast to {user_id}: {e}")
+                # Remove stale connection
+                self.disconnect(user_id)
+
+# Global connection manager
+connection_manager = ConnectionManager()
+
 @api_router.post("/admin/listings/bulk-delete")
 async def bulk_delete_listings(
     request: BulkDeleteRequest,
