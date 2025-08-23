@@ -3742,6 +3742,90 @@ const AdminPanel = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-6">
+                        {/* Hero Image Above Title */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Hero Image (above title)</label>
+                          <div className="space-y-3">
+                            <input
+                              type="file"
+                              accept=".png,.jpg,.jpeg"
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  // Validate file type
+                                  if (!file.type.startsWith('image/')) {
+                                    toast({
+                                      title: "Invalid file type",
+                                      description: "Please select a PNG or JPEG image file",
+                                      variant: "destructive"
+                                    });
+                                    return;
+                                  }
+                                  
+                                  // Validate file size (max 5MB)
+                                  if (file.size > 5 * 1024 * 1024) {
+                                    toast({
+                                      title: "File too large",
+                                      description: "Please select an image smaller than 5MB",
+                                      variant: "destructive"
+                                    });
+                                    return;
+                                  }
+                                  
+                                  const formData = new FormData();
+                                  formData.append('file', file);
+                                  
+                                  try {
+                                    const response = await axios.post(`${API}/admin/cms/upload-hero-image`, formData, {
+                                      headers: { 'Content-Type': 'multipart/form-data' }
+                                    });
+                                    
+                                    setSiteSettings({
+                                      ...siteSettings, 
+                                      hero_image_url: response.data.hero_image_url
+                                    });
+                                    
+                                    toast({
+                                      title: "Success",
+                                      description: "Hero image uploaded successfully"
+                                    });
+                                  } catch (error) {
+                                    toast({
+                                      title: "Upload failed",
+                                      description: "Failed to upload hero image",
+                                      variant: "destructive"
+                                    });
+                                  }
+                                }
+                              }}
+                              className="w-full p-2 border rounded-md"
+                            />
+                            {siteSettings.hero_image_url && (
+                              <div className="flex items-center space-x-3">
+                                <img
+                                  src={siteSettings.hero_image_url.startsWith('/uploads/') 
+                                    ? `${BACKEND_URL}${siteSettings.hero_image_url}` 
+                                    : siteSettings.hero_image_url
+                                  }
+                                  alt="Hero image preview"
+                                  className="w-20 h-20 object-cover rounded-lg border"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                  }}
+                                />
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setSiteSettings({...siteSettings, hero_image_url: ''})}
+                                >
+                                  Remove Image
+                                </Button>
+                              </div>
+                            )}
+                            <p className="text-xs text-gray-500">Upload a PNG or JPEG image to display above the hero title (max 5MB)</p>
+                          </div>
+                        </div>
+
                         {/* Hero Content */}
                         <div className="grid grid-cols-1 gap-4">
                           <div>
