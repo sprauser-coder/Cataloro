@@ -212,13 +212,52 @@ const Header = () => {
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
+            <Link 
+              to="/" 
+              className="font-medium transition-colors"
+              style={{
+                color: siteSettings?.link_color || '#6b7280',
+                fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = siteSettings?.link_color || '#6b7280';
+              }}
+            >
               Browse
             </Link>
-            <Link to="/sell" className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
+            <Link 
+              to="/sell" 
+              className="font-medium transition-colors"
+              style={{
+                color: siteSettings?.link_color || '#6b7280',
+                fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = siteSettings?.link_color || '#6b7280';
+              }}
+            >
               Sell
             </Link>
-            <Link to="/orders" className="text-gray-700 hover:text-indigo-600 font-medium transition-colors">
+            <Link 
+              to="/orders" 
+              className="font-medium transition-colors"
+              style={{
+                color: siteSettings?.link_color || '#6b7280',
+                fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = siteSettings?.link_color || '#6b7280';
+              }}
+            >
               My Orders
             </Link>
             {/* Dynamic Navigation from CMS */}
