@@ -3454,6 +3454,7 @@ const AdminPanel = () => {
                               />
                             </div>
                             <h3 
+                              key={`h3-${siteSettings.global_font_family || 'Inter'}`}
                               className="font-medium" 
                               style={{
                                 fontSize: siteSettings.h3_size || '24px',
