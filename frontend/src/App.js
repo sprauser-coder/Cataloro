@@ -179,20 +179,25 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
-            {siteSettings?.header_logo_url ? (
+            {siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? (
               <img 
                 src={`${API}${siteSettings.header_logo_url}`} 
                 alt={siteSettings.header_logo_alt || 'Logo'} 
                 className="h-8 w-auto object-contain"
+                onError={(e) => {
+                  // If image fails to load, hide it and show fallback
+                  e.target.style.display = 'none';
+                  const fallback = e.target.parentElement.querySelector('.logo-fallback');
+                  if (fallback) fallback.style.display = 'flex';
+                }}
               />
-            ) : (
-              <>
-                <Package className="h-8 w-8 text-indigo-600" />
-                <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  {siteName}
-                </span>
-              </>
-            )}
+            ) : null}
+            <div className={`logo-fallback flex items-center space-x-2 ${siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? 'hidden' : ''}`}>
+              <Package className="h-8 w-8 text-indigo-600" />
+              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                {siteName}
+              </span>
+            </div>
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
