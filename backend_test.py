@@ -141,7 +141,8 @@ class Phase3ABackendTester:
                 "location": "San Francisco, CA, USA"
             }
             
-            response = self.session.put(f"{BACKEND_URL}/profile", json=update_data, headers=headers)
+            # Use direct backend URL due to nginx routing issue with /profile endpoints
+            response = self.session.put(f"{BACKEND_DIRECT_URL}/profile", json=update_data, headers=headers)
             
             if response.status_code == 200:
                 data = response.json()
