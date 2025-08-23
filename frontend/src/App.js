@@ -4015,7 +4015,7 @@ const AdminPanel = () => {
                                       </div>
                                     </div>
                                   )}
-                                  <p className="text-xs text-gray-500">Upload a PNG or JPEG image for the hero background (max 10MB)</p>
+                                  <p className="text-xs text-gray-500">Upload a PNG or JPEG image for the hero background (max 25MB)</p>
                                 </div>
                               </div>
                             ) : null}
