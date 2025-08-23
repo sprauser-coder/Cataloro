@@ -2506,11 +2506,11 @@ const AdminPanel = () => {
                                             <div><strong>User ID:</strong> {user?.user_id || 'Not assigned'}</div>
                                             <div><strong>Role:</strong> <Badge variant="outline">{user?.role || 'Unknown'}</Badge></div>
                                             <div><strong>Status:</strong> 
-                                              <Badge variant={user.is_active ? "default" : "destructive"}>
-                                                {user.is_active ? "Active" : "Blocked"}
+                                              <Badge variant={user?.is_active ? "default" : "destructive"}>
+                                                {user?.is_active ? "Active" : "Blocked"}
                                               </Badge>
                                             </div>
-                                            <div><strong>Joined:</strong> {new Date(user.created_at).toLocaleString()}</div>
+                                            <div><strong>Joined:</strong> {user?.created_at ? new Date(user.created_at).toLocaleString() : 'Unknown'}</div>
                                           </div>
                                         </div>
                                         <div>
