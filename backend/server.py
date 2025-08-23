@@ -1138,6 +1138,26 @@ async def generate_missing_user_ids(admin: User = Depends(get_admin_user)):
 # ===========================
 
 # Site Settings Management
+# Test endpoint to debug Phase 2 fields
+@api_router.get("/admin/cms/test-settings")
+async def test_site_settings(admin: User = Depends(get_admin_user)):
+    """Test endpoint to debug Phase 2 fields"""
+    site_settings = SiteSettings()
+    result = site_settings.dict(exclude_unset=False)
+    
+    return {
+        "total_fields": len(result),
+        "phase2_fields": {
+            "font_color": result.get("font_color"),
+            "link_color": result.get("link_color"), 
+            "link_hover_color": result.get("link_hover_color"),
+            "hero_image_url": result.get("hero_image_url"),
+            "hero_background_image_url": result.get("hero_background_image_url"),
+            "hero_background_size": result.get("hero_background_size")
+        },
+        "all_fields": sorted(result.keys())
+    }
+
 @api_router.get("/admin/cms/settings")
 async def get_site_settings(admin: User = Depends(get_admin_user)):
     """Get current site settings"""
