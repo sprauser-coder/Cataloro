@@ -1956,6 +1956,11 @@ const AdminPanel = () => {
         window.cataloroSettings[`${logoType}_logo_url`] = response.data.logo_url;
       }
 
+      // Trigger a window event to notify components of settings change
+      window.dispatchEvent(new CustomEvent('cataloroSettingsUpdated', { 
+        detail: { logoType, logoUrl: response.data.logo_url }
+      }));
+
       toast({
         title: "Success",
         description: `${logoType.charAt(0).toUpperCase() + logoType.slice(1)} logo uploaded successfully`,
