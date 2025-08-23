@@ -2501,10 +2501,10 @@ const AdminPanel = () => {
                                         <div>
                                           <h4 className="font-medium mb-3">Profile Information</h4>
                                           <div className="space-y-2 text-sm">
-                                            <div><strong>Name:</strong> {user.name}</div>
-                                            <div><strong>Email:</strong> {user.email}</div>
-                                            <div><strong>User ID:</strong> {user.user_id || 'Not assigned'}</div>
-                                            <div><strong>Role:</strong> <Badge variant="outline">{user.role}</Badge></div>
+                                            <div><strong>Name:</strong> {user?.name || 'Unknown'}</div>
+                                            <div><strong>Email:</strong> {user?.email || 'No email'}</div>
+                                            <div><strong>User ID:</strong> {user?.user_id || 'Not assigned'}</div>
+                                            <div><strong>Role:</strong> <Badge variant="outline">{user?.role || 'Unknown'}</Badge></div>
                                             <div><strong>Status:</strong> 
                                               <Badge variant={user.is_active ? "default" : "destructive"}>
                                                 {user.is_active ? "Active" : "Blocked"}
