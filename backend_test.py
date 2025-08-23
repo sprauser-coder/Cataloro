@@ -292,14 +292,15 @@ class Phase3ABackendTester:
                 "location": "Workflow Test City, CA"
             }
             
-            profile_response = self.session.put(f"{BACKEND_URL}/profile", json=profile_update, headers=headers)
+            # Use direct backend URL due to nginx routing issue with /profile endpoints
+            profile_response = self.session.put(f"{BACKEND_DIRECT_URL}/profile", json=profile_update, headers=headers)
             workflow_steps.append(("Profile Update", profile_response.status_code == 200))
             
             # Step 3: Create listing (already done)
             workflow_steps.append(("Create Listing", self.test_listing_id is not None))
             
             # Step 4: Check updated stats
-            stats_response = self.session.get(f"{BACKEND_URL}/profile/stats", headers=headers)
+            stats_response = self.session.get(f"{BACKEND_DIRECT_URL}/profile/stats", headers=headers)
             stats_success = stats_response.status_code == 200
             if stats_success:
                 stats_data = stats_response.json()
@@ -308,7 +309,7 @@ class Phase3ABackendTester:
             workflow_steps.append(("Updated Stats", stats_success))
             
             # Step 5: Verify my-listings shows the listing
-            my_listings_response = self.session.get(f"{BACKEND_URL}/listings/my-listings", headers=headers)
+            my_listings_response = self.session.get(f"{BACKEND_DIRECT_URL}/listings/my-listings", headers=headers)
             my_listings_success = my_listings_response.status_code == 200
             if my_listings_success:
                 listings_data = my_listings_response.json()
