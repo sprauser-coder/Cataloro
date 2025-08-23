@@ -831,7 +831,7 @@ const ListingDetail = () => {
                 <img
                   src={
                     listing.images[0].startsWith('/uploads/') 
-                      ? `${BACKEND_URL}${listing.images[0]}` 
+                      ? `${BACKEND_URL}:8001${listing.images[0]}` 
                       : listing.images[0]
                   }
                   alt={listing.title}
