@@ -3941,11 +3941,11 @@ const AdminPanel = () => {
                                           return;
                                         }
                                         
-                                        // Validate file size (max 10MB for backgrounds)
-                                        if (file.size > 10 * 1024 * 1024) {
+                                        // Validate file size (max 25MB for backgrounds)
+                                        if (file.size > 25 * 1024 * 1024) {
                                           toast({
                                             title: "File too large",
-                                            description: "Please select an image smaller than 10MB",
+                                            description: "Please select an image smaller than 25MB",
                                             variant: "destructive"
                                           });
                                           return;
