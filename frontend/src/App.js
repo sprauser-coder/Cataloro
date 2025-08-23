@@ -922,7 +922,7 @@ const ListingDetail = () => {
                   </Button>
                   {listing.buyout_price && (
                     <Button onClick={handleBuyNow} variant="outline" className="w-full mt-2">
-                      Buy Now - ${listing.buyout_price.toFixed(2)}
+                      Buy Now - €{listing.buyout_price.toFixed(2)}
                     </Button>
                   )}
                 </>
