@@ -3378,6 +3378,7 @@ const AdminPanel = () => {
                               />
                             </div>
                             <h1 
+                              key={`h1-${siteSettings.global_font_family || 'Inter'}`}
                               className="font-bold" 
                               style={{
                                 fontSize: siteSettings.h1_size || '36px',
