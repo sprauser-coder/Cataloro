@@ -531,10 +531,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Product Detail Page"
-    - "Shopping Cart Page" 
-    - "Orders History Page"
-  stuck_tasks: []
+    - "Phase 2 CMS Settings New Fields"
+  stuck_tasks:
+    - "Phase 2 CMS Settings New Fields"
   test_all: false
   test_priority: "high_first"
   completed_testing:
@@ -544,6 +543,8 @@ test_plan:
     - "Dashboard Layout Changes (removed visitor countries/quick actions)"
     - "Users Panel Stats Bars"
     - "Listings Panel Thumbnail Images"
+    - "Phase 2 Hero Image Upload Endpoints"
+    - "Phase 2 Dashboard Analytics Enhancement"
 
 agent_communication:
   - agent: "main"
