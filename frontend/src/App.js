@@ -519,11 +519,32 @@ const Home = () => {
   const getHeroStyle = () => {
     if (!siteSettings) return {};
     
+    let backgroundStyle = {};
+    
+    if (siteSettings.hero_background_type === 'image' && siteSettings.hero_background_image_url) {
+      const imageUrl = siteSettings.hero_background_image_url.startsWith('/uploads/') 
+        ? `${BACKEND_URL}${siteSettings.hero_background_image_url}` 
+        : siteSettings.hero_background_image_url;
+      
+      backgroundStyle = {
+        backgroundImage: `url(${imageUrl})`,
+        backgroundSize: siteSettings.hero_background_size || 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      };
+    } else if (siteSettings.hero_background_type === 'gradient') {
+      backgroundStyle = {
+        background: `linear-gradient(135deg, ${siteSettings.hero_background_gradient_start || '#667eea'} 0%, ${siteSettings.hero_background_gradient_end || '#764ba2'} 100%)`
+      };
+    } else {
+      backgroundStyle = {
+        backgroundColor: siteSettings.hero_background_color || '#6366f1'
+      };
+    }
+    
     const baseStyle = {
-      background: siteSettings.hero_background_type === 'gradient' 
-        ? `linear-gradient(135deg, ${siteSettings.hero_background_gradient_start} 0%, ${siteSettings.hero_background_gradient_end} 100%)`
-        : siteSettings.hero_background_color,
-      color: siteSettings.hero_text_color,
+      ...backgroundStyle,
+      color: siteSettings.hero_text_color || '#ffffff',
       height: siteSettings.hero_height || '600px',
       display: 'flex',
       alignItems: 'center'
