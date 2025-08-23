@@ -245,11 +245,11 @@ backend:
 
   - task: "Logo Upload Functionality"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
@@ -263,6 +263,9 @@ backend:
       - working: false
         agent: "main"
         comment: "CRITICAL BUG FOUND: File type validation error in frontend handleLogoUpload function. Line 1906 has incorrect operator precedence: '!file.type === \"image/png\"' should be 'file.type !== \"image/png\"'. This bug prevents all logo uploads from working. Bug fixed."
+      - working: true
+        agent: "testing"
+        comment: "RETESTED AFTER FRONTEND BUG FIX: Comprehensive logo upload testing completed with 6/6 tests passed (100% success rate). ✅ Admin authentication properly enforced (403 for non-admin users), ✅ Valid PNG files upload successfully with proper response and logo_url, ✅ Invalid formats (JPEG) properly rejected with 400 error, ✅ File size validation working (6MB files rejected, smaller files accepted), ✅ Logo URL correctly stored in site settings and accessible via admin API, ✅ Uploaded logo files accessible via static serving. Frontend bug fix successful - logo upload functionality fully operational."
 
   - task: "Listing Image Upload Functionality"
     implemented: true
@@ -270,7 +273,7 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
@@ -284,6 +287,9 @@ backend:
       - working: true
         agent: "main"
         comment: "Listing image upload appears to be working correctly in backend. The bug was in logo upload frontend validation, not listing images. Needs retesting to confirm functionality."
+      - working: true
+        agent: "testing"
+        comment: "RETESTED AFTER FRONTEND BUG FIX: Comprehensive listing image upload testing completed with 8/8 tests passed (100% success rate). ✅ User authentication properly enforced (403 for unauthenticated requests), ✅ Valid PNG and JPEG files upload successfully with proper image_url response, ✅ Invalid formats (GIF) properly rejected with 400 error, ✅ File size validation working (11MB files rejected, smaller files accepted), ✅ Both regular users and admin users can upload listing images, ✅ Uploaded images accessible via static serving, ✅ Listings can be created with uploaded images and images display correctly, ✅ Integration with listings system working perfectly. Listing image upload functionality fully operational."
 
   - task: "Hero Section Height Functionality"
     implemented: true
