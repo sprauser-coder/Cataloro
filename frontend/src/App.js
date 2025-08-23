@@ -3437,7 +3437,7 @@ const AdminPanel = () => {
                         </div>
 
                         <Button 
-                          onClick={saveAppearanceSettings}
+                          onClick={() => updateSiteSettings(siteSettings)}
                           className="w-full"
                         >
                           Save Typography Settings
