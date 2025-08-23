@@ -11,8 +11,8 @@ from datetime import datetime
 import sys
 
 # Configuration
-BACKEND_URL = "http://217.154.0.82/api"  # Using VPS URL from frontend/.env
-WEBSOCKET_URL = "ws://217.154.0.82/api"
+BACKEND_URL = "http://localhost:8001/api"  # Using direct backend URL for testing
+WEBSOCKET_URL = "ws://localhost:8001/api"
 
 # Admin credentials for testing
 ADMIN_EMAIL = "admin@marketplace.com"
