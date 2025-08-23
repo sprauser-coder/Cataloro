@@ -1141,25 +1141,22 @@ async def generate_missing_user_ids(admin: User = Depends(get_admin_user)):
 @api_router.get("/admin/cms/settings")
 async def get_site_settings(admin: User = Depends(get_admin_user)):
     """Get current site settings"""
+    # Always return a fresh SiteSettings instance with all fields
     settings = await db.site_settings.find_one({})
-    if not settings:
-        # Create default settings with all fields
-        default_settings = SiteSettings()
-        settings_doc = prepare_for_mongo(default_settings.dict(exclude_unset=False))
-        await db.site_settings.insert_one(settings_doc)
-        return default_settings.dict(exclude_unset=False)
+    if settings:
+        parsed_settings = parse_from_mongo(settings)
+        site_settings = SiteSettings(**parsed_settings)
+    else:
+        site_settings = SiteSettings()
     
-    # Parse the database settings and return as SiteSettings instance
-    parsed_settings = parse_from_mongo(settings)
+    # Return the complete settings dict
+    result = site_settings.dict(exclude_unset=False)
     
-    # Create instance with all fields (missing fields will use defaults)
-    site_settings = SiteSettings(**parsed_settings)
+    # Update database with complete settings for future use
+    settings_doc = prepare_for_mongo(result)
+    await db.site_settings.replace_one({}, settings_doc, upsert=True)
     
-    # Update the database document to include all fields for future requests
-    complete_settings_doc = prepare_for_mongo(site_settings.dict(exclude_unset=False))
-    await db.site_settings.replace_one({}, complete_settings_doc)
-    
-    return site_settings.dict(exclude_unset=False)
+    return result
 
 @api_router.put("/admin/cms/settings")
 async def update_site_settings(settings_data: dict, admin: User = Depends(get_admin_user)):
