@@ -1405,6 +1405,18 @@ def main():
         tester.test_branding_admin_panel_functionality,
         tester.test_branding_core_functionality_unaffected,
         
+        # Hero Height Functionality Tests
+        tester.test_hero_height_default_value,
+        tester.test_hero_height_in_public_settings,
+        tester.test_hero_height_update_400px,
+        tester.test_hero_height_update_800px,
+        tester.test_hero_height_persistence_after_update,
+        tester.test_hero_height_minimum_value_300px,
+        tester.test_hero_height_maximum_value_1000px,
+        tester.test_hero_height_public_api_after_update,
+        tester.test_hero_height_database_storage,
+        tester.test_hero_height_various_formats,
+        
         # Logo Upload Tests
         tester.test_logo_upload_without_admin_auth,
         tester.test_logo_upload_valid_png,
