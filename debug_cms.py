@@ -31,6 +31,9 @@ def test_cms_debug():
         for field in ['font_color', 'link_color', 'link_hover_color', 'hero_image_url', 'hero_background_image_url', 'hero_background_size']:
             value = settings.get(field, 'MISSING')
             print(f"  {field}: {value}")
+        
+        # Show all field names to debug
+        print(f"\nAll field names in response: {sorted(settings.keys())}")
     else:
         print(f"Failed to get settings: {response.status_code}")
         return
