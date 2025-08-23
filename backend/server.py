@@ -314,7 +314,7 @@ async def login(credentials: UserLogin):
 # Listing Routes
 @api_router.post("/listings", response_model=ProductListing)
 async def create_listing(listing_data: ListingCreate, current_user: User = Depends(get_current_user)):
-    if current_user.role not in [UserRole.SELLER, UserRole.BOTH]:
+    if current_user.role not in [UserRole.SELLER, UserRole.BOTH, UserRole.ADMIN]:
         raise HTTPException(status_code=403, detail="Only sellers can create listings")
     
     listing_dict = listing_data.dict()
