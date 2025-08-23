@@ -2440,7 +2440,7 @@ const AdminPanel = () => {
                                 <div className="flex-1">
                                   <div className="flex items-center space-x-3 mb-2">
                                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                                      {user.name.charAt(0).toUpperCase()}
+                                      {(user?.name || 'U').charAt(0).toUpperCase()}
                                     </div>
                                     <div>
                                       <div className="flex items-center space-x-2">
