@@ -419,13 +419,14 @@ class Phase3ABackendTester:
                 "location": "Phase 3A Test Location, State, Country"
             }
             
-            update_response = self.session.put(f"{BACKEND_URL}/profile", json=phase3a_update, headers=headers)
+            # Use direct backend URL due to nginx routing issue with /profile endpoints
+            update_response = self.session.put(f"{BACKEND_DIRECT_URL}/profile", json=phase3a_update, headers=headers)
             if update_response.status_code != 200:
                 self.log_test("User Model - Phase 3A Fields Update", False, f"Update failed: {update_response.status_code}")
                 return False
             
             # Retrieve and verify
-            get_response = self.session.get(f"{BACKEND_URL}/profile", headers=headers)
+            get_response = self.session.get(f"{BACKEND_DIRECT_URL}/profile", headers=headers)
             if get_response.status_code != 200:
                 self.log_test("User Model - Phase 3A Fields Retrieval", False, f"Retrieval failed: {get_response.status_code}")
                 return False
