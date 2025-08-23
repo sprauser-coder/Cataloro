@@ -2371,7 +2371,7 @@ const AdminPanel = () => {
                         </div>
                         <div className="flex items-center space-x-4">
                           <div className="text-right">
-                            <p className="font-semibold">${listing.price?.toFixed(2)}</p>
+                            <p className="font-semibold">€{listing.price?.toFixed(2)}</p>
                             <p className="text-sm text-gray-500">
                               {new Date(listing.created_at).toLocaleDateString()}
                             </p>
