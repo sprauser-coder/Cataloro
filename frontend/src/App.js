@@ -622,7 +622,7 @@ const Home = () => {
                     src={
                       listing.images?.[0] 
                         ? (listing.images[0].startsWith('/uploads/') 
-                            ? `${BACKEND_URL}${listing.images[0]}` 
+                            ? `${BACKEND_URL}:8001${listing.images[0]}` 
                             : listing.images[0])
                         : 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'
                     }
