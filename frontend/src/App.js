@@ -1104,6 +1104,11 @@ const Sell = () => {
     setUploadedImages(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
+  const testFunction = () => {
+    alert('Test function called!');
+    console.log('Test function executed');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
