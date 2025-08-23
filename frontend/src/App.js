@@ -1298,7 +1298,7 @@ const Sell = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="buyout_price">Buy Now Price ($ - Optional)</Label>
+                    <Label htmlFor="buyout_price">Buy Now Price (€ - Optional)</Label>
                     <Input
                       id="buyout_price"
                       type="number"
