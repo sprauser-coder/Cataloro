@@ -2307,7 +2307,7 @@ const AdminPanel = () => {
                       <CardDescription>Marketplace activity trends</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-4">
+                      <div className="grid grid-cols-7 gap-4">
                         {/* Chart Data */}
                         {[
                           { day: 'Mon', completed: stats.total_orders || 12, active: Math.floor((stats.total_listings || 45) * 1.0), pending: 8 },
@@ -2320,38 +2320,38 @@ const AdminPanel = () => {
                         ].map((data, index) => {
                           const maxValue = Math.max(data.completed, data.active, data.pending, 1);
                           return (
-                            <div key={index} className="flex items-end space-x-2 h-24">
-                              <div className="flex-1 text-center">
-                                <div className="text-sm font-medium text-gray-600 mb-2">{data.day}</div>
-                                <div className="flex justify-center items-end space-x-1 h-16">
-                                  {/* Completed Listings Bar */}
-                                  <div className="flex flex-col items-center">
-                                    <div 
-                                      className="w-6 bg-red-500 rounded-t-sm transition-all duration-300 hover:bg-red-600"
-                                      style={{ height: `${(data.completed / maxValue) * 60}px` }}
-                                      title={`Completed: ${data.completed}`}
-                                    ></div>
-                                    <div className="text-xs text-red-600 mt-1">{data.completed}</div>
-                                  </div>
-                                  {/* Active Listings Bar */}
-                                  <div className="flex flex-col items-center">
-                                    <div 
-                                      className="w-6 bg-blue-500 rounded-t-sm transition-all duration-300 hover:bg-blue-600"
-                                      style={{ height: `${(data.active / maxValue) * 60}px` }}
-                                      title={`Active: ${data.active}`}
-                                    ></div>
-                                    <div className="text-xs text-blue-600 mt-1">{data.active}</div>
-                                  </div>
-                                  {/* Pending Orders Bar */}
-                                  <div className="flex flex-col items-center">
-                                    <div 
-                                      className="w-6 bg-orange-500 rounded-t-sm transition-all duration-300 hover:bg-orange-600"
-                                      style={{ height: `${(data.pending / maxValue) * 60}px` }}
-                                      title={`Pending: ${data.pending}`}
-                                    ></div>
-                                    <div className="text-xs text-orange-600 mt-1">{data.pending}</div>
-                                  </div>
+                            <div key={index} className="text-center">
+                              <div className="text-sm font-medium text-gray-600 mb-2">{data.day}</div>
+                              <div className="flex justify-center items-end space-x-1 h-24 mb-2">
+                                {/* Completed Listings Bar */}
+                                <div className="flex flex-col items-center">
+                                  <div 
+                                    className="w-4 bg-red-500 rounded-t-sm transition-all duration-300 hover:bg-red-600"
+                                    style={{ height: `${Math.max((data.completed / maxValue) * 80, 2)}px` }}
+                                    title={`Completed: ${data.completed}`}
+                                  ></div>
                                 </div>
+                                {/* Active Listings Bar */}
+                                <div className="flex flex-col items-center">
+                                  <div 
+                                    className="w-4 bg-blue-500 rounded-t-sm transition-all duration-300 hover:bg-blue-600"
+                                    style={{ height: `${Math.max((data.active / maxValue) * 80, 2)}px` }}
+                                    title={`Active: ${data.active}`}
+                                  ></div>
+                                </div>
+                                {/* Pending Orders Bar */}
+                                <div className="flex flex-col items-center">
+                                  <div 
+                                    className="w-4 bg-orange-500 rounded-t-sm transition-all duration-300 hover:bg-orange-600"
+                                    style={{ height: `${Math.max((data.pending / maxValue) * 80, 2)}px` }}
+                                    title={`Pending: ${data.pending}`}
+                                  ></div>
+                                </div>
+                              </div>
+                              <div className="space-y-1 text-xs">
+                                <div className="text-red-600">{data.completed}</div>
+                                <div className="text-blue-600">{data.active}</div>
+                                <div className="text-orange-600">{data.pending}</div>
                               </div>
                             </div>
                           );
