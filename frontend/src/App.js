@@ -471,10 +471,10 @@ const Home = () => {
 
   const formatPrice = (listing) => {
     if (listing.listing_type === 'fixed_price') {
-      return `$${listing.price?.toFixed(2)}`;
+      return `€${listing.price?.toFixed(2)}`;
     } else {
       if (listing.current_bid) {
-        return `Current bid: $${listing.current_bid.toFixed(2)}`;
+        return `Current bid: €${listing.current_bid.toFixed(2)}`;
       } else {
         return `Starting bid: $${listing.starting_bid?.toFixed(2)}`;
       }
