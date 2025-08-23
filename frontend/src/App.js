@@ -2544,7 +2544,7 @@ const AdminPanel = () => {
                                         <div className="space-y-2 text-sm">
                                           <div className="p-2 border-l-4 border-blue-200 bg-blue-50 rounded-r">
                                             <div className="font-medium">Account Created</div>
-                                            <div className="text-gray-600">{new Date(user.created_at).toLocaleString()}</div>
+                                            <div className="text-gray-600">{user?.created_at ? new Date(user.created_at).toLocaleString() : 'Unknown date'}</div>
                                           </div>
                                           <div className="p-2 border-l-4 border-gray-200 bg-gray-50 rounded-r">
                                             <div className="font-medium">No recent activity</div>
