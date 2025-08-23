@@ -126,6 +126,44 @@ const ProtectedRoute = ({ children }) => {
   return token ? children : <Navigate to="/auth" />;
 };
 
+// Footer Component with Version
+const Footer = ({ siteSettings }) => {
+  const currentVersion = "1.0.0";
+  const completionDateTime = new Date().toLocaleString('en-GB', {
+    day: '2-digit',
+    month: '2-digit', 
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).replace(',', '');
+
+  return (
+    <footer className="bg-white border-t border-gray-200 mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <div className="flex items-center space-x-4">
+            <p 
+              className="text-sm"
+              style={{
+                color: siteSettings?.font_color || '#6b7280',
+                fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
+              }}
+            >
+              © {new Date().getFullYear()} {siteSettings?.site_title || 'Cataloro Marketplace'}. All rights reserved.
+            </p>
+          </div>
+          <div className="flex items-center space-x-6">
+            <div className="text-xs text-gray-400 font-mono">
+              Version {currentVersion} • {completionDateTime}
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
 // Header Component
 const Header = () => {
   const { user, logout } = useAuth();
