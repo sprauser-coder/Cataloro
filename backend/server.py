@@ -1349,9 +1349,7 @@ async def upload_logo(
     
     # Update the appropriate logo field
     if logo_type == "header":
-        current_settings["header_logo_url"] = logo_url
-        
-        # Remove old logo file if it exists
+        # Remove old logo file if it exists BEFORE updating the setting
         old_logo_url = current_settings.get("header_logo_url")
         if old_logo_url and old_logo_url.startswith("/uploads/"):
             old_file_path = UPLOAD_DIR / old_logo_url.split("/")[-1]
@@ -1360,6 +1358,9 @@ async def upload_logo(
                     old_file_path.unlink()
                 except Exception:
                     pass  # Ignore errors when deleting old files
+        
+        # Now set the new logo URL
+        current_settings["header_logo_url"] = logo_url
     
     # Update settings in database
     await db.site_settings.replace_one(
