@@ -139,6 +139,9 @@ const Header = () => {
       fetchCartCount();
     }
     
+    // Fetch site settings for header styling
+    fetchSiteSettings();
+    
     // Load navigation and settings from global state or fetch
     const loadHeaderData = () => {
       if (window.cataloroNavigation) {
@@ -171,6 +174,16 @@ const Header = () => {
       window.removeEventListener('cataloroSettingsUpdated', handleSettingsUpdate);
     };
   }, [user]);
+
+  const fetchSiteSettings = async () => {
+    try {
+      const response = await axios.get(`${API}/cms/settings`);
+      setSiteSettings(response.data);
+      window.cataloroSettings = response.data;
+    } catch (error) {
+      console.error('Error fetching site settings:', error);
+    }
+  };
 
   const fetchCartCount = async () => {
     try {
