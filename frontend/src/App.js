@@ -2452,7 +2452,7 @@ const AdminPanel = () => {
                                           <Badge variant="destructive">Blocked</Badge>
                                         )}
                                       </div>
-                                      <p className="text-gray-600">{user.email}</p>
+                                      <p className="text-gray-600">{user?.email || 'No email'}</p>
                                       <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
                                         <span>ID: {user.user_id || 'Not assigned'}</span>
                                         <span>•</span>
