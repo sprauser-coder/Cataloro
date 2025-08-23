@@ -1903,7 +1903,7 @@ const AdminPanel = () => {
     if (!file) return;
 
     // Validate file type
-    if (!file.type === 'image/png') {
+    if (file.type !== 'image/png') {
       toast({
         title: "Error",
         description: "Please select a PNG file",
