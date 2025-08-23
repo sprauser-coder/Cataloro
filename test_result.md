@@ -396,9 +396,9 @@ frontend:
 
   - task: "Sell/Create Listing Page"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -411,6 +411,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "COMPREHENSIVE TESTING COMPLETED: ✅ Create New Listing form fully functional with all required fields (title, description, category, condition, price, quantity, location, listing_type), ✅ Image upload section working with 'Product Images (up to 3)' and 'Add Image (0/3)' functionality, ✅ Form accepts PNG, JPG, JPEG files with 10MB limit, ✅ Fixed Price and Auction listing types available, ✅ Category dropdown and condition selection working, ✅ Admin users can access and use the listing creation functionality. All create listing functionality operational and ready for production use."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL BUG DISCOVERED: Listing creation fails with 422 validation error on VPS deployment. ❌ ROOT CAUSE: Frontend sends empty strings ('') for starting_bid and buyout_price fields in Fixed Price listings, but backend expects null/undefined for optional numeric fields. ❌ ERROR DETAILS: Backend returns 'Input should be a valid number, unable to parse string as a number' for both starting_bid and buyout_price fields when they are empty strings. ❌ USER IMPACT: Users cannot create any listings - form appears to work but fails on submission with generic error message. ✅ FORM UI: All form fields, validation, image upload, and UI components work correctly. ✅ AUTHENTICATION: Admin login and page access working perfectly. ✅ API CONNECTIVITY: Request reaches backend successfully with proper authentication headers. REQUIRES IMMEDIATE FIX: Frontend should send null/undefined instead of empty strings for optional numeric fields in Fixed Price listings."
 
   - task: "Orders History Page"
     implemented: true
