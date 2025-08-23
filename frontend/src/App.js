@@ -15,7 +15,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useToast } from './hooks/use-toast';
 import { Toaster } from './components/ui/toaster';
 import { Search, ShoppingCart, User, Plus, Heart, Star, Clock, Euro, Package, Eye, Gavel, Trash2, Edit, MapPin, X } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
