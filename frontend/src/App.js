@@ -4133,6 +4133,24 @@ const CMSPage = () => {
 
 // Main App Component
 function App() {
+  // Initialize site settings on app load
+  useEffect(() => {
+    const initializeSiteSettings = async () => {
+      try {
+        const response = await axios.get(`${API}/cms/settings`);
+        window.cataloroSettings = response.data;
+        // Dispatch event to notify all components
+        window.dispatchEvent(new CustomEvent('cataloroSettingsUpdated', { 
+          detail: response.data 
+        }));
+      } catch (error) {
+        console.error('Error loading site settings:', error);
+      }
+    };
+    
+    initializeSiteSettings();
+  }, []);
+
   // Very targeted branding removal
   useEffect(() => {
     const removeBrandingOnly = () => {
