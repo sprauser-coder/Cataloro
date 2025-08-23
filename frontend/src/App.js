@@ -330,7 +330,16 @@ const Header = () => {
               <Avatar className="h-8 w-8">
                 <AvatarFallback>{user?.full_name?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium">{user?.full_name}</span>
+              <Link 
+                to="/profile"
+                className="text-sm font-medium transition-colors hover:text-indigo-600"
+                style={{
+                  color: siteSettings?.font_color || '#374151',
+                  fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
+                }}
+              >
+                {user?.full_name}
+              </Link>
               <Button variant="ghost" size="sm" onClick={logout}>
                 Logout
               </Button>
