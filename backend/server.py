@@ -654,6 +654,16 @@ class SiteSettings(BaseModel):
     h4_color: str = Field(default="#6b7280")  # gray-500
     h5_color: str = Field(default="#9ca3af")  # gray-400
     
+    # Phase 2: New Color Settings
+    font_color: str = Field(default="#1f2937")  # Default text color
+    link_color: str = Field(default="#3b82f6")  # Default link color (blue-500)
+    link_hover_color: str = Field(default="#1d4ed8")  # Default link hover color (blue-700)
+    
+    # Phase 2: Hero Section Enhancements
+    hero_image_url: Optional[str] = Field(default=None)  # Image above hero title
+    hero_background_image_url: Optional[str] = Field(default=None)  # Background image
+    hero_background_size: str = Field(default="cover")  # cover, contain, auto
+    
     # Feature Toggles
     show_hero_section: bool = Field(default=True)
     show_categories: bool = Field(default=True)
