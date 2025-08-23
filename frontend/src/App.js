@@ -2307,31 +2307,57 @@ const AdminPanel = () => {
                       <CardDescription>Marketplace activity trends</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart
-                            data={[
-                              { day: 'Mon', completed: stats.total_orders || 12, active: stats.total_listings || 45, pending: 8 },
-                              { day: 'Tue', completed: Math.floor((stats.total_orders || 12) * 0.8), active: Math.floor((stats.total_listings || 45) * 1.1), pending: 6 },
-                              { day: 'Wed', completed: Math.floor((stats.total_orders || 12) * 1.2), active: Math.floor((stats.total_listings || 45) * 0.9), pending: 10 },
-                              { day: 'Thu', completed: Math.floor((stats.total_orders || 12) * 0.7), active: Math.floor((stats.total_listings || 45) * 1.3), pending: 5 },
-                              { day: 'Fri', completed: Math.floor((stats.total_orders || 12) * 1.5), active: Math.floor((stats.total_listings || 45) * 1.1), pending: 12 },
-                              { day: 'Sat', completed: Math.floor((stats.total_orders || 12) * 1.1), active: Math.floor((stats.total_listings || 45) * 0.8), pending: 7 },
-                              { day: 'Sun', completed: Math.floor((stats.total_orders || 12) * 0.9), active: Math.floor((stats.total_listings || 45) * 1.2), pending: 9 }
-                            ]}
-                            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="day" />
-                            <YAxis />
-                            <Tooltip />
-                            <Bar dataKey="completed" fill="#ef4444" name="Completed Listings" />
-                            <Bar dataKey="active" fill="#3b82f6" name="Active Listings" />
-                            <Bar dataKey="pending" fill="#f97316" name="Pending Orders" />
-                          </BarChart>
-                        </ResponsiveContainer>
+                      <div className="space-y-4">
+                        {/* Chart Data */}
+                        {[
+                          { day: 'Mon', completed: stats.total_orders || 12, active: Math.floor((stats.total_listings || 45) * 1.0), pending: 8 },
+                          { day: 'Tue', completed: Math.floor((stats.total_orders || 12) * 0.8), active: Math.floor((stats.total_listings || 45) * 1.1), pending: 6 },
+                          { day: 'Wed', completed: Math.floor((stats.total_orders || 12) * 1.2), active: Math.floor((stats.total_listings || 45) * 0.9), pending: 10 },
+                          { day: 'Thu', completed: Math.floor((stats.total_orders || 12) * 0.7), active: Math.floor((stats.total_listings || 45) * 1.3), pending: 5 },
+                          { day: 'Fri', completed: Math.floor((stats.total_orders || 12) * 1.5), active: Math.floor((stats.total_listings || 45) * 1.1), pending: 12 },
+                          { day: 'Sat', completed: Math.floor((stats.total_orders || 12) * 1.1), active: Math.floor((stats.total_listings || 45) * 0.8), pending: 7 },
+                          { day: 'Sun', completed: Math.floor((stats.total_orders || 12) * 0.9), active: Math.floor((stats.total_listings || 45) * 1.2), pending: 9 }
+                        ].map((data, index) => {
+                          const maxValue = Math.max(data.completed, data.active, data.pending, 1);
+                          return (
+                            <div key={index} className="flex items-end space-x-2 h-24">
+                              <div className="flex-1 text-center">
+                                <div className="text-sm font-medium text-gray-600 mb-2">{data.day}</div>
+                                <div className="flex justify-center items-end space-x-1 h-16">
+                                  {/* Completed Listings Bar */}
+                                  <div className="flex flex-col items-center">
+                                    <div 
+                                      className="w-6 bg-red-500 rounded-t-sm transition-all duration-300 hover:bg-red-600"
+                                      style={{ height: `${(data.completed / maxValue) * 60}px` }}
+                                      title={`Completed: ${data.completed}`}
+                                    ></div>
+                                    <div className="text-xs text-red-600 mt-1">{data.completed}</div>
+                                  </div>
+                                  {/* Active Listings Bar */}
+                                  <div className="flex flex-col items-center">
+                                    <div 
+                                      className="w-6 bg-blue-500 rounded-t-sm transition-all duration-300 hover:bg-blue-600"
+                                      style={{ height: `${(data.active / maxValue) * 60}px` }}
+                                      title={`Active: ${data.active}`}
+                                    ></div>
+                                    <div className="text-xs text-blue-600 mt-1">{data.active}</div>
+                                  </div>
+                                  {/* Pending Orders Bar */}
+                                  <div className="flex flex-col items-center">
+                                    <div 
+                                      className="w-6 bg-orange-500 rounded-t-sm transition-all duration-300 hover:bg-orange-600"
+                                      style={{ height: `${(data.pending / maxValue) * 60}px` }}
+                                      title={`Pending: ${data.pending}`}
+                                    ></div>
+                                    <div className="text-xs text-orange-600 mt-1">{data.pending}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                      <div className="flex justify-center mt-4 space-x-6">
+                      <div className="flex justify-center mt-6 space-x-6">
                         <div className="flex items-center space-x-2">
                           <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                           <span className="text-sm text-gray-600">Completed Listings</span>
