@@ -5249,6 +5249,8 @@ const CMSPage = () => {
 
 // Main App Component
 function App() {
+  const [siteSettings, setSiteSettings] = useState(null);
+  
   // Initialize site settings on app load
   useEffect(() => {
     const initializeSiteSettings = async () => {
