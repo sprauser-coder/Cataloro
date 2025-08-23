@@ -83,7 +83,8 @@ class Phase3ABackendTester:
                 "address": "123 Test Street, Test City"
             }
             
-            response = self.session.post(f"{BACKEND_URL}/auth/register", json=test_user_data)
+            # Use direct backend URL to ensure consistency with profile endpoint testing
+            response = self.session.post(f"{BACKEND_DIRECT_URL}/auth/register", json=test_user_data)
             
             if response.status_code == 200:
                 data = response.json()
