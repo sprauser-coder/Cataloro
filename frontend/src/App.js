@@ -2265,18 +2265,36 @@ const AdminPanel = () => {
     }
   };
 
-  const createPage = async (pageData) => {
+  const createPage = async () => {
     try {
+      const pageData = {
+        title: newPage.title,
+        slug: newPage.slug,
+        content: newPage.content,
+        published: newPage.published,
+        show_in_navigation: newPage.show_in_navigation
+      };
+      
       await axios.post(`${API}/admin/cms/pages`, pageData);
       toast({
         title: "Success",
         description: "Page created successfully"
       });
+      
+      // Reset form
+      setNewPage({
+        title: '',
+        slug: '',
+        content: '',
+        published: false,
+        show_in_navigation: false
+      });
+      
       fetchPages();
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create page",
+        description: formatErrorMessage(error, "Failed to create page"),
         variant: "destructive"
       });
     }
