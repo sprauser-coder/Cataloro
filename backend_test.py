@@ -7,6 +7,402 @@ import io
 import os
 from pathlib import Path
 
+# Configuration for image serving tests
+BACKEND_URL = "http://217.154.0.82/api"  # From frontend/.env
+STATIC_URL = "http://217.154.0.82"  # For static file serving
+ADMIN_EMAIL = "admin@marketplace.com"
+ADMIN_PASSWORD = "admin123"
+
+class ImageServingTester:
+    def __init__(self):
+        self.session = requests.Session()
+        self.admin_token = None
+        self.test_results = []
+        
+    def log_result(self, test_name, success, message, details=None):
+        """Log test result"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        result = {
+            "test": test_name,
+            "status": status,
+            "message": message,
+            "details": details or {}
+        }
+        self.test_results.append(result)
+        print(f"{status}: {test_name} - {message}")
+        if details:
+            for key, value in details.items():
+                print(f"  {key}: {value}")
+        print()
+
+    def admin_login(self):
+        """Login as admin user"""
+        try:
+            login_data = {
+                "email": ADMIN_EMAIL,
+                "password": ADMIN_PASSWORD
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/auth/login", json=login_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.admin_token = data["access_token"]
+                self.session.headers.update({"Authorization": f"Bearer {self.admin_token}"})
+                self.log_result("Admin Login", True, "Successfully logged in as admin", {
+                    "user_role": data["user"]["role"],
+                    "user_email": data["user"]["email"]
+                })
+                return True
+            else:
+                self.log_result("Admin Login", False, f"Login failed with status {response.status_code}", {
+                    "response": response.text
+                })
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Login", False, f"Login error: {str(e)}")
+            return False
+
+    def test_static_file_serving_specific_files(self):
+        """Test access to specific files mentioned in review request"""
+        test_files = [
+            "/uploads/header_logo_0d53f9d9965b4ea2adfa7f5f68ead7d6.png",
+            "/uploads/listing_028691668cf94dae91e096abf42ce705.jpg"
+        ]
+        
+        for file_path in test_files:
+            try:
+                url = f"{STATIC_URL}{file_path}"
+                response = requests.get(url, timeout=10)
+                
+                if response.status_code == 200:
+                    content_type = response.headers.get('content-type', '')
+                    content_length = len(response.content)
+                    
+                    # Verify content type
+                    expected_type = "image/png" if file_path.endswith('.png') else "image/jpeg"
+                    type_match = expected_type in content_type or content_type.startswith('image/')
+                    
+                    self.log_result(f"Static File Access: {file_path}", True, 
+                                  f"File accessible with {content_length} bytes", {
+                        "url": url,
+                        "status_code": response.status_code,
+                        "content_type": content_type,
+                        "content_length": content_length,
+                        "type_match": type_match
+                    })
+                else:
+                    self.log_result(f"Static File Access: {file_path}", False, 
+                                  f"File not accessible - HTTP {response.status_code}", {
+                        "url": url,
+                        "status_code": response.status_code,
+                        "response": response.text[:200]
+                    })
+                    
+            except Exception as e:
+                self.log_result(f"Static File Access: {file_path}", False, f"Error accessing file: {str(e)}")
+
+    def test_random_existing_files(self):
+        """Test access to some random existing files from uploads directory"""
+        test_files = [
+            "/uploads/listing_57577116ef394756a9214462ccb49ce8.jpg",
+            "/uploads/listing_977f1a65b4ca458682b0846bfd119eab.jpg",
+            "/uploads/listing_ff134f5d991c4e5c8acfdc44797f1ca6.png"
+        ]
+        
+        for file_path in test_files:
+            try:
+                url = f"{STATIC_URL}{file_path}"
+                response = requests.get(url, timeout=10)
+                
+                if response.status_code == 200:
+                    content_length = len(response.content)
+                    content_type = response.headers.get('content-type', '')
+                    
+                    self.log_result(f"Random File Access: {file_path.split('/')[-1]}", True, 
+                                  f"File accessible with {content_length} bytes", {
+                        "url": url,
+                        "content_type": content_type,
+                        "content_length": content_length
+                    })
+                else:
+                    self.log_result(f"Random File Access: {file_path.split('/')[-1]}", False, 
+                                  f"File not accessible - HTTP {response.status_code}")
+                    
+            except Exception as e:
+                self.log_result(f"Random File Access: {file_path.split('/')[-1]}", False, f"Error: {str(e)}")
+
+    def create_test_image(self, format='PNG'):
+        """Create a small test image"""
+        try:
+            from PIL import Image
+            import io
+            
+            # Create a small test image
+            img = Image.new('RGB', (100, 100), color='red')
+            img_bytes = io.BytesIO()
+            img.save(img_bytes, format=format)
+            img_bytes.seek(0)
+            
+            return img_bytes.getvalue()
+        except ImportError:
+            # Fallback: create a minimal PNG/JPEG header for testing
+            if format == 'PNG':
+                # Minimal PNG header
+                return b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\tpHYs\x00\x00\x0b\x13\x00\x00\x0b\x13\x01\x00\x9a\x9c\x18\x00\x00\x00\nIDATx\x9cc\xf8\x00\x00\x00\x01\x00\x01\x00\x00\x00\x00IEND\xaeB`\x82'
+            else:
+                # Minimal JPEG header
+                return b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t\x08\n\x0c\x14\r\x0c\x0b\x0b\x0c\x19\x12\x13\x0f\x14\x1d\x1a\x1f\x1e\x1d\x1a\x1c\x1c $.\' ",#\x1c\x1c(7),01444\x1f\'9=82<.342\xff\xc0\x00\x11\x08\x00\x01\x00\x01\x01\x01\x11\x00\x02\x11\x01\x03\x11\x01\xff\xc4\x00\x14\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xda\x00\x08\x01\x01\x00\x00?\x00\xaa\xff\xd9'
+
+    def test_logo_upload_endpoint(self):
+        """Test logo upload endpoint functionality"""
+        if not self.admin_token:
+            self.log_result("Logo Upload Test", False, "No admin token available")
+            return
+            
+        try:
+            # Create test PNG image
+            test_image_data = self.create_test_image('PNG')
+            
+            # Prepare multipart form data
+            files = {
+                'file': ('test_logo.png', test_image_data, 'image/png')
+            }
+            data = {
+                'logo_type': 'header'
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/admin/cms/upload-logo", files=files, data=data)
+            
+            if response.status_code == 200:
+                result = response.json()
+                logo_url = result.get('logo_url')
+                
+                if logo_url:
+                    # Test if the uploaded file is accessible
+                    file_url = f"{STATIC_URL}{logo_url}"
+                    file_response = requests.get(file_url, timeout=10)
+                    
+                    if file_response.status_code == 200:
+                        self.log_result("Logo Upload Test", True, "Logo uploaded and accessible", {
+                            "logo_url": logo_url,
+                            "file_url": file_url,
+                            "upload_response": result,
+                            "file_size": len(file_response.content)
+                        })
+                    else:
+                        self.log_result("Logo Upload Test", False, "Logo uploaded but not accessible via HTTP", {
+                            "logo_url": logo_url,
+                            "file_url": file_url,
+                            "file_status": file_response.status_code
+                        })
+                else:
+                    self.log_result("Logo Upload Test", False, "Logo upload succeeded but no URL returned", {
+                        "response": result
+                    })
+            else:
+                self.log_result("Logo Upload Test", False, f"Logo upload failed - HTTP {response.status_code}", {
+                    "response": response.text
+                })
+                
+        except Exception as e:
+            self.log_result("Logo Upload Test", False, f"Logo upload error: {str(e)}")
+
+    def test_listing_image_upload_endpoint(self):
+        """Test listing image upload endpoint functionality"""
+        if not self.admin_token:
+            self.log_result("Listing Image Upload Test", False, "No admin token available")
+            return
+            
+        try:
+            # Test PNG upload
+            test_image_data = self.create_test_image('PNG')
+            
+            files = {
+                'file': ('test_listing.png', test_image_data, 'image/png')
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/listings/upload-image", files=files)
+            
+            if response.status_code == 200:
+                result = response.json()
+                image_url = result.get('image_url')
+                
+                if image_url:
+                    # Test if the uploaded file is accessible
+                    file_url = f"{STATIC_URL}{image_url}"
+                    file_response = requests.get(file_url, timeout=10)
+                    
+                    if file_response.status_code == 200:
+                        self.log_result("Listing Image Upload Test (PNG)", True, "Image uploaded and accessible", {
+                            "image_url": image_url,
+                            "file_url": file_url,
+                            "upload_response": result,
+                            "file_size": len(file_response.content)
+                        })
+                    else:
+                        self.log_result("Listing Image Upload Test (PNG)", False, "Image uploaded but not accessible via HTTP", {
+                            "image_url": image_url,
+                            "file_url": file_url,
+                            "file_status": file_response.status_code
+                        })
+                else:
+                    self.log_result("Listing Image Upload Test (PNG)", False, "Image upload succeeded but no URL returned", {
+                        "response": result
+                    })
+            else:
+                self.log_result("Listing Image Upload Test (PNG)", False, f"Image upload failed - HTTP {response.status_code}", {
+                    "response": response.text
+                })
+                
+            # Test JPEG upload
+            test_image_data = self.create_test_image('JPEG')
+            
+            files = {
+                'file': ('test_listing.jpg', test_image_data, 'image/jpeg')
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/listings/upload-image", files=files)
+            
+            if response.status_code == 200:
+                result = response.json()
+                image_url = result.get('image_url')
+                
+                if image_url:
+                    # Test if the uploaded file is accessible
+                    file_url = f"{STATIC_URL}{image_url}"
+                    file_response = requests.get(file_url, timeout=10)
+                    
+                    if file_response.status_code == 200:
+                        self.log_result("Listing Image Upload Test (JPEG)", True, "Image uploaded and accessible", {
+                            "image_url": image_url,
+                            "file_url": file_url,
+                            "file_size": len(file_response.content)
+                        })
+                    else:
+                        self.log_result("Listing Image Upload Test (JPEG)", False, "Image uploaded but not accessible via HTTP", {
+                            "image_url": image_url,
+                            "file_url": file_url,
+                            "file_status": file_response.status_code
+                        })
+                else:
+                    self.log_result("Listing Image Upload Test (JPEG)", False, "Image upload succeeded but no URL returned")
+            else:
+                self.log_result("Listing Image Upload Test (JPEG)", False, f"Image upload failed - HTTP {response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Listing Image Upload Test", False, f"Image upload error: {str(e)}")
+
+    def test_site_settings_logo_integration(self):
+        """Test that logo URLs are properly stored in site settings"""
+        if not self.admin_token:
+            self.log_result("Site Settings Logo Integration", False, "No admin token available")
+            return
+            
+        try:
+            # Get current site settings
+            response = self.session.get(f"{BACKEND_URL}/cms/settings")
+            
+            if response.status_code == 200:
+                settings = response.json()
+                header_logo_url = settings.get('header_logo_url')
+                
+                if header_logo_url:
+                    # Test if the logo URL from settings is accessible
+                    file_url = f"{STATIC_URL}{header_logo_url}"
+                    file_response = requests.get(file_url, timeout=10)
+                    
+                    if file_response.status_code == 200:
+                        self.log_result("Site Settings Logo Integration", True, "Logo URL in settings is accessible", {
+                            "header_logo_url": header_logo_url,
+                            "file_url": file_url,
+                            "file_size": len(file_response.content),
+                            "content_type": file_response.headers.get('content-type')
+                        })
+                    else:
+                        self.log_result("Site Settings Logo Integration", False, "Logo URL in settings not accessible", {
+                            "header_logo_url": header_logo_url,
+                            "file_url": file_url,
+                            "file_status": file_response.status_code
+                        })
+                else:
+                    self.log_result("Site Settings Logo Integration", True, "No logo URL in settings (expected if no logo uploaded)", {
+                        "header_logo_url": header_logo_url
+                    })
+            else:
+                self.log_result("Site Settings Logo Integration", False, f"Failed to get site settings - HTTP {response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Site Settings Logo Integration", False, f"Error: {str(e)}")
+
+    def test_static_file_headers(self):
+        """Test that static files return proper HTTP headers"""
+        test_file = "/uploads/header_logo_0d53f9d9965b4ea2adfa7f5f68ead7d6.png"
+        
+        try:
+            url = f"{STATIC_URL}{test_file}"
+            response = requests.get(url, timeout=10)
+            
+            if response.status_code == 200:
+                headers = response.headers
+                content_type = headers.get('content-type', '')
+                content_length = headers.get('content-length', '')
+                cache_control = headers.get('cache-control', '')
+                
+                # Check for proper image content type
+                proper_content_type = content_type.startswith('image/')
+                
+                self.log_result("Static File Headers", True, "Static file returns proper headers", {
+                    "url": url,
+                    "content_type": content_type,
+                    "content_length": content_length,
+                    "cache_control": cache_control,
+                    "proper_content_type": proper_content_type,
+                    "all_headers": dict(headers)
+                })
+            else:
+                self.log_result("Static File Headers", False, f"Static file not accessible - HTTP {response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Static File Headers", False, f"Error: {str(e)}")
+
+    def test_upload_directory_permissions(self):
+        """Test upload directory exists and has proper permissions"""
+        try:
+            # Check if uploads directory exists on the server by trying to upload a file
+            if not self.admin_token:
+                self.log_result("Upload Directory Test", False, "No admin token available")
+                return
+                
+            # Try a small upload to test directory permissions
+            test_image_data = self.create_test_image('PNG')
+            
+            files = {
+                'file': ('permission_test.png', test_image_data, 'image/png')
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/listings/upload-image", files=files)
+            
+            if response.status_code == 200:
+                result = response.json()
+                image_url = result.get('image_url')
+                
+                if image_url:
+                    self.log_result("Upload Directory Test", True, "Upload directory accessible and writable", {
+                        "test_upload_url": image_url,
+                        "upload_response": result
+                    })
+                else:
+                    self.log_result("Upload Directory Test", False, "Upload succeeded but no URL returned")
+            else:
+                self.log_result("Upload Directory Test", False, f"Upload failed - HTTP {response.status_code}", {
+                    "response": response.text
+                })
+                
+        except Exception as e:
+            self.log_result("Upload Directory Test", False, f"Error: {str(e)}")
+
 class MarketplaceAPITester:
     def __init__(self, base_url="https://market-deploy.preview.emergentagent.com"):
         self.base_url = base_url
