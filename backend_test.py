@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 
 class MarketplaceAPITester:
-    def __init__(self, base_url="http://localhost:8001"):
+    def __init__(self, base_url="https://cataloro-deploy.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.token = None
