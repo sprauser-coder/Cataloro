@@ -1110,7 +1110,7 @@ const Sell = () => {
       
       toast({
         title: "Error",
-        description: formatErrorMessage(error, "Failed to create listing"),
+        description: "Failed to create listing. Please check your input and try again.",
         variant: "destructive"
       });
     }
