@@ -2328,6 +2328,7 @@ const AdminPanel = () => {
               <div className="text-center py-12">
                 <p>Failed to load dashboard data</p>
               </div>
+            )}
           </TabsContent>
 
           {/* Users Tab */}
