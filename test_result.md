@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Build a complete eBay-like marketplace application with user registration (buyer/seller accounts), product search with categorization, shopping cart functionality, and ratings/reviews system. The application should support both fixed-price listings and auction-style biddings. No payment integration required as sales are person-to-person cash transactions."
+user_problem_statement: "Fix several issues with the Cataloro marketplace: 1) Images not showing right now - no previews, 2) Logo upload not working properly - can upload but cannot see it in header, 3) Delete all test parts '🚀 PREVIEW SYNC TEST - CATALORO v2.0 🚀', 4) Replace 'cataloro' name in header with logo when logo is uploaded, 5) Give more functions to design hero section and delete sync testing content, 6) Delete height adjustment for hero section from general settings - only keep in hero selection tab"
 
 backend:
   - task: "User Authentication System"
