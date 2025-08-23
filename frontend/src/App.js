@@ -1927,6 +1927,7 @@ const AdminPanel = () => {
     }
 
     try {
+      setUploading(true);
       const formData = new FormData();
       formData.append('file', file);
       formData.append('logo_type', logoType);
