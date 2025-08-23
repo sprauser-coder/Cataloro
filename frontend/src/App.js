@@ -1704,6 +1704,14 @@ const AdminPanel = () => {
   const [navigation, setNavigation] = useState([]);
   const [selectedPage, setSelectedPage] = useState(null);
   const [editingContent, setEditingContent] = useState('');
+  const [newPage, setNewPage] = useState({
+    title: '',
+    slug: '',
+    content: '',
+    published: false,
+    show_in_navigation: false
+  });
+  const [editingPage, setEditingPage] = useState(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
