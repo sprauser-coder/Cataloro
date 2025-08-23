@@ -619,7 +619,7 @@ const Home = () => {
                       {listing.listing_type === 'auction' ? (
                         <><Gavel className="h-3 w-3 mr-1" /> Auction</>
                       ) : (
-                        <><DollarSign className="h-3 w-3 mr-1" /> Buy Now</>
+                        <><Euro className="h-3 w-3 mr-1" /> Buy Now</>
                       )}
                     </Badge>
                   </div>
