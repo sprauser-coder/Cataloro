@@ -404,7 +404,12 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Home Page with Search and Listings"
+    - "Product Detail Page"
+    - "Shopping Cart Page"
+    - "Orders History Page"
+    - "Navigation Header Component"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
