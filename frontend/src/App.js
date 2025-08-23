@@ -1951,6 +1951,11 @@ const AdminPanel = () => {
         [`${logoType}_logo_url`]: response.data.logo_url
       }));
 
+      // Also update global window settings so the main app can see changes
+      if (window.cataloroSettings) {
+        window.cataloroSettings[`${logoType}_logo_url`] = response.data.logo_url;
+      }
+
       toast({
         title: "Success",
         description: `${logoType.charAt(0).toUpperCase() + logoType.slice(1)} logo uploaded successfully`,
