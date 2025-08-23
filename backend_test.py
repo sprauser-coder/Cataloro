@@ -1334,6 +1334,120 @@ class MarketplaceAPITester:
         return all_passed
 
     # ===========================
+    # SITE NAME SPECIFIC TESTS (FOR ADMIN PANEL TITLE FIX)
+    # ===========================
+
+    def test_site_name_current_value(self):
+        """Test current site_name value in CMS settings"""
+        success, response = self.run_test("Check Current Site Name", "GET", "cms/settings", 200)
+        if success and 'site_name' in response:
+            site_name = response['site_name']
+            print(f"   Current site_name: '{site_name}'")
+            
+            # Store current value for comparison
+            self.current_site_name = site_name
+            return True
+        else:
+            print("❌ Could not retrieve current site_name")
+            return False
+
+    def test_admin_site_name_current_value(self):
+        """Test current site_name value via admin API"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin site name check - no admin token")
+            return False
+            
+        success, response = self.run_test("Check Admin Site Name", "GET", "admin/cms/settings", 200, use_admin_token=True)
+        if success and 'site_name' in response:
+            admin_site_name = response['site_name']
+            print(f"   Admin API site_name: '{admin_site_name}'")
+            
+            # Store admin value for comparison
+            self.admin_site_name = admin_site_name
+            return True
+        else:
+            print("❌ Could not retrieve admin site_name")
+            return False
+
+    def test_update_site_name_to_cataloro(self):
+        """Test updating site_name to 'Cataloro' if it's not already set correctly"""
+        if not self.admin_token:
+            print("⚠️  Skipping site name update - no admin token")
+            return False
+            
+        # Check current value first
+        current_name = getattr(self, 'current_site_name', None) or getattr(self, 'admin_site_name', None)
+        
+        if current_name == "Cataloro":
+            print(f"✅ Site name is already correctly set to 'Cataloro'")
+            return True
+        else:
+            print(f"   Current site_name is '{current_name}', updating to 'Cataloro'...")
+            
+            # Update site_name to Cataloro
+            settings_data = {
+                "site_name": "Cataloro"
+            }
+            
+            success, response = self.run_test("Update Site Name to Cataloro", "PUT", "admin/cms/settings", 200, settings_data, use_admin_token=True)
+            if success:
+                print("✅ Successfully updated site_name to 'Cataloro'")
+                return True
+            else:
+                print("❌ Failed to update site_name to 'Cataloro'")
+                return False
+
+    def test_verify_site_name_update_persistence(self):
+        """Test that site_name update persists correctly"""
+        # Check public API
+        success1, response1 = self.run_test("Verify Site Name in Public API", "GET", "cms/settings", 200)
+        public_name = response1.get('site_name') if success1 else None
+        
+        # Check admin API
+        success2, response2 = self.run_test("Verify Site Name in Admin API", "GET", "admin/cms/settings", 200, use_admin_token=True) if self.admin_token else (False, {})
+        admin_name = response2.get('site_name') if success2 else None
+        
+        if success1 and public_name == "Cataloro":
+            print(f"✅ Public API correctly returns site_name: '{public_name}'")
+            
+            if success2 and admin_name == "Cataloro":
+                print(f"✅ Admin API correctly returns site_name: '{admin_name}'")
+                print("✅ Site name update verification PASSED - Both APIs return 'Cataloro'")
+                return True
+            elif self.admin_token:
+                print(f"❌ Admin API returns incorrect site_name: '{admin_name}'")
+                return False
+            else:
+                print("⚠️  Admin API not tested (no admin token)")
+                return True
+        else:
+            print(f"❌ Public API returns incorrect site_name: '{public_name}'")
+            return False
+
+    def test_admin_panel_title_fix_verification(self):
+        """Test that admin panel will show 'Cataloro Admin' instead of 'Catalogo Admin'"""
+        if not self.admin_token:
+            print("⚠️  Skipping admin panel title verification - no admin token")
+            return False
+            
+        # Get current site settings via admin API
+        success, response = self.run_test("Admin Panel Title Fix Verification", "GET", "admin/cms/settings", 200, use_admin_token=True)
+        
+        if success and 'site_name' in response:
+            site_name = response['site_name']
+            
+            if site_name == "Cataloro":
+                print(f"✅ Admin panel title fix verified - site_name is '{site_name}'")
+                print("   This means admin panel should now show 'Cataloro Admin' instead of 'Catalogo Admin'")
+                return True
+            else:
+                print(f"❌ Admin panel title fix failed - site_name is still '{site_name}' instead of 'Cataloro'")
+                return False
+        else:
+            print("❌ Could not verify admin panel title fix - unable to retrieve site_name")
+            return False
+
+    # ===========================
     # CLEANUP TESTS
     # ===========================
 
