@@ -1521,6 +1521,7 @@ const Cart = () => {
 // Admin Panel Component
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [appearanceTab, setAppearanceTab] = useState('typography');
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
   const [listings, setListings] = useState([]);
