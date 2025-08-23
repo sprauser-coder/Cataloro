@@ -844,7 +844,7 @@ const ListingDetail = () => {
                         key={index}
                         src={
                           image.startsWith('/uploads/') 
-                            ? `${API}${image}` 
+                            ? `${BACKEND_URL}${image}` 
                             : image
                         }
                         alt={`${listing.title} ${index + 2}`}
