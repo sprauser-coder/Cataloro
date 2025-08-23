@@ -245,11 +245,11 @@ backend:
 
   - task: "Logo Upload Functionality"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "main"
@@ -257,6 +257,12 @@ backend:
       - working: true
         agent: "testing"
         comment: "TESTED: Comprehensive logo upload functionality testing completed with 8/8 tests passed (100% success rate). ✅ Admin authentication required (403 without admin token), ✅ PNG file validation (rejects JPG with 400 error), ✅ File size validation (rejects 6MB files, accepts smaller files), ✅ Successful PNG upload with proper response, ✅ Logo URL correctly stored in site settings (header_logo_url, header_logo_alt fields), ✅ Logo fields returned in public GET /cms/settings endpoint, ✅ Uploads directory properly created and files accessible via static serving, ✅ Old logo files properly replaced when new logo uploaded. All validation, authentication, data storage, and file management aspects working perfectly."
+      - working: false
+        agent: "user"
+        comment: "User reported that image upload functionality is not working properly now. Cannot upload images (listings as well as logo)"
+      - working: false
+        agent: "main"
+        comment: "CRITICAL BUG FOUND: File type validation error in frontend handleLogoUpload function. Line 1906 has incorrect operator precedence: '!file.type === \"image/png\"' should be 'file.type !== \"image/png\"'. This bug prevents all logo uploads from working. Bug fixed."
 
   - task: "Listing Image Upload Functionality"
     implemented: true
