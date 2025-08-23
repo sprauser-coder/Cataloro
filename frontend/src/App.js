@@ -1420,11 +1420,6 @@ const Sell = () => {
                 />
               </div>
 
-              {/* Test Button */}
-              <Button type="button" onClick={testFunction} className="w-full bg-red-500 hover:bg-red-600 mb-4">
-                Test Function (Click to verify component works)
-              </Button>
-
               <Button type="submit" className="w-full bg-gradient-to-r from-indigo-600 to-purple-600">
                 Create Listing
               </Button>
