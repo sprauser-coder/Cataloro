@@ -7,8 +7,6 @@ Testing comprehensive notification system and order approval workflow
 import requests
 import json
 import time
-import asyncio
-import websockets
 from datetime import datetime
 import sys
 
