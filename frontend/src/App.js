@@ -3044,7 +3044,7 @@ const AdminPanel = () => {
                           {siteSettings.header_logo_url && (
                             <div className="mb-2">
                               <img 
-                                src={`${API}${siteSettings.header_logo_url}`} 
+                                src={siteSettings.header_logo_url ? `http://localhost:8001${siteSettings.header_logo_url}` : ''} 
                                 alt="Current Header Logo" 
                                 className="max-h-16 object-contain border rounded"
                               />
