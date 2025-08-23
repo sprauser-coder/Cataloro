@@ -299,6 +299,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "FRONTEND FUNCTIONALITY VERIFIED: Listing image upload UI working perfectly. Product Images section properly displayed on Sell page, file input accepts all image types (accept='image/*'), 10MB file size limit mentioned, maximum 3 images limit displayed, Add Image functionality present with preview/remove capabilities. No bugs found in listing image upload - functionality fully operational."
+      - working: true
+        agent: "testing"
+        comment: "POST-FIX VERIFICATION COMPLETED: Comprehensive testing of listing image upload functionality after recent fixes with 6/6 tests passed (100% success rate). ✅ IMAGE UPLOAD ENDPOINT: POST /api/listings/upload-image working perfectly with user authentication, PNG/JPEG file validation (rejects GIF with 400 error), 10MB file size limits enforced (11MB files rejected), both regular users and admin users can upload images. ✅ FILE STORAGE: Images saved correctly in /app/backend/uploads/ directory and accessible via static serving. ✅ LISTING INTEGRATION: Uploaded images can be used in listings creation, images display correctly in GET /listings responses, listing detail endpoints return proper image URLs. ✅ PREVIEW FUNCTIONALITY: All uploaded images accessible via HTTP for preview purposes. Image upload previews working flawlessly."
 
   - task: "Hero Section Height Functionality"
     implemented: true
