@@ -1106,6 +1106,30 @@ const Sell = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    console.log('Form submission started');
+    console.log('Form data:', formData);
+    console.log('Categories available:', categories);
+    
+    // Check required fields
+    if (!formData.title || !formData.description || !formData.category || !formData.condition || !formData.price || !formData.location) {
+      console.log('Missing required fields:', {
+        title: !!formData.title,
+        description: !!formData.description,
+        category: !!formData.category,
+        condition: !!formData.condition,
+        price: !!formData.price,
+        location: !!formData.location
+      });
+      
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     try {
       const data = { ...formData };
       
@@ -1129,14 +1153,20 @@ const Sell = () => {
       // Add uploaded images to the listing data
       data.images = uploadedImages;
 
+      console.log('Sending data to API:', data);
+
       const response = await axios.post(`${API}/listings`, data);
+      
+      console.log('API response:', response.data);
+      
       toast({
         title: "Listing created!",
         description: "Your item has been listed successfully"
       });
       navigate(`/listing/${response.data.id}`);
     } catch (error) {
-      console.error('Create listing error:', error.response?.data);
+      console.error('Create listing error:', error);
+      console.error('Error response:', error.response?.data);
       
       toast({
         title: "Error",
