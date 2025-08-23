@@ -5343,6 +5343,7 @@ function App() {
         
         // Store settings globally for components to use
         window.cataloroSettings = settings;
+        setSiteSettings(settings);
         
       } catch (error) {
         console.error('Failed to load CMS settings:', error);
