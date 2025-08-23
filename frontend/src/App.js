@@ -1104,42 +1104,69 @@ const Sell = () => {
     setUploadedImages(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  const testFunction = () => {
-    alert('Test function called!');
-    console.log('Test function executed');
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Simple alert to test if function is being called
-    alert('Form submitted! Check console for details.');
-    
-    console.log('=== SIMPLE TEST ===');
-    console.log('formData:', formData);
-    console.log('BACKEND_URL:', BACKEND_URL);
-    console.log('API:', API);
-    
-    // Basic validation
-    if (!formData.title) {
-      console.log('Missing title');
-      alert('Title is required');
-      return;
+    try {
+      // Create listing data
+      const listingData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        condition: formData.condition,
+        listing_type: formData.listing_type,
+        price: parseFloat(formData.price),
+        quantity: parseInt(formData.quantity) || 1,
+        location: formData.location,
+        images: uploadedImages
+      };
+      
+      // Add optional fields only if they have values
+      if (formData.shipping_cost && formData.shipping_cost.trim()) {
+        listingData.shipping_cost = parseFloat(formData.shipping_cost);
+      }
+      
+      if (formData.listing_type === 'auction') {
+        if (formData.starting_bid && formData.starting_bid.trim()) {
+          listingData.starting_bid = parseFloat(formData.starting_bid);
+        }
+        if (formData.buyout_price && formData.buyout_price.trim()) {
+          listingData.buyout_price = parseFloat(formData.buyout_price);
+        }
+        if (formData.auction_duration_hours && formData.auction_duration_hours.trim()) {
+          listingData.auction_duration_hours = parseInt(formData.auction_duration_hours);
+        }
+      }
+      
+      const response = await axios.post(`${API}/listings`, listingData);
+      
+      toast({
+        title: "Success!",
+        description: "Your listing has been created successfully"
+      });
+      
+      // Navigate to the new listing
+      navigate(`/listing/${response.data.id}`);
+      
+    } catch (error) {
+      console.error('Listing creation error:', error);
+      
+      let errorMessage = 'Failed to create listing. Please try again.';
+      
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
     }
-    
-    if (!formData.category) {
-      console.log('Missing category');
-      alert('Category is required');
-      return;
-    }
-    
-    console.log('All checks passed, would make API call here');
-    
-    // For now, just show success without actually calling API
-    toast({
-      title: "Test Success",
-      description: "Form validation passed! (API call disabled for testing)"
-    });
   };
 
   if (user?.role === 'buyer') {
