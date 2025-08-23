@@ -538,8 +538,7 @@ metadata:
 test_plan:
   current_focus:
     - "Phase 2 CMS Settings New Fields"
-  stuck_tasks:
-    - "Phase 2 CMS Settings New Fields"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
   completed_testing:
@@ -551,6 +550,7 @@ test_plan:
     - "Listings Panel Thumbnail Images"
     - "Phase 2 Hero Image Upload Endpoints"
     - "Phase 2 Dashboard Analytics Enhancement"
+    - "Phase 2 CMS Settings New Fields"
 
 agent_communication:
   - agent: "main"
