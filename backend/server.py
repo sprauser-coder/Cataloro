@@ -76,10 +76,13 @@ class User(BaseModel):
     role: UserRole
     phone: Optional[str] = None
     address: Optional[str] = None
+    bio: Optional[str] = None  # Phase 3A: User biography
+    location: Optional[str] = None  # Phase 3A: User location
     rating: float = Field(default=0.0)
     total_reviews: int = Field(default=0)
     is_blocked: bool = Field(default=False)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: Optional[datetime] = None  # Phase 3A: Profile update tracking
     is_active: bool = Field(default=True)
 
 class UserCreate(BaseModel):
