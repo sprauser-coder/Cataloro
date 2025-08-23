@@ -1571,6 +1571,204 @@ async def get_public_navigation():
     nav_items = await db.navigation.find({"is_visible": True}).sort("order", 1).to_list(length=None)
     return [NavigationItem(**parse_from_mongo(item)).dict() for item in nav_items]
 
+# ===========================
+# USER PROFILE ENDPOINTS
+# ===========================
+
+class ProfileUpdate(BaseModel):
+    """User profile update model"""
+    username: Optional[str] = None
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
+    bio: Optional[str] = None
+    location: Optional[str] = None
+
+class UserProfile(BaseModel):
+    """User profile response model"""
+    id: str
+    username: str
+    full_name: str
+    email: str
+    phone: Optional[str] = None
+    bio: Optional[str] = None
+    location: Optional[str] = None
+    role: str
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+class UserStats(BaseModel):
+    """User statistics model"""
+    total_orders: int = 0
+    total_listings: int = 0
+    total_spent: float = 0.0
+    total_earned: float = 0.0
+    avg_rating: float = 0.0
+    total_reviews: int = 0
+
+@api_router.get("/profile", response_model=UserProfile)
+async def get_user_profile(current_user: User = Depends(get_current_user)):
+    """Get current user's profile"""
+    try:
+        # Convert User model to ProfileResponse
+        profile_data = {
+            "id": current_user.id,
+            "username": current_user.username,
+            "full_name": current_user.full_name,
+            "email": current_user.email,
+            "phone": getattr(current_user, 'phone', None),
+            "bio": getattr(current_user, 'bio', None),
+            "location": getattr(current_user, 'location', None),
+            "role": current_user.role,
+            "created_at": current_user.created_at,
+            "updated_at": getattr(current_user, 'updated_at', None)
+        }
+        
+        return UserProfile(**profile_data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve profile: {str(e)}")
+
+@api_router.put("/profile", response_model=UserProfile)  
+async def update_user_profile(
+    profile_update: ProfileUpdate,
+    current_user: User = Depends(get_current_user)
+):
+    """Update current user's profile"""
+    try:
+        # Prepare update data
+        update_data = {}
+        
+        if profile_update.username is not None:
+            # Check if username is already taken
+            existing_user = await db.users.find_one({
+                "username": profile_update.username,
+                "id": {"$ne": current_user.id}
+            })
+            if existing_user:
+                raise HTTPException(status_code=400, detail="Username already taken")
+            update_data["username"] = profile_update.username
+            
+        if profile_update.full_name is not None:
+            update_data["full_name"] = profile_update.full_name
+            
+        if profile_update.phone is not None:
+            update_data["phone"] = profile_update.phone
+            
+        if profile_update.bio is not None:
+            update_data["bio"] = profile_update.bio
+            
+        if profile_update.location is not None:
+            update_data["location"] = profile_update.location
+            
+        if update_data:
+            update_data["updated_at"] = datetime.now(timezone.utc)
+            
+            # Update user in database
+            await db.users.update_one(
+                {"id": current_user.id},
+                {"$set": update_data}
+            )
+            
+            # Fetch updated user
+            updated_user_doc = await db.users.find_one({"id": current_user.id})
+            if not updated_user_doc:
+                raise HTTPException(status_code=404, detail="User not found after update")
+                
+            updated_user_doc = parse_from_mongo(updated_user_doc)
+            
+            # Convert to profile response
+            profile_data = {
+                "id": updated_user_doc["id"],
+                "username": updated_user_doc["username"],
+                "full_name": updated_user_doc["full_name"],
+                "email": updated_user_doc["email"],
+                "phone": updated_user_doc.get("phone"),
+                "bio": updated_user_doc.get("bio"),
+                "location": updated_user_doc.get("location"),
+                "role": updated_user_doc["role"],
+                "created_at": updated_user_doc["created_at"],
+                "updated_at": updated_user_doc.get("updated_at")
+            }
+            
+            return UserProfile(**profile_data)
+        else:
+            # No updates provided, return current profile
+            return await get_user_profile(current_user)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update profile: {str(e)}")
+
+@api_router.get("/profile/stats", response_model=UserStats)
+async def get_user_stats(current_user: User = Depends(get_current_user)):
+    """Get current user's statistics"""
+    try:
+        stats = UserStats()
+        
+        # Count user's orders
+        orders_count = await db.orders.count_documents({"buyer_id": current_user.id})
+        stats.total_orders = orders_count
+        
+        # Calculate total spent
+        orders_cursor = db.orders.find({"buyer_id": current_user.id})
+        total_spent = 0.0
+        async for order in orders_cursor:
+            if order.get("total_amount"):
+                total_spent += float(order["total_amount"])
+        stats.total_spent = total_spent
+        
+        # Count user's listings  
+        listings_count = await db.listings.count_documents({"seller_id": current_user.id})
+        stats.total_listings = listings_count
+        
+        # Calculate total earned (from completed orders of user's listings)
+        listings_cursor = db.listings.find({"seller_id": current_user.id})
+        total_earned = 0.0
+        async for listing in listings_cursor:
+            # Find completed orders for this listing
+            completed_orders = db.orders.find({
+                "listing_id": listing["id"],
+                "status": "completed"
+            })
+            async for order in completed_orders:
+                if order.get("total_amount"):
+                    total_earned += float(order["total_amount"])
+        stats.total_earned = total_earned
+        
+        # Get user rating and reviews
+        stats.avg_rating = getattr(current_user, 'rating', 0.0)
+        stats.total_reviews = getattr(current_user, 'total_reviews', 0)
+        
+        return stats
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve user statistics: {str(e)}")
+
+@api_router.get("/listings/my-listings")
+async def get_my_listings(current_user: User = Depends(get_current_user)):
+    """Get current user's listings"""
+    try:
+        # Find listings created by current user
+        cursor = db.listings.find({"seller_id": current_user.id})
+        listings = []
+        
+        async for listing_doc in cursor:
+            listing_data = parse_from_mongo(listing_doc)
+            
+            # Add seller information
+            listing_data["seller_name"] = current_user.full_name
+            listing_data["seller_username"] = current_user.username
+            
+            listings.append(listing_data)
+        
+        # Sort by creation date (newest first)
+        listings.sort(key=lambda x: x.get("created_at", datetime.min), reverse=True)
+        
+        return listings
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve user listings: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
