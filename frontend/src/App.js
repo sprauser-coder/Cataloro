@@ -4447,6 +4447,7 @@ const AdminPanel = () => {
                               placeholder="e.g., Buy and sell with confidence on Cataloro"
                             />
                           </div>
+                        </div>
 
                         {/* Background Settings */}
                         <div className="space-y-4">
