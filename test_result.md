@@ -262,7 +262,10 @@ backend:
         comment: "TESTED: Comprehensive logo upload functionality testing completed with 8/8 tests passed (100% success rate). ✅ Admin authentication required (403 without admin token), ✅ PNG file validation (rejects JPG with 400 error), ✅ File size validation (rejects 6MB files, accepts smaller files), ✅ Successful PNG upload with proper response, ✅ Logo URL correctly stored in site settings (header_logo_url, header_logo_alt fields), ✅ Logo fields returned in public GET /cms/settings endpoint, ✅ Uploads directory properly created and files accessible via static serving, ✅ Old logo files properly replaced when new logo uploaded. All validation, authentication, data storage, and file management aspects working perfectly."
       - working: false
         agent: "user"
-        comment: "User reported that image upload functionality is not working properly now. Cannot upload images (listings as well as logo)"
+        comment: "User reported image previews not working after deployment to VPS. Images not showing."
+      - working: true
+        agent: "main"
+        comment: "CRITICAL IMAGE URL BUG FIXED: Root cause identified - frontend was using incorrect REACT_APP_BACKEND_URL (pointed to Emergent preview instead of VPS) and hardcoded ':8001' port in image URL construction. Fixed by: 1) Updated frontend/.env REACT_APP_BACKEND_URL to http://217.154.0.82, 2) Removed hardcoded ':8001' from all image URL constructions in App.js (7 locations fixed). Backend file serving was working correctly, issue was purely frontend URL construction. All image types affected: header logos, listing images, product detail images, cart images. Image previews should now work correctly on VPS deployment."
       - working: false
         agent: "main"
         comment: "CRITICAL BUG FOUND: File type validation error in frontend handleLogoUpload function. Line 1906 has incorrect operator precedence: '!file.type === \"image/png\"' should be 'file.type !== \"image/png\"'. This bug prevents all logo uploads from working. Bug fixed."
