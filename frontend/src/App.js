@@ -2484,17 +2484,17 @@ const AdminPanel = () => {
                                   </div>
                                   
                                   {/* Quick User Stats */}
-                                  <div className="grid grid-cols-3 gap-4 mt-3 p-3 bg-gray-50 rounded-lg">
+                                  <div className="grid grid-cols-3 gap-2 mt-2 p-2 bg-gray-50 rounded">
                                     <div className="text-center">
-                                      <p className="text-lg font-semibold text-blue-600">0</p>
+                                      <p className="text-sm font-semibold text-blue-600">0</p>
                                       <p className="text-xs text-gray-500">Orders</p>
                                     </div>
                                     <div className="text-center">
-                                      <p className="text-lg font-semibold text-green-600">0</p>
+                                      <p className="text-sm font-semibold text-green-600">0</p>
                                       <p className="text-xs text-gray-500">Listings</p>
                                     </div>
                                     <div className="text-center">
-                                      <p className="text-lg font-semibold text-yellow-600">€0.00</p>
+                                      <p className="text-sm font-semibold text-yellow-600">€0.00</p>
                                       <p className="text-xs text-gray-500">Spent</p>
                                     </div>
                                   </div>
