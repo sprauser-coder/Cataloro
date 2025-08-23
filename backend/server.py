@@ -1149,21 +1149,19 @@ async def get_site_settings(admin: User = Depends(get_admin_user)):
         await db.site_settings.insert_one(settings_doc)
         return default_settings
     
-    # Create a default settings object to get all field defaults
-    default_settings = SiteSettings()
-    default_dict = default_settings.dict()
-    
     # Parse the database settings
     parsed_settings = parse_from_mongo(settings)
     
-    # Merge: start with defaults, then override with database values
-    merged_settings = default_dict.copy()
-    merged_settings.update(parsed_settings)
+    # Remove any Phase 2 fields that are explicitly None to allow defaults to work
+    phase2_fields = ["font_color", "link_color", "link_hover_color", 
+                    "hero_image_url", "hero_background_image_url", "hero_background_size"]
     
-    # Add a debug field to verify this code is running
-    merged_settings["debug_phase2_fix"] = "ACTIVE"
+    for field in phase2_fields:
+        if field in parsed_settings and parsed_settings[field] is None:
+            del parsed_settings[field]
     
-    return SiteSettings(**merged_settings)
+    # Create instance with cleaned data - this should use defaults for missing fields
+    return SiteSettings(**parsed_settings)
 
 @api_router.put("/admin/cms/settings")
 async def update_site_settings(settings_data: dict, admin: User = Depends(get_admin_user)):
