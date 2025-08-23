@@ -1108,11 +1108,23 @@ const Sell = () => {
     e.preventDefault();
     try {
       const data = { ...formData };
+      
+      // Handle required numeric fields
       if (data.price) data.price = parseFloat(data.price);
-      if (data.starting_bid) data.starting_bid = parseFloat(data.starting_bid);
-      if (data.buyout_price) data.buyout_price = parseFloat(data.buyout_price);
-      if (data.shipping_cost) data.shipping_cost = parseFloat(data.shipping_cost);
-      if (data.auction_duration_hours) data.auction_duration_hours = parseInt(data.auction_duration_hours);
+      if (data.quantity) data.quantity = parseInt(data.quantity);
+      
+      // Handle optional numeric fields - convert empty strings to null
+      data.starting_bid = data.starting_bid && data.starting_bid.trim() !== '' ? parseFloat(data.starting_bid) : null;
+      data.buyout_price = data.buyout_price && data.buyout_price.trim() !== '' ? parseFloat(data.buyout_price) : null;
+      data.shipping_cost = data.shipping_cost && data.shipping_cost.trim() !== '' ? parseFloat(data.shipping_cost) : null;
+      data.auction_duration_hours = data.auction_duration_hours && data.auction_duration_hours.trim() !== '' ? parseInt(data.auction_duration_hours) : null;
+      
+      // Remove null fields to avoid sending them to the backend
+      Object.keys(data).forEach(key => {
+        if (data[key] === null || data[key] === '') {
+          delete data[key];
+        }
+      });
       
       // Add uploaded images to the listing data
       data.images = uploadedImages;
