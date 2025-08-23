@@ -3432,12 +3432,12 @@ const AdminPanel = () => {
                               />
                             </div>
                             <h1 
-                              key={`h1-${siteSettings.global_font_family || 'Inter'}`}
+                              key={`h1-${siteSettings.global_font_family || 'Inter'}-${Date.now()}`}
                               className="font-bold" 
                               style={{
                                 fontSize: siteSettings.h1_size || '36px',
                                 color: siteSettings.h1_color || '#1f2937',
-                                fontFamily: siteSettings.global_font_family || 'Inter'
+                                fontFamily: `${siteSettings.global_font_family || 'Inter'}, sans-serif`
                               }}
                             >
                               Sample H1 Text
