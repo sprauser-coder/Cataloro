@@ -398,7 +398,7 @@ frontend:
     implemented: true
     working: false
     file: "/app/frontend/src/App.js"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
@@ -420,6 +420,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "CATEGORY SELECTION BUG INVESTIGATION COMPLETED: Comprehensive testing with debug logging reveals the REAL issue is NOT category selection. ✅ CATEGORY/CONDITION DROPDOWNS WORKING PERFECTLY: Screenshots confirm Electronics can be selected from category dropdown, New condition is selectable, all dropdown functionality is operational. ✅ FORM FUNCTIONALITY: All form fields fillable (title, description, price, quantity, location), admin login successful, sell page accessible. ❌ ACTUAL BUG: Form submission fails with 'Create listing error: undefined' and red Error toast notification appears. No API requests reach backend (/api/listings POST never called). The issue is in the frontend form validation or submission logic, NOT the category selection. Debug logging shows no console messages for 'Form submission started', 'Form data:', or 'Category selected:' indicating the debug logging itself may not be working or the form submission is failing before reaching the handleSubmit function. CORRECTED DIAGNOSIS: Category selection works fine - the bug is in form submission validation or error handling."
+      - working: false
+        agent: "testing"
+        comment: "FINAL COMPREHENSIVE TESTING COMPLETED ON VPS: Extensive testing of cleaned up listing creation form confirms the issue persists after main agent's fixes. ✅ AUTHENTICATION & NAVIGATION: Admin login (admin@marketplace.com/admin123) working perfectly, successfully navigated to Sell page, 'Create New Listing' form accessible. ✅ FORM FUNCTIONALITY: All form fields working correctly - title ('Fixed Listing Test'), description ('Testing the cleaned up form submission'), category (Electronics selected successfully), condition (New selected successfully), listing type (Fixed Price default), price (149.99), quantity (1), location ('Test City'). ✅ UI COMPONENTS: Category and condition dropdowns open and selections register properly, form validation UI working, submit button accessible. ❌ CRITICAL FORM SUBMISSION BUG: Form submission fails with console error 'Create listing error: undefined', no POST request made to /api/listings endpoint, user remains on sell page instead of being redirected to listing detail page, no success toast appears. The issue is in the frontend handleSubmit function - form validation passes but submission logic fails before reaching the backend API. This confirms the main agent's backend fixes are not the issue - there's a frontend JavaScript error preventing form submission."
 
   - task: "Orders History Page"
     implemented: true
