@@ -2010,6 +2010,7 @@ const AdminPanel = () => {
       root.style.setProperty('--hero-bg-end', settings.hero_background_gradient_end || '#764ba2');
       root.style.setProperty('--hero-text-color', settings.hero_text_color || '#ffffff');
       root.style.setProperty('--hero-subtitle-color', settings.hero_subtitle_color || '#f1f5f9');
+      root.style.setProperty('--hero-height', settings.hero_height || '600px');
       
       // Typography
       root.style.setProperty('--h1-size', settings.h1_size || '3rem');
