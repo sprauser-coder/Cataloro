@@ -1107,120 +1107,34 @@ const Sell = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    console.log('=== FORM SUBMISSION DEBUG ===');
-    console.log('1. Form submission started');
-    console.log('2. Form data:', formData);
-    console.log('3. Categories available:', categories);
-    console.log('4. Uploaded images:', uploadedImages);
+    // Simple alert to test if function is being called
+    alert('Form submitted! Check console for details.');
     
-    // Basic validation with detailed logging
-    const requiredFields = {
-      title: formData.title,
-      description: formData.description, 
-      category: formData.category,
-      condition: formData.condition,
-      price: formData.price,
-      location: formData.location
-    };
+    console.log('=== SIMPLE TEST ===');
+    console.log('formData:', formData);
+    console.log('BACKEND_URL:', BACKEND_URL);
+    console.log('API:', API);
     
-    console.log('5. Required fields check:', requiredFields);
-    
-    const missingFields = Object.entries(requiredFields).filter(([key, value]) => !value);
-    if (missingFields.length > 0) {
-      console.log('6. Missing fields:', missingFields.map(([key]) => key));
-      toast({
-        title: "Error",
-        description: `Please fill in all required fields: ${missingFields.map(([key]) => key).join(', ')}`,
-        variant: "destructive"
-      });
+    // Basic validation
+    if (!formData.title) {
+      console.log('Missing title');
+      alert('Title is required');
       return;
     }
     
-    console.log('7. All required fields present, proceeding with API call');
-    
-    try {
-      const data = { ...formData };
-      
-      // Handle numeric fields
-      data.price = parseFloat(data.price);
-      data.quantity = parseInt(data.quantity) || 1;
-      
-      // Handle optional numeric fields - only include if they have values
-      if (data.starting_bid && data.starting_bid.trim() !== '') {
-        data.starting_bid = parseFloat(data.starting_bid);
-      } else {
-        delete data.starting_bid;
-      }
-      
-      if (data.buyout_price && data.buyout_price.trim() !== '') {
-        data.buyout_price = parseFloat(data.buyout_price);
-      } else {
-        delete data.buyout_price;
-      }
-      
-      if (data.shipping_cost && data.shipping_cost.trim() !== '') {
-        data.shipping_cost = parseFloat(data.shipping_cost);
-      } else {
-        delete data.shipping_cost;
-      }
-      
-      if (data.auction_duration_hours && data.auction_duration_hours.trim() !== '') {
-        data.auction_duration_hours = parseInt(data.auction_duration_hours);
-      } else {
-        delete data.auction_duration_hours;
-      }
-      
-      // Add uploaded images
-      data.images = uploadedImages;
-
-      console.log('8. Final data to send:', data);
-      console.log('9. API endpoint:', `${API}/listings`);
-      console.log('10. Making axios POST request...');
-
-      const response = await axios.post(`${API}/listings`, data);
-      
-      console.log('11. API call successful!');
-      console.log('12. Response:', response.data);
-      
-      toast({
-        title: "Success!",
-        description: "Your listing has been created successfully"
-      });
-      
-      navigate(`/listing/${response.data.id}`);
-      
-    } catch (error) {
-      console.log('=== ERROR DEBUGGING ===');
-      console.log('13. Error caught:', error);
-      console.log('14. Error type:', typeof error);
-      console.log('15. Error object keys:', error ? Object.keys(error) : 'error is null/undefined');
-      
-      if (error) {
-        console.log('16. Error message:', error.message);
-        console.log('17. Error response:', error.response);
-        console.log('18. Error request:', error.request);
-        console.log('19. Error config:', error.config);
-        
-        if (error.response) {
-          console.log('20. Response data:', error.response.data);
-          console.log('21. Response status:', error.response.status);
-          console.log('22. Response headers:', error.response.headers);
-        }
-      }
-      
-      const errorMessage = error?.response?.data?.detail || 
-                          error?.response?.data?.message || 
-                          error?.message ||
-                          'Failed to create listing. Please try again.';
-      
-      console.log('23. Final error message:', errorMessage);
-      
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive"
-      });
+    if (!formData.category) {
+      console.log('Missing category');
+      alert('Category is required');
+      return;
     }
+    
+    console.log('All checks passed, would make API call here');
+    
+    // For now, just show success without actually calling API
+    toast({
+      title: "Test Success",
+      description: "Form validation passed! (API call disabled for testing)"
+    });
   };
 
   if (user?.role === 'buyer') {
