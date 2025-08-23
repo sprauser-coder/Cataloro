@@ -2327,11 +2327,11 @@ const AdminPanel = () => {
     }
   };
 
-  const deletePage = async (pageSlug) => {
+  const deletePage = async (pageId) => {
     if (!confirm('Are you sure you want to delete this page?')) return;
     
     try {
-      await axios.delete(`${API}/admin/cms/pages/${pageSlug}`);
+      await axios.delete(`${API}/admin/cms/pages/${pageId}`);
       toast({
         title: "Success",
         description: "Page deleted successfully"
@@ -2340,10 +2340,21 @@ const AdminPanel = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to delete page",
+        description: formatErrorMessage(error, "Failed to delete page"),
         variant: "destructive"
       });
     }
+  };
+
+  const editPage = (page) => {
+    setEditingPage({
+      id: page.id,
+      title: page.title,
+      slug: page.slug,
+      content: page.content,
+      published: page.published,
+      show_in_navigation: page.show_in_navigation
+    });
   };
 
   const syncNavigationWithPages = async () => {
