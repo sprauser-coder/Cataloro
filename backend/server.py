@@ -1160,10 +1160,26 @@ async def update_site_settings(settings_data: dict, admin: User = Depends(get_ad
     """Update site settings"""
     settings_data['updated_at'] = datetime.now(timezone.utc)
     
-    # Update or create settings
-    result = await db.site_settings.update_one(
+    # Get current settings or create default
+    current_settings = await db.site_settings.find_one({})
+    if not current_settings:
+        # Create default settings with all fields
+        default_settings = SiteSettings()
+        current_settings = prepare_for_mongo(default_settings.dict(exclude_unset=False))
+    else:
+        current_settings = parse_from_mongo(current_settings)
+    
+    # Update current settings with new data
+    current_settings.update(settings_data)
+    
+    # Ensure all fields are present by creating SiteSettings instance
+    updated_settings = SiteSettings(**current_settings)
+    settings_doc = prepare_for_mongo(updated_settings.dict(exclude_unset=False))
+    
+    # Replace the entire document to ensure all fields are saved
+    result = await db.site_settings.replace_one(
         {},
-        {"$set": settings_data},
+        settings_doc,
         upsert=True
     )
     
