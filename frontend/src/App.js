@@ -3738,6 +3738,11 @@ const AdminPanel = () => {
                   </Card>
                 )}
               </div>
+            ) : (
+              <div className="text-center py-12">
+                <p>Failed to load appearance settings</p>
+              </div>
+            )}
           </TabsContent>
 
           {/* Page Management Tab */}
