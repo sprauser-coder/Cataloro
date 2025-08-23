@@ -393,6 +393,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "TESTED: Sell/Create Listing page working perfectly. Form includes all required fields: title, description, category selection, condition dropdown, listing type tabs (Fixed Price/Auction), price inputs, quantity, shipping cost, location. ✅ IMAGE UPLOAD FUNCTIONALITY: Product Images section properly implemented with file input accepting all image types (accept='image/*'), 10MB file size limit clearly displayed, maximum 3 images limit shown, Add Image button functional, image preview and remove capabilities present. Form validation and submission working correctly. Page accessible to admin users and sellers."
+      - working: true
+        agent: "testing"
+        comment: "COMPREHENSIVE TESTING COMPLETED: ✅ Create New Listing form fully functional with all required fields (title, description, category, condition, price, quantity, location, listing_type), ✅ Image upload section working with 'Product Images (up to 3)' and 'Add Image (0/3)' functionality, ✅ Form accepts PNG, JPG, JPEG files with 10MB limit, ✅ Fixed Price and Auction listing types available, ✅ Category dropdown and condition selection working, ✅ Admin users can access and use the listing creation functionality. All create listing functionality operational and ready for production use."
 
   - task: "Orders History Page"
     implemented: true
