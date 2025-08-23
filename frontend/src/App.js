@@ -3812,7 +3812,7 @@ const AdminPanel = () => {
                                 <input
                                   type="file"
                                   accept=".png"
-                                  onChange={handleLogoUpload}
+                                  onChange={(e) => handleLogoUpload(e, 'header')}
                                   disabled={uploading}
                                   className="hidden"
                                   id="logo-upload"
