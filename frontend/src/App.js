@@ -1108,7 +1108,372 @@ const ListingDetail = () => {
   );
 };
 
-// Sell Component
+// Profile Component
+const Profile = () => {
+  const { user } = useAuth();
+  const [profileData, setProfileData] = useState({
+    username: user?.username || '',
+    full_name: user?.full_name || '',
+    email: user?.email || '',
+    phone: '',
+    bio: '',
+    location: '',
+    joined_date: user?.created_at || ''
+  });
+  const [orders, setOrders] = useState([]);
+  const [listings, setListings] = useState([]);
+  const [stats, setStats] = useState({
+    total_orders: 0,
+    total_listings: 0,
+    total_spent: 0,
+    total_earned: 0,
+    avg_rating: 0,
+    total_reviews: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchProfileData();
+    fetchUserOrders();
+    fetchUserListings();
+    fetchUserStats();
+  }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      const response = await axios.get(`${API}/profile`);
+      setProfileData(response.data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
+  const fetchUserOrders = async () => {
+    try {
+      const response = await axios.get(`${API}/orders`);
+      setOrders(response.data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
+
+  const fetchUserListings = async () => {
+    try {
+      const response = await axios.get(`${API}/listings/my-listings`);
+      setListings(response.data);
+    } catch (error) {
+      console.error('Error fetching listings:', error);
+    }
+  };
+
+  const fetchUserStats = async () => {
+    try {
+      const response = await axios.get(`${API}/profile/stats`);
+      setStats(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      setLoading(false);
+    }
+  };
+
+  const updateProfile = async () => {
+    try {
+      await axios.put(`${API}/profile`, profileData);
+      toast({
+        title: "Success",
+        description: "Profile updated successfully"
+      });
+      setIsEditing(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive"
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex justify-center">
+            <div className="text-center">Loading profile...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
+          <p className="text-gray-600 mt-2">Manage your account and view your marketplace activity</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Profile Information */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Profile Information</CardTitle>
+                  <CardDescription>Your personal details and preferences</CardDescription>
+                </div>
+                <Button
+                  variant={isEditing ? "default" : "outline"}
+                  onClick={() => isEditing ? updateProfile() : setIsEditing(true)}
+                >
+                  {isEditing ? "Save Changes" : "Edit Profile"}
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="username">Username</Label>
+                      <Input
+                        id="username"
+                        value={profileData.username}
+                        onChange={(e) => setProfileData({...profileData, username: e.target.value})}
+                        disabled={!isEditing}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="fullName">Full Name</Label>
+                      <Input
+                        id="fullName" 
+                        value={profileData.full_name}
+                        onChange={(e) => setProfileData({...profileData, full_name: e.target.value})}
+                        disabled={!isEditing}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={profileData.email}
+                        disabled={true}
+                        className="mt-1 bg-gray-50"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        value={profileData.phone}
+                        onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                        disabled={!isEditing}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      id="location"
+                      value={profileData.location}
+                      onChange={(e) => setProfileData({...profileData, location: e.target.value})}
+                      disabled={!isEditing}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="bio">Bio</Label>
+                    <Textarea
+                      id="bio"
+                      value={profileData.bio}
+                      onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
+                      disabled={!isEditing}
+                      className="mt-1"
+                      placeholder="Tell us about yourself..."
+                    />
+                  </div>
+                  {isEditing && (
+                    <div className="flex justify-end space-x-2">
+                      <Button variant="outline" onClick={() => setIsEditing(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={updateProfile}>
+                        Save Changes
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Activity */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+                <CardDescription>Your latest orders and listings</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="orders" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="orders">Recent Orders</TabsTrigger>
+                    <TabsTrigger value="listings">My Listings</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="orders" className="space-y-4">
+                    {orders.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <ShoppingCart className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No orders yet</p>
+                        <p className="text-sm">Start shopping to see your orders here</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {orders.slice(0, 3).map((order) => (
+                          <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div>
+                              <p className="font-medium">{order.listing_title}</p>
+                              <p className="text-sm text-gray-600">
+                                {new Date(order.created_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-medium">€{order.total_amount?.toFixed(2)}</p>
+                              <Badge variant={order.status === 'completed' ? 'default' : 'secondary'}>
+                                {order.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                        {orders.length > 3 && (
+                          <div className="text-center">
+                            <Button variant="outline" size="sm">
+                              View All Orders ({orders.length})
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="listings" className="space-y-4">
+                    {listings.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No listings yet</p>
+                        <p className="text-sm">Create your first listing to start selling</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {listings.slice(0, 3).map((listing) => (
+                          <div key={listing.id} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div>
+                              <p className="font-medium">{listing.title}</p>
+                              <p className="text-sm text-gray-600">
+                                Created {new Date(listing.created_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-medium">€{listing.price?.toFixed(2)}</p>
+                              <Badge variant={listing.status === 'active' ? 'default' : 'secondary'}>
+                                {listing.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                        {listings.length > 3 && (
+                          <div className="text-center">
+                            <Button variant="outline" size="sm">
+                              View All Listings ({listings.length})
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Stats Sidebar */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Account Overview</CardTitle>
+                <CardDescription>Your marketplace statistics</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Member Since</span>
+                    <span className="font-medium">
+                      {new Date(profileData.joined_date).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Total Orders</span>
+                    <span className="font-medium">{stats.total_orders}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Total Listings</span>
+                    <span className="font-medium">{stats.total_listings}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Total Spent</span>
+                    <span className="font-medium">€{stats.total_spent?.toFixed(2) || '0.00'}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Total Earned</span>
+                    <span className="font-medium">€{stats.total_earned?.toFixed(2) || '0.00'}</span>
+                  </div>
+                  {stats.avg_rating > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Average Rating</span>
+                      <div className="flex items-center space-x-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="font-medium">{stats.avg_rating.toFixed(1)}</span>
+                        <span className="text-sm text-gray-500">({stats.total_reviews})</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Account Actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <Button variant="outline" className="w-full">
+                    Change Password
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    Download My Data
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    Privacy Settings
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 const Sell = () => {
   const [formData, setFormData] = useState({
     title: '',
