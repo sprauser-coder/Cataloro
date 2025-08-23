@@ -1152,8 +1152,13 @@ async def get_site_settings(admin: User = Depends(get_admin_user)):
     # Parse the database settings and return as SiteSettings instance
     parsed_settings = parse_from_mongo(settings)
     
-    # Create instance - missing fields will use defaults from Pydantic model
+    # Create instance with all fields (missing fields will use defaults)
     site_settings = SiteSettings(**parsed_settings)
+    
+    # Update the database document to include all fields for future requests
+    complete_settings_doc = prepare_for_mongo(site_settings.dict(exclude_unset=False))
+    await db.site_settings.replace_one({}, complete_settings_doc)
+    
     return site_settings.dict(exclude_unset=False)
 
 @api_router.put("/admin/cms/settings")
