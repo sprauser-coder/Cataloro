@@ -1305,10 +1305,7 @@ const Sell = () => {
                   <Label htmlFor="condition">Condition</Label>
                   <Select 
                     value={formData.condition || ""} 
-                    onValueChange={(value) => {
-                      console.log('Condition selected:', value);
-                      setFormData({...formData, condition: value});
-                    }}
+                    onValueChange={(value) => setFormData({...formData, condition: value})}
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select condition" />
@@ -1321,10 +1318,6 @@ const Sell = () => {
                       <SelectItem value="Poor">Poor</SelectItem>
                     </SelectContent>
                   </Select>
-                  {/* Debug info */}
-                  <div className="text-xs text-gray-500 mt-1">
-                    Selected: {formData.condition || 'None'}
-                  </div>
                 </div>
               </div>
 
