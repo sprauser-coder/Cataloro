@@ -2336,28 +2336,240 @@ const AdminPanel = () => {
             {loading ? (
               <div className="flex justify-center py-8">Loading...</div>
             ) : (
-              <Card>
-                <CardHeader>
-                  <CardTitle>User Management</CardTitle>
-                  <CardDescription>View and manage all platform users</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {/* Bulk Actions */}
-                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                    <h4 className="font-medium mb-3">Bulk Actions & System Tools</h4>
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={generateMissingUserIds}
-                      >
-                        Generate User IDs
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={selectAllUsers}
-                      >
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>User Management</CardTitle>
+                    <CardDescription>View and manage all platform users with detailed information</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {/* Bulk Actions */}
+                    <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium mb-3">Bulk Actions & System Tools</h4>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={generateMissingUserIds}
+                        >
+                          Generate User IDs
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={selectAllUsers}
+                        >
+                          Select All
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={deactivateAllUsers}
+                        >
+                          Deactivate All
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={deleteAllUsers}
+                        >
+                          Delete All
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Users List with Enhanced Information */}
+                    <div className="space-y-4">
+                      {users.map((user) => (
+                        <Card key={user.id} className="border-l-4 border-l-blue-500">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-4 flex-1">
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedUsers.includes(user.id)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSelectedUsers([...selectedUsers, user.id]);
+                                      } else {
+                                        setSelectedUsers(selectedUsers.filter(id => id !== user.id));
+                                      }
+                                    }}
+                                    className="rounded"
+                                  />
+                                </div>
+                                
+                                <div className="flex-1">
+                                  <div className="flex items-center space-x-3 mb-2">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                      {user.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                      <div className="flex items-center space-x-2">
+                                        <h3 className="font-semibold text-lg">{user.name}</h3>
+                                        <Badge variant={user.role === 'admin' ? 'default' : user.role === 'seller' ? 'secondary' : 'outline'}>
+                                          {user.role}
+                                        </Badge>
+                                        {user.is_active === false && (
+                                          <Badge variant="destructive">Blocked</Badge>
+                                        )}
+                                      </div>
+                                      <p className="text-gray-600">{user.email}</p>
+                                      <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                                        <span>ID: {user.user_id || 'Not assigned'}</span>
+                                        <span>•</span>
+                                        <span>Joined: {new Date(user.created_at).toLocaleDateString()}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Quick User Stats */}
+                                  <div className="grid grid-cols-3 gap-4 mt-3 p-3 bg-gray-50 rounded-lg">
+                                    <div className="text-center">
+                                      <p className="text-lg font-semibold text-blue-600">0</p>
+                                      <p className="text-xs text-gray-500">Orders</p>
+                                    </div>
+                                    <div className="text-center">
+                                      <p className="text-lg font-semibold text-green-600">0</p>
+                                      <p className="text-xs text-gray-500">Listings</p>
+                                    </div>
+                                    <div className="text-center">
+                                      <p className="text-lg font-semibold text-yellow-600">€0.00</p>
+                                      <p className="text-xs text-gray-500">Spent</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Action Buttons */}
+                              <div className="flex items-center space-x-2">
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                      <Eye className="h-4 w-4 mr-1" />
+                                      Details
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-2xl">
+                                    <DialogHeader>
+                                      <DialogTitle>User Details - {user.name}</DialogTitle>
+                                      <DialogDescription>
+                                        Complete user information and activity history
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="space-y-6">
+                                      {/* User Profile Section */}
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <h4 className="font-medium mb-3">Profile Information</h4>
+                                          <div className="space-y-2 text-sm">
+                                            <div><strong>Name:</strong> {user.name}</div>
+                                            <div><strong>Email:</strong> {user.email}</div>
+                                            <div><strong>User ID:</strong> {user.user_id || 'Not assigned'}</div>
+                                            <div><strong>Role:</strong> <Badge variant="outline">{user.role}</Badge></div>
+                                            <div><strong>Status:</strong> 
+                                              <Badge variant={user.is_active ? "default" : "destructive"}>
+                                                {user.is_active ? "Active" : "Blocked"}
+                                              </Badge>
+                                            </div>
+                                            <div><strong>Joined:</strong> {new Date(user.created_at).toLocaleString()}</div>
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <h4 className="font-medium mb-3">Account Statistics</h4>
+                                          <div className="space-y-3">
+                                            <div className="p-3 bg-blue-50 rounded-lg">
+                                              <div className="flex justify-between items-center">
+                                                <span className="text-sm">Total Orders</span>
+                                                <span className="font-semibold">0</span>
+                                              </div>
+                                            </div>
+                                            <div className="p-3 bg-green-50 rounded-lg">
+                                              <div className="flex justify-between items-center">
+                                                <span className="text-sm">Active Listings</span>
+                                                <span className="font-semibold">0</span>
+                                              </div>
+                                            </div>
+                                            <div className="p-3 bg-yellow-50 rounded-lg">
+                                              <div className="flex justify-between items-center">
+                                                <span className="text-sm">Total Spent</span>
+                                                <span className="font-semibold">€0.00</span>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      {/* Activity Timeline */}
+                                      <div>
+                                        <h4 className="font-medium mb-3">Recent Activity</h4>
+                                        <div className="space-y-2 text-sm">
+                                          <div className="p-2 border-l-4 border-blue-200 bg-blue-50 rounded-r">
+                                            <div className="font-medium">Account Created</div>
+                                            <div className="text-gray-600">{new Date(user.created_at).toLocaleString()}</div>
+                                          </div>
+                                          <div className="p-2 border-l-4 border-gray-200 bg-gray-50 rounded-r">
+                                            <div className="font-medium">No recent activity</div>
+                                            <div className="text-gray-600">User activity will appear here</div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+
+                                {user.is_active ? (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => toggleUserStatus(user.id, false)}
+                                  >
+                                    Block
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => toggleUserStatus(user.id, true)}
+                                  >
+                                    Unblock
+                                  </Button>
+                                )}
+                                
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => resetUserPassword(user.id)}
+                                >
+                                  Reset Password
+                                </Button>
+                                
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => deleteUser(user.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {users.length === 0 && (
+                      <div className="text-center py-12">
+                        <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
+                        <p className="text-gray-500">Users will appear here once they register</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
                         {selectedUsers.length === users.length ? 'Deselect All' : 'Select All'}
                       </Button>
                       {selectedUsers.length > 0 && (
