@@ -3416,6 +3416,7 @@ const AdminPanel = () => {
                               />
                             </div>
                             <h2 
+                              key={`h2-${siteSettings.global_font_family || 'Inter'}`}
                               className="font-semibold" 
                               style={{
                                 fontSize: siteSettings.h2_size || '30px',
