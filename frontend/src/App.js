@@ -2612,19 +2612,24 @@ const AdminPanel = () => {
                         </div>
 
                         {/* Hero Preview */}
-                        <div className="p-6 rounded-lg border" style={{
+                        <div className="p-6 rounded-lg border flex items-center justify-center" style={{
                           background: siteSettings.hero_background_type === 'gradient' 
                             ? `linear-gradient(135deg, ${siteSettings.hero_background_gradient_start} 0%, ${siteSettings.hero_background_gradient_end} 100%)`
                             : siteSettings.hero_background_color,
                           color: siteSettings.hero_text_color,
-                          textAlign: 'center'
+                          textAlign: 'center',
+                          height: siteSettings.hero_height || '600px',
+                          maxHeight: '300px' // Limit preview height
                         }}>
-                          <h1 className="text-4xl font-bold mb-4" style={{color: siteSettings.hero_text_color}}>
-                            {siteSettings.hero_title}
-                          </h1>
-                          <p className="text-xl" style={{color: siteSettings.hero_subtitle_color}}>
-                            {siteSettings.hero_subtitle}
-                          </p>
+                          <div>
+                            <h1 className="text-4xl font-bold mb-4" style={{color: siteSettings.hero_text_color}}>
+                              {siteSettings.hero_title}
+                            </h1>
+                            <p className="text-xl" style={{color: siteSettings.hero_subtitle_color}}>
+                              {siteSettings.hero_subtitle}
+                            </p>
+                            <p className="text-sm opacity-75 mt-2">Height: {siteSettings.hero_height || '600px'}</p>
+                          </div>
                         </div>
 
                         <Button
