@@ -4447,30 +4447,6 @@ const AdminPanel = () => {
                               placeholder="e.g., Buy and sell with confidence on Cataloro"
                             />
                           </div>
-                          
-                          <div>
-                            <label className="block text-sm font-medium mb-2">Hero Section Height</label>
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="range"
-                                min="300"
-                                max="1000"
-                                step="50"
-                                value={parseInt(siteSettings.hero_height?.replace('px', '') || '600')}
-                                onChange={(e) => setSiteSettings({...siteSettings, hero_height: `${e.target.value}px`})}
-                                className="flex-1"
-                              />
-                              <input
-                                type="text"
-                                value={siteSettings.hero_height || '600px'}
-                                onChange={(e) => setSiteSettings({...siteSettings, hero_height: e.target.value})}
-                                className="w-20 p-2 border rounded-md text-center"
-                                placeholder="600px"
-                              />
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1">Adjust the height of the hero section (300px - 1000px)</p>
-                          </div>
-                        </div>
 
                         {/* Background Settings */}
                         <div className="space-y-4">
