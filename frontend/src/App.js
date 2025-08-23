@@ -3038,7 +3038,7 @@ const AdminPanel = () => {
                           {siteSettings.header_logo_url && (
                             <div className="mb-2">
                               <img 
-                                src={siteSettings.header_logo_url ? `http://localhost:8001${siteSettings.header_logo_url}` : ''} 
+                                src={siteSettings.header_logo_url ? `${process.env.REACT_APP_BACKEND_URL}${siteSettings.header_logo_url}` : ''} 
                                 alt="Current Header Logo" 
                                 className="max-h-16 object-contain border rounded"
                               />
