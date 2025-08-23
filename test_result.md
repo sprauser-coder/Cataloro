@@ -360,15 +360,18 @@ frontend:
 
   - task: "Sell/Create Listing Page"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Complete listing creation form with fixed-price and auction options"
+      - working: true
+        agent: "testing"
+        comment: "TESTED: Sell/Create Listing page working perfectly. Form includes all required fields: title, description, category selection, condition dropdown, listing type tabs (Fixed Price/Auction), price inputs, quantity, shipping cost, location. ✅ IMAGE UPLOAD FUNCTIONALITY: Product Images section properly implemented with file input accepting all image types (accept='image/*'), 10MB file size limit clearly displayed, maximum 3 images limit shown, Add Image button functional, image preview and remove capabilities present. Form validation and submission working correctly. Page accessible to admin users and sellers."
 
   - task: "Orders History Page"
     implemented: true
