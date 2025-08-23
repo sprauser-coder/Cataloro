@@ -1117,6 +1117,223 @@ class MarketplaceAPITester:
             return False
 
     # ===========================
+    # HERO HEIGHT FUNCTIONALITY TESTS
+    # ===========================
+
+    def test_hero_height_default_value(self):
+        """Test that default hero_height is '600px' when not set"""
+        success, response = self.run_test("Check Default Hero Height", "GET", "cms/settings", 200)
+        if success and 'hero_height' in response:
+            hero_height = response['hero_height']
+            if hero_height == "600px":
+                print(f"✅ Hero Height Default Test Passed - Default value is correctly set to: {hero_height}")
+                return True
+            else:
+                print(f"❌ Hero Height Default Test Failed - Expected '600px', got: {hero_height}")
+                return False
+        else:
+            print("❌ Hero Height Default Test Failed - Could not retrieve hero_height from response")
+            return False
+
+    def test_hero_height_in_public_settings(self):
+        """Test that hero_height field is included in public CMS settings"""
+        success, response = self.run_test("Check Hero Height in Public Settings", "GET", "cms/settings", 200)
+        if success:
+            has_hero_height = 'hero_height' in response
+            if has_hero_height:
+                hero_height = response['hero_height']
+                print(f"✅ Public Hero Height Test Passed - Field found with value: {hero_height}")
+                return True
+            else:
+                print("❌ Public Hero Height Test Failed - hero_height field missing from public settings")
+                return False
+        return success
+
+    def test_hero_height_update_400px(self):
+        """Test updating hero_height to 400px via admin API"""
+        if not self.admin_token:
+            print("⚠️  Skipping hero height update test - no admin token")
+            return False
+            
+        settings_data = {
+            "hero_height": "400px"
+        }
+        
+        success, response = self.run_test("Update Hero Height to 400px", "PUT", "admin/cms/settings", 200, settings_data, use_admin_token=True)
+        if success:
+            print("✅ Hero Height Update Test (400px) Passed")
+        return success
+
+    def test_hero_height_update_800px(self):
+        """Test updating hero_height to 800px via admin API"""
+        if not self.admin_token:
+            print("⚠️  Skipping hero height update test - no admin token")
+            return False
+            
+        settings_data = {
+            "hero_height": "800px"
+        }
+        
+        success, response = self.run_test("Update Hero Height to 800px", "PUT", "admin/cms/settings", 200, settings_data, use_admin_token=True)
+        if success:
+            print("✅ Hero Height Update Test (800px) Passed")
+        return success
+
+    def test_hero_height_persistence_after_update(self):
+        """Test that hero_height value persists after update"""
+        if not self.admin_token:
+            print("⚠️  Skipping hero height persistence test - no admin token")
+            return False
+            
+        # First update to a specific value
+        settings_data = {
+            "hero_height": "750px"
+        }
+        
+        success1, response1 = self.run_test("Set Hero Height to 750px", "PUT", "admin/cms/settings", 200, settings_data, use_admin_token=True)
+        if not success1:
+            return False
+            
+        # Then retrieve and verify the value persisted
+        success2, response2 = self.run_test("Verify Hero Height Persistence", "GET", "admin/cms/settings", 200, use_admin_token=True)
+        if success2 and 'hero_height' in response2:
+            hero_height = response2['hero_height']
+            if hero_height == "750px":
+                print(f"✅ Hero Height Persistence Test Passed - Value correctly persisted: {hero_height}")
+                return True
+            else:
+                print(f"❌ Hero Height Persistence Test Failed - Expected '750px', got: {hero_height}")
+                return False
+        else:
+            print("❌ Hero Height Persistence Test Failed - Could not retrieve hero_height after update")
+            return False
+
+    def test_hero_height_minimum_value_300px(self):
+        """Test hero_height with minimum recommended value (300px)"""
+        if not self.admin_token:
+            print("⚠️  Skipping hero height minimum test - no admin token")
+            return False
+            
+        settings_data = {
+            "hero_height": "300px"
+        }
+        
+        success, response = self.run_test("Update Hero Height to 300px (Minimum)", "PUT", "admin/cms/settings", 200, settings_data, use_admin_token=True)
+        if success:
+            print("✅ Hero Height Minimum Value Test (300px) Passed")
+        return success
+
+    def test_hero_height_maximum_value_1000px(self):
+        """Test hero_height with maximum recommended value (1000px)"""
+        if not self.admin_token:
+            print("⚠️  Skipping hero height maximum test - no admin token")
+            return False
+            
+        settings_data = {
+            "hero_height": "1000px"
+        }
+        
+        success, response = self.run_test("Update Hero Height to 1000px (Maximum)", "PUT", "admin/cms/settings", 200, settings_data, use_admin_token=True)
+        if success:
+            print("✅ Hero Height Maximum Value Test (1000px) Passed")
+        return success
+
+    def test_hero_height_public_api_after_update(self):
+        """Test that public CMS settings endpoint returns updated hero_height value"""
+        if not self.admin_token:
+            print("⚠️  Skipping hero height public API test - no admin token")
+            return False
+            
+        # First update to a specific value
+        settings_data = {
+            "hero_height": "650px"
+        }
+        
+        success1, response1 = self.run_test("Set Hero Height to 650px for Public Test", "PUT", "admin/cms/settings", 200, settings_data, use_admin_token=True)
+        if not success1:
+            return False
+            
+        # Then check public API returns the updated value
+        success2, response2 = self.run_test("Verify Hero Height in Public API", "GET", "cms/settings", 200)
+        if success2 and 'hero_height' in response2:
+            hero_height = response2['hero_height']
+            if hero_height == "650px":
+                print(f"✅ Hero Height Public API Test Passed - Public API returns updated value: {hero_height}")
+                return True
+            else:
+                print(f"❌ Hero Height Public API Test Failed - Expected '650px', got: {hero_height}")
+                return False
+        else:
+            print("❌ Hero Height Public API Test Failed - Could not retrieve hero_height from public API")
+            return False
+
+    def test_hero_height_database_storage(self):
+        """Test that hero_height is properly saved and retrieved from database"""
+        if not self.admin_token:
+            print("⚠️  Skipping hero height database test - no admin token")
+            return False
+            
+        # Update to a unique value
+        unique_height = "555px"
+        settings_data = {
+            "hero_height": unique_height
+        }
+        
+        success1, response1 = self.run_test("Set Unique Hero Height for DB Test", "PUT", "admin/cms/settings", 200, settings_data, use_admin_token=True)
+        if not success1:
+            return False
+            
+        # Retrieve via admin API
+        success2, response2 = self.run_test("Verify Hero Height via Admin API", "GET", "admin/cms/settings", 200, use_admin_token=True)
+        admin_height = response2.get('hero_height') if success2 else None
+        
+        # Retrieve via public API
+        success3, response3 = self.run_test("Verify Hero Height via Public API", "GET", "cms/settings", 200)
+        public_height = response3.get('hero_height') if success3 else None
+        
+        if success2 and success3 and admin_height == unique_height and public_height == unique_height:
+            print(f"✅ Hero Height Database Storage Test Passed - Value consistently retrieved: {unique_height}")
+            return True
+        else:
+            print(f"❌ Hero Height Database Storage Test Failed - Admin: {admin_height}, Public: {public_height}, Expected: {unique_height}")
+            return False
+
+    def test_hero_height_various_formats(self):
+        """Test hero_height with various CSS height formats"""
+        if not self.admin_token:
+            print("⚠️  Skipping hero height formats test - no admin token")
+            return False
+            
+        test_formats = [
+            "500px",
+            "50vh",
+            "600px",
+            "80vh"
+        ]
+        
+        all_passed = True
+        
+        for height_format in test_formats:
+            settings_data = {
+                "hero_height": height_format
+            }
+            
+            success, response = self.run_test(f"Test Hero Height Format: {height_format}", "PUT", "admin/cms/settings", 200, settings_data, use_admin_token=True)
+            if not success:
+                all_passed = False
+                print(f"❌ Failed to set hero_height to: {height_format}")
+            else:
+                # Verify the value was set correctly
+                verify_success, verify_response = self.run_test(f"Verify Hero Height Format: {height_format}", "GET", "admin/cms/settings", 200, use_admin_token=True)
+                if verify_success and verify_response.get('hero_height') == height_format:
+                    print(f"✅ Hero Height Format Test Passed for: {height_format}")
+                else:
+                    all_passed = False
+                    print(f"❌ Hero Height Format Test Failed for: {height_format}")
+        
+        return all_passed
+
+    # ===========================
     # CLEANUP TESTS
     # ===========================
 
