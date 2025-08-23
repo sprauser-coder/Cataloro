@@ -2490,7 +2490,7 @@ const AdminPanel = () => {
                                   </DialogTrigger>
                                   <DialogContent className="max-w-2xl">
                                     <DialogHeader>
-                                      <DialogTitle>User Details - {user.name}</DialogTitle>
+                                      <DialogTitle>User Details - {user?.name || 'Unknown User'}</DialogTitle>
                                       <DialogDescription>
                                         Complete user information and activity history
                                       </DialogDescription>
