@@ -532,28 +532,161 @@ async def create_order(order_data: OrderCreate, current_user: User = Depends(get
             raise HTTPException(status_code=400, detail="This auction doesn't have a buyout option")
         total_amount = listing_obj.buyout_price * order_data.quantity
     
-    # Create order
+    # Create order with pending status (Phase 3C: Order Approval Workflow)
     order_dict = order_data.dict()
     order_dict['buyer_id'] = current_user.id
     order_dict['seller_id'] = listing_obj.seller_id
     order_dict['total_amount'] = total_amount
+    order_dict['status'] = OrderStatus.PENDING  # Start as pending for seller approval
     
     order = Order(**order_dict)
     order_doc = prepare_for_mongo(order.dict())
     
     await db.orders.insert_one(order_doc)
     
-    # Update listing status if sold out
-    if order_data.quantity >= listing_obj.quantity:
-        await db.listings.update_one(
-            {"id": order_data.listing_id},
-            {"$set": {"status": ListingStatus.SOLD}}
+    # Phase 3C: Send notification to seller for order approval
+    seller = await db.users.find_one({"id": listing_obj.seller_id})
+    if seller:
+        await create_notification(
+            user_id=listing_obj.seller_id,
+            notification_type=NotificationType.ORDER_RECEIVED,
+            title="New Order Received!",
+            message=f"{current_user.full_name} wants to buy your '{listing_obj.title}' for €{total_amount:.2f}",
+            data={
+                "order_id": order.id,
+                "listing_id": order_data.listing_id,
+                "buyer_name": current_user.full_name,
+                "buyer_id": current_user.id,
+                "amount": total_amount,
+                "quantity": order_data.quantity
+            }
         )
     
+    # Don't update listing status yet - wait for seller approval
     # Remove from cart if exists
     await db.cart_items.delete_many({"user_id": current_user.id, "listing_id": order_data.listing_id})
     
     return order
+
+# Phase 3C: Order Approval Endpoints
+@api_router.put("/orders/{order_id}/approve")
+async def approve_order(order_id: str, current_user: User = Depends(get_current_user)):
+    """Seller approves an order"""
+    try:
+        # Find the order
+        order_doc = await db.orders.find_one({"id": order_id})
+        if not order_doc:
+            raise HTTPException(status_code=404, detail="Order not found")
+            
+        order = Order(**parse_from_mongo(order_doc))
+        
+        # Check if current user is the seller
+        if order.seller_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Only the seller can approve this order")
+            
+        # Check if order is in pending status
+        if order.status != OrderStatus.PENDING:
+            raise HTTPException(status_code=400, detail="Order is not pending approval")
+            
+        # Update order status to completed
+        await db.orders.update_one(
+            {"id": order_id},
+            {"$set": {"status": OrderStatus.COMPLETED, "updated_at": datetime.now(timezone.utc)}}
+        )
+        
+        # Update listing status to sold and reduce quantity
+        listing = await db.listings.find_one({"id": order.listing_id})
+        if listing:
+            new_quantity = max(0, listing.get("quantity", 0) - order.quantity)
+            update_data = {"quantity": new_quantity, "updated_at": datetime.now(timezone.utc)}
+            
+            if new_quantity == 0:
+                update_data["status"] = ListingStatus.SOLD
+                
+            await db.listings.update_one(
+                {"id": order.listing_id},
+                {"$set": update_data}
+            )
+        
+        # Send notification to buyer
+        await create_notification(
+            user_id=order.buyer_id,
+            notification_type=NotificationType.ORDER_APPROVED,
+            title="Order Approved!",
+            message=f"Your order for '{listing.get('title', 'item')}' has been approved by the seller.",
+            data={
+                "order_id": order_id,
+                "listing_id": order.listing_id,
+                "seller_name": current_user.full_name,
+                "amount": order.total_amount
+            }
+        )
+        
+        return {"message": "Order approved successfully", "order_id": order_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to approve order: {str(e)}")
+
+@api_router.put("/orders/{order_id}/reject")
+async def reject_order(
+    order_id: str, 
+    rejection_reason: Optional[str] = None,
+    current_user: User = Depends(get_current_user)
+):
+    """Seller rejects an order"""
+    try:
+        # Find the order
+        order_doc = await db.orders.find_one({"id": order_id})
+        if not order_doc:
+            raise HTTPException(status_code=404, detail="Order not found")
+            
+        order = Order(**parse_from_mongo(order_doc))
+        
+        # Check if current user is the seller
+        if order.seller_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Only the seller can reject this order")
+            
+        # Check if order is in pending status
+        if order.status != OrderStatus.PENDING:
+            raise HTTPException(status_code=400, detail="Order is not pending approval")
+            
+        # Update order status to cancelled
+        await db.orders.update_one(
+            {"id": order_id},
+            {
+                "$set": {
+                    "status": OrderStatus.CANCELLED,
+                    "rejection_reason": rejection_reason or "Seller rejected the order",
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        
+        # Get listing info for notification
+        listing = await db.listings.find_one({"id": order.listing_id})
+        
+        # Send notification to buyer
+        await create_notification(
+            user_id=order.buyer_id,
+            notification_type=NotificationType.ORDER_REJECTED,
+            title="Order Rejected",
+            message=f"Your order for '{listing.get('title', 'item')}' was rejected by the seller. Reason: {rejection_reason or 'No reason provided'}",
+            data={
+                "order_id": order_id,
+                "listing_id": order.listing_id,
+                "seller_name": current_user.full_name,
+                "reason": rejection_reason
+            }
+        )
+        
+        return {"message": "Order rejected successfully", "order_id": order_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reject order: {str(e)}")
 
 @api_router.get("/orders", response_model=List[Dict[str, Any]])
 async def get_user_orders(current_user: User = Depends(get_current_user)):
