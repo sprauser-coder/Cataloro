@@ -40,7 +40,7 @@ api_router = APIRouter(prefix="/api")
 # JWT Configuration
 SECRET_KEY = os.environ.get('JWT_SECRET', 'your-secret-key')
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 480  # 8 hours for better user experience
 
 security = HTTPBearer()
 
