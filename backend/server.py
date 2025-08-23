@@ -1769,6 +1769,126 @@ async def get_user_stats(current_user: User = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve user statistics: {str(e)}")
 
+# ===========================
+# BULK ACTIONS ENDPOINTS (Phase 3B)
+# ===========================
+
+class BulkListingUpdate(BaseModel):
+    """Bulk listing update model"""
+    listing_ids: List[str]
+    status: Optional[str] = None
+    category: Optional[str] = None
+    featured: Optional[bool] = None
+
+class BulkPriceUpdate(BaseModel):
+    """Bulk price update model"""
+    listing_ids: List[str]
+    price_type: str  # 'increase', 'decrease', 'set'
+    price_value: float
+
+class BulkDeleteRequest(BaseModel):
+    """Bulk delete model"""
+    listing_ids: List[str]
+
+@api_router.post("/admin/listings/bulk-delete")
+async def bulk_delete_listings(
+    request: BulkDeleteRequest,
+    admin: User = Depends(get_admin_user)
+):
+    """Bulk delete listings"""
+    try:
+        result = await db.listings.delete_many({
+            "id": {"$in": request.listing_ids}
+        })
+        
+        return {
+            "message": f"Successfully deleted {result.deleted_count} listings",
+            "deleted_count": result.deleted_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete listings: {str(e)}")
+
+@api_router.post("/admin/listings/bulk-update")
+async def bulk_update_listings(
+    request: BulkListingUpdate,
+    admin: User = Depends(get_admin_user)
+):
+    """Bulk update listing properties"""
+    try:
+        update_data = {}
+        
+        if request.status is not None:
+            update_data["status"] = request.status
+        if request.category is not None:
+            update_data["category"] = request.category
+        if request.featured is not None:
+            update_data["featured"] = request.featured
+            
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No update fields provided")
+            
+        update_data["updated_at"] = datetime.now(timezone.utc)
+        
+        result = await db.listings.update_many(
+            {"id": {"$in": request.listing_ids}},
+            {"$set": update_data}
+        )
+        
+        return {
+            "message": f"Successfully updated {result.modified_count} listings",
+            "modified_count": result.modified_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update listings: {str(e)}")
+
+@api_router.post("/admin/listings/bulk-price-update")
+async def bulk_price_update_listings(
+    request: BulkPriceUpdate,
+    admin: User = Depends(get_admin_user)
+):
+    """Bulk update listing prices"""
+    try:
+        # Get current listings to calculate new prices
+        cursor = db.listings.find({"id": {"$in": request.listing_ids}})
+        
+        updates = []
+        async for listing in cursor:
+            current_price = float(listing.get("price", 0))
+            
+            if request.price_type == "increase":
+                new_price = current_price * (1 + request.price_value / 100)
+            elif request.price_type == "decrease":
+                new_price = current_price * (1 - request.price_value / 100)
+                new_price = max(0.01, new_price)  # Ensure minimum price
+            elif request.price_type == "set":
+                new_price = request.price_value
+            else:
+                continue
+                
+            updates.append({
+                "listing_id": listing["id"],
+                "old_price": current_price,
+                "new_price": round(new_price, 2)
+            })
+            
+            # Update the listing
+            await db.listings.update_one(
+                {"id": listing["id"]},
+                {
+                    "$set": {
+                        "price": round(new_price, 2),
+                        "updated_at": datetime.now(timezone.utc)
+                    }
+                }
+            )
+        
+        return {
+            "message": f"Successfully updated prices for {len(updates)} listings",
+            "updates": updates
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update prices: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
