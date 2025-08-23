@@ -247,7 +247,8 @@ class Phase3ABackendTester:
         """Test GET /listings/my-listings endpoint"""
         try:
             headers = {"Authorization": f"Bearer {self.test_user_token}"}
-            response = self.session.get(f"{BACKEND_URL}/listings/my-listings", headers=headers)
+            # Use direct backend URL due to nginx routing issue with /listings/my-listings endpoint
+            response = self.session.get(f"{BACKEND_DIRECT_URL}/listings/my-listings", headers=headers)
             
             if response.status_code == 200:
                 data = response.json()
