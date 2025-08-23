@@ -156,7 +156,15 @@ const Header = () => {
       setCustomNavigation(event.detail);
     };
     
+    // Listen for settings updates (e.g., after logo upload)
+    const handleSettingsUpdate = (event) => {
+      if (window.cataloroSettings) {
+        setSiteSettings(window.cataloroSettings);
+      }
+    };
+    
     window.addEventListener('cataloroNavigationLoaded', handleNavigationUpdate);
+    window.addEventListener('cataloroSettingsUpdated', handleSettingsUpdate);
     
     return () => {
       window.removeEventListener('cataloroNavigationLoaded', handleNavigationUpdate);
