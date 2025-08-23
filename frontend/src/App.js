@@ -5256,6 +5256,7 @@ function App() {
     const initializeSiteSettings = async () => {
       try {
         const response = await axios.get(`${API}/cms/settings`);
+        setSiteSettings(response.data);
         window.cataloroSettings = response.data;
         // Dispatch event to notify all components
         window.dispatchEvent(new CustomEvent('cataloroSettingsUpdated', { 
