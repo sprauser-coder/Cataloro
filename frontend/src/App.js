@@ -2351,83 +2351,37 @@ const AdminPanel = () => {
                 </div>
 
                 {/* Listing Performance */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Listing Performance</CardTitle>
-                      <CardDescription>Overview of marketplace activity</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                            <span className="text-sm font-medium">Completed Listings</span>
-                          </div>
-                          <span className="text-lg font-bold text-green-600">{Math.max(0, stats.total_orders || 0)}</span>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Listing Performance</CardTitle>
+                    <CardDescription>Overview of marketplace activity</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <span className="text-sm font-medium">Completed Listings</span>
                         </div>
-                        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                            <span className="text-sm font-medium">Active Listings</span>
-                          </div>
-                          <span className="text-lg font-bold text-blue-600">{Math.max(0, stats.total_listings || 0)}</span>
-                        </div>
-                        <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                            <span className="text-sm font-medium">Pending Orders</span>
-                          </div>
-                          <span className="text-lg font-bold text-yellow-600">0</span>
-                        </div>
+                        <span className="text-lg font-bold text-green-600">{Math.max(0, stats.total_orders || 0)}</span>
                       </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Quick Actions */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Quick Actions</CardTitle>
-                      <CardDescription>Common administrative tasks</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 gap-3">
-                        <Button 
-                          variant="outline" 
-                          className="h-20 flex flex-col items-center justify-center"
-                          onClick={() => setActiveTab('users')}
-                        >
-                          <User className="h-6 w-6 mb-2" />
-                          <span className="text-xs">Manage Users</span>
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          className="h-20 flex flex-col items-center justify-center"
-                          onClick={() => setActiveTab('listings')}
-                        >
-                          <Package className="h-6 w-6 mb-2" />
-                          <span className="text-xs">View Listings</span>
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          className="h-20 flex flex-col items-center justify-center"
-                          onClick={() => setActiveTab('appearance')}
-                        >
-                          <Edit className="h-6 w-6 mb-2" />
-                          <span className="text-xs">Customize</span>
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          className="h-20 flex flex-col items-center justify-center"
-                          onClick={() => setActiveTab('settings')}
-                        >
-                          <MapPin className="h-6 w-6 mb-2" />
-                          <span className="text-xs">Settings</span>
-                        </Button>
+                      <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <span className="text-sm font-medium">Active Listings</span>
+                        </div>
+                        <span className="text-lg font-bold text-blue-600">{Math.max(0, stats.total_listings || 0)}</span>
                       </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                      <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                          <span className="text-sm font-medium">Pending Orders</span>
+                        </div>
+                        <span className="text-lg font-bold text-yellow-600">0</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             ) : (
               <div className="text-center py-12">
