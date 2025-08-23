@@ -168,6 +168,7 @@ const Header = () => {
     
     return () => {
       window.removeEventListener('cataloroNavigationLoaded', handleNavigationUpdate);
+      window.removeEventListener('cataloroSettingsUpdated', handleSettingsUpdate);
     };
   }, [user]);
 
