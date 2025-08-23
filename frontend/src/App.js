@@ -3372,7 +3372,23 @@ const AdminPanel = () => {
                           <select
                             className="w-full p-3 border rounded-md"
                             value={siteSettings.global_font_family || 'Inter'}
-                            onChange={(e) => setSiteSettings({...siteSettings, global_font_family: e.target.value})}
+                            onChange={(e) => {
+                              const newFont = e.target.value;
+                              setSiteSettings({...siteSettings, global_font_family: newFont});
+                              
+                              // Force font loading by creating a hidden element
+                              const testElement = document.createElement('div');
+                              testElement.style.fontFamily = newFont;
+                              testElement.style.position = 'absolute';
+                              testElement.style.visibility = 'hidden';
+                              testElement.textContent = 'Test';
+                              document.body.appendChild(testElement);
+                              
+                              // Remove after a short delay
+                              setTimeout(() => {
+                                document.body.removeChild(testElement);
+                              }, 100);
+                            }}
                           >
                             <option value="Inter">Inter</option>
                             <option value="Roboto">Roboto</option>
