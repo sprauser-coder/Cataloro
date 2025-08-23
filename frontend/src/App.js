@@ -5338,6 +5338,11 @@ function App() {
                 <Sell />
               </ProtectedRoute>
             } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
             <Route path="/cart" element={
               <ProtectedRoute>
                 <Cart />
