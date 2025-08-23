@@ -134,6 +134,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "TESTED: All listing endpoints working - create fixed-price/auction listings, get all listings, get by ID, search functionality, category/type filtering. Role-based access control properly enforced (only sellers can create listings)."
+      - working: true
+        agent: "testing"
+        comment: "POST-FIX VERIFICATION COMPLETED: Comprehensive testing of create new listing functionality after recent fixes with 3/3 tests passed (100% success rate). ✅ CREATE LISTING ENDPOINT: POST /api/listings working perfectly with admin credentials (admin@marketplace.com/admin123), admin users can create listings as expected, role-based access control properly enforced. ✅ REQUIRED FIELDS VALIDATION: All required fields properly validated - title, description, category, condition, price, quantity, location, listing_type. ✅ SELLER ROLE VERIFICATION: Both admin users and seller role users can create listings successfully. ✅ INTEGRATION WITH IMAGES: Listings can be created with uploaded images from image upload endpoint, images properly stored in listings and accessible via GET /listings responses. Create new listing functionality working flawlessly with proper authentication and validation."
 
   - task: "Shopping Cart API"
     implemented: true
