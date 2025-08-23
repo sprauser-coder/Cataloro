@@ -1167,27 +1167,15 @@ async def update_site_settings(settings_data: dict, admin: User = Depends(get_ad
         # Create default settings with all fields
         default_settings = SiteSettings()
         current_settings = prepare_for_mongo(default_settings.dict(exclude_unset=False))
-        print(f"DEBUG: Created default settings with {len(current_settings)} fields")
     else:
         current_settings = parse_from_mongo(current_settings)
-        print(f"DEBUG: Found existing settings with {len(current_settings)} fields")
     
     # Update current settings with new data
     current_settings.update(settings_data)
-    print(f"DEBUG: After update, settings has {len(current_settings)} fields")
-    print(f"DEBUG: font_color in current_settings: {current_settings.get('font_color')}")
     
     # Ensure all fields are present by creating SiteSettings instance
-    try:
-        updated_settings = SiteSettings(**current_settings)
-        print(f"DEBUG: SiteSettings instance created successfully")
-        print(f"DEBUG: updated_settings.font_color: {updated_settings.font_color}")
-        settings_doc = prepare_for_mongo(updated_settings.dict(exclude_unset=False))
-        print(f"DEBUG: Final document has {len(settings_doc)} fields")
-        print(f"DEBUG: font_color in final doc: {settings_doc.get('font_color')}")
-    except Exception as e:
-        print(f"DEBUG: Error creating SiteSettings instance: {e}")
-        return {"error": str(e)}
+    updated_settings = SiteSettings(**current_settings)
+    settings_doc = prepare_for_mongo(updated_settings.dict(exclude_unset=False))
     
     # Replace the entire document to ensure all fields are saved
     result = await db.site_settings.replace_one(
@@ -1195,8 +1183,6 @@ async def update_site_settings(settings_data: dict, admin: User = Depends(get_ad
         settings_doc,
         upsert=True
     )
-    
-    print(f"DEBUG: Database operation result: matched={result.matched_count}, modified={result.modified_count}")
     
     return {"message": "Site settings updated successfully"}
 
