@@ -1107,24 +1107,11 @@ const Sell = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    console.log('Form submission started');
-    console.log('Form data:', formData);
-    console.log('Categories available:', categories);
-    
-    // Check required fields
+    // Basic validation
     if (!formData.title || !formData.description || !formData.category || !formData.condition || !formData.price || !formData.location) {
-      console.log('Missing required fields:', {
-        title: !!formData.title,
-        description: !!formData.description,
-        category: !!formData.category,
-        condition: !!formData.condition,
-        price: !!formData.price,
-        location: !!formData.location
-      });
-      
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: "Please fill in all required fields (title, description, category, condition, price, location)",
         variant: "destructive"
       });
       return;
@@ -1133,44 +1120,55 @@ const Sell = () => {
     try {
       const data = { ...formData };
       
-      // Handle required numeric fields
-      if (data.price) data.price = parseFloat(data.price);
-      if (data.quantity) data.quantity = parseInt(data.quantity);
+      // Handle numeric fields
+      data.price = parseFloat(data.price);
+      data.quantity = parseInt(data.quantity) || 1;
       
-      // Handle optional numeric fields - convert empty strings to null
-      data.starting_bid = data.starting_bid && data.starting_bid.trim() !== '' ? parseFloat(data.starting_bid) : null;
-      data.buyout_price = data.buyout_price && data.buyout_price.trim() !== '' ? parseFloat(data.buyout_price) : null;
-      data.shipping_cost = data.shipping_cost && data.shipping_cost.trim() !== '' ? parseFloat(data.shipping_cost) : null;
-      data.auction_duration_hours = data.auction_duration_hours && data.auction_duration_hours.trim() !== '' ? parseInt(data.auction_duration_hours) : null;
+      // Handle optional numeric fields - only include if they have values
+      if (data.starting_bid && data.starting_bid.trim() !== '') {
+        data.starting_bid = parseFloat(data.starting_bid);
+      } else {
+        delete data.starting_bid;
+      }
       
-      // Remove null fields to avoid sending them to the backend
-      Object.keys(data).forEach(key => {
-        if (data[key] === null || data[key] === '') {
-          delete data[key];
-        }
-      });
+      if (data.buyout_price && data.buyout_price.trim() !== '') {
+        data.buyout_price = parseFloat(data.buyout_price);
+      } else {
+        delete data.buyout_price;
+      }
       
-      // Add uploaded images to the listing data
+      if (data.shipping_cost && data.shipping_cost.trim() !== '') {
+        data.shipping_cost = parseFloat(data.shipping_cost);
+      } else {
+        delete data.shipping_cost;
+      }
+      
+      if (data.auction_duration_hours && data.auction_duration_hours.trim() !== '') {
+        data.auction_duration_hours = parseInt(data.auction_duration_hours);
+      } else {
+        delete data.auction_duration_hours;
+      }
+      
+      // Add uploaded images
       data.images = uploadedImages;
-
-      console.log('Sending data to API:', data);
 
       const response = await axios.post(`${API}/listings`, data);
       
-      console.log('API response:', response.data);
-      
       toast({
-        title: "Listing created!",
-        description: "Your item has been listed successfully"
+        title: "Success!",
+        description: "Your listing has been created successfully"
       });
+      
       navigate(`/listing/${response.data.id}`);
+      
     } catch (error) {
-      console.error('Create listing error:', error);
-      console.error('Error response:', error.response?.data);
+      const errorMessage = error.response?.data?.detail || 
+                          (error.response?.data?.message) || 
+                          'Failed to create listing. Please try again.';
       
       toast({
         title: "Error",
-        description: "Failed to create listing. Please check your input and try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     }
