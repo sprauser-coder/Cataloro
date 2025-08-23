@@ -239,6 +239,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "TESTED: All branding changes verified successfully. Default site_name is now 'Cataloro', hero_subtitle contains 'Cataloro' instead of 'Catalogo', no 'Catalogo' references found in default settings. Admin panel functionality works correctly with new branding. All core marketplace functionality remains unaffected by branding changes. GET /cms/settings returns proper default values with 'Cataloro' branding."
+      - working: true
+        agent: "testing"
+        comment: "ADMIN PANEL TITLE FIX TESTED: Discovered site_name was incorrectly set to 'Test Marketplace' instead of 'Cataloro'. Successfully updated site_name to 'Cataloro' via PUT /admin/cms/settings endpoint. Verified persistence across both public (GET /cms/settings) and admin (GET /admin/cms/settings) APIs. Admin panel title issue resolved - admin panel should now display 'Cataloro Admin' instead of 'Catalogo Admin'. All CMS settings endpoints working correctly with proper authentication and data validation."
 
   - task: "Logo Upload Functionality"
     implemented: true
