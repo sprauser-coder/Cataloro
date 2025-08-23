@@ -2364,16 +2364,16 @@ const AdminPanel = () => {
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={deactivateAllUsers}
+                          onClick={bulkDeactivateAll}
                         >
                           Deactivate All
                         </Button>
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={deleteAllUsers}
+                          onClick={deleteAllNonAdminUsers}
                         >
-                          Delete All
+                          Delete All Non-Admin
                         </Button>
                       </div>
                     </div>
