@@ -1221,7 +1221,7 @@ const Sell = () => {
                       {uploadedImages.map((imageUrl, index) => (
                         <div key={index} className="relative">
                           <img
-                            src={imageUrl.startsWith('/uploads/') ? `${process.env.REACT_APP_BACKEND_URL}${imageUrl}` : imageUrl}
+                            src={imageUrl.startsWith('/uploads/') ? `${process.env.REACT_APP_BACKEND_URL.replace('/api', '')}${imageUrl}` : imageUrl}
                             alt={`Upload ${index + 1}`}
                             className="w-full h-24 object-cover rounded-lg border"
                           />
