@@ -11,6 +11,7 @@ from datetime import datetime
 
 # Configuration
 BACKEND_URL = "http://217.154.0.82/api"
+BACKEND_DIRECT_URL = "http://localhost:8001/api"  # Direct backend access for profile endpoints
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
