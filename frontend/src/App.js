@@ -5411,6 +5411,7 @@ function App() {
           </Routes>
         </BrowserRouter>
         <Toaster />
+        <Footer siteSettings={siteSettings} />
       </div>
     </AuthProvider>
   );
