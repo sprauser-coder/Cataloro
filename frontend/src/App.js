@@ -21,20 +21,28 @@ const API = `${BACKEND_URL}/api`;
 
 // Utility function to format error messages
 const formatErrorMessage = (error, fallbackMessage) => {
-  if (error.response?.data?.detail) {
-    if (Array.isArray(error.response.data.detail)) {
-      // Multiple validation errors
-      return error.response.data.detail.map(err => 
-        `${err.loc ? err.loc.join('.') + ': ' : ''}${err.msg}`
-      ).join(', ');
-    } else if (typeof error.response.data.detail === 'string') {
-      // Single string error
-      return error.response.data.detail;
-    } else {
-      // Single validation error object
-      return error.response.data.detail.msg || "Validation error";
-    }
+  if (!error.response?.data?.detail) {
+    return fallbackMessage;
   }
+  
+  const detail = error.response.data.detail;
+  
+  if (Array.isArray(detail)) {
+    // Multiple validation errors - ensure we return a single string
+    const errorMessages = detail.map(err => {
+      const location = err.loc ? err.loc.join('.') + ': ' : '';
+      const message = err.msg || 'Validation error';
+      return `${location}${message}`;
+    });
+    return errorMessages.join(', ');
+  } else if (typeof detail === 'string') {
+    // Single string error
+    return detail;
+  } else if (detail && detail.msg) {
+    // Single validation error object
+    return detail.msg;
+  }
+  
   return fallbackMessage;
 };
 
