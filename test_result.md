@@ -396,11 +396,11 @@ frontend:
 
   - task: "Sell/Create Listing Page"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -414,6 +414,9 @@ frontend:
       - working: true
         agent: "main"
         comment: "CRITICAL BUG FIXED: Resolved listing creation failure caused by empty string handling for optional numeric fields. Root cause: Frontend was sending empty strings ('') for starting_bid and buyout_price fields, causing backend 422 validation error 'Input should be a valid number'. Fix implemented: Modified handleSubmit function to properly handle optional numeric fields by converting empty strings to null and removing null/empty fields from request payload. Now correctly handles: required fields (price, quantity), optional fields (starting_bid, buyout_price, shipping_cost, auction_duration_hours) by omitting them when empty rather than sending empty strings. User should now be able to successfully create listings."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL ISSUE FOUND ON VPS DEPLOYMENT: Comprehensive testing on user's VPS (http://217.154.0.82) reveals listing creation is still failing. ✅ WORKING COMPONENTS: Admin login successful (admin@marketplace.com/admin123), Sell page accessible, all form fields can be filled (title, description, price, quantity, location), form submission triggers properly. ❌ CRITICAL BUG: Category dropdown selection is broken - category field is required but cannot be properly selected, causing frontend validation to fail. Error message: 'Failed to create listing. Please check your input and try again.' No API requests reach backend due to frontend validation failure. Console shows 'Create listing error: undefined'. The category Select component (React Select) is not functioning correctly - dropdown opens showing options but selection doesn't register. This prevents any listing creation. IMMEDIATE FIX NEEDED: Category selection component requires debugging and repair."
 
   - task: "Orders History Page"
     implemented: true
