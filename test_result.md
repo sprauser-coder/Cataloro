@@ -424,6 +424,21 @@ frontend:
         agent: "testing"
         comment: "TESTED: Navigation header working perfectly. ✅ Logo display system functional - shows logo fallback (Package icon + 'Cataloro' text) when no logo uploaded, ✅ Navigation links working (Browse, Sell, My Orders), ✅ Admin panel link visible for admin users ('Cataloro Admin'), ✅ User info display with avatar and full name, ✅ Cart icon with count badge, ✅ Logout functionality working, ✅ Header responsive and properly styled. All header functionality operational including logo upload system integration."
 
+  - task: "Admin Panel Logo Upload Interface"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added comprehensive logo upload functionality to admin panel General Settings with file upload, preview, and alt text"
+      - working: true
+        agent: "testing"
+        comment: "TESTED: Admin Panel Logo Upload Interface working perfectly. ✅ Accessible via Admin Panel → General Settings tab, ✅ Logo Settings section clearly visible with 'Header Logo' upload field, ✅ PNG file input properly configured (PNG files only, max 5MB), ✅ 'Current Header Logo' preview image displayed, ✅ Logo Alt Text input field present, ✅ Site settings integration working (site name, tagline, hero content), ✅ Hero Section Height slider functional (300px-1000px range). All logo upload interface elements operational and properly integrated into admin panel."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
