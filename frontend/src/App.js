@@ -1666,6 +1666,25 @@ const AdminPanel = () => {
     }
   };
 
+  const deleteUser = async (userId) => {
+    if (!confirm('Are you sure you want to permanently delete this user? This action cannot be undone.')) return;
+    
+    try {
+      await axios.delete(`${API}/admin/users/${userId}`);
+      toast({
+        title: "Success",
+        description: "User deleted successfully"
+      });
+      fetchUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete user",
+        variant: "destructive"
+      });
+    }
+  };
+
   const resetUserPassword = async (userId) => {
     if (!confirm('Are you sure you want to reset this user\'s password? They will receive a temporary password.')) return;
     
