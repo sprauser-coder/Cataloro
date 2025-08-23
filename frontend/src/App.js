@@ -855,7 +855,7 @@ const ListingDetail = () => {
                           // You can implement image switching functionality here
                           const mainImg = document.querySelector('.main-listing-image');
                           if (mainImg) {
-                            mainImg.src = image.startsWith('/uploads/') ? `${BACKEND_URL}${image}` : image;
+                            mainImg.src = image.startsWith('/uploads/') ? `${BACKEND_URL}:8001${image}` : image;
                           }
                         }}
                       />
