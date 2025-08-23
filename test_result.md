@@ -247,7 +247,7 @@ backend:
     implemented: true
     working: true
     file: "/app/backend/server.py"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
@@ -263,6 +263,9 @@ backend:
       - working: false
         agent: "main"
         comment: "CRITICAL BUG FOUND: File type validation error in frontend handleLogoUpload function. Line 1906 has incorrect operator precedence: '!file.type === \"image/png\"' should be 'file.type !== \"image/png\"'. This bug prevents all logo uploads from working. Bug fixed."
+      - working: true
+        agent: "testing"
+        comment: "BUG FIX VERIFIED: Frontend logo upload testing confirms the operator precedence fix worked. Logo Settings accessible in General Settings → Site Settings tab, PNG file input correctly configured with accept='.png', logo alt text input present. Frontend validation now correctly rejects non-PNG files. Logo upload functionality fully operational."
       - working: true
         agent: "testing"
         comment: "RETESTED AFTER FRONTEND BUG FIX: Comprehensive logo upload testing completed with 6/6 tests passed (100% success rate). ✅ Admin authentication properly enforced (403 for non-admin users), ✅ Valid PNG files upload successfully with proper response and logo_url, ✅ Invalid formats (JPEG) properly rejected with 400 error, ✅ File size validation working (6MB files rejected, smaller files accepted), ✅ Logo URL correctly stored in site settings and accessible via admin API, ✅ Uploaded logo files accessible via static serving. Frontend bug fix successful - logo upload functionality fully operational."
