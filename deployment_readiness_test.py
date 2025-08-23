@@ -379,18 +379,17 @@ class DeploymentReadinessTest:
         
         # Test authenticated endpoint without token
         total_tests += 1
-        url = f"{self.api_url}/cart"
-        headers = {'Content-Type': 'application/json'}
-        # No Authorization header
-        
         try:
-            response = requests.get(url, headers=headers, timeout=10)
-            if response and response.status_code in [401, 403]:
+            response = requests.get(f"{self.api_url}/cart", 
+                                  headers={'Content-Type': 'application/json'}, 
+                                  timeout=10)
+            if response.status_code in [401, 403]:
                 self.log_test("JWT token protection working", True, f"Unauthorized access blocked with status {response.status_code}")
                 success_count += 1
             else:
-                status = response.status_code if response else "No response"
-                self.log_test("JWT token protection failed", False, f"Expected 401/403, got: {status}")
+                self.log_test("JWT token protection failed", False, f"Expected 401/403, got: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            self.log_test("JWT token protection test error", False, f"Network error: {str(e)}")
         except Exception as e:
             self.log_test("JWT token protection test error", False, f"Error: {str(e)}")
         
