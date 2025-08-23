@@ -505,7 +505,10 @@ const Home = () => {
       background: siteSettings.hero_background_type === 'gradient' 
         ? `linear-gradient(135deg, ${siteSettings.hero_background_gradient_start} 0%, ${siteSettings.hero_background_gradient_end} 100%)`
         : siteSettings.hero_background_color,
-      color: siteSettings.hero_text_color
+      color: siteSettings.hero_text_color,
+      height: siteSettings.hero_height || '600px',
+      display: 'flex',
+      alignItems: 'center'
     };
     
     return baseStyle;
