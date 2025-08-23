@@ -465,12 +465,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Sell/Create Listing Page"
     - "Product Detail Page"
-    - "Shopping Cart Page"
+    - "Shopping Cart Page" 
     - "Orders History Page"
-  stuck_tasks:
-    - "Sell/Create Listing Page"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
