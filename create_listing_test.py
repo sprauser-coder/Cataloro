@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import time
 
 class CreateListingTester:
-    def __init__(self, base_url="https://cataloro-launch.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-deploy.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.token = None

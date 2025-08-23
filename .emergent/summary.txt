@@ -1,63 +1,62 @@
 <analysis>
-The Cataloro marketplace, initially developed from an MVP, now focuses on deployment. The previous AI engineer fixed a critical image upload bug in  and set up the self-hosted VPS (AlmaLinux 8.10). This involved Python, Node.js, PM2, MongoDB, and Nginx installations, cloning the codebase to , and installing dependencies.
-
-The current challenge is stabilizing the deployment. Recurring issues included user command concatenation leading to corrupted config files ( and Nginx conf) and, critically, a Python package incompatibility ( with ) causing the backend to crash. The Nginx configuration and frontend build are complete and verified. The PM2  process repeatedly fails, and the immediate task is to diagnose why  is not providing output.
+The previous AI engineer effectively transitioned the Cataloro marketplace from MVP to a deployment-ready state, primarily focusing on fixing critical deployment bugs on a self-hosted AlmaLinux 8.10 VPS. The work involved extensive troubleshooting of Python dependency conflicts ( and ), Nginx configuration complexities (conflicting server blocks, include directives, and WebSocket headers), and critical SELinux permissions. The AI engineer iteratively provided step-by-step commands for the user to execute on their VPS, diagnosing and resolving issues ranging from local API connectivity to external server accessibility. The primary challenge was the iterative nature of debugging a remote, user-controlled environment and resolving cascading configuration issues, with persistent SSH session freezing. The application's backend and frontend are now fully functional and accessible via the VPS IP, with the final task for the user being external DNS configuration.
 </analysis>
 
 <product_requirements>
-The Cataloro marketplace is an eBay-like platform for cash transactions, intentionally excluding payment integrations. It features user roles, product listings, cart, order management, and reviews. Implemented features include Cataloro branding, a comprehensive 8-tab admin panel (Dashboard, Users, Listings, Orders, Appearance, Page Management, General Settings, Database), a CMS for site settings and dynamic pages, auto-generated sequential user IDs, and image uploads for logos (PNG) and listings (up to 3, PNG/JPEG). The hero section height is adjustable via the admin panel, and all currency symbols are €. The current overarching goal is deploying the application to  (IP: 217.154.0.82) on a self-hosted AlmaLinux 8.10 server.
+The Cataloro marketplace is an eBay-like e-commerce platform for cash transactions, intentionally designed without payment integrations. Key features include user roles (buyer/seller), product listings, cart, order management, and reviews. Branding is Cataloro, with an 8-tab admin panel (Dashboard, Users, Listings, Orders, Appearance, Page Management, General Settings, Database) and a CMS for site settings and dynamic pages. User IDs are auto-generated and sequential. Image uploads are supported for logos (PNG) and listings (up to 3, PNG/JPEG). The hero section height is configurable via the admin panel, and all currency symbols are set to €. The overarching goal is the successful deployment of this application to  (IP: 217.154.0.82) on a self-hosted AlmaLinux 8.10 server.
 </product_requirements>
 
 <key_technical_concepts>
 -   **React**: Frontend UI framework.
 -   **FastAPI**: Python backend API framework.
 -   **MongoDB**: NoSQL database.
--   **JWT**: Authentication.
--   **Shadcn UI**: Frontend components.
--   **CSS Custom Properties**: Dynamic styling.
--   **FastAPI , , **: File handling.
--   **Axios**: HTTP client.
--   **PM2**: Node.js process manager.
--   **AlmaLinux**: Server OS.
--   **Nginx**: Web server/reverse proxy.
--   **Python Virtual Environment**: Package isolation.
+-   **PM2**: Node.js process manager for application orchestration.
+-   **Nginx**: Web server and reverse proxy.
+-   **AlmaLinux**: Server Operating System.
+-   **Python Virtual Environment**: Dependency management.
 -   **Yarn**: Node.js package manager.
+-   **SELinux**: Linux security module for access control.
 </key_technical_concepts>
 
 <code_architecture>
 
 
 -   ****:
-    -   **Importance**: Core API logic.
-    -   **Changes**: Extended , added  and  endpoints.
+    -   **Importance**: Contains the core FastAPI application logic, API endpoints, and database interactions.
+    -   **Changes**: No direct changes in this trajectory, but it defines the API routes, including the  prefix which is critical for Nginx routing.
 -   ****:
-    -   **Importance**: Storage for user-uploaded images.
-    -   **Changes**: Managed by the app, permissions set on VPS.
--   ****:
-    -   **Importance**: Backend environment variables.
-    -   **Changes**: Updated on VPS to include , , , .
--   ****:
-    -   **Importance**: PM2 configuration for backend process on VPS.
-    -   **Changes**: Created/recreated on VPS with , , , .
--   ****:
-    -   **Importance**: Main React component.
-    -   **Changes**: Branding, admin panel, image upload logic (fixed  to ), hero section height.
--   ****:
-    -   **Importance**: Frontend environment variables.
-    -   **Changes**: Updated on VPS to  and .
--   ** (on VPS)**:
-    -   **Importance**: Output directory for production-ready frontend assets.
-    -   **Changes**: Generated by yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command..
--   ** (on VPS)**:
-    -   **Importance**: Nginx server block configuration.
-    -   **Changes**: Configured to serve frontend from , proxy  to , and serve  from .
--   ****:
-    -   **Importance**: Backend entry point specifically for VPS deployment.
-    -   **Changes**: Referenced by PM2 config, 20KB in size.
+    -   **Importance**: Stores backend environment variables like , , , , .
+    -   **Changes**: Updated during deployment steps to production-ready values: , , .
 -   ****:
     -   **Importance**: Lists Python dependencies for the backend.
-    -   **Changes**: Existence/content currently unknown/empty, preventing proper package upgrades.
+    -   **Changes**: Content was inspected and used to guide package upgrades (To use the fastapi command, please install "fastapi[standard]":
+
+	pip install "fastapi[standard]", , , , , , , ).
+-   ****:
+    -   **Importance**: Main React component containing the application's UI, routing, and logic, including image upload and display.
+    -   **Changes**: Critical fix involved replacing hardcoded  URLs (lines 1205 and 3041) with  to correctly reference the backend URL from environment variables.
+-   ****:
+    -   **Importance**: Stores frontend environment variables, crucially .
+    -   **Changes**: Updated during deployment steps to  and  for production.
+-   ****:
+    -   **Importance**: A custom, minimal Python entry point for the FastAPI application specifically designed for PM2 deployment on the VPS, handling environment setup and .
+    -   **Changes**: Created/updated to correctly import the FastAPI app from  and run it via Uvicorn.
+-   ****:
+    -   **Importance**: PM2 configuration file defining how the backend process () should be managed on the VPS, including the script to run, working directory, interpreter, and environment variables.
+    -   **Changes**: Created with a configuration to run  using the Python virtual environment, listening on port 8001.
+-   ** (deployed to  on VPS)**:
+    -   **Importance**: Nginx server block configuration for handling incoming HTTP requests, serving the frontend, proxying API requests to the backend, and serving uploaded files.
+    -   **Changes**:
+        -   Configured to  and serve  and .
+        -    serves frontend static files from .
+        -    proxies requests to .
+        -    serves uploaded images from .
+        -   Removed , , and  to resolve Unsupported upgrade request error.
+-   ** (on VPS)**:
+    -   **Importance**: Main Nginx configuration file.
+    -   **Changes**:
+        -   Modified to comment out or remove  directives from its default  block to prevent conflicts with .
+        -   Ensured  was correctly placed inside the  block to load custom configurations.
 </code_architecture>
 
 <pending_tasks>
@@ -65,54 +64,24 @@ info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this comm
 -   Complete Page Management tab functionality.
 -   Implement footer management functionality in admin panel.
 -   Implement actual .xls upload for database creation/management.
--   Resolve  incompatibility issue on VPS.
 </pending_tasks>
 
 <current_work>
-The current focus is resolving a critical deployment issue on the user's AlmaLinux 8.10 VPS. The environment is mostly set up: Python 3.11.13, Node.js 20.19.4, PM2 6.0.8, MongoDB v6.0.25, and Nginx 1.14.1 are installed and active. The Cataloro codebase is cloned to , backend and frontend dependencies are installed (with some noted downgrades in Python packages).
+The immediate work focused on resolving critical deployment issues to make the Cataloro marketplace accessible at . The AI engineer and user collaboratively debugged the AlmaLinux 8.10 VPS setup.
 
-Recently, the environment variables in  and  were successfully updated for production, and the frontend was built (yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.). Nginx has been configured and reloaded to serve the frontend and proxy API requests.
+Key problems addressed include:
+1.  **Python Dependency Incompatibility**: The Pydantic (1.8.2) and  (1.1.3) versions were incompatible with Python 3.11.13, causing the FastAPI backend to crash. This was resolved by explicitly upgrading  to  (among other backend packages) and  to  within the Python virtual environment.
+2.  **Hardcoded Frontend URLs**: The  file contained hardcoded  URLs for image display, preventing it from connecting to the production backend. These were replaced with .
+3.  **Environment Variable Misconfiguration**: Both  and  files were updated on the VPS to contain production-ready URLs and settings (e.g., , ).
+4.  **Nginx Configuration Conflicts**: The primary Nginx configuration () had a  block that was intercepting requests meant for . This was resolved by modifying both  (removing  from the default block) and  (setting it as the ). Additionally, the  directive in  was misplaced and corrected to be within the  block.
+5.  **SELinux Permissions**: Nginx was returning a 403 Forbidden error for frontend assets due to incorrect SELinux context on  directory and its contents. This was fixed by running , which set the context to . SELinux was also configured to allow HTTPD network connections to the backend with .
+6.  **Nginx WebSocket Headers**: An Unsupported upgrade request error occurred due to unnecessary WebSocket upgrade headers in the Nginx proxy configuration, which were removed from .
 
-However, the  PM2 service is in an  state, restarting repeatedly. Logs revealed a  originating from , indicating a **version incompatibility between Pydantic 1.8.2 and Python 3.11.13**. Attempts to upgrade packages using Looking in indexes: https://pypi.org/simple, https://d33sy5i8bnduwe.cloudfront.net/simple/
-Requirement already satisfied: fastapi==0.110.1 in /root/.venv/lib/python3.11/site-packages (0.110.1)
-Collecting pydantic==2.6.4
-  Downloading pydantic-2.6.4-py3-none-any.whl.metadata (85 kB)
-Requirement already satisfied: pymongo==4.5.0 in /root/.venv/lib/python3.11/site-packages (4.5.0)
-Collecting uvicorn==0.27.1
-  Downloading uvicorn-0.27.1-py3-none-any.whl.metadata (6.3 kB)
-Requirement already satisfied: starlette<0.38.0,>=0.37.2 in /root/.venv/lib/python3.11/site-packages (from fastapi==0.110.1) (0.37.2)
-Requirement already satisfied: typing-extensions>=4.8.0 in /root/.venv/lib/python3.11/site-packages (from fastapi==0.110.1) (4.14.1)
-Requirement already satisfied: annotated-types>=0.4.0 in /root/.venv/lib/python3.11/site-packages (from pydantic==2.6.4) (0.7.0)
-Collecting pydantic-core==2.16.3 (from pydantic==2.6.4)
-  Downloading pydantic_core-2.16.3-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (6.5 kB)
-Requirement already satisfied: dnspython<3.0.0,>=1.16.0 in /root/.venv/lib/python3.11/site-packages (from pymongo==4.5.0) (2.7.0)
-Requirement already satisfied: click>=7.0 in /root/.venv/lib/python3.11/site-packages (from uvicorn==0.27.1) (8.2.1)
-Requirement already satisfied: h11>=0.8 in /root/.venv/lib/python3.11/site-packages (from uvicorn==0.27.1) (0.16.0)
-Requirement already satisfied: anyio<5,>=3.4.0 in /root/.venv/lib/python3.11/site-packages (from starlette<0.38.0,>=0.37.2->fastapi==0.110.1) (4.10.0)
-Requirement already satisfied: idna>=2.8 in /root/.venv/lib/python3.11/site-packages (from anyio<5,>=3.4.0->starlette<0.38.0,>=0.37.2->fastapi==0.110.1) (3.10)
-Requirement already satisfied: sniffio>=1.1 in /root/.venv/lib/python3.11/site-packages (from anyio<5,>=3.4.0->starlette<0.38.0,>=0.37.2->fastapi==0.110.1) (1.3.1)
-Downloading pydantic-2.6.4-py3-none-any.whl (394 kB)
-Downloading uvicorn-0.27.1-py3-none-any.whl (60 kB)
-Downloading pydantic_core-2.16.3-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (1.9 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 25.9 MB/s  0:00:00
-Installing collected packages: uvicorn, pydantic-core, pydantic
-  Attempting uninstall: uvicorn
-    Found existing installation: uvicorn 0.25.0
-    Uninstalling uvicorn-0.25.0:
-      Successfully uninstalled uvicorn-0.25.0
-  Attempting uninstall: pydantic-core
-    Found existing installation: pydantic_core 2.33.2
-    Uninstalling pydantic_core-2.33.2:
-      Successfully uninstalled pydantic_core-2.33.2
-  Attempting uninstall: pydantic
-    Found existing installation: pydantic 2.11.7
-    Uninstalling pydantic-2.11.7:
-      Successfully uninstalled pydantic-2.11.7
+The application's backend API now consistently returns  both locally on the VPS and via Nginx proxy using the  header. The frontend React application loads successfully when accessed via the VPS's IP address () in a browser, displaying the login panel.
 
-Successfully installed pydantic-2.6.4 pydantic-core-2.16.3 uvicorn-0.27.1 were hindered because the  file appears to be empty or missing, preventing proper inspection of current backend package requirements.
+The persistent challenge was user interaction on the VPS, including SSH session freezing and command execution errors. This required the AI to provide highly granular, one-step-at-a-time instructions. All server-side deployment issues have been resolved.
 </current_work>
 
 <optional_next_step>
-Investigate the  directory to locate or inspect  content.
+Guide the user on configuring DNS records at their domain registrar for  and  to point to the VPS IP .
 </optional_next_step>
