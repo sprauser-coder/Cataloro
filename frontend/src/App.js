@@ -1208,7 +1208,7 @@ const Sell = () => {
                       {uploadedImages.map((imageUrl, index) => (
                         <div key={index} className="relative">
                           <img
-                            src={`${API}${imageUrl}`}
+                            src={imageUrl.startsWith('/uploads/') ? `http://localhost:8001${imageUrl}` : imageUrl}
                             alt={`Upload ${index + 1}`}
                             className="w-full h-24 object-cover rounded-lg border"
                           />
