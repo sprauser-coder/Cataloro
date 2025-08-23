@@ -1375,6 +1375,81 @@ async def upload_logo(
         "logo_type": logo_type
     }
 
+# Hero Image Upload Endpoints
+@api_router.post("/admin/cms/upload-hero-image")
+async def upload_hero_image(
+    file: UploadFile = File(...),
+    admin: User = Depends(get_admin_user)
+):
+    """Upload hero image file (PNG, JPG, JPEG only)"""
+    
+    # Validate file type
+    allowed_types = ["image/png", "image/jpeg", "image/jpg"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Only PNG and JPEG files are allowed")
+    
+    # Validate file size (max 5MB)
+    file_size = 0
+    content = await file.read()
+    file_size = len(content)
+    
+    if file_size > 5 * 1024 * 1024:  # 5MB limit
+        raise HTTPException(status_code=400, detail="File size too large. Maximum 5MB allowed")
+    
+    # Generate unique filename
+    file_extension = os.path.splitext(file.filename)[1] or ".png"
+    unique_filename = f"hero_image_{uuid.uuid4().hex}{file_extension}"
+    file_path = UPLOAD_DIR / unique_filename
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        buffer.write(content)
+    
+    # Generate URL
+    hero_image_url = f"/uploads/{unique_filename}"
+    
+    return {
+        "message": "Hero image uploaded successfully",
+        "hero_image_url": hero_image_url
+    }
+
+@api_router.post("/admin/cms/upload-hero-background")
+async def upload_hero_background(
+    file: UploadFile = File(...),
+    admin: User = Depends(get_admin_user)
+):
+    """Upload hero background image file (PNG, JPG, JPEG only)"""
+    
+    # Validate file type
+    allowed_types = ["image/png", "image/jpeg", "image/jpg"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Only PNG and JPEG files are allowed")
+    
+    # Validate file size (max 10MB for backgrounds)
+    file_size = 0
+    content = await file.read()
+    file_size = len(content)
+    
+    if file_size > 10 * 1024 * 1024:  # 10MB limit
+        raise HTTPException(status_code=400, detail="File size too large. Maximum 10MB allowed")
+    
+    # Generate unique filename
+    file_extension = os.path.splitext(file.filename)[1] or ".png"
+    unique_filename = f"hero_background_{uuid.uuid4().hex}{file_extension}"
+    file_path = UPLOAD_DIR / unique_filename
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        buffer.write(content)
+    
+    # Generate URL
+    hero_background_image_url = f"/uploads/{unique_filename}"
+    
+    return {
+        "message": "Hero background image uploaded successfully",
+        "hero_background_image_url": hero_background_image_url
+    }
+
 # Listing Image Upload Endpoints
 @api_router.post("/listings/upload-image")
 async def upload_listing_image(
