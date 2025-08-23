@@ -525,8 +525,11 @@ const Home = () => {
       <div className="text-white" style={getHeroStyle()}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="text-center">
-            <h1 className="text-6xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-blue-500 text-white p-8 rounded-lg shadow-xl">
-              🎉 CATALORO v2.0 - PREVIEW UPDATED! 🎉
+            <h1 
+              className="text-6xl font-bold mb-6"
+              style={{color: siteSettings?.hero_title_color || '#ffffff'}}
+            >
+              {heroTitle}
             </h1>
             <p 
               className="text-xl mb-8 opacity-90"
