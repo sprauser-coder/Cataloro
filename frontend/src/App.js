@@ -2328,60 +2328,6 @@ const AdminPanel = () => {
               <div className="text-center py-12">
                 <p>Failed to load dashboard data</p>
               </div>
-            )}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-600">Active Listings</p>
-                        <p className="text-2xl font-bold">{stats.active_listings}</p>
-                      </div>
-                      <Package className="h-8 w-8 text-green-600" />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-600">Total Orders</p>
-                        <p className="text-2xl font-bold">{stats.total_orders}</p>
-                      </div>
-                      <ShoppingCart className="h-8 w-8 text-purple-600" />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-600">Total Revenue</p>
-                        <p className="text-2xl font-bold">€{stats.total_revenue.toFixed(2)}</p>
-                      </div>
-                      <Euro className="h-8 w-8 text-yellow-600" />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-600">Blocked Users</p>
-                        <p className="text-2xl font-bold text-red-600">{stats.blocked_users}</p>
-                      </div>
-                      <Badge className="h-8 w-8 text-red-600" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            ) : null}
           </TabsContent>
 
           {/* Users Tab */}
