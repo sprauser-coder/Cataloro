@@ -2058,6 +2058,23 @@ const AdminPanel = () => {
     }
   };
 
+  // Add missing saveAppearanceSettings function
+  const saveAppearanceSettings = async () => {
+    try {
+      await updateSiteSettings(siteSettings);
+      toast({
+        title: "Success",
+        description: "Appearance settings saved successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save appearance settings",
+        variant: "destructive"
+      });
+    }
+  };
+
   const createPage = async (pageData) => {
     try {
       await axios.post(`${API}/admin/cms/pages`, pageData);
