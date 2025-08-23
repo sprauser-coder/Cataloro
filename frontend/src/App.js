@@ -190,7 +190,7 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2">
             {siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? (
               <img 
-                src={`${API}${siteSettings.header_logo_url}`} 
+                src={`${API.replace('/api', '')}${siteSettings.header_logo_url}`} 
                 alt={siteSettings.header_logo_alt || 'Logo'} 
                 className="h-8 w-auto object-contain"
                 onError={(e) => {
