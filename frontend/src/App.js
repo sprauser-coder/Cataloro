@@ -3542,12 +3542,12 @@ const AdminPanel = () => {
                                 />
                               </div>
                               <h4 
-                                key={`h4-${siteSettings.global_font_family || 'Inter'}`}
+                                key={`h4-${siteSettings.global_font_family || 'Inter'}-${Date.now()}`}
                                 className="font-medium" 
                                 style={{
                                   fontSize: siteSettings.h4_size || '20px',
                                   color: siteSettings.h4_color || '#6b7280',
-                                  fontFamily: siteSettings.global_font_family || 'Inter'
+                                  fontFamily: `${siteSettings.global_font_family || 'Inter'}, sans-serif`
                                 }}
                               >
                                 Sample H4 Text
