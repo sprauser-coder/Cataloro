@@ -597,8 +597,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Phase 2 CMS Settings New Fields"
-  stuck_tasks: []
+    - "Phase 3A Profile Endpoints"
+  stuck_tasks:
+    - "Phase 3A Profile Endpoints"
   test_all: false
   test_priority: "high_first"
   completed_testing:
@@ -611,6 +612,10 @@ test_plan:
     - "Phase 2 Hero Image Upload Endpoints"
     - "Phase 2 Dashboard Analytics Enhancement"
     - "Phase 2 CMS Settings New Fields"
+    - "Phase 3A Page Management Endpoints"
+    - "Phase 3A General Settings Hero Height Management"
+    - "Phase 3A Footer Version Functionality"
+    - "Phase 3A Show in Navigation Functionality"
 
 agent_communication:
   - agent: "main"
