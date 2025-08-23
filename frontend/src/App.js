@@ -1256,7 +1256,13 @@ const Sell = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="category">Category</Label>
-                  <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+                  <Select 
+                    value={formData.category || ""} 
+                    onValueChange={(value) => {
+                      console.log('Category selected:', value);
+                      setFormData({...formData, category: value});
+                    }}
+                  >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
@@ -1268,6 +1274,10 @@ const Sell = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  {/* Debug info */}
+                  <div className="text-xs text-gray-500 mt-1">
+                    Selected: {formData.category || 'None'} | Available: {categories.length}
+                  </div>
                 </div>
 
                 <div>
