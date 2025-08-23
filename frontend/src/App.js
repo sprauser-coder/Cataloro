@@ -164,6 +164,248 @@ const Footer = ({ siteSettings }) => {
   );
 };
 
+// Notification Center Component (Phase 3C)
+const NotificationCenter = () => {
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [socket, setSocket] = useState(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (user) {
+      fetchNotifications();
+      connectWebSocket();
+    }
+    
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, [user]);
+
+  const connectWebSocket = () => {
+    try {
+      const wsUrl = `ws://localhost:8001/api/notifications/${user.id}`;
+      const ws = new WebSocket(wsUrl);
+      
+      ws.onopen = () => {
+        console.log('WebSocket connected for notifications');
+        setSocket(ws);
+      };
+      
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'notification') {
+          const newNotification = data.data;
+          setNotifications(prev => [newNotification, ...prev]);
+          setUnreadCount(prev => prev + 1);
+          
+          // Show toast for important notifications
+          if (newNotification.notification_type === 'order_received') {
+            toast({
+              title: newNotification.title,
+              description: newNotification.message,
+              duration: 5000
+            });
+          }
+        }
+      };
+      
+      ws.onclose = () => {
+        console.log('WebSocket disconnected');
+        setSocket(null);
+      };
+      
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+      
+    } catch (error) {
+      console.error('Failed to connect WebSocket:', error);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/notifications`);
+      setNotifications(response.data.notifications);
+      setUnreadCount(response.data.unread_count);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const markAsRead = async (notificationId) => {
+    try {
+      await axios.put(`${API}/notifications/${notificationId}/read`);
+      setNotifications(prev => 
+        prev.map(n => n.id === notificationId ? {...n, read: true} : n)
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      await axios.put(`${API}/notifications/mark-all-read`);
+      setNotifications(prev => prev.map(n => ({...n, read: true})));
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    }
+  };
+
+  const handleOrderAction = async (orderId, action, reason = null) => {
+    try {
+      const endpoint = action === 'approve' ? 'approve' : 'reject';
+      const payload = action === 'reject' && reason ? { rejection_reason: reason } : {};
+      
+      await axios.put(`${API}/orders/${orderId}/${endpoint}`, payload);
+      
+      toast({
+        title: "Success",
+        description: `Order ${action}d successfully`
+      });
+      
+      // Refresh notifications
+      fetchNotifications();
+      
+    } catch (error) {
+      toast({
+        title: "Error", 
+        description: `Failed to ${action} order`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const renderNotificationActions = (notification) => {
+    if (notification.notification_type === 'order_received') {
+      return (
+        <div className="flex space-x-2 mt-2">
+          <Button 
+            size="sm"
+            onClick={() => handleOrderAction(notification.data.order_id, 'approve')}
+          >
+            Approve
+          </Button>
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const reason = prompt('Rejection reason (optional):');
+              handleOrderAction(notification.data.order_id, 'reject', reason);
+            }}
+          >
+            Reject
+          </Button>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case 'order_received':
+        return <ShoppingCart className="h-4 w-4 text-blue-600" />;
+      case 'order_approved':
+        return <Package className="h-4 w-4 text-green-600" />;
+      case 'order_rejected':
+        return <X className="h-4 w-4 text-red-600" />;
+      default:
+        return <User className="h-4 w-4 text-gray-600" />;
+    }
+  };
+
+  if (!user) return null;
+
+  return (
+    <div className="relative">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="relative"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <User className="h-5 w-5" />
+        {unreadCount > 0 && (
+          <Badge 
+            variant="destructive"
+            className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+          >
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </Badge>
+        )}
+      </Button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-50 max-h-96 overflow-hidden">
+          <div className="p-4 border-b bg-gray-50">
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium">Notifications</h3>
+              <div className="flex space-x-2">
+                {unreadCount > 0 && (
+                  <Button variant="ghost" size="sm" onClick={markAllAsRead}>
+                    Mark all read
+                  </Button>
+                )}
+                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="max-h-80 overflow-y-auto">
+            {loading ? (
+              <div className="p-4 text-center text-gray-500">Loading...</div>
+            ) : notifications.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">
+                <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p>No notifications yet</p>
+              </div>
+            ) : (
+              notifications.map((notification) => (
+                <div 
+                  key={notification.id}
+                  className={`p-4 border-b hover:bg-gray-50 cursor-pointer ${
+                    !notification.read ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                  }`}
+                  onClick={() => !notification.read && markAsRead(notification.id)}
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 mt-1">
+                      {getNotificationIcon(notification.notification_type)}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium">{notification.title}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        {new Date(notification.created_at).toLocaleString()}
+                      </p>
+                      {renderNotificationActions(notification)}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Header Component
 const Header = () => {
   const { user, logout } = useAuth();
