@@ -2300,18 +2300,28 @@ const AdminPanel = () => {
     }
   };
 
-  const updatePage = async (pageSlug, pageData) => {
+  const updatePage = async () => {
     try {
-      await axios.put(`${API}/admin/cms/pages/${pageSlug}`, pageData);
+      const pageData = {
+        title: editingPage.title,
+        slug: editingPage.slug,
+        content: editingPage.content,
+        published: editingPage.published,
+        show_in_navigation: editingPage.show_in_navigation
+      };
+      
+      await axios.put(`${API}/admin/cms/pages/${editingPage.id}`, pageData);
       toast({
         title: "Success",
         description: "Page updated successfully"
       });
+      
+      setEditingPage(null);
       fetchPages();
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to update page",
+        description: formatErrorMessage(error, "Failed to update page"),
         variant: "destructive"
       });
     }
