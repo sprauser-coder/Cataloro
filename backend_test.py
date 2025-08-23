@@ -376,8 +376,8 @@ class Phase3ABackendTester:
     def test_authentication_integration(self):
         """Test profile endpoints with authentication"""
         try:
-            # Test without authentication
-            no_auth_response = self.session.get(f"{BACKEND_URL}/profile")
+            # Test without authentication - use direct backend URL due to nginx routing issue
+            no_auth_response = self.session.get(f"{BACKEND_DIRECT_URL}/profile")
             if no_auth_response.status_code == 401:
                 self.log_test("Profile Authentication - No Token", True, "Correctly rejected unauthenticated request")
             else:
@@ -386,7 +386,7 @@ class Phase3ABackendTester:
             
             # Test with invalid token
             invalid_headers = {"Authorization": "Bearer invalid_token_here"}
-            invalid_response = self.session.get(f"{BACKEND_URL}/profile", headers=invalid_headers)
+            invalid_response = self.session.get(f"{BACKEND_DIRECT_URL}/profile", headers=invalid_headers)
             if invalid_response.status_code == 401:
                 self.log_test("Profile Authentication - Invalid Token", True, "Correctly rejected invalid token")
             else:
@@ -395,7 +395,7 @@ class Phase3ABackendTester:
             
             # Test with valid token (should work)
             valid_headers = {"Authorization": f"Bearer {self.test_user_token}"}
-            valid_response = self.session.get(f"{BACKEND_URL}/profile", headers=valid_headers)
+            valid_response = self.session.get(f"{BACKEND_DIRECT_URL}/profile", headers=valid_headers)
             if valid_response.status_code == 200:
                 self.log_test("Profile Authentication - Valid Token", True, "Successfully authenticated with valid token")
             else:
