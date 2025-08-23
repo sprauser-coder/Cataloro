@@ -265,6 +265,10 @@ def prepare_for_mongo(data):
 
 def parse_from_mongo(item):
     if isinstance(item, dict):
+        # Remove MongoDB _id field if present
+        if '_id' in item:
+            del item['_id']
+            
         for key, value in item.items():
             if isinstance(value, str) and 'T' in value and value.endswith('Z'):
                 try:
