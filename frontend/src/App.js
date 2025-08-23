@@ -3840,12 +3840,6 @@ const AdminPanel = () => {
     </div>
   );
 };
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
-};
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
