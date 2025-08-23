@@ -3767,9 +3767,92 @@ const AdminPanel = () => {
                   <CardDescription>Basic site configuration and settings</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {/* General settings content will be added here */}
-                  <div className="text-center py-12">
-                    <p className="text-gray-500">General settings features coming soon</p>
+                  <div className="space-y-6">
+                    {/* Site Settings */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Site Settings</CardTitle>
+                        <CardDescription>Basic site configuration</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Site Name</label>
+                            <input
+                              type="text"
+                              className="w-full p-3 border rounded-md"
+                              value={siteSettings?.site_name || ''}
+                              onChange={(e) => setSiteSettings({...siteSettings, site_name: e.target.value})}
+                              placeholder="e.g., Cataloro"
+                            />
+                          </div>
+                          
+                          {/* Logo Settings */}
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Logo Settings</label>
+                            <div className="space-y-3">
+                              {/* Current Logo Display */}
+                              {siteSettings?.header_logo_url && (
+                                <div className="flex items-center space-x-3 p-3 border rounded-md bg-gray-50">
+                                  <img
+                                    src={`${API}${siteSettings.header_logo_url}`}
+                                    alt="Current Logo"
+                                    className="h-12 w-auto object-contain"
+                                  />
+                                  <div>
+                                    <p className="text-sm font-medium">Current Logo</p>
+                                    <p className="text-xs text-gray-500">{siteSettings.header_logo_alt || 'No alt text'}</p>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Logo Upload */}
+                              <div>
+                                <input
+                                  type="file"
+                                  accept=".png"
+                                  onChange={handleLogoUpload}
+                                  disabled={uploading}
+                                  className="hidden"
+                                  id="logo-upload"
+                                />
+                                <label
+                                  htmlFor="logo-upload"
+                                  className={`inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer ${
+                                    uploading ? 'opacity-50 cursor-not-allowed' : ''
+                                  }`}
+                                >
+                                  {uploading ? (
+                                    <>
+                                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600 mr-2"></div>
+                                      Uploading...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Plus className="h-4 w-4 mr-2" />
+                                      Upload Logo (PNG only)
+                                    </>
+                                  )}
+                                </label>
+                                <p className="text-xs text-gray-500 mt-1">PNG files only, max 5MB</p>
+                              </div>
+                              
+                              {/* Logo Alt Text */}
+                              <div>
+                                <label className="block text-sm font-medium mb-1">Logo Alt Text</label>
+                                <input
+                                  type="text"
+                                  className="w-full p-2 border rounded-md"
+                                  value={siteSettings?.header_logo_alt || ''}
+                                  onChange={(e) => setSiteSettings({...siteSettings, header_logo_alt: e.target.value})}
+                                  placeholder="e.g., Cataloro Logo"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
                 </CardContent>
               </Card>
