@@ -3441,7 +3441,7 @@ const AdminPanel = () => {
                           {/* H4 & H5 Settings */}
                           <div className="space-y-3">
                             <h4 className="font-medium">H4 & H5 Headings</h4>
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                               <div className="flex items-center space-x-3">
                                 <span className="text-sm w-8">H4:</span>
                                 <input
@@ -3459,6 +3459,17 @@ const AdminPanel = () => {
                                   className="w-8 h-8 border rounded cursor-pointer"
                                 />
                               </div>
+                              <h4 
+                                className="font-medium" 
+                                style={{
+                                  fontSize: siteSettings.h4_size || '20px',
+                                  color: siteSettings.h4_color || '#6b7280',
+                                  fontFamily: siteSettings.global_font_family || 'Inter'
+                                }}
+                              >
+                                Sample H4 Text
+                              </h4>
+                              
                               <div className="flex items-center space-x-3">
                                 <span className="text-sm w-8">H5:</span>
                                 <input
@@ -3476,6 +3487,16 @@ const AdminPanel = () => {
                                   className="w-8 h-8 border rounded cursor-pointer"
                                 />
                               </div>
+                              <h5 
+                                className="font-normal" 
+                                style={{
+                                  fontSize: siteSettings.h5_size || '18px',
+                                  color: siteSettings.h5_color || '#9ca3af',
+                                  fontFamily: siteSettings.global_font_family || 'Inter'
+                                }}
+                              >
+                                Sample H5 Text
+                              </h5>
                             </div>
                           </div>
                         </div>
