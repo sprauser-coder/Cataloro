@@ -3508,12 +3508,12 @@ const AdminPanel = () => {
                               />
                             </div>
                             <h3 
-                              key={`h3-${siteSettings.global_font_family || 'Inter'}`}
+                              key={`h3-${siteSettings.global_font_family || 'Inter'}-${Date.now()}`}
                               className="font-medium" 
                               style={{
                                 fontSize: siteSettings.h3_size || '24px',
                                 color: siteSettings.h3_color || '#4b5563',
-                                fontFamily: siteSettings.global_font_family || 'Inter'
+                                fontFamily: `${siteSettings.global_font_family || 'Inter'}, sans-serif`
                               }}
                             >
                               Sample H3 Text
