@@ -2569,6 +2569,7 @@ const AdminPanel = () => {
                   </CardContent>
                 </Card>
               </div>
+            )}
           </TabsContent>
 
           {/* Listings Tab */}
