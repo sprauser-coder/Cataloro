@@ -2318,6 +2318,151 @@ const AdminPanel = () => {
     }
   };
 
+  // Phase 3B: Bulk Actions for Listings
+  const executeBulkAction = async () => {
+    if (!bulkAction || selectedListings.length === 0) return;
+
+    try {
+      let endpoint = '';
+      let payload = {
+        listing_ids: selectedListings
+      };
+
+      switch (bulkAction) {
+        case 'delete':
+          endpoint = '/admin/listings/bulk-delete';
+          break;
+        case 'activate':
+          endpoint = '/admin/listings/bulk-update';
+          payload.status = 'active';
+          break;
+        case 'deactivate':
+          endpoint = '/admin/listings/bulk-update';
+          payload.status = 'inactive';
+          break;
+        case 'mark-sold':
+          endpoint = '/admin/listings/bulk-update';
+          payload.status = 'sold';
+          break;
+        case 'change-category':
+          if (!bulkActionData.category) {
+            toast({
+              title: "Error",
+              description: "Please select a category",
+              variant: "destructive"
+            });
+            return;
+          }
+          endpoint = '/admin/listings/bulk-update';
+          payload.category = bulkActionData.category;
+          break;
+        case 'adjust-price':
+          if (!bulkActionData.priceType || !bulkActionData.priceValue) {
+            toast({
+              title: "Error", 
+              description: "Please configure price adjustment",
+              variant: "destructive"
+            });
+            return;
+          }
+          endpoint = '/admin/listings/bulk-price-update';
+          payload.price_type = bulkActionData.priceType;
+          payload.price_value = parseFloat(bulkActionData.priceValue);
+          break;
+        case 'feature':
+          endpoint = '/admin/listings/bulk-update';
+          payload.featured = true;
+          break;
+        case 'unfeature':
+          endpoint = '/admin/listings/bulk-update';
+          payload.featured = false;
+          break;
+        case 'export':
+          await exportListings();
+          return;
+        default:
+          return;
+      }
+
+      const response = await axios.post(`${API}${endpoint}`, payload);
+      
+      toast({
+        title: "Success",
+        description: `Bulk action applied to ${selectedListings.length} listings`
+      });
+
+      // Reset selections and fetch updated data
+      setSelectedListings([]);
+      setBulkAction('');
+      setBulkActionData({});
+      fetchListings();
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `Failed to execute bulk action: ${error.response?.data?.detail || 'Unknown error'}`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const editSingleListing = (listing) => {
+    // TODO: Implement single listing edit modal
+    toast({
+      title: "Feature Coming Soon",
+      description: "Single listing edit will be implemented in next update"
+    });
+  };
+
+  const exportListings = async () => {
+    try {
+      const listingsToExport = listings.filter(l => selectedListings.includes(l.id));
+      const exportData = listingsToExport.map(listing => ({
+        id: listing.id,
+        title: listing.title,
+        category: listing.category,
+        price: listing.price,
+        status: listing.status,
+        seller: listing.seller_name,
+        created: new Date(listing.created_at).toLocaleDateString(),
+        views: listing.views || 0
+      }));
+
+      // Create CSV content
+      const headers = ['ID', 'Title', 'Category', 'Price', 'Status', 'Seller', 'Created', 'Views'];
+      const csvContent = [
+        headers.join(','),
+        ...exportData.map(row => 
+          Object.values(row).map(field => 
+            typeof field === 'string' && field.includes(',') ? `"${field}"` : field
+          ).join(',')
+        )
+      ].join('\n');
+
+      // Download CSV
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `listings_export_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+
+      toast({
+        title: "Success",
+        description: `${selectedListings.length} listings exported to CSV`
+      });
+
+      setSelectedListings([]);
+      setBulkAction('');
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to export listings",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleUserSelection = (userId, isSelected) => {
     if (isSelected) {
       setSelectedUsers([...selectedUsers, userId]);
