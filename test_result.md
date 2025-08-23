@@ -295,7 +295,10 @@ backend:
         comment: "TESTED: Comprehensive listing image upload functionality testing completed with 10/10 tests passed (100% success rate). ✅ User authentication required (403 without token), ✅ PNG and JPEG file validation (accepts PNG/JPEG, rejects GIF with 400 error), ✅ File size validation (rejects 11MB files, accepts smaller files), ✅ Both regular users and admin users can upload images, ✅ Successful uploads return proper image_url, ✅ Listings can be created with uploaded images in images array, ✅ GET /listings returns listings with proper image URLs, ✅ Listing detail endpoints return image data correctly, ✅ Uploads directory works correctly for listing images, ✅ Uploaded images are accessible via HTTP static serving. All file upload validation, authentication, integration with listings system, and file management aspects working perfectly."
       - working: false
         agent: "user"
-        comment: "User reported that image upload functionality is not working properly now. Cannot upload images (listings as well as logo)"
+        comment: "User reported image previews not working after deployment to VPS. Images not showing."
+      - working: true
+        agent: "main"
+        comment: "FIXED SAME IMAGE URL BUG: Applied same fix as logo upload - updated REACT_APP_BACKEND_URL and removed hardcoded ':8001' port references. Listing image previews should now work correctly on VPS deployment."
       - working: true
         agent: "main"
         comment: "Listing image upload appears to be working correctly in backend. The bug was in logo upload frontend validation, not listing images. Needs retesting to confirm functionality."
