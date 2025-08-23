@@ -2523,7 +2523,7 @@ const AdminPanel = () => {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => toggleUserStatus(user.id, false)}
+                                    onClick={() => blockUser(user.id)}
                                   >
                                     Block
                                   </Button>
@@ -2531,7 +2531,7 @@ const AdminPanel = () => {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => toggleUserStatus(user.id, true)}
+                                    onClick={() => unblockUser(user.id)}
                                   >
                                     Unblock
                                   </Button>
