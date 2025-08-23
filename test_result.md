@@ -628,6 +628,7 @@ test_plan:
     - "Phase 3A General Settings Hero Height Management"
     - "Phase 3A Footer Version Functionality"
     - "Phase 3A Show in Navigation Functionality"
+    - "Phase 3C Order Processing & Notification System"
 
 agent_communication:
   - agent: "main"
