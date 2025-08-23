@@ -1156,25 +1156,14 @@ async def get_site_settings(admin: User = Depends(get_admin_user)):
     # Parse the database settings
     parsed_settings = parse_from_mongo(settings)
     
-    # Debug logging
-    print(f"DEBUG: Default dict has {len(default_dict)} fields")
-    print(f"DEBUG: Parsed settings has {len(parsed_settings)} fields")
-    print(f"DEBUG: Phase 2 fields in defaults: font_color={default_dict.get('font_color')}")
-    print(f"DEBUG: Phase 2 fields in parsed: font_color={parsed_settings.get('font_color')}")
-    
     # Merge: start with defaults, then override with database values
     merged_settings = default_dict.copy()
     merged_settings.update(parsed_settings)
     
-    print(f"DEBUG: Merged settings has {len(merged_settings)} fields")
-    print(f"DEBUG: Phase 2 fields in merged: font_color={merged_settings.get('font_color')}")
+    # Add a debug field to verify this code is running
+    merged_settings["debug_phase2_fix"] = "ACTIVE"
     
-    result = SiteSettings(**merged_settings)
-    result_dict = result.dict()
-    print(f"DEBUG: Result dict has {len(result_dict)} fields")
-    print(f"DEBUG: Phase 2 fields in result: font_color={result_dict.get('font_color')}")
-    
-    return result
+    return SiteSettings(**merged_settings)
 
 @api_router.put("/admin/cms/settings")
 async def update_site_settings(settings_data: dict, admin: User = Depends(get_admin_user)):
