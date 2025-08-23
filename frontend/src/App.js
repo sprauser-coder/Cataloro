@@ -3571,12 +3571,12 @@ const AdminPanel = () => {
                                 />
                               </div>
                               <h5 
-                                key={`h5-${siteSettings.global_font_family || 'Inter'}`}
+                                key={`h5-${siteSettings.global_font_family || 'Inter'}-${Date.now()}`}
                                 className="font-normal" 
                                 style={{
                                   fontSize: siteSettings.h5_size || '18px',
                                   color: siteSettings.h5_color || '#9ca3af',
-                                  fontFamily: siteSettings.global_font_family || 'Inter'
+                                  fontFamily: `${siteSettings.global_font_family || 'Inter'}, sans-serif`
                                 }}
                               >
                                 Sample H5 Text
