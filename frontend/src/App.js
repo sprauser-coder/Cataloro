@@ -564,6 +564,23 @@ const Home = () => {
       <div className="text-white" style={getHeroStyle()}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="text-center">
+            {/* Hero Image Above Title */}
+            {siteSettings?.hero_image_url && (
+              <div className="mb-8">
+                <img
+                  src={siteSettings.hero_image_url.startsWith('/uploads/') 
+                    ? `${BACKEND_URL}${siteSettings.hero_image_url}` 
+                    : siteSettings.hero_image_url
+                  }
+                  alt="Hero image"
+                  className="mx-auto max-h-32 w-auto object-contain"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
+            
             <h1 
               className="text-6xl font-bold mb-6"
               style={{color: siteSettings?.hero_title_color || '#ffffff'}}
