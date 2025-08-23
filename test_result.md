@@ -393,9 +393,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Authentication Pages (Login/Register)"
-    - "Home Page with Search and Listings"
-    - "Product Detail Page"
+    - "Logo Upload Functionality"
+    - "Listing Image Upload Functionality"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
