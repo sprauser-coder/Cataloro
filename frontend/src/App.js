@@ -1469,7 +1469,7 @@ const Cart = () => {
                           <h3 className="font-semibold">{item.listing.title}</h3>
                           <p className="text-gray-600 text-sm">{item.listing.condition}</p>
                           <div className="flex items-center justify-between mt-2">
-                            <span className="font-bold text-lg">${item.listing.price.toFixed(2)}</span>
+                            <span className="font-bold text-lg">€{item.listing.price.toFixed(2)}</span>
                             <div className="flex items-center space-x-2">
                               <span>Qty: {item.cart_item.quantity}</span>
                               <Button
