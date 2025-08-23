@@ -1543,8 +1543,8 @@ async def get_public_site_settings():
     """Get public site settings"""
     settings = await db.site_settings.find_one({})
     if not settings:
-        return SiteSettings().dict()
-    return SiteSettings(**parse_from_mongo(settings)).dict()
+        return SiteSettings().dict(exclude_unset=False)
+    return SiteSettings(**parse_from_mongo(settings)).dict(exclude_unset=False)
 
 @api_router.get("/cms/pages/{page_slug}")
 async def get_public_page_content(page_slug: str):
