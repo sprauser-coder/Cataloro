@@ -2153,7 +2153,7 @@ const AdminPanel = () => {
       
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 bg-green-500 text-white p-4 rounded">🚀 PREVIEW SYNC TEST - CATALORO v2.0 🚀</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Cataloro Admin</h1>
           <p className="text-gray-600">Manage users, listings, and monitor platform activity</p>
         </div>
 
