@@ -2111,6 +2111,10 @@ const AdminPanel = () => {
   const [uploading, setUploading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
+  const [selectedListings, setSelectedListings] = useState([]);
+  const [showListingBulkActions, setShowListingBulkActions] = useState(false);
+  const [bulkAction, setBulkAction] = useState('');
+  const [bulkActionData, setBulkActionData] = useState({});
   const [siteSettings, setSiteSettings] = useState(null);
   const [pages, setPages] = useState([]);
   const [navigation, setNavigation] = useState([]);
