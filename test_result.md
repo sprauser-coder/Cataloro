@@ -270,6 +270,21 @@ backend:
         agent: "testing"
         comment: "TESTED: Comprehensive listing image upload functionality testing completed with 10/10 tests passed (100% success rate). ✅ User authentication required (403 without token), ✅ PNG and JPEG file validation (accepts PNG/JPEG, rejects GIF with 400 error), ✅ File size validation (rejects 11MB files, accepts smaller files), ✅ Both regular users and admin users can upload images, ✅ Successful uploads return proper image_url, ✅ Listings can be created with uploaded images in images array, ✅ GET /listings returns listings with proper image URLs, ✅ Listing detail endpoints return image data correctly, ✅ Uploads directory works correctly for listing images, ✅ Uploaded images are accessible via HTTP static serving. All file upload validation, authentication, integration with listings system, and file management aspects working perfectly."
 
+  - task: "Hero Section Height Functionality"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added hero_height field to SiteSettings model with default value '600px' for CMS customization"
+      - working: true
+        agent: "testing"
+        comment: "TESTED: Comprehensive hero section height functionality testing completed with 10/10 tests passed (100% success rate). ✅ Default hero_height value correctly set to '600px' when not configured, ✅ GET /cms/settings includes hero_height field in public API response, ✅ PUT /admin/cms/settings successfully updates hero_height values (tested 400px, 800px), ✅ Hero height values properly persist in database after updates, ✅ Minimum (300px) and maximum (1000px) range values accepted and stored correctly, ✅ Public CMS settings endpoint returns updated hero_height values immediately, ✅ Database storage and retrieval working consistently across admin and public APIs, ✅ Various CSS height formats supported (px, vh units), ✅ All CRUD operations for hero_height field working perfectly. Hero section height customization is fully functional and integrated into the CMS system."
+
 frontend:
   - task: "Authentication Pages (Login/Register)"
     implemented: true
