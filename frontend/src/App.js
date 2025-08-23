@@ -3738,375 +3738,103 @@ const AdminPanel = () => {
                   </Card>
                 )}
               </div>
+          </TabsContent>
+
+          {/* Page Management Tab */}
+          <TabsContent value="pages">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
             ) : (
-              <div className="text-center py-12">
-                <p>Failed to load appearance settings</p>
-              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Page Management</CardTitle>
+                  <CardDescription>Create and manage custom pages for your website</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {/* Page Management content will be added here */}
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">Page management features coming soon</p>
+                  </div>
+                </CardContent>
+              </Card>
             )}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Typography Settings</CardTitle>
-                    <CardDescription>Customize fonts, heading sizes, and colors</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      {/* Global Font */}
-                      <div>
-                        <label className="block text-sm font-medium mb-2">Global Font Family</label>
-                        <select
-                          className="w-full p-2 border rounded-md"
-                          value={siteSettings.global_font_family}
-                          onChange={(e) => setSiteSettings({...siteSettings, global_font_family: e.target.value})}
+          </TabsContent>
+
+          {/* General Settings Tab */}
+          <TabsContent value="settings">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>General Settings</CardTitle>
+                  <CardDescription>Basic site configuration and settings</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {/* General settings content will be added here */}
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">General settings features coming soon</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Database Tab */}
+          <TabsContent value="database">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Database Management</CardTitle>
+                  <CardDescription>Upload and manage database files</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                      <div className="text-center">
+                        <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <h4 className="text-lg font-medium text-gray-900 mb-2">Upload Excel File</h4>
+                        <p className="text-gray-500 mb-4">Upload a .xls or .xlsx file to create a new database</p>
+                        <input
+                          type="file"
+                          accept=".xls,.xlsx"
+                          className="hidden"
+                          id="database-upload"
+                        />
+                        <label
+                          htmlFor="database-upload"
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
                         >
-                          <option value="Inter">Inter</option>
-                          <option value="Roboto">Roboto</option>
-                          <option value="Open Sans">Open Sans</option>
-                          <option value="Poppins">Poppins</option>
-                          <option value="Nunito">Nunito</option>
-                          <option value="Lato">Lato</option>
-                          <option value="Montserrat">Montserrat</option>
-                          <option value="Source Sans Pro">Source Sans Pro</option>
-                          <option value="PT Sans">PT Sans</option>
-                          <option value="Ubuntu">Ubuntu</option>
-                        </select>
-                      </div>
-
-                      {/* Heading Sizes */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium mb-2">H1 Size</label>
-                          <select
-                            className="w-full p-2 border rounded-md"
-                            value={siteSettings.h1_size}
-                            onChange={(e) => setSiteSettings({...siteSettings, h1_size: e.target.value})}
-                          >
-                            <option value="2rem">2rem (32px)</option>
-                            <option value="2.25rem">2.25rem (36px)</option>
-                            <option value="2.5rem">2.5rem (40px)</option>
-                            <option value="3rem">3rem (48px)</option>
-                            <option value="3.75rem">3.75rem (60px)</option>
-                            <option value="4.5rem">4.5rem (72px)</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">H2 Size</label>
-                          <select
-                            className="w-full p-2 border rounded-md"
-                            value={siteSettings.h2_size}
-                            onChange={(e) => setSiteSettings({...siteSettings, h2_size: e.target.value})}
-                          >
-                            <option value="1.5rem">1.5rem (24px)</option>
-                            <option value="1.875rem">1.875rem (30px)</option>
-                            <option value="2.25rem">2.25rem (36px)</option>
-                            <option value="3rem">3rem (48px)</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">H3 Size</label>
-                          <select
-                            className="w-full p-2 border rounded-md"
-                            value={siteSettings.h3_size}
-                            onChange={(e) => setSiteSettings({...siteSettings, h3_size: e.target.value})}
-                          >
-                            <option value="1.125rem">1.125rem (18px)</option>
-                            <option value="1.25rem">1.25rem (20px)</option>
-                            <option value="1.5rem">1.5rem (24px)</option>
-                            <option value="1.875rem">1.875rem (30px)</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">H4 Size</label>
-                          <select
-                            className="w-full p-2 border rounded-md"
-                            value={siteSettings.h4_size}
-                            onChange={(e) => setSiteSettings({...siteSettings, h4_size: e.target.value})}
-                          >
-                            <option value="1rem">1rem (16px)</option>
-                            <option value="1.125rem">1.125rem (18px)</option>
-                            <option value="1.25rem">1.25rem (20px)</option>
-                            <option value="1.5rem">1.5rem (24px)</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">H5 Size</label>
-                          <select
-                            className="w-full p-2 border rounded-md"
-                            value={siteSettings.h5_size}
-                            onChange={(e) => setSiteSettings({...siteSettings, h5_size: e.target.value})}
-                          >
-                            <option value="0.875rem">0.875rem (14px)</option>
-                            <option value="1rem">1rem (16px)</option>
-                            <option value="1.125rem">1.125rem (18px)</option>
-                            <option value="1.25rem">1.25rem (20px)</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      {/* Heading Colors */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium mb-2">H1 Color</label>
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="color"
-                              value={siteSettings.h1_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, h1_color: e.target.value})}
-                              className="w-12 h-10 border rounded"
-                            />
-                            <input
-                              type="text"
-                              value={siteSettings.h1_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, h1_color: e.target.value})}
-                              className="flex-1 p-2 border rounded-md font-mono text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">H2 Color</label>
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="color"
-                              value={siteSettings.h2_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, h2_color: e.target.value})}
-                              className="w-12 h-10 border rounded"
-                            />
-                            <input
-                              type="text"
-                              value={siteSettings.h2_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, h2_color: e.target.value})}
-                              className="flex-1 p-2 border rounded-md font-mono text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">H3 Color</label>
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="color"
-                              value={siteSettings.h3_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, h3_color: e.target.value})}
-                              className="w-12 h-10 border rounded"
-                            />
-                            <input
-                              type="text"
-                              value={siteSettings.h3_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, h3_color: e.target.value})}
-                              className="flex-1 p-2 border rounded-md font-mono text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">H4 Color</label>
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="color"
-                              value={siteSettings.h4_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, h4_color: e.target.value})}
-                              className="w-12 h-10 border rounded"
-                            />
-                            <input
-                              type="text"
-                              value={siteSettings.h4_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, h4_color: e.target.value})}
-                              className="flex-1 p-2 border rounded-md font-mono text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">H5 Color</label>
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="color"
-                              value={siteSettings.h5_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, h5_color: e.target.value})}
-                              className="w-12 h-10 border rounded"
-                            />
-                            <input
-                              type="text"
-                              value={siteSettings.h5_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, h5_color: e.target.value})}
-                              className="flex-1 p-2 border rounded-md font-mono text-sm"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Typography Preview */}
-                      <div className="p-6 bg-gray-50 rounded-lg" style={{fontFamily: siteSettings.global_font_family}}>
-                        <h4 className="font-medium mb-4">Typography Preview</h4>
-                        <h1 style={{fontSize: siteSettings.h1_size, color: siteSettings.h1_color}} className="font-bold">
-                          H1 Heading - {siteSettings.h1_size}
-                        </h1>
-                        <h2 style={{fontSize: siteSettings.h2_size, color: siteSettings.h2_color}} className="font-semibold mt-2">
-                          H2 Heading - {siteSettings.h2_size}
-                        </h2>
-                        <h3 style={{fontSize: siteSettings.h3_size, color: siteSettings.h3_color}} className="font-medium mt-2">
-                          H3 Heading - {siteSettings.h3_size}
-                        </h3>
-                        <h4 style={{fontSize: siteSettings.h4_size, color: siteSettings.h4_color}} className="font-medium mt-2">
-                          H4 Heading - {siteSettings.h4_size}
-                        </h4>
-                        <h5 style={{fontSize: siteSettings.h5_size, color: siteSettings.h5_color}} className="font-medium mt-2">
-                          H5 Heading - {siteSettings.h5_size}
-                        </h5>
-                        <p className="mt-4 text-gray-600">
-                          This is how your text will look with the selected font family: <strong>{siteSettings.global_font_family}</strong>
-                        </p>
+                          Choose Excel File
+                        </label>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-
-                {/* Theme Colors */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Theme Colors</CardTitle>
-                    <CardDescription>Customize your marketplace color scheme</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium mb-2">Primary Color</label>
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="color"
-                              value={siteSettings.primary_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, primary_color: e.target.value})}
-                              className="w-12 h-10 border rounded"
-                            />
-                            <input
-                              type="text"
-                              value={siteSettings.primary_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, primary_color: e.target.value})}
-                              className="flex-1 p-2 border rounded-md font-mono"
-                            />
-                          </div>
+                    
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <div className="flex">
+                        <div className="flex-shrink-0">
+                          <Eye className="h-5 w-5 text-yellow-400" />
                         </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium mb-2">Secondary Color</label>
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="color"
-                              value={siteSettings.secondary_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, secondary_color: e.target.value})}
-                              className="w-12 h-10 border rounded"
-                            />
-                            <input
-                              type="text"
-                              value={siteSettings.secondary_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, secondary_color: e.target.value})}
-                              className="flex-1 p-2 border rounded-md font-mono"
-                            />
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium mb-2">Accent Color</label>
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="color"
-                              value={siteSettings.accent_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, accent_color: e.target.value})}
-                              className="w-12 h-10 border rounded"
-                            />
-                            <input
-                              type="text"
-                              value={siteSettings.accent_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, accent_color: e.target.value})}
-                              className="flex-1 p-2 border rounded-md font-mono"
-                            />
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium mb-2">Background Color</label>
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="color"
-                              value={siteSettings.background_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, background_color: e.target.value})}
-                              className="w-12 h-10 border rounded"
-                            />
-                            <input
-                              type="text"
-                              value={siteSettings.background_color}
-                              onChange={(e) => setSiteSettings({...siteSettings, background_color: e.target.value})}
-                              className="flex-1 p-2 border rounded-md font-mono"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="p-4 bg-gray-50 rounded-lg">
-                        <h4 className="font-medium mb-4">Color Preview</h4>
-                        <div className="flex items-center space-x-4">
-                          <div 
-                            className="w-16 h-16 rounded-lg flex items-center justify-center text-white font-bold text-xs"
-                            style={{backgroundColor: siteSettings.primary_color}}
-                          >
-                            Primary
-                          </div>
-                          <div 
-                            className="w-16 h-16 rounded-lg flex items-center justify-center text-white font-bold text-xs"
-                            style={{backgroundColor: siteSettings.secondary_color}}
-                          >
-                            Secondary
-                          </div>
-                          <div 
-                            className="w-16 h-16 rounded-lg flex items-center justify-center text-white font-bold text-xs"
-                            style={{backgroundColor: siteSettings.accent_color}}
-                          >
-                            Accent
-                          </div>
-                          <div 
-                            className="w-16 h-16 rounded-lg flex items-center justify-center border text-xs"
-                            style={{backgroundColor: siteSettings.background_color}}
-                          >
-                            BG
+                        <div className="ml-3">
+                          <h3 className="text-sm font-medium text-yellow-800">Important Notice</h3>
+                          <div className="mt-2 text-sm text-yellow-700">
+                            <p>Uploading a new database file will replace existing data. Please ensure you have a backup before proceeding.</p>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-
-                <div className="flex space-x-2">
-                  <Button
-                    onClick={() => updateSiteSettings(siteSettings)}
-                    className="flex-1"
-                  >
-                    Save All Appearance Settings
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSiteSettings({
-                        ...siteSettings,
-                        global_font_family: 'Inter',
-                        h1_size: '3rem',
-                        h2_size: '2.25rem',
-                        h3_size: '1.875rem',
-                        h4_size: '1.5rem',
-                        h5_size: '1.25rem',
-                        h1_color: '#1f2937',
-                        h2_color: '#374151',
-                        h3_color: '#4b5563',
-                        h4_color: '#6b7280',
-                        h5_color: '#9ca3af',
-                        primary_color: '#6366f1',
-                        secondary_color: '#8b5cf6',
-                        accent_color: '#ef4444',
-                        background_color: '#f8fafc'
-                      });
-                    }}
-                  >
-                    Reset to Defaults
-                  </Button>
-                </div>
-              </div>
-            ) : null}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
           </TabsContent>
         </Tabs>
       </div>
