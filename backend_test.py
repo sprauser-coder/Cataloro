@@ -230,7 +230,8 @@ class Phase3ABackendTester:
                 "location": "Test City, Test State"
             }
             
-            response = self.session.post(f"{BACKEND_URL}/listings", json=listing_data, headers=headers)
+            # Use direct backend URL for consistency with user creation
+            response = self.session.post(f"{BACKEND_DIRECT_URL}/listings", json=listing_data, headers=headers)
             
             if response.status_code == 200:
                 data = response.json()
