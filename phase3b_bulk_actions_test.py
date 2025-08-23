@@ -9,8 +9,8 @@ import json
 import os
 from datetime import datetime
 
-# Configuration
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://217.154.0.82')
+# Configuration - Use localhost for testing as external proxy has routing issues
+BACKEND_URL = "http://localhost:8001"
 API_BASE = f"{BACKEND_URL}/api"
 
 # Admin credentials
