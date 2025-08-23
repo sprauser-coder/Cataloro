@@ -2,7 +2,7 @@ import requests
 import json
 
 class AuthEdgeCaseTester:
-    def __init__(self, base_url="https://emarket-cataloro.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-launch.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         
