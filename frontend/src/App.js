@@ -265,14 +265,37 @@ const Header = () => {
               <Link
                 key={navItem.id}
                 to={navItem.url}
-                className="text-gray-700 hover:text-indigo-600 font-medium transition-colors"
+                className="font-medium transition-colors"
+                style={{
+                  color: siteSettings?.link_color || '#6b7280',
+                  fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = siteSettings?.link_color || '#6b7280';
+                }}
                 target={navItem.target}
               >
                 {navItem.label}
               </Link>
             ))}
             {user?.role === 'admin' && (
-              <Link to="/admin" className="text-red-600 hover:text-red-800 font-medium transition-colors">
+              <Link 
+                to="/admin" 
+                className="font-medium transition-colors"
+                style={{
+                  color: '#dc2626', // Keep admin link red for visibility
+                  fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.color = '#b91c1c';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = '#dc2626';
+                }}
+              >
                 Cataloro Admin
               </Link>
             )}
