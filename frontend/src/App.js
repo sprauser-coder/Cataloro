@@ -2124,14 +2124,15 @@ const AdminPanel = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="listings">Listings</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="cms">Content</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="appearance">Appearance</TabsTrigger>
+            <TabsTrigger value="pages">Page Management</TabsTrigger>
+            <TabsTrigger value="settings">General Settings</TabsTrigger>
+            <TabsTrigger value="database">Database</TabsTrigger>
           </TabsList>
 
           {/* Dashboard Tab */}
