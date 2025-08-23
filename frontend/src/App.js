@@ -1107,15 +1107,36 @@ const Sell = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Basic validation
-    if (!formData.title || !formData.description || !formData.category || !formData.condition || !formData.price || !formData.location) {
+    console.log('=== FORM SUBMISSION DEBUG ===');
+    console.log('1. Form submission started');
+    console.log('2. Form data:', formData);
+    console.log('3. Categories available:', categories);
+    console.log('4. Uploaded images:', uploadedImages);
+    
+    // Basic validation with detailed logging
+    const requiredFields = {
+      title: formData.title,
+      description: formData.description, 
+      category: formData.category,
+      condition: formData.condition,
+      price: formData.price,
+      location: formData.location
+    };
+    
+    console.log('5. Required fields check:', requiredFields);
+    
+    const missingFields = Object.entries(requiredFields).filter(([key, value]) => !value);
+    if (missingFields.length > 0) {
+      console.log('6. Missing fields:', missingFields.map(([key]) => key));
       toast({
         title: "Error",
-        description: "Please fill in all required fields (title, description, category, condition, price, location)",
+        description: `Please fill in all required fields: ${missingFields.map(([key]) => key).join(', ')}`,
         variant: "destructive"
       });
       return;
     }
+    
+    console.log('7. All required fields present, proceeding with API call');
     
     try {
       const data = { ...formData };
@@ -1152,7 +1173,14 @@ const Sell = () => {
       // Add uploaded images
       data.images = uploadedImages;
 
+      console.log('8. Final data to send:', data);
+      console.log('9. API endpoint:', `${API}/listings`);
+      console.log('10. Making axios POST request...');
+
       const response = await axios.post(`${API}/listings`, data);
+      
+      console.log('11. API call successful!');
+      console.log('12. Response:', response.data);
       
       toast({
         title: "Success!",
@@ -1162,9 +1190,30 @@ const Sell = () => {
       navigate(`/listing/${response.data.id}`);
       
     } catch (error) {
-      const errorMessage = error.response?.data?.detail || 
-                          (error.response?.data?.message) || 
+      console.log('=== ERROR DEBUGGING ===');
+      console.log('13. Error caught:', error);
+      console.log('14. Error type:', typeof error);
+      console.log('15. Error object keys:', error ? Object.keys(error) : 'error is null/undefined');
+      
+      if (error) {
+        console.log('16. Error message:', error.message);
+        console.log('17. Error response:', error.response);
+        console.log('18. Error request:', error.request);
+        console.log('19. Error config:', error.config);
+        
+        if (error.response) {
+          console.log('20. Response data:', error.response.data);
+          console.log('21. Response status:', error.response.status);
+          console.log('22. Response headers:', error.response.headers);
+        }
+      }
+      
+      const errorMessage = error?.response?.data?.detail || 
+                          error?.response?.data?.message || 
+                          error?.message ||
                           'Failed to create listing. Please try again.';
+      
+      console.log('23. Final error message:', errorMessage);
       
       toast({
         title: "Error",
