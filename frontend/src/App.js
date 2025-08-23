@@ -1949,15 +1949,16 @@ const AdminPanel = () => {
         description: `${logoType.charAt(0).toUpperCase() + logoType.slice(1)} logo uploaded successfully`,
       });
 
-      // Clear the file input
-      event.target.value = '';
-
     } catch (error) {
       toast({
         title: "Error",
         description: formatErrorMessage(error, "Failed to upload logo"),
         variant: "destructive"
       });
+    } finally {
+      setUploading(false);
+      // Clear the file input
+      event.target.value = '';
     }
   };
 
