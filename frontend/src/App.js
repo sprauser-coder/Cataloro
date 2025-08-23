@@ -1272,7 +1272,7 @@ const Sell = () => {
 
               {formData.listing_type === 'fixed_price' ? (
                 <div>
-                  <Label htmlFor="price">Price ($)</Label>
+                  <Label htmlFor="price">Price (€)</Label>
                   <Input
                     id="price"
                     type="number"
