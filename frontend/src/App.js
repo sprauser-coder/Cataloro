@@ -3620,35 +3620,104 @@ const AdminPanel = () => {
                               </div>
                             </div>
                           </div>
+
+                          {/* Text & Link Colors */}
+                          <div className="space-y-4">
+                            <h4 className="font-medium">Text & Link Colors</h4>
+                            <div className="space-y-3">
+                              <div className="flex items-center space-x-3">
+                                <label className="w-24 text-sm">Font Color:</label>
+                                <input
+                                  type="color"
+                                  value={siteSettings.font_color || '#1f2937'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, font_color: e.target.value})}
+                                  className="w-12 h-12 border rounded cursor-pointer"
+                                />
+                                <span className="text-sm text-gray-500">{siteSettings.font_color || '#1f2937'}</span>
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <label className="w-24 text-sm">Link Color:</label>
+                                <input
+                                  type="color"
+                                  value={siteSettings.link_color || '#3b82f6'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, link_color: e.target.value})}
+                                  className="w-12 h-12 border rounded cursor-pointer"
+                                />
+                                <span className="text-sm text-gray-500">{siteSettings.link_color || '#3b82f6'}</span>
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <label className="w-24 text-sm">Link Hover:</label>
+                                <input
+                                  type="color"
+                                  value={siteSettings.link_hover_color || '#1d4ed8'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, link_hover_color: e.target.value})}
+                                  className="w-12 h-12 border rounded cursor-pointer"
+                                />
+                                <span className="text-sm text-gray-500">{siteSettings.link_hover_color || '#1d4ed8'}</span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
 
                         {/* Color Preview */}
                         <div className="p-6 border rounded-lg">
                           <h4 className="font-medium mb-4">Color Preview</h4>
-                          <div className="flex space-x-4">
-                            <div 
-                              className="px-4 py-2 rounded text-white font-medium"
-                              style={{backgroundColor: siteSettings.primary_color || '#6366f1'}}
-                            >
-                              Primary Button
+                          <div className="space-y-4">
+                            {/* Buttons Preview */}
+                            <div className="flex space-x-4">
+                              <div 
+                                className="px-4 py-2 rounded text-white font-medium"
+                                style={{backgroundColor: siteSettings.primary_color || '#6366f1'}}
+                              >
+                                Primary Button
+                              </div>
+                              <div 
+                                className="px-4 py-2 rounded text-white font-medium"
+                                style={{backgroundColor: siteSettings.secondary_color || '#f59e0b'}}
+                              >
+                                Secondary Button
+                              </div>
+                              <div 
+                                className="px-4 py-2 rounded text-white font-medium"
+                                style={{backgroundColor: siteSettings.success_color || '#10b981'}}
+                              >
+                                Success
+                              </div>
+                              <div 
+                                className="px-4 py-2 rounded text-white font-medium"
+                                style={{backgroundColor: siteSettings.error_color || '#ef4444'}}
+                              >
+                                Error
+                              </div>
                             </div>
-                            <div 
-                              className="px-4 py-2 rounded text-white font-medium"
-                              style={{backgroundColor: siteSettings.secondary_color || '#f59e0b'}}
-                            >
-                              Secondary Button
-                            </div>
-                            <div 
-                              className="px-4 py-2 rounded text-white font-medium"
-                              style={{backgroundColor: siteSettings.success_color || '#10b981'}}
-                            >
-                              Success
-                            </div>
-                            <div 
-                              className="px-4 py-2 rounded text-white font-medium"
-                              style={{backgroundColor: siteSettings.error_color || '#ef4444'}}
-                            >
-                              Error
+                            
+                            {/* Text & Links Preview */}
+                            <div className="pt-4 border-t">
+                              <p 
+                                className="mb-2"
+                                style={{color: siteSettings.font_color || '#1f2937'}}
+                              >
+                                Sample paragraph text with custom font color.
+                              </p>
+                              <p>
+                                This is a text with{' '}
+                                <a 
+                                  href="#" 
+                                  className="transition-colors duration-200"
+                                  style={{
+                                    color: siteSettings.link_color || '#3b82f6',
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.target.style.color = siteSettings.link_hover_color || '#1d4ed8';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.target.style.color = siteSettings.link_color || '#3b82f6';
+                                  }}
+                                >
+                                  custom link colors
+                                </a>
+                                {' '}that you can hover over to see the hover effect.
+                              </p>
                             </div>
                           </div>
                         </div>
