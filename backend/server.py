@@ -1425,13 +1425,13 @@ async def upload_hero_background(
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Only PNG and JPEG files are allowed")
     
-    # Validate file size (max 10MB for backgrounds)
+    # Validate file size (max 25MB for backgrounds)
     file_size = 0
     content = await file.read()
     file_size = len(content)
     
-    if file_size > 10 * 1024 * 1024:  # 10MB limit
-        raise HTTPException(status_code=400, detail="File size too large. Maximum 10MB allowed")
+    if file_size > 25 * 1024 * 1024:  # 25MB limit
+        raise HTTPException(status_code=400, detail="File size too large. Maximum 25MB allowed")
     
     # Generate unique filename
     file_extension = os.path.splitext(file.filename)[1] or ".png"
