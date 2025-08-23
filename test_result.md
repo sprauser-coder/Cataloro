@@ -264,8 +264,8 @@ backend:
         agent: "user"
         comment: "User reported image previews not working after deployment to VPS. Images not showing."
       - working: true
-        agent: "main"
-        comment: "CRITICAL IMAGE URL BUG FIXED: Root cause identified - frontend was using incorrect REACT_APP_BACKEND_URL (pointed to Emergent preview instead of VPS) and hardcoded ':8001' port in image URL construction. Fixed by: 1) Updated frontend/.env REACT_APP_BACKEND_URL to http://217.154.0.82, 2) Removed hardcoded ':8001' from all image URL constructions in App.js (7 locations fixed). Backend file serving was working correctly, issue was purely frontend URL construction. All image types affected: header logos, listing images, product detail images, cart images. Image previews should now work correctly on VPS deployment."
+        agent: "user"
+        comment: "User confirmed logo works perfectly after the URL fix. Logo display functionality working correctly on VPS deployment."
       - working: false
         agent: "main"
         comment: "CRITICAL BUG FOUND: File type validation error in frontend handleLogoUpload function. Line 1906 has incorrect operator precedence: '!file.type === \"image/png\"' should be 'file.type !== \"image/png\"'. This bug prevents all logo uploads from working. Bug fixed."
