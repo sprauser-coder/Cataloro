@@ -3470,12 +3470,12 @@ const AdminPanel = () => {
                               />
                             </div>
                             <h2 
-                              key={`h2-${siteSettings.global_font_family || 'Inter'}`}
+                              key={`h2-${siteSettings.global_font_family || 'Inter'}-${Date.now()}`}
                               className="font-semibold" 
                               style={{
                                 fontSize: siteSettings.h2_size || '30px',
                                 color: siteSettings.h2_color || '#374151',
-                                fontFamily: siteSettings.global_font_family || 'Inter'
+                                fontFamily: `${siteSettings.global_font_family || 'Inter'}, sans-serif`
                               }}
                             >
                               Sample H2 Text
