@@ -386,7 +386,7 @@ class DeploymentReadinessTest:
         try:
             response = requests.get(url, headers=headers, timeout=10)
             if response and response.status_code in [401, 403]:
-                self.log_test("JWT token protection working", True, "Unauthorized access properly blocked")
+                self.log_test("JWT token protection working", True, f"Unauthorized access blocked with status {response.status_code}")
                 success_count += 1
             else:
                 status = response.status_code if response else "No response"
