@@ -1149,17 +1149,18 @@ async def get_site_settings(admin: User = Depends(get_admin_user)):
         await db.site_settings.insert_one(settings_doc)
         return default_settings
     
-    # Ensure all fields from the model are present, using defaults for missing fields
-    parsed_settings = parse_from_mongo(settings)
+    # Create a default settings object to get all field defaults
     default_settings = SiteSettings()
+    default_dict = default_settings.dict()
     
-    # Merge database settings with defaults for any missing fields
-    for field_name, field_info in SiteSettings.__fields__.items():
-        if field_name not in parsed_settings:
-            default_value = getattr(default_settings, field_name)
-            parsed_settings[field_name] = default_value
+    # Parse the database settings
+    parsed_settings = parse_from_mongo(settings)
     
-    return SiteSettings(**parsed_settings)
+    # Merge: start with defaults, then override with database values
+    merged_settings = default_dict.copy()
+    merged_settings.update(parsed_settings)
+    
+    return SiteSettings(**merged_settings)
 
 @api_router.put("/admin/cms/settings")
 async def update_site_settings(settings_data: dict, admin: User = Depends(get_admin_user)):
