@@ -143,6 +143,13 @@ class DeploymentReadinessTest:
         """Test admin authentication"""
         print("\n🔍 Testing Admin Authentication...")
         
+        # First ensure admin exists
+        try:
+            create_response = requests.post(f"{self.api_url}/admin/create-default-admin", timeout=10)
+            # Ignore if admin already exists
+        except:
+            pass
+        
         admin_data = {
             "email": "admin@marketplace.com",
             "password": "admin123"
