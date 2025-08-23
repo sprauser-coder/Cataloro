@@ -639,6 +639,7 @@ class SiteSettings(BaseModel):
     hero_background_gradient_end: str = Field(default="#764ba2")
     hero_text_color: str = Field(default="#ffffff")
     hero_subtitle_color: str = Field(default="#f1f5f9")  # Light gray
+    hero_height: str = Field(default="600px")  # Hero section height
     
     # Typography Settings
     global_font_family: str = Field(default="Inter")  # "Inter", "Roboto", "Open Sans", "Poppins", etc.
