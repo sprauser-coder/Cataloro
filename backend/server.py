@@ -1959,6 +1959,148 @@ async def bulk_price_update_listings(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update prices: {str(e)}")
 
+# ===========================
+# NOTIFICATION ENDPOINTS (Phase 3C)
+# ===========================
+
+@api_router.websocket("/notifications/{user_id}")
+async def websocket_notifications(websocket: WebSocket, user_id: str):
+    """WebSocket endpoint for real-time notifications"""
+    try:
+        await connection_manager.connect(websocket, user_id)
+        
+        # Send any unread notifications when user connects
+        unread_notifications = await get_user_notifications(user_id, unread_only=True)
+        for notification in unread_notifications:
+            await connection_manager.send_personal_notification(user_id, {
+                "type": "notification",
+                "data": notification
+            })
+        
+        # Keep connection alive
+        while True:
+            try:
+                # Receive heartbeat or other messages from client
+                message = await websocket.receive_text()
+                if message == "ping":
+                    await websocket.send_text("pong")
+            except WebSocketDisconnect:
+                break
+            except Exception as e:
+                print(f"WebSocket error for user {user_id}: {e}")
+                break
+                
+    except WebSocketDisconnect:
+        pass
+    finally:
+        connection_manager.disconnect(user_id)
+
+async def create_notification(
+    user_id: str,
+    notification_type: NotificationType,
+    title: str,
+    message: str,
+    data: Optional[Dict[str, Any]] = None
+) -> str:
+    """Create and send notification"""
+    try:
+        notification = Notification(
+            user_id=user_id,
+            notification_type=notification_type,
+            title=title,
+            message=message,
+            data=data or {}
+        )
+        
+        # Save to database
+        notification_doc = prepare_for_mongo(notification.dict())
+        await db.notifications.insert_one(notification_doc)
+        
+        # Send real-time notification
+        await connection_manager.send_personal_notification(user_id, {
+            "type": "notification",
+            "data": notification.dict()
+        })
+        
+        return notification.id
+        
+    except Exception as e:
+        print(f"Failed to create notification: {e}")
+        return None
+
+async def get_user_notifications(user_id: str, unread_only: bool = False) -> List[dict]:
+    """Get user notifications"""
+    try:
+        query = {"user_id": user_id}
+        if unread_only:
+            query["read"] = False
+            
+        cursor = db.notifications.find(query).sort("created_at", -1)
+        notifications = []
+        
+        async for doc in cursor:
+            notification = parse_from_mongo(doc)
+            notifications.append(notification)
+            
+        return notifications
+        
+    except Exception as e:
+        print(f"Failed to get notifications: {e}")
+        return []
+
+@api_router.get("/notifications")
+async def get_notifications(
+    unread_only: bool = False,
+    current_user: User = Depends(get_current_user)
+):
+    """Get user notifications"""
+    try:
+        notifications = await get_user_notifications(current_user.id, unread_only)
+        return {
+            "notifications": notifications,
+            "unread_count": len([n for n in notifications if not n.get("read", False)])
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get notifications: {str(e)}")
+
+@api_router.put("/notifications/{notification_id}/read")
+async def mark_notification_read(
+    notification_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Mark notification as read"""
+    try:
+        result = await db.notifications.update_one(
+            {"id": notification_id, "user_id": current_user.id},
+            {"$set": {"read": True}}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Notification not found")
+            
+        return {"message": "Notification marked as read"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark notification as read: {str(e)}")
+
+@api_router.put("/notifications/mark-all-read")
+async def mark_all_notifications_read(current_user: User = Depends(get_current_user)):
+    """Mark all user notifications as read"""
+    try:
+        result = await db.notifications.update_many(
+            {"user_id": current_user.id, "read": False},
+            {"$set": {"read": True}}
+        )
+        
+        return {
+            "message": f"Marked {result.modified_count} notifications as read"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark notifications as read: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
