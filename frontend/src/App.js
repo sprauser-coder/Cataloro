@@ -1286,10 +1286,7 @@ const Sell = () => {
                   <Label htmlFor="category">Category</Label>
                   <Select 
                     value={formData.category || ""} 
-                    onValueChange={(value) => {
-                      console.log('Category selected:', value);
-                      setFormData({...formData, category: value});
-                    }}
+                    onValueChange={(value) => setFormData({...formData, category: value})}
                   >
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select category" />
@@ -1302,10 +1299,6 @@ const Sell = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  {/* Debug info */}
-                  <div className="text-xs text-gray-500 mt-1">
-                    Selected: {formData.category || 'None'} | Available: {categories.length}
-                  </div>
                 </div>
 
                 <div>
