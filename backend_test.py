@@ -1519,6 +1519,13 @@ def main():
         tester.test_branding_admin_panel_functionality,
         tester.test_branding_core_functionality_unaffected,
         
+        # Site Name Specific Tests (Admin Panel Title Fix)
+        tester.test_site_name_current_value,
+        tester.test_admin_site_name_current_value,
+        tester.test_update_site_name_to_cataloro,
+        tester.test_verify_site_name_update_persistence,
+        tester.test_admin_panel_title_fix_verification,
+        
         # Hero Height Functionality Tests
         tester.test_hero_height_default_value,
         tester.test_hero_height_in_public_settings,
