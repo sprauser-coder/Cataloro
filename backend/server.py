@@ -371,6 +371,31 @@ async def get_listings(
     listings = await db.listings.find(query).skip(skip).limit(limit).to_list(length=None)
     return [ProductListing(**parse_from_mongo(listing)) for listing in listings]
 
+@api_router.get("/listings/my-listings")
+async def get_my_listings(current_user: User = Depends(get_current_user)):
+    """Get current user's listings"""
+    try:
+        # Find listings created by current user
+        cursor = db.listings.find({"seller_id": current_user.id})
+        listings = []
+        
+        async for listing_doc in cursor:
+            listing_data = parse_from_mongo(listing_doc)
+            
+            # Add seller information
+            listing_data["seller_name"] = current_user.full_name
+            listing_data["seller_username"] = current_user.username
+            
+            listings.append(listing_data)
+        
+        # Sort by creation date (newest first)
+        listings.sort(key=lambda x: x.get("created_at", datetime.min), reverse=True)
+        
+        return listings
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve user listings: {str(e)}")
+
 @api_router.get("/listings/{listing_id}", response_model=ProductListing)
 async def get_listing(listing_id: str):
     listing = await db.listings.find_one({"id": listing_id})
