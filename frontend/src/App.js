@@ -1074,7 +1074,7 @@ const Sell = () => {
       
       toast({
         title: "Error",
-        description: formatErrorMessage(error, "Failed to upload image"),
+        description: "Failed to upload image. Please try again.",
         variant: "destructive"
       });
     } finally {
