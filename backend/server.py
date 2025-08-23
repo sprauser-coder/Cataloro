@@ -1143,24 +1143,16 @@ async def get_site_settings(admin: User = Depends(get_admin_user)):
     """Get current site settings"""
     settings = await db.site_settings.find_one({})
     if not settings:
-        # Create default settings
+        # Create default settings with all fields
         default_settings = SiteSettings()
-        settings_doc = prepare_for_mongo(default_settings.dict())
+        settings_doc = prepare_for_mongo(default_settings.dict(exclude_unset=False))
         await db.site_settings.insert_one(settings_doc)
         return default_settings
     
-    # Parse the database settings
+    # Parse the database settings and return as SiteSettings instance
     parsed_settings = parse_from_mongo(settings)
     
-    # Remove any Phase 2 fields that are explicitly None to allow defaults to work
-    phase2_fields = ["font_color", "link_color", "link_hover_color", 
-                    "hero_image_url", "hero_background_image_url", "hero_background_size"]
-    
-    for field in phase2_fields:
-        if field in parsed_settings and parsed_settings[field] is None:
-            del parsed_settings[field]
-    
-    # Create instance with cleaned data - this should use defaults for missing fields
+    # Create instance - missing fields will use defaults from Pydantic model
     return SiteSettings(**parsed_settings)
 
 @api_router.put("/admin/cms/settings")
