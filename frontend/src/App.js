@@ -3517,6 +3517,7 @@ const AdminPanel = () => {
                                 />
                               </div>
                               <h5 
+                                key={`h5-${siteSettings.global_font_family || 'Inter'}`}
                                 className="font-normal" 
                                 style={{
                                   fontSize: siteSettings.h5_size || '18px',
