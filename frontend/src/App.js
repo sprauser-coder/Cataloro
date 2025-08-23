@@ -871,7 +871,7 @@ const ListingDetail = () => {
               {listing.listing_type === 'fixed_price' ? (
                 <>
                   <div className="text-3xl font-bold text-green-600 mb-4">
-                    ${listing.price?.toFixed(2)}
+                    €{listing.price?.toFixed(2)}
                   </div>
                   <div className="mb-4">
                     <Label htmlFor="quantity">Quantity</Label>
