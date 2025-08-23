@@ -3886,6 +3886,7 @@ const AdminPanel = () => {
                               >
                                 <option value="solid">Solid Color</option>
                                 <option value="gradient">Gradient</option>
+                                <option value="image">Background Image</option>
                               </select>
                             </div>
                             
