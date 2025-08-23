@@ -3213,7 +3213,535 @@ const AdminPanel = () => {
               <div className="flex justify-center py-8">Loading...</div>
             ) : siteSettings ? (
               <div className="space-y-6">
-                {/* Typography Settings */}
+                {/* Sub-navigation for Appearance sections */}
+                <div className="border-b border-gray-200">
+                  <nav className="-mb-px flex space-x-8">
+                    <button
+                      className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
+                        appearanceTab === 'typography' 
+                          ? 'border-indigo-500 text-indigo-600' 
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                      onClick={() => setAppearanceTab('typography')}
+                    >
+                      Typography
+                    </button>
+                    <button
+                      className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
+                        appearanceTab === 'colors' 
+                          ? 'border-indigo-500 text-indigo-600' 
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                      onClick={() => setAppearanceTab('colors')}
+                    >
+                      Theme Colours
+                    </button>
+                    <button
+                      className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
+                        appearanceTab === 'hero' 
+                          ? 'border-indigo-500 text-indigo-600' 
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                      onClick={() => setAppearanceTab('hero')}
+                    >
+                      Hero Selection
+                    </button>
+                  </nav>
+                </div>
+
+                {/* Typography Section */}
+                {appearanceTab === 'typography' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Typography Settings</CardTitle>
+                      <CardDescription>Customize fonts and text appearance across your site</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {/* Global Font Family */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Global Font Family</label>
+                          <select
+                            className="w-full p-3 border rounded-md"
+                            value={siteSettings.global_font_family || 'Inter'}
+                            onChange={(e) => setSiteSettings({...siteSettings, global_font_family: e.target.value})}
+                          >
+                            <option value="Inter">Inter</option>
+                            <option value="Roboto">Roboto</option>
+                            <option value="Open Sans">Open Sans</option>
+                            <option value="Lato">Lato</option>
+                            <option value="Poppins">Poppins</option>
+                            <option value="Source Sans Pro">Source Sans Pro</option>
+                            <option value="PT Sans">PT Sans</option>
+                            <option value="Arial">Arial</option>
+                            <option value="Helvetica">Helvetica</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Times">Times</option>
+                          </select>
+                        </div>
+
+                        {/* Heading Sizes and Colors */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* H1 Settings */}
+                          <div className="space-y-3">
+                            <h4 className="font-medium">H1 Heading</h4>
+                            <div className="flex items-center space-x-3">
+                              <input
+                                type="range"
+                                min="24"
+                                max="72"
+                                value={parseInt(siteSettings.h1_size?.replace('px', '') || '36')}
+                                onChange={(e) => setSiteSettings({...siteSettings, h1_size: e.target.value + 'px'})}
+                                className="flex-1"
+                              />
+                              <input
+                                type="text"
+                                value={siteSettings.h1_size || '36px'}
+                                onChange={(e) => setSiteSettings({...siteSettings, h1_size: e.target.value})}
+                                className="w-16 p-1 border rounded text-center text-sm"
+                              />
+                              <input
+                                type="color"
+                                value={siteSettings.h1_color || '#1f2937'}
+                                onChange={(e) => setSiteSettings({...siteSettings, h1_color: e.target.value})}
+                                className="w-10 h-10 border rounded cursor-pointer"
+                              />
+                            </div>
+                            <h1 
+                              className="font-bold" 
+                              style={{
+                                fontSize: siteSettings.h1_size || '36px',
+                                color: siteSettings.h1_color || '#1f2937',
+                                fontFamily: siteSettings.global_font_family || 'Inter'
+                              }}
+                            >
+                              Sample H1 Text
+                            </h1>
+                          </div>
+
+                          {/* H2 Settings */}
+                          <div className="space-y-3">
+                            <h4 className="font-medium">H2 Heading</h4>
+                            <div className="flex items-center space-x-3">
+                              <input
+                                type="range"
+                                min="20"
+                                max="48"
+                                value={parseInt(siteSettings.h2_size?.replace('px', '') || '30')}
+                                onChange={(e) => setSiteSettings({...siteSettings, h2_size: e.target.value + 'px'})}
+                                className="flex-1"
+                              />
+                              <input
+                                type="text"
+                                value={siteSettings.h2_size || '30px'}
+                                onChange={(e) => setSiteSettings({...siteSettings, h2_size: e.target.value})}
+                                className="w-16 p-1 border rounded text-center text-sm"
+                              />
+                              <input
+                                type="color"
+                                value={siteSettings.h2_color || '#374151'}
+                                onChange={(e) => setSiteSettings({...siteSettings, h2_color: e.target.value})}
+                                className="w-10 h-10 border rounded cursor-pointer"
+                              />
+                            </div>
+                            <h2 
+                              className="font-semibold" 
+                              style={{
+                                fontSize: siteSettings.h2_size || '30px',
+                                color: siteSettings.h2_color || '#374151',
+                                fontFamily: siteSettings.global_font_family || 'Inter'
+                              }}
+                            >
+                              Sample H2 Text
+                            </h2>
+                          </div>
+
+                          {/* H3 Settings */}
+                          <div className="space-y-3">
+                            <h4 className="font-medium">H3 Heading</h4>
+                            <div className="flex items-center space-x-3">
+                              <input
+                                type="range"
+                                min="18"
+                                max="36"
+                                value={parseInt(siteSettings.h3_size?.replace('px', '') || '24')}
+                                onChange={(e) => setSiteSettings({...siteSettings, h3_size: e.target.value + 'px'})}
+                                className="flex-1"
+                              />
+                              <input
+                                type="text"
+                                value={siteSettings.h3_size || '24px'}
+                                onChange={(e) => setSiteSettings({...siteSettings, h3_size: e.target.value})}
+                                className="w-16 p-1 border rounded text-center text-sm"
+                              />
+                              <input
+                                type="color"
+                                value={siteSettings.h3_color || '#4b5563'}
+                                onChange={(e) => setSiteSettings({...siteSettings, h3_color: e.target.value})}
+                                className="w-10 h-10 border rounded cursor-pointer"
+                              />
+                            </div>
+                            <h3 
+                              className="font-medium" 
+                              style={{
+                                fontSize: siteSettings.h3_size || '24px',
+                                color: siteSettings.h3_color || '#4b5563',
+                                fontFamily: siteSettings.global_font_family || 'Inter'
+                              }}
+                            >
+                              Sample H3 Text
+                            </h3>
+                          </div>
+
+                          {/* H4 & H5 Settings */}
+                          <div className="space-y-3">
+                            <h4 className="font-medium">H4 & H5 Headings</h4>
+                            <div className="space-y-2">
+                              <div className="flex items-center space-x-3">
+                                <span className="text-sm w-8">H4:</span>
+                                <input
+                                  type="range"
+                                  min="16"
+                                  max="28"
+                                  value={parseInt(siteSettings.h4_size?.replace('px', '') || '20')}
+                                  onChange={(e) => setSiteSettings({...siteSettings, h4_size: e.target.value + 'px'})}
+                                  className="flex-1"
+                                />
+                                <input
+                                  type="color"
+                                  value={siteSettings.h4_color || '#6b7280'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, h4_color: e.target.value})}
+                                  className="w-8 h-8 border rounded cursor-pointer"
+                                />
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <span className="text-sm w-8">H5:</span>
+                                <input
+                                  type="range"
+                                  min="14"
+                                  max="24"
+                                  value={parseInt(siteSettings.h5_size?.replace('px', '') || '18')}
+                                  onChange={(e) => setSiteSettings({...siteSettings, h5_size: e.target.value + 'px'})}
+                                  className="flex-1"
+                                />
+                                <input
+                                  type="color"
+                                  value={siteSettings.h5_color || '#9ca3af'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, h5_color: e.target.value})}
+                                  className="w-8 h-8 border rounded cursor-pointer"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Button 
+                          onClick={saveAppearanceSettings}
+                          className="w-full"
+                        >
+                          Save Typography Settings
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Theme Colors Section */}
+                {appearanceTab === 'colors' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Theme Colors</CardTitle>
+                      <CardDescription>Customize the color scheme of your marketplace</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Primary Colors */}
+                          <div className="space-y-4">
+                            <h4 className="font-medium">Primary Colors</h4>
+                            <div className="space-y-3">
+                              <div className="flex items-center space-x-3">
+                                <label className="w-24 text-sm">Primary:</label>
+                                <input
+                                  type="color"
+                                  value={siteSettings.primary_color || '#6366f1'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, primary_color: e.target.value})}
+                                  className="w-12 h-12 border rounded cursor-pointer"
+                                />
+                                <span className="text-sm text-gray-500">{siteSettings.primary_color || '#6366f1'}</span>
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <label className="w-24 text-sm">Secondary:</label>
+                                <input
+                                  type="color"
+                                  value={siteSettings.secondary_color || '#f59e0b'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, secondary_color: e.target.value})}
+                                  className="w-12 h-12 border rounded cursor-pointer"
+                                />
+                                <span className="text-sm text-gray-500">{siteSettings.secondary_color || '#f59e0b'}</span>
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <label className="w-24 text-sm">Accent:</label>
+                                <input
+                                  type="color"
+                                  value={siteSettings.accent_color || '#10b981'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, accent_color: e.target.value})}
+                                  className="w-12 h-12 border rounded cursor-pointer"
+                                />
+                                <span className="text-sm text-gray-500">{siteSettings.accent_color || '#10b981'}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Status Colors */}
+                          <div className="space-y-4">
+                            <h4 className="font-medium">Status Colors</h4>
+                            <div className="space-y-3">
+                              <div className="flex items-center space-x-3">
+                                <label className="w-24 text-sm">Success:</label>
+                                <input
+                                  type="color"
+                                  value={siteSettings.success_color || '#10b981'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, success_color: e.target.value})}
+                                  className="w-12 h-12 border rounded cursor-pointer"
+                                />
+                                <span className="text-sm text-gray-500">{siteSettings.success_color || '#10b981'}</span>
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <label className="w-24 text-sm">Warning:</label>
+                                <input
+                                  type="color"
+                                  value={siteSettings.warning_color || '#f59e0b'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, warning_color: e.target.value})}
+                                  className="w-12 h-12 border rounded cursor-pointer"
+                                />
+                                <span className="text-sm text-gray-500">{siteSettings.warning_color || '#f59e0b'}</span>
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <label className="w-24 text-sm">Error:</label>
+                                <input
+                                  type="color"
+                                  value={siteSettings.error_color || '#ef4444'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, error_color: e.target.value})}
+                                  className="w-12 h-12 border rounded cursor-pointer"
+                                />
+                                <span className="text-sm text-gray-500">{siteSettings.error_color || '#ef4444'}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Color Preview */}
+                        <div className="p-6 border rounded-lg">
+                          <h4 className="font-medium mb-4">Color Preview</h4>
+                          <div className="flex space-x-4">
+                            <div 
+                              className="px-4 py-2 rounded text-white font-medium"
+                              style={{backgroundColor: siteSettings.primary_color || '#6366f1'}}
+                            >
+                              Primary Button
+                            </div>
+                            <div 
+                              className="px-4 py-2 rounded text-white font-medium"
+                              style={{backgroundColor: siteSettings.secondary_color || '#f59e0b'}}
+                            >
+                              Secondary Button
+                            </div>
+                            <div 
+                              className="px-4 py-2 rounded text-white font-medium"
+                              style={{backgroundColor: siteSettings.success_color || '#10b981'}}
+                            >
+                              Success
+                            </div>
+                            <div 
+                              className="px-4 py-2 rounded text-white font-medium"
+                              style={{backgroundColor: siteSettings.error_color || '#ef4444'}}
+                            >
+                              Error
+                            </div>
+                          </div>
+                        </div>
+
+                        <Button 
+                          onClick={saveAppearanceSettings}
+                          className="w-full"
+                        >
+                          Save Color Settings
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Hero Selection Section */}
+                {appearanceTab === 'hero' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Hero Section Customization</CardTitle>
+                      <CardDescription>Customize the main hero/banner section of your homepage</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {/* Hero Content */}
+                        <div className="grid grid-cols-1 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Hero Title</label>
+                            <input
+                              type="text"
+                              className="w-full p-3 border rounded-md"
+                              value={siteSettings.hero_title || ''}
+                              onChange={(e) => setSiteSettings({...siteSettings, hero_title: e.target.value})}
+                              placeholder="e.g., Discover Amazing Deals"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
+                            <textarea
+                              className="w-full p-3 border rounded-md"
+                              rows={3}
+                              value={siteSettings.hero_subtitle || ''}
+                              onChange={(e) => setSiteSettings({...siteSettings, hero_subtitle: e.target.value})}
+                              placeholder="e.g., Buy and sell with confidence on Cataloro"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Hero Section Height</label>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="range"
+                                min="300"
+                                max="1000"
+                                step="50"
+                                value={parseInt(siteSettings.hero_height?.replace('px', '') || '600')}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_height: `${e.target.value}px`})}
+                                className="flex-1"
+                              />
+                              <input
+                                type="text"
+                                value={siteSettings.hero_height || '600px'}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_height: e.target.value})}
+                                className="w-20 p-2 border rounded-md text-center"
+                                placeholder="600px"
+                              />
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">Adjust the height of the hero section (300px - 1000px)</p>
+                          </div>
+                        </div>
+
+                        {/* Background Settings */}
+                        <div className="space-y-4">
+                          <h4 className="font-medium">Background Settings</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium mb-2">Background Type</label>
+                              <select
+                                className="w-full p-3 border rounded-md"
+                                value={siteSettings.hero_background_type || 'gradient'}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_background_type: e.target.value})}
+                              >
+                                <option value="solid">Solid Color</option>
+                                <option value="gradient">Gradient</option>
+                              </select>
+                            </div>
+                            
+                            {siteSettings.hero_background_type === 'solid' ? (
+                              <div>
+                                <label className="block text-sm font-medium mb-2">Background Color</label>
+                                <input
+                                  type="color"
+                                  value={siteSettings.hero_background_color || '#6366f1'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, hero_background_color: e.target.value})}
+                                  className="w-full h-12 border rounded cursor-pointer"
+                                />
+                              </div>
+                            ) : (
+                              <>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Gradient Start</label>
+                                  <input
+                                    type="color"
+                                    value={siteSettings.hero_background_gradient_start || '#667eea'}
+                                    onChange={(e) => setSiteSettings({...siteSettings, hero_background_gradient_start: e.target.value})}
+                                    className="w-full h-12 border rounded cursor-pointer"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-sm font-medium mb-2">Gradient End</label>
+                                  <input
+                                    type="color"
+                                    value={siteSettings.hero_background_gradient_end || '#764ba2'}
+                                    onChange={(e) => setSiteSettings({...siteSettings, hero_background_gradient_end: e.target.value})}
+                                    className="w-full h-12 border rounded cursor-pointer"
+                                  />
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Text Colors */}
+                        <div className="space-y-4">
+                          <h4 className="font-medium">Text Colors</h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium mb-2">Title Color</label>
+                              <input
+                                type="color"
+                                value={siteSettings.hero_text_color || '#ffffff'}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_text_color: e.target.value})}
+                                className="w-full h-12 border rounded cursor-pointer"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium mb-2">Subtitle Color</label>
+                              <input
+                                type="color"
+                                value={siteSettings.hero_subtitle_color || '#f1f5f9'}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_subtitle_color: e.target.value})}
+                                className="w-full h-12 border rounded cursor-pointer"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Hero Preview */}
+                        <div className="p-6 rounded-lg border flex items-center justify-center" style={{
+                          background: siteSettings.hero_background_type === 'gradient' 
+                            ? `linear-gradient(135deg, ${siteSettings.hero_background_gradient_start} 0%, ${siteSettings.hero_background_gradient_end} 100%)`
+                            : siteSettings.hero_background_color,
+                          color: siteSettings.hero_text_color,
+                          textAlign: 'center',
+                          height: siteSettings.hero_height || '600px',
+                          maxHeight: '300px' // Limit preview height
+                        }}>
+                          <div>
+                            <h1 className="text-4xl font-bold mb-4" style={{color: siteSettings.hero_text_color}}>
+                              {siteSettings.hero_title || 'Your Hero Title'}
+                            </h1>
+                            <p className="text-xl" style={{color: siteSettings.hero_subtitle_color}}>
+                              {siteSettings.hero_subtitle || 'Your hero subtitle description'}
+                            </p>
+                            <p className="text-sm opacity-75 mt-2">Height: {siteSettings.hero_height || '600px'}</p>
+                          </div>
+                        </div>
+
+                        <Button 
+                          onClick={saveAppearanceSettings}
+                          className="w-full"
+                        >
+                          Save Hero Settings
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p>Failed to load appearance settings</p>
+              </div>
+            )}
                 <Card>
                   <CardHeader>
                     <CardTitle>Typography Settings</CardTitle>
