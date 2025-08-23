@@ -3488,6 +3488,7 @@ const AdminPanel = () => {
                                 />
                               </div>
                               <h4 
+                                key={`h4-${siteSettings.global_font_family || 'Inter'}`}
                                 className="font-medium" 
                                 style={{
                                   fontSize: siteSettings.h4_size || '20px',
