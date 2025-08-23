@@ -431,8 +431,8 @@ class Phase3CBackendTester:
             import socket
             
             # Parse URL to get host and port
-            host = "217.154.0.82"
-            port = 80
+            host = "localhost"
+            port = 8001
             
             # Test if we can connect to the server
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
