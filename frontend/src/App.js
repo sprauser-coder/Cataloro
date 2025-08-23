@@ -2181,9 +2181,9 @@ const AdminPanel = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-gray-600">Total Revenue</p>
-                        <p className="text-2xl font-bold">${stats.total_revenue.toFixed(2)}</p>
+                        <p className="text-2xl font-bold">€{stats.total_revenue.toFixed(2)}</p>
                       </div>
-                      <DollarSign className="h-8 w-8 text-yellow-600" />
+                      <Euro className="h-8 w-8 text-yellow-600" />
                     </div>
                   </CardContent>
                 </Card>
