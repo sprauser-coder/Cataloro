@@ -3699,18 +3699,24 @@ const AdminPanel = () => {
                             {/* Text & Links Preview */}
                             <div className="pt-4 border-t">
                               <p 
+                                key={`text-${siteSettings.font_color || '#1f2937'}`}
                                 className="mb-2"
-                                style={{color: siteSettings.font_color || '#1f2937'}}
+                                style={{
+                                  color: siteSettings.font_color || '#1f2937',
+                                  fontFamily: siteSettings.global_font_family || 'Inter'
+                                }}
                               >
                                 Sample paragraph text with custom font color.
                               </p>
-                              <p>
+                              <p style={{ fontFamily: siteSettings.global_font_family || 'Inter' }}>
                                 This is a text with{' '}
                                 <a 
+                                  key={`link-${siteSettings.link_color || '#3b82f6'}-${siteSettings.link_hover_color || '#1d4ed8'}`}
                                   href="#" 
                                   className="transition-colors duration-200"
                                   style={{
                                     color: siteSettings.link_color || '#3b82f6',
+                                    fontFamily: siteSettings.global_font_family || 'Inter'
                                   }}
                                   onMouseEnter={(e) => {
                                     e.target.style.color = siteSettings.link_hover_color || '#1d4ed8';
