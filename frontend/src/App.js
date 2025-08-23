@@ -21,40 +21,37 @@ const API = `${BACKEND_URL}/api`;
 
 // Utility function to format error messages
 const formatErrorMessage = (error, fallbackMessage) => {
-  console.log('formatErrorMessage called with:', error?.response?.data);
-  
-  if (!error?.response?.data?.detail) {
+  try {
+    if (!error?.response?.data?.detail) {
+      return fallbackMessage;
+    }
+    
+    const detail = error.response.data.detail;
+    
+    if (Array.isArray(detail)) {
+      // Multiple validation errors - ensure we return a single string
+      const errorMessages = detail.map(err => {
+        if (!err || typeof err !== 'object') {
+          return 'Invalid error format';
+        }
+        const location = (err.loc && Array.isArray(err.loc)) ? err.loc.join('.') + ': ' : '';
+        const message = typeof err.msg === 'string' ? err.msg : 'Validation error';
+        return `${location}${message}`;
+      });
+      return errorMessages.join(', ');
+    } else if (typeof detail === 'string') {
+      // Single string error
+      return detail;
+    } else if (detail && typeof detail === 'object' && typeof detail.msg === 'string') {
+      // Single validation error object
+      return detail.msg;
+    }
+    
+    return fallbackMessage;
+  } catch (e) {
+    // Fallback in case of any error in processing
     return fallbackMessage;
   }
-  
-  const detail = error.response.data.detail;
-  console.log('Detail type:', typeof detail, 'Is array:', Array.isArray(detail), 'Value:', detail);
-  
-  if (Array.isArray(detail)) {
-    // Multiple validation errors - ensure we return a single string
-    const errorMessages = detail.map(err => {
-      if (!err || typeof err !== 'object') {
-        return 'Invalid error format';
-      }
-      const location = (err.loc && Array.isArray(err.loc)) ? err.loc.join('.') + ': ' : '';
-      const message = err.msg || 'Validation error';
-      return `${location}${message}`;
-    });
-    const result = errorMessages.join(', ');
-    console.log('Returning array result:', result);
-    return result;
-  } else if (typeof detail === 'string') {
-    // Single string error
-    console.log('Returning string result:', detail);
-    return detail;
-  } else if (detail && typeof detail === 'object' && detail.msg) {
-    // Single validation error object
-    console.log('Returning object msg:', detail.msg);
-    return detail.msg;
-  }
-  
-  console.log('Falling back to fallback message:', fallbackMessage);
-  return fallbackMessage;
 };
 
 // Auth Context
