@@ -3832,6 +3832,7 @@ const AdminPanel = () => {
                 <p>Failed to load dashboard data</p>
               </div>
             )}
+          </TabsContent>
 
           {/* Users Content */}
           {activeTab === 'users' && (
