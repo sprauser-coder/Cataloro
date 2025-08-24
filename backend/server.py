@@ -1871,6 +1871,7 @@ class ProfileUpdate(BaseModel):
 class UserProfile(BaseModel):
     """User profile response model"""
     id: str
+    user_id: str  # Added user_id field for v1.0.2
     username: str
     full_name: str
     email: str
