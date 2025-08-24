@@ -3662,6 +3662,10 @@ const AdminPanel = () => {
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : stats ? (
+              <div className="space-y-6">
               <div className="space-y-6">
                 {/* Key Metrics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
