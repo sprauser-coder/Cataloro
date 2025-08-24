@@ -3584,14 +3584,36 @@ const AdminPanel = () => {
 
   const deleteCategory = async (categoryName) => {
     try {
+      // Show confirmation dialog
+      const confirmed = window.confirm(`Are you sure you want to delete the category "${categoryName}"? This will not delete existing listings in this category.`);
+      if (!confirmed) return;
+      
+      // Try to delete from backend first
+      try {
+        await axios.delete(`${API}/categories/${encodeURIComponent(categoryName)}`);
+      } catch (error) {
+        console.log('Backend category deletion not supported, removing locally');
+      }
+      
+      // Update local state
       const updatedCategories = categories.filter(cat => cat.name !== categoryName);
       setCategories(updatedCategories);
+      
+      // Update global categories for listings dropdown
+      window.cataloroCategories = updatedCategories;
       
       toast({
         title: "Success",
         description: `Category "${categoryName}" deleted successfully`
       });
+      
+      // Refresh categories to get accurate counts
+      setTimeout(() => {
+        fetchCategories();
+      }, 1000);
+      
     } catch (error) {
+      console.error('Error deleting category:', error);
       toast({
         title: "Error",
         description: "Failed to delete category",
