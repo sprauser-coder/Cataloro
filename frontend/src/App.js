@@ -1021,15 +1021,159 @@ const Home = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
-        <div className="mb-6">
-          <Tabs value={listingType} onValueChange={setListingType}>
-            <TabsList>
-              <TabsTrigger value="">All Items</TabsTrigger>
-              <TabsTrigger value="fixed_price">Buy Now</TabsTrigger>
-              <TabsTrigger value="auction">Auctions</TabsTrigger>
-            </TabsList>
-          </Tabs>
+        {/* Phase 3D: Enhanced Filters & Sorting */}
+        <div className="mb-6 space-y-4">
+          {/* Primary Filters Row */}
+          <div className="flex flex-wrap items-center gap-4">
+            <Tabs value={listingType} onValueChange={setListingType}>
+              <TabsList>
+                <TabsTrigger value="">All Items</TabsTrigger>
+                <TabsTrigger value="fixed_price">Buy Now</TabsTrigger>
+                <TabsTrigger value="auction">Auctions</TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            {/* Sort Options */}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-medium text-gray-700">Sort by:</span>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="created_desc">Newest First</SelectItem>
+                  <SelectItem value="created_asc">Oldest First</SelectItem>
+                  <SelectItem value="price_high">Price: High to Low</SelectItem>
+                  <SelectItem value="price_low">Price: Low to High</SelectItem>
+                  <SelectItem value="views_desc">Most Viewed</SelectItem>
+                  <SelectItem value="title_asc">Name: A to Z</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Toggle Advanced Filters */}
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center space-x-2"
+            >
+              <Search className="h-4 w-4" />
+              <span>More Filters</span>
+              {showFilters ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+            </Button>
+
+            {/* Results Count */}
+            <div className="ml-auto text-sm text-gray-600">
+              {loading ? 'Loading...' : `${listings.length} items found`}
+            </div>
+          </div>
+
+          {/* Advanced Filters Panel */}
+          {showFilters && (
+            <Card className="p-4">
+              <CardHeader>
+                <CardTitle className="text-lg">Advanced Filters</CardTitle>
+                <CardDescription>Refine your search with detailed criteria</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  
+                  {/* Price Range */}
+                  <div>
+                    <Label className="text-sm font-medium">Price Range (€)</Label>
+                    <div className="flex space-x-2 mt-1">
+                      <Input
+                        type="number"
+                        placeholder="Min"
+                        value={priceRange.min}
+                        onChange={(e) => setPriceRange({...priceRange, min: e.target.value})}
+                        className="w-20"
+                      />
+                      <span className="self-center text-gray-400">to</span>
+                      <Input
+                        type="number"
+                        placeholder="Max"
+                        value={priceRange.max}
+                        onChange={(e) => setPriceRange({...priceRange, max: e.target.value})}
+                        className="w-20"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Condition Filter */}
+                  <div>
+                    <Label className="text-sm font-medium">Condition</Label>
+                    <Select value={selectedCondition} onValueChange={setSelectedCondition}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Any condition" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Any Condition</SelectItem>
+                        <SelectItem value="New">New</SelectItem>
+                        <SelectItem value="Like New">Like New</SelectItem>
+                        <SelectItem value="Good">Good</SelectItem>
+                        <SelectItem value="Fair">Fair</SelectItem>
+                        <SelectItem value="Poor">Poor</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Future: Region Filter */}
+                  <div>
+                    <Label className="text-sm font-medium">Region <Badge variant="secondary" className="ml-1 text-xs">Coming Soon</Badge></Label>
+                    <Select value={selectedRegion} onValueChange={setSelectedRegion} disabled>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Any region" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Any Region</SelectItem>
+                        <SelectItem value="north">North</SelectItem>
+                        <SelectItem value="south">South</SelectItem>
+                        <SelectItem value="east">East</SelectItem>
+                        <SelectItem value="west">West</SelectItem>
+                        <SelectItem value="central">Central</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Future: Distance Filter */}
+                  <div>
+                    <Label className="text-sm font-medium">Max Distance <Badge variant="secondary" className="ml-1 text-xs">Coming Soon</Badge></Label>
+                    <div className="flex space-x-2 mt-1">
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        value={maxDistance}
+                        onChange={(e) => setMaxDistance(e.target.value)}
+                        disabled
+                        className="flex-1"
+                      />
+                      <span className="self-center text-gray-400 text-sm">km</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Requires location access</p>
+                  </div>
+                </div>
+
+                {/* Filter Actions */}
+                <div className="flex justify-between items-center mt-6 pt-4 border-t">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setPriceRange({ min: '', max: '' });
+                      setSelectedCondition('');
+                      setSelectedRegion('');
+                      setMaxDistance('');
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
+                  <div className="text-sm text-gray-600">
+                    Filters help you find exactly what you're looking for
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Listings Grid */}
