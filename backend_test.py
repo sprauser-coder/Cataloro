@@ -1,5 +1,369 @@
 #!/usr/bin/env python3
 """
+Admin Authentication and Role Verification Test
+Testing admin login, role verification, token validation, and admin endpoint access
+to resolve admin panel white screen issue.
+"""
+
+import requests
+import json
+import sys
+from datetime import datetime
+
+# Configuration
+BACKEND_URL = "https://marketplace-fix-4.preview.emergentagent.com/api"
+ADMIN_EMAIL = "admin@marketplace.com"
+ADMIN_PASSWORD = "admin123"
+
+class AdminAuthTester:
+    def __init__(self):
+        self.session = requests.Session()
+        self.admin_token = None
+        self.admin_user = None
+        self.test_results = []
+        
+    def log_test(self, test_name, success, details=""):
+        """Log test results"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        self.test_results.append({
+            "test": test_name,
+            "success": success,
+            "details": details
+        })
+        print(f"{status}: {test_name}")
+        if details:
+            print(f"   Details: {details}")
+        print()
+    
+    def test_admin_login(self):
+        """Test 1: Admin Login Test - POST /api/auth/login with admin credentials"""
+        print("🔐 Testing Admin Login...")
+        
+        try:
+            login_data = {
+                "email": ADMIN_EMAIL,
+                "password": ADMIN_PASSWORD
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/auth/login", json=login_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "access_token" in data and "user" in data:
+                    self.admin_token = data["access_token"]
+                    self.admin_user = data["user"]
+                    
+                    # Verify token type
+                    if data.get("token_type") == "bearer":
+                        self.log_test(
+                            "Admin Login", 
+                            True, 
+                            f"Successfully logged in as {self.admin_user.get('email')}. Token received."
+                        )
+                        return True
+                    else:
+                        self.log_test("Admin Login", False, "Invalid token type returned")
+                        return False
+                else:
+                    self.log_test("Admin Login", False, "Missing access_token or user in response")
+                    return False
+            else:
+                self.log_test(
+                    "Admin Login", 
+                    False, 
+                    f"Login failed with status {response.status_code}: {response.text}"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin Login", False, f"Exception occurred: {str(e)}")
+            return False
+    
+    def test_admin_role_verification(self):
+        """Test 2: Admin Role Verification - Verify returned user object contains role='admin'"""
+        print("👤 Testing Admin Role Verification...")
+        
+        if not self.admin_user:
+            self.log_test("Admin Role Verification", False, "No admin user data available")
+            return False
+        
+        try:
+            user_role = self.admin_user.get("role")
+            user_email = self.admin_user.get("email")
+            user_id = self.admin_user.get("id")
+            user_username = self.admin_user.get("username")
+            
+            if user_role == "admin":
+                self.log_test(
+                    "Admin Role Verification", 
+                    True, 
+                    f"User role correctly set to 'admin'. User details: email={user_email}, username={user_username}, id={user_id}"
+                )
+                return True
+            else:
+                self.log_test(
+                    "Admin Role Verification", 
+                    False, 
+                    f"Expected role 'admin' but got '{user_role}'"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin Role Verification", False, f"Exception occurred: {str(e)}")
+            return False
+    
+    def test_token_validation(self):
+        """Test 3: Token Validation - Test if JWT token is valid for protected routes"""
+        print("🔑 Testing Token Validation...")
+        
+        if not self.admin_token:
+            self.log_test("Token Validation", False, "No admin token available")
+            return False
+        
+        try:
+            # Test token with a simple protected endpoint
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(f"{BACKEND_URL}/listings/my-listings", headers=headers)
+            
+            if response.status_code == 200:
+                self.log_test(
+                    "Token Validation", 
+                    True, 
+                    "JWT token is valid and accepted by protected endpoints"
+                )
+                return True
+            elif response.status_code == 401:
+                self.log_test("Token Validation", False, "Token rejected - 401 Unauthorized")
+                return False
+            elif response.status_code == 403:
+                self.log_test("Token Validation", False, "Token rejected - 403 Forbidden")
+                return False
+            else:
+                self.log_test(
+                    "Token Validation", 
+                    False, 
+                    f"Unexpected response status: {response.status_code}"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test("Token Validation", False, f"Exception occurred: {str(e)}")
+            return False
+    
+    def test_admin_profile(self):
+        """Test 4: Admin Profile - Test GET /api/profile with admin token"""
+        print("📋 Testing Admin Profile Access...")
+        
+        if not self.admin_token:
+            self.log_test("Admin Profile Access", False, "No admin token available")
+            return False
+        
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(f"{BACKEND_URL}/profile", headers=headers)
+            
+            if response.status_code == 200:
+                profile_data = response.json()
+                
+                # Verify role persistence in profile
+                profile_role = profile_data.get("role")
+                profile_email = profile_data.get("email")
+                user_id = profile_data.get("user_id", "Not set")
+                
+                if profile_role == "admin":
+                    self.log_test(
+                        "Admin Profile Access", 
+                        True, 
+                        f"Profile endpoint working. Role persisted as 'admin'. Email: {profile_email}, User ID: {user_id}"
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Admin Profile Access", 
+                        False, 
+                        f"Role not persisted correctly. Expected 'admin', got '{profile_role}'"
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "Admin Profile Access", 
+                    False, 
+                    f"Profile endpoint failed with status {response.status_code}: {response.text}"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin Profile Access", False, f"Exception occurred: {str(e)}")
+            return False
+    
+    def test_admin_stats_access(self):
+        """Test 5: Admin Stats Access - Test GET /api/admin/stats with admin token"""
+        print("📊 Testing Admin Stats Access...")
+        
+        if not self.admin_token:
+            self.log_test("Admin Stats Access", False, "No admin token available")
+            return False
+        
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(f"{BACKEND_URL}/admin/stats", headers=headers)
+            
+            if response.status_code == 200:
+                stats_data = response.json()
+                
+                # Verify expected stats fields
+                expected_fields = [
+                    "total_users", "active_users", "blocked_users",
+                    "total_listings", "active_listings", 
+                    "total_orders", "total_revenue"
+                ]
+                
+                missing_fields = [field for field in expected_fields if field not in stats_data]
+                
+                if not missing_fields:
+                    self.log_test(
+                        "Admin Stats Access", 
+                        True, 
+                        f"Admin stats endpoint working. Stats: {json.dumps(stats_data, indent=2)}"
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Admin Stats Access", 
+                        False, 
+                        f"Missing expected fields in stats response: {missing_fields}"
+                    )
+                    return False
+            elif response.status_code == 403:
+                self.log_test(
+                    "Admin Stats Access", 
+                    False, 
+                    "Access denied to admin stats - role verification may be failing"
+                )
+                return False
+            else:
+                self.log_test(
+                    "Admin Stats Access", 
+                    False, 
+                    f"Admin stats endpoint failed with status {response.status_code}: {response.text}"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin Stats Access", False, f"Exception occurred: {str(e)}")
+            return False
+    
+    def test_additional_admin_endpoints(self):
+        """Test additional admin endpoints to ensure comprehensive access"""
+        print("🔧 Testing Additional Admin Endpoints...")
+        
+        if not self.admin_token:
+            self.log_test("Additional Admin Endpoints", False, "No admin token available")
+            return False
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        admin_endpoints = [
+            ("/admin/users", "Users Management"),
+            ("/admin/listings", "Listings Management"),
+            ("/admin/orders", "Orders Management"),
+            ("/admin/cms/settings", "CMS Settings")
+        ]
+        
+        successful_endpoints = []
+        failed_endpoints = []
+        
+        for endpoint, description in admin_endpoints:
+            try:
+                response = self.session.get(f"{BACKEND_URL}{endpoint}", headers=headers)
+                if response.status_code == 200:
+                    successful_endpoints.append(f"{description} ({endpoint})")
+                else:
+                    failed_endpoints.append(f"{description} ({endpoint}) - Status: {response.status_code}")
+            except Exception as e:
+                failed_endpoints.append(f"{description} ({endpoint}) - Error: {str(e)}")
+        
+        if len(successful_endpoints) >= 3:  # At least 3 out of 4 should work
+            self.log_test(
+                "Additional Admin Endpoints", 
+                True, 
+                f"Working endpoints: {', '.join(successful_endpoints)}"
+            )
+            if failed_endpoints:
+                print(f"   Note: Some endpoints had issues: {', '.join(failed_endpoints)}")
+            return True
+        else:
+            self.log_test(
+                "Additional Admin Endpoints", 
+                False, 
+                f"Too many endpoints failed. Working: {len(successful_endpoints)}, Failed: {len(failed_endpoints)}"
+            )
+            return False
+    
+    def run_all_tests(self):
+        """Run all admin authentication tests"""
+        print("=" * 80)
+        print("🚀 ADMIN AUTHENTICATION & ROLE VERIFICATION TEST SUITE")
+        print("=" * 80)
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"Admin Email: {ADMIN_EMAIL}")
+        print(f"Test Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print("=" * 80)
+        print()
+        
+        # Run tests in sequence
+        tests = [
+            self.test_admin_login,
+            self.test_admin_role_verification,
+            self.test_token_validation,
+            self.test_admin_profile,
+            self.test_admin_stats_access,
+            self.test_additional_admin_endpoints
+        ]
+        
+        for test in tests:
+            test()
+        
+        # Summary
+        print("=" * 80)
+        print("📊 TEST SUMMARY")
+        print("=" * 80)
+        
+        passed_tests = [r for r in self.test_results if r["success"]]
+        failed_tests = [r for r in self.test_results if not r["success"]]
+        
+        print(f"Total Tests: {len(self.test_results)}")
+        print(f"Passed: {len(passed_tests)}")
+        print(f"Failed: {len(failed_tests)}")
+        print(f"Success Rate: {len(passed_tests)/len(self.test_results)*100:.1f}%")
+        print()
+        
+        if failed_tests:
+            print("❌ FAILED TESTS:")
+            for test in failed_tests:
+                print(f"  - {test['test']}: {test['details']}")
+            print()
+        
+        if len(passed_tests) == len(self.test_results):
+            print("🎉 ALL TESTS PASSED! Admin authentication is working correctly.")
+            print("✅ Admin panel should be accessible without white screen issues.")
+        elif len(passed_tests) >= 4:  # At least core functionality working
+            print("⚠️  MOSTLY WORKING: Core admin authentication is functional.")
+            print("✅ Admin panel should be accessible, but some features may have issues.")
+        else:
+            print("🚨 CRITICAL ISSUES FOUND: Admin authentication has significant problems.")
+            print("❌ Admin panel white screen issue likely caused by authentication failures.")
+        
+        print("=" * 80)
+        
+        return len(failed_tests) == 0
+
+if __name__ == "__main__":
+    tester = AdminAuthTester()
+    success = tester.run_all_tests()
+    sys.exit(0 if success else 1)
+"""
 Profile Endpoints Testing for Cataloro v1.0.4
 Testing Phase 1 fixes for profile functionality
 """
