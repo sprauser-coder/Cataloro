@@ -913,39 +913,50 @@ async def remove_from_favorites(
     
     return {"message": "Removed from favorites"}
 
-# Migration endpoint to update existing users to new user_id format
-@api_router.post("/admin/migrate-user-ids")
-async def migrate_user_ids(admin: User = Depends(get_admin_user)):
-    """Migrate existing users to new U00001 format"""
-    try:
-        # Find users without proper user_id format
-        users_to_update = await db.users.find({
-            "$or": [
-                {"user_id": {"$exists": False}},
-                {"user_id": ""},
-                {"user_id": {"$regex": "^USER\\d+$"}}  # Old format
-            ]
-        }).to_list(length=None)
-        
-        updated_count = 0
-        
-        for user_doc in users_to_update:
-            # Generate new user ID
-            new_user_id = await generate_user_id()
-            
-            # Update the user
-            await db.users.update_one(
-                {"_id": user_doc["_id"]},
-                {"$set": {"user_id": new_user_id}}
-            )
-            updated_count += 1
-        
-        return {
-            "message": f"Successfully migrated {updated_count} users to new ID format",
-            "updated_count": updated_count
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Migration failed: {str(e)}")
+@api_router.get("/admin/navigation")
+async def get_navigation_items(admin: User = Depends(get_admin_user)):
+    """Get all navigation items"""
+    nav_items = await db.navigation.find({}).to_list(length=None)
+    return [parse_from_mongo(item) for item in nav_items]
+
+@api_router.delete("/admin/navigation/{nav_id}")
+async def delete_navigation_item(nav_id: str, admin: User = Depends(get_admin_user)):
+    """Delete a navigation item"""
+    result = await db.navigation.delete_one({"id": nav_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Navigation item not found")
+    
+    return {"message": "Navigation item deleted successfully"}
+
+@api_router.delete("/admin/navigation/test-pages")
+async def delete_test_pages(admin: User = Depends(get_admin_user)):
+    """Delete all test pages from navigation"""
+    # Delete navigation items that contain test-related keywords
+    result = await db.navigation.delete_many({
+        "$or": [
+            {"label": {"$regex": "test", "$options": "i"}},
+            {"label": {"$regex": "preview", "$options": "i"}},
+            {"label": {"$regex": "🚀", "$options": "i"}},
+            {"url": {"$regex": "test", "$options": "i"}}
+        ]
+    })
+    
+    # Also delete test pages from pages collection
+    pages_result = await db.pages.delete_many({
+        "$or": [
+            {"title": {"$regex": "test", "$options": "i"}},
+            {"title": {"$regex": "preview", "$options": "i"}},
+            {"title": {"$regex": "🚀", "$options": "i"}},
+            {"slug": {"$regex": "test", "$options": "i"}}
+        ]
+    })
+    
+    return {
+        "message": f"Deleted {result.deleted_count} test navigation items and {pages_result.deleted_count} test pages",
+        "navigation_deleted": result.deleted_count,
+        "pages_deleted": pages_result.deleted_count
+    }
 
 # CMS Models
 class SiteSettings(BaseModel):
