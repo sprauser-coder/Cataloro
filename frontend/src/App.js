@@ -3247,10 +3247,10 @@ const AdminPanel = () => {
     try {
       const pageData = {
         title: newPage.title,
-        slug: newPage.slug,
+        page_slug: newPage.slug,
         content: newPage.content,
-        published: newPage.published,
-        show_in_navigation: newPage.show_in_navigation
+        is_published: newPage.published,
+        meta_description: newPage.meta_description || ""
       };
       
       await axios.post(`${API}/admin/cms/pages`, pageData);
