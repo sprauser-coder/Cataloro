@@ -4361,25 +4361,34 @@ const AdminPanel = () => {
                         <div className="flex justify-center py-8">Loading...</div>
                       ) : (
                         <div className="space-y-4">
-                          {/* Order Filters */}
-                          <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
-                            <div className="flex items-center space-x-2">
-                              <Label className="text-sm font-medium">Status:</Label>
+                          {/* Search and Filters */}
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
+                            <div>
+                              <Label className="text-sm font-medium">Search Orders</Label>
+                              <Input
+                                type="text"
+                                placeholder="Search by ID, buyer, seller..."
+                                className="mt-1"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm font-medium">Status</Label>
                               <Select defaultValue="all">
-                                <SelectTrigger className="w-32">
+                                <SelectTrigger className="mt-1">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="all">All Orders</SelectItem>
                                   <SelectItem value="pending">Pending</SelectItem>
                                   <SelectItem value="completed">Completed</SelectItem>
+                                  <SelectItem value="cancelled">Cancelled</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <Label className="text-sm font-medium">Time Frame:</Label>
+                            <div>
+                              <Label className="text-sm font-medium">Time Frame</Label>
                               <Select defaultValue="all">
-                                <SelectTrigger className="w-36">
+                                <SelectTrigger className="mt-1">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -4392,32 +4401,76 @@ const AdminPanel = () => {
                                 </SelectContent>
                               </Select>
                             </div>
+                            <div>
+                              <Label className="text-sm font-medium">Sort By</Label>
+                              <Select defaultValue="created_desc">
+                                <SelectTrigger className="mt-1">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="created_desc">Newest First</SelectItem>
+                                  <SelectItem value="created_asc">Oldest First</SelectItem>
+                                  <SelectItem value="amount_desc">Highest Amount</SelectItem>
+                                  <SelectItem value="amount_asc">Lowest Amount</SelectItem>
+                                  <SelectItem value="status">Status</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
                           </div>
 
                           {/* Orders Display */}
                           <div className="space-y-4">
                             {orders.map((orderData) => (
-                              <div key={orderData.order.id} className="p-4 border rounded-lg">
-                                <div className="flex items-center justify-between mb-2">
-                                  <h3 className="font-semibold">Order #{orderData.order.id}</h3>
-                                  <Badge variant={orderData.order.status === 'completed' ? 'default' : 'secondary'}>
-                                    {orderData.order.status}
-                                  </Badge>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                                  <div>
-                                    <p className="text-gray-600">Buyer</p>
-                                    <p>{orderData.buyer?.full_name}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-gray-600">Seller</p>
-                                    <p>{orderData.seller?.full_name}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-gray-600">Amount</p>
-                                    <p className="font-semibold">€{orderData.order.total_amount.toFixed(2)}</p>
+                              <div key={orderData.order.id} className="p-4 border rounded-lg bg-white shadow-sm">
+                                <div className="flex items-center justify-between mb-3">
+                                  <h3 className="font-semibold">Order #{orderData.order.id.slice(-8)}</h3>
+                                  <div className="flex items-center space-x-2">
+                                    <Badge variant={orderData.order.status === 'completed' ? 'default' : 
+                                                  orderData.order.status === 'pending' ? 'secondary' : 'destructive'}>
+                                      {orderData.order.status}
+                                    </Badge>
                                   </div>
                                 </div>
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                                  <div>
+                                    <p className="text-gray-600 font-medium">Buyer</p>
+                                    <p>{orderData.buyer?.full_name || 'Unknown Buyer'}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-600 font-medium">Seller</p>
+                                    <p>{orderData.seller?.full_name || 'Unknown Seller'}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-600 font-medium">Amount</p>
+                                    <p className="font-semibold text-lg">€{orderData.order.total_amount?.toFixed(2) || '0.00'}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-600 font-medium">Timestamps</p>
+                                    <div className="space-y-1">
+                                      <p className="text-xs">
+                                        <span className="text-gray-500">Created:</span> {new Date(orderData.order.created_at).toLocaleString()}
+                                      </p>
+                                      {orderData.order.updated_at && orderData.order.updated_at !== orderData.order.created_at && (
+                                        <p className="text-xs">
+                                          <span className="text-gray-500">Updated:</span> {new Date(orderData.order.updated_at).toLocaleString()}
+                                        </p>
+                                      )}
+                                      {orderData.order.completed_at && (
+                                        <p className="text-xs">
+                                          <span className="text-green-600">Completed:</span> {new Date(orderData.order.completed_at).toLocaleString()}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                {orderData.listing && (
+                                  <div className="mt-3 pt-3 border-t">
+                                    <p className="text-gray-600 font-medium text-sm">Item</p>
+                                    <p className="font-medium">{orderData.listing.title}</p>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
                                 {orderData.listing && (
                                   <p className="text-sm text-gray-600 mt-2">
                                     Item: {orderData.listing.title}
