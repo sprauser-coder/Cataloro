@@ -820,11 +820,6 @@ const Home = () => {
         title: "Added to Favorites",
         description: `"${listing.title}" has been saved to your favorites`
       });
-      
-      // Update favorites count
-      if (user) {
-        fetchFavoritesCount();
-      }
     } catch (error) {
       toast({
         title: "Error",
