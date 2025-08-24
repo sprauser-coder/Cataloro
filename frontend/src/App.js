@@ -806,6 +806,7 @@ const Home = () => {
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [selectedCondition, setSelectedCondition] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [listingsPerPage, setListingsPerPage] = useState(10); // New: listings per page
   
   // Future Phase 3D Infrastructure
   const [selectedRegion, setSelectedRegion] = useState('');
