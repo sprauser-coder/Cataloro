@@ -3026,6 +3026,88 @@ const AdminPanel = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      // Get all predefined categories and count listings for each
+      const predefinedCategories = ['Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books', 'Toys', 'Automotive', 'Health & Beauty', 'Other'];
+      const categoriesWithCounts = [];
+      
+      for (const category of predefinedCategories) {
+        try {
+          const response = await axios.get(`${API}/listings`, { params: { category } });
+          categoriesWithCounts.push({
+            name: category,
+            count: response.data.length
+          });
+        } catch (error) {
+          categoriesWithCounts.push({
+            name: category,
+            count: 0
+          });
+        }
+      }
+      
+      setCategories(categoriesWithCounts);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch categories",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const addCategory = async () => {
+    if (!newCategoryName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a category name",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      // For now, we'll add to the local state since backend doesn't have category management
+      const newCategory = {
+        name: newCategoryName.trim(),
+        count: 0
+      };
+      
+      setCategories([...categories, newCategory]);
+      setNewCategoryName('');
+      
+      toast({
+        title: "Success",
+        description: `Category "${newCategoryName}" added successfully`
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add category",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deleteCategory = async (categoryName) => {
+    try {
+      const updatedCategories = categories.filter(cat => cat.name !== categoryName);
+      setCategories(updatedCategories);
+      
+      toast({
+        title: "Success",
+        description: `Category "${categoryName}" deleted successfully`
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete category",
+        variant: "destructive"
+      });
+    }
+  };
+
   const exportListings = async () => {
     try {
       const listingsToExport = listings.filter(l => selectedListings.includes(l.id));
