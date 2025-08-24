@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix multiple issues with Cataloro marketplace v1.0.2: 1) Multi-image navigation works, 2) Menu restructuring works but test sites still need deletion, 3) Combine orders and listings into 'Products' menu with tabs, 4) Favorites system not working - change 'Add to cart' to 'Save to favorites', 5) Single listing edit not working, 6) Categories should show all categories (not just ones with products), 7) User ID format still old for existing users"
+user_problem_statement: "Fix 5 critical issues in Cataloro v1.0.3: 1) Test menu items still visible - delete from navigation, 2) Admin panel menu exceeding width - needs styling fix, 3) User details missing bio field in admin panel, 4) Products page showing no listings and missing bulk options, 5) Content management not showing pages, can't delete/change pages, missing 'add to menu' buttons"
 
 backend:
   - task: "User Authentication System"
