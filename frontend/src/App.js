@@ -3109,7 +3109,12 @@ const AdminPanel = () => {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API}/admin/stats`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API}/admin/stats`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setStats(response.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
