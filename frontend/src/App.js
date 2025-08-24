@@ -128,15 +128,9 @@ const ProtectedRoute = ({ children }) => {
 
 // Footer Component with Version
 const Footer = ({ siteSettings }) => {
-  const currentVersion = "1.0.1";
-  const completionDateTime = new Date().toLocaleString('en-GB', {
-    day: '2-digit',
-    month: '2-digit', 
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  }).replace(',', '');
+  const currentVersion = "1.0.2";
+  // Use deployment/completion time instead of current time
+  const deploymentDateTime = "21/01/2025 14:30";
 
   return (
     <footer className="bg-white border-t border-gray-200 mt-auto">
@@ -155,7 +149,7 @@ const Footer = ({ siteSettings }) => {
           </div>
           <div className="flex items-center space-x-6">
             <div className="text-xs text-gray-400 font-mono">
-              Version {currentVersion} • {completionDateTime}
+              Version {currentVersion} • {deploymentDateTime}
             </div>
           </div>
         </div>
