@@ -150,23 +150,41 @@ const AdminProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   const token = localStorage.getItem('token');
   
+  // Debug logging to see what's happening
+  console.log('AdminProtectedRoute Debug:', { 
+    token: !!token, 
+    loading, 
+    user: user, 
+    userRole: user?.role 
+  });
+  
   if (!token) {
+    console.log('AdminProtectedRoute: No token, redirecting to auth');
     return <Navigate to="/auth" />;
   }
   
-  // Show loading while user data is being fetched
-  if (loading || !user) {
+  // Show loading while user data is being fetched, but with timeout
+  if (loading) {
+    console.log('AdminProtectedRoute: Still loading user data');
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
           <p className="mt-2 text-gray-600">Loading admin panel...</p>
+          <p className="mt-1 text-xs text-gray-400">v1.1.5 Debug Mode</p>
         </div>
       </div>
     );
   }
   
+  // If not loading but no user, there's an auth issue
+  if (!user) {
+    console.log('AdminProtectedRoute: No user data, redirecting to auth');
+    return <Navigate to="/auth" />;
+  }
+  
   if (user.role !== 'admin') {
+    console.log('AdminProtectedRoute: User is not admin:', user.role);
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
@@ -186,6 +204,7 @@ const AdminProtectedRoute = ({ children }) => {
     );
   }
   
+  console.log('AdminProtectedRoute: Admin user authenticated, rendering AdminPanel');
   return children;
 };
 
