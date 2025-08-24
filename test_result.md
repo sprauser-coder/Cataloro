@@ -510,6 +510,20 @@ backend:
         agent: "testing"
         comment: "CATALORO v1.0.4 BUG FIXES COMPREHENSIVE TESTING COMPLETED: Extensive testing of v1.0.4 bug fixes implementation with 95.7% success rate (45/47 tests passed). ✅ FAVORITES SYSTEM: Complete favorites functionality working perfectly for both regular and auction items - POST /api/favorites adds items to favorites, GET /api/favorites retrieves user favorites with only active listings shown, DELETE /api/favorites/{favorite_id} removes items successfully, both fixed_price and auction listing types can be favorited. ✅ CATEGORIES MANAGEMENT: All 10 categories available and working correctly (Electronics, Fashion, Home & Garden, Sports, Books, Automotive, Health & Beauty, Toys, Art & Collectibles, Other), categories properly integrated with listing creation functionality. ✅ ORDER MANAGEMENT ENHANCEMENTS: Enhanced order display with timestamps and search functionality working perfectly - GET /admin/orders supports status filters (all, pending, completed), time frame filters (today, last_week, last_month, last_year), combined filtering, proper timestamp fields (created_at, updated_at), complete relationship data (buyer, seller, listing). ✅ PAGE MANAGEMENT CRUD: Full page CRUD operations working correctly - create, read, update/edit, delete functionality all operational, 'add to menu' functionality automatically adds published pages to navigation, page editing verified with proper field updates. ✅ ADMIN PANEL ENDPOINTS: All admin endpoints working with new sidebar layout - Dashboard Stats (7 fields), Users Management (17 users), Listings Management (21 listings), Orders Management (8 orders), CMS Settings (45 fields), Pages Management, Navigation Management, proper admin authentication enforcement. ✅ INTEGRATION WORKFLOW: Complete v1.0.4 workflow tested successfully - browse listings, add favorites, view favorites, admin order management with filters, admin page management. ⚠️ MINOR ISSUES: Duplicate favorites prevention returns 200 instead of expected 400 (non-critical), workflow favorites addition had token context issue (non-critical). All major v1.0.4 bug fixes are working correctly and ready for production use."
 frontend:
+  - task: "Cataloro v1.0.5 New Issues Implementation"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported 8 new issues: 1) Profile recent activity invalid date when no orders, 2) Profile needs account actions, 3) Dashboard needs date picker and overview changes, 4) Admin users overview needs reorganization and sorting, 5) Notifications need icon change and clearing after actions, 6) My orders need view details button, 7) View All listings button not working, 8) Categories management multiple <listings> display and deletion issues"
+      - working: false
+        agent: "main"
+        comment: "New issues identified and documented. Need to implement systematic fixes for all 8 reported problems starting with most critical user-facing issues first."
   - task: "Authentication Pages (Login/Register)"
     implemented: true
     working: true
