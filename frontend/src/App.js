@@ -5351,31 +5351,38 @@ const AdminPanel = () => {
 
                       {/* Current Categories */}
                       <div>
-                        <h4 className="text-md font-medium mb-3">Current Categories</h4>
+                        <h4 className="text-md font-medium mb-3">Current Categories ({categories.length})</h4>
                         <div className="space-y-2">
-                          {categories.map((category) => (
-                            <div key={category.name} className="flex items-center justify-between p-3 border rounded-lg">
-                              <div className="flex items-center space-x-2">
-                                <span className="font-medium">{category.name}</span>
-                                <Badge variant="secondary">{category.count} listings</Badge>
+                          {categories.length > 0 ? (
+                            categories.map((category, index) => (
+                              <div key={`${category.name}-${index}`} className="flex items-center justify-between p-3 border rounded-lg">
+                                <div className="flex items-center space-x-2">
+                                  <span className="font-medium">{category.name || 'Unknown Category'}</span>
+                                  <Badge variant="secondary">
+                                    {typeof category.count === 'number' ? category.count : 0} listings
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Button variant="outline" size="sm" disabled>
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button 
+                                    variant="destructive" 
+                                    size="sm"
+                                    onClick={() => deleteCategory(category.name)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </div>
-                              <div className="flex items-center space-x-2">
-                                <Button variant="outline" size="sm">
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button 
-                                  variant="destructive" 
-                                  size="sm"
-                                  onClick={() => deleteCategory(category.name)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                            ))
+                          ) : (
+                            <div className="text-center py-8 text-gray-500">
+                              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <Package className="h-6 w-6 text-gray-400" />
                               </div>
-                            </div>
-                          ))}
-                          {categories.length === 0 && (
-                            <div className="text-center py-4 text-gray-500">
-                              <p>Loading categories...</p>
+                              <p className="font-medium">No categories found</p>
+                              <p className="text-sm">Add your first category above to get started</p>
                             </div>
                           )}
                         </div>
