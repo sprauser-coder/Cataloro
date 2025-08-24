@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix 5 critical issues in Cataloro v1.0.3: 1) Test menu items still visible - delete from navigation, 2) Admin panel menu exceeding width - needs styling fix, 3) User details missing bio field in admin panel, 4) Products page showing no listings and missing bulk options, 5) Content management not showing pages, can't delete/change pages, missing 'add to menu' buttons"
+user_problem_statement: "Fix 8 critical bugs in Cataloro v1.0.4: 1) Missing 'add to favorites' function on browse overview products, 2) 'Add to favorite' missing on auction listings, 3) Delete button not working in favorites tab, 4) Need timestamp for order completion + sorting + search bar in order panel, 5) Add category still not working, 6) Only categories with listings shown - need all categories visible/editable, 7) Page edit not working despite visible buttons, 8) Admin panel menu scrollable issue - need better layout solution"
 
 backend:
   - task: "User Authentication System"
