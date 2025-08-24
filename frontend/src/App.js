@@ -2497,40 +2497,40 @@ const Sell = () => {
   );
 };
 
-// Cart Component
-const Cart = () => {
-  const [cartItems, setCartItems] = useState([]);
+// Favorites Component
+const Favorites = () => {
+  const [favoriteItems, setFavoriteItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchCart();
+    fetchFavorites();
   }, []);
 
-  const fetchCart = async () => {
+  const fetchFavorites = async () => {
     try {
-      const response = await axios.get(`${API}/cart`);
-      setCartItems(response.data);
+      const response = await axios.get(`${API}/favorites`);
+      setFavoriteItems(response.data);
     } catch (error) {
-      console.error('Error fetching cart:', error);
+      console.error('Error fetching favorites:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const removeFromCart = async (itemId) => {
+  const removeFromFavorites = async (favoriteId) => {
     try {
-      await axios.delete(`${API}/cart/${itemId}`);
-      fetchCart();
+      await axios.delete(`${API}/favorites/${favoriteId}`);
+      fetchFavorites();
       toast({
         title: "Item removed",
-        description: "Item has been removed from your cart"
+        description: "Item has been removed from your favorites"
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to remove item from cart",
+        description: formatErrorMessage(error, "Failed to remove item"),  
         variant: "destructive"
       });
     }
