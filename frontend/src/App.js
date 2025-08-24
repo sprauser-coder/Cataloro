@@ -498,60 +498,12 @@ const Header = () => {
             </div>
           </Link>
           
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link 
-              to="/" 
-              className="font-medium transition-colors"
-              style={{
-                color: siteSettings?.link_color || '#6b7280',
-                fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.color = siteSettings?.link_color || '#6b7280';
-              }}
-            >
-              Browse
-            </Link>
-            <Link 
-              to="/sell" 
-              className="font-medium transition-colors"
-              style={{
-                color: siteSettings?.link_color || '#6b7280',
-                fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.color = siteSettings?.link_color || '#6b7280';
-              }}
-            >
-              Sell
-            </Link>
-            <Link 
-              to="/orders" 
-              className="font-medium transition-colors"
-              style={{
-                color: siteSettings?.link_color || '#6b7280',
-                fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.color = siteSettings?.link_color || '#6b7280';
-              }}
-            >
-              My Orders
-            </Link>
-            {/* Dynamic Navigation from CMS */}
-            {customNavigation.map((navItem) => (
-              <Link
-                key={navItem.id}
-                to={navItem.url}
+          {/* Right side: Navigation + User Info */}
+          <div className="flex items-center space-x-4">
+            {/* Main Navigation - moved to right */}
+            <nav className="hidden md:flex items-center space-x-6">
+              <Link 
+                to="/" 
                 className="font-medium transition-colors"
                 style={{
                   color: siteSettings?.link_color || '#6b7280',
@@ -563,32 +515,83 @@ const Header = () => {
                 onMouseLeave={(e) => {
                   e.target.style.color = siteSettings?.link_color || '#6b7280';
                 }}
-                target={navItem.target}
               >
-                {navItem.label}
+                Browse
               </Link>
-            ))}
-            {user?.role === 'admin' && (
               <Link 
-                to="/admin" 
+                to="/sell" 
                 className="font-medium transition-colors"
                 style={{
-                  color: '#dc2626', // Keep admin link red for visibility
+                  color: siteSettings?.link_color || '#6b7280',
                   fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.color = '#b91c1c';
+                  e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.color = '#dc2626';
+                  e.target.style.color = siteSettings?.link_color || '#6b7280';
                 }}
               >
-                Admin Panel
+                Sell
               </Link>
-            )}
-          </nav>
+              <Link 
+                to="/orders" 
+                className="font-medium transition-colors"
+                style={{
+                  color: siteSettings?.link_color || '#6b7280',
+                  fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = siteSettings?.link_color || '#6b7280';
+                }}
+              >
+                My Orders
+              </Link>
+              {/* Dynamic Navigation from CMS */}
+              {customNavigation.map((navItem) => (
+                <Link
+                  key={navItem.id}
+                  to={navItem.url}
+                  className="font-medium transition-colors"
+                  style={{
+                    color: siteSettings?.link_color || '#6b7280',
+                    fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = siteSettings?.link_color || '#6b7280';
+                  }}
+                  target={navItem.target}
+                >
+                  {navItem.label}
+                </Link>
+              ))}
+              {user?.role === 'admin' && (
+                <Link 
+                  to="/admin" 
+                  className="font-medium transition-colors"
+                  style={{
+                    color: '#dc2626', // Keep admin link red for visibility
+                    fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = '#b91c1c';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = '#dc2626';
+                  }}
+                >
+                  Admin Panel
+                </Link>
+              )}
+            </nav>
 
-          <div className="flex items-center space-x-4">
+            {/* Favorites Icon */}
             <Link to="/favorites" className="relative">
               <Button variant="ghost" size="sm" className="relative">
                 <Star className="h-5 w-5" />
@@ -603,6 +606,7 @@ const Header = () => {
             {/* Phase 3C: Notification Center */}
             <NotificationCenter />
             
+            {/* User Info */}
             <div className="flex items-center space-x-2">
               <Avatar className="h-8 w-8">
                 <AvatarFallback>{user?.full_name?.charAt(0) || 'U'}</AvatarFallback>
