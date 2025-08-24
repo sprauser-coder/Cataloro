@@ -3179,7 +3179,12 @@ const AdminPanel = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API}/admin/users`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API}/admin/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setUsers(response.data);
       setSelectedUsers([]);
     } catch (error) {
