@@ -3929,7 +3929,6 @@ const AdminPanel = () => {
                 <p>Failed to load dashboard data</p>
               </div>
             )}
-            </div>
           )}
 
           {/* Users Content */}
