@@ -3495,15 +3495,15 @@ const AdminPanel = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="products">Products</TabsTrigger>
-            <TabsTrigger value="content-listings">Content & Listings</TabsTrigger>
-            <TabsTrigger value="appearance">Appearance</TabsTrigger>
-            <TabsTrigger value="pages">Content Management</TabsTrigger>
-            <TabsTrigger value="settings">General Settings</TabsTrigger>
-            <TabsTrigger value="database">Database</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-6 overflow-x-auto">
+            <TabsTrigger value="dashboard" className="text-xs md:text-sm">Dashboard</TabsTrigger>
+            <TabsTrigger value="users" className="text-xs md:text-sm">Users</TabsTrigger>
+            <TabsTrigger value="products" className="text-xs md:text-sm">Products</TabsTrigger>
+            <TabsTrigger value="content-listings" className="text-xs md:text-sm">Content & Listings</TabsTrigger>
+            <TabsTrigger value="appearance" className="text-xs md:text-sm">Appearance</TabsTrigger>
+            <TabsTrigger value="pages" className="text-xs md:text-sm">Content Mgmt</TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs md:text-sm">Settings</TabsTrigger>
+            <TabsTrigger value="database" className="text-xs md:text-sm">Database</TabsTrigger>
           </TabsList>
 
           {/* Dashboard Tab */}
