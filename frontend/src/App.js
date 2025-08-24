@@ -3647,16 +3647,16 @@ const AdminPanel = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="overflow-x-auto">
-            <TabsList className="grid w-max grid-cols-8 min-w-full">
-              <TabsTrigger value="dashboard" className="text-xs px-2">📊 Dashboard</TabsTrigger>
-              <TabsTrigger value="users" className="text-xs px-2">👥 Users</TabsTrigger>
-              <TabsTrigger value="products" className="text-xs px-2">🛍️ Products</TabsTrigger>
-              <TabsTrigger value="content-listings" className="text-xs px-2">🏷️ Categories</TabsTrigger>
-              <TabsTrigger value="appearance" className="text-xs px-2">🎨 Appearance</TabsTrigger>
-              <TabsTrigger value="pages" className="text-xs px-2">📄 Content</TabsTrigger>
-              <TabsTrigger value="settings" className="text-xs px-2">⚙️ Settings</TabsTrigger>
-              <TabsTrigger value="database" className="text-xs px-2">🗄️ Database</TabsTrigger>
+          <div className="overflow-x-auto pb-2">
+            <TabsList className="grid w-max grid-cols-8 min-w-[800px]">
+              <TabsTrigger value="dashboard" className="text-xs">📊 Dashboard</TabsTrigger>
+              <TabsTrigger value="users" className="text-xs">👥 Users</TabsTrigger>
+              <TabsTrigger value="products" className="text-xs">🛍️ Products</TabsTrigger>
+              <TabsTrigger value="content-listings" className="text-xs">🏷️ Categories</TabsTrigger>
+              <TabsTrigger value="appearance" className="text-xs">🎨 Appearance</TabsTrigger>
+              <TabsTrigger value="pages" className="text-xs">📄 Content</TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs">⚙️ Settings</TabsTrigger>
+              <TabsTrigger value="database" className="text-xs">🗄️ Database</TabsTrigger>
             </TabsList>
           </div>
 
