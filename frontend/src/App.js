@@ -4506,12 +4506,14 @@ const AdminPanel = () => {
                               <Input
                                 type="text"
                                 placeholder="Search by ID, buyer, seller..."
+                                value={orderSearchTerm}
+                                onChange={(e) => setOrderSearchTerm(e.target.value)}
                                 className="mt-1"
                               />
                             </div>
                             <div>
                               <Label className="text-sm font-medium">Status</Label>
-                              <Select defaultValue="all">
+                              <Select value={orderStatusFilter} onValueChange={setOrderStatusFilter}>
                                 <SelectTrigger className="mt-1">
                                   <SelectValue />
                                 </SelectTrigger>
@@ -4525,7 +4527,7 @@ const AdminPanel = () => {
                             </div>
                             <div>
                               <Label className="text-sm font-medium">Time Frame</Label>
-                              <Select defaultValue="all">
+                              <Select value={orderTimeFilter} onValueChange={setOrderTimeFilter}>
                                 <SelectTrigger className="mt-1">
                                   <SelectValue />
                                 </SelectTrigger>
@@ -4541,7 +4543,7 @@ const AdminPanel = () => {
                             </div>
                             <div>
                               <Label className="text-sm font-medium">Sort By</Label>
-                              <Select defaultValue="created_desc">
+                              <Select value={orderSortBy} onValueChange={setOrderSortBy}>
                                 <SelectTrigger className="mt-1">
                                   <SelectValue />
                                 </SelectTrigger>
