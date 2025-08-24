@@ -2685,6 +2685,8 @@ const AdminPanel = () => {
   });
   const [editingPage, setEditingPage] = useState(null);
   const [editingListing, setEditingListing] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [newCategoryName, setNewCategoryName] = useState('');
   const { user } = useAuth();
   const { toast } = useToast();
 
