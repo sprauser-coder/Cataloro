@@ -4321,6 +4321,41 @@ const AdminPanel = () => {
                     <CardDescription>View and manage all platform users with detailed information</CardDescription>
                   </CardHeader>
                   <CardContent>
+                    {/* Search and Filter Controls */}
+                    <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                        <div className="flex-1">
+                          <Input
+                            placeholder="Search by name, email, username, or user ID..."
+                            value={userSearchTerm}
+                            onChange={(e) => setUserSearchTerm(e.target.value)}
+                            className="w-full"
+                          />
+                        </div>
+                        <Select value={userSortBy} onValueChange={setUserSortBy}>
+                          <SelectTrigger className="w-48">
+                            <SelectValue placeholder="Sort by..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="created_desc">Date Created (Newest)</SelectItem>
+                            <SelectItem value="created_asc">Date Created (Oldest)</SelectItem>
+                            <SelectItem value="name_asc">Name (A-Z)</SelectItem>
+                            <SelectItem value="name_desc">Name (Z-A)</SelectItem>
+                            <SelectItem value="listings_desc">Most Listings</SelectItem>
+                            <SelectItem value="listings_asc">Fewest Listings</SelectItem>
+                            <SelectItem value="orders_desc">Most Orders</SelectItem>
+                            <SelectItem value="orders_asc">Fewest Orders</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {/* Results Count */}
+                      <div className="text-sm text-gray-600 mb-3">
+                        Showing {getFilteredAndSortedUsers().length} of {users.length} users
+                        {userSearchTerm && ` matching "${userSearchTerm}"`}
+                      </div>
+                    </div>
+
                     {/* Bulk Actions */}
                     <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                       <h4 className="font-medium mb-3">Bulk Actions & System Tools</h4>
@@ -4358,7 +4393,7 @@ const AdminPanel = () => {
 
                     {/* Users List with Enhanced Information */}
                     <div className="space-y-4">
-                      {users.map((user) => (
+                      {getFilteredAndSortedUsers().map((user) => (
                         <Card key={user.id} className="border-l-4 border-l-blue-500">
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between">
@@ -4379,12 +4414,52 @@ const AdminPanel = () => {
                                 </div>
                                 
                                 <div className="flex-1">
-                                  <div className="flex items-center space-x-3 mb-2">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                                      {(user?.name || 'U').charAt(0).toUpperCase()}
+                                  <div className="flex items-center space-x-3 mb-3">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
+                                      {(user?.full_name || user?.username || 'U').charAt(0).toUpperCase()}
                                     </div>
-                                    <div>
-                                      <div className="flex items-center space-x-2">
+                                    <div className="flex-1">
+                                      <div className="flex items-center space-x-2 mb-1">
+                                        <h3 className="font-semibold text-lg">{user.full_name || 'Unnamed User'}</h3>
+                                        <Badge variant={user.role === 'admin' ? 'destructive' : user.role === 'seller' ? 'default' : 'secondary'}>
+                                          {user.role}
+                                        </Badge>
+                                        {user.is_blocked && <Badge variant="outline" className="text-red-600 border-red-600">Blocked</Badge>}
+                                      </div>
+                                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                        <span><strong>ID:</strong> {user.user_id || 'Not assigned'}</span>
+                                        <span><strong>Email:</strong> {user.email}</span>
+                                        <span><strong>Username:</strong> {user.username}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Order Statistics in the Middle */}
+                                  <div className="flex justify-center mb-3">
+                                    <div className="grid grid-cols-3 gap-6 text-center">
+                                      <div className="bg-blue-50 rounded-lg p-3">
+                                        <div className="text-2xl font-bold text-blue-600">{user.total_orders || 0}</div>
+                                        <div className="text-xs text-blue-600 font-medium">Orders</div>
+                                      </div>
+                                      <div className="bg-green-50 rounded-lg p-3">
+                                        <div className="text-2xl font-bold text-green-600">{user.total_listings || 0}</div>
+                                        <div className="text-xs text-green-600 font-medium">Listings</div>
+                                      </div>
+                                      <div className="bg-yellow-50 rounded-lg p-3">
+                                        <div className="text-2xl font-bold text-yellow-600">€{((user.total_orders || 0) * 25.50).toFixed(0)}</div>
+                                        <div className="text-xs text-yellow-600 font-medium">Revenue</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="text-xs text-gray-500 text-center">
+                                    Member since {new Date(user.created_at).toLocaleDateString()}
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* User Actions */}
+                              <div className="flex flex-col space-y-2 ml-4">
                                         <h3 className="font-semibold text-lg">{user?.username || user?.full_name || 'Unknown User'}</h3>
                                         <Badge variant={user.role === 'admin' ? 'default' : user.role === 'seller' ? 'secondary' : 'outline'}>
                                           {user.role}
