@@ -2948,10 +2948,16 @@ const AdminPanel = () => {
   };
 
   const editSingleListing = (listing) => {
-    // TODO: Implement single listing edit modal
-    toast({
-      title: "Feature Coming Soon",
-      description: "Single listing edit will be implemented in next update"
+    setEditingListing({
+      id: listing.id,
+      title: listing.title,
+      description: listing.description || '',
+      price: listing.price || '',
+      category: listing.category || '',
+      condition: listing.condition || '',
+      quantity: listing.quantity || 1,
+      location: listing.location || '',
+      listing_type: listing.listing_type || 'fixed_price'
     });
   };
 
