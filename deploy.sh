@@ -33,6 +33,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Install serve globally if not present
+echo "📦 Ensuring serve is installed globally..."
+npm list -g serve || npm install -g serve
+
 # Restart services using PM2
 echo "🔄 Restarting services..."
 cd /var/www/cataloro
