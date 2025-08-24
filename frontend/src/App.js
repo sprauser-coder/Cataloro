@@ -4582,11 +4582,22 @@ const AdminPanel = () => {
                             <Input
                               id="newCategory"
                               placeholder="e.g., Electronics, Fashion, Sports"
+                              value={newCategoryName}
+                              onChange={(e) => setNewCategoryName(e.target.value)}
                               className="mt-1"
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  addCategory();
+                                }
+                              }}
                             />
                           </div>
                           <div className="flex items-end">
-                            <Button className="w-full">
+                            <Button 
+                              className="w-full"
+                              onClick={addCategory}
+                              disabled={!newCategoryName.trim()}
+                            >
                               Add Category
                             </Button>
                           </div>
@@ -4597,62 +4608,31 @@ const AdminPanel = () => {
                       <div>
                         <h4 className="text-md font-medium mb-3">Current Categories</h4>
                         <div className="space-y-2">
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-medium">Electronics</span>
-                              <Badge variant="secondary">12 listings</Badge>
+                          {categories.map((category) => (
+                            <div key={category.name} className="flex items-center justify-between p-3 border rounded-lg">
+                              <div className="flex items-center space-x-2">
+                                <span className="font-medium">{category.name}</span>
+                                <Badge variant="secondary">{category.count} listings</Badge>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Button variant="outline" size="sm">
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  variant="destructive" 
+                                  size="sm"
+                                  onClick={() => deleteCategory(category.name)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <Button variant="outline" size="sm">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button variant="destructive" size="sm">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                          ))}
+                          {categories.length === 0 && (
+                            <div className="text-center py-4 text-gray-500">
+                              <p>Loading categories...</p>
                             </div>
-                          </div>
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-medium">Fashion</span>
-                              <Badge variant="secondary">8 listings</Badge>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Button variant="outline" size="sm">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button variant="destructive" size="sm">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-medium">Home & Garden</span>
-                              <Badge variant="secondary">5 listings</Badge>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Button variant="outline" size="sm">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button variant="destructive" size="sm">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-medium">Sports</span>
-                              <Badge variant="secondary">3 listings</Badge>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Button variant="outline" size="sm">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button variant="destructive" size="sm">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
+                          )}
                         </div>
                       </div>
                     </div>
