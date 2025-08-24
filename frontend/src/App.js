@@ -3942,288 +3942,456 @@ const AdminPanel = () => {
             )}
           </TabsContent>
 
-          {/* Listings Tab */}
-          <TabsContent value="listings">
-            {loading ? (
-              <div className="flex justify-center py-8">Loading...</div>
-            ) : (
+          {/* Products Tab (Combined Listings and Orders) */}
+          <TabsContent value="products">
+            <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Listing Management ({listings.length})</CardTitle>
-                      <CardDescription>View and manage all platform listings with bulk actions</CardDescription>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {selectedListings.length > 0 && (
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="secondary">{selectedListings.length} selected</Badge>
-                          <Select
-                            value={bulkAction}
-                            onValueChange={(value) => setBulkAction(value)}
-                          >
-                            <SelectTrigger className="w-40">
-                              <SelectValue placeholder="Bulk Actions" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="delete">Delete Selected</SelectItem>
-                              <SelectItem value="activate">Activate</SelectItem>
-                              <SelectItem value="deactivate">Deactivate</SelectItem>
-                              <SelectItem value="mark-sold">Mark as Sold</SelectItem>
-                              <SelectItem value="change-category">Change Category</SelectItem>
-                              <SelectItem value="adjust-price">Adjust Price</SelectItem>
-                              <SelectItem value="feature">Feature</SelectItem>
-                              <SelectItem value="unfeature">Unfeature</SelectItem>
-                              <SelectItem value="export">Export Data</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <Button 
-                            onClick={executeBulkAction}
-                            disabled={!bulkAction}
-                            variant="outline"
-                          >
-                            Apply
-                          </Button>
-                        </div>
-                      )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          const allSelected = selectedListings.length === listings.length;
-                          setSelectedListings(allSelected ? [] : listings.map(l => l.id));
-                        }}
-                      >
-                        {selectedListings.length === listings.length ? 'Deselect All' : 'Select All'}
-                      </Button>
-                    </div>
-                  </div>
+                  <CardTitle>Products Management</CardTitle>
+                  <CardDescription>Manage listings and orders for your marketplace</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {listings.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
-                      <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No listings found</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {listings.map((listing) => (
-                        <div key={listing.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                          {/* Selection Checkbox */}
-                          <div className="flex-shrink-0">
-                            <input
-                              type="checkbox"
-                              checked={selectedListings.includes(listing.id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedListings([...selectedListings, listing.id]);
-                                } else {
-                                  setSelectedListings(selectedListings.filter(id => id !== listing.id));
-                                }
-                              }}
-                              className="w-4 h-4 rounded border-gray-300"
-                            />
-                          </div>
-                          
-                          {/* Listing Image */}
-                          <div className="flex-shrink-0">
-                            {listing.images && listing.images.length > 0 ? (
-                              <img
-                                src={listing.images[0].startsWith('/uploads/') 
-                                  ? `${BACKEND_URL}${listing.images[0]}` 
-                                  : listing.images[0]
-                                }
-                                alt={listing.title}
-                                className="w-16 h-16 object-cover rounded-lg border"
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                  e.target.nextSibling.style.display = 'flex';
-                                }}
-                              />
-                            ) : null}
-                            <div 
-                              className={`w-16 h-16 bg-gray-100 rounded-lg border flex items-center justify-center ${
-                                listing.images && listing.images.length > 0 ? 'hidden' : 'flex'
-                              }`}
-                            >
-                              <Package className="h-6 w-6 text-gray-400" />
+                  {/* Products Management Subtabs */}
+                  <Tabs defaultValue="listings-management" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="listings-management">Listings</TabsTrigger>
+                      <TabsTrigger value="orders-management">Orders</TabsTrigger>
+                    </TabsList>
+
+                    {/* Listings Management Subtab */}
+                    <TabsContent value="listings-management" className="mt-6">
+                      {loading ? (
+                        <div className="flex justify-center py-8">Loading...</div>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="text-lg font-medium">Listing Management ({listings.length})</h3>
+                              <p className="text-gray-600">View and manage all platform listings with bulk actions</p>
                             </div>
-                          </div>
-                          
-                          {/* Listing Details */}
-                          <div className="flex-1">
                             <div className="flex items-center space-x-2">
-                              <h3 className="font-semibold">{listing.title}</h3>
-                              {listing.featured && (
-                                <Badge variant="default" className="bg-yellow-500">Featured</Badge>
+                              {selectedListings.length > 0 && (
+                                <div className="flex items-center space-x-2">
+                                  <Badge variant="secondary">{selectedListings.length} selected</Badge>
+                                  <Select
+                                    value={bulkAction}
+                                    onValueChange={(value) => setBulkAction(value)}
+                                  >
+                                    <SelectTrigger className="w-40">
+                                      <SelectValue placeholder="Bulk Actions" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="delete">Delete Selected</SelectItem>
+                                      <SelectItem value="activate">Activate</SelectItem>
+                                      <SelectItem value="deactivate">Deactivate</SelectItem>
+                                      <SelectItem value="mark-sold">Mark as Sold</SelectItem>
+                                      <SelectItem value="change-category">Change Category</SelectItem>
+                                      <SelectItem value="adjust-price">Adjust Price</SelectItem>
+                                      <SelectItem value="feature">Feature</SelectItem>
+                                      <SelectItem value="unfeature">Unfeature</SelectItem>
+                                      <SelectItem value="export">Export Data</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <Button 
+                                    onClick={executeBulkAction}
+                                    disabled={!bulkAction}
+                                    variant="outline"
+                                  >
+                                    Apply
+                                  </Button>
+                                </div>
                               )}
-                            </div>
-                            <p className="text-sm text-gray-600">by {listing.seller_name}</p>
-                            <div className="flex items-center space-x-2 mt-1">
-                              <Badge variant="outline">{listing.category}</Badge>
-                              <Badge variant={listing.status === 'active' ? 'default' : 'secondary'}>
-                                {listing.status}
-                              </Badge>
-                              <span className="text-sm text-gray-500">Views: {listing.views || 0}</span>
-                              <span className="text-sm text-gray-500">•</span>
-                              <span className="text-sm text-gray-500">{listing.listing_type}</span>
-                            </div>
-                          </div>
-                          
-                          {/* Price and Actions */}
-                          <div className="flex items-center space-x-4">
-                            <div className="text-right">
-                              <p className="font-semibold">€{listing.price?.toFixed(2)}</p>
-                              <p className="text-sm text-gray-500">
-                                {new Date(listing.created_at).toLocaleDateString()}
-                              </p>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => editSingleListing(listing)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => {
-                                  window.open(`/listing/${listing.id}`, '_blank');
+                                  const allSelected = selectedListings.length === listings.length;
+                                  setSelectedListings(allSelected ? [] : listings.map(l => l.id));
                                 }}
                               >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => deleteListing(listing.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
+                                {selectedListings.length === listings.length ? 'Deselect All' : 'Select All'}
                               </Button>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
 
-                  {/* Bulk Action Panel */}
-                  {bulkAction && selectedListings.length > 0 && (
-                    <div className="mt-6 p-4 border rounded-lg bg-blue-50">
-                      <h4 className="font-medium mb-3">Configure Bulk Action: {bulkAction}</h4>
-                      {bulkAction === 'change-category' && (
-                        <div className="space-y-2">
-                          <Label>New Category</Label>
-                          <Select
-                            value={bulkActionData.category || ''}
-                            onValueChange={(value) => setBulkActionData({...bulkActionData, category: value})}
-                          >
-                            <SelectTrigger className="w-48">
-                              <SelectValue placeholder="Select category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Electronics">Electronics</SelectItem>
-                              <SelectItem value="Fashion">Fashion</SelectItem>
-                              <SelectItem value="Home & Garden">Home & Garden</SelectItem>
-                              <SelectItem value="Sports">Sports</SelectItem>
-                              <SelectItem value="Books">Books</SelectItem>
-                              <SelectItem value="Toys">Toys</SelectItem>
-                              <SelectItem value="Other">Other</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          {/* Listings Grid */}
+                          <div className="grid grid-cols-1 gap-4">
+                            {listings.length === 0 ? (
+                              <div className="text-center py-8 text-gray-500">
+                                <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                <p>No listings found</p>
+                              </div>
+                            ) : (
+                              listings.map((listing) => (
+                                <div key={listing.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                                  {/* Selection Checkbox */}
+                                  <div className="flex-shrink-0">
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedListings.includes(listing.id)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          setSelectedListings([...selectedListings, listing.id]);
+                                        } else {
+                                          setSelectedListings(selectedListings.filter(id => id !== listing.id));
+                                        }
+                                      }}
+                                      className="w-4 h-4 rounded border-gray-300"
+                                    />
+                                  </div>
+                                  
+                                  {/* Listing Image */}
+                                  <div className="flex-shrink-0">
+                                    {listing.images && listing.images.length > 0 ? (
+                                      <img
+                                        src={listing.images[0].startsWith('/uploads/') 
+                                          ? `${BACKEND_URL}${listing.images[0]}` 
+                                          : listing.images[0]
+                                        }
+                                        alt={listing.title}
+                                        className="w-16 h-16 object-cover rounded-lg border"
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                    ) : null}
+                                    <div 
+                                      className={`w-16 h-16 bg-gray-100 rounded-lg border flex items-center justify-center ${
+                                        listing.images && listing.images.length > 0 ? 'hidden' : 'flex'
+                                      }`}
+                                    >
+                                      <Package className="h-6 w-6 text-gray-400" />
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Listing Details */}
+                                  <div className="flex-1">
+                                    <div className="flex items-center space-x-2">
+                                      <h3 className="font-semibold">{listing.title}</h3>
+                                      {listing.featured && (
+                                        <Badge variant="default" className="bg-yellow-500">Featured</Badge>
+                                      )}
+                                    </div>
+                                    <p className="text-sm text-gray-600">by {listing.seller_name}</p>
+                                    <div className="flex items-center space-x-2 mt-1">
+                                      <Badge variant="outline">{listing.category}</Badge>
+                                      <Badge variant={listing.status === 'active' ? 'default' : 'secondary'}>
+                                        {listing.status}
+                                      </Badge>
+                                      <span className="text-sm text-gray-500">Views: {listing.views || 0}</span>
+                                      <span className="text-sm text-gray-500">•</span>
+                                      <span className="text-sm text-gray-500">{listing.listing_type}</span>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Price and Actions */}
+                                  <div className="flex items-center space-x-4">
+                                    <div className="text-right">
+                                      <p className="font-semibold">€{listing.price?.toFixed(2)}</p>
+                                      <p className="text-sm text-gray-500">
+                                        {new Date(listing.created_at).toLocaleDateString()}
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => editSingleListing(listing)}
+                                      >
+                                        <Edit className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                          window.open(`/listing/${listing.id}`, '_blank');
+                                        }}
+                                      >
+                                        <Eye className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => deleteListing(listing.id)}
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))
+                            )}
+                          </div>
+
+                          {/* Bulk Action Panel */}
+                          {bulkAction && selectedListings.length > 0 && (
+                            <div className="mt-6 p-4 border rounded-lg bg-blue-50">
+                              <h4 className="font-medium mb-3">Configure Bulk Action: {bulkAction}</h4>
+                              {bulkAction === 'change-category' && (
+                                <div className="space-y-2">
+                                  <Label>New Category</Label>
+                                  <Select
+                                    value={bulkActionData.category || ''}
+                                    onValueChange={(value) => setBulkActionData({...bulkActionData, category: value})}
+                                  >
+                                    <SelectTrigger className="w-48">
+                                      <SelectValue placeholder="Select category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="Electronics">Electronics</SelectItem>
+                                      <SelectItem value="Fashion">Fashion</SelectItem>
+                                      <SelectItem value="Home & Garden">Home & Garden</SelectItem>
+                                      <SelectItem value="Sports">Sports</SelectItem>
+                                      <SelectItem value="Books">Books</SelectItem>
+                                      <SelectItem value="Toys">Toys</SelectItem>
+                                      <SelectItem value="Other">Other</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              )}
+                              {bulkAction === 'adjust-price' && (
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label>Adjustment Type</Label>
+                                    <Select
+                                      value={bulkActionData.priceType || ''}
+                                      onValueChange={(value) => setBulkActionData({...bulkActionData, priceType: value})}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select type" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="increase">Increase by %</SelectItem>
+                                        <SelectItem value="decrease">Decrease by %</SelectItem>
+                                        <SelectItem value="set">Set specific price</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div>
+                                    <Label>Value</Label>
+                                    <Input
+                                      type="number"
+                                      placeholder={bulkActionData.priceType === 'set' ? 'New price' : 'Percentage'}
+                                      value={bulkActionData.priceValue || ''}
+                                      onChange={(e) => setBulkActionData({...bulkActionData, priceValue: e.target.value})}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                              <div className="flex justify-end space-x-2 mt-4">
+                                <Button variant="outline" onClick={() => setBulkAction('')}>
+                                  Cancel
+                                </Button>
+                                <Button onClick={executeBulkAction}>
+                                  Apply to {selectedListings.length} listings
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Single Listing Edit Modal */}
+                          {editingListing && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                              <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                                <h3 className="text-lg font-semibold mb-4">Edit Listing</h3>
+                                <div className="space-y-4">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                      <Label htmlFor="editTitle">Title</Label>
+                                      <Input
+                                        id="editTitle"
+                                        value={editingListing.title}
+                                        onChange={(e) => setEditingListing({...editingListing, title: e.target.value})}
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label htmlFor="editPrice">Price (€)</Label>
+                                      <Input
+                                        id="editPrice"
+                                        type="number"
+                                        step="0.01"
+                                        value={editingListing.price}
+                                        onChange={(e) => setEditingListing({...editingListing, price: parseFloat(e.target.value) || 0})}
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="editDescription">Description</Label>
+                                    <Textarea
+                                      id="editDescription"
+                                      value={editingListing.description}
+                                      onChange={(e) => setEditingListing({...editingListing, description: e.target.value})}
+                                      className="mt-1"
+                                      rows={3}
+                                    />
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                      <Label htmlFor="editCategory">Category</Label>
+                                      <Select
+                                        value={editingListing.category}
+                                        onValueChange={(value) => setEditingListing({...editingListing, category: value})}
+                                      >
+                                        <SelectTrigger className="mt-1">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="Electronics">Electronics</SelectItem>
+                                          <SelectItem value="Fashion">Fashion</SelectItem>
+                                          <SelectItem value="Home & Garden">Home & Garden</SelectItem>
+                                          <SelectItem value="Sports">Sports</SelectItem>
+                                          <SelectItem value="Books">Books</SelectItem>
+                                          <SelectItem value="Toys">Toys</SelectItem>
+                                          <SelectItem value="Other">Other</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div>
+                                      <Label htmlFor="editCondition">Condition</Label>
+                                      <Select
+                                        value={editingListing.condition}
+                                        onValueChange={(value) => setEditingListing({...editingListing, condition: value})}
+                                      >
+                                        <SelectTrigger className="mt-1">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="New">New</SelectItem>
+                                          <SelectItem value="Like New">Like New</SelectItem>
+                                          <SelectItem value="Good">Good</SelectItem>
+                                          <SelectItem value="Fair">Fair</SelectItem>
+                                          <SelectItem value="Poor">Poor</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div>
+                                      <Label htmlFor="editQuantity">Quantity</Label>
+                                      <Input
+                                        id="editQuantity"
+                                        type="number"
+                                        min="1"
+                                        value={editingListing.quantity}
+                                        onChange={(e) => setEditingListing({...editingListing, quantity: parseInt(e.target.value) || 1})}
+                                        className="mt-1"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="editLocation">Location</Label>
+                                    <Input
+                                      id="editLocation"
+                                      value={editingListing.location}
+                                      onChange={(e) => setEditingListing({...editingListing, location: e.target.value})}
+                                      className="mt-1"
+                                    />
+                                  </div>
+                                  <div className="flex justify-end space-x-2 pt-4">
+                                    <Button
+                                      variant="outline"
+                                      onClick={() => setEditingListing(null)}
+                                    >
+                                      Cancel
+                                    </Button>
+                                    <Button onClick={updateSingleListing}>
+                                      Save Changes
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
-                      {bulkAction === 'adjust-price' && (
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label>Adjustment Type</Label>
-                            <Select
-                              value={bulkActionData.priceType || ''}
-                              onValueChange={(value) => setBulkActionData({...bulkActionData, priceType: value})}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select type" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="increase">Increase by %</SelectItem>
-                                <SelectItem value="decrease">Decrease by %</SelectItem>
-                                <SelectItem value="set">Set specific price</SelectItem>
-                              </SelectContent>
-                            </Select>
+                    </TabsContent>
+
+                    {/* Orders Management Subtab */}
+                    <TabsContent value="orders-management" className="mt-6">
+                      {loading ? (
+                        <div className="flex justify-center py-8">Loading...</div>
+                      ) : (
+                        <div className="space-y-4">
+                          {/* Order Filters */}
+                          <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
+                            <div className="flex items-center space-x-2">
+                              <Label className="text-sm font-medium">Status:</Label>
+                              <Select defaultValue="all">
+                                <SelectTrigger className="w-32">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="all">All Orders</SelectItem>
+                                  <SelectItem value="pending">Pending</SelectItem>
+                                  <SelectItem value="completed">Completed</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Label className="text-sm font-medium">Time Frame:</Label>
+                              <Select defaultValue="all">
+                                <SelectTrigger className="w-36">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="all">All Time</SelectItem>
+                                  <SelectItem value="today">Today</SelectItem>
+                                  <SelectItem value="yesterday">Yesterday</SelectItem>
+                                  <SelectItem value="last_week">Last Week</SelectItem>
+                                  <SelectItem value="last_month">Last Month</SelectItem>
+                                  <SelectItem value="last_year">Last Year</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
                           </div>
-                          <div>
-                            <Label>Value</Label>
-                            <Input
-                              type="number"
-                              placeholder={bulkActionData.priceType === 'set' ? 'New price' : 'Percentage'}
-                              value={bulkActionData.priceValue || ''}
-                              onChange={(e) => setBulkActionData({...bulkActionData, priceValue: e.target.value})}
-                            />
+
+                          {/* Orders Display */}
+                          <div className="space-y-4">
+                            {orders.map((orderData) => (
+                              <div key={orderData.order.id} className="p-4 border rounded-lg">
+                                <div className="flex items-center justify-between mb-2">
+                                  <h3 className="font-semibold">Order #{orderData.order.id}</h3>
+                                  <Badge variant={orderData.order.status === 'completed' ? 'default' : 'secondary'}>
+                                    {orderData.order.status}
+                                  </Badge>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                  <div>
+                                    <p className="text-gray-600">Buyer</p>
+                                    <p>{orderData.buyer?.full_name}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-600">Seller</p>
+                                    <p>{orderData.seller?.full_name}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-600">Amount</p>
+                                    <p className="font-semibold">€{orderData.order.total_amount.toFixed(2)}</p>
+                                  </div>
+                                </div>
+                                {orderData.listing && (
+                                  <p className="text-sm text-gray-600 mt-2">
+                                    Item: {orderData.listing.title}
+                                  </p>
+                                )}
+                              </div>
+                            ))}
                           </div>
+
+                          {orders.length === 0 && (
+                            <div className="text-center py-8 text-gray-500">
+                              <ShoppingCart className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                              <p>No orders found</p>
+                            </div>
+                          )}
                         </div>
                       )}
-                      <div className="flex justify-end space-x-2 mt-4">
-                        <Button variant="outline" onClick={() => setBulkAction('')}>
-                          Cancel
-                        </Button>
-                        <Button onClick={executeBulkAction}>
-                          Apply to {selectedListings.length} listings
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+                    </TabsContent>
+                  </Tabs>
                 </CardContent>
               </Card>
-            )}
-          </TabsContent>
-
-          {/* Orders Tab */}
-          <TabsContent value="orders">
-            {loading ? (
-              <div className="flex justify-center py-8">Loading...</div>
-            ) : (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Order Management</CardTitle>
-                  <CardDescription>View all platform orders</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {orders.map((orderData) => (
-                      <div key={orderData.order.id} className="p-4 border rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold">Order #{orderData.order.id}</h3>
-                          <Badge variant={orderData.order.status === 'completed' ? 'default' : 'secondary'}>
-                            {orderData.order.status}
-                          </Badge>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                          <div>
-                            <p className="text-gray-600">Buyer</p>
-                            <p>{orderData.buyer?.full_name}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-600">Seller</p>
-                            <p>{orderData.seller?.full_name}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-600">Amount</p>
-                            <p className="font-semibold">${orderData.order.total_amount.toFixed(2)}</p>
-                          </div>
-                        </div>
-                        {orderData.listing && (
-                          <p className="text-sm text-gray-600 mt-2">
-                            Item: {orderData.listing.title}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            </div>
           </TabsContent>
 
           {/* Content & Listings Tab */}
