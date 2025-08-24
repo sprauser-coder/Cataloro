@@ -828,7 +828,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchListings();
-  }, [searchTerm, selectedCategory, listingType, sortBy, priceRange, selectedCondition, selectedRegion, maxDistance]);
+  }, [searchTerm, selectedCategory, listingType, sortBy, priceRange, selectedCondition, selectedRegion, maxDistance, listingsPerPage]);
 
   const fetchCategories = async () => {
     try {
