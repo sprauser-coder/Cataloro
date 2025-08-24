@@ -4560,7 +4560,75 @@ const AdminPanel = () => {
 
                           {/* Orders Display */}
                           <div className="space-y-4">
-                            {orders.map((order) => (
+                            {orders
+                              .filter(order => {
+                                // Search filter
+                                if (orderSearchTerm) {
+                                  const searchLower = orderSearchTerm.toLowerCase();
+                                  const matchesId = order.order.id.toLowerCase().includes(searchLower);
+                                  const matchesBuyer = order.buyer?.full_name?.toLowerCase().includes(searchLower);
+                                  const matchesSeller = order.seller?.full_name?.toLowerCase().includes(searchLower);
+                                  const matchesItem = order.listing?.title?.toLowerCase().includes(searchLower);
+                                  
+                                  if (!matchesId && !matchesBuyer && !matchesSeller && !matchesItem) {
+                                    return false;
+                                  }
+                                }
+                                
+                                // Status filter
+                                if (orderStatusFilter !== 'all' && order.order.status !== orderStatusFilter) {
+                                  return false;
+                                }
+                                
+                                // Time filter
+                                if (orderTimeFilter !== 'all') {
+                                  const orderDate = new Date(order.order.created_at);
+                                  const now = new Date();
+                                  
+                                  switch (orderTimeFilter) {
+                                    case 'today':
+                                      if (orderDate.toDateString() !== now.toDateString()) return false;
+                                      break;
+                                    case 'yesterday':
+                                      const yesterday = new Date(now);
+                                      yesterday.setDate(yesterday.getDate() - 1);
+                                      if (orderDate.toDateString() !== yesterday.toDateString()) return false;
+                                      break;
+                                    case 'last_week':
+                                      const weekAgo = new Date(now);
+                                      weekAgo.setDate(weekAgo.getDate() - 7);
+                                      if (orderDate < weekAgo) return false;
+                                      break;
+                                    case 'last_month':
+                                      const monthAgo = new Date(now);
+                                      monthAgo.setMonth(monthAgo.getMonth() - 1);
+                                      if (orderDate < monthAgo) return false;
+                                      break;
+                                    case 'last_year':
+                                      const yearAgo = new Date(now);
+                                      yearAgo.setFullYear(yearAgo.getFullYear() - 1);
+                                      if (orderDate < yearAgo) return false;
+                                      break;
+                                  }
+                                }
+                                
+                                return true;
+                              })
+                              .sort((a, b) => {
+                                switch (orderSortBy) {
+                                  case 'created_asc':
+                                    return new Date(a.order.created_at) - new Date(b.order.created_at);
+                                  case 'amount_desc':
+                                    return (b.order.total_amount || 0) - (a.order.total_amount || 0);
+                                  case 'amount_asc':
+                                    return (a.order.total_amount || 0) - (b.order.total_amount || 0);
+                                  case 'status':
+                                    return a.order.status.localeCompare(b.order.status);
+                                  default: // created_desc
+                                    return new Date(b.order.created_at) - new Date(a.order.created_at);
+                                }
+                              })
+                              .map((order) => (
                               <Card key={order.order.id}>
                                 <CardContent className="p-4">
                                   <div className="flex items-center justify-between mb-3">
