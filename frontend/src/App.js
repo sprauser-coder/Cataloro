@@ -3039,6 +3039,26 @@ const Favorites = () => {
 
 // Admin Panel Component
 const AdminPanel = () => {
+  // Test minimal render first
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Admin Panel v1.1.1 - Test Mode</h1>
+          <p className="text-gray-600">Testing basic render functionality</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4">Admin Panel Loaded Successfully</h2>
+          <p>If you can see this message, the AdminPanel component is rendering properly.</p>
+          <p>This is a minimal test version to debug the white screen issue.</p>
+        </div>
+      </div>
+    </div>
+  );
+  
+  // Original complex implementation commented out for testing
+  /*
   const [activeTab, setActiveTab] = useState('dashboard');
   const [appearanceTab, setAppearanceTab] = useState('typography');
   const [stats, setStats] = useState(null);
