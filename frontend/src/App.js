@@ -410,7 +410,7 @@ const Header = () => {
 
   useEffect(() => {
     if (user) {
-      fetchCartCount();
+      fetchFavoritesCount();
     }
     
     // Fetch site settings for header styling
