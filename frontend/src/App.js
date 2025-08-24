@@ -210,7 +210,7 @@ const AdminProtectedRoute = ({ children }) => {
 
 // Footer Component with Version
 const Footer = ({ siteSettings }) => {
-  const currentVersion = "1.2.0";
+  const currentVersion = "1.2.1";
   // Use deployment/completion time instead of current time
   const deploymentDateTime = "24/01/2025 15:20";
 
