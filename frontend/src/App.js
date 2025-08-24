@@ -128,9 +128,9 @@ const ProtectedRoute = ({ children }) => {
 
 // Footer Component with Version
 const Footer = ({ siteSettings }) => {
-  const currentVersion = "1.0.3";
+  const currentVersion = "1.0.4";
   // Use deployment/completion time instead of current time
-  const deploymentDateTime = "24/01/2025 14:45";
+  const deploymentDateTime = "24/01/2025 15:20";
 
   return (
     <footer className="bg-white border-t border-gray-200 mt-auto">
