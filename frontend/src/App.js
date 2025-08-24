@@ -4472,9 +4472,6 @@ const AdminPanel = () => {
                               </div>
                             ))}
                                 {orderData.listing && (
-                                  <p className="text-sm text-gray-600 mt-2">
-                                    Item: {orderData.listing.title}
-                                  </p>
                                 )}
                               </div>
                             ))}
