@@ -4078,6 +4078,7 @@ const AdminPanel = () => {
                 </Card>
               </div>
             )}
+            </div>
           </TabsContent>
 
           {/* Products Tab (Combined Listings and Orders) */}
