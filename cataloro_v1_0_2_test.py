@@ -86,7 +86,7 @@ class CataloroV102Tester:
                 "username": f"userid_test_{datetime.now().strftime('%H%M%S')}",
                 "password": "testpass123",
                 "full_name": "User ID Test User",
-                "role": "buyer",
+                "role": "both",  # Changed to "both" so user can create listings
                 "phone": "+1234567890",
                 "address": "123 Test Street"
             }
