@@ -1774,7 +1774,11 @@ const Profile = () => {
         full_name: profileData.full_name,
         phone: profileData.phone,
         bio: profileData.bio,
-        location: profileData.location
+        location: profileData.location,
+        is_business: profileData.is_business,
+        company_name: profileData.company_name,
+        country: profileData.country,
+        vat_number: profileData.vat_number
       };
       
       const response = await axios.put(`${API}/profile`, updateData);
