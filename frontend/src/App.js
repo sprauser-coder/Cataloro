@@ -890,22 +890,45 @@ const Auth = () => {
                 </>
               )}
               
-              <Button type="submit" className="w-full mt-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
-                {isLogin ? 'Sign In' : 'Create Account'}
+              <Button 
+                type="submit" 
+                className="w-full mt-8 h-12 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:via-indigo-700 hover:to-purple-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 focus:ring-4 focus:ring-purple-200"
+              >
+                {isLogin ? '✨ Sign In' : '🚀 Create Account'}
               </Button>
             </form>
+            
+            {/* Additional login options */}
+            {isLogin && (
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="text-center">
+                  <p className="text-sm text-gray-600 mb-4">Quick Access</p>
+                  <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-100">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Demo Admin Account:</p>
+                    <p className="text-xs text-gray-600">admin@marketplace.com / admin123</p>
+                  </div>
+                </div>
+              </div>
+            )}
             
             <div className="mt-6 text-center">
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-indigo-600 hover:text-indigo-800 font-medium"
+                className="text-purple-600 hover:text-purple-800 font-medium text-sm transition-colors duration-300 hover:underline"
               >
-                {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+                {isLogin ? "New to Cataloro? Create an account" : "Already have an account? Sign in"}
               </button>
             </div>
           </CardContent>
         </Card>
+        
+        {/* Footer */}
+        <div className="text-center mt-8">
+          <p className="text-gray-500 text-sm">
+            © 2025 Cataloro. Premium marketplace experience.
+          </p>
+        </div>
       </div>
     </div>
   );
