@@ -27,7 +27,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://cataloro-admin-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-fix-4.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
