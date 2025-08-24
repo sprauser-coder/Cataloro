@@ -913,22 +913,6 @@ async def remove_from_favorites(
     
     return {"message": "Removed from favorites"}
 
-@api_router.get("/admin/navigation")
-async def get_navigation_items(admin: User = Depends(get_admin_user)):
-    """Get all navigation items"""
-    nav_items = await db.navigation.find({}).to_list(length=None)
-    return [parse_from_mongo(item) for item in nav_items]
-
-@api_router.delete("/admin/navigation/{nav_id}")
-async def delete_navigation_item(nav_id: str, admin: User = Depends(get_admin_user)):
-    """Delete a navigation item"""
-    result = await db.navigation.delete_one({"id": nav_id})
-    
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Navigation item not found")
-    
-    return {"message": "Navigation item deleted successfully"}
-
 @api_router.delete("/admin/navigation/test-pages")
 async def delete_test_pages(admin: User = Depends(get_admin_user)):
     """Delete all test pages from navigation"""
@@ -957,6 +941,22 @@ async def delete_test_pages(admin: User = Depends(get_admin_user)):
         "navigation_deleted": result.deleted_count,
         "pages_deleted": pages_result.deleted_count
     }
+
+@api_router.get("/admin/navigation")
+async def get_navigation_items(admin: User = Depends(get_admin_user)):
+    """Get all navigation items"""
+    nav_items = await db.navigation.find({}).to_list(length=None)
+    return [parse_from_mongo(item) for item in nav_items]
+
+@api_router.delete("/admin/navigation/{nav_id}")
+async def delete_navigation_item(nav_id: str, admin: User = Depends(get_admin_user)):
+    """Delete a navigation item"""
+    result = await db.navigation.delete_one({"id": nav_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Navigation item not found")
+    
+    return {"message": "Navigation item deleted successfully"}
 
 # CMS Models
 class SiteSettings(BaseModel):
