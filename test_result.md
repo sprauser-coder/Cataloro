@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix several issues with the Cataloro marketplace: 1) Images not showing right now - no previews, 2) Logo upload not working properly - can upload but cannot see it in header, 3) Delete all test parts '🚀 PREVIEW SYNC TEST - CATALORO v2.0 🚀', 4) Replace 'cataloro' name in header with logo when logo is uploaded, 5) Give more functions to design hero section and delete sync testing content, 6) Delete height adjustment for hero section from general settings - only keep in hero selection tab"
+user_problem_statement: "Fix multiple issues with Cataloro marketplace v1.0.2: 1) Multi-image navigation works, 2) Menu restructuring works but test sites still need deletion, 3) Combine orders and listings into 'Products' menu with tabs, 4) Favorites system not working - change 'Add to cart' to 'Save to favorites', 5) Single listing edit not working, 6) Categories should show all categories (not just ones with products), 7) User ID format still old for existing users"
 
 backend:
   - task: "User Authentication System"
