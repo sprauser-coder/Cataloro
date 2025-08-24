@@ -2668,6 +2668,7 @@ const AdminPanel = () => {
     meta_description: ''
   });
   const [editingPage, setEditingPage] = useState(null);
+  const [editingListing, setEditingListing] = useState(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
