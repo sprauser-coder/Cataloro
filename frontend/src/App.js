@@ -7697,9 +7697,9 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/admin" element={
-              <ProtectedRoute>
+              <AdminProtectedRoute>
                 <AdminPanel />
-              </ProtectedRoute>
+              </AdminProtectedRoute>
             } />
             {/* Dynamic CMS Pages Route */}
             <Route path="/:slug" element={<CMSPage />} />
