@@ -1060,9 +1060,24 @@ const Home = () => {
               {showFilters ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
             </Button>
 
-            {/* Results Count */}
-            <div className="ml-auto text-sm text-gray-600">
-              {loading ? 'Loading...' : `${listings.length} items found`}
+            {/* Results Count and Per Page Selector */}
+            <div className="ml-auto flex items-center space-x-4">
+              <div className="text-sm text-gray-600">
+                {loading ? 'Loading...' : `${listings.length} items found`}
+              </div>
+              <div className="flex items-center space-x-2">
+                <Label className="text-sm text-gray-600">Show:</Label>
+                <Select value={listingsPerPage.toString()} onValueChange={(value) => setListingsPerPage(parseInt(value))}>
+                  <SelectTrigger className="w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
