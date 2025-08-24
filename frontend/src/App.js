@@ -766,18 +766,33 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
-          <CardHeader className="text-center pb-8">
-            <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full w-fit">
-              <Package className="h-8 w-8 text-white" />
-            </div>
-            <CardTitle className="text-2xl font-bold">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-purple-100 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-10 -left-10 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+        <div className="absolute -bottom-8 -right-8 w-80 h-80 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2s"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4s"></div>
+      </div>
+      
+      <div className="w-full max-w-lg relative z-10">
+        {/* Logo and Brand Section */}
+        <div className="text-center mb-8">
+          <div className="mx-auto mb-6 p-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 rounded-3xl w-fit shadow-2xl transform hover:scale-105 transition-transform duration-300">
+            <Package className="h-12 w-12 text-white" />
+          </div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 bg-clip-text text-transparent mb-2">
+            Cataloro
+          </h1>
+          <p className="text-gray-600 text-lg">Premium Marketplace Experience</p>
+        </div>
+        
+        <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-xl rounded-3xl overflow-hidden">
+          <CardHeader className="text-center pb-6 pt-8 px-8">
+            <CardTitle className="text-2xl font-bold text-gray-800 mb-2">
               {isLogin ? 'Welcome Back' : 'Join Cataloro'}
             </CardTitle>
-            <CardDescription>
-              {isLogin ? 'Sign in to your account' : 'Create your account and start trading on Cataloro'}
+            <CardDescription className="text-gray-600">
+              {isLogin ? 'Sign in to continue your journey' : 'Create your account and start your marketplace adventure'}
             </CardDescription>
           </CardHeader>
           
