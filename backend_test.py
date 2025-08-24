@@ -11,7 +11,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://shop-recovery.preview.emergentagent.com/api"
+BACKEND_URL = "https://shopfix-deploy-1.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
@@ -374,7 +374,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://shop-recovery.preview.emergentagent.com/api"
+BASE_URL = "https://shopfix-deploy-1.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
