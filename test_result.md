@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix 8 critical bugs in Cataloro v1.0.4: 1) Missing 'add to favorites' function on browse overview products, 2) 'Add to favorite' missing on auction listings, 3) Delete button not working in favorites tab, 4) Need timestamp for order completion + sorting + search bar in order panel, 5) Add category still not working, 6) Only categories with listings shown - need all categories visible/editable, 7) Page edit not working despite visible buttons, 8) Admin panel menu scrollable issue - need better layout solution"
+user_problem_statement: "Fix 8 critical bugs in Cataloro v1.0.4: 1) Category creation works but doesn't update listing dropdown - make dynamic, 2) Browse page favorites icon should show 'active' state if item already in favorites, 3) Search orders function not working, 4) Add same filtering/search structure to listings as orders, 5) Delete 'listing organization' from content management admin panel, 6) Pages not deletable - 'page not found' error, 7) 'Add to menu' button not working, 8) My profile changes not saved and missing user number display"
 
 backend:
   - task: "User Authentication System"
