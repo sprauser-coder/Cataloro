@@ -1694,6 +1694,7 @@ const ListingDetail = () => {
 const Profile = () => {
   const { user } = useAuth();
   const [profileData, setProfileData] = useState({
+    user_id: user?.user_id || '',
     username: user?.username || '',
     full_name: user?.full_name || '',
     email: user?.email || '',
