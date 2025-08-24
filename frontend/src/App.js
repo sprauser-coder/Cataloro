@@ -3548,6 +3548,16 @@ const AdminPanel = () => {
       return;
     }
     
+    // Check if category already exists
+    if (categories.some(cat => cat.name.toLowerCase() === newCategoryName.trim().toLowerCase())) {
+      toast({
+        title: "Error", 
+        description: "Category already exists",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     try {
       // Try to add to backend first
       try {
@@ -3562,18 +3572,25 @@ const AdminPanel = () => {
         count: 0
       };
       
-      setCategories([...categories, newCategory]);
+      const updatedCategories = [...categories, newCategory];
+      setCategories(updatedCategories);
       setNewCategoryName('');
       
       // Update global categories for listings
-      window.cataloroCategories = [...categories, newCategory];
+      window.cataloroCategories = updatedCategories;
       
       toast({
         title: "Success",
-        description: `Category "${newCategoryName}" added successfully`
+        description: `Category "${newCategoryName.trim()}" added successfully`
       });
       
+      // Refresh categories to get accurate data
+      setTimeout(() => {
+        fetchCategories();
+      }, 500);
+      
     } catch (error) {
+      console.error('Error adding category:', error);
       toast({
         title: "Error",
         description: "Failed to add category",
