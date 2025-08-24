@@ -3368,7 +3368,7 @@ const AdminPanel = () => {
             <TabsTrigger value="listings">Listings</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="appearance">Appearance</TabsTrigger>
-            <TabsTrigger value="pages">Page Management</TabsTrigger>
+            <TabsTrigger value="pages">Content Management</TabsTrigger>
             <TabsTrigger value="settings">General Settings</TabsTrigger>
             <TabsTrigger value="database">Database</TabsTrigger>
           </TabsList>
