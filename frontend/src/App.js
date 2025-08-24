@@ -128,14 +128,26 @@ const ProtectedRoute = ({ children }) => {
 
 // Admin Protected Route Component (requires admin role)
 const AdminProtectedRoute = ({ children }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const token = localStorage.getItem('token');
   
   if (!token) {
     return <Navigate to="/auth" />;
   }
   
-  if (user && user.role !== 'admin') {
+  // Show loading while user data is being fetched
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+          <p className="mt-2 text-gray-600">Loading admin panel...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (user.role !== 'admin') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
@@ -144,9 +156,12 @@ const AdminProtectedRoute = ({ children }) => {
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Access Denied</h2>
           <p className="text-gray-600 mb-4">You don't have permission to access the admin panel.</p>
-          <Link to="/" className="inline-block">
-            <Button>Return to Home</Button>
-          </Link>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-500">Current role: {user.role || 'Not assigned'}</p>
+            <Link to="/" className="inline-block">
+              <Button>Return to Home</Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
