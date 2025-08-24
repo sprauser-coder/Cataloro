@@ -2,8 +2,8 @@ module.exports = {
   apps: [
     {
       name: 'cataloro-backend',
-      script: 'server.py',
-      cwd: '/var/www/cataloro/backend',
+      script: 'vps-server.py',
+      cwd: '/var/www/cataloro',
       interpreter: '/var/www/cataloro/venv/bin/python',
       instances: 1,
       autorestart: true,
