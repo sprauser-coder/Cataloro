@@ -3265,7 +3265,7 @@ const AdminPanel = () => {
         slug: '',
         content: '',
         published: false,
-        show_in_navigation: false
+        meta_description: ''
       });
       
       fetchPages();
