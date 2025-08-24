@@ -528,6 +528,20 @@ backend:
         agent: "testing"
         comment: "CATEGORIES MANAGEMENT FIX 8 BACKEND TESTING COMPLETED: Comprehensive testing of categories management system with 100% success rate (19/19 tests passed). ✅ CATEGORIES RETRIEVAL: GET /api/categories endpoint working perfectly - returns clean JSON array of 10 predefined categories without any display issues or corruption. ✅ CATEGORY FILTERING: GET /api/listings?category={category} filtering working flawlessly - tested all 10 categories, proper filtering logic, accurate counts (Electronics: 13, Fashion: 3, Home & Garden: 2, Art & Collectibles: 1, others: 0), invalid categories return empty arrays. ✅ DATA STRUCTURE VERIFICATION: No multiple <listings> display bugs found in API responses, no blank/empty listings detected, no duplicate IDs, all listings have required fields (id, title, category, price, seller_id) properly populated. ✅ LISTING COUNTS ACCURACY: Manual verification confirms category filtering counts match actual distribution - total 19 active listings properly categorized with 100% accuracy. ✅ BACKEND ENDPOINTS STATUS: Categories are static/hardcoded (not dynamically managed), POST/DELETE endpoints correctly return 404/405 as expected. ✅ JSON RESPONSE INTEGRITY: All API responses return clean, properly formatted JSON without corruption, HTML tags, or display artifacts. The backend categories management system is working correctly - any reported issues with multiple <listings> display, blank items, or deletion problems are frontend-specific and not caused by backend API data corruption."
 frontend:
+  - task: "Frontend URL Configuration Fix"
+    implemented: true
+    working: true
+    file: "/app/frontend/.env"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported login issues - frontend was using hardcoded shopfix-deploy-1.preview.emergentagent.com URL instead of 217.154.0.82 production server"
+      - working: true
+        agent: "main"
+        comment: "FIXED: Updated REACT_APP_BACKEND_URL from https://shopfix-deploy-1.preview.emergentagent.com to http://217.154.0.82 in frontend/.env, rebuilt frontend with yarn build, updated CORS origins in backend to include 217.154.0.82, restarted all services. Website now loads correctly and login form is functional."
   - task: "Cataloro v1.1.1 Admin Panel White Screen Investigation and Authentication Fix"
     implemented: true
     working: true
