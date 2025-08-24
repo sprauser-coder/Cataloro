@@ -842,6 +842,77 @@ async def get_categories():
 async def root():
     return {"message": "Marketplace API"}
 
+# Favorites System (replaces cart)
+@api_router.post("/favorites")
+async def add_to_favorites(
+    request: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Add item to user's favorites"""
+    listing_id = request.get("listing_id")
+    
+    # Check if listing exists and is active
+    listing = await db.listings.find_one({"id": listing_id, "status": "active"})
+    if not listing:
+        raise HTTPException(status_code=404, detail="Listing not found or inactive")
+    
+    # Check if already in favorites
+    existing = await db.favorites.find_one({
+        "user_id": current_user.id,
+        "listing_id": listing_id
+    })
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="Item already in favorites")
+    
+    # Add to favorites
+    favorite_data = {
+        "id": str(uuid.uuid4()),
+        "user_id": current_user.id,
+        "listing_id": listing_id,
+        "created_at": datetime.now(timezone.utc)
+    }
+    
+    await db.favorites.insert_one(prepare_for_mongo(favorite_data))
+    
+    return {"message": "Added to favorites", "favorite_id": favorite_data["id"]}
+
+@api_router.get("/favorites")
+async def get_user_favorites(current_user: User = Depends(get_current_user)):
+    """Get user's favorite items (only active listings)"""
+    favorites = await db.favorites.find({"user_id": current_user.id}).to_list(length=None)
+    
+    result = []
+    for favorite in favorites:
+        # Get the listing details
+        listing = await db.listings.find_one({"id": favorite["listing_id"]})
+        
+        # Only include favorites for active listings
+        if listing and listing.get("status") == "active":
+            result.append({
+                "favorite_id": favorite["id"],
+                "listing": ProductListing(**parse_from_mongo(listing)),
+                "added_at": favorite["created_at"]
+            })
+    
+    return result
+
+@api_router.delete("/favorites/{favorite_id}")
+async def remove_from_favorites(
+    favorite_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Remove item from favorites"""
+    result = await db.favorites.delete_one({
+        "id": favorite_id,
+        "user_id": current_user.id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Favorite not found")
+    
+    return {"message": "Removed from favorites"}
+
 # ===========================
 # ADMIN ROUTES
 # ===========================
