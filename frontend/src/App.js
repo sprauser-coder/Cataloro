@@ -3822,6 +3822,9 @@ const AdminPanel = () => {
                                                 {user?.is_active ? "Active" : "Blocked"}
                                               </Badge>
                                             </div>
+                                            <div><strong>Bio:</strong> {user?.bio || 'No bio provided'}</div>
+                                            <div><strong>Phone:</strong> {user?.phone || 'Not provided'}</div>
+                                            <div><strong>Address:</strong> {user?.address || 'Not provided'}</div>
                                             <div><strong>Joined:</strong> {user?.created_at ? new Date(user.created_at).toLocaleString() : 'Unknown'}</div>
                                           </div>
                                         </div>
