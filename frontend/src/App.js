@@ -1768,13 +1768,27 @@ const Profile = () => {
 
   const updateProfile = async () => {
     try {
-      await axios.put(`${API}/profile`, profileData);
+      // Only send fields that the backend ProfileUpdate model accepts
+      const updateData = {
+        username: profileData.username,
+        full_name: profileData.full_name,
+        phone: profileData.phone,
+        bio: profileData.bio,
+        location: profileData.location
+      };
+      
+      const response = await axios.put(`${API}/profile`, updateData);
+      
+      // Update the local profileData with the response to ensure consistency
+      setProfileData(response.data);
+      
       toast({
         title: "Success",
         description: "Profile updated successfully"
       });
       setIsEditing(false);
     } catch (error) {
+      console.error('Profile update error:', error);
       toast({
         title: "Error",
         description: "Failed to update profile",
