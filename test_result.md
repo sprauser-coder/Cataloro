@@ -659,6 +659,7 @@ test_plan:
     - "Phase 3A Profile Endpoints"
     - "Cataloro v1.0.2 Enhanced Features"
     - "Cataloro v1.0.2 Bug Fixes Testing"
+    - "Cataloro v1.0.3 Bug Fixes Testing"
 
 agent_communication:
   - agent: "main"
