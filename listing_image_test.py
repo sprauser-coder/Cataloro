@@ -5,7 +5,7 @@ from datetime import datetime
 import time
 
 class ListingImageTester:
-    def __init__(self, base_url="https://marketplace-fix-4.preview.emergentagent.com"):
+    def __init__(self, base_url="https://shop-recovery.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.token = None
