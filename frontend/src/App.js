@@ -1838,7 +1838,7 @@ const Profile = () => {
                       <Label htmlFor="userId">User ID</Label>
                       <Input
                         id="userId"
-                        value={user?.user_id || 'Not assigned'}
+                        value={profileData.user_id || 'Not assigned'}
                         disabled={true}
                         className="mt-1 bg-gray-50"
                       />
