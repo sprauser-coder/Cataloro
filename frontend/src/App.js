@@ -3083,11 +3083,6 @@ const AdminPanel = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  // Debug logging
-  console.log('AdminPanel: Component starting to render');
-  console.log('AdminPanel: User data:', user);
-  console.log('AdminPanel: ActiveTab:', activeTab);
-
   useEffect(() => {
     if (activeTab === 'dashboard') {
       fetchStats();
