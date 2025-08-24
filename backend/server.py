@@ -2031,7 +2031,11 @@ async def get_user_profile(current_user: User = Depends(get_current_user)):
             "location": getattr(current_user, 'location', None),
             "role": current_user.role,
             "created_at": current_user.created_at,
-            "updated_at": getattr(current_user, 'updated_at', None)
+            "updated_at": getattr(current_user, 'updated_at', None),
+            "is_business": getattr(current_user, 'is_business', False),
+            "company_name": getattr(current_user, 'company_name', None),
+            "country": getattr(current_user, 'country', None),
+            "vat_number": getattr(current_user, 'vat_number', None)
         }
         
         return UserProfile(**profile_data)
