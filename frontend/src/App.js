@@ -3487,8 +3487,34 @@ const AdminPanel = () => {
     try {
       // Get categories from backend or use default list
       const response = await axios.get(`${API}/categories`);
-      setCategories(response.data);
+      const categoryNames = Array.isArray(response.data) ? response.data : [];
+      
+      // Convert to proper data structure with listing counts
+      const categoriesWithCounts = [];
+      
+      for (const categoryName of categoryNames) {
+        try {
+          // Get listing count for each category
+          const listingsResponse = await axios.get(`${API}/listings`, { 
+            params: { category: categoryName, limit: 1000 } 
+          });
+          categoriesWithCounts.push({
+            name: categoryName,
+            count: listingsResponse.data.length
+          });
+        } catch (error) {
+          // If listing fetch fails, still add category with 0 count
+          categoriesWithCounts.push({
+            name: categoryName,
+            count: 0
+          });
+        }
+      }
+      
+      setCategories(categoriesWithCounts);
+      
     } catch (error) {
+      console.error('Error fetching categories:', error);
       // If backend doesn't have categories endpoint, use predefined list
       const predefinedCategories = ['Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books', 'Toys', 'Automotive', 'Health & Beauty', 'Other'];
       const categoriesWithCounts = [];
