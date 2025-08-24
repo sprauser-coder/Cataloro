@@ -2132,10 +2132,17 @@ const Sell = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${API}/categories`);
-      setCategories(response.data);
+      // Use categories from global state or fetch from admin panel
+      if (window.cataloroCategories) {
+        setCategories(window.cataloroCategories.map(cat => cat.name));
+      } else {
+        // Default categories if none available
+        const defaultCategories = ['Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books', 'Toys', 'Automotive', 'Health & Beauty', 'Other'];
+        setCategories(defaultCategories);
+      }
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      const defaultCategories = ['Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books', 'Toys', 'Automotive', 'Health & Beauty', 'Other'];
+      setCategories(defaultCategories);
     }
   };
 
