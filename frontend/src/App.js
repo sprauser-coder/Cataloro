@@ -1010,8 +1010,12 @@ const Home = () => {
     return baseStyle;
   };
 
-  const heroTitle = siteSettings?.hero_title || 'Discover Amazing Deals';
-  const heroSubtitle = siteSettings?.hero_subtitle || 'Buy and sell with confidence on Cataloro - your trusted marketplace for amazing deals';
+  const heroTitle = urlParams.get('user_listings') === 'true' ? 
+    'My Listings' : 
+    (siteSettings?.hero_title || 'Discover Amazing Deals');
+  const heroSubtitle = urlParams.get('user_listings') === 'true' ? 
+    'Manage and view all your listed items' : 
+    (siteSettings?.hero_subtitle || 'Buy and sell with confidence on Cataloro - your trusted marketplace for amazing deals');
 
   return (
     <div className="min-h-screen bg-gray-100">
