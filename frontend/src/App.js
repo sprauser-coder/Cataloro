@@ -583,7 +583,7 @@ const Header = () => {
                   e.target.style.color = '#dc2626';
                 }}
               >
-                Cataloro Admin
+                Admin Panel
               </Link>
             )}
           </nav>
