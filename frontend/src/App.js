@@ -809,6 +809,7 @@ const Home = () => {
   const [listingType, setListingType] = useState('');
   const [loading, setLoading] = useState(true);
   const [siteSettings, setSiteSettings] = useState(null);
+  const [userFavorites, setUserFavorites] = useState([]);
   
   const addToFavoritesBrowse = async (listing) => {
     try {
