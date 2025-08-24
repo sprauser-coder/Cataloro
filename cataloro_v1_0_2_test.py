@@ -343,8 +343,15 @@ class CataloroV102Tester:
             response = self.session.get(f"{BACKEND_URL}/profile", headers=headers)
             if response.status_code == 200:
                 profile_data = response.json()
-                required_fields = ["id", "user_id", "email", "username", "full_name", "role"]
+                required_fields = ["id", "email", "username", "full_name", "role"]
                 missing_fields = [field for field in required_fields if field not in profile_data]
+                
+                # Check if user_id exists (it should be generated)
+                if "user_id" in profile_data and profile_data["user_id"]:
+                    self.log_test("Profile Management - User ID Present", True, f"User ID: {profile_data['user_id']}")
+                else:
+                    self.log_test("Profile Management - User ID Present", False, "user_id field missing or empty")
+                    all_passed = False
                 
                 if not missing_fields:
                     self.log_test("Profile Management - GET Profile", True, f"Retrieved profile with all required fields")
