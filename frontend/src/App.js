@@ -4460,22 +4460,22 @@ const AdminPanel = () => {
                               
                               {/* User Actions */}
                               <div className="flex flex-col space-y-2 ml-4">
-                                        <h3 className="font-semibold text-lg">{user?.username || user?.full_name || 'Unknown User'}</h3>
-                                        <Badge variant={user.role === 'admin' ? 'default' : user.role === 'seller' ? 'secondary' : 'outline'}>
-                                          {user.role}
-                                        </Badge>
-                                        {user.is_active === false && (
-                                          <Badge variant="destructive">Blocked</Badge>
-                                        )}
-                                      </div>
-                                      <p className="text-gray-600">{user?.email || 'No email'}</p>
-                                      <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
-                                        <span>ID: {user.user_id || 'Not assigned'}</span>
-                                        <span>•</span>
-                                        <span>Joined: {new Date(user.created_at).toLocaleDateString()}</span>
-                                      </div>
-                                    </div>
-                                  </div>
+                                <h3 className="font-semibold text-lg">{user?.username || user?.full_name || 'Unknown User'}</h3>
+                                <Badge variant={user.role === 'admin' ? 'default' : user.role === 'seller' ? 'secondary' : 'outline'}>
+                                  {user.role}
+                                </Badge>
+                                {user.is_active === false && (
+                                  <Badge variant="destructive">Blocked</Badge>
+                                )}
+                              </div>
+                              <p className="text-gray-600">{user?.email || 'No email'}</p>
+                              <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                                <span>ID: {user.user_id || 'Not assigned'}</span>
+                                <span>•</span>
+                                <span>Joined: {new Date(user.created_at).toLocaleDateString()}</span>
+                              </div>
+                            </div>
+                          </div>
                                   
                                   {/* Quick User Stats */}
                                   <div className="grid grid-cols-3 gap-2 mt-2 p-2 bg-gray-50 rounded">
