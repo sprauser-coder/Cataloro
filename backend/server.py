@@ -913,9 +913,39 @@ async def remove_from_favorites(
     
     return {"message": "Removed from favorites"}
 
-# ===========================
-# ADMIN ROUTES
-# ===========================
+# Migration endpoint to update existing users to new user_id format
+@api_router.post("/admin/migrate-user-ids")
+async def migrate_user_ids(admin: User = Depends(get_admin_user)):
+    """Migrate existing users to new U00001 format"""
+    try:
+        # Find users without proper user_id format
+        users_to_update = await db.users.find({
+            "$or": [
+                {"user_id": {"$exists": False}},
+                {"user_id": ""},
+                {"user_id": {"$regex": "^USER\\d+$"}}  # Old format
+            ]
+        }).to_list(length=None)
+        
+        updated_count = 0
+        
+        for user_doc in users_to_update:
+            # Generate new user ID
+            new_user_id = await generate_user_id()
+            
+            # Update the user
+            await db.users.update_one(
+                {"_id": user_doc["_id"]},
+                {"$set": {"user_id": new_user_id}}
+            )
+            updated_count += 1
+        
+        return {
+            "message": f"Successfully migrated {updated_count} users to new ID format",
+            "updated_count": updated_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Migration failed: {str(e)}")
 
 # CMS Models
 class SiteSettings(BaseModel):
