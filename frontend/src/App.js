@@ -3925,7 +3925,12 @@ const AdminPanel = () => {
   const fetchSiteSettings = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API}/admin/cms/settings`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API}/admin/cms/settings`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setSiteSettings(response.data);
     } catch (error) {
       toast({
