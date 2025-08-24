@@ -4036,7 +4036,12 @@ const AdminPanel = () => {
 
   const fetchNavigation = async () => {
     try {
-      const response = await axios.get(`${API}/admin/cms/navigation`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API}/admin/cms/navigation`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setNavigation(response.data);
     } catch (error) {
       toast({
