@@ -2943,19 +2943,27 @@ const AdminPanel = () => {
     });
   };
 
-  const updateSingleListing = async () => {
+  const addPageToMenu = async (page) => {
     try {
-      await axios.put(`${API}/admin/listings/${editingListing.id}`, editingListing);
+      await axios.post(`${API}/cms/navigation`, {
+        label: page.title,
+        url: `/${page.slug}`,
+        target: '_self'
+      });
+      
       toast({
         title: "Success",
-        description: "Listing updated successfully"
+        description: `"${page.title}" has been added to the navigation menu`
       });
-      setEditingListing(null);
-      fetchListings();
+      
+      // Refresh navigation
+      const navResponse = await axios.get(`${API}/cms/navigation`);
+      window.cataloroNavigation = navResponse.data;
+      window.dispatchEvent(new CustomEvent('cataloroNavigationLoaded', { detail: navResponse.data }));
     } catch (error) {
       toast({
-        title: "Error", 
-        description: "Failed to update listing",
+        title: "Error",
+        description: "Failed to add page to menu",
         variant: "destructive"
       });
     }
