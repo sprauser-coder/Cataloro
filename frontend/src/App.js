@@ -911,18 +911,7 @@ const Auth = () => {
               </Button>
             </form>
             
-            {/* Additional login options */}
-            {isLogin && (
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-4">Quick Access</p>
-                  <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-100">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Demo Admin Account:</p>
-                    <p className="text-xs text-gray-600">admin@marketplace.com / admin123</p>
-                  </div>
-                </div>
-              </div>
-            )}
+
             
             <div className="mt-6 text-center">
               <button
