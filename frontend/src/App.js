@@ -810,6 +810,30 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [siteSettings, setSiteSettings] = useState(null);
   
+  const addToFavoritesBrowse = async (listing) => {
+    try {
+      await axios.post(`${API}/favorites`, {
+        listing_id: listing.id,
+        quantity: 1
+      });
+      toast({
+        title: "Added to Favorites",
+        description: `"${listing.title}" has been saved to your favorites`
+      });
+      
+      // Update favorites count
+      if (user) {
+        fetchFavoritesCount();
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: formatErrorMessage(error, "Failed to add to favorites"),
+        variant: "destructive"
+      });
+    }
+  };
+
   // Phase 3D: Enhanced Filtering & Sorting
   const [sortBy, setSortBy] = useState('created_desc'); // newest first by default
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
