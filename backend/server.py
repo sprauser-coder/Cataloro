@@ -1291,9 +1291,43 @@ async def update_listing(
 
 # Admin Order Management
 @api_router.get("/admin/orders")
-async def get_all_orders(admin: User = Depends(get_admin_user)):
-    """Get all orders for admin management"""
-    orders = await db.orders.find({}).sort("created_at", -1).to_list(length=None)
+async def get_all_orders(
+    status_filter: str = None,  # "pending", "completed", "all"
+    time_frame: str = None,  # "today", "yesterday", "last_week", "last_month", "last_year"
+    admin: User = Depends(get_admin_user)
+):
+    """Get all orders for admin management with filters"""
+    # Build query based on filters
+    query = {}
+    
+    # Status filter
+    if status_filter and status_filter != "all":
+        if status_filter == "pending":
+            query["status"] = {"$in": ["pending", "confirmed"]}
+        elif status_filter == "completed":
+            query["status"] = "completed"
+    
+    # Time frame filter
+    if time_frame:
+        now = datetime.now(timezone.utc)
+        if time_frame == "today":
+            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            query["created_at"] = {"$gte": start_date}
+        elif time_frame == "yesterday":
+            end_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            start_date = end_date - timedelta(days=1)
+            query["created_at"] = {"$gte": start_date, "$lt": end_date}
+        elif time_frame == "last_week":
+            start_date = now - timedelta(days=7)
+            query["created_at"] = {"$gte": start_date}
+        elif time_frame == "last_month":
+            start_date = now - timedelta(days=30)
+            query["created_at"] = {"$gte": start_date}
+        elif time_frame == "last_year":
+            start_date = now - timedelta(days=365)
+            query["created_at"] = {"$gte": start_date}
+    
+    orders = await db.orders.find(query).sort("created_at", -1).to_list(length=None)
     
     result = []
     for order_doc in orders:
