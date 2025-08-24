@@ -2943,6 +2943,24 @@ const AdminPanel = () => {
     });
   };
 
+  const updateSingleListing = async () => {
+    try {
+      await axios.put(`${API}/admin/listings/${editingListing.id}`, editingListing);
+      toast({
+        title: "Success",
+        description: "Listing updated successfully"
+      });
+      setEditingListing(null);
+      fetchListings();
+    } catch (error) {
+      toast({
+        title: "Error", 
+        description: "Failed to update listing",
+        variant: "destructive"
+      });
+    }
+  };
+
   const addPageToMenu = async (page) => {
     try {
       await axios.post(`${API}/cms/navigation`, {
