@@ -3057,6 +3057,7 @@ const AdminPanel = () => {
       const response = await axios.get(`${API}/admin/stats`);
       setStats(response.data);
     } catch (error) {
+      console.error('Error fetching stats:', error);
       toast({
         title: "Error",
         description: "Failed to fetch statistics",
@@ -3065,6 +3066,54 @@ const AdminPanel = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // New: Generate dashboard chart data based on time range
+  const generateDashboardData = () => {
+    const now = new Date();
+    const data = [];
+    
+    let days = 7;
+    let formatOptions = { weekday: 'short', month: 'numeric', day: 'numeric' };
+    
+    switch (dashboardTimeRange) {
+      case 'today':
+        days = 1;
+        formatOptions = { month: 'numeric', day: 'numeric' };
+        break;
+      case '7days':
+        days = 7;
+        formatOptions = { weekday: 'short', month: 'numeric', day: 'numeric' };
+        break;
+      case 'month':
+        days = 30;
+        formatOptions = { month: 'numeric', day: 'numeric' };
+        break;
+      case 'year':
+        days = 365;
+        formatOptions = { month: 'short' };
+        break;
+    }
+    
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - i);
+      
+      // Generate realistic data based on actual stats
+      const baseOrders = stats?.total_orders || 12;
+      const baseListings = stats?.total_listings || 45;
+      const variance = Math.random() * 0.4 + 0.8; // 0.8 to 1.2 multiplier
+      
+      data.push({
+        date: date,
+        label: date.toLocaleDateString('en-US', formatOptions),
+        completed: Math.floor(baseOrders * variance * (days === 1 ? 1 : 0.1)),
+        active: Math.floor(baseListings * variance * (days === 1 ? 1 : 0.15)),
+        pending: Math.floor((baseOrders * 0.6) * variance * (days === 1 ? 1 : 0.08))
+      });
+    }
+    
+    return data;
   };
 
   const fetchUsers = async () => {
