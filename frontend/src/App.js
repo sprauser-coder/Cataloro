@@ -459,12 +459,12 @@ const Header = () => {
     }
   };
 
-  const fetchCartCount = async () => {
+  const fetchFavoritesCount = async () => {
     try {
-      const response = await axios.get(`${API}/cart`);
-      setCartCount(response.data.length);
+      const response = await axios.get(`${API}/favorites`);
+      setFavoritesCount(response.data.length);
     } catch (error) {
-      console.error('Error fetching cart count:', error);
+      console.error('Error fetching favorites count:', error);
     }
   };
 
