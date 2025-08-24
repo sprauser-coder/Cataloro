@@ -4016,7 +4016,12 @@ const AdminPanel = () => {
   const fetchPages = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API}/admin/cms/pages`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API}/admin/cms/pages`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setPages(response.data);
     } catch (error) {
       toast({
