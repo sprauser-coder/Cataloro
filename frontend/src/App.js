@@ -108,11 +108,13 @@ const AuthProvider = ({ children }) => {
   };
 
   const login = (tokenData) => {
+    console.log('AuthProvider login called with:', tokenData);
     setToken(tokenData.access_token);
     setUser(tokenData.user);
     localStorage.setItem('token', tokenData.access_token);
     localStorage.setItem('user', JSON.stringify(tokenData.user));
     axios.defaults.headers.common['Authorization'] = `Bearer ${tokenData.access_token}`;
+    console.log('AuthProvider login completed, user role:', tokenData.user.role);
   };
 
   const logout = () => {
