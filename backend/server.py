@@ -1898,6 +1898,7 @@ async def get_user_profile(current_user: User = Depends(get_current_user)):
         # Convert User model to ProfileResponse
         profile_data = {
             "id": current_user.id,
+            "user_id": getattr(current_user, 'user_id', ''),  # Added user_id field for v1.0.2
             "username": current_user.username,
             "full_name": current_user.full_name,
             "email": current_user.email,
