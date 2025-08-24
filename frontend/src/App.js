@@ -3049,19 +3049,6 @@ const AdminPanel = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  // Check if user is admin
-  if (user?.role !== 'admin') {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="max-w-2xl mx-auto px-4 py-8 text-center">
-          <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
-          <p className="text-gray-600">You need admin privileges to access this page.</p>
-        </div>
-      </div>
-    );
-  }
-
   useEffect(() => {
     if (activeTab === 'dashboard') {
       fetchStats();
