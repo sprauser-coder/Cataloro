@@ -863,6 +863,9 @@ const Home = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  // Get URL parameters for filtering
+  const [urlParams] = useState(() => new URLSearchParams(window.location.search));
 
   useEffect(() => {
     fetchCategories();
