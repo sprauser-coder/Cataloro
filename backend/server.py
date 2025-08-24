@@ -914,6 +914,7 @@ async def remove_from_favorites(
     return {"message": "Removed from favorites"}
 
 @api_router.get("/admin/navigation")
+@api_router.get("/admin/navigation")
 async def get_navigation_items(admin: User = Depends(get_admin_user)):
     """Get all navigation items"""
     nav_items = await db.navigation.find({}).to_list(length=None)
