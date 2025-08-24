@@ -2074,6 +2074,18 @@ async def update_user_profile(
         if profile_update.location is not None:
             update_data["location"] = profile_update.location
             
+        if profile_update.is_business is not None:
+            update_data["is_business"] = profile_update.is_business
+            
+        if profile_update.company_name is not None:
+            update_data["company_name"] = profile_update.company_name
+            
+        if profile_update.country is not None:
+            update_data["country"] = profile_update.country
+            
+        if profile_update.vat_number is not None:
+            update_data["vat_number"] = profile_update.vat_number
+            
         if update_data:
             update_data["updated_at"] = datetime.now(timezone.utc)
             
