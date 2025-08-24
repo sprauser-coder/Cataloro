@@ -128,7 +128,7 @@ const ProtectedRoute = ({ children }) => {
 
 // Footer Component with Version
 const Footer = ({ siteSettings }) => {
-  const currentVersion = "1.0.0";
+  const currentVersion = "1.0.1";
   const completionDateTime = new Date().toLocaleString('en-GB', {
     day: '2-digit',
     month: '2-digit', 
