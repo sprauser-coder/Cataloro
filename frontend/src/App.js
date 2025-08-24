@@ -293,7 +293,7 @@ const NotificationCenter = () => {
         <div className="flex space-x-2 mt-2">
           <Button 
             size="sm"
-            onClick={() => handleOrderAction(notification.data.order_id, 'approve')}
+            onClick={() => handleOrderAction(notification.data.order_id, 'approve', notification.id)}
           >
             Approve
           </Button>
@@ -302,7 +302,7 @@ const NotificationCenter = () => {
             size="sm"
             onClick={() => {
               const reason = prompt('Rejection reason (optional):');
-              handleOrderAction(notification.data.order_id, 'reject', reason);
+              handleOrderAction(notification.data.order_id, 'reject', notification.id, reason);
             }}
           >
             Reject
