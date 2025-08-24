@@ -806,6 +806,18 @@ const Home = () => {
   const [listingType, setListingType] = useState('');
   const [loading, setLoading] = useState(true);
   const [siteSettings, setSiteSettings] = useState(null);
+  
+  // Phase 3D: Enhanced Filtering & Sorting
+  const [sortBy, setSortBy] = useState('created_desc'); // newest first by default
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+  const [selectedCondition, setSelectedCondition] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // Future Phase 3D Infrastructure
+  const [selectedRegion, setSelectedRegion] = useState('');
+  const [maxDistance, setMaxDistance] = useState('');
+  const [userLocation, setUserLocation] = useState(null);
+  
   const { toast } = useToast();
   const navigate = useNavigate();
 
