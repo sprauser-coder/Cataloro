@@ -7226,13 +7226,30 @@ const Orders = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Total Amount</p>
-                      <p className="font-semibold">${orderData.order.total_amount.toFixed(2)}</p>
+                      <p className="font-semibold">€{orderData.order.total_amount?.toFixed(2) || '0.00'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Seller</p>
-                      <p className="font-semibold">{orderData.seller?.full_name}</p>
+                      <p className="font-semibold">{orderData.seller?.full_name || 'Unknown Seller'}</p>
                     </div>
                   </div>
+                  
+                  {/* View Details Button for Completed Orders */}
+                  {orderData.order.status === 'completed' && (
+                    <div className="mt-4 pt-4 border-t">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setSelectedOrder(orderData);
+                          setShowOrderDetails(true);
+                        }}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
