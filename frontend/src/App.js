@@ -2717,6 +2717,8 @@ const AdminPanel = () => {
       fetchPages();
     } else if (activeTab === 'cms') {
       fetchPages();
+    } else if (activeTab === 'content-listings') {
+      fetchCategories();
     } else if (activeTab === 'settings') {
       fetchSiteSettings();
     } else if (activeTab === 'appearance') {
