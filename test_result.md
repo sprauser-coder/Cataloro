@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Critical white screen fix needed for Admin Panel in Cataloro v1.1.0 + complete all previous v1.0.5 tasks: 1) Admin panel shows white screen when clicked, 2) Profile recent activity invalid date fixes, 3) Account actions implementation, 4) Dashboard overview with date picker, 5) Admin users management with search/sort, 6) Notifications system improvements, 7) My orders view details, 8) View All listings functionality, 9) Categories management fixes for multiple <listings> display and deletion issues"
+user_problem_statement: "Critical login issues fix needed for Cataloro deployment: Frontend was using hardcoded shopfix-deploy-1.preview.emergentagent.com URL instead of the production server 217.154.0.82, causing 404 errors during login and API communication failures. User requested elegant solution to fix frontend-backend communication without terminal work."
 
 backend:
   - task: "User Authentication System"
