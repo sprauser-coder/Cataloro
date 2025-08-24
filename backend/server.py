@@ -1267,6 +1267,28 @@ async def update_listing_status(
     
     return {"message": f"Listing status updated to {status}"}
 
+@api_router.put("/admin/listings/{listing_id}")
+async def update_listing(
+    listing_id: str, 
+    listing_data: dict, 
+    admin: User = Depends(get_admin_user)
+):
+    """Update listing details"""
+    # Remove any fields that shouldn't be updated
+    allowed_fields = ['title', 'description', 'price', 'category', 'condition', 'quantity', 'location', 'listing_type']
+    update_data = {k: v for k, v in listing_data.items() if k in allowed_fields}
+    update_data['updated_at'] = datetime.now(timezone.utc)
+    
+    result = await db.listings.update_one(
+        {"id": listing_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    
+    return {"message": "Listing updated successfully"}
+
 # Admin Order Management
 @api_router.get("/admin/orders")
 async def get_all_orders(admin: User = Depends(get_admin_user)):
