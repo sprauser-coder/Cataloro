@@ -2536,18 +2536,12 @@ const Favorites = () => {
     }
   };
 
-  const calculateTotal = () => {
-    return cartItems.reduce((total, item) => {
-      return total + (item.listing.price * item.cart_item.quantity);
-    }, 0);
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="flex justify-center items-center h-96">
-          Loading cart...
+          Loading favorites...
         </div>
       </div>
     );
@@ -2557,82 +2551,61 @@ const Favorites = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+        <h1 className="text-3xl font-bold mb-8">My Favorites</h1>
         
-        {cartItems.length === 0 ? (
+        {favoriteItems.length === 0 ? (
           <div className="text-center py-12">
-            <ShoppingCart className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
-            <p className="text-gray-500 mb-4">Start shopping to add items to your cart</p>
+            <Heart className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No favorites yet</h3>
+            <p className="text-gray-500 mb-4">Start browsing to save items you love</p>
             <Button onClick={() => navigate('/')} className="bg-gradient-to-r from-indigo-600 to-purple-600">
-              Continue Shopping
+              Browse Items
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <div className="space-y-4">
-                {cartItems.map((item) => (
-                  <Card key={item.cart_item.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-4">
-                        <img
-                          src={
-                            item.listing.images?.[0] 
-                              ? (item.listing.images[0].startsWith('/uploads/') 
-                                  ? `${BACKEND_URL}${item.listing.images[0]}` 
-                                  : item.listing.images[0])
-                              : 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'
-                          }
-                          alt={item.listing.title}
-                          className="w-20 h-20 object-cover rounded"
-                        />
-                        <div className="flex-1">
-                          <h3 className="font-semibold">{item.listing.title}</h3>
-                          <p className="text-gray-600 text-sm">{item.listing.condition}</p>
-                          <div className="flex items-center justify-between mt-2">
-                            <span className="font-bold text-lg">€{item.listing.price.toFixed(2)}</span>
-                            <div className="flex items-center space-x-2">
-                              <span>Qty: {item.cart_item.quantity}</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeFromCart(item.cart_item.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Order Summary</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Subtotal:</span>
-                      <span>${calculateTotal().toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-lg border-t pt-2">
-                      <span>Total:</span>
-                      <span>${calculateTotal().toFixed(2)}</span>
-                    </div>
-                  </div>
-                  <Button className="w-full mt-4 bg-green-600 hover:bg-green-700">
-                    Proceed to Checkout
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {favoriteItems.map((favorite) => (
+              <Card key={favorite.id} className="hover:shadow-lg transition-shadow">
+                <div className="relative">
+                  <img
+                    src={
+                      favorite.listing.images?.[0] 
+                        ? (favorite.listing.images[0].startsWith('/uploads/') 
+                            ? `${BACKEND_URL}${favorite.listing.images[0]}` 
+                            : favorite.listing.images[0])
+                        : 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'
+                    }
+                    alt={favorite.listing.title}
+                    className="w-full h-48 object-cover rounded-t-lg cursor-pointer"
+                    onClick={() => navigate(`/listing/${favorite.listing.id}`)}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-2 right-2 bg-white/80 hover:bg-white"
+                    onClick={() => removeFromFavorites(favorite.id)}
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
                   </Button>
+                </div>
+                <CardContent className="p-4">
+                  <h3 className="font-semibold text-lg mb-2 cursor-pointer hover:text-indigo-600" 
+                      onClick={() => navigate(`/listing/${favorite.listing.id}`)}>
+                    {favorite.listing.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">{favorite.listing.description}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-lg text-indigo-600">
+                      €{favorite.listing.price?.toFixed(2)}
+                    </span>
+                    <Badge variant="outline">{favorite.listing.condition}</Badge>
+                  </div>
+                  <div className="mt-3 text-xs text-gray-500">
+                    Saved {new Date(favorite.created_at).toLocaleDateString()}
+                  </div>
                 </CardContent>
               </Card>
-            </div>
+            ))}
           </div>
         )}
       </div>
