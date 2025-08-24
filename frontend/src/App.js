@@ -1331,20 +1331,20 @@ const ListingDetail = () => {
     }
   };
 
-  const handleAddToCart = async () => {
+  const handleAddToFavorites = async () => {
     try {
-      await axios.post(`${API}/cart`, {
+      await axios.post(`${API}/favorites`, {
         listing_id: id,
         quantity: quantity
       });
       toast({
-        title: "Added to cart!",
-        description: "Item has been added to your cart"
+        title: "Added to Favorites",
+        description: "Item has been saved to your favorites"
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: formatErrorMessage(error, "Failed to add to cart"),
+        description: formatErrorMessage(error, "Failed to add to favorites"),
         variant: "destructive"
       });
     }
