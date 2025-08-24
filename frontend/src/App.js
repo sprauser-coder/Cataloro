@@ -898,30 +898,40 @@ const Home = () => {
       setLoading(true);
       const params = new URLSearchParams();
       
-      // Existing filters
-      if (searchTerm) params.append('search', searchTerm);
-      if (selectedCategory && selectedCategory !== 'all') params.append('category', selectedCategory);
-      if (listingType) params.append('listing_type', listingType);
+      // Check if we should show only user's listings
+      const showUserListings = urlParams.get('user_listings') === 'true';
       
-      // Phase 3D: New sorting and filtering
-      if (sortBy) params.append('sort_by', sortBy);
-      if (priceRange.min) params.append('min_price', priceRange.min);
-      if (priceRange.max) params.append('max_price', priceRange.max);
-      if (selectedCondition) params.append('condition', selectedCondition);
-      
-      // Listings per page
-      params.append('limit', listingsPerPage.toString());
-      
-      // Future infrastructure 
-      if (selectedRegion) params.append('region', selectedRegion);
-      if (maxDistance && userLocation) {
-        params.append('max_distance', maxDistance);
-        params.append('user_lat', userLocation.lat);
-        params.append('user_lng', userLocation.lng);
+      if (showUserListings && user) {
+        // Fetch only user's listings
+        const response = await axios.get(`${API}/listings/my-listings`);
+        setListings(response.data);
+      } else {
+        // Regular listings fetch with filters
+        // Existing filters
+        if (searchTerm) params.append('search', searchTerm);
+        if (selectedCategory && selectedCategory !== 'all') params.append('category', selectedCategory);
+        if (listingType) params.append('listing_type', listingType);
+        
+        // Phase 3D: New sorting and filtering
+        if (sortBy) params.append('sort_by', sortBy);
+        if (priceRange.min) params.append('min_price', priceRange.min);
+        if (priceRange.max) params.append('max_price', priceRange.max);
+        if (selectedCondition) params.append('condition', selectedCondition);
+        
+        // Listings per page
+        params.append('limit', listingsPerPage.toString());
+        
+        // Future infrastructure 
+        if (selectedRegion) params.append('region', selectedRegion);
+        if (maxDistance && userLocation) {
+          params.append('max_distance', maxDistance);
+          params.append('user_lat', userLocation.lat);
+          params.append('user_lng', userLocation.lng);
+        }
+        
+        const response = await axios.get(`${API}/listings?${params}`);
+        setListings(response.data);
       }
-      
-      const response = await axios.get(`${API}/listings?${params}`);
-      setListings(response.data);
     } catch (error) {
       console.error('Error fetching listings:', error);
       toast({
