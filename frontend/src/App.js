@@ -4126,6 +4126,166 @@ const AdminPanel = () => {
             )}
           </TabsContent>
 
+          {/* Content & Listings Tab */}
+          <TabsContent value="content-listings">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Content & Listings Management</CardTitle>
+                  <CardDescription>Manage categories and listing organization</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {/* Categories Management */}
+                    <div className="border rounded-lg p-4">
+                      <h3 className="text-lg font-medium mb-4">Categories Management</h3>
+                      <p className="text-gray-600 mb-4">Add, edit, or remove categories that are shown and clickable on the browse page.</p>
+                      
+                      {/* Add New Category */}
+                      <div className="border rounded-lg p-4 mb-4">
+                        <h4 className="text-md font-medium mb-3">Add New Category</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="newCategory">Category Name</Label>
+                            <Input
+                              id="newCategory"
+                              placeholder="e.g., Electronics, Fashion, Sports"
+                              className="mt-1"
+                            />
+                          </div>
+                          <div className="flex items-end">
+                            <Button className="w-full">
+                              Add Category
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Current Categories */}
+                      <div>
+                        <h4 className="text-md font-medium mb-3">Current Categories</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium">Electronics</span>
+                              <Badge variant="secondary">12 listings</Badge>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Button variant="outline" size="sm">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="destructive" size="sm">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium">Fashion</span>
+                              <Badge variant="secondary">8 listings</Badge>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Button variant="outline" size="sm">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="destructive" size="sm">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium">Home & Garden</span>
+                              <Badge variant="secondary">5 listings</Badge>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Button variant="outline" size="sm">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="destructive" size="sm">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium">Sports</span>
+                              <Badge variant="secondary">3 listings</Badge>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Button variant="outline" size="sm">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="destructive" size="sm">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Listing Organization */}
+                    <div className="border rounded-lg p-4">
+                      <h3 className="text-lg font-medium mb-4">Listing Organization</h3>
+                      <p className="text-gray-600 mb-4">Configure how listings are displayed and organized on the browse page.</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label className="text-sm font-medium">Default Sort Order</Label>
+                          <Select defaultValue="created_desc">
+                            <SelectTrigger className="mt-1">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="created_desc">Newest First</SelectItem>
+                              <SelectItem value="created_asc">Oldest First</SelectItem>
+                              <SelectItem value="price_low">Price: Low to High</SelectItem>
+                              <SelectItem value="price_high">Price: High to Low</SelectItem>
+                              <SelectItem value="title_asc">Title: A-Z</SelectItem>
+                              <SelectItem value="views_desc">Most Viewed</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div>
+                          <Label className="text-sm font-medium">Default Items Per Page</Label>
+                          <Select defaultValue="10">
+                            <SelectTrigger className="mt-1">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="10">10 items</SelectItem>
+                              <SelectItem value="25">25 items</SelectItem>
+                              <SelectItem value="50">50 items</SelectItem>
+                              <SelectItem value="100">100 items</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="showListingImages"
+                            defaultChecked
+                            className="rounded"
+                          />
+                          <Label htmlFor="showListingImages" className="text-sm">Show listing images in browse view</Label>
+                        </div>
+                      </div>
+                      
+                      <Button className="mt-4">
+                        Save Listing Settings
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* Content Management Tab */}
           <TabsContent value="cms">
             {loading ? (
