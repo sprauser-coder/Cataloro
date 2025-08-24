@@ -5332,8 +5332,20 @@ const AdminPanel = () => {
                   <div className="space-y-6">
                     {/* Categories Management */}
                     <div className="border rounded-lg p-4">
-                      <h3 className="text-lg font-medium mb-4">Categories Management</h3>
-                      <p className="text-gray-600 mb-4">Add, edit, or remove categories that are shown and clickable on the browse page.</p>
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="text-lg font-medium">Categories Management</h3>
+                          <p className="text-gray-600">Add, edit, or remove categories that are shown and clickable on the browse page.</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={fetchCategories}
+                        >
+                          <RefreshCw className="h-4 w-4 mr-2" />
+                          Refresh
+                        </Button>
+                      </div>
                       
                       {/* Add New Category */}
                       <div className="border rounded-lg p-4 mb-4">
