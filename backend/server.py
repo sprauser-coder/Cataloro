@@ -345,11 +345,20 @@ async def get_listings(
     listing_type: Optional[ListingType] = None,
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
+    # Phase 3D: Enhanced filtering and sorting
+    sort_by: Optional[str] = "created_desc",
+    condition: Optional[str] = None,
+    region: Optional[str] = None,
+    max_distance: Optional[float] = None,
+    user_lat: Optional[float] = None,
+    user_lng: Optional[float] = None,
     limit: int = 20,
     skip: int = 0
 ):
+    """Get listings with enhanced filtering and sorting (Phase 3D)"""
     query = {"status": ListingStatus.ACTIVE}
     
+    # Existing filters
     if category:
         query["category"] = category
     if listing_type:
@@ -360,20 +369,78 @@ async def get_listings(
             {"description": {"$regex": search, "$options": "i"}}
         ]
     
-    # Price filtering
+    # Phase 3D: New filters
+    if condition:
+        query["condition"] = condition
+        
+    if region:
+        query["region"] = region
+    
+    # Price filtering (enhanced)
     if min_price is not None or max_price is not None:
         price_query = {}
         if min_price is not None:
             price_query["$gte"] = min_price
         if max_price is not None:
             price_query["$lte"] = max_price
+        
+        # Apply to both fixed price and auction current prices
         query["$or"] = [
-            {"price": price_query},
-            {"current_bid": price_query}
+            {"price": price_query, "listing_type": "fixed_price"},
+            {"current_bid": price_query, "listing_type": "auction"}
         ]
     
-    listings = await db.listings.find(query).skip(skip).limit(limit).to_list(length=None)
-    return [ProductListing(**parse_from_mongo(listing)) for listing in listings]
+    # Phase 3D: Sorting options
+    sort_options = {
+        "created_desc": [("created_at", -1)],
+        "created_asc": [("created_at", 1)],
+        "price_high": [("price", -1), ("current_bid", -1)],
+        "price_low": [("price", 1), ("current_bid", 1)],
+        "views_desc": [("views", -1)],
+        "title_asc": [("title", 1)],
+    }
+    
+    sort_criteria = sort_options.get(sort_by, [("created_at", -1)])
+    
+    # Execute query with sorting
+    cursor = db.listings.find(query)
+    
+    # Apply sorting
+    for field, direction in sort_criteria:
+        cursor = cursor.sort(field, direction)
+    
+    # Apply pagination
+    cursor = cursor.skip(skip).limit(limit)
+    
+    # Convert results
+    listings = []
+    async for listing_doc in cursor:
+        listing_data = parse_from_mongo(listing_doc)
+        
+        # Phase 3D: Distance filtering (future infrastructure)
+        if max_distance and user_lat and user_lng and listing_data.get("latitude") and listing_data.get("longitude"):
+            # Calculate distance using Haversine formula
+            import math
+            
+            lat1, lng1 = math.radians(user_lat), math.radians(user_lng)
+            lat2, lng2 = math.radians(listing_data["latitude"]), math.radians(listing_data["longitude"])
+            
+            dlat, dlng = lat2 - lat1, lng2 - lng1
+            a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlng/2)**2
+            distance = 2 * math.asin(math.sqrt(a)) * 6371  # Earth radius in km
+            
+            if distance > max_distance:
+                continue  # Skip this listing if it's too far
+                
+        # Add seller information
+        seller = await db.users.find_one({"id": listing_data["seller_id"]})
+        if seller:
+            listing_data["seller_name"] = seller.get("full_name", "Unknown")
+            listing_data["seller_username"] = seller.get("username", "unknown")
+        
+        listings.append(listing_data)
+    
+    return [ProductListing(**listing) for listing in listings]
 
 @api_router.get("/listings/my-listings")
 async def get_my_listings(current_user: User = Depends(get_current_user)):
