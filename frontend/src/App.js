@@ -846,6 +846,7 @@ const Home = () => {
   const [maxDistance, setMaxDistance] = useState('');
   const [userLocation, setUserLocation] = useState(null);
   
+  const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
