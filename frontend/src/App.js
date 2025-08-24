@@ -5434,6 +5434,16 @@ const AdminPanel = () => {
                           className="mt-1 min-h-32"
                         />
                       </div>
+                      <div className="mt-4">
+                        <Label htmlFor="metaDescription">Meta Description</Label>
+                        <Input
+                          id="metaDescription"
+                          placeholder="Brief description for SEO (optional)"
+                          value={newPage.meta_description}
+                          onChange={(e) => setNewPage({...newPage, meta_description: e.target.value})}
+                          className="mt-1"
+                        />
+                      </div>
                       <div className="flex items-center space-x-4 mt-4">
                         <div className="flex items-center space-x-2">
                           <input
@@ -5444,16 +5454,6 @@ const AdminPanel = () => {
                             className="rounded"
                           />
                           <Label htmlFor="pagePublished" className="text-sm">Published</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="showInNav"
-                            checked={newPage.show_in_navigation}
-                            onChange={(e) => setNewPage({...newPage, show_in_navigation: e.target.checked})}
-                            className="rounded"
-                          />
-                          <Label htmlFor="showInNav" className="text-sm">Show in Navigation</Label>
                         </div>
                         <Button 
                           onClick={createPage}
