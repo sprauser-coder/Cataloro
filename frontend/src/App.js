@@ -419,7 +419,12 @@ const Header = () => {
     // Load navigation and settings from global state or fetch
     const loadHeaderData = () => {
       if (window.cataloroNavigation) {
-        setCustomNavigation(window.cataloroNavigation);
+        // Filter out test items from navigation
+        const filteredNav = window.cataloroNavigation.filter(item => 
+          !item.label?.toLowerCase().includes('test') && 
+          !item.url?.toLowerCase().includes('test')
+        );
+        setCustomNavigation(filteredNav);
       }
       if (window.cataloroSettings) {
         setSiteSettings(window.cataloroSettings);
