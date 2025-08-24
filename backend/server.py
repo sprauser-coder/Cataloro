@@ -1979,6 +1979,10 @@ class ProfileUpdate(BaseModel):
     phone: Optional[str] = None
     bio: Optional[str] = None
     location: Optional[str] = None
+    is_business: Optional[bool] = None
+    company_name: Optional[str] = None
+    country: Optional[str] = None
+    vat_number: Optional[str] = None
 
 class UserProfile(BaseModel):
     """User profile response model"""
