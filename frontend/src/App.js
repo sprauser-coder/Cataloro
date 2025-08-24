@@ -3241,7 +3241,12 @@ const AdminPanel = () => {
   const fetchListings = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API}/admin/listings`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API}/admin/listings`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setListings(response.data);
     } catch (error) {
       toast({
