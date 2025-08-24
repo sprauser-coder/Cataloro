@@ -84,6 +84,10 @@ class User(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: Optional[datetime] = None  # Phase 3A: Profile update tracking
     is_active: bool = Field(default=True)
+    is_business: Optional[bool] = Field(default=False)  # Business profile fields
+    company_name: Optional[str] = None
+    country: Optional[str] = None
+    vat_number: Optional[str] = None
 
 class UserCreate(BaseModel):
     email: EmailStr
