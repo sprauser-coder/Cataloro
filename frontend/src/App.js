@@ -6470,10 +6470,7 @@ const AdminPanel = () => {
               </Card>
             )}
           </TabsContent>
-              </div>
-            </div>
-          </div>
-        </div>
+        </Tabs>
       </div>
     </div>
   );
