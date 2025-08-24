@@ -6629,9 +6629,9 @@ function App() {
                 <Profile />
               </ProtectedRoute>
             } />
-            <Route path="/cart" element={
+            <Route path="/favorites" element={
               <ProtectedRoute>
-                <Cart />
+                <Favorites />
               </ProtectedRoute>
             } />
             <Route path="/orders" element={
