@@ -2726,6 +2726,10 @@ const AdminPanel = () => {
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
   const [orderTimeFilter, setOrderTimeFilter] = useState('all');
   const [orderSortBy, setOrderSortBy] = useState('created_desc');
+  const [listingSearchTerm, setListingSearchTerm] = useState('');
+  const [listingStatusFilter, setListingStatusFilter] = useState('all');
+  const [listingCategoryFilter, setListingCategoryFilter] = useState('all');
+  const [listingSortBy, setListingSortBy] = useState('created_desc');
   const { user } = useAuth();
   const { toast } = useToast();
 
