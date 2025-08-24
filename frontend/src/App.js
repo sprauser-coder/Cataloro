@@ -821,6 +821,9 @@ const Home = () => {
         title: "Added to Favorites",
         description: `"${listing.title}" has been saved to your favorites`
       });
+      
+      // Update local favorites state
+      fetchUserFavorites();
     } catch (error) {
       toast({
         title: "Error",
@@ -828,6 +831,21 @@ const Home = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const fetchUserFavorites = async () => {
+    if (!user) return;
+    
+    try {
+      const response = await axios.get(`${API}/favorites`);
+      setUserFavorites(response.data.map(fav => fav.listing.id));
+    } catch (error) {
+      console.error('Error fetching user favorites:', error);
+    }
+  };
+
+  const isListingFavorited = (listingId) => {
+    return userFavorites.includes(listingId);
   };
 
   // Phase 3D: Enhanced Filtering & Sorting
