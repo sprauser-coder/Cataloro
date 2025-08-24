@@ -126,6 +126,35 @@ const ProtectedRoute = ({ children }) => {
   return token ? children : <Navigate to="/auth" />;
 };
 
+// Admin Protected Route Component (requires admin role)
+const AdminProtectedRoute = ({ children }) => {
+  const { user } = useAuth();
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    return <Navigate to="/auth" />;
+  }
+  
+  if (user && user.role !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+            <X className="h-8 w-8 text-red-600" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Access Denied</h2>
+          <p className="text-gray-600 mb-4">You don't have permission to access the admin panel.</p>
+          <Link to="/" className="inline-block">
+            <Button>Return to Home</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+  
+  return children;
+};
+
 // Footer Component with Version
 const Footer = ({ siteSettings }) => {
   const currentVersion = "1.1.0";
