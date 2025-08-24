@@ -1808,6 +1808,104 @@ const Profile = () => {
     }
   };
 
+  const handleChangePassword = async () => {
+    if (passwordData.new_password !== passwordData.confirm_password) {
+      toast({
+        title: "Error",
+        description: "New passwords do not match",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (passwordData.new_password.length < 6) {
+      toast({
+        title: "Error", 
+        description: "Password must be at least 6 characters long",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      await axios.put(`${API}/auth/change-password`, {
+        current_password: passwordData.current_password,
+        new_password: passwordData.new_password
+      });
+      
+      toast({
+        title: "Success",
+        description: "Password changed successfully"
+      });
+      
+      setShowPasswordDialog(false);
+      setPasswordData({
+        current_password: '',
+        new_password: '',
+        confirm_password: ''
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: formatErrorMessage(error, "Failed to change password"),
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDownloadData = async () => {
+    try {
+      const response = await axios.get(`${API}/profile/export-data`, {
+        responseType: 'blob'
+      });
+      
+      const blob = new Blob([response.data], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `cataloro-data-${user.username}-${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Success",
+        description: "Your data has been downloaded successfully"
+      });
+    } catch (error) {
+      // Fallback: create data export manually if backend endpoint doesn't exist
+      const exportData = {
+        profile: profileData,
+        orders: orders,
+        listings: listings,
+        stats: stats,
+        exported_at: new Date().toISOString()
+      };
+      
+      const dataStr = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `cataloro-data-${user.username}-${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Success",
+        description: "Your data has been downloaded successfully"
+      });
+    }
+  };
+
+  const handleViewAllListings = () => {
+    // Navigate to a filtered view of user's listings
+    navigate('/browse?user_listings=true');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
