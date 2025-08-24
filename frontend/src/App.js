@@ -1593,14 +1593,20 @@ const ListingDetail = () => {
                       placeholder="Enter bid amount"
                     />
                   </div>
-                  <Button onClick={handlePlaceBid} className="w-full">
-                    Place Bid
-                  </Button>
-                  {listing.buyout_price && (
-                    <Button onClick={handleBuyNow} variant="outline" className="w-full mt-2">
-                      Buy Now - €{listing.buyout_price.toFixed(2)}
+                  <div className="space-y-2">
+                    <Button onClick={handlePlaceBid} className="w-full">
+                      Place Bid
                     </Button>
-                  )}
+                    {listing.buyout_price && (
+                      <Button onClick={handleBuyNow} variant="outline" className="w-full">
+                        Buy Now - €{listing.buyout_price.toFixed(2)}
+                      </Button>
+                    )}
+                    <Button onClick={handleAddToFavorites} variant="outline" className="w-full">
+                      <Star className="h-4 w-4 mr-2" />
+                      Save to Favorites
+                    </Button>
+                  </div>
                 </>
               )}
             </div>
