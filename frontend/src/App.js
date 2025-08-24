@@ -1629,7 +1629,11 @@ const Profile = () => {
     phone: '',
     bio: '',
     location: '',
-    joined_date: user?.created_at || ''
+    joined_date: user?.created_at || '',
+    is_business: false,
+    company_name: '',
+    country: '',
+    vat_number: ''
   });
   const [orders, setOrders] = useState([]);
   const [listings, setListings] = useState([]);
