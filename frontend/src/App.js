@@ -2252,13 +2252,28 @@ const Profile = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <Button variant="outline" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setShowPasswordDialog(true)}
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
                     Change Password
                   </Button>
-                  <Button variant="outline" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={handleDownloadData}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
                     Download My Data
                   </Button>
-                  <Button variant="outline" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setShowPrivacyDialog(true)}
+                  >
+                    <User className="h-4 w-4 mr-2" />
                     Privacy Settings
                   </Button>
                 </div>
