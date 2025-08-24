@@ -1965,6 +1965,7 @@ async def update_user_profile(
             # Convert to profile response
             profile_data = {
                 "id": updated_user_doc["id"],
+                "user_id": updated_user_doc.get("user_id", ""),  # Added user_id field for v1.0.2
                 "username": updated_user_doc["username"],
                 "full_name": updated_user_doc["full_name"],
                 "email": updated_user_doc["email"],
