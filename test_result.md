@@ -636,7 +636,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Cataloro v1.0.2 Enhanced Features Testing Complete"
+    - "Cataloro v1.0.3 Bug Fixes Testing Complete"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
