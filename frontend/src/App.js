@@ -258,19 +258,24 @@ const NotificationCenter = () => {
     }
   };
 
-  const handleOrderAction = async (orderId, action, reason = null) => {
+  const handleOrderAction = async (orderId, action, notificationId, reason = null) => {
     try {
       const endpoint = action === 'approve' ? 'approve' : 'reject';
       const payload = action === 'reject' && reason ? { rejection_reason: reason } : {};
       
       await axios.put(`${API}/orders/${orderId}/${endpoint}`, payload);
       
+      // Mark the notification as read/clear it
+      if (notificationId) {
+        await markAsRead(notificationId);
+      }
+      
       toast({
         title: "Success",
-        description: `Order ${action}d successfully`
+        description: `Order ${action}d successfully. ${action === 'approve' ? 'Order added to completed orders.' : 'Order cancelled.'}`
       });
       
-      // Refresh notifications
+      // Refresh notifications to remove completed ones
       fetchNotifications();
       
     } catch (error) {
