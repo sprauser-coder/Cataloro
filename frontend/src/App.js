@@ -2607,7 +2607,7 @@ const Favorites = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {favoriteItems.map((favorite) => (
-              <Card key={favorite.id} className="hover:shadow-lg transition-shadow">
+              <Card key={favorite.favorite_id || favorite.id} className="hover:shadow-lg transition-shadow">
                 <div className="relative">
                   <img
                     src={
@@ -2625,7 +2625,7 @@ const Favorites = () => {
                     variant="ghost"
                     size="sm"
                     className="absolute top-2 right-2 bg-white/80 hover:bg-white"
-                    onClick={() => removeFromFavorites(favorite.id)}
+                    onClick={() => removeFromFavorites(favorite.favorite_id || favorite.id)}
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />
                   </Button>
