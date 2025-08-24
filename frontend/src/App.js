@@ -2674,6 +2674,8 @@ const AdminPanel = () => {
       fetchOrders();
     } else if (activeTab === 'orders') {
       fetchOrders();
+    } else if (activeTab === 'pages') {
+      fetchPages();
     } else if (activeTab === 'cms') {
       fetchPages();
     } else if (activeTab === 'settings') {
