@@ -79,14 +79,33 @@ const AuthProvider = ({ children }) => {
         const savedUser = localStorage.getItem('user');
         if (savedUser) {
           setUser(JSON.parse(savedUser));
+          setLoading(false);
+        } else {
+          // If no saved user data, fetch from API
+          fetchUserProfile();
         }
       } catch (error) {
         console.error('Invalid token');
         logout();
+        setLoading(false);
       }
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, [token]);
+
+  const fetchUserProfile = async () => {
+    try {
+      const response = await axios.get(`${API}/profile`);
+      setUser(response.data);
+      localStorage.setItem('user', JSON.stringify(response.data));
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+      logout();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = (tokenData) => {
     setToken(tokenData.access_token);
