@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix 8 new critical issues in Cataloro v1.0.4 post-profile fixes: 1) Profile view recent activity shows invalid date when no orders, 2) Profile view needs account action functionalities, 3) Dashboard change to overview with date picker (today/7days/month/year) and show dates not weekdays, 4) Admin panel users overview - reorganize order stats, add sorting/search functions, 5) Notifications - change icon, clear after actions, add to completed orders, 6) My orders - add view details button for completed orders, 7) My profile View All listings button not working, 8) Categories management showing multiple <listings>, blank displays, deletion issues"
+user_problem_statement: "Critical white screen fix needed for Admin Panel in Cataloro v1.1.0 + complete all previous v1.0.5 tasks: 1) Admin panel shows white screen when clicked, 2) Profile recent activity invalid date fixes, 3) Account actions implementation, 4) Dashboard overview with date picker, 5) Admin users management with search/sort, 6) Notifications system improvements, 7) My orders view details, 8) View All listings functionality, 9) Categories management fixes for multiple <listings> display and deletion issues"
 
 backend:
   - task: "User Authentication System"
