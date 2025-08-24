@@ -1817,6 +1817,78 @@ const Profile = () => {
                       placeholder="Tell us about yourself..."
                     />
                   </div>
+
+                  {/* Business Profile Section */}
+                  <div className="border-t pt-4">
+                    <div className="flex items-center space-x-2 mb-4">
+                      <input
+                        type="checkbox"
+                        id="isBusiness"
+                        checked={profileData.is_business}
+                        onChange={(e) => setProfileData({...profileData, is_business: e.target.checked})}
+                        disabled={!isEditing}
+                        className="rounded"
+                      />
+                      <Label htmlFor="isBusiness" className="text-sm font-medium">I am a business</Label>
+                    </div>
+                    
+                    {profileData.is_business && (
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="companyName">Company Name</Label>
+                          <Input
+                            id="companyName"
+                            value={profileData.company_name}
+                            onChange={(e) => setProfileData({...profileData, company_name: e.target.value})}
+                            disabled={!isEditing}
+                            className="mt-1"
+                            placeholder="Enter your company name"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="country">Country</Label>
+                            <Select 
+                              value={profileData.country} 
+                              onValueChange={(value) => setProfileData({...profileData, country: value})}
+                              disabled={!isEditing}
+                            >
+                              <SelectTrigger className="mt-1">
+                                <SelectValue placeholder="Select country" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="DE">Germany</SelectItem>
+                                <SelectItem value="FR">France</SelectItem>
+                                <SelectItem value="IT">Italy</SelectItem>
+                                <SelectItem value="ES">Spain</SelectItem>
+                                <SelectItem value="NL">Netherlands</SelectItem>
+                                <SelectItem value="BE">Belgium</SelectItem>
+                                <SelectItem value="AT">Austria</SelectItem>
+                                <SelectItem value="CH">Switzerland</SelectItem>
+                                <SelectItem value="UK">United Kingdom</SelectItem>
+                                <SelectItem value="US">United States</SelectItem>
+                                <SelectItem value="CA">Canada</SelectItem>
+                                <SelectItem value="AU">Australia</SelectItem>
+                                <SelectItem value="OTHER">Other</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor="vatNumber">VAT Number</Label>
+                            <Input
+                              id="vatNumber"
+                              value={profileData.vat_number}
+                              onChange={(e) => setProfileData({...profileData, vat_number: e.target.value})}
+                              disabled={!isEditing}
+                              className="mt-1"
+                              placeholder="Enter VAT number (optional)"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   {isEditing && (
                     <div className="flex justify-end space-x-2">
                       <Button variant="outline" onClick={() => setIsEditing(false)}>
