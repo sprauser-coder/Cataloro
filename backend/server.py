@@ -1997,6 +1997,10 @@ class UserProfile(BaseModel):
     role: str
     created_at: datetime
     updated_at: Optional[datetime] = None
+    is_business: Optional[bool] = None
+    company_name: Optional[str] = None
+    country: Optional[str] = None
+    vat_number: Optional[str] = None
 
 class UserStats(BaseModel):
     """User statistics model"""
