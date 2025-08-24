@@ -3756,7 +3756,9 @@ const AdminPanel = () => {
           <div className="lg:col-span-3">
             <div className="bg-white rounded-lg shadow-sm border">
               <div className="p-6">
-          <TabsContent value="dashboard">
+          {/* Dashboard Content */}
+          {activeTab === 'dashboard' && (
+            <div>
             {loading ? (
               <div className="flex justify-center py-8">Loading...</div>
             ) : stats ? (
