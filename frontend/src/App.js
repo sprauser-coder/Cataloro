@@ -3091,13 +3091,13 @@ const AdminPanel = () => {
       setCategories([...categories, newCategory]);
       setNewCategoryName('');
       
+      // Update global categories for listings
+      window.cataloroCategories = [...categories, newCategory];
+      
       toast({
         title: "Success",
         description: `Category "${newCategoryName}" added successfully`
       });
-      
-      // Update global categories for listings
-      window.cataloroCategories = [...categories, newCategory];
       
     } catch (error) {
       toast({
