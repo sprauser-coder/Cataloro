@@ -7256,6 +7256,108 @@ const Orders = () => {
           </div>
         )}
       </div>
+      
+      {/* Order Details Modal */}
+      <Dialog open={showOrderDetails} onOpenChange={setShowOrderDetails}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Order Details</DialogTitle>
+            <DialogDescription>
+              Complete information about your order
+            </DialogDescription>
+          </DialogHeader>
+          {selectedOrder && (
+            <div className="space-y-6">
+              {/* Order Summary */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-medium mb-3">Order Information</h4>
+                  <div className="space-y-2 text-sm">
+                    <div><strong>Order ID:</strong> {selectedOrder.order.id}</div>
+                    <div><strong>Status:</strong> 
+                      <Badge variant={selectedOrder.order.status === 'completed' ? 'default' : 'secondary'} className="ml-2">
+                        {selectedOrder.order.status}
+                      </Badge>
+                    </div>
+                    <div><strong>Order Date:</strong> {new Date(selectedOrder.order.created_at).toLocaleDateString()}</div>
+                    {selectedOrder.order.updated_at !== selectedOrder.order.created_at && (
+                      <div><strong>Last Updated:</strong> {new Date(selectedOrder.order.updated_at).toLocaleDateString()}</div>
+                    )}
+                    <div><strong>Payment Method:</strong> Cash</div>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-3">Pricing Details</h4>
+                  <div className="space-y-2 text-sm">
+                    <div><strong>Item Price:</strong> €{(selectedOrder.order.total_amount / selectedOrder.order.quantity)?.toFixed(2) || '0.00'}</div>
+                    <div><strong>Quantity:</strong> {selectedOrder.order.quantity}</div>
+                    <div><strong>Subtotal:</strong> €{selectedOrder.order.total_amount?.toFixed(2) || '0.00'}</div>
+                    <div><strong>Shipping:</strong> Free</div>
+                    <div className="pt-2 border-t">
+                      <strong>Total: €{selectedOrder.order.total_amount?.toFixed(2) || '0.00'}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Item Details */}
+              <div>
+                <h4 className="font-medium mb-3">Item Details</h4>
+                <div className="border rounded-lg p-4">
+                  <div className="flex items-start space-x-4">
+                    {selectedOrder.listing?.images && selectedOrder.listing.images.length > 0 && (
+                      <img 
+                        src={selectedOrder.listing.images[0].startsWith('/uploads/') 
+                          ? `${BACKEND_URL}${selectedOrder.listing.images[0]}` 
+                          : selectedOrder.listing.images[0]
+                        }
+                        alt={selectedOrder.listing.title}
+                        className="w-20 h-20 object-cover rounded-lg"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <h5 className="font-medium">{selectedOrder.listing?.title || 'Item'}</h5>
+                      <p className="text-sm text-gray-600 mt-1">{selectedOrder.listing?.description || 'No description available'}</p>
+                      <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                        <span><strong>Category:</strong> {selectedOrder.listing?.category || 'Unknown'}</span>
+                        <span><strong>Condition:</strong> {selectedOrder.listing?.condition || 'Unknown'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Seller Information */}
+              <div>
+                <h4 className="font-medium mb-3">Seller Information</h4>
+                <div className="border rounded-lg p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                      {(selectedOrder.seller?.full_name || 'S').charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-medium">{selectedOrder.seller?.full_name || 'Unknown Seller'}</p>
+                      <p className="text-sm text-gray-600">{selectedOrder.seller?.email || 'No email available'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Delivery Information */}
+              <div>
+                <h4 className="font-medium mb-3">Delivery Information</h4>
+                <div className="border rounded-lg p-4">
+                  <div className="text-sm space-y-1">
+                    <div><strong>Delivery Method:</strong> Pickup/Cash Transaction</div>
+                    <div><strong>Location:</strong> {selectedOrder.listing?.location || 'Contact seller for details'}</div>
+                    <div><strong>Status:</strong> {selectedOrder.order.status === 'completed' ? 'Delivered' : 'Pending'}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
