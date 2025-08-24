@@ -4077,7 +4077,7 @@ const AdminPanel = () => {
               </div>
             )}
             </div>
-          </TabsContent>
+          )}
 
           {/* Products Tab (Combined Listings and Orders) */}
           <TabsContent value="products">
