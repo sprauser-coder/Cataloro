@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix 8 critical bugs in Cataloro v1.0.4: 1) Category creation works but doesn't update listing dropdown - make dynamic, 2) Browse page favorites icon should show 'active' state if item already in favorites, 3) Search orders function not working, 4) Add same filtering/search structure to listings as orders, 5) Delete 'listing organization' from content management admin panel, 6) Pages not deletable - 'page not found' error, 7) 'Add to menu' button not working, 8) My profile changes not saved and missing user number display"
+user_problem_statement: "Fix 8 new critical issues in Cataloro v1.0.4 post-profile fixes: 1) Profile view recent activity shows invalid date when no orders, 2) Profile view needs account action functionalities, 3) Dashboard change to overview with date picker (today/7days/month/year) and show dates not weekdays, 4) Admin panel users overview - reorganize order stats, add sorting/search functions, 5) Notifications - change icon, clear after actions, add to completed orders, 6) My orders - add view details button for completed orders, 7) My profile View All listings button not working, 8) Categories management showing multiple <listings>, blank displays, deletion issues"
 
 backend:
   - task: "User Authentication System"
