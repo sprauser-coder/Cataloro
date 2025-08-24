@@ -2669,8 +2669,9 @@ const AdminPanel = () => {
       fetchStats();
     } else if (activeTab === 'users') {
       fetchUsers();
-    } else if (activeTab === 'listings') {
+    } else if (activeTab === 'products') {
       fetchListings();
+      fetchOrders();
     } else if (activeTab === 'orders') {
       fetchOrders();
     } else if (activeTab === 'cms') {
