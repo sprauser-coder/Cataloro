@@ -2188,7 +2188,11 @@ const Profile = () => {
                         ))}
                         {listings.length > 3 && (
                           <div className="text-center">
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={handleViewAllListings}
+                            >
                               View All Listings ({listings.length})
                             </Button>
                           </div>
