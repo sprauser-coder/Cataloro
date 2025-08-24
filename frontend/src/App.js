@@ -3624,7 +3624,7 @@ const AdminPanel = () => {
                                     </div>
                                     <div>
                                       <div className="flex items-center space-x-2">
-                                        <h3 className="font-semibold text-lg">{user?.name || 'Unknown User'}</h3>
+                                        <h3 className="font-semibold text-lg">{user?.username || user?.full_name || 'Unknown User'}</h3>
                                         <Badge variant={user.role === 'admin' ? 'default' : user.role === 'seller' ? 'secondary' : 'outline'}>
                                           {user.role}
                                         </Badge>
