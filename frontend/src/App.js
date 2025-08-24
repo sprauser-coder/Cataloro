@@ -3640,7 +3640,7 @@ const AdminPanel = () => {
     if (!confirm('Are you sure you want to delete this page?')) return;
     
     try {
-      await axios.delete(`${API}/admin/cms/pages/${pageId}`);
+      await axios.delete(`${API}/cms/pages/${pageId}`);
       toast({
         title: "Success",
         description: "Page deleted successfully"
