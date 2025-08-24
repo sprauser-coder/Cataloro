@@ -1395,25 +1395,58 @@ const ListingDetail = () => {
       <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Images Gallery */}
+          {/* Enhanced Images Gallery with Navigation */}
           <div>
             {listing.images && listing.images.length > 0 ? (
               <div className="space-y-4">
-                {/* Main Image */}
-                <img
-                  src={
-                    listing.images[0].startsWith('/uploads/') 
-                      ? `${BACKEND_URL}${listing.images[0]}` 
-                      : listing.images[0]
-                  }
-                  alt={listing.title}
-                  className="w-full h-96 object-cover rounded-lg main-listing-image"
-                />
+                {/* Main Image with Navigation */}
+                <div className="relative">
+                  <img
+                    src={
+                      listing.images[currentImageIndex]?.startsWith('/uploads/') 
+                        ? `${BACKEND_URL}${listing.images[currentImageIndex]}` 
+                        : listing.images[currentImageIndex]
+                    }
+                    alt={`${listing.title} ${currentImageIndex + 1}`}
+                    className="w-full h-96 object-cover rounded-lg"
+                  />
+                  
+                  {/* Left/Right Navigation Arrows */}
+                  {listing.images.length > 1 && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                        onClick={() => setCurrentImageIndex((prev) => 
+                          prev === 0 ? listing.images.length - 1 : prev - 1
+                        )}
+                      >
+                        ←
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                        onClick={() => setCurrentImageIndex((prev) => 
+                          prev === listing.images.length - 1 ? 0 : prev + 1
+                        )}
+                      >
+                        →
+                      </Button>
+                    </>
+                  )}
+                  
+                  {/* Image Counter */}
+                  <div className="absolute bottom-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-sm">
+                    {currentImageIndex + 1} / {listing.images.length}
+                  </div>
+                </div>
                 
-                {/* Thumbnail Gallery */}
+                {/* All Thumbnails Below Main Image */}
                 {listing.images.length > 1 && (
                   <div className="grid grid-cols-3 gap-2">
-                    {listing.images.slice(1).map((image, index) => (
+                    {listing.images.map((image, index) => (
                       <img
                         key={index}
                         src={
@@ -1421,15 +1454,11 @@ const ListingDetail = () => {
                             ? `${BACKEND_URL}${image}` 
                             : image
                         }
-                        alt={`${listing.title} ${index + 2}`}
-                        className="w-full h-24 object-cover rounded cursor-pointer hover:opacity-75"
-                        onClick={() => {
-                          // You can implement image switching functionality here
-                          const mainImg = document.querySelector('.main-listing-image');
-                          if (mainImg) {
-                            mainImg.src = image.startsWith('/uploads/') ? `${BACKEND_URL}${image}` : image;
-                          }
-                        }}
+                        alt={`${listing.title} ${index + 1}`}
+                        className={`w-full h-24 object-cover rounded cursor-pointer hover:opacity-75 border-2 ${
+                          index === currentImageIndex ? 'border-indigo-500' : 'border-transparent'
+                        }`}
+                        onClick={() => setCurrentImageIndex(index)}
                       />
                     ))}
                   </div>
