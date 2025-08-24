@@ -3123,14 +3123,54 @@ const AdminPanel = () => {
       setUsers(response.data);
       setSelectedUsers([]);
     } catch (error) {
+      console.error('Error fetching users:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch users",
+        description: "Failed to fetch users", 
         variant: "destructive"
       });
     } finally {
       setLoading(false);
     }
+  };
+
+  // New: Filter and sort users
+  const getFilteredAndSortedUsers = () => {
+    let filtered = users;
+    
+    // Apply search filter
+    if (userSearchTerm) {
+      filtered = filtered.filter(user => 
+        user.full_name?.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+        user.username?.toLowerCase().includes(userSearchTerm.toLowerCase()) ||
+        user.user_id?.toLowerCase().includes(userSearchTerm.toLowerCase())
+      );
+    }
+    
+    // Apply sorting
+    return filtered.sort((a, b) => {
+      switch (userSortBy) {
+        case 'created_desc':
+          return new Date(b.created_at) - new Date(a.created_at);
+        case 'created_asc':
+          return new Date(a.created_at) - new Date(b.created_at);
+        case 'name_asc':
+          return (a.full_name || '').localeCompare(b.full_name || '');
+        case 'name_desc':
+          return (b.full_name || '').localeCompare(a.full_name || '');
+        case 'listings_desc':
+          return (b.total_listings || 0) - (a.total_listings || 0);
+        case 'listings_asc':
+          return (a.total_listings || 0) - (b.total_listings || 0);
+        case 'orders_desc':
+          return (b.total_orders || 0) - (a.total_orders || 0);
+        case 'orders_asc':
+          return (a.total_orders || 0) - (b.total_orders || 0);
+        default:
+          return 0;
+      }
+    });
   };
 
   const fetchListings = async () => {
