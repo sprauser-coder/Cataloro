@@ -2114,7 +2114,11 @@ async def update_user_profile(
                 "location": updated_user_doc.get("location"),
                 "role": updated_user_doc["role"],
                 "created_at": updated_user_doc["created_at"],
-                "updated_at": updated_user_doc.get("updated_at")
+                "updated_at": updated_user_doc.get("updated_at"),
+                "is_business": updated_user_doc.get("is_business", False),
+                "company_name": updated_user_doc.get("company_name"),
+                "country": updated_user_doc.get("country"),
+                "vat_number": updated_user_doc.get("vat_number")
             }
             
             return UserProfile(**profile_data)
