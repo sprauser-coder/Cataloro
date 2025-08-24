@@ -855,6 +855,9 @@ const Home = () => {
       if (priceRange.max) params.append('max_price', priceRange.max);
       if (selectedCondition) params.append('condition', selectedCondition);
       
+      // Listings per page
+      params.append('limit', listingsPerPage.toString());
+      
       // Future infrastructure 
       if (selectedRegion) params.append('region', selectedRegion);
       if (maxDistance && userLocation) {
