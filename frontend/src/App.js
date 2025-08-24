@@ -1693,6 +1693,7 @@ const ListingDetail = () => {
 // Profile Component
 const Profile = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [profileData, setProfileData] = useState({
     user_id: user?.user_id || '',
     username: user?.username || '',
