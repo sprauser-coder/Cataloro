@@ -1834,6 +1834,18 @@ const Profile = () => {
                       />
                     </div>
                     <div>
+                      <Label htmlFor="userId">User ID</Label>
+                      <Input
+                        id="userId"
+                        value={user?.user_id || 'Not assigned'}
+                        disabled={true}
+                        className="mt-1 bg-gray-50"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Your unique user identifier</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
                       <Label htmlFor="fullName">Full Name</Label>
                       <Input
                         id="fullName" 
@@ -1843,8 +1855,6 @@ const Profile = () => {
                         className="mt-1"
                       />
                     </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="email">Email</Label>
                       <Input
