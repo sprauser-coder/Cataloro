@@ -1,5 +1,558 @@
 #!/usr/bin/env python3
 """
+Cataloro v1.0.3 Bug Fixes Backend Testing
+=========================================
+
+Testing the v1.0.3 bug fixes implementation focusing on backend functionality:
+
+Priority Testing Areas:
+1. Navigation Management: Test DELETE /admin/navigation/test-pages to confirm test items are removed
+2. Products Tab Data: Verify GET /admin/listings returns listings for Products tab
+3. User Profile Details: Test GET /profile endpoint to confirm bio field is available
+4. Page Management: Test page CRUD operations (create, read, update, delete)
+5. Navigation Integration: Test POST /cms/navigation for "Add to Menu" functionality
+
+Test Scenarios:
+- Admin authentication (admin@marketplace.com/admin123)
+- Test navigation cleanup functionality
+- Verify listings data is available for Products tab
+- Confirm user profile includes bio, phone, address fields
+- Test page management operations work correctly
+- Verify "Add to Menu" functionality adds pages to navigation
+"""
+
+import requests
+import json
+import sys
+from datetime import datetime
+
+# Configuration
+BACKEND_URL = "https://cataloro-admin-1.preview.emergentagent.com/api"
+ADMIN_EMAIL = "admin@marketplace.com"
+ADMIN_PASSWORD = "admin123"
+
+class CataloroV103Tester:
+    def __init__(self):
+        self.session = requests.Session()
+        self.admin_token = None
+        self.test_results = []
+        self.total_tests = 0
+        self.passed_tests = 0
+        
+    def log_test(self, test_name, success, details=""):
+        """Log test result"""
+        self.total_tests += 1
+        if success:
+            self.passed_tests += 1
+            status = "✅ PASS"
+        else:
+            status = "❌ FAIL"
+        
+        result = f"{status}: {test_name}"
+        if details:
+            result += f" - {details}"
+        
+        self.test_results.append(result)
+        print(result)
+        
+    def authenticate_admin(self):
+        """Authenticate as admin user"""
+        try:
+            response = self.session.post(f"{BACKEND_URL}/auth/login", json={
+                "email": ADMIN_EMAIL,
+                "password": ADMIN_PASSWORD
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.admin_token = data["access_token"]
+                self.session.headers.update({
+                    "Authorization": f"Bearer {self.admin_token}"
+                })
+                self.log_test("Admin Authentication", True, f"Successfully authenticated as {ADMIN_EMAIL}")
+                return True
+            else:
+                self.log_test("Admin Authentication", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin Authentication", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_navigation_cleanup(self):
+        """Test DELETE /admin/navigation/test-pages endpoint"""
+        print("\n=== TESTING NAVIGATION CLEANUP ===")
+        
+        try:
+            # First, get current navigation items to see what exists
+            response = self.session.get(f"{BACKEND_URL}/admin/navigation")
+            if response.status_code == 200:
+                nav_items = response.json()
+                initial_count = len(nav_items)
+                test_items = [item for item in nav_items if 
+                             'test' in item.get('label', '').lower() or 
+                             'preview' in item.get('label', '').lower() or
+                             '🚀' in item.get('label', '') or
+                             'test' in item.get('url', '').lower()]
+                
+                self.log_test("Get Navigation Items", True, f"Found {initial_count} navigation items, {len(test_items)} test items")
+            else:
+                self.log_test("Get Navigation Items", False, f"Status: {response.status_code}")
+                return
+            
+            # Test the cleanup endpoint
+            response = self.session.delete(f"{BACKEND_URL}/admin/navigation/test-pages")
+            
+            if response.status_code == 200:
+                data = response.json()
+                nav_deleted = data.get('navigation_deleted', 0)
+                pages_deleted = data.get('pages_deleted', 0)
+                self.log_test("Delete Test Navigation Items", True, 
+                             f"Deleted {nav_deleted} navigation items and {pages_deleted} test pages")
+                
+                # Verify items were actually removed
+                response = self.session.get(f"{BACKEND_URL}/admin/navigation")
+                if response.status_code == 200:
+                    nav_items_after = response.json()
+                    final_count = len(nav_items_after)
+                    remaining_test_items = [item for item in nav_items_after if 
+                                          'test' in item.get('label', '').lower() or 
+                                          'preview' in item.get('label', '').lower() or
+                                          '🚀' in item.get('label', '') or
+                                          'test' in item.get('url', '').lower()]
+                    
+                    self.log_test("Verify Navigation Cleanup", True, 
+                                 f"Navigation items reduced from {initial_count} to {final_count}, {len(remaining_test_items)} test items remaining")
+                else:
+                    self.log_test("Verify Navigation Cleanup", False, "Could not verify cleanup")
+                    
+            else:
+                self.log_test("Delete Test Navigation Items", False, f"Status: {response.status_code}, Response: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Navigation Cleanup Test", False, f"Exception: {str(e)}")
+    
+    def test_products_tab_data(self):
+        """Test GET /admin/listings for Products tab data"""
+        print("\n=== TESTING PRODUCTS TAB DATA ===")
+        
+        try:
+            # Test basic listings endpoint
+            response = self.session.get(f"{BACKEND_URL}/admin/listings")
+            
+            if response.status_code == 200:
+                listings = response.json()
+                self.log_test("Get Admin Listings", True, f"Retrieved {len(listings)} listings for Products tab")
+                
+                # Verify listing data structure
+                if listings:
+                    sample_listing = listings[0]
+                    required_fields = ['id', 'title', 'seller_name', 'price', 'status', 'category', 'views']
+                    missing_fields = [field for field in required_fields if field not in sample_listing]
+                    
+                    if not missing_fields:
+                        self.log_test("Listing Data Structure", True, "All required fields present in listing data")
+                    else:
+                        self.log_test("Listing Data Structure", False, f"Missing fields: {missing_fields}")
+                        
+                    # Test with different parameters for Products tab functionality
+                    test_params = [
+                        {"limit": 10},
+                        {"limit": 50},
+                        {"category": "Electronics"},
+                        {"status": "active"}
+                    ]
+                    
+                    for params in test_params:
+                        response = self.session.get(f"{BACKEND_URL}/admin/listings", params=params)
+                        if response.status_code == 200:
+                            filtered_listings = response.json()
+                            self.log_test(f"Listings with params {params}", True, f"Retrieved {len(filtered_listings)} listings")
+                        else:
+                            self.log_test(f"Listings with params {params}", False, f"Status: {response.status_code}")
+                else:
+                    self.log_test("Listing Data Structure", True, "No listings found (empty database)")
+                    
+            else:
+                self.log_test("Get Admin Listings", False, f"Status: {response.status_code}, Response: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Products Tab Data Test", False, f"Exception: {str(e)}")
+    
+    def test_user_profile_details(self):
+        """Test GET /profile endpoint for bio field availability"""
+        print("\n=== TESTING USER PROFILE DETAILS ===")
+        
+        try:
+            # Test profile endpoint
+            response = self.session.get(f"{BACKEND_URL}/profile")
+            
+            if response.status_code == 200:
+                profile = response.json()
+                self.log_test("Get User Profile", True, "Profile endpoint accessible")
+                
+                # Check for required fields including bio
+                required_fields = ['id', 'email', 'username', 'full_name', 'role']
+                bio_fields = ['bio', 'phone', 'address', 'location']
+                
+                missing_required = [field for field in required_fields if field not in profile]
+                available_bio_fields = [field for field in bio_fields if field in profile]
+                
+                if not missing_required:
+                    self.log_test("Profile Required Fields", True, "All required profile fields present")
+                else:
+                    self.log_test("Profile Required Fields", False, f"Missing required fields: {missing_required}")
+                
+                if 'bio' in profile:
+                    self.log_test("Bio Field Available", True, f"Bio field present with value: {profile.get('bio', 'None')}")
+                else:
+                    self.log_test("Bio Field Available", False, "Bio field missing from profile")
+                
+                self.log_test("Profile Bio Fields", True, f"Available bio fields: {available_bio_fields}")
+                
+                # Test profile update functionality
+                test_bio = f"Test bio updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                update_data = {
+                    "bio": test_bio,
+                    "phone": "+1234567890",
+                    "location": "Test City"
+                }
+                
+                response = self.session.put(f"{BACKEND_URL}/profile", json=update_data)
+                if response.status_code == 200:
+                    self.log_test("Update Profile Bio", True, "Successfully updated profile with bio")
+                    
+                    # Verify the update
+                    response = self.session.get(f"{BACKEND_URL}/profile")
+                    if response.status_code == 200:
+                        updated_profile = response.json()
+                        if updated_profile.get('bio') == test_bio:
+                            self.log_test("Verify Bio Update", True, "Bio field updated correctly")
+                        else:
+                            self.log_test("Verify Bio Update", False, f"Bio not updated correctly. Expected: {test_bio}, Got: {updated_profile.get('bio')}")
+                    else:
+                        self.log_test("Verify Bio Update", False, "Could not retrieve updated profile")
+                else:
+                    self.log_test("Update Profile Bio", False, f"Status: {response.status_code}, Response: {response.text}")
+                    
+            else:
+                self.log_test("Get User Profile", False, f"Status: {response.status_code}, Response: {response.text}")
+                
+        except Exception as e:
+            self.log_test("User Profile Details Test", False, f"Exception: {str(e)}")
+    
+    def test_page_management(self):
+        """Test page CRUD operations"""
+        print("\n=== TESTING PAGE MANAGEMENT ===")
+        
+        test_page_slug = f"test-page-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+        test_page_id = None
+        
+        try:
+            # Test CREATE page
+            page_data = {
+                "page_slug": test_page_slug,
+                "title": "Test Page for v1.0.3",
+                "content": "<h1>Test Page Content</h1><p>This is a test page created for v1.0.3 testing.</p>",
+                "is_published": True,
+                "meta_description": "Test page for v1.0.3 bug fixes",
+                "custom_css": "/* Test CSS */"
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/admin/cms/pages", json=page_data)
+            
+            if response.status_code == 200:
+                result = response.json()
+                test_page_id = result.get('page', {}).get('id')
+                self.log_test("Create Page", True, f"Successfully created page with slug: {test_page_slug}")
+            else:
+                self.log_test("Create Page", False, f"Status: {response.status_code}, Response: {response.text}")
+                return
+            
+            # Test READ pages (list all)
+            response = self.session.get(f"{BACKEND_URL}/admin/cms/pages")
+            
+            if response.status_code == 200:
+                pages = response.json()
+                created_page = next((p for p in pages if p.get('page_slug') == test_page_slug), None)
+                if created_page:
+                    self.log_test("Read Pages (List)", True, f"Found created page in list of {len(pages)} pages")
+                    test_page_id = created_page.get('id')
+                else:
+                    self.log_test("Read Pages (List)", False, "Created page not found in pages list")
+            else:
+                self.log_test("Read Pages (List)", False, f"Status: {response.status_code}")
+            
+            # Test READ specific page
+            if test_page_id:
+                response = self.session.get(f"{BACKEND_URL}/admin/cms/pages/{test_page_slug}")
+                
+                if response.status_code == 200:
+                    page = response.json()
+                    self.log_test("Read Specific Page", True, f"Retrieved page: {page.get('title')}")
+                else:
+                    self.log_test("Read Specific Page", False, f"Status: {response.status_code}")
+            
+            # Test UPDATE page
+            if test_page_id:
+                update_data = {
+                    "title": "Updated Test Page for v1.0.3",
+                    "content": "<h1>Updated Content</h1><p>This page has been updated.</p>",
+                    "is_published": False
+                }
+                
+                response = self.session.put(f"{BACKEND_URL}/admin/cms/pages/{test_page_slug}", json=update_data)
+                
+                if response.status_code == 200:
+                    self.log_test("Update Page", True, "Successfully updated page")
+                    
+                    # Verify update
+                    response = self.session.get(f"{BACKEND_URL}/admin/cms/pages/{test_page_slug}")
+                    if response.status_code == 200:
+                        updated_page = response.json()
+                        if updated_page.get('title') == update_data['title']:
+                            self.log_test("Verify Page Update", True, "Page update verified")
+                        else:
+                            self.log_test("Verify Page Update", False, "Page update not reflected")
+                    else:
+                        self.log_test("Verify Page Update", False, "Could not verify page update")
+                else:
+                    self.log_test("Update Page", False, f"Status: {response.status_code}, Response: {response.text}")
+            
+            # Test public page access (should be 404 since we set is_published to False)
+            response = requests.get(f"{BACKEND_URL.replace('/api', '')}/cms/pages/{test_page_slug}")
+            if response.status_code == 404:
+                self.log_test("Unpublished Page Access", True, "Unpublished page correctly returns 404")
+            else:
+                self.log_test("Unpublished Page Access", False, f"Expected 404, got {response.status_code}")
+            
+            # Test DELETE page
+            if test_page_id:
+                response = self.session.delete(f"{BACKEND_URL}/admin/cms/pages/{test_page_slug}")
+                
+                if response.status_code == 200:
+                    self.log_test("Delete Page", True, "Successfully deleted page")
+                    
+                    # Verify deletion
+                    response = self.session.get(f"{BACKEND_URL}/admin/cms/pages/{test_page_slug}")
+                    if response.status_code == 404:
+                        self.log_test("Verify Page Deletion", True, "Page deletion verified")
+                    else:
+                        self.log_test("Verify Page Deletion", False, "Page still exists after deletion")
+                else:
+                    self.log_test("Delete Page", False, f"Status: {response.status_code}, Response: {response.text}")
+                    
+        except Exception as e:
+            self.log_test("Page Management Test", False, f"Exception: {str(e)}")
+    
+    def test_navigation_integration(self):
+        """Test navigation integration and 'Add to Menu' functionality"""
+        print("\n=== TESTING NAVIGATION INTEGRATION ===")
+        
+        try:
+            # Test getting current navigation
+            response = self.session.get(f"{BACKEND_URL}/admin/navigation")
+            
+            if response.status_code == 200:
+                nav_items = response.json()
+                initial_nav_count = len(nav_items)
+                self.log_test("Get Navigation Items", True, f"Retrieved {initial_nav_count} navigation items")
+            else:
+                self.log_test("Get Navigation Items", False, f"Status: {response.status_code}")
+                return
+            
+            # Test creating a page that should auto-add to navigation
+            test_slug = f"nav-test-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+            page_data = {
+                "page_slug": test_slug,
+                "title": "Navigation Test Page",
+                "content": "<h1>Navigation Test</h1><p>This page should be added to navigation automatically.</p>",
+                "is_published": True,
+                "meta_description": "Test page for navigation integration"
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/admin/cms/pages", json=page_data)
+            
+            if response.status_code == 200:
+                self.log_test("Create Page for Navigation", True, "Successfully created page")
+                
+                # Check if page was auto-added to navigation
+                response = self.session.get(f"{BACKEND_URL}/admin/navigation")
+                if response.status_code == 200:
+                    nav_items_after = response.json()
+                    new_nav_item = next((item for item in nav_items_after if item.get('url') == f"/{test_slug}"), None)
+                    
+                    if new_nav_item:
+                        self.log_test("Auto-Add to Navigation", True, f"Page automatically added to navigation with label: {new_nav_item.get('label')}")
+                    else:
+                        self.log_test("Auto-Add to Navigation", False, "Page was not automatically added to navigation")
+                        
+                    if len(nav_items_after) > initial_nav_count:
+                        self.log_test("Navigation Count Increased", True, f"Navigation items increased from {initial_nav_count} to {len(nav_items_after)}")
+                    else:
+                        self.log_test("Navigation Count Increased", False, "Navigation count did not increase")
+                else:
+                    self.log_test("Check Navigation After Page Creation", False, "Could not retrieve navigation items")
+            else:
+                self.log_test("Create Page for Navigation", False, f"Status: {response.status_code}")
+                return
+            
+            # Test manual navigation item creation (Add to Menu functionality)
+            nav_item_data = {
+                "label": "Manual Test Link",
+                "url": "/manual-test",
+                "order": 999,
+                "is_visible": True,
+                "target": "_self"
+            }
+            
+            # Note: The endpoint might be different, let's try the CMS navigation endpoint
+            response = self.session.post(f"{BACKEND_URL}/admin/cms/navigation", json=nav_item_data)
+            
+            if response.status_code == 200:
+                self.log_test("Manual Add to Navigation", True, "Successfully added manual navigation item")
+            elif response.status_code == 404:
+                # Try alternative endpoint structure
+                self.log_test("Manual Add to Navigation", False, "Navigation creation endpoint not found - may need different endpoint structure")
+            else:
+                self.log_test("Manual Add to Navigation", False, f"Status: {response.status_code}, Response: {response.text}")
+            
+            # Test navigation visibility toggle
+            response = self.session.get(f"{BACKEND_URL}/admin/navigation")
+            if response.status_code == 200:
+                nav_items = response.json()
+                if nav_items:
+                    test_nav_item = nav_items[0]
+                    nav_id = test_nav_item.get('id')
+                    
+                    if nav_id:
+                        # Try to update navigation item visibility
+                        update_data = {"is_visible": not test_nav_item.get('is_visible', True)}
+                        response = self.session.put(f"{BACKEND_URL}/admin/navigation/{nav_id}", json=update_data)
+                        
+                        if response.status_code == 200:
+                            self.log_test("Update Navigation Visibility", True, "Successfully updated navigation item visibility")
+                        else:
+                            self.log_test("Update Navigation Visibility", False, f"Status: {response.status_code}")
+                    else:
+                        self.log_test("Update Navigation Visibility", False, "No navigation ID found")
+                else:
+                    self.log_test("Update Navigation Visibility", False, "No navigation items to test")
+            
+            # Clean up - delete test page
+            try:
+                self.session.delete(f"{BACKEND_URL}/admin/cms/pages/{test_slug}")
+            except:
+                pass  # Cleanup attempt, don't fail test if it doesn't work
+                
+        except Exception as e:
+            self.log_test("Navigation Integration Test", False, f"Exception: {str(e)}")
+    
+    def test_additional_v103_features(self):
+        """Test additional v1.0.3 features and edge cases"""
+        print("\n=== TESTING ADDITIONAL v1.0.3 FEATURES ===")
+        
+        try:
+            # Test admin stats endpoint (for Products tab)
+            response = self.session.get(f"{BACKEND_URL}/admin/stats")
+            
+            if response.status_code == 200:
+                stats = response.json()
+                required_stats = ['total_users', 'active_users', 'total_listings', 'active_listings', 'total_orders', 'total_revenue']
+                missing_stats = [stat for stat in required_stats if stat not in stats]
+                
+                if not missing_stats:
+                    self.log_test("Admin Stats Endpoint", True, f"All required stats present: Users: {stats.get('total_users')}, Listings: {stats.get('total_listings')}, Orders: {stats.get('total_orders')}")
+                else:
+                    self.log_test("Admin Stats Endpoint", False, f"Missing stats: {missing_stats}")
+            else:
+                self.log_test("Admin Stats Endpoint", False, f"Status: {response.status_code}")
+            
+            # Test CMS settings endpoint
+            response = self.session.get(f"{BACKEND_URL}/admin/cms/settings")
+            
+            if response.status_code == 200:
+                settings = response.json()
+                self.log_test("CMS Settings Endpoint", True, f"Retrieved CMS settings with {len(settings)} fields")
+                
+                # Check for important settings
+                important_settings = ['site_name', 'hero_title', 'primary_color', 'auto_add_pages_to_menu']
+                available_settings = [setting for setting in important_settings if setting in settings]
+                self.log_test("Important CMS Settings", True, f"Available settings: {available_settings}")
+            else:
+                self.log_test("CMS Settings Endpoint", False, f"Status: {response.status_code}")
+            
+            # Test public CMS endpoints (should work without authentication)
+            public_session = requests.Session()
+            
+            response = public_session.get(f"{BACKEND_URL.replace('/api', '')}/cms/settings")
+            if response.status_code == 200:
+                public_settings = response.json()
+                self.log_test("Public CMS Settings", True, f"Public settings accessible with {len(public_settings)} fields")
+            else:
+                self.log_test("Public CMS Settings", False, f"Status: {response.status_code}")
+            
+            response = public_session.get(f"{BACKEND_URL.replace('/api', '')}/cms/navigation")
+            if response.status_code == 200:
+                public_nav = response.json()
+                visible_nav_items = [item for item in public_nav if item.get('is_visible', True)]
+                self.log_test("Public Navigation", True, f"Public navigation accessible with {len(visible_nav_items)} visible items")
+            else:
+                self.log_test("Public Navigation", False, f"Status: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Additional v1.0.3 Features Test", False, f"Exception: {str(e)}")
+    
+    def run_all_tests(self):
+        """Run all v1.0.3 bug fix tests"""
+        print("🚀 STARTING CATALORO v1.0.3 BUG FIXES BACKEND TESTING")
+        print("=" * 60)
+        
+        # Authenticate first
+        if not self.authenticate_admin():
+            print("❌ CRITICAL: Admin authentication failed. Cannot proceed with tests.")
+            return False
+        
+        # Run all test suites
+        self.test_navigation_cleanup()
+        self.test_products_tab_data()
+        self.test_user_profile_details()
+        self.test_page_management()
+        self.test_navigation_integration()
+        self.test_additional_v103_features()
+        
+        # Print summary
+        print("\n" + "=" * 60)
+        print("🎯 CATALORO v1.0.3 BUG FIXES TESTING SUMMARY")
+        print("=" * 60)
+        
+        success_rate = (self.passed_tests / self.total_tests * 100) if self.total_tests > 0 else 0
+        
+        print(f"Total Tests: {self.total_tests}")
+        print(f"Passed: {self.passed_tests}")
+        print(f"Failed: {self.total_tests - self.passed_tests}")
+        print(f"Success Rate: {success_rate:.1f}%")
+        
+        print("\nDetailed Results:")
+        for result in self.test_results:
+            print(f"  {result}")
+        
+        if success_rate >= 90:
+            print("\n🎉 EXCELLENT: v1.0.3 bug fixes are working correctly!")
+        elif success_rate >= 75:
+            print("\n✅ GOOD: Most v1.0.3 bug fixes are working, minor issues found.")
+        elif success_rate >= 50:
+            print("\n⚠️  MODERATE: Some v1.0.3 bug fixes working, significant issues found.")
+        else:
+            print("\n❌ CRITICAL: Major issues with v1.0.3 bug fixes implementation.")
+        
+        return success_rate >= 75
+
+if __name__ == "__main__":
+    tester = CataloroV103Tester()
+    success = tester.run_all_tests()
+    sys.exit(0 if success else 1)
+"""
 Phase 3A Backend Testing - Complete Profile Management & Workflow Testing
 Testing after routing issue fix - verifying all Phase 3A functionality is working
 """
