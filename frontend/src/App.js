@@ -1237,11 +1237,22 @@ const Home = () => {
                       )}
                     </Badge>
                   </div>
-                  <div className="absolute top-2 right-2">
+                  <div className="absolute top-2 right-2 flex space-x-2">
                     <Badge variant="secondary" className="bg-white/90">
                       <Eye className="h-3 w-3 mr-1" />
                       {listing.views}
                     </Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-white/90 hover:bg-white"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToFavoritesBrowse(listing);
+                      }}
+                    >
+                      <Star className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
                 
