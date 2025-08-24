@@ -3030,7 +3030,11 @@ const AdminPanel = () => {
 
   const fetchCategories = async () => {
     try {
-      // Get all predefined categories and count listings for each
+      // Get categories from backend or use default list
+      const response = await axios.get(`${API}/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      // If backend doesn't have categories endpoint, use predefined list
       const predefinedCategories = ['Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books', 'Toys', 'Automotive', 'Health & Beauty', 'Other'];
       const categoriesWithCounts = [];
       
@@ -3050,12 +3054,6 @@ const AdminPanel = () => {
       }
       
       setCategories(categoriesWithCounts);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch categories",
-        variant: "destructive"
-      });
     }
   };
 
@@ -3070,7 +3068,14 @@ const AdminPanel = () => {
     }
     
     try {
-      // For now, we'll add to the local state since backend doesn't have category management
+      // Try to add to backend first
+      try {
+        await axios.post(`${API}/categories`, { name: newCategoryName.trim() });
+      } catch (error) {
+        // If backend doesn't support, add locally
+        console.log('Backend category creation not supported, adding locally');
+      }
+      
       const newCategory = {
         name: newCategoryName.trim(),
         count: 0
@@ -3083,6 +3088,10 @@ const AdminPanel = () => {
         title: "Success",
         description: `Category "${newCategoryName}" added successfully`
       });
+      
+      // Update global categories for listings
+      window.cataloroCategories = [...categories, newCategory];
+      
     } catch (error) {
       toast({
         title: "Error",
