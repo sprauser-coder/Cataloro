@@ -5437,217 +5437,298 @@ const AdminPanel = () => {
             )}
           </TabsContent>
 
-          {/* Page Management Tab */}
+          {/* Content Management Tab */}
           <TabsContent value="pages">
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Page Management</CardTitle>
-                  <CardDescription>Create and manage custom pages for your marketplace</CardDescription>
+                  <CardTitle>Content Management</CardTitle>
+                  <CardDescription>Manage pages and navigation for your marketplace</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-6">
-                    {/* Create New Page Form */}
-                    <div className="border rounded-lg p-4">
-                      <h3 className="text-lg font-medium mb-4">Create New Page</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="pageTitle">Page Title</Label>
-                          <Input
-                            id="pageTitle"
-                            placeholder="Enter page title"
-                            value={newPage.title}
-                            onChange={(e) => setNewPage({...newPage, title: e.target.value})}
-                            className="mt-1"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="pageSlug">URL Slug</Label>
-                          <Input
-                            id="pageSlug"
-                            placeholder="page-url-slug"
-                            value={newPage.slug}
-                            onChange={(e) => setNewPage({...newPage, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-')})}
-                            className="mt-1"
-                          />
-                        </div>
-                      </div>
-                      <div className="mt-4">
-                        <Label htmlFor="pageContent">Page Content</Label>
-                        <Textarea
-                          id="pageContent"
-                          placeholder="Enter page content (HTML supported)"
-                          value={newPage.content}
-                          onChange={(e) => setNewPage({...newPage, content: e.target.value})}
-                          className="mt-1 min-h-32"
-                        />
-                      </div>
-                      <div className="mt-4">
-                        <Label htmlFor="metaDescription">Meta Description</Label>
-                        <Input
-                          id="metaDescription"
-                          placeholder="Brief description for SEO (optional)"
-                          value={newPage.meta_description}
-                          onChange={(e) => setNewPage({...newPage, meta_description: e.target.value})}
-                          className="mt-1"
-                        />
-                      </div>
-                      <div className="flex items-center space-x-4 mt-4">
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="pagePublished"
-                            checked={newPage.published}
-                            onChange={(e) => setNewPage({...newPage, published: e.target.checked})}
-                            className="rounded"
-                          />
-                          <Label htmlFor="pagePublished" className="text-sm">Published</Label>
-                        </div>
-                        <Button 
-                          onClick={createPage}
-                          disabled={!newPage.title || !newPage.slug}
-                          className="ml-auto"
-                        >
-                          Create Page
-                        </Button>
-                      </div>
-                    </div>
+                  {/* Content Management Subsections */}
+                  <Tabs defaultValue="page-management" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="page-management">Page Management</TabsTrigger>
+                      <TabsTrigger value="menu-management">Menu Management</TabsTrigger>
+                    </TabsList>
 
-                    {/* Existing Pages List */}
-                    <div>
-                      <h3 className="text-lg font-medium mb-4">Existing Pages ({pages.length})</h3>
-                      {pages.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
-                          <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                          <p>No custom pages created yet</p>
-                          <p className="text-sm">Create your first page using the form above</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          {pages.map((page) => (
-                            <div key={page.id} className="border rounded-lg p-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                  <div className="flex items-center space-x-2">
-                                    <h4 className="font-medium">{page.title}</h4>
-                                    <Badge variant={page.published ? "default" : "secondary"}>
-                                      {page.published ? "Published" : "Draft"}
-                                    </Badge>
-                                    {page.show_in_navigation && (
-                                      <Badge variant="outline">In Navigation</Badge>
-                                    )}
-                                  </div>
-                                  <p className="text-sm text-gray-600 mt-1">/{page.slug}</p>
-                                  <p className="text-sm text-gray-500 mt-1">
-                                    Created: {new Date(page.created_at).toLocaleDateString()}
-                                    {page.updated_at && page.updated_at !== page.created_at && (
-                                      <span> • Updated: {new Date(page.updated_at).toLocaleDateString()}</span>
-                                    )}
-                                  </p>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => editPage(page)}
-                                  >
-                                    <Edit className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      window.open(`/${page.slug}`, '_blank');
-                                    }}
-                                  >
-                                    <Eye className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => deletePage(page.id)}
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </div>
-                              {editingPage && editingPage.id === page.id && (
-                                <div className="mt-4 pt-4 border-t">
-                                  <div className="space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <div>
-                                        <Label>Page Title</Label>
-                                        <Input
-                                          value={editingPage.title}
-                                          onChange={(e) => setEditingPage({...editingPage, title: e.target.value})}
-                                          className="mt-1"
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label>URL Slug</Label>
-                                        <Input
-                                          value={editingPage.slug}
-                                          onChange={(e) => setEditingPage({...editingPage, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-')})}
-                                          className="mt-1"
-                                        />
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <Label>Page Content</Label>
-                                      <Textarea
-                                        value={editingPage.content}
-                                        onChange={(e) => setEditingPage({...editingPage, content: e.target.value})}
-                                        className="mt-1 min-h-32"
-                                      />
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center space-x-4">
-                                        <div className="flex items-center space-x-2">
-                                          <input
-                                            type="checkbox"
-                                            id={`edit-published-${page.id}`}
-                                            checked={editingPage.published}
-                                            onChange={(e) => setEditingPage({...editingPage, published: e.target.checked})}
-                                            className="rounded"
-                                          />
-                                          <Label htmlFor={`edit-published-${page.id}`} className="text-sm">Published</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                          <input
-                                            type="checkbox"
-                                            id={`edit-nav-${page.id}`}
-                                            checked={editingPage.show_in_navigation}
-                                            onChange={(e) => setEditingPage({...editingPage, show_in_navigation: e.target.checked})}
-                                            className="rounded"
-                                          />
-                                          <Label htmlFor={`edit-nav-${page.id}`} className="text-sm">Show in Navigation</Label>
-                                        </div>
-                                      </div>
-                                      <div className="flex items-center space-x-2">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => setEditingPage(null)}
-                                        >
-                                          Cancel
-                                        </Button>
-                                        <Button
-                                          size="sm"
-                                          onClick={updatePage}
-                                        >
-                                          Save Changes
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
+                    {/* Page Management Subsection */}
+                    <TabsContent value="page-management" className="mt-6">
+                      <div className="space-y-6">
+                        {/* Create New Page Form */}
+                        <div className="border rounded-lg p-4">
+                          <h3 className="text-lg font-medium mb-4">Create New Page</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="pageTitle">Page Title</Label>
+                              <Input
+                                id="pageTitle"
+                                placeholder="Enter page title"
+                                value={newPage.title}
+                                onChange={(e) => setNewPage({...newPage, title: e.target.value})}
+                                className="mt-1"
+                              />
                             </div>
-                          ))}
+                            <div>
+                              <Label htmlFor="pageSlug">URL Slug</Label>
+                              <Input
+                                id="pageSlug"
+                                placeholder="page-url-slug"
+                                value={newPage.slug}
+                                onChange={(e) => setNewPage({...newPage, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-')})}
+                                className="mt-1"
+                              />
+                            </div>
+                          </div>
+                          <div className="mt-4">
+                            <Label htmlFor="pageContent">Page Content</Label>
+                            <Textarea
+                              id="pageContent"
+                              placeholder="Enter page content (HTML supported)"
+                              value={newPage.content}
+                              onChange={(e) => setNewPage({...newPage, content: e.target.value})}
+                              className="mt-1 min-h-32"
+                            />
+                          </div>
+                          <div className="mt-4">
+                            <Label htmlFor="metaDescription">Meta Description</Label>
+                            <Input
+                              id="metaDescription"
+                              placeholder="Brief description for SEO (optional)"
+                              value={newPage.meta_description}
+                              onChange={(e) => setNewPage({...newPage, meta_description: e.target.value})}
+                              className="mt-1"
+                            />
+                          </div>
+                          <div className="flex items-center space-x-4 mt-4">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                id="pagePublished"
+                                checked={newPage.published}
+                                onChange={(e) => setNewPage({...newPage, published: e.target.checked})}
+                                className="rounded"
+                              />
+                              <Label htmlFor="pagePublished" className="text-sm">Published</Label>
+                            </div>
+                            <Button 
+                              onClick={createPage}
+                              disabled={!newPage.title || !newPage.slug}
+                              className="ml-auto"
+                            >
+                              Create Page
+                            </Button>
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  </div>
+
+                        {/* Existing Pages List */}
+                        <div>
+                          <h3 className="text-lg font-medium mb-4">Existing Pages ({pages.length})</h3>
+                          {pages.length === 0 ? (
+                            <div className="text-center py-8 text-gray-500">
+                              <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                              <p>No custom pages created yet</p>
+                              <p className="text-sm">Create your first page using the form above</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {pages.map((page) => (
+                                <div key={page.id} className="border rounded-lg p-4">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex-1">
+                                      <div className="flex items-center space-x-2">
+                                        <h4 className="font-medium">{page.title}</h4>
+                                        <Badge variant={page.published ? "default" : "secondary"}>
+                                          {page.published ? "Published" : "Draft"}
+                                        </Badge>
+                                        {page.show_in_navigation && (
+                                          <Badge variant="outline">In Navigation</Badge>
+                                        )}
+                                      </div>
+                                      <p className="text-sm text-gray-600 mt-1">/{page.slug}</p>
+                                      <p className="text-sm text-gray-500 mt-1">
+                                        Created: {new Date(page.created_at).toLocaleDateString()}
+                                        {page.updated_at && page.updated_at !== page.created_at && (
+                                          <span> • Updated: {new Date(page.updated_at).toLocaleDateString()}</span>
+                                        )}
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => editPage(page)}
+                                      >
+                                        <Edit className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                          window.open(`/${page.slug}`, '_blank');
+                                        }}
+                                      >
+                                        <Eye className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => deletePage(page.id)}
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                  {editingPage && editingPage.id === page.id && (
+                                    <div className="mt-4 pt-4 border-t">
+                                      <div className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <div>
+                                            <Label>Page Title</Label>
+                                            <Input
+                                              value={editingPage.title}
+                                              onChange={(e) => setEditingPage({...editingPage, title: e.target.value})}
+                                              className="mt-1"
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label>URL Slug</Label>
+                                            <Input
+                                              value={editingPage.slug}
+                                              onChange={(e) => setEditingPage({...editingPage, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-')})}
+                                              className="mt-1"
+                                            />
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <Label>Page Content</Label>
+                                          <Textarea
+                                            value={editingPage.content}
+                                            onChange={(e) => setEditingPage({...editingPage, content: e.target.value})}
+                                            className="mt-1 min-h-32"
+                                          />
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center space-x-4">
+                                            <div className="flex items-center space-x-2">
+                                              <input
+                                                type="checkbox"
+                                                id={`edit-published-${page.id}`}
+                                                checked={editingPage.published}
+                                                onChange={(e) => setEditingPage({...editingPage, published: e.target.checked})}
+                                                className="rounded"
+                                              />
+                                              <Label htmlFor={`edit-published-${page.id}`} className="text-sm">Published</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                              <input
+                                                type="checkbox"
+                                                id={`edit-nav-${page.id}`}
+                                                checked={editingPage.show_in_navigation}
+                                                onChange={(e) => setEditingPage({...editingPage, show_in_navigation: e.target.checked})}
+                                                className="rounded"
+                                              />
+                                              <Label htmlFor={`edit-nav-${page.id}`} className="text-sm">Show in Navigation</Label>
+                                            </div>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <Button
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={() => setEditingPage(null)}
+                                            >
+                                              Cancel
+                                            </Button>
+                                            <Button
+                                              size="sm"
+                                              onClick={updatePage}
+                                            >
+                                              Save Changes
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    {/* Menu Management Subsection */}
+                    <TabsContent value="menu-management" className="mt-6">
+                      <div className="space-y-6">
+                        <div className="border rounded-lg p-4">
+                          <h3 className="text-lg font-medium mb-4">Menu Management</h3>
+                          <p className="text-gray-600 mb-4">Manage the main navigation menu links. Add, edit, or remove menu items that appear in the header.</p>
+                          
+                          {/* Add New Menu Item Form */}
+                          <div className="border rounded-lg p-4 mb-4">
+                            <h4 className="text-md font-medium mb-3">Add New Menu Item</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div>
+                                <Label htmlFor="menuLabel">Menu Label</Label>
+                                <Input
+                                  id="menuLabel"
+                                  placeholder="e.g., About Us"
+                                  className="mt-1"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="menuUrl">URL</Label>
+                                <Input
+                                  id="menuUrl"
+                                  placeholder="e.g., /about or https://example.com"
+                                  className="mt-1"
+                                />
+                              </div>
+                              <div className="flex items-end">
+                                <Button className="w-full">
+                                  Add Menu Item
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Current Menu Items */}
+                          <div>
+                            <h4 className="text-md font-medium mb-3">Current Menu Items</h4>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between p-3 border rounded-lg">
+                                <div>
+                                  <span className="font-medium">Browse</span>
+                                  <span className="text-gray-500 ml-2">→ /</span>
+                                </div>
+                                <Badge variant="outline">Default</Badge>
+                              </div>
+                              <div className="flex items-center justify-between p-3 border rounded-lg">
+                                <div>
+                                  <span className="font-medium">Sell</span>
+                                  <span className="text-gray-500 ml-2">→ /sell</span>
+                                </div>
+                                <Badge variant="outline">Default</Badge>
+                              </div>
+                              <div className="flex items-center justify-between p-3 border rounded-lg">
+                                <div>
+                                  <span className="font-medium">My Orders</span>
+                                  <span className="text-gray-500 ml-2">→ /orders</span>
+                                </div>
+                                <Badge variant="outline">Default</Badge>
+                              </div>
+                              {/* Custom menu items would be listed here */}
+                              <div className="text-center py-4 text-gray-500">
+                                <p className="text-sm">No custom menu items yet</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
                 </CardContent>
               </Card>
             </div>
