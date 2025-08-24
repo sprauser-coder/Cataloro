@@ -4274,7 +4274,49 @@ const AdminPanel = () => {
                                 <p>No listings found</p>
                               </div>
                             ) : (
-                              listings.map((listing) => (
+                              listings
+                                .filter(listing => {
+                                  // Search filter
+                                  if (listingSearchTerm) {
+                                    const searchLower = listingSearchTerm.toLowerCase();
+                                    const matchesTitle = listing.title?.toLowerCase().includes(searchLower);
+                                    const matchesSeller = listing.seller_name?.toLowerCase().includes(searchLower);
+                                    const matchesCategory = listing.category?.toLowerCase().includes(searchLower);
+                                    
+                                    if (!matchesTitle && !matchesSeller && !matchesCategory) {
+                                      return false;
+                                    }
+                                  }
+                                  
+                                  // Status filter
+                                  if (listingStatusFilter !== 'all' && listing.status !== listingStatusFilter) {
+                                    return false;
+                                  }
+                                  
+                                  // Category filter
+                                  if (listingCategoryFilter !== 'all' && listing.category !== listingCategoryFilter) {
+                                    return false;
+                                  }
+                                  
+                                  return true;
+                                })
+                                .sort((a, b) => {
+                                  switch (listingSortBy) {
+                                    case 'created_asc':
+                                      return new Date(a.created_at) - new Date(b.created_at);
+                                    case 'price_desc':
+                                      return (b.price || 0) - (a.price || 0);
+                                    case 'price_asc':
+                                      return (a.price || 0) - (b.price || 0);
+                                    case 'title_asc':
+                                      return (a.title || '').localeCompare(b.title || '');
+                                    case 'status':
+                                      return (a.status || '').localeCompare(b.status || '');
+                                    default: // created_desc
+                                      return new Date(b.created_at) - new Date(a.created_at);
+                                  }
+                                })
+                                .map((listing) => (
                                 <div key={listing.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                                   {/* Selection Checkbox */}
                                   <div className="flex-shrink-0">
