@@ -1528,8 +1528,9 @@ const ListingDetail = () => {
                     <Button onClick={handleBuyNow} className="w-full bg-green-600 hover:bg-green-700">
                       Buy Now
                     </Button>
-                    <Button onClick={handleAddToCart} variant="outline" className="w-full">
-                      Add to Cart
+                    <Button onClick={handleAddToFavorites} variant="outline" className="w-full">
+                      <Star className="h-4 w-4 mr-2" />
+                      Save to Favorites
                     </Button>
                   </div>
                 </>
