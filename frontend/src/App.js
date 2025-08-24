@@ -265,7 +265,8 @@ const NotificationCenter = () => {
 
   const connectWebSocket = () => {
     try {
-      const wsUrl = `ws://localhost:8001/api/notifications/${user.id}`;
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+      const wsUrl = `${backendUrl.replace('https://', 'wss://').replace('http://', 'ws://')}/api/notifications/${user.id}`;
       const ws = new WebSocket(wsUrl);
       
       ws.onopen = () => {
