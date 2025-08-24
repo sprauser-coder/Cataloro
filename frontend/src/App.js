@@ -3646,119 +3646,22 @@ const AdminPanel = () => {
           <p className="text-gray-600">Manage users, listings, and monitor platform activity</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Admin Sidebar Navigation */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border p-4">
-              <h2 className="font-semibold text-lg mb-4">Admin Panel</h2>
-              <nav className="space-y-1">
-                <button
-                  onClick={() => setActiveTab('dashboard')}
-                  className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeTab === 'dashboard' 
-                      ? 'bg-indigo-100 text-indigo-700 border-indigo-300' 
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  📊 Dashboard
-                </button>
-                
-                <div className="pt-2">
-                  <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</p>
-                  <button
-                    onClick={() => setActiveTab('users')}
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === 'users' 
-                        ? 'bg-indigo-100 text-indigo-700' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    👥 Users
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('products')}
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === 'products' 
-                        ? 'bg-indigo-100 text-indigo-700' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    🛍️ Products
-                  </button>
-                </div>
-                
-                <div className="pt-2">
-                  <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Content</p>
-                  <button
-                    onClick={() => setActiveTab('pages')}
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === 'pages' 
-                        ? 'bg-indigo-100 text-indigo-700' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    📄 Content Mgmt
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('content-listings')}
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === 'content-listings' 
-                        ? 'bg-indigo-100 text-indigo-700' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    🏷️ Categories
-                  </button>
-                </div>
-                
-                <div className="pt-2">
-                  <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Customization</p>
-                  <button
-                    onClick={() => setActiveTab('appearance')}
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === 'appearance' 
-                        ? 'bg-indigo-100 text-indigo-700' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    🎨 Appearance
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('settings')}
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === 'settings' 
-                        ? 'bg-indigo-100 text-indigo-700' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    ⚙️ Settings
-                  </button>
-                </div>
-                
-                <div className="pt-2">
-                  <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">System</p>
-                  <button
-                    onClick={() => setActiveTab('database')}
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === 'database' 
-                        ? 'bg-indigo-100 text-indigo-700' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    🗄️ Database
-                  </button>
-                </div>
-              </nav>
-            </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <div className="overflow-x-auto">
+            <TabsList className="grid w-max grid-cols-8 min-w-full">
+              <TabsTrigger value="dashboard" className="text-xs px-2">📊 Dashboard</TabsTrigger>
+              <TabsTrigger value="users" className="text-xs px-2">👥 Users</TabsTrigger>
+              <TabsTrigger value="products" className="text-xs px-2">🛍️ Products</TabsTrigger>
+              <TabsTrigger value="content-listings" className="text-xs px-2">🏷️ Categories</TabsTrigger>
+              <TabsTrigger value="appearance" className="text-xs px-2">🎨 Appearance</TabsTrigger>
+              <TabsTrigger value="pages" className="text-xs px-2">📄 Content</TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs px-2">⚙️ Settings</TabsTrigger>
+              <TabsTrigger value="database" className="text-xs px-2">🗄️ Database</TabsTrigger>
+            </TabsList>
           </div>
 
-          {/* Main Content Area */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg shadow-sm border">
-              <div className="p-6">
-          {/* Dashboard Content */}
-          {activeTab === 'dashboard' && (
-            <div>
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard">
             {loading ? (
               <div className="flex justify-center py-8">Loading...</div>
             ) : stats ? (
