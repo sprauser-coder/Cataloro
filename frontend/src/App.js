@@ -4867,61 +4867,7 @@ const AdminPanel = () => {
                       </div>
                     </div>
 
-                    {/* Listing Organization */}
-                    <div className="border rounded-lg p-4">
-                      <h3 className="text-lg font-medium mb-4">Listing Organization</h3>
-                      <p className="text-gray-600 mb-4">Configure how listings are displayed and organized on the browse page.</p>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <Label className="text-sm font-medium">Default Sort Order</Label>
-                          <Select defaultValue="created_desc">
-                            <SelectTrigger className="mt-1">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="created_desc">Newest First</SelectItem>
-                              <SelectItem value="created_asc">Oldest First</SelectItem>
-                              <SelectItem value="price_low">Price: Low to High</SelectItem>
-                              <SelectItem value="price_high">Price: High to Low</SelectItem>
-                              <SelectItem value="title_asc">Title: A-Z</SelectItem>
-                              <SelectItem value="views_desc">Most Viewed</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <div>
-                          <Label className="text-sm font-medium">Default Items Per Page</Label>
-                          <Select defaultValue="10">
-                            <SelectTrigger className="mt-1">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="10">10 items</SelectItem>
-                              <SelectItem value="25">25 items</SelectItem>
-                              <SelectItem value="50">50 items</SelectItem>
-                              <SelectItem value="100">100 items</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-4">
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="showListingImages"
-                            defaultChecked
-                            className="rounded"
-                          />
-                          <Label htmlFor="showListingImages" className="text-sm">Show listing images in browse view</Label>
-                        </div>
-                      </div>
-                      
-                      <Button className="mt-4">
-                        Save Listing Settings
-                      </Button>
-                    </div>
+                    {/* End of Categories Management */}
                   </div>
                 </CardContent>
               </Card>
