@@ -1287,13 +1287,19 @@ const Home = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="bg-white/90 hover:bg-white"
+                      className={`hover:bg-white ${
+                        isListingFavorited(listing.id) 
+                          ? 'bg-yellow-100 border-yellow-300 text-yellow-700' 
+                          : 'bg-white/90'
+                      }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         addToFavoritesBrowse(listing);
                       }}
                     >
-                      <Star className="h-4 w-4" />
+                      <Star className={`h-4 w-4 ${
+                        isListingFavorited(listing.id) ? 'fill-yellow-400 text-yellow-400' : ''
+                      }`} />
                     </Button>
                   </div>
                 </div>
