@@ -152,19 +152,12 @@ const AdminProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   const token = localStorage.getItem('token');
   
-  console.log('AdminProtectedRoute: token exists:', !!token);
-  console.log('AdminProtectedRoute: loading:', loading);
-  console.log('AdminProtectedRoute: user:', user);
-  console.log('AdminProtectedRoute: user role:', user?.role);
-  
   if (!token) {
-    console.log('AdminProtectedRoute: No token, redirecting to auth');
     return <Navigate to="/auth" />;
   }
   
   // Show loading while user data is being fetched
   if (loading || !user) {
-    console.log('AdminProtectedRoute: Loading or no user data');
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -176,7 +169,6 @@ const AdminProtectedRoute = ({ children }) => {
   }
   
   if (user.role !== 'admin') {
-    console.log('AdminProtectedRoute: User is not admin, showing access denied');
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
@@ -196,7 +188,6 @@ const AdminProtectedRoute = ({ children }) => {
     );
   }
   
-  console.log('AdminProtectedRoute: Admin user authenticated, rendering children');
   return children;
 };
 
