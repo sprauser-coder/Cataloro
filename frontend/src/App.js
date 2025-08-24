@@ -3929,10 +3929,12 @@ const AdminPanel = () => {
                 <p>Failed to load dashboard data</p>
               </div>
             )}
-          </TabsContent>
+            </div>
+          )}
 
-          {/* Users Tab */}
-          <TabsContent value="users">
+          {/* Users Content */}
+          {activeTab === 'users' && (
+            <div>
             {loading ? (
               <div className="flex justify-center py-8">Loading...</div>
             ) : (
