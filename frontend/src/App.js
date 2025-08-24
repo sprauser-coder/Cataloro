@@ -3262,7 +3262,12 @@ const AdminPanel = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API}/admin/orders`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API}/admin/orders`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setOrders(response.data);
     } catch (error) {
       toast({
