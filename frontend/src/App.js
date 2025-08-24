@@ -6564,7 +6564,10 @@ const AdminPanel = () => {
               </Card>
             )}
           </TabsContent>
-        </Tabs>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
