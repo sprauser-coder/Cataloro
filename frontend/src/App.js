@@ -4138,56 +4138,71 @@ const AdminPanel = () => {
 
                 {/* Analytics Section */}
                 <div className="grid grid-cols-1 gap-6">
-                  {/* Daily Analytics Chart */}
+                  {/* Overview Chart with Time Picker */}
                   <Card>
-                    <CardHeader>
-                      <CardTitle>Daily Overview (Last 7 Days)</CardTitle>
-                      <CardDescription>Marketplace activity trends</CardDescription>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                      <div>
+                        <CardTitle>Overview</CardTitle>
+                        <CardDescription>Marketplace activity trends</CardDescription>
+                      </div>
+                      <Select value={dashboardTimeRange} onValueChange={setDashboardTimeRange}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="today">Today</SelectItem>
+                          <SelectItem value="7days">7 Days</SelectItem>
+                          <SelectItem value="month">This Month</SelectItem>
+                          <SelectItem value="year">This Year</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-7 gap-4">
-                        {/* Chart Data */}
-                        {[
-                          { day: 'Mon', completed: stats.total_orders || 12, active: Math.floor((stats.total_listings || 45) * 1.0), pending: 8 },
-                          { day: 'Tue', completed: Math.floor((stats.total_orders || 12) * 0.8), active: Math.floor((stats.total_listings || 45) * 1.1), pending: 6 },
-                          { day: 'Wed', completed: Math.floor((stats.total_orders || 12) * 1.2), active: Math.floor((stats.total_listings || 45) * 0.9), pending: 10 },
-                          { day: 'Thu', completed: Math.floor((stats.total_orders || 12) * 0.7), active: Math.floor((stats.total_listings || 45) * 1.3), pending: 5 },
-                          { day: 'Fri', completed: Math.floor((stats.total_orders || 12) * 1.5), active: Math.floor((stats.total_listings || 45) * 1.1), pending: 12 },
-                          { day: 'Sat', completed: Math.floor((stats.total_orders || 12) * 1.1), active: Math.floor((stats.total_listings || 45) * 0.8), pending: 7 },
-                          { day: 'Sun', completed: Math.floor((stats.total_orders || 12) * 0.9), active: Math.floor((stats.total_listings || 45) * 1.2), pending: 9 }
-                        ].map((data, index) => {
+                      <div className={`grid gap-4 ${
+                        dashboardTimeRange === 'today' ? 'grid-cols-1' :
+                        dashboardTimeRange === '7days' ? 'grid-cols-7' :
+                        dashboardTimeRange === 'month' ? 'grid-cols-10' :
+                        'grid-cols-12'
+                      }`}>
+                        {/* Dynamic Chart Data */}
+                        {generateDashboardData().slice(0, 
+                          dashboardTimeRange === 'today' ? 1 :
+                          dashboardTimeRange === '7days' ? 7 :
+                          dashboardTimeRange === 'month' ? 10 :
+                          12
+                        ).map((data, index) => {
                           const maxValue = Math.max(data.completed, data.active, data.pending, 1);
                           return (
                             <div key={index} className="text-center">
-                              <div className="text-sm font-medium text-gray-600 mb-2">{data.day}</div>
+                              <div className="text-xs font-medium text-gray-600 mb-2 truncate">{data.label}</div>
                               <div className="flex justify-center items-end space-x-1 h-24 mb-2">
-                                {/* Completed Listings Bar */}
+                                {/* Completed Orders Bar */}
                                 <div className="flex flex-col items-center">
                                   <div 
-                                    className="w-4 bg-red-500 rounded-t-sm transition-all duration-300 hover:bg-red-600"
+                                    className="w-3 bg-green-500 rounded-t-sm transition-all duration-300 hover:bg-green-600"
                                     style={{ height: `${Math.max((data.completed / maxValue) * 80, 2)}px` }}
-                                    title={`Completed: ${data.completed}`}
+                                    title={`Completed Orders: ${data.completed}`}
                                   ></div>
                                 </div>
                                 {/* Active Listings Bar */}
                                 <div className="flex flex-col items-center">
                                   <div 
-                                    className="w-4 bg-blue-500 rounded-t-sm transition-all duration-300 hover:bg-blue-600"
+                                    className="w-3 bg-blue-500 rounded-t-sm transition-all duration-300 hover:bg-blue-600"
                                     style={{ height: `${Math.max((data.active / maxValue) * 80, 2)}px` }}
-                                    title={`Active: ${data.active}`}
+                                    title={`Active Listings: ${data.active}`}
                                   ></div>
                                 </div>
                                 {/* Pending Orders Bar */}
                                 <div className="flex flex-col items-center">
                                   <div 
-                                    className="w-4 bg-orange-500 rounded-t-sm transition-all duration-300 hover:bg-orange-600"
+                                    className="w-3 bg-orange-500 rounded-t-sm transition-all duration-300 hover:bg-orange-600"
                                     style={{ height: `${Math.max((data.pending / maxValue) * 80, 2)}px` }}
-                                    title={`Pending: ${data.pending}`}
+                                    title={`Pending Orders: ${data.pending}`}
                                   ></div>
                                 </div>
                               </div>
                               <div className="space-y-1 text-xs">
-                                <div className="text-red-600">{data.completed}</div>
+                                <div className="text-green-600">{data.completed}</div>
                                 <div className="text-blue-600">{data.active}</div>
                                 <div className="text-orange-600">{data.pending}</div>
                               </div>
@@ -4197,8 +4212,8 @@ const AdminPanel = () => {
                       </div>
                       <div className="flex justify-center mt-6 space-x-6">
                         <div className="flex items-center space-x-2">
-                          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                          <span className="text-sm text-gray-600">Completed Listings</span>
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <span className="text-sm text-gray-600">Completed Orders</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
