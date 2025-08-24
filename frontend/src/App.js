@@ -2542,7 +2542,7 @@ const AdminPanel = () => {
     slug: '',
     content: '',
     published: false,
-    show_in_navigation: false
+    meta_description: ''
   });
   const [editingPage, setEditingPage] = useState(null);
   const { user } = useAuth();
