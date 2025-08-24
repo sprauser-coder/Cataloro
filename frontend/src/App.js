@@ -4420,62 +4420,40 @@ const AdminPanel = () => {
 
                           {/* Orders Display */}
                           <div className="space-y-4">
-                            {orders.map((orderData) => (
-                              <div key={orderData.order.id} className="p-4 border rounded-lg bg-white shadow-sm">
-                                <div className="flex items-center justify-between mb-3">
-                                  <h3 className="font-semibold">Order #{orderData.order.id.slice(-8)}</h3>
-                                  <div className="flex items-center space-x-2">
-                                    <Badge variant={orderData.order.status === 'completed' ? 'default' : 
-                                                  orderData.order.status === 'pending' ? 'secondary' : 'destructive'}>
-                                      {orderData.order.status}
+                            {orders.map((order) => (
+                              <Card key={order.order.id}>
+                                <CardContent className="p-4">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <p className="font-medium">Order #{order.order.id.slice(-8)}</p>
+                                    <Badge variant={
+                                      order.order.status === 'completed' ? 'default' :
+                                      order.order.status === 'pending' ? 'secondary' :
+                                      'outline'
+                                    }>
+                                      {order.order.status}
                                     </Badge>
                                   </div>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                                  <div>
-                                    <p className="text-gray-600 font-medium">Buyer</p>
-                                    <p>{orderData.buyer?.full_name || 'Unknown Buyer'}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-gray-600 font-medium">Seller</p>
-                                    <p>{orderData.seller?.full_name || 'Unknown Seller'}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-gray-600 font-medium">Amount</p>
-                                    <p className="font-semibold text-lg">€{orderData.order.total_amount?.toFixed(2) || '0.00'}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-gray-600 font-medium">Timestamps</p>
-                                    <div className="space-y-1">
-                                      <p className="text-xs">
-                                        <span className="text-gray-500">Created:</span> {new Date(orderData.order.created_at).toLocaleString()}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                      <p className="text-gray-600">
+                                        {order.buyer?.full_name || 'Unknown Buyer'} → {order.seller?.full_name || 'Unknown Seller'}
                                       </p>
-                                      {orderData.order.updated_at && orderData.order.updated_at !== orderData.order.created_at && (
-                                        <p className="text-xs">
-                                          <span className="text-gray-500">Updated:</span> {new Date(orderData.order.updated_at).toLocaleString()}
-                                        </p>
-                                      )}
-                                      {orderData.order.completed_at && (
-                                        <p className="text-xs">
-                                          <span className="text-green-600">Completed:</span> {new Date(orderData.order.completed_at).toLocaleString()}
+                                      <p className="text-sm text-gray-500">{order.listing?.title || 'Deleted Item'}</p>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="font-semibold">€{(order.order.total_amount || 0).toFixed(2)}</p>
+                                      <p className="text-xs text-gray-500">
+                                        {new Date(order.order.created_at).toLocaleDateString()}
+                                      </p>
+                                      {order.order.completed_at && (
+                                        <p className="text-xs text-green-600">
+                                          Completed: {new Date(order.order.completed_at).toLocaleDateString()}
                                         </p>
                                       )}
                                     </div>
                                   </div>
-                                </div>
-                                {orderData.listing && (
-                                  <div className="mt-3 pt-3 border-t">
-                                    <p className="text-gray-600 font-medium text-sm">Item</p>
-                                    <p className="font-medium">{orderData.listing.title}</p>
-                                  </div>
-                                </div>
-                                {orderData.listing && (
-                                  <div className="mt-3 pt-3 border-t">
-                                    <p className="text-gray-600 font-medium text-sm">Item</p>
-                                    <p className="font-medium">{orderData.listing.title}</p>
-                                  </div>
-                                )}
-                              </div>
+                                </CardContent>
+                              </Card>
                             ))}
                           </div>
 
