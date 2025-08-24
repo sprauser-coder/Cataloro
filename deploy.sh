@@ -15,12 +15,12 @@ fi
 
 # Navigate to backend and install Python dependencies
 echo "🐍 Installing backend dependencies..."
-cd /app/backend
+cd /var/www/cataloro/backend
 pip3 install -r requirements.txt
 
 # Navigate to frontend and install Node dependencies  
 echo "📦 Installing frontend dependencies..."
-cd /app/frontend
+cd /var/www/cataloro/frontend
 yarn install --production=false
 
 # Build the frontend
@@ -35,7 +35,7 @@ fi
 
 # Restart services using PM2
 echo "🔄 Restarting services..."
-cd /app
+cd /var/www/cataloro
 pm2 restart ecosystem.config.js
 
 # Check PM2 status
