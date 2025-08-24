@@ -4204,6 +4204,68 @@ const AdminPanel = () => {
                             </div>
                           </div>
 
+                          {/* Listings Search and Filters */}
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
+                            <div>
+                              <Label className="text-sm font-medium">Search Listings</Label>
+                              <Input
+                                type="text"
+                                placeholder="Search by title, seller, category..."
+                                value={listingSearchTerm}
+                                onChange={(e) => setListingSearchTerm(e.target.value)}
+                                className="mt-1"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm font-medium">Status</Label>
+                              <Select value={listingStatusFilter} onValueChange={setListingStatusFilter}>
+                                <SelectTrigger className="mt-1">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="all">All Status</SelectItem>
+                                  <SelectItem value="active">Active</SelectItem>
+                                  <SelectItem value="pending">Pending</SelectItem>
+                                  <SelectItem value="sold">Sold</SelectItem>
+                                  <SelectItem value="inactive">Inactive</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label className="text-sm font-medium">Category</Label>
+                              <Select value={listingCategoryFilter} onValueChange={setListingCategoryFilter}>
+                                <SelectTrigger className="mt-1">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="all">All Categories</SelectItem>
+                                  <SelectItem value="Electronics">Electronics</SelectItem>
+                                  <SelectItem value="Fashion">Fashion</SelectItem>
+                                  <SelectItem value="Home & Garden">Home & Garden</SelectItem>
+                                  <SelectItem value="Sports">Sports</SelectItem>
+                                  <SelectItem value="Books">Books</SelectItem>
+                                  <SelectItem value="Other">Other</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label className="text-sm font-medium">Sort By</Label>
+                              <Select value={listingSortBy} onValueChange={setListingSortBy}>
+                                <SelectTrigger className="mt-1">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="created_desc">Newest First</SelectItem>
+                                  <SelectItem value="created_asc">Oldest First</SelectItem>
+                                  <SelectItem value="price_desc">Highest Price</SelectItem>
+                                  <SelectItem value="price_asc">Lowest Price</SelectItem>
+                                  <SelectItem value="title_asc">Title A-Z</SelectItem>
+                                  <SelectItem value="status">Status</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
                           {/* Listings Grid */}
                           <div className="grid grid-cols-1 gap-4">
                             {listings.length === 0 ? (
