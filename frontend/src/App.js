@@ -2028,15 +2028,18 @@ const Profile = () => {
                         {orders.slice(0, 3).map((order) => (
                           <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
                             <div>
-                              <p className="font-medium">{order.listing_title}</p>
+                              <p className="font-medium">{order.listing_title || 'Order Item'}</p>
                               <p className="text-sm text-gray-600">
-                                {new Date(order.created_at).toLocaleDateString()}
+                                {order.created_at ? 
+                                  new Date(order.created_at).toLocaleDateString() : 
+                                  'Date not available'
+                                }
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="font-medium">€{order.total_amount?.toFixed(2)}</p>
+                              <p className="font-medium">€{order.total_amount?.toFixed(2) || '0.00'}</p>
                               <Badge variant={order.status === 'completed' ? 'default' : 'secondary'}>
-                                {order.status}
+                                {order.status || 'pending'}
                               </Badge>
                             </div>
                           </div>
