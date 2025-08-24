@@ -403,7 +403,7 @@ const NotificationCenter = () => {
 // Header Component
 const Header = () => {
   const { user, logout } = useAuth();
-  const [cartCount, setCartCount] = useState(0);
+  const [favoritesCount, setFavoritesCount] = useState(0);
   const [customNavigation, setCustomNavigation] = useState([]);
   const [siteSettings, setSiteSettings] = useState(null);
   const navigate = useNavigate();
