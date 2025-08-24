@@ -4468,10 +4468,12 @@ const AdminPanel = () => {
                                     <p className="text-gray-600 font-medium text-sm">Item</p>
                                     <p className="font-medium">{orderData.listing.title}</p>
                                   </div>
-                                )}
-                              </div>
-                            ))}
+                                </div>
                                 {orderData.listing && (
+                                  <div className="mt-3 pt-3 border-t">
+                                    <p className="text-gray-600 font-medium text-sm">Item</p>
+                                    <p className="font-medium">{orderData.listing.title}</p>
+                                  </div>
                                 )}
                               </div>
                             ))}
