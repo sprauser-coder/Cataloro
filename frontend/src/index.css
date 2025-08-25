@@ -201,3 +201,28 @@ div[style*="position: fixed"][style*="bottom: 24px"][style*="right: 24px"] {
 *[innerHTML*="Made with"] {
   display: none !important;
 }
+
+/* Target specific GitHub avatar images used by Emergent */
+img[src*="avatars.githubusercontent.com/in/1201222"],
+img[src*="avatars.githubusercontent.com"][style*="width:20px"],
+img[src*="avatars.githubusercontent.com"][style*="height:20px"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Hide any small avatar images in fixed positions */
+img[width="20"][height="20"],
+img[style*="width:20px"][style*="height:20px"] {
+  display: none !important;
+}
+
+/* More aggressive GitHub avatar targeting */
+*[src*="avatars.githubusercontent.com"] {
+  display: none !important;
+}
+
+/* Hide any parent elements containing GitHub avatars */
+*:has(img[src*="avatars.githubusercontent.com"]) {
+  display: none !important;
+}
