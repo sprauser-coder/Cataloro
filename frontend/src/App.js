@@ -2155,7 +2155,7 @@ const Profile = () => {
                       <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                         {profileData.profile_picture_url ? (
                           <img 
-                            src={profileData.profile_picture_url.startsWith('http') ? profileData.profile_picture_url : `${BACKEND_URL.replace('/api', '')}${profileData.profile_picture_url}`}
+                            src={getImageUrl(profileData.profile_picture_url)}
                             alt="Profile"
                             className="w-full h-full object-cover"
                             onError={(e) => {
