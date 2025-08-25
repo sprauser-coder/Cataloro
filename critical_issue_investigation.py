@@ -16,7 +16,7 @@ from PIL import Image
 import io
 
 # Configuration - Use the correct backend URL from frontend/.env
-BACKEND_URL = "https://api-connect-fix-5.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-profile-fix.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
@@ -270,7 +270,7 @@ class CriticalIssueTester:
         try:
             # Convert relative URL to full URL if needed
             if image_url.startswith('/'):
-                full_url = f"https://api-connect-fix-5.preview.emergentagent.com{image_url}"
+                full_url = f"https://cataloro-profile-fix.preview.emergentagent.com{image_url}"
             else:
                 full_url = image_url
             
