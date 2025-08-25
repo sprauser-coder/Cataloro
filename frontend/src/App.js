@@ -4991,9 +4991,9 @@ const AdminPanel = () => {
                         <div>
                           <p className="text-sm text-gray-600">Listings Created</p>
                           <p className="text-2xl font-bold">
-                            {timeFrame === 'today' ? Math.floor(Math.random() * 5) + 1 :
-                             timeFrame === 'week' ? Math.floor(Math.random() * 15) + 5 :
-                             timeFrame === 'month' ? Math.floor(Math.random() * 40) + 15 :
+                            {overviewTimeFrame === 'today' ? Math.floor(Math.random() * 5) + 1 :
+                             overviewTimeFrame === 'week' ? Math.floor(Math.random() * 15) + 5 :
+                             overviewTimeFrame === 'month' ? Math.floor(Math.random() * 40) + 15 :
                              stats.total_listings + (Math.floor(Math.random() * 50) + 10)}
                           </p>
                         </div>
