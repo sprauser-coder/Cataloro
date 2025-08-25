@@ -5317,7 +5317,7 @@ const AdminPanel = () => {
                           <span className="text-xs text-gray-500 ml-auto">12m ago</span>
                         </div>
                         <div className="text-center pt-2">
-                          <Button variant="link" size="sm" className="text-xs">
+                          <Button variant="link" size="sm" className="text-xs" onClick={() => setActiveTab('activity')}>
                             View All Activity →
                           </Button>
                         </div>
