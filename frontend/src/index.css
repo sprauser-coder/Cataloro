@@ -159,3 +159,28 @@ div[style*="position: fixed"][style*="bottom: 20px"][style*="right: 20px"][style
 div[style*="position: fixed"][style*="bottom: 10px"][style*="right: 10px"][style*="font-size: 12px"] {
   display: none !important;
 }
+
+/* Hide any element containing "Made with Emergent" text */
+*:contains("Made with Emergent") {
+  display: none !important;
+}
+
+/* Hide any element with Emergent branding class or attributes */
+.emergent-branding,
+[class*="emergent"],
+[class*="Emergent"],
+[id*="emergent"],
+[id*="Emergent"] {
+  display: none !important;
+}
+
+/* Target common branding positions */
+div[style*="position: fixed"][style*="bottom"][style*="right"][style*="z-index"] {
+  display: none !important;
+}
+
+/* Hide small text elements in bottom corners */
+div[style*="position: fixed"][style*="bottom"][style*="right"] > a,
+div[style*="position: fixed"][style*="bottom"][style*="right"] > span {
+  display: none !important;
+}
