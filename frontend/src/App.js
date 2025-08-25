@@ -801,14 +801,30 @@ const Auth = () => {
         { email: formData.email, password: formData.password } : 
         formData;
       
+      console.log('🔥 CRITICAL DEBUG: Login attempt', { 
+        endpoint: `${API}${endpoint}`, 
+        data, 
+        API 
+      });
+      
       const response = await axios.post(`${API}${endpoint}`, data);
+      
+      console.log('🔥 CRITICAL DEBUG: Login response', { 
+        status: response.status, 
+        data: response.data 
+      });
+      
       login(response.data);
       navigate('/');
+      
+      console.log('🔥 CRITICAL DEBUG: Login completed, should navigate to /');
+      
       toast({
         title: isLogin ? "Welcome back!" : "Account created!",
         description: isLogin ? "You've been logged in successfully." : "Your account has been created and you're now logged in."
       });
     } catch (error) {
+      console.error('🔥 CRITICAL DEBUG: Login error', error);
       toast({
         title: "Error",
         description: formatErrorMessage(error, "Something went wrong"),
