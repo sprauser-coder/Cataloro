@@ -29,8 +29,8 @@ const getImageUrl = (imageUrl) => {
   if (!imageUrl) return '';
   if (imageUrl.startsWith('http')) return imageUrl;
   if (imageUrl.startsWith('/uploads/')) {
-    // Use the same domain as frontend but route through backend API
-    return `${window.location.origin}/api${imageUrl}`;
+    // Use the same domain as frontend - backend serves static files on /uploads
+    return `${window.location.origin}${imageUrl}`;
   }
   return imageUrl;
 };
