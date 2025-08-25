@@ -5768,6 +5768,107 @@ const AdminPanel = () => {
                             </div>
                           </div>
 
+                          {/* Bulk Actions Controls */}
+                          {selectedOrders.length > 0 && (
+                            <Card className="bg-blue-50 border-blue-200">
+                              <CardContent className="p-4">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-4">
+                                    <Badge variant="secondary">{selectedOrders.length} orders selected</Badge>
+                                    <Select value={bulkAction} onValueChange={setBulkAction}>
+                                      <SelectTrigger className="w-48">
+                                        <SelectValue placeholder="Select action..." />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="mark-completed">Mark as Completed</SelectItem>
+                                        <SelectItem value="mark-pending">Mark as Pending</SelectItem>
+                                        <SelectItem value="mark-cancelled">Mark as Cancelled</SelectItem>
+                                        <SelectItem value="mark-shipped">Mark as Shipped</SelectItem>
+                                        <SelectItem value="delete">Delete Orders</SelectItem>
+                                        <SelectItem value="export">Export to CSV</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="flex space-x-2">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => setSelectedOrders([])}
+                                    >
+                                      Cancel
+                                    </Button>
+                                    <Button 
+                                      size="sm"
+                                      onClick={executeOrderBulkAction}
+                                      disabled={!bulkAction}
+                                    >
+                                      Apply to {selectedOrders.length} orders
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+
+                          {/* Select All / Deselect All */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const filteredOrders = orders.filter(order => {
+                                    // Apply same filters as the display
+                                    if (orderSearchTerm) {
+                                      const searchLower = orderSearchTerm.toLowerCase();
+                                      const matchesId = order.order.id.toLowerCase().includes(searchLower);
+                                      const matchesBuyer = order.buyer?.full_name?.toLowerCase().includes(searchLower);
+                                      const matchesSeller = order.seller?.full_name?.toLowerCase().includes(searchLower);
+                                      const matchesItem = order.listing?.title?.toLowerCase().includes(searchLower);
+                                      
+                                      if (!matchesId && !matchesBuyer && !matchesSeller && !matchesItem) {
+                                        return false;
+                                      }
+                                    }
+                                    
+                                    if (orderStatusFilter !== 'all' && order.order.status !== orderStatusFilter) {
+                                      return false;
+                                    }
+                                    
+                                    return true;
+                                  });
+                                  
+                                  const allSelected = selectedOrders.length === filteredOrders.length;
+                                  setSelectedOrders(allSelected ? [] : filteredOrders.map(o => o.order.id));
+                                }}
+                              >
+                                {selectedOrders.length === orders.filter(order => {
+                                  // Apply same filters
+                                  if (orderSearchTerm) {
+                                    const searchLower = orderSearchTerm.toLowerCase();
+                                    const matchesId = order.order.id.toLowerCase().includes(searchLower);
+                                    const matchesBuyer = order.buyer?.full_name?.toLowerCase().includes(searchLower);
+                                    const matchesSeller = order.seller?.full_name?.toLowerCase().includes(searchLower);
+                                    const matchesItem = order.listing?.title?.toLowerCase().includes(searchLower);
+                                    
+                                    if (!matchesId && !matchesBuyer && !matchesSeller && !matchesItem) {
+                                      return false;
+                                    }
+                                  }
+                                  
+                                  if (orderStatusFilter !== 'all' && order.order.status !== orderStatusFilter) {
+                                    return false;
+                                  }
+                                  
+                                  return true;
+                                }).length ? 'Deselect All' : 'Select All'}
+                              </Button>
+                              <p className="text-sm text-gray-600">
+                                Manage orders with bulk actions - select orders below
+                              </p>
+                            </div>
+                          </div>
+
                           {/* Orders Display */}
                           <div className="space-y-4">
                             {orders
