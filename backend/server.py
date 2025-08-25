@@ -2215,7 +2215,7 @@ async def get_user_stats(current_user: User = Depends(get_current_user)):
     
     # Calculate spending from user's orders
     spending_pipeline = [
-        {"$match": {"user_id": user_id, "status": "completed"}},
+        {"$match": {"buyer_id": user_id, "status": "completed"}},
         {"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}
     ]
     spending_result = await db.orders.aggregate(spending_pipeline).to_list(1)
