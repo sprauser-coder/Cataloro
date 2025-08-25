@@ -336,8 +336,8 @@ async def login(credentials: UserLogin):
     
     return Token(access_token=access_token, token_type="bearer", user=user)
 
-# Listing Routes - Count endpoint with different path to avoid conflicts
-@api_router.get("/listings-count")
+# Listing Routes - Count endpoint MUST come first before parameterized routes
+@api_router.get("/listings/count")
 async def get_listings_count(
     category: Optional[str] = None,
     search: Optional[str] = None,
