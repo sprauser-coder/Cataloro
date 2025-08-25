@@ -1969,7 +1969,7 @@ async def save_seo_settings(
         seo_data.updated_at = datetime.now(timezone.utc)
         
         # Convert to dict for MongoDB
-        seo_dict = seo_data.dict()
+        seo_dict = prepare_for_mongo(seo_data.dict())
         
         # Upsert the settings (update if exists, create if not)
         await db.seo_settings.replace_one(
