@@ -1938,6 +1938,54 @@ async def upload_hero_background(
         "hero_background_image_url": hero_background_image_url
     }
 
+# SEO Settings Endpoints
+@api_router.get("/admin/seo")
+async def get_seo_settings(current_user: User = Depends(get_admin_user)):
+    """Get SEO settings for admin"""
+    try:
+        # Try to get existing SEO settings
+        seo_doc = await db.seo_settings.find_one({})
+        
+        if seo_doc:
+            # Convert MongoDB document to SEOSettings model
+            seo_settings = SEOSettings(**seo_doc)
+            return seo_settings.dict()
+        else:
+            # Return default settings
+            default_settings = SEOSettings()
+            return default_settings.dict()
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get SEO settings: {str(e)}")
+
+@api_router.post("/admin/seo")
+async def save_seo_settings(
+    seo_data: SEOSettings,
+    current_user: User = Depends(get_admin_user)
+):
+    """Save SEO settings"""
+    try:
+        # Update timestamps
+        seo_data.updated_at = datetime.now(timezone.utc)
+        
+        # Convert to dict for MongoDB
+        seo_dict = seo_data.dict()
+        
+        # Upsert the settings (update if exists, create if not)
+        await db.seo_settings.replace_one(
+            {},  # Empty filter to match any document (since we only have one SEO settings document)
+            seo_dict,
+            upsert=True
+        )
+        
+        return {
+            "message": "SEO settings saved successfully",
+            "settings": seo_dict
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save SEO settings: {str(e)}")
+
 # Listing Image Upload Endpoints
 @api_router.post("/listings/upload-image")
 async def upload_listing_image(
