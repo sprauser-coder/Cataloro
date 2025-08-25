@@ -4179,6 +4179,96 @@ const AdminPanel = () => {
     }
   };
 
+  // SEO Settings Functions
+  const loadSeoSettings = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/seo`);
+      setSeoSettings(response.data);
+    } catch (error) {
+      console.log('Using default SEO settings');
+    }
+  };
+
+  const saveSeoSettings = async (settings) => {
+    try {
+      await axios.post(`${API}/admin/seo`, settings);
+      setSeoSettings(settings);
+      toast({
+        title: "Success",
+        description: "SEO settings saved successfully"
+      });
+      // Update document head dynamically
+      updateDocumentHead(settings);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save SEO settings",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const updateDocumentHead = (settings) => {
+    // Update page title
+    document.title = settings.site_title;
+    
+    // Update meta description
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', settings.meta_description);
+    
+    // Update meta keywords
+    let metaKeywords = document.querySelector('meta[name="keywords"]');
+    if (!metaKeywords) {
+      metaKeywords = document.createElement('meta');
+      metaKeywords.setAttribute('name', 'keywords');
+      document.head.appendChild(metaKeywords);
+    }
+    metaKeywords.setAttribute('content', settings.meta_keywords);
+    
+    // Update Open Graph tags
+    updateMetaTag('property', 'og:title', settings.og_title);
+    updateMetaTag('property', 'og:description', settings.og_description);
+    if (settings.og_image) updateMetaTag('property', 'og:image', settings.og_image);
+    
+    // Update Twitter card
+    updateMetaTag('name', 'twitter:card', settings.twitter_card);
+    updateMetaTag('name', 'twitter:title', settings.og_title);
+    updateMetaTag('name', 'twitter:description', settings.og_description);
+    if (settings.og_image) updateMetaTag('name', 'twitter:image', settings.og_image);
+    
+    // Update canonical URL
+    if (settings.canonical_url) {
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute('href', settings.canonical_url);
+    }
+    
+    // Update favicon
+    if (settings.favicon_url) {
+      let favicon = document.querySelector('link[rel="icon"]');
+      if (!favicon) {
+        favicon = document.createElement('link');
+        favicon.setAttribute('rel', 'icon');
+        document.head.appendChild(favicon);
+      }
+      favicon.setAttribute('href', settings.favicon_url);
+    }
+  };
+
+  const updateMetaTag = (attribute, value, content) => {
+    let meta = document.querySelector(`meta[${attribute}="${value}"]`);
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute(attribute, value);
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', content);
+  };
+
   const createPage = async () => {
     try {
       const pageData = {
