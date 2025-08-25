@@ -858,7 +858,11 @@ async def get_categories():
 
 @api_router.get("/")
 async def root():
-    return {"message": "Marketplace API"}
+    return {"message": "Marketplace API", "version": "bulk-test-v1"}
+
+@api_router.get("/test-bulk-endpoints")
+async def test_bulk_endpoints():
+    return {"message": "Bulk endpoints test", "timestamp": datetime.now().isoformat()}
 
 # Favorites System (replaces cart)
 @api_router.post("/favorites")
