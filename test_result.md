@@ -1132,6 +1132,7 @@ test_plan:
     - "Cataloro v1.0.2 Bug Fixes Testing"
     - "Cataloro v1.0.3 Bug Fixes Testing"
     - "Cataloro v1.0.4 Bug Fixes Testing"
+    - "NEW Profile Database Endpoints Testing"
 
 agent_communication:
   - agent: "main"
