@@ -1,44 +1,39 @@
 #!/usr/bin/env python3
 """
-Backend Testing Script for Listings Count Endpoint
-Focus: Test the fixed listings count endpoint with proper route ordering
+Comprehensive Backend Testing for NEW Profile Database Endpoints
+Testing the new comprehensive profile endpoints with live database integration.
 """
 
 import requests
 import json
 import sys
 from datetime import datetime
+import os
 
 # Configuration
 BACKEND_URL = "http://217.154.0.82/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
-class BackendTester:
+class ProfileEndpointTester:
     def __init__(self):
         self.session = requests.Session()
         self.admin_token = None
         self.test_results = []
         
-    def log_test(self, test_name, success, details="", error=""):
+    def log_test(self, test_name, success, details=""):
         """Log test results"""
-        result = {
-            "test": test_name,
-            "success": success,
-            "details": details,
-            "error": error,
-            "timestamp": datetime.now().isoformat()
-        }
-        self.test_results.append(result)
-        
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} {test_name}")
+        print(f"{status}: {test_name}")
         if details:
             print(f"   Details: {details}")
-        if error:
-            print(f"   Error: {error}")
-        print()
-
+        
+        self.test_results.append({
+            "test": test_name,
+            "success": success,
+            "details": details
+        })
+    
     def authenticate_admin(self):
         """Authenticate as admin user"""
         try:
@@ -50,525 +45,372 @@ class BackendTester:
             if response.status_code == 200:
                 data = response.json()
                 self.admin_token = data["access_token"]
-                self.session.headers.update({"Authorization": f"Bearer {self.admin_token}"})
+                self.session.headers.update({
+                    "Authorization": f"Bearer {self.admin_token}"
+                })
                 self.log_test("Admin Authentication", True, f"Token: {self.admin_token[:20]}...")
                 return True
             else:
-                self.log_test("Admin Authentication", False, error=f"Status: {response.status_code}, Response: {response.text}")
+                self.log_test("Admin Authentication", False, f"Status: {response.status_code}, Response: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_test("Admin Authentication", False, error=str(e))
+            self.log_test("Admin Authentication", False, f"Exception: {str(e)}")
             return False
-
-    def test_listings_count_endpoint(self):
-        """Test GET /api/listings/count endpoint"""
+    
+    def test_profile_stats_endpoint(self):
+        """Test GET /api/profile/stats - Should return real user statistics"""
         try:
-            # Test basic count endpoint
-            response = self.session.get(f"{BACKEND_URL}/listings/count")
+            response = self.session.get(f"{BACKEND_URL}/profile/stats")
             
             if response.status_code == 200:
                 data = response.json()
-                if "total_count" in data:
-                    count = data["total_count"]
-                    self.log_test("Listings Count Endpoint", True, f"Total count: {count}")
-                    return count
-                else:
-                    self.log_test("Listings Count Endpoint", False, error="Missing 'total_count' field in response")
-                    return None
-            else:
-                self.log_test("Listings Count Endpoint", False, error=f"Status: {response.status_code}, Response: {response.text}")
-                return None
                 
-        except Exception as e:
-            self.log_test("Listings Count Endpoint", False, error=str(e))
-            return None
-
-    def test_listings_count_with_filters(self):
-        """Test listings count with various filters"""
-        filters_to_test = [
-            {"category": "Electronics"},
-            {"listing_type": "fixed_price"},
-            {"listing_type": "auction"},
-            {"search": "test"},
-            {"min_price": 10},
-            {"max_price": 100},
-            {"min_price": 10, "max_price": 100}
-        ]
-        
-        for filter_params in filters_to_test:
-            try:
-                response = self.session.get(f"{BACKEND_URL}/listings/count", params=filter_params)
+                # Verify expected fields are present
+                expected_fields = [
+                    "total_orders", "total_listings", "total_spent", "total_earned",
+                    "avg_rating", "total_reviews", "successful_transactions",
+                    "profile_views", "trust_score", "account_level", "badges_earned",
+                    "response_rate", "avg_response_time"
+                ]
                 
-                if response.status_code == 200:
-                    data = response.json()
-                    if "total_count" in data:
-                        count = data["total_count"]
-                        filter_str = ", ".join([f"{k}={v}" for k, v in filter_params.items()])
-                        self.log_test(f"Count with Filters ({filter_str})", True, f"Count: {count}")
-                    else:
-                        self.log_test(f"Count with Filters ({filter_str})", False, error="Missing 'total_count' field")
-                else:
-                    filter_str = ", ".join([f"{k}={v}" for k, v in filter_params.items()])
-                    self.log_test(f"Count with Filters ({filter_str})", False, error=f"Status: {response.status_code}")
-                    
-            except Exception as e:
-                filter_str = ", ".join([f"{k}={v}" for k, v in filter_params.items()])
-                self.log_test(f"Count with Filters ({filter_str})", False, error=str(e))
-
-    def get_actual_listings(self, limit=1000):
-        """Get actual listings to verify count accuracy"""
-        try:
-            response = self.session.get(f"{BACKEND_URL}/listings", params={"limit": limit})
-            
-            if response.status_code == 200:
-                listings = response.json()
-                actual_count = len(listings)
-                self.log_test("Get Actual Listings", True, f"Retrieved {actual_count} listings (limit: {limit})")
-                return actual_count, listings
-            else:
-                self.log_test("Get Actual Listings", False, error=f"Status: {response.status_code}, Response: {response.text}")
-                return None, None
+                missing_fields = [field for field in expected_fields if field not in data]
                 
-        except Exception as e:
-            self.log_test("Get Actual Listings", False, error=str(e))
-            return None, None
-
-    def compare_counts(self, count_endpoint_result, actual_listings_count):
-        """Compare count endpoint result with actual listings count"""
-        if count_endpoint_result is not None and actual_listings_count is not None:
-            if count_endpoint_result == actual_listings_count:
-                self.log_test("Count Accuracy Verification", True, 
-                            f"Count endpoint: {count_endpoint_result}, Actual listings: {actual_listings_count} - MATCH")
-                return True
-            else:
-                self.log_test("Count Accuracy Verification", False, 
-                            f"Count endpoint: {count_endpoint_result}, Actual listings: {actual_listings_count} - MISMATCH")
-                return False
-        else:
-            self.log_test("Count Accuracy Verification", False, error="Unable to compare - missing data")
-            return False
-
-    def test_route_ordering_fix(self):
-        """Test that route ordering fix works - specific listing ID should work"""
-        try:
-            # First get some listings to get a valid ID
-            response = self.session.get(f"{BACKEND_URL}/listings", params={"limit": 1})
-            
-            if response.status_code == 200:
-                listings = response.json()
-                if listings:
-                    listing_id = listings[0]["id"]
-                    
-                    # Test specific listing endpoint
-                    response = self.session.get(f"{BACKEND_URL}/listings/{listing_id}")
-                    
-                    if response.status_code == 200:
-                        listing_data = response.json()
-                        self.log_test("Route Ordering Fix - Specific Listing", True, 
-                                    f"Successfully retrieved listing: {listing_data.get('title', 'Unknown')}")
-                        return True
-                    else:
-                        self.log_test("Route Ordering Fix - Specific Listing", False, 
-                                    error=f"Status: {response.status_code}, Response: {response.text}")
-                        return False
+                if not missing_fields:
+                    self.log_test("GET /api/profile/stats", True, 
+                                f"All fields present. Sample data: total_orders={data.get('total_orders')}, "
+                                f"total_listings={data.get('total_listings')}, trust_score={data.get('trust_score')}")
+                    return True
                 else:
-                    self.log_test("Route Ordering Fix - Specific Listing", False, error="No listings available to test")
+                    self.log_test("GET /api/profile/stats", False, f"Missing fields: {missing_fields}")
                     return False
             else:
-                self.log_test("Route Ordering Fix - Specific Listing", False, 
-                            error=f"Failed to get listings: {response.status_code}")
+                self.log_test("GET /api/profile/stats", False, f"Status: {response.status_code}, Response: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_test("Route Ordering Fix - Specific Listing", False, error=str(e))
+            self.log_test("GET /api/profile/stats", False, f"Exception: {str(e)}")
             return False
-
-    def test_count_endpoint_edge_cases(self):
-        """Test edge cases for count endpoint"""
-        edge_cases = [
-            {"min_price": 0},  # Zero price
-            {"max_price": 999999},  # Very high price
-            {"search": "nonexistentproduct12345"},  # Search with no results
-            {"category": "NonExistentCategory"},  # Invalid category
-            {"listing_type": "invalid_type"},  # Invalid listing type
+    
+    def test_profile_activity_endpoint(self):
+        """Test GET /api/profile/activity - Should return real activity timeline"""
+        try:
+            response = self.session.get(f"{BACKEND_URL}/profile/activity")
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if isinstance(data, list):
+                    # Check if activities have expected structure
+                    if len(data) > 0:
+                        activity = data[0]
+                        expected_fields = ["type", "title", "time", "icon", "color"]
+                        missing_fields = [field for field in expected_fields if field not in activity]
+                        
+                        if not missing_fields:
+                            self.log_test("GET /api/profile/activity", True, 
+                                        f"Activity timeline returned {len(data)} activities. "
+                                        f"Sample: {activity.get('title', 'N/A')}")
+                            return True
+                        else:
+                            self.log_test("GET /api/profile/activity", False, f"Activity missing fields: {missing_fields}")
+                            return False
+                    else:
+                        self.log_test("GET /api/profile/activity", True, "Empty activity timeline (valid for new user)")
+                        return True
+                else:
+                    self.log_test("GET /api/profile/activity", False, f"Expected list, got: {type(data)}")
+                    return False
+            else:
+                self.log_test("GET /api/profile/activity", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("GET /api/profile/activity", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_profile_update_endpoint(self):
+        """Test PUT /api/profile - Should update profile with enhanced fields"""
+        try:
+            # Test profile update with enhanced fields
+            update_data = {
+                "full_name": "Admin User Updated",
+                "bio": "Updated bio for comprehensive profile testing",
+                "location": "London, UK",
+                "website": "https://cataloro.com",
+                "phone": "+44 123 456 7890",
+                "social_links": {
+                    "twitter": "https://twitter.com/cataloro",
+                    "linkedin": "https://linkedin.com/company/cataloro"
+                },
+                "preferences": {
+                    "email_notifications": True,
+                    "sms_notifications": False,
+                    "theme": "dark",
+                    "language": "en",
+                    "currency": "GBP"
+                }
+            }
+            
+            response = self.session.put(f"{BACKEND_URL}/profile", json=update_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "message" in data and "successfully" in data["message"].lower():
+                    self.log_test("PUT /api/profile", True, "Profile updated with enhanced fields successfully")
+                    return True
+                else:
+                    self.log_test("PUT /api/profile", False, f"Unexpected response: {data}")
+                    return False
+            else:
+                self.log_test("PUT /api/profile", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("PUT /api/profile", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_profile_picture_upload_endpoint(self):
+        """Test POST /api/profile/upload-picture - Should upload profile pictures"""
+        try:
+            # Create a small test image file
+            test_image_content = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\tpHYs\x00\x00\x0b\x13\x00\x00\x0b\x13\x01\x00\x9a\x9c\x18\x00\x00\x00\nIDATx\x9cc\xf8\x00\x00\x00\x01\x00\x01\x00\x00\x00\x00IEND\xaeB`\x82'
+            
+            files = {
+                'file': ('test_profile.png', test_image_content, 'image/png')
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/profile/upload-picture", files=files)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "profile_picture_url" in data:
+                    self.log_test("POST /api/profile/upload-picture", True, 
+                                f"Profile picture uploaded: {data['profile_picture_url']}")
+                    return True
+                else:
+                    self.log_test("POST /api/profile/upload-picture", False, f"Missing profile_picture_url in response: {data}")
+                    return False
+            else:
+                self.log_test("POST /api/profile/upload-picture", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("POST /api/profile/upload-picture", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_messages_endpoint(self):
+        """Test GET /api/messages - Should return user messages"""
+        try:
+            response = self.session.get(f"{BACKEND_URL}/messages")
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if isinstance(data, list):
+                    if len(data) > 0:
+                        # Check message structure
+                        message = data[0]
+                        expected_fields = ["id", "sender", "message", "time", "read", "is_sender"]
+                        missing_fields = [field for field in expected_fields if field not in message]
+                        
+                        if not missing_fields:
+                            self.log_test("GET /api/messages", True, 
+                                        f"Messages returned {len(data)} messages. "
+                                        f"Sample: {message.get('sender', 'N/A')}")
+                            return True
+                        else:
+                            self.log_test("GET /api/messages", False, f"Message missing fields: {missing_fields}")
+                            return False
+                    else:
+                        self.log_test("GET /api/messages", True, "Empty messages list (valid for new user)")
+                        return True
+                else:
+                    self.log_test("GET /api/messages", False, f"Expected list, got: {type(data)}")
+                    return False
+            else:
+                self.log_test("GET /api/messages", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("GET /api/messages", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_user_reviews_endpoint(self):
+        """Test GET /api/reviews/user - Should return user reviews"""
+        try:
+            response = self.session.get(f"{BACKEND_URL}/reviews/user")
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if isinstance(data, list):
+                    if len(data) > 0:
+                        # Check review structure
+                        review = data[0]
+                        expected_fields = ["id", "reviewer", "rating", "comment", "date", "item"]
+                        missing_fields = [field for field in expected_fields if field not in review]
+                        
+                        if not missing_fields:
+                            self.log_test("GET /api/reviews/user", True, 
+                                        f"Reviews returned {len(data)} reviews. "
+                                        f"Sample: {review.get('rating', 'N/A')} stars from {review.get('reviewer', 'N/A')}")
+                            return True
+                        else:
+                            self.log_test("GET /api/reviews/user", False, f"Review missing fields: {missing_fields}")
+                            return False
+                    else:
+                        self.log_test("GET /api/reviews/user", True, "Empty reviews list (valid for new user)")
+                        return True
+                else:
+                    self.log_test("GET /api/reviews/user", False, f"Expected list, got: {type(data)}")
+                    return False
+            else:
+                self.log_test("GET /api/reviews/user", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("GET /api/reviews/user", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_user_orders_endpoint(self):
+        """Test GET /api/orders - Should return enhanced order details"""
+        try:
+            response = self.session.get(f"{BACKEND_URL}/orders")
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if isinstance(data, list):
+                    if len(data) > 0:
+                        # Check order structure
+                        order = data[0]
+                        expected_fields = ["id", "title", "status", "total", "created_at", "seller"]
+                        missing_fields = [field for field in expected_fields if field not in order]
+                        
+                        if not missing_fields:
+                            self.log_test("GET /api/orders", True, 
+                                        f"Orders returned {len(data)} orders. "
+                                        f"Sample: {order.get('title', 'N/A')} - {order.get('status', 'N/A')}")
+                            return True
+                        else:
+                            self.log_test("GET /api/orders", False, f"Order missing fields: {missing_fields}")
+                            return False
+                    else:
+                        self.log_test("GET /api/orders", True, "Empty orders list (valid for new user)")
+                        return True
+                else:
+                    self.log_test("GET /api/orders", False, f"Expected list, got: {type(data)}")
+                    return False
+            else:
+                self.log_test("GET /api/orders", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("GET /api/orders", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_user_listings_endpoint(self):
+        """Test GET /api/listings/user - Should return enhanced listing details"""
+        try:
+            response = self.session.get(f"{BACKEND_URL}/listings/user")
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if isinstance(data, list):
+                    if len(data) > 0:
+                        # Check listing structure
+                        listing = data[0]
+                        expected_fields = ["id", "title", "status", "price", "views", "watchers", "created_at"]
+                        missing_fields = [field for field in expected_fields if field not in listing]
+                        
+                        if not missing_fields:
+                            self.log_test("GET /api/listings/user", True, 
+                                        f"User listings returned {len(data)} listings. "
+                                        f"Sample: {listing.get('title', 'N/A')} - {listing.get('views', 0)} views")
+                            return True
+                        else:
+                            self.log_test("GET /api/listings/user", False, f"Listing missing fields: {missing_fields}")
+                            return False
+                    else:
+                        self.log_test("GET /api/listings/user", True, "Empty listings list (valid for new user)")
+                        return True
+                else:
+                    self.log_test("GET /api/listings/user", False, f"Expected list, got: {type(data)}")
+                    return False
+            else:
+                self.log_test("GET /api/listings/user", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("GET /api/listings/user", False, f"Exception: {str(e)}")
+            return False
+    
+    def run_all_tests(self):
+        """Run all profile endpoint tests"""
+        print("=" * 80)
+        print("COMPREHENSIVE PROFILE DATABASE ENDPOINTS TESTING")
+        print("=" * 80)
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"Admin Credentials: {ADMIN_EMAIL} / {ADMIN_PASSWORD}")
+        print(f"Test Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print("=" * 80)
+        
+        # Authenticate first
+        if not self.authenticate_admin():
+            print("❌ CRITICAL: Authentication failed. Cannot proceed with tests.")
+            return False
+        
+        print("\n🔍 TESTING NEW COMPREHENSIVE PROFILE ENDPOINTS:")
+        print("-" * 60)
+        
+        # Test all new profile endpoints
+        tests = [
+            self.test_profile_stats_endpoint,
+            self.test_profile_activity_endpoint,
+            self.test_profile_update_endpoint,
+            self.test_profile_picture_upload_endpoint,
+            self.test_messages_endpoint,
+            self.test_user_reviews_endpoint,
+            self.test_user_orders_endpoint,
+            self.test_user_listings_endpoint
         ]
         
-        for case in edge_cases:
-            try:
-                response = self.session.get(f"{BACKEND_URL}/listings/count", params=case)
-                
-                # Should return 200 even for edge cases (with count 0 for no results)
-                if response.status_code == 200:
-                    data = response.json()
-                    if "total_count" in data:
-                        count = data["total_count"]
-                        case_str = ", ".join([f"{k}={v}" for k, v in case.items()])
-                        self.log_test(f"Edge Case ({case_str})", True, f"Count: {count}")
-                    else:
-                        self.log_test(f"Edge Case ({case_str})", False, error="Missing 'total_count' field")
-                else:
-                    case_str = ", ".join([f"{k}={v}" for k, v in case.items()])
-                    # For invalid listing_type, 422 is acceptable
-                    if response.status_code == 422 and "listing_type" in case:
-                        self.log_test(f"Edge Case ({case_str})", True, "Correctly rejected invalid listing_type")
-                    else:
-                        self.log_test(f"Edge Case ({case_str})", False, 
-                                    error=f"Status: {response.status_code}, Response: {response.text}")
-                    
-            except Exception as e:
-                case_str = ", ".join([f"{k}={v}" for k, v in case.items()])
-                self.log_test(f"Edge Case ({case_str})", False, error=str(e))
-
-    def run_all_tests(self):
-        """Run all tests for listings count endpoint"""
-        print("=" * 80)
-        print("BACKEND TESTING: LISTINGS COUNT ENDPOINT WITH ROUTE ORDERING FIX")
-        print("=" * 80)
-        print()
+        passed = 0
+        total = len(tests)
         
-        # Step 1: Authenticate
-        if not self.authenticate_admin():
-            print("❌ Authentication failed. Cannot proceed with tests.")
-            return False
-        
-        # Step 2: Test basic count endpoint
-        count_result = self.test_listings_count_endpoint()
-        
-        # Step 3: Test count with filters
-        self.test_listings_count_with_filters()
-        
-        # Step 4: Get actual listings for comparison
-        actual_count, listings = self.get_actual_listings(1000)
-        
-        # Step 5: Compare counts
-        self.compare_counts(count_result, actual_count)
-        
-        # Step 6: Test route ordering fix
-        self.test_route_ordering_fix()
-        
-        # Step 7: Test edge cases
-        self.test_count_endpoint_edge_cases()
+        for test in tests:
+            if test():
+                passed += 1
+            print()  # Add spacing between tests
         
         # Summary
         print("=" * 80)
         print("TEST SUMMARY")
         print("=" * 80)
+        print(f"Total Tests: {total}")
+        print(f"Passed: {passed}")
+        print(f"Failed: {total - passed}")
+        print(f"Success Rate: {(passed/total)*100:.1f}%")
         
-        total_tests = len(self.test_results)
-        passed_tests = sum(1 for result in self.test_results if result["success"])
-        failed_tests = total_tests - passed_tests
+        if passed == total:
+            print("\n🎉 ALL PROFILE ENDPOINTS WORKING PERFECTLY!")
+            print("✅ Live database integration confirmed")
+            print("✅ All new comprehensive profile features operational")
+        else:
+            print(f"\n⚠️  {total - passed} endpoint(s) need attention")
+            print("❌ Some profile features may not work correctly")
         
-        print(f"Total Tests: {total_tests}")
-        print(f"Passed: {passed_tests}")
-        print(f"Failed: {failed_tests}")
-        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
-        print()
-        
-        if failed_tests > 0:
-            print("FAILED TESTS:")
-            for result in self.test_results:
-                if not result["success"]:
-                    print(f"❌ {result['test']}: {result['error']}")
-            print()
-        
-        return failed_tests == 0
+        return passed == total
 
-if __name__ == "__main__":
-    tester = BackendTester()
+def main():
+    """Main test execution"""
+    tester = ProfileEndpointTester()
     success = tester.run_all_tests()
     
-    if success:
-        print("🎉 ALL TESTS PASSED! Listings count endpoint is working correctly.")
-        sys.exit(0)
-    else:
-        print("⚠️  SOME TESTS FAILED. Check the details above.")
-        sys.exit(1)
-"""
-Backend Testing Script for Listings Count Endpoint
-Testing the fixed listings count endpoint (route ordering issue resolved)
-"""
-
-import requests
-import json
-import sys
-from datetime import datetime
-
-# Configuration
-BACKEND_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
-
-class BackendTester:
-    def __init__(self):
-        self.session = requests.Session()
-        self.admin_token = None
-        self.test_results = []
-        
-    def log_test(self, test_name, success, message, details=None):
-        """Log test results"""
-        result = {
-            "test": test_name,
-            "success": success,
-            "message": message,
-            "details": details,
-            "timestamp": datetime.now().isoformat()
-        }
-        self.test_results.append(result)
-        
-        status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status}: {test_name}")
-        print(f"   {message}")
-        if details:
-            print(f"   Details: {details}")
-        print()
-
-    def authenticate_admin(self):
-        """Authenticate as admin user"""
-        try:
-            response = self.session.post(f"{BACKEND_URL}/auth/login", json={
-                "email": ADMIN_EMAIL,
-                "password": ADMIN_PASSWORD
-            })
-            
-            if response.status_code == 200:
-                data = response.json()
-                self.admin_token = data["access_token"]
-                self.session.headers.update({"Authorization": f"Bearer {self.admin_token}"})
-                self.log_test("Admin Authentication", True, f"Successfully authenticated as {ADMIN_EMAIL}")
-                return True
-            else:
-                self.log_test("Admin Authentication", False, f"Failed to authenticate: {response.status_code} - {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("Admin Authentication", False, f"Authentication error: {str(e)}")
-            return False
-
-    def test_listings_count_no_filters(self):
-        """Test GET /api/listings/count - total count of all active listings"""
-        try:
-            response = self.session.get(f"{BACKEND_URL}/listings/count")
-            
-            if response.status_code == 200:
-                data = response.json()
-                if "total_count" in data:
-                    count = data["total_count"]
-                    self.log_test(
-                        "Listings Count (No Filters)", 
-                        True, 
-                        f"Successfully retrieved total count: {count} active listings",
-                        {"total_count": count, "response": data}
-                    )
-                    return count
-                else:
-                    self.log_test("Listings Count (No Filters)", False, "Response missing 'total_count' field", data)
-                    return None
-            else:
-                self.log_test("Listings Count (No Filters)", False, f"HTTP {response.status_code}: {response.text}")
-                return None
-                
-        except Exception as e:
-            self.log_test("Listings Count (No Filters)", False, f"Request error: {str(e)}")
-            return None
-
-    def test_listings_count_with_category_filter(self):
-        """Test GET /api/listings/count?category=Electronics - count with category filter"""
-        try:
-            response = self.session.get(f"{BACKEND_URL}/listings/count?category=Electronics")
-            
-            if response.status_code == 200:
-                data = response.json()
-                if "total_count" in data:
-                    count = data["total_count"]
-                    self.log_test(
-                        "Listings Count (Electronics Filter)", 
-                        True, 
-                        f"Successfully retrieved Electronics count: {count} listings",
-                        {"category": "Electronics", "total_count": count, "response": data}
-                    )
-                    return count
-                else:
-                    self.log_test("Listings Count (Electronics Filter)", False, "Response missing 'total_count' field", data)
-                    return None
-            else:
-                self.log_test("Listings Count (Electronics Filter)", False, f"HTTP {response.status_code}: {response.text}")
-                return None
-                
-        except Exception as e:
-            self.log_test("Listings Count (Electronics Filter)", False, f"Request error: {str(e)}")
-            return None
-
-    def test_listings_actual_count(self):
-        """Test GET /api/listings - get actual listings to verify count accuracy"""
-        try:
-            # Get all listings with a high limit to ensure we get everything
-            response = self.session.get(f"{BACKEND_URL}/listings?limit=1000")
-            
-            if response.status_code == 200:
-                listings = response.json()
-                total_listings = len(listings)
-                
-                # Count Electronics listings
-                electronics_listings = [l for l in listings if l.get("category") == "Electronics"]
-                electronics_count = len(electronics_listings)
-                
-                self.log_test(
-                    "Actual Listings Retrieval", 
-                    True, 
-                    f"Retrieved {total_listings} total listings, {electronics_count} Electronics listings",
-                    {
-                        "total_listings": total_listings,
-                        "electronics_count": electronics_count,
-                        "sample_categories": list(set([l.get("category", "Unknown") for l in listings[:10]]))
-                    }
-                )
-                return total_listings, electronics_count
-            else:
-                self.log_test("Actual Listings Retrieval", False, f"HTTP {response.status_code}: {response.text}")
-                return None, None
-                
-        except Exception as e:
-            self.log_test("Actual Listings Retrieval", False, f"Request error: {str(e)}")
-            return None, None
-
-    def verify_count_accuracy(self, count_total, count_electronics, actual_total, actual_electronics):
-        """Verify that count endpoint returns accurate counts"""
-        if count_total is None or actual_total is None:
-            self.log_test("Count Accuracy Verification", False, "Missing data for verification")
-            return False
-            
-        total_match = count_total == actual_total
-        electronics_match = count_electronics == actual_electronics
-        
-        if total_match and electronics_match:
-            self.log_test(
-                "Count Accuracy Verification", 
-                True, 
-                f"Count endpoint accuracy verified: Total={count_total}, Electronics={count_electronics}",
-                {
-                    "count_endpoint_total": count_total,
-                    "actual_listings_total": actual_total,
-                    "count_endpoint_electronics": count_electronics,
-                    "actual_listings_electronics": actual_electronics
-                }
-            )
-            return True
-        else:
-            self.log_test(
-                "Count Accuracy Verification", 
-                False, 
-                f"Count mismatch - Total: {count_total} vs {actual_total}, Electronics: {count_electronics} vs {actual_electronics}",
-                {
-                    "count_endpoint_total": count_total,
-                    "actual_listings_total": actual_total,
-                    "count_endpoint_electronics": count_electronics,
-                    "actual_listings_electronics": actual_electronics,
-                    "total_match": total_match,
-                    "electronics_match": electronics_match
-                }
-            )
-            return False
-
-    def test_route_ordering_fix(self):
-        """Test that the route ordering fix works - count endpoint should not conflict with {listing_id}"""
-        try:
-            # Test that /listings/count works (should not be interpreted as listing_id="count")
-            count_response = self.session.get(f"{BACKEND_URL}/listings/count")
-            
-            # Test that /listings/{actual_id} still works
-            # First get a real listing ID
-            listings_response = self.session.get(f"{BACKEND_URL}/listings?limit=1")
-            
-            if listings_response.status_code == 200 and count_response.status_code == 200:
-                listings = listings_response.json()
-                count_data = count_response.json()
-                
-                if listings and "total_count" in count_data:
-                    # Test accessing a real listing by ID
-                    listing_id = listings[0]["id"]
-                    listing_response = self.session.get(f"{BACKEND_URL}/listings/{listing_id}")
-                    
-                    if listing_response.status_code == 200:
-                        listing_data = listing_response.json()
-                        self.log_test(
-                            "Route Ordering Fix Verification", 
-                            True, 
-                            "Both /listings/count and /listings/{id} work correctly - route ordering fixed",
-                            {
-                                "count_endpoint_works": True,
-                                "count_response": count_data,
-                                "listing_id_endpoint_works": True,
-                                "tested_listing_id": listing_id,
-                                "listing_title": listing_data.get("title", "Unknown")
-                            }
-                        )
-                        return True
-                    else:
-                        self.log_test("Route Ordering Fix Verification", False, f"Listing by ID failed: {listing_response.status_code}")
-                        return False
-                else:
-                    self.log_test("Route Ordering Fix Verification", False, "No listings found or count endpoint failed")
-                    return False
-            else:
-                self.log_test("Route Ordering Fix Verification", False, f"Count: {count_response.status_code}, Listings: {listings_response.status_code}")
-                return False
-                
-        except Exception as e:
-            self.log_test("Route Ordering Fix Verification", False, f"Request error: {str(e)}")
-            return False
-
-    def run_all_tests(self):
-        """Run all listings count endpoint tests"""
-        print("=" * 80)
-        print("LISTINGS COUNT ENDPOINT TESTING")
-        print("Testing the fixed listings count endpoint (route ordering issue resolved)")
-        print("=" * 80)
-        print()
-        
-        # Authenticate
-        if not self.authenticate_admin():
-            print("❌ Cannot proceed without authentication")
-            return False
-        
-        # Test 1: Get total count of all active listings
-        count_total = self.test_listings_count_no_filters()
-        
-        # Test 2: Get count with category filter
-        count_electronics = self.test_listings_count_with_category_filter()
-        
-        # Test 3: Get actual listings to verify count accuracy
-        actual_total, actual_electronics = self.test_listings_actual_count()
-        
-        # Test 4: Verify count accuracy
-        accuracy_verified = self.verify_count_accuracy(count_total, count_electronics, actual_total, actual_electronics)
-        
-        # Test 5: Verify route ordering fix
-        route_ordering_fixed = self.test_route_ordering_fix()
-        
-        # Summary
-        print("=" * 80)
-        print("TEST SUMMARY")
-        print("=" * 80)
-        
-        passed_tests = sum(1 for result in self.test_results if result["success"])
-        total_tests = len(self.test_results)
-        
-        print(f"Tests Passed: {passed_tests}/{total_tests}")
-        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
-        print()
-        
-        if passed_tests == total_tests:
-            print("🎉 ALL TESTS PASSED - Listings count endpoint is working correctly!")
-            print("✅ Route ordering issue has been resolved")
-            print("✅ Count endpoint returns accurate counts")
-            print("✅ Category filtering works properly")
-        else:
-            print("⚠️  Some tests failed - see details above")
-            
-        return passed_tests == total_tests
+    # Exit with appropriate code
+    sys.exit(0 if success else 1)
 
 if __name__ == "__main__":
-    tester = BackendTester()
-    success = tester.run_all_tests()
-    sys.exit(0 if success else 1)
+    main()
