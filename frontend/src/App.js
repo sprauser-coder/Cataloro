@@ -1133,7 +1133,7 @@ const Home = () => {
         if (priceRange.max) params.append('max_price', priceRange.max);
         if (selectedCondition) params.append('condition', selectedCondition);
         
-        // Request all listings by setting high limit to bypass backend pagination
+        // Request all listings by setting high limit to get all active listings
         params.append('limit', '10000'); // Request up to 10000 listings to get all
         params.append('skip', '0'); // Start from beginning
         
