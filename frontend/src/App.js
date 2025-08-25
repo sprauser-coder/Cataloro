@@ -4805,9 +4805,6 @@ const AdminPanel = () => {
     }
   };
 
-  // Debug: Add console log to check if component is being called
-  console.log('🔍 AdminPanel component is rendering');
-  
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
