@@ -7260,6 +7260,238 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
+          {/* SEO Management Tab */}
+          <TabsContent value="seo">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>SEO Management</CardTitle>
+                  <CardDescription>Manage search engine optimization settings for your marketplace</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    
+                    {/* Basic SEO Settings */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Basic SEO Settings</CardTitle>
+                        <CardDescription>Configure fundamental SEO elements</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Site Title</label>
+                            <input
+                              type="text"
+                              className="w-full p-3 border rounded-md"
+                              value={seoSettings.site_title}
+                              onChange={(e) => setSeoSettings({...seoSettings, site_title: e.target.value})}
+                              placeholder="e.g., Cataloro - Your Trusted Marketplace"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">This appears in browser tabs and search results</p>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Meta Description</label>
+                            <textarea
+                              className="w-full p-3 border rounded-md"
+                              rows={3}
+                              value={seoSettings.meta_description}
+                              onChange={(e) => setSeoSettings({...seoSettings, meta_description: e.target.value})}
+                              placeholder="Brief description of your marketplace (150-160 characters)"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Shows up in search engine results. Keep it under 160 characters.</p>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Meta Keywords</label>
+                            <input
+                              type="text"
+                              className="w-full p-3 border rounded-md"
+                              value={seoSettings.meta_keywords}
+                              onChange={(e) => setSeoSettings({...seoSettings, meta_keywords: e.target.value})}
+                              placeholder="marketplace, buy, sell, ecommerce"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Comma-separated keywords relevant to your site</p>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Canonical URL</label>
+                            <input
+                              type="url"
+                              className="w-full p-3 border rounded-md"
+                              value={seoSettings.canonical_url}
+                              onChange={(e) => setSeoSettings({...seoSettings, canonical_url: e.target.value})}
+                              placeholder="https://yourdomain.com"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Primary URL for your site to avoid duplicate content issues</p>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Favicon URL</label>
+                            <input
+                              type="text"
+                              className="w-full p-3 border rounded-md"
+                              value={seoSettings.favicon_url}
+                              onChange={(e) => setSeoSettings({...seoSettings, favicon_url: e.target.value})}
+                              placeholder="/favicon.ico"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Path to your site's favicon (16x16 or 32x32 pixels)</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Open Graph Settings */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Social Media (Open Graph)</CardTitle>
+                        <CardDescription>Configure how your site appears when shared on social media</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Open Graph Title</label>
+                            <input
+                              type="text"
+                              className="w-full p-3 border rounded-md"
+                              value={seoSettings.og_title}
+                              onChange={(e) => setSeoSettings({...seoSettings, og_title: e.target.value})}
+                              placeholder="Cataloro Marketplace"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Open Graph Description</label>
+                            <textarea
+                              className="w-full p-3 border rounded-md"
+                              rows={3}
+                              value={seoSettings.og_description}
+                              onChange={(e) => setSeoSettings({...seoSettings, og_description: e.target.value})}
+                              placeholder="Description for social media shares"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Open Graph Image URL</label>
+                            <input
+                              type="url"
+                              className="w-full p-3 border rounded-md"
+                              value={seoSettings.og_image}
+                              onChange={(e) => setSeoSettings({...seoSettings, og_image: e.target.value})}
+                              placeholder="https://yourdomain.com/og-image.jpg"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Recommended size: 1200x630 pixels</p>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Twitter Card Type</label>
+                            <select
+                              className="w-full p-3 border rounded-md"
+                              value={seoSettings.twitter_card}
+                              onChange={(e) => setSeoSettings({...seoSettings, twitter_card: e.target.value})}
+                            >
+                              <option value="summary">Summary</option>
+                              <option value="summary_large_image">Summary with Large Image</option>
+                              <option value="app">App</option>
+                              <option value="player">Player</option>
+                            </select>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Advanced SEO Settings */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Advanced SEO</CardTitle>
+                        <CardDescription>Advanced SEO configuration</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Robots.txt Content</label>
+                            <textarea
+                              className="w-full p-3 border rounded-md font-mono text-sm"
+                              rows={6}
+                              value={seoSettings.robots_txt}
+                              onChange={(e) => setSeoSettings({...seoSettings, robots_txt: e.target.value})}
+                              placeholder="User-agent: *\nAllow: /\nSitemap: https://yourdomain.com/sitemap.xml"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Controls how search engines crawl your site</p>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium mb-2">Structured Data (JSON-LD)</label>
+                            <textarea
+                              className="w-full p-3 border rounded-md font-mono text-sm"
+                              rows={8}
+                              value={seoSettings.structured_data}
+                              onChange={(e) => setSeoSettings({...seoSettings, structured_data: e.target.value})}
+                              placeholder='{"@context": "https://schema.org", "@type": "Organization", "name": "Cataloro"}'
+                            />
+                            <p className="text-xs text-gray-500 mt-1">JSON-LD structured data for rich snippets</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* SEO Tools */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>SEO Tools</CardTitle>
+                        <CardDescription>Quick SEO analysis and tools</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="p-4 bg-blue-50 rounded-lg">
+                              <h4 className="font-medium mb-2">Title Length</h4>
+                              <div className="text-sm">
+                                <span className={`font-mono ${seoSettings.site_title.length > 60 ? 'text-red-600' : seoSettings.site_title.length > 50 ? 'text-yellow-600' : 'text-green-600'}`}>
+                                  {seoSettings.site_title.length}
+                                </span>
+                                <span className="text-gray-500"> / 60 characters (optimal: 50-60)</span>
+                              </div>
+                            </div>
+                            
+                            <div className="p-4 bg-green-50 rounded-lg">
+                              <h4 className="font-medium mb-2">Description Length</h4>
+                              <div className="text-sm">
+                                <span className={`font-mono ${seoSettings.meta_description.length > 160 ? 'text-red-600' : seoSettings.meta_description.length > 150 ? 'text-yellow-600' : 'text-green-600'}`}>
+                                  {seoSettings.meta_description.length}
+                                </span>
+                                <span className="text-gray-500"> / 160 characters (optimal: 150-160)</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex space-x-2">
+                            <button 
+                              onClick={() => saveSeoSettings(seoSettings)}
+                              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                            >
+                              Save SEO Settings
+                            </button>
+                            <button 
+                              onClick={loadSeoSettings}
+                              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                            >
+                              Reload Settings
+                            </button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
           {/* General Settings Tab */}
           <TabsContent value="settings">
             {loading ? (
