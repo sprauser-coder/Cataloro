@@ -2523,6 +2523,22 @@ async def mark_all_notifications_read(current_user: User = Depends(get_current_u
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to mark notifications as read: {str(e)}")
 
+@api_router.delete("/notifications/clear-all")
+async def clear_all_notifications(current_user: User = Depends(get_current_user)):
+    """Clear (delete) all user notifications"""
+    try:
+        result = await db.notifications.delete_many(
+            {"user_id": current_user.id}
+        )
+        
+        return {
+            "message": f"Cleared {result.deleted_count} notifications",
+            "deleted_count": result.deleted_count
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to clear notifications: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
