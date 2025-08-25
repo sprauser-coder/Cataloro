@@ -2602,6 +2602,66 @@ async def clear_all_notifications(current_user: User = Depends(get_current_user)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to clear notifications: {str(e)}")
 
+# Bulk Order Management Endpoints
+@api_router.post("/admin/orders/bulk-update")
+async def bulk_update_orders(
+    order_ids: List[str] = Field(..., description="List of order IDs to update"),
+    status: Optional[str] = Field(None, description="New status for orders"),
+    admin: User = Depends(get_admin_user)
+):
+    """Bulk update order status"""
+    try:
+        if not order_ids:
+            raise HTTPException(status_code=400, detail="No order IDs provided")
+        
+        # Build update query
+        update_data = {
+            "updated_at": datetime.now(timezone.utc)
+        }
+        
+        if status:
+            update_data["status"] = status
+            if status == "completed":
+                update_data["completed_at"] = datetime.now(timezone.utc)
+        
+        # Update orders
+        result = await db.orders.update_many(
+            {"id": {"$in": order_ids}},
+            {"$set": update_data}
+        )
+        
+        return {
+            "message": f"Successfully updated {result.modified_count} orders",
+            "updated_count": result.modified_count,
+            "status": status
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update orders: {str(e)}")
+
+@api_router.post("/admin/orders/bulk-delete")
+async def bulk_delete_orders(
+    order_ids: List[str] = Field(..., description="List of order IDs to delete"),
+    admin: User = Depends(get_admin_user)
+):
+    """Bulk delete orders"""
+    try:
+        if not order_ids:
+            raise HTTPException(status_code=400, detail="No order IDs provided")
+        
+        # Delete orders
+        result = await db.orders.delete_many(
+            {"id": {"$in": order_ids}}
+        )
+        
+        return {
+            "message": f"Successfully deleted {result.deleted_count} orders",
+            "deleted_count": result.deleted_count
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete orders: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
