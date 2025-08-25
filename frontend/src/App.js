@@ -5447,19 +5447,19 @@ const AdminPanel = () => {
                                     </div>
                                   </div>
                                   
-                                  {/* Order Statistics Left-aligned */}
+                                  {/* Order Statistics Compact */}
                                   <div className="mb-3 mt-4">
-                                    <div className="grid grid-cols-3 gap-6">
-                                      <div className="bg-blue-50 rounded-lg p-3 text-left">
-                                        <div className="text-2xl font-bold text-blue-600">{user.total_orders || 0}</div>
+                                    <div className="grid grid-cols-3 gap-3">
+                                      <div className="bg-blue-50 rounded-md p-2 text-left">
+                                        <div className="text-lg font-bold text-blue-600">{user.total_orders || 0}</div>
                                         <div className="text-xs text-blue-600 font-medium">Orders</div>
                                       </div>
-                                      <div className="bg-green-50 rounded-lg p-3 text-left">
-                                        <div className="text-2xl font-bold text-green-600">{user.total_listings || 0}</div>
+                                      <div className="bg-green-50 rounded-md p-2 text-left">
+                                        <div className="text-lg font-bold text-green-600">{user.total_listings || 0}</div>
                                         <div className="text-xs text-green-600 font-medium">Listings</div>
                                       </div>
-                                      <div className="bg-yellow-50 rounded-lg p-3 text-left">
-                                        <div className="text-2xl font-bold text-yellow-600">€{((user.total_orders || 0) * 25.50).toFixed(0)}</div>
+                                      <div className="bg-yellow-50 rounded-md p-2 text-left">
+                                        <div className="text-lg font-bold text-yellow-600">€{((user.total_orders || 0) * 25.50).toFixed(0)}</div>
                                         <div className="text-xs text-yellow-600 font-medium">Revenue</div>
                                       </div>
                                     </div>
