@@ -517,6 +517,11 @@ const NotificationCenter = () => {
             <div className="flex items-center justify-between">
               <h3 className="font-medium">Notifications</h3>
               <div className="flex space-x-2">
+                {notifications.length > 0 && (
+                  <Button variant="ghost" size="sm" onClick={clearAllNotifications}>
+                    Clear all
+                  </Button>
+                )}
                 {unreadCount > 0 && (
                   <Button variant="ghost" size="sm" onClick={markAllAsRead}>
                     Mark all read
