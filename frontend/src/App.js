@@ -3433,19 +3433,32 @@ const AdminPanel = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API}/admin/stats`, {
+      // Try to fetch real statistics from new endpoint
+      const statsResponse = await axios.get(`${API}/profile/stats`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      setStats(response.data);
+      setStats(statsResponse.data);
+      console.log('✅ Real profile statistics loaded:', statsResponse.data);
     } catch (error) {
-      console.error('Error fetching stats:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch statistics",
-        variant: "destructive"
-      });
+      console.log('📊 Using fallback stats - new endpoint not available');
+      // Fallback to admin stats
+      try {
+        const response = await axios.get(`${API}/admin/stats`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setStats(response.data);
+      } catch (fallbackError) {
+        console.error('Error fetching stats:', fallbackError);
+        toast({
+          title: "Error",
+          description: "Failed to fetch statistics",
+          variant: "destructive"
+        });
+      }
     } finally {
       setLoading(false);
     }
