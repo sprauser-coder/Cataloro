@@ -3371,6 +3371,7 @@ const AdminPanel = () => {
   const [showOrderBulkActions, setShowOrderBulkActions] = useState(false);
   const [bulkAction, setBulkAction] = useState('');
   const [bulkActionData, setBulkActionData] = useState({});
+  const [timeFrame, setTimeFrame] = useState('today'); // Add time frame state
   const [siteSettings, setSiteSettings] = useState(null);
   const [pages, setPages] = useState([]);
   const [navigation, setNavigation] = useState([]);
