@@ -198,8 +198,14 @@ class HeroImageTester:
         print("=== TESTING HERO IMAGE ACCESSIBILITY ===")
         
         try:
+            # Convert relative URL to absolute URL
+            if hero_url.startswith('/'):
+                full_url = BACKEND_URL.replace('/api', '') + hero_url
+            else:
+                full_url = hero_url
+                
             # Test direct URL access
-            response = requests.get(hero_url)
+            response = requests.get(full_url)
             
             if response.status_code == 200:
                 content_type = response.headers.get('content-type', '')
