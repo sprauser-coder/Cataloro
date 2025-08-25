@@ -13,7 +13,7 @@ from PIL import Image
 
 class QuickImageTester:
     def __init__(self):
-        self.base_url = "https://cataloro-revival.preview.emergentagent.com"
+        self.base_url = "http://217.154.0.82"
         self.api_url = f"{self.base_url}/api"
         self.admin_token = None
         self.tests_run = 0
