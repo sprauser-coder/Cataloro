@@ -293,7 +293,7 @@ backend:
 
   - task: "Listing Image Upload Functionality"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 1
     priority: "high"
