@@ -2286,15 +2286,6 @@ const Profile = () => {
     }
   };
 
-  const fetchUserListings = async () => {
-    try {
-      const response = await axios.get(`${API}/listings/user`);
-      setListings(response.data);
-    } catch (error) {
-      console.error('Error fetching listings:', error);
-    }
-  };
-
   const fetchUserStats = async () => {
     try {
       const response = await axios.get(`${API}/profile/stats`);
