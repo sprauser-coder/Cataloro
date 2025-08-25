@@ -29,8 +29,8 @@ const getImageUrl = (imageUrl) => {
   if (!imageUrl) return '';
   if (imageUrl.startsWith('http')) return imageUrl;
   if (imageUrl.startsWith('/uploads/')) {
-    // Use API route for image serving to ensure proxy compatibility
-    return `${window.location.origin}/api${imageUrl}`;
+    // Force API route for image serving - bypasses all infrastructure caching issues
+    return `/api${imageUrl}`;
   }
   return imageUrl;
 };
