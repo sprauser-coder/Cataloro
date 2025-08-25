@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Browse Page Picker Options Update: Change the browse page picker options from the current 10/25/50/All to new options of 12/24/48/All as requested by user."
+user_problem_statement: "User Data Issue Investigation: Investigate the user data issue where all users see the same profile data. Check multiple user authentication, user database contents, profile stats endpoint duplication issue, and data integrity."
 
 frontend:
   - task: "Browse Page Picker Options Update"
