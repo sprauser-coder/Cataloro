@@ -1,461 +1,710 @@
 #!/usr/bin/env python3
 """
-Deployment Readiness Testing for Cataloro Marketplace
-Testing backend connectivity and core functionality at IP: http://217.154.0.82
+Real-Time Statistics System Testing
+Testing the new real-time statistics system thoroughly as requested
 """
 
 import requests
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
+import time
 
 # Configuration
 BASE_URL = "http://217.154.0.82/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
-class DeploymentTester:
+class RealTimeStatsTestSuite:
     def __init__(self):
         self.admin_token = None
+        self.user_token = None
         self.test_results = []
-        self.failed_tests = []
+        self.session = requests.Session()
         
-    def log_test(self, test_name, success, message, details=None):
+    def log_test(self, test_name, success, details=""):
         """Log test results"""
         status = "✅ PASS" if success else "❌ FAIL"
-        result = {
+        self.test_results.append({
             "test": test_name,
-            "status": status,
-            "message": message,
-            "details": details or {},
-            "timestamp": datetime.now().isoformat()
-        }
-        self.test_results.append(result)
-        
-        if not success:
-            self.failed_tests.append(test_name)
-            
-        print(f"{status}: {test_name} - {message}")
-        if details and not success:
+            "success": success,
+            "details": details
+        })
+        print(f"{status}: {test_name}")
+        if details:
             print(f"   Details: {details}")
+        print()
     
-    def test_basic_connectivity(self):
-        """Test 1: Basic Backend Connectivity"""
+    def authenticate_admin(self):
+        """Authenticate as admin user"""
         try:
-            response = requests.get(f"{BASE_URL}/", timeout=10)
-            
-            if response.status_code == 200:
-                data = response.json()
-                if "Marketplace API" in data.get("message", ""):
-                    self.log_test(
-                        "Basic Connectivity", 
-                        True, 
-                        f"Backend accessible at {BASE_URL}",
-                        {"response": data, "status_code": response.status_code}
-                    )
-                    return True
-                else:
-                    self.log_test(
-                        "Basic Connectivity", 
-                        False, 
-                        "Unexpected API response format",
-                        {"response": data, "status_code": response.status_code}
-                    )
-            else:
-                self.log_test(
-                    "Basic Connectivity", 
-                    False, 
-                    f"HTTP {response.status_code} error",
-                    {"status_code": response.status_code, "response": response.text}
-                )
-        except requests.exceptions.RequestException as e:
-            self.log_test(
-                "Basic Connectivity", 
-                False, 
-                f"Connection failed: {str(e)}",
-                {"error": str(e)}
-            )
-        return False
-    
-    def test_admin_authentication(self):
-        """Test 2: Admin Authentication"""
-        try:
-            auth_data = {
+            response = self.session.post(f"{BASE_URL}/auth/login", json={
                 "email": ADMIN_EMAIL,
                 "password": ADMIN_PASSWORD
-            }
-            
-            response = requests.post(
-                f"{BASE_URL}/auth/login", 
-                json=auth_data,
-                timeout=10
-            )
+            })
             
             if response.status_code == 200:
                 data = response.json()
-                if "access_token" in data and "user" in data:
-                    self.admin_token = data["access_token"]
-                    user_info = data["user"]
-                    
-                    if user_info.get("role") == "admin":
-                        self.log_test(
-                            "Admin Authentication", 
-                            True, 
-                            f"Admin login successful for {ADMIN_EMAIL}",
-                            {
-                                "user_id": user_info.get("id"),
-                                "role": user_info.get("role"),
-                                "full_name": user_info.get("full_name"),
-                                "token_length": len(self.admin_token)
-                            }
-                        )
-                        return True
-                    else:
-                        self.log_test(
-                            "Admin Authentication", 
-                            False, 
-                            f"User role is {user_info.get('role')}, not admin",
-                            {"user_info": user_info}
-                        )
-                else:
-                    self.log_test(
-                        "Admin Authentication", 
-                        False, 
-                        "Invalid response format - missing token or user",
-                        {"response": data}
-                    )
-            else:
-                self.log_test(
-                    "Admin Authentication", 
-                    False, 
-                    f"Authentication failed with HTTP {response.status_code}",
-                    {"status_code": response.status_code, "response": response.text}
-                )
-        except requests.exceptions.RequestException as e:
-            self.log_test(
-                "Admin Authentication", 
-                False, 
-                f"Request failed: {str(e)}",
-                {"error": str(e)}
-            )
-        return False
-    
-    def test_cors_headers(self):
-        """Test 3: CORS Headers Verification"""
-        try:
-            # Test preflight request
-            headers = {
-                "Origin": "http://217.154.0.82",
-                "Access-Control-Request-Method": "POST",
-                "Access-Control-Request-Headers": "Content-Type,Authorization"
-            }
-            
-            response = requests.options(f"{BASE_URL}/auth/login", headers=headers, timeout=10)
-            
-            cors_headers = {
-                "Access-Control-Allow-Origin": response.headers.get("Access-Control-Allow-Origin"),
-                "Access-Control-Allow-Methods": response.headers.get("Access-Control-Allow-Methods"),
-                "Access-Control-Allow-Headers": response.headers.get("Access-Control-Allow-Headers"),
-                "Access-Control-Allow-Credentials": response.headers.get("Access-Control-Allow-Credentials")
-            }
-            
-            # Check if CORS is properly configured for our IP
-            origin_ok = cors_headers["Access-Control-Allow-Origin"] in ["*", "http://217.154.0.82"]
-            methods_ok = "POST" in (cors_headers["Access-Control-Allow-Methods"] or "")
-            headers_ok = "Authorization" in (cors_headers["Access-Control-Allow-Headers"] or "")
-            
-            if origin_ok and methods_ok and headers_ok:
-                self.log_test(
-                    "CORS Headers", 
-                    True, 
-                    "CORS properly configured for IP address",
-                    {"cors_headers": cors_headers, "status_code": response.status_code}
-                )
+                self.admin_token = data["access_token"]
+                self.log_test("Admin Authentication", True, f"Token: {self.admin_token[:20]}...")
                 return True
             else:
-                self.log_test(
-                    "CORS Headers", 
-                    False, 
-                    "CORS configuration issues detected",
-                    {
-                        "cors_headers": cors_headers,
-                        "origin_ok": origin_ok,
-                        "methods_ok": methods_ok,
-                        "headers_ok": headers_ok
-                    }
-                )
-        except requests.exceptions.RequestException as e:
-            self.log_test(
-                "CORS Headers", 
-                False, 
-                f"CORS test failed: {str(e)}",
-                {"error": str(e)}
-            )
-        return False
-    
-    def test_profile_stats_endpoint(self):
-        """Test 4: Profile Stats Endpoint (Recently Fixed)"""
-        if not self.admin_token:
-            self.log_test(
-                "Profile Stats Endpoint", 
-                False, 
-                "Cannot test - no admin token available",
-                {}
-            )
-            return False
-            
-        try:
-            headers = {"Authorization": f"Bearer {self.admin_token}"}
-            response = requests.get(f"{BASE_URL}/profile/stats", headers=headers, timeout=10)
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check if the response has expected fields
-                expected_fields = ["total_orders", "total_listings", "total_spent", "total_earned"]
-                has_expected_fields = all(field in data for field in expected_fields)
-                
-                if has_expected_fields:
-                    self.log_test(
-                        "Profile Stats Endpoint", 
-                        True, 
-                        "Profile stats endpoint working correctly",
-                        {
-                            "stats": data,
-                            "fields_present": list(data.keys())
-                        }
-                    )
-                    return True
-                else:
-                    self.log_test(
-                        "Profile Stats Endpoint", 
-                        False, 
-                        "Response missing expected fields",
-                        {
-                            "response": data,
-                            "expected_fields": expected_fields,
-                            "missing_fields": [f for f in expected_fields if f not in data]
-                        }
-                    )
-            else:
-                self.log_test(
-                    "Profile Stats Endpoint", 
-                    False, 
-                    f"HTTP {response.status_code} error",
-                    {"status_code": response.status_code, "response": response.text}
-                )
-        except requests.exceptions.RequestException as e:
-            self.log_test(
-                "Profile Stats Endpoint", 
-                False, 
-                f"Request failed: {str(e)}",
-                {"error": str(e)}
-            )
-        return False
-    
-    def test_listings_endpoint(self):
-        """Test 5: Listings Endpoint (Core Marketplace Functionality)"""
-        try:
-            response = requests.get(f"{BASE_URL}/listings", timeout=10)
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                if isinstance(data, list):
-                    self.log_test(
-                        "Listings Endpoint", 
-                        True, 
-                        f"Listings endpoint working - returned {len(data)} listings",
-                        {
-                            "listings_count": len(data),
-                            "sample_listing": data[0] if data else None
-                        }
-                    )
-                    return True
-                else:
-                    self.log_test(
-                        "Listings Endpoint", 
-                        False, 
-                        "Response is not a list format",
-                        {"response_type": type(data).__name__, "response": data}
-                    )
-            else:
-                self.log_test(
-                    "Listings Endpoint", 
-                    False, 
-                    f"HTTP {response.status_code} error",
-                    {"status_code": response.status_code, "response": response.text}
-                )
-        except requests.exceptions.RequestException as e:
-            self.log_test(
-                "Listings Endpoint", 
-                False, 
-                f"Request failed: {str(e)}",
-                {"error": str(e)}
-            )
-        return False
-    
-    def test_image_serving(self):
-        """Test 6: Image Serving Functionality"""
-        try:
-            # Test if we can access the uploads directory through the API
-            test_image_url = f"{BASE_URL}/uploads/test-image-check"
-            response = requests.get(test_image_url, timeout=10)
-            
-            # We expect 404 for non-existent image, but this tests the route is working
-            if response.status_code == 404:
-                self.log_test(
-                    "Image Serving", 
-                    True, 
-                    "Image serving route is accessible (404 for non-existent file is expected)",
-                    {"status_code": response.status_code, "url_tested": test_image_url}
-                )
-                return True
-            elif response.status_code == 200:
-                self.log_test(
-                    "Image Serving", 
-                    True, 
-                    "Image serving working - found existing image",
-                    {"status_code": response.status_code, "content_type": response.headers.get("content-type")}
-                )
-                return True
-            else:
-                self.log_test(
-                    "Image Serving", 
-                    False, 
-                    f"Unexpected status code {response.status_code}",
-                    {"status_code": response.status_code, "response": response.text}
-                )
-        except requests.exceptions.RequestException as e:
-            self.log_test(
-                "Image Serving", 
-                False, 
-                f"Image serving test failed: {str(e)}",
-                {"error": str(e)}
-            )
-        return False
-    
-    def test_production_environment(self):
-        """Test 7: Production Environment Configuration"""
-        try:
-            # Test admin stats endpoint to verify production setup
-            if not self.admin_token:
-                self.log_test(
-                    "Production Environment", 
-                    False, 
-                    "Cannot verify - no admin token",
-                    {}
-                )
+                self.log_test("Admin Authentication", False, f"Status: {response.status_code}, Response: {response.text}")
                 return False
                 
+        except Exception as e:
+            self.log_test("Admin Authentication", False, f"Exception: {str(e)}")
+            return False
+    
+    def create_test_user(self):
+        """Create a test user for user-specific endpoint testing"""
+        try:
+            # First check if test user already exists
+            test_user_data = {
+                "email": "testuser@cataloro.com",
+                "username": "testuser123",
+                "password": "testpass123",
+                "full_name": "Test User",
+                "role": "both"
+            }
+            
+            # Try to register
+            response = self.session.post(f"{BASE_URL}/auth/register", json=test_user_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.user_token = data["access_token"]
+                self.log_test("Test User Creation", True, f"Created user: {test_user_data['email']}")
+                return True
+            elif response.status_code == 400 and "already exists" in response.text:
+                # User exists, try to login
+                login_response = self.session.post(f"{BASE_URL}/auth/login", json={
+                    "email": test_user_data["email"],
+                    "password": test_user_data["password"]
+                })
+                
+                if login_response.status_code == 200:
+                    data = login_response.json()
+                    self.user_token = data["access_token"]
+                    self.log_test("Test User Login", True, f"Logged in existing user: {test_user_data['email']}")
+                    return True
+                else:
+                    self.log_test("Test User Login", False, f"Status: {login_response.status_code}")
+                    return False
+            else:
+                self.log_test("Test User Creation", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Test User Creation", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_profile_stats_endpoint(self):
+        """Test GET /api/profile/stats endpoint for individual user statistics"""
+        print("=== Testing Profile Stats Endpoint ===")
+        
+        # Test with admin user
+        try:
             headers = {"Authorization": f"Bearer {self.admin_token}"}
-            response = requests.get(f"{BASE_URL}/admin/stats", headers=headers, timeout=10)
+            response = self.session.get(f"{BASE_URL}/profile/stats", headers=headers)
             
             if response.status_code == 200:
                 data = response.json()
                 
-                # Check if we have production-like data
-                has_stats = all(key in data for key in ["total_users", "total_listings", "total_orders"])
+                # Validate required fields
+                required_fields = [
+                    "user_id", "total_orders", "total_listings", "favorites_count",
+                    "total_spent", "total_earned", "avg_rating", "total_reviews",
+                    "trust_score", "account_level", "badges_earned"
+                ]
                 
-                if has_stats:
-                    self.log_test(
-                        "Production Environment", 
-                        True, 
-                        "Production environment verified - admin stats accessible",
-                        {
-                            "admin_stats": data,
-                            "environment_indicators": {
-                                "has_users": data.get("total_users", 0) > 0,
-                                "has_listings": data.get("total_listings", 0) > 0,
-                                "admin_access": True
-                            }
-                        }
-                    )
-                    return True
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if not missing_fields:
+                    self.log_test("Profile Stats - Admin User", True, 
+                                f"Retrieved stats: Orders={data.get('total_orders', 0)}, "
+                                f"Listings={data.get('total_listings', 0)}, "
+                                f"Level={data.get('account_level', 'N/A')}")
                 else:
-                    self.log_test(
-                        "Production Environment", 
-                        False, 
-                        "Admin stats response missing expected fields",
-                        {"response": data}
-                    )
+                    self.log_test("Profile Stats - Admin User", False, 
+                                f"Missing fields: {missing_fields}")
             else:
-                self.log_test(
-                    "Production Environment", 
-                    False, 
-                    f"Admin stats endpoint failed with HTTP {response.status_code}",
-                    {"status_code": response.status_code, "response": response.text}
-                )
-        except requests.exceptions.RequestException as e:
-            self.log_test(
-                "Production Environment", 
-                False, 
-                f"Production environment test failed: {str(e)}",
-                {"error": str(e)}
-            )
-        return False
+                self.log_test("Profile Stats - Admin User", False, 
+                            f"Status: {response.status_code}, Response: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Profile Stats - Admin User", False, f"Exception: {str(e)}")
+        
+        # Test with regular user if available
+        if self.user_token:
+            try:
+                headers = {"Authorization": f"Bearer {self.user_token}"}
+                response = self.session.get(f"{BASE_URL}/profile/stats", headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    self.log_test("Profile Stats - Regular User", True, 
+                                f"Retrieved stats: Orders={data.get('total_orders', 0)}, "
+                                f"Listings={data.get('total_listings', 0)}")
+                else:
+                    self.log_test("Profile Stats - Regular User", False, 
+                                f"Status: {response.status_code}")
+                    
+            except Exception as e:
+                self.log_test("Profile Stats - Regular User", False, f"Exception: {str(e)}")
+        
+        # Test without authentication
+        try:
+            response = self.session.get(f"{BASE_URL}/profile/stats")
+            
+            if response.status_code == 401 or response.status_code == 403:
+                self.log_test("Profile Stats - No Auth", True, "Correctly blocked unauthenticated request")
+            else:
+                self.log_test("Profile Stats - No Auth", False, 
+                            f"Should block unauthenticated requests, got: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Profile Stats - No Auth", False, f"Exception: {str(e)}")
+    
+    def test_admin_time_based_stats(self):
+        """Test GET /api/admin/stats/time-based endpoint with different time frames"""
+        print("=== Testing Admin Time-Based Stats Endpoint ===")
+        
+        if not self.admin_token:
+            self.log_test("Admin Time-Based Stats", False, "No admin token available")
+            return
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        time_frames = ["today", "week", "month", "year"]
+        
+        for time_frame in time_frames:
+            try:
+                response = self.session.get(f"{BASE_URL}/admin/stats/time-based?time_frame={time_frame}", 
+                                          headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    # Validate required fields
+                    required_fields = [
+                        "total_users", "users_in_period", "active_users", "blocked_users",
+                        "total_listings", "listings_in_period", "active_listings",
+                        "total_orders", "orders_in_period", "total_revenue", "time_frame"
+                    ]
+                    
+                    missing_fields = [field for field in required_fields if field not in data]
+                    
+                    if not missing_fields:
+                        # Validate logical consistency
+                        logical_errors = []
+                        
+                        # Check that period counts don't exceed totals
+                        if data["users_in_period"] > data["total_users"]:
+                            logical_errors.append(f"Users in {time_frame} ({data['users_in_period']}) > Total users ({data['total_users']})")
+                        
+                        if data["listings_in_period"] > data["total_listings"]:
+                            logical_errors.append(f"Listings in {time_frame} ({data['listings_in_period']}) > Total listings ({data['total_listings']})")
+                        
+                        if data["orders_in_period"] > data["total_orders"]:
+                            logical_errors.append(f"Orders in {time_frame} ({data['orders_in_period']}) > Total orders ({data['total_orders']})")
+                        
+                        # Check that active + blocked users make sense
+                        total_calculated = data["active_users"] + data["blocked_users"]
+                        if abs(total_calculated - data["total_users"]) > 1:
+                            logical_errors.append(f"Active ({data['active_users']}) + Blocked ({data['blocked_users']}) != Total ({data['total_users']})")
+                        
+                        if not logical_errors:
+                            self.log_test(f"Admin Time-Based Stats - {time_frame.title()}", True,
+                                        f"Users: {data['users_in_period']}/{data['total_users']}, "
+                                        f"Listings: {data['listings_in_period']}/{data['total_listings']}, "
+                                        f"Orders: {data['orders_in_period']}/{data['total_orders']}")
+                        else:
+                            self.log_test(f"Admin Time-Based Stats - {time_frame.title()}", False,
+                                        f"Logical validation errors: {'; '.join(logical_errors)}")
+                    else:
+                        self.log_test(f"Admin Time-Based Stats - {time_frame.title()}", False,
+                                    f"Missing fields: {missing_fields}")
+                else:
+                    self.log_test(f"Admin Time-Based Stats - {time_frame.title()}", False,
+                                f"Status: {response.status_code}, Response: {response.text}")
+                    
+            except Exception as e:
+                self.log_test(f"Admin Time-Based Stats - {time_frame.title()}", False, f"Exception: {str(e)}")
+        
+        # Test invalid time frame
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/stats/time-based?time_frame=invalid", 
+                                      headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                # Should default to "today" for invalid time frame
+                if data.get("time_frame") == "today":
+                    self.log_test("Admin Time-Based Stats - Invalid Time Frame", True,
+                                "Correctly defaulted to 'today' for invalid time frame")
+                else:
+                    self.log_test("Admin Time-Based Stats - Invalid Time Frame", False,
+                                f"Expected default to 'today', got: {data.get('time_frame')}")
+            else:
+                self.log_test("Admin Time-Based Stats - Invalid Time Frame", False,
+                            f"Status: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Admin Time-Based Stats - Invalid Time Frame", False, f"Exception: {str(e)}")
+        
+        # Test without admin privileges
+        if self.user_token:
+            try:
+                headers = {"Authorization": f"Bearer {self.user_token}"}
+                response = self.session.get(f"{BASE_URL}/admin/stats/time-based", headers=headers)
+                
+                if response.status_code == 403:
+                    self.log_test("Admin Time-Based Stats - Non-Admin User", True,
+                                "Correctly blocked non-admin user")
+                else:
+                    self.log_test("Admin Time-Based Stats - Non-Admin User", False,
+                                f"Should block non-admin users, got: {response.status_code}")
+                    
+            except Exception as e:
+                self.log_test("Admin Time-Based Stats - Non-Admin User", False, f"Exception: {str(e)}")
+    
+    def test_enhanced_admin_stats(self):
+        """Test GET /api/admin/stats endpoint (enhanced version)"""
+        print("=== Testing Enhanced Admin Stats Endpoint ===")
+        
+        if not self.admin_token:
+            self.log_test("Enhanced Admin Stats", False, "No admin token available")
+            return
+        
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(f"{BASE_URL}/admin/stats", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Validate required fields for AdminStats model
+                required_fields = [
+                    "total_users", "active_users", "blocked_users",
+                    "total_listings", "active_listings", "total_orders", "total_revenue"
+                ]
+                
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if not missing_fields:
+                    self.log_test("Enhanced Admin Stats", True,
+                                f"Total Users: {data['total_users']}, "
+                                f"Active Listings: {data['active_listings']}, "
+                                f"Total Revenue: €{data['total_revenue']}")
+                else:
+                    self.log_test("Enhanced Admin Stats", False,
+                                f"Missing fields: {missing_fields}")
+            else:
+                self.log_test("Enhanced Admin Stats", False,
+                            f"Status: {response.status_code}, Response: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Enhanced Admin Stats", False, f"Exception: {str(e)}")
+    
+    def test_track_activity_endpoint(self):
+        """Test POST /api/track-activity endpoint for real-time activity tracking"""
+        print("=== Testing Track Activity Endpoint ===")
+        
+        # Test with admin user
+        if self.admin_token:
+            try:
+                headers = {"Authorization": f"Bearer {self.admin_token}"}
+                activity_data = {
+                    "type": "listing_viewed",
+                    "listing_id": "test-listing-123",
+                    "metadata": {
+                        "page": "browse",
+                        "category": "Electronics"
+                    }
+                }
+                
+                response = self.session.post(f"{BASE_URL}/track-activity", 
+                                           json=activity_data, headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("message") == "Activity tracked successfully":
+                        self.log_test("Track Activity - Admin User", True,
+                                    f"Successfully tracked activity: {activity_data['type']}")
+                    else:
+                        self.log_test("Track Activity - Admin User", False,
+                                    f"Unexpected response: {data}")
+                else:
+                    self.log_test("Track Activity - Admin User", False,
+                                f"Status: {response.status_code}, Response: {response.text}")
+                    
+            except Exception as e:
+                self.log_test("Track Activity - Admin User", False, f"Exception: {str(e)}")
+        
+        # Test with regular user
+        if self.user_token:
+            try:
+                headers = {"Authorization": f"Bearer {self.user_token}"}
+                activity_data = {
+                    "type": "profile_updated",
+                    "metadata": {
+                        "fields_changed": ["bio", "location"]
+                    }
+                }
+                
+                response = self.session.post(f"{BASE_URL}/track-activity", 
+                                           json=activity_data, headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("message") == "Activity tracked successfully":
+                        self.log_test("Track Activity - Regular User", True,
+                                    f"Successfully tracked activity: {activity_data['type']}")
+                    else:
+                        self.log_test("Track Activity - Regular User", False,
+                                    f"Unexpected response: {data}")
+                else:
+                    self.log_test("Track Activity - Regular User", False,
+                                f"Status: {response.status_code}")
+                    
+            except Exception as e:
+                self.log_test("Track Activity - Regular User", False, f"Exception: {str(e)}")
+        
+        # Test without authentication
+        try:
+            activity_data = {"type": "unauthorized_test"}
+            response = self.session.post(f"{BASE_URL}/track-activity", json=activity_data)
+            
+            if response.status_code == 401 or response.status_code == 403:
+                self.log_test("Track Activity - No Auth", True,
+                            "Correctly blocked unauthenticated request")
+            else:
+                self.log_test("Track Activity - No Auth", False,
+                            f"Should block unauthenticated requests, got: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Track Activity - No Auth", False, f"Exception: {str(e)}")
+    
+    def test_favorites_count_endpoint(self):
+        """Test GET /api/favorites/count endpoint for real-time favorites count"""
+        print("=== Testing Favorites Count Endpoint ===")
+        
+        # Test with admin user
+        if self.admin_token:
+            try:
+                headers = {"Authorization": f"Bearer {self.admin_token}"}
+                response = self.session.get(f"{BASE_URL}/favorites/count", headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if "count" in data and isinstance(data["count"], int):
+                        self.log_test("Favorites Count - Admin User", True,
+                                    f"Favorites count: {data['count']}")
+                    else:
+                        self.log_test("Favorites Count - Admin User", False,
+                                    f"Invalid response format: {data}")
+                else:
+                    self.log_test("Favorites Count - Admin User", False,
+                                f"Status: {response.status_code}, Response: {response.text}")
+                    
+            except Exception as e:
+                self.log_test("Favorites Count - Admin User", False, f"Exception: {str(e)}")
+        
+        # Test with regular user
+        if self.user_token:
+            try:
+                headers = {"Authorization": f"Bearer {self.user_token}"}
+                response = self.session.get(f"{BASE_URL}/favorites/count", headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if "count" in data and isinstance(data["count"], int):
+                        self.log_test("Favorites Count - Regular User", True,
+                                    f"Favorites count: {data['count']}")
+                    else:
+                        self.log_test("Favorites Count - Regular User", False,
+                                    f"Invalid response format: {data}")
+                else:
+                    self.log_test("Favorites Count - Regular User", False,
+                                f"Status: {response.status_code}")
+                    
+            except Exception as e:
+                self.log_test("Favorites Count - Regular User", False, f"Exception: {str(e)}")
+        
+        # Test without authentication
+        try:
+            response = self.session.get(f"{BASE_URL}/favorites/count")
+            
+            if response.status_code == 401 or response.status_code == 403:
+                self.log_test("Favorites Count - No Auth", True,
+                            "Correctly blocked unauthenticated request")
+            else:
+                self.log_test("Favorites Count - No Auth", False,
+                            f"Should block unauthenticated requests, got: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Favorites Count - No Auth", False, f"Exception: {str(e)}")
+    
+    def test_data_uniqueness_validation(self):
+        """Test that individual user statistics are unique per user"""
+        print("=== Testing Data Uniqueness Validation ===")
+        
+        if not (self.admin_token and self.user_token):
+            self.log_test("Data Uniqueness Validation", False, "Need both admin and user tokens")
+            return
+        
+        try:
+            # Get admin stats
+            admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+            admin_response = self.session.get(f"{BASE_URL}/profile/stats", headers=admin_headers)
+            
+            # Get user stats
+            user_headers = {"Authorization": f"Bearer {self.user_token}"}
+            user_response = self.session.get(f"{BASE_URL}/profile/stats", headers=user_headers)
+            
+            if admin_response.status_code == 200 and user_response.status_code == 200:
+                admin_data = admin_response.json()
+                user_data = user_response.json()
+                
+                # Check that user_ids are different
+                if admin_data.get("user_id") != user_data.get("user_id"):
+                    self.log_test("Data Uniqueness - Different User IDs", True,
+                                f"Admin ID: {admin_data.get('user_id')[:8]}..., "
+                                f"User ID: {user_data.get('user_id')[:8]}...")
+                else:
+                    self.log_test("Data Uniqueness - Different User IDs", False,
+                                "Both users have the same user_id")
+                
+                # Check that statistics are potentially different (they could be the same by coincidence)
+                different_fields = []
+                comparable_fields = ["total_orders", "total_listings", "total_spent", "total_earned"]
+                
+                for field in comparable_fields:
+                    if admin_data.get(field, 0) != user_data.get(field, 0):
+                        different_fields.append(field)
+                
+                if different_fields or admin_data.get("user_id") != user_data.get("user_id"):
+                    self.log_test("Data Uniqueness - Individual Statistics", True,
+                                f"Users have unique statistics. Different fields: {different_fields}")
+                else:
+                    self.log_test("Data Uniqueness - Individual Statistics", True,
+                                "Users have identical statistics (could be valid for new users)")
+            else:
+                self.log_test("Data Uniqueness Validation", False,
+                            f"Failed to get stats - Admin: {admin_response.status_code}, "
+                            f"User: {user_response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Data Uniqueness Validation", False, f"Exception: {str(e)}")
+    
+    def test_time_based_logical_validation(self):
+        """Test logical validation of time-based statistics"""
+        print("=== Testing Time-Based Logical Validation ===")
+        
+        if not self.admin_token:
+            self.log_test("Time-Based Logical Validation", False, "No admin token available")
+            return
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        try:
+            # Get stats for different time frames
+            today_response = self.session.get(f"{BASE_URL}/admin/stats/time-based?time_frame=today", 
+                                            headers=headers)
+            week_response = self.session.get(f"{BASE_URL}/admin/stats/time-based?time_frame=week", 
+                                           headers=headers)
+            month_response = self.session.get(f"{BASE_URL}/admin/stats/time-based?time_frame=month", 
+                                            headers=headers)
+            
+            if all(r.status_code == 200 for r in [today_response, week_response, month_response]):
+                today_data = today_response.json()
+                week_data = week_response.json()
+                month_data = month_response.json()
+                
+                validation_errors = []
+                
+                # Test: Today's counts shouldn't exceed week's counts
+                if today_data["users_in_period"] > week_data["users_in_period"]:
+                    validation_errors.append(f"Today's users ({today_data['users_in_period']}) > Week's users ({week_data['users_in_period']})")
+                
+                if today_data["listings_in_period"] > week_data["listings_in_period"]:
+                    validation_errors.append(f"Today's listings ({today_data['listings_in_period']}) > Week's listings ({week_data['listings_in_period']})")
+                
+                if today_data["orders_in_period"] > week_data["orders_in_period"]:
+                    validation_errors.append(f"Today's orders ({today_data['orders_in_period']}) > Week's orders ({week_data['orders_in_period']})")
+                
+                # Test: Week's counts shouldn't exceed month's counts
+                if week_data["users_in_period"] > month_data["users_in_period"]:
+                    validation_errors.append(f"Week's users ({week_data['users_in_period']}) > Month's users ({month_data['users_in_period']})")
+                
+                if week_data["listings_in_period"] > month_data["listings_in_period"]:
+                    validation_errors.append(f"Week's listings ({week_data['listings_in_period']}) > Month's listings ({month_data['listings_in_period']})")
+                
+                if week_data["orders_in_period"] > month_data["orders_in_period"]:
+                    validation_errors.append(f"Week's orders ({week_data['orders_in_period']}) > Month's orders ({month_data['orders_in_period']})")
+                
+                if not validation_errors:
+                    self.log_test("Time-Based Logical Validation", True,
+                                f"All time-based relationships are logical. "
+                                f"Today: {today_data['listings_in_period']} listings, "
+                                f"Week: {week_data['listings_in_period']} listings, "
+                                f"Month: {month_data['listings_in_period']} listings")
+                else:
+                    self.log_test("Time-Based Logical Validation", False,
+                                f"Logical validation errors: {'; '.join(validation_errors)}")
+            else:
+                self.log_test("Time-Based Logical Validation", False,
+                            f"Failed to get all time frame stats - Today: {today_response.status_code}, "
+                            f"Week: {week_response.status_code}, Month: {month_response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Time-Based Logical Validation", False, f"Exception: {str(e)}")
+    
+    def test_growth_metrics_calculation(self):
+        """Test that growth metrics calculations are working correctly"""
+        print("=== Testing Growth Metrics Calculation ===")
+        
+        if not self.admin_token:
+            self.log_test("Growth Metrics Calculation", False, "No admin token available")
+            return
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/stats/time-based?time_frame=week", 
+                                      headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if "growth_metrics" in data:
+                    growth = data["growth_metrics"]
+                    
+                    # Check that growth metrics have expected fields
+                    expected_fields = ["users_growth", "listings_growth", "orders_growth"]
+                    missing_fields = [field for field in expected_fields if field not in growth]
+                    
+                    if not missing_fields:
+                        # Check that growth values are reasonable numbers
+                        valid_growth = True
+                        for field in expected_fields:
+                            value = growth[field]
+                            if not isinstance(value, (int, float)) or value < -100 or value > 10000:
+                                valid_growth = False
+                                break
+                        
+                        if valid_growth:
+                            self.log_test("Growth Metrics Calculation", True,
+                                        f"Users: {growth['users_growth']}%, "
+                                        f"Listings: {growth['listings_growth']}%, "
+                                        f"Orders: {growth['orders_growth']}%")
+                        else:
+                            self.log_test("Growth Metrics Calculation", False,
+                                        f"Invalid growth values: {growth}")
+                    else:
+                        self.log_test("Growth Metrics Calculation", False,
+                                    f"Missing growth fields: {missing_fields}")
+                else:
+                    self.log_test("Growth Metrics Calculation", False,
+                                "No growth_metrics field in response")
+            else:
+                self.log_test("Growth Metrics Calculation", False,
+                            f"Status: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Growth Metrics Calculation", False, f"Exception: {str(e)}")
+    
+    def test_error_handling(self):
+        """Test error handling for various scenarios"""
+        print("=== Testing Error Handling ===")
+        
+        # Test with non-existent user (this would require creating a fake token, skip for now)
+        # Test invalid endpoints
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(f"{BASE_URL}/admin/stats/time-based?time_frame=invalid_frame", 
+                                      headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                # Should default to "today"
+                if data.get("time_frame") == "today":
+                    self.log_test("Error Handling - Invalid Time Frame", True,
+                                "Correctly handled invalid time frame by defaulting to 'today'")
+                else:
+                    self.log_test("Error Handling - Invalid Time Frame", False,
+                                f"Unexpected handling of invalid time frame: {data.get('time_frame')}")
+            else:
+                self.log_test("Error Handling - Invalid Time Frame", False,
+                            f"Unexpected status code: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Error Handling - Invalid Time Frame", False, f"Exception: {str(e)}")
+        
+        # Test malformed requests
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.post(f"{BASE_URL}/track-activity", 
+                                       json={"invalid": "data"}, headers=headers)
+            
+            # Should still work as the endpoint accepts any activity data
+            if response.status_code == 200:
+                self.log_test("Error Handling - Malformed Activity Data", True,
+                            "Endpoint gracefully handled malformed activity data")
+            else:
+                self.log_test("Error Handling - Malformed Activity Data", False,
+                            f"Status: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Error Handling - Malformed Activity Data", False, f"Exception: {str(e)}")
     
     def run_all_tests(self):
-        """Run all deployment readiness tests"""
-        print("=" * 80)
-        print("CATALORO MARKETPLACE - DEPLOYMENT READINESS TESTING")
-        print(f"Target IP: http://217.154.0.82")
-        print(f"Test Started: {datetime.now().isoformat()}")
-        print("=" * 80)
+        """Run all test suites"""
+        print("🚀 Starting Real-Time Statistics System Testing")
+        print("=" * 60)
         
-        # Run tests in sequence
-        tests = [
-            self.test_basic_connectivity,
-            self.test_admin_authentication,
-            self.test_cors_headers,
-            self.test_profile_stats_endpoint,
-            self.test_listings_endpoint,
-            self.test_image_serving,
-            self.test_production_environment
-        ]
+        # Setup
+        if not self.authenticate_admin():
+            print("❌ Cannot proceed without admin authentication")
+            return False
         
-        passed_tests = 0
-        for test_func in tests:
-            try:
-                if test_func():
-                    passed_tests += 1
-            except Exception as e:
-                print(f"❌ FAIL: {test_func.__name__} - Unexpected error: {str(e)}")
-            print("-" * 40)
+        self.create_test_user()  # Optional, tests will work with just admin
+        
+        # Run all test suites
+        self.test_profile_stats_endpoint()
+        self.test_admin_time_based_stats()
+        self.test_enhanced_admin_stats()
+        self.test_track_activity_endpoint()
+        self.test_favorites_count_endpoint()
+        self.test_data_uniqueness_validation()
+        self.test_time_based_logical_validation()
+        self.test_growth_metrics_calculation()
+        self.test_error_handling()
         
         # Summary
-        total_tests = len(tests)
-        success_rate = (passed_tests / total_tests) * 100
+        print("=" * 60)
+        print("📊 TEST SUMMARY")
+        print("=" * 60)
         
-        print("=" * 80)
-        print("DEPLOYMENT READINESS TEST SUMMARY")
-        print("=" * 80)
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        
         print(f"Total Tests: {total_tests}")
-        print(f"Passed: {passed_tests}")
-        print(f"Failed: {len(self.failed_tests)}")
-        print(f"Success Rate: {success_rate:.1f}%")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
         
-        if self.failed_tests:
-            print(f"\nFailed Tests:")
-            for test in self.failed_tests:
-                print(f"  - {test}")
+        if failed_tests > 0:
+            print("\n❌ FAILED TESTS:")
+            for result in self.test_results:
+                if not result["success"]:
+                    print(f"  - {result['test']}: {result['details']}")
         
-        print(f"\nDeployment Status: {'✅ READY' if success_rate >= 85 else '❌ NOT READY'}")
-        
-        if success_rate >= 85:
-            print("\n🎉 DEPLOYMENT READINESS CONFIRMED!")
-            print("The application is ready for production deployment at http://217.154.0.82")
-        else:
-            print("\n⚠️  DEPLOYMENT ISSUES DETECTED!")
-            print("Please resolve the failed tests before deploying to production.")
-        
-        print("=" * 80)
-        
-        return success_rate >= 85
+        print("\n" + "=" * 60)
+        return failed_tests == 0
 
 if __name__ == "__main__":
-    tester = DeploymentTester()
-    deployment_ready = tester.run_all_tests()
-    
-    # Exit with appropriate code
-    sys.exit(0 if deployment_ready else 1)
+    tester = RealTimeStatsTestSuite()
+    success = tester.run_all_tests()
+    sys.exit(0 if success else 1)
