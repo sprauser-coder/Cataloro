@@ -2542,7 +2542,7 @@ const Profile = () => {
           <div className="border-b border-gray-200">
             <nav className="flex space-x-8 px-6">
               {[
-                { id: 'overview', label: 'Overview', icon: Home },
+                { id: 'overview', label: 'Overview', icon: HomeIcon },
                 { id: 'activity', label: 'Activity', icon: Activity },
                 { id: 'listings', label: 'My Listings', icon: Package },
                 { id: 'orders', label: 'Orders', icon: ShoppingCart },
