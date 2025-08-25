@@ -998,6 +998,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [siteSettings, setSiteSettings] = useState(null);
   const [userFavorites, setUserFavorites] = useState([]);
+  const [favoritesMap, setFavoritesMap] = useState({}); // Map listing_id to favorite_id
   
   const addToFavoritesBrowse = async (listing) => {
     try {
