@@ -276,7 +276,7 @@ class NotificationDebugTester:
                     updated_notification = None
                     if isinstance(self.notifications, list):
                         updated_notification = next((n for n in self.notifications if isinstance(n, dict) and n.get('id') == notification_id), None)
-                    if updated_notification and updated_notification.get('is_read'):
+                    if updated_notification and updated_notification.get('read'):
                         self.log_result("Notification Read Status Update", True, "Notification successfully marked as read")
                     else:
                         self.log_result("Notification Read Status Update", False, "Notification was not marked as read")
