@@ -105,6 +105,19 @@
 user_problem_statement: "Browse Page Picker Options Update: Change the browse page picker options from the current 10/25/50/All to new options of 12/24/48/All as requested by user."
 
 frontend:
+  - task: "Browse Page Picker Options Update"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Successfully updated browse page picker options from 10/25/50/All to 12/24/48/All as requested by user. Updated SelectItem values in dropdown (lines 1436-1439), changed default listingsPerPage state from 10 to 12, updated pagination condition check from >10 to >12. Required frontend rebuild and restart to clear cached compiled JS. All changes working correctly - dropdown now shows 12 as default with new options 12/24/48/All available."
+
+frontend:
   - task: "Footer Component with Version Display"
     implemented: true
     working: true
