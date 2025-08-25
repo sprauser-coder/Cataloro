@@ -82,6 +82,9 @@ const useAuth = () => {
   return context;
 };
 
+// Export useAuth for use in other components
+export { useAuth };
+
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
