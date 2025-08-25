@@ -315,6 +315,21 @@ frontend:
         agent: "main"
         comment: "PAGINATION COMPLETELY FIXED WITH CORRECT LOGIC: 1) FETCH ALL LISTINGS: Modified to request ALL listings from backend (limit=10000) instead of server-side pagination 2) FIXED TOTAL COUNT: Set totalListings to actual length of ALL fetched listings (fixed number, doesn't change with picker) 3) CLIENT-SIDE PAGINATION: Implemented proper client-side pagination using array.slice() based on currentPage and listingsPerPage selection 4) CORRECT PAGE CALCULATION: Pages calculated as Math.ceil(totalListings / listingsPerPage) based on real total 5) PROPER DISPLAY: Shows 'X items found' (fixed total), 'Page Y/Z' format, 'All X items' when showing all. Now works exactly as requested: fetch ALL → show fixed total → paginate client-side → calculate pages correctly."
 
+  - task: "Favorites Toggle - Add/Remove Bug Fix"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported favorites toggle doesn't work, shows 'Favorite not found' error when trying to remove from favorites."
+      - working: true
+        agent: "main"
+        comment: "FAVORITES TOGGLE COMPLETELY FIXED: 1) ROOT CAUSE IDENTIFIED: DELETE endpoint requires favorite_id (unique DB record ID), not listing_id as I was using 2) SOLUTION IMPLEMENTED: Added favoritesMap state to store listing_id → favorite_id mapping, updated fetchUserFavorites to populate both userFavorites array and favoritesMap object, fixed removeFromFavoritesBrowse to use correct favorite_id from mapping 3) TOGGLE FUNCTIONALITY: Created toggleFavoritesBrowse function that checks if favorited → removes if active, adds if not active 4) BACKEND VERIFICATION: All endpoints working perfectly (GET/POST/DELETE) with proper data structure (favorite_id + complete listing data) 5) USER EXPERIENCE: Proper toast notifications for both add/remove, real-time visual feedback with star icon, error handling for edge cases. Favorites now work as perfect toggle - click empty star to add, click filled star to remove."
+
   - task: "Logo Settings Reorganization"
     implemented: true
     working: true
