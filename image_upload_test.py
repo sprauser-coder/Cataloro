@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Image Upload Functionality Testing Script
-Tests both Logo Upload and Listing Image Upload endpoints after frontend bug fix
+Quick Image Upload Verification Test
+Focus: POST /api/listings/upload-image with PNG file upload and accessibility verification
 """
 
 import requests
@@ -12,17 +12,16 @@ import time
 import io
 import os
 from pathlib import Path
+from PIL import Image
 
 class ImageUploadTester:
-    def __init__(self, base_url="https://revived-cataloro.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-revival.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.admin_token = None
-        self.user_token = None
         self.tests_run = 0
         self.tests_passed = 0
-        self.uploaded_logo_url = None
-        self.uploaded_listing_images = []
+        self.uploaded_images = []
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None, use_admin_token=False):
         """Run a single API test"""
