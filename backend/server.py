@@ -2603,16 +2603,16 @@ async def clear_all_notifications(current_user: User = Depends(get_current_user)
         raise HTTPException(status_code=500, detail=f"Failed to clear notifications: {str(e)}")
 
 # Bulk Order Management Endpoints
-class BulkOrderUpdate(BaseModel):
+class OrderBulkUpdateRequest(BaseModel):
     order_ids: List[str]
     status: Optional[str] = None
 
-class BulkOrderDelete(BaseModel):
+class OrderBulkDeleteRequest(BaseModel):
     order_ids: List[str]
 
 @api_router.post("/admin/orders/bulk-update")
 async def bulk_update_orders(
-    request: BulkOrderUpdate,
+    request: OrderBulkUpdateRequest,
     admin: User = Depends(get_admin_user)
 ):
     """Bulk update order status"""
@@ -2647,7 +2647,7 @@ async def bulk_update_orders(
 
 @api_router.post("/admin/orders/bulk-delete")
 async def bulk_delete_orders(
-    request: BulkOrderDelete,
+    request: OrderBulkDeleteRequest,
     admin: User = Depends(get_admin_user)
 ):
     """Bulk delete orders"""
