@@ -1441,7 +1441,7 @@ const Home = () => {
                 </Select>
               </div>
               {/* Page indicator - always show if more than minimum items */}
-              {!loading && totalListings > 10 && ( 
+              {!loading && totalListings > 12 && ( 
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-600">
                     {listingsPerPage >= 1000 ? `All ${totalListings} items` : 
