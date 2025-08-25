@@ -2772,6 +2772,8 @@ const Profile = () => {
     </div>
   );
 };
+
+// Sell Component
 const Sell = () => {
   const [formData, setFormData] = useState({
     title: '',
