@@ -117,6 +117,42 @@ frontend:
         agent: "main"
         comment: "Successfully implemented footer component showing version 1.3.0 and current timestamp. Footer integrated into main App component with flexbox layout, pulls site settings from backend API, includes copyright info and version display. User confirmed footer is visible and working correctly."
 
+  - task: "Clear All Notifications Button"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added 'Clear all' button to notifications dropdown that appears when notifications exist. Button calls clearAllNotifications function which marks all as read and clears the local notifications array. Provides user feedback via toast notification."
+
+  - task: "Hide Made with Emergent Branding"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/index.css"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added comprehensive CSS rules to hide 'Made with Emergent' branding text from all pages. Multiple targeting strategies implemented including position-based selectors, content-based selectors, and attribute-based selectors to ensure complete removal."
+
+  - task: "Logo Size Picker in Admin Panel"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added logo size picker to Admin Panel > Settings > Site Settings > Logo Settings section. Allows selection of Small (h-6), Medium (h-8), Large (h-10), Extra Large (h-12), and XXL (h-16) sizes. Backend field header_logo_size added to SiteSettings model with default 'h-8'. Header component updated to use dynamic logo size from settings."
+
 backend:
   - task: "Authentication Session Management Fix"
     implemented: true
