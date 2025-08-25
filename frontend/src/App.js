@@ -5130,7 +5130,7 @@ const AdminPanel = () => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <span className="text-xs text-gray-600">Time:</span>
-                        <Select value={timeFrame} onValueChange={setTimeFrame}>
+                        <Select value={performanceTimeFrame} onValueChange={setPerformanceTimeFrame}>
                           <SelectTrigger className="w-24">
                             <SelectValue />
                           </SelectTrigger>
