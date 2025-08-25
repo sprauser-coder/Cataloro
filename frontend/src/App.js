@@ -8181,6 +8181,21 @@ const CMSPage = () => {
 
 // Main App Component
 function App() {
+  const [siteSettings, setSiteSettings] = useState(null);
+
+  useEffect(() => {
+    fetchSiteSettings();
+  }, []);
+
+  const fetchSiteSettings = async () => {
+    try {
+      const response = await axios.get(`${API}/cms/settings`);
+      setSiteSettings(response.data);
+    } catch (error) {
+      console.error('Error fetching site settings:', error);
+    }
+  };
+
   return (
     <AuthProvider>
       <div className="App">
