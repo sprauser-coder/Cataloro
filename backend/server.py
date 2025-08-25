@@ -460,6 +460,11 @@ async def get_listings(
     
     return [ProductListing(**listing) for listing in listings]
 
+@api_router.get("/listings/debug-count")
+async def debug_listings_count():
+    """Debug endpoint to test route registration"""
+    return {"message": "Debug count endpoint working", "timestamp": datetime.now().isoformat()}
+
 @api_router.get("/listings/count")
 async def get_listings_count(
     category: Optional[str] = None,
