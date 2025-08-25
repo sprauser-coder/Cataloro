@@ -2194,9 +2194,241 @@ async def get_public_navigation():
     nav_items = await db.navigation.find({"is_visible": True}).sort("order", 1).to_list(length=None)
     return [NavigationItem(**parse_from_mongo(item)).dict() for item in nav_items]
 
-# ===========================
-# USER PROFILE ENDPOINTS
-# ===========================
+# Enhanced Profile Management Endpoints
+
+@api_router.get("/profile/stats")
+async def get_user_stats(current_user: dict = Depends(get_current_user)):
+    """Get comprehensive user statistics"""
+    user_id = current_user["id"]
+    
+    # Get basic stats from database
+    total_orders = await db.orders.count_documents({"user_id": user_id})
+    total_listings = await db.listings.count_documents({"seller_id": user_id})
+    
+    # Calculate earnings from completed orders
+    earnings_pipeline = [
+        {"$match": {"seller_id": user_id, "status": "completed"}},
+        {"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}
+    ]
+    earnings_result = await db.orders.aggregate(earnings_pipeline).to_list(1)
+    total_earned = earnings_result[0]["total"] if earnings_result else 0.0
+    
+    # Calculate spending from user's orders
+    spending_pipeline = [
+        {"$match": {"user_id": user_id, "status": "completed"}},
+        {"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}
+    ]
+    spending_result = await db.orders.aggregate(spending_pipeline).to_list(1)
+    total_spent = spending_result[0]["total"] if spending_result else 0.0
+    
+    # Get reviews for this user
+    reviews = await db.reviews.find({"reviewed_user_id": user_id}).to_list(None)
+    total_reviews = len(reviews)
+    avg_rating = sum(r["rating"] for r in reviews) / total_reviews if total_reviews > 0 else 0.0
+    
+    # Count successful transactions
+    successful_transactions = await db.orders.count_documents({
+        "$or": [{"user_id": user_id}, {"seller_id": user_id}],
+        "status": "completed"
+    })
+    
+    # Get user profile data for additional stats
+    user_profile = await db.users.find_one({"id": user_id})
+    profile_views = user_profile.get("profile_views", 0) if user_profile else 0
+    trust_score = user_profile.get("trust_score", 50) if user_profile else 50
+    account_level = user_profile.get("account_level", "Bronze") if user_profile else "Bronze"
+    
+    # Calculate badges based on achievements
+    badges_earned = 0
+    if total_listings >= 10: badges_earned += 1  # Active Seller
+    if total_reviews >= 20: badges_earned += 1   # Trusted User
+    if avg_rating >= 4.5: badges_earned += 1     # Top Rated
+    if successful_transactions >= 50: badges_earned += 1  # Super Trader
+    if trust_score >= 90: badges_earned += 1     # Verified Expert
+    
+    # Calculate response rate (mock for now, can be improved with message tracking)
+    response_rate = min(95.0, 60.0 + (trust_score * 0.4))
+    avg_response_time = max(0.5, 5.0 - (trust_score * 0.05))
+    
+    return {
+        "total_orders": total_orders,
+        "total_listings": total_listings,
+        "total_spent": round(total_spent, 2),
+        "total_earned": round(total_earned, 2),
+        "avg_rating": round(avg_rating, 1),
+        "total_reviews": total_reviews,
+        "successful_transactions": successful_transactions,
+        "profile_views": profile_views,
+        "trust_score": trust_score,
+        "account_level": account_level,
+        "badges_earned": badges_earned,
+        "response_rate": round(response_rate, 1),
+        "avg_response_time": round(avg_response_time, 1)
+    }
+
+@api_router.get("/profile/activity")
+async def get_user_activity(current_user: dict = Depends(get_current_user)):
+    """Get user activity timeline"""
+    user_id = current_user["id"]
+    
+    activities = []
+    
+    # Get recent listings
+    recent_listings = await db.listings.find(
+        {"seller_id": user_id}
+    ).sort("created_at", -1).limit(5).to_list(5)
+    
+    for listing in recent_listings:
+        time_diff = datetime.now(timezone.utc) - listing["created_at"]
+        hours_ago = int(time_diff.total_seconds() / 3600)
+        time_str = f"{hours_ago}h ago" if hours_ago < 24 else f"{int(hours_ago/24)}d ago"
+        
+        activities.append({
+            "type": "listing_created",
+            "title": f"Created new listing: {listing['title']}",
+            "time": time_str,
+            "icon": "📦",
+            "color": "green",
+            "metadata": {"listing_id": listing["id"]}
+        })
+    
+    # Get recent orders
+    recent_orders = await db.orders.find(
+        {"user_id": user_id}
+    ).sort("created_at", -1).limit(5).to_list(5)
+    
+    for order in recent_orders:
+        time_diff = datetime.now(timezone.utc) - order["created_at"]
+        hours_ago = int(time_diff.total_seconds() / 3600)
+        time_str = f"{hours_ago}h ago" if hours_ago < 24 else f"{int(hours_ago/24)}d ago"
+        
+        status_icon = "✅" if order["status"] == "completed" else "🛒"
+        status_text = "Completed purchase" if order["status"] == "completed" else "Placed order"
+        
+        # Get listing title
+        listing = await db.listings.find_one({"id": order["listing_id"]})
+        listing_title = listing["title"] if listing else "Unknown item"
+        
+        activities.append({
+            "type": "order_" + order["status"],
+            "title": f"{status_text}: {listing_title}",
+            "time": time_str,
+            "icon": status_icon,
+            "color": "blue" if order["status"] == "completed" else "purple",
+            "metadata": {"order_id": order["id"]}
+        })
+    
+    # Get recent reviews received
+    recent_reviews = await db.reviews.find(
+        {"reviewed_user_id": user_id}
+    ).sort("created_at", -1).limit(3).to_list(3)
+    
+    for review in recent_reviews:
+        time_diff = datetime.now(timezone.utc) - review["created_at"]
+        hours_ago = int(time_diff.total_seconds() / 3600)
+        time_str = f"{hours_ago}h ago" if hours_ago < 24 else f"{int(hours_ago/24)}d ago"
+        
+        # Get reviewer name
+        reviewer = await db.users.find_one({"id": review["reviewer_id"]})
+        reviewer_name = reviewer["full_name"] if reviewer else "Anonymous"
+        
+        activities.append({
+            "type": "review_received",
+            "title": f"Received {review['rating']}-star review from {reviewer_name}",
+            "time": time_str,
+            "icon": "⭐",
+            "color": "yellow",
+            "metadata": {"review_id": review["id"], "rating": review["rating"]}
+        })
+    
+    # Sort all activities by time (most recent first)
+    activities.sort(key=lambda x: x["time"])
+    
+    return activities[:10]  # Return top 10 activities
+
+@api_router.put("/profile")
+async def update_profile(
+    profile_update: ProfileUpdateRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update user profile information"""
+    user_id = current_user["id"]
+    
+    update_data = {}
+    if profile_update.full_name is not None:
+        update_data["full_name"] = profile_update.full_name
+    if profile_update.bio is not None:
+        update_data["bio"] = profile_update.bio
+    if profile_update.location is not None:
+        update_data["location"] = profile_update.location
+    if profile_update.website is not None:
+        update_data["website"] = profile_update.website
+    if profile_update.phone is not None:
+        update_data["phone"] = profile_update.phone
+    if profile_update.social_links is not None:
+        update_data["social_links"] = profile_update.social_links
+    if profile_update.preferences is not None:
+        update_data["preferences"] = profile_update.preferences
+    
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": update_data}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "Profile updated successfully"}
+
+@api_router.post("/profile/upload-picture")
+async def upload_profile_picture(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """Upload user profile picture"""
+    user_id = current_user["id"]
+    
+    # Validate file type
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Validate file size (5MB limit)
+    if file.size > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File size must be less than 5MB")
+    
+    # Generate unique filename
+    file_extension = file.filename.split('.')[-1]
+    filename = f"profile_{user_id}_{int(datetime.now().timestamp())}.{file_extension}"
+    file_path = UPLOAD_DIR / filename
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    # Update user profile with new picture URL
+    profile_picture_url = f"/uploads/{filename}"
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {
+            "profile_picture_url": profile_picture_url,
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    return {"profile_picture_url": profile_picture_url}
+
+@api_router.get("/profile/increment-view/{profile_user_id}")
+async def increment_profile_view(profile_user_id: str):
+    """Increment profile view count (can be called anonymously)"""
+    await db.users.update_one(
+        {"id": profile_user_id},
+        {"$inc": {"profile_views": 1}}
+    )
+    return {"message": "Profile view incremented"}
+
+# Profile-related endpoints (existing ones to keep)
 
 class ProfileUpdate(BaseModel):
     """User profile update model"""
