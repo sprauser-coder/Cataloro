@@ -252,7 +252,8 @@ class HeroImageTester:
 
         # Test public settings endpoint
         try:
-            response = requests.get(f"{BACKEND_URL.replace('/api', '')}/cms/settings")
+            public_url = f"{BACKEND_URL.replace('/api', '')}/cms/settings"
+            response = requests.get(public_url)
             
             if response.status_code == 200:
                 public_settings = response.json()
@@ -265,7 +266,8 @@ class HeroImageTester:
                     self.log_result("Hero Image Public Settings", False, "No hero_image_url in public settings")
                     
             else:
-                self.log_result("Hero Image Public Settings", False, f"Failed to get public settings, status {response.status_code}")
+                self.log_result("Hero Image Public Settings", False, f"Failed to get public settings, status {response.status_code}",
+                              {"url": public_url, "response": response.text[:200]})
                 
         except Exception as e:
             self.log_result("Hero Image Public Settings", False, f"Exception: {str(e)}")
