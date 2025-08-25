@@ -351,7 +351,11 @@ class HeroImageTester:
             
             # Step 3: Verify image is accessible
             if hero_url:
-                image_response = requests.get(hero_url)
+                if hero_url.startswith('/'):
+                    full_hero_url = BACKEND_URL.replace('/api', '') + hero_url
+                else:
+                    full_hero_url = hero_url
+                image_response = requests.get(full_hero_url)
                 image_accessible = image_response.status_code == 200 and 'image' in image_response.headers.get('content-type', '')
             else:
                 image_accessible = False
