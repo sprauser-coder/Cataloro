@@ -37,6 +37,9 @@ app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Also serve uploads through API route for proxy compatibility
+api_router.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="api_uploads")
+
 # JWT Configuration
 SECRET_KEY = os.environ.get('JWT_SECRET', 'your-secret-key')
 ALGORITHM = "HS256"
