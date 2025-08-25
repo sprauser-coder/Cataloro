@@ -1253,30 +1253,22 @@ class ListingManagement(BaseModel):
 # Admin Analytics Endpoints
 @api_router.get("/admin/stats", response_model=AdminStats)
 async def get_admin_stats(admin: User = Depends(get_admin_user)):
-    """Get platform statistics"""
-    # Count users
-    total_users = await db.users.count_documents({})
-    active_users = await db.users.count_documents({"is_blocked": False})
-    blocked_users = await db.users.count_documents({"is_blocked": True})
-    
-    # Count listings
-    total_listings = await db.listings.count_documents({})
-    active_listings = await db.listings.count_documents({"status": "active"})
-    
-    # Count orders and revenue
-    total_orders = await db.orders.count_documents({})
-    orders = await db.orders.find({}).to_list(length=None)
-    total_revenue = sum(order.get('total_amount', 0) for order in orders)
-    
-    return AdminStats(
-        total_users=total_users,
-        active_users=active_users,
-        blocked_users=blocked_users,
-        total_listings=total_listings,
-        active_listings=active_listings,
-        total_orders=total_orders,
-        total_revenue=total_revenue
-    )
+    """Get platform statistics - enhanced with real-time data"""
+    try:
+        # Get real-time stats from service
+        realtime_stats = await stats_service.get_admin_time_based_stats("all")
+        
+        return AdminStats(
+            total_users=realtime_stats["total_users"],
+            active_users=realtime_stats["active_users"],
+            blocked_users=realtime_stats["blocked_users"],
+            total_listings=realtime_stats["total_listings"],
+            active_listings=realtime_stats["active_listings"],
+            total_orders=realtime_stats["total_orders"],
+            total_revenue=realtime_stats["total_revenue"]
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get admin stats: {str(e)}")
 
 # Admin User Management
 @api_router.get("/admin/users", response_model=List[UserManagement])
