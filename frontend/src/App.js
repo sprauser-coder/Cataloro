@@ -1133,37 +1133,67 @@ const Home = () => {
         if (priceRange.max) params.append('max_price', priceRange.max);
         if (selectedCondition) params.append('condition', selectedCondition);
         
-        // Get total count first
-        const countParams = new URLSearchParams();
-        if (searchTerm) countParams.append('search', searchTerm);
-        if (selectedCategory) countParams.append('category', selectedCategory);
-        if (listingType !== 'all') countParams.append('listing_type', listingType);
-        if (priceRange.min > 0) countParams.append('min_price', priceRange.min.toString());
-        if (priceRange.max < 10000) countParams.append('max_price', priceRange.max.toString());
-        if (selectedCondition !== 'all') countParams.append('condition', selectedCondition);
-        if (selectedRegion) countParams.append('region', selectedRegion);
-        
-        const countResponse = await axios.get(`${API}/listings/count?${countParams}`);
-        const totalCount = countResponse.data.total_count;
-        setTotalListings(totalCount);
-        
-        // Now get the listings with pagination
-        params.append('limit', listingsPerPage >= 1000 ? '10000' : listingsPerPage.toString());
-        params.append('skip', listingsPerPage >= 1000 ? '0' : ((currentPage - 1) * listingsPerPage).toString());
-        
-        // Future infrastructure 
-        if (selectedRegion) params.append('region', selectedRegion);
-        if (maxDistance && userLocation) {
-          params.append('max_distance', maxDistance);
-          params.append('user_lat', userLocation.lat);
-          params.append('user_lng', userLocation.lng);
+        try {
+          // Get total count first (with fallback)
+          let totalCount = 0;
+          try {
+            const countParams = new URLSearchParams();
+            if (searchTerm) countParams.append('search', searchTerm);
+            if (selectedCategory) countParams.append('category', selectedCategory);
+            if (listingType !== 'all') countParams.append('listing_type', listingType);
+            if (priceRange.min > 0) countParams.append('min_price', priceRange.min.toString());
+            if (priceRange.max < 10000) countParams.append('max_price', priceRange.max.toString());
+            if (selectedCondition !== 'all') countParams.append('condition', selectedCondition);
+            if (selectedRegion) countParams.append('region', selectedRegion);
+            
+            const countResponse = await axios.get(`${API}/listings/count?${countParams}`);
+            totalCount = countResponse.data.total_count;
+          } catch (countError) {
+            console.warn('Count endpoint failed, will use fallback:', countError);
+            // Fallback: will set count after fetching listings
+          }
+          
+          // Get the listings with pagination
+          params.append('limit', listingsPerPage >= 1000 ? '10000' : listingsPerPage.toString());
+          params.append('skip', listingsPerPage >= 1000 ? '0' : ((currentPage - 1) * listingsPerPage).toString());
+          
+          // Future infrastructure 
+          if (selectedRegion) params.append('region', selectedRegion);
+          if (maxDistance && userLocation) {
+            params.append('max_distance', maxDistance);
+            params.append('user_lat', userLocation.lat);
+            params.append('user_lng', userLocation.lng);
+          }
+          
+          const response = await axios.get(`${API}/listings?${params}`);
+          const fetchedListings = response.data;
+          
+          // Set total count (either from count endpoint or fallback)
+          if (totalCount > 0) {
+            setTotalListings(totalCount);
+          } else {
+            // Fallback: estimate total based on returned results
+            setTotalListings(Math.max(fetchedListings.length, fetchedListings.length + 20));
+          }
+          
+          setListings(fetchedListings);
+          
+        } catch (error) {
+          console.error('Error fetching listings:', error);
+          // Fallback to simple approach if everything fails
+          try {
+            const fallbackResponse = await axios.get(`${API}/listings?limit=50`);
+            setListings(fallbackResponse.data);
+            setTotalListings(fallbackResponse.data.length);
+          } catch (fallbackError) {
+            console.error('Fallback also failed:', fallbackError);
+            toast({
+              title: "Error",
+              description: "Failed to fetch listings",
+              variant: "destructive"
+            });
+          }
         }
-        
-        const response = await axios.get(`${API}/listings?${params}`);
-        const fetchedListings = response.data;
-        
-        // No need for client-side pagination anymore since backend handles it properly
-        setListings(fetchedListings);
       }
     } catch (error) {
       console.error('Error fetching listings:', error);
