@@ -2481,18 +2481,17 @@ async def get_admin_time_based_stats(
         raise HTTPException(status_code=500, detail=f"Failed to get admin statistics: {str(e)}")
 
 # Real-time Activity Tracking
-@api_router.post("/track-activity")
-async def track_user_activity(
-    activity_data: dict,
+@api_router.post("/activity/track")
+async def track_user_activity_simple(
+    activity_type: str,
     current_user: User = Depends(get_current_user)
 ):
-    """Track user activity for real-time statistics"""
+    """Track user activity for real-time statistics - simplified version"""
     try:
         activity = {
             "id": str(uuid.uuid4()),
             "user_id": current_user.id,
-            "activity_type": activity_data.get("type", "unknown"),
-            "activity_data": activity_data,
+            "activity_type": activity_type,
             "timestamp": datetime.now(timezone.utc)
         }
         
@@ -2504,7 +2503,7 @@ async def track_user_activity(
             {"$set": {"last_activity": datetime.now(timezone.utc)}}
         )
         
-        return {"message": "Activity tracked successfully"}
+        return {"message": "Activity tracked successfully", "activity_type": activity_type}
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to track activity: {str(e)}")
