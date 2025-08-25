@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-URGENT Authentication Testing - Post URL Fix Verification
-Testing authentication functionality after fixing frontend URL configuration from preview URL to IP address (http://217.154.0.82)
+SEO Settings Endpoints Testing
+Testing the new SEO settings endpoints that were just added.
 """
 
 import requests
@@ -14,474 +14,314 @@ BACKEND_URL = "http://217.154.0.82/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
-def print_test_header(test_name):
-    print(f"\n{'='*60}")
-    print(f"🧪 {test_name}")
-    print(f"{'='*60}")
-
-def print_result(success, message, details=None):
-    status = "✅ PASS" if success else "❌ FAIL"
-    print(f"{status}: {message}")
-    if details:
-        print(f"   Details: {details}")
-
-def test_basic_connectivity():
-    """Test 1: GET /api/ - Test basic connectivity"""
-    print_test_header("Basic API Connectivity Test")
-    
-    try:
-        response = requests.get(f"{BACKEND_URL}/", timeout=10)
-        
-        if response.status_code == 200:
-            data = response.json()
-            expected_message = "Marketplace API"
-            
-            if data.get("message") == expected_message:
-                print_result(True, f"Basic connectivity working - Status: {response.status_code}")
-                print(f"   Response: {data}")
-                return True
-            else:
-                print_result(False, f"Unexpected response message: {data}")
-                return False
-        else:
-            print_result(False, f"HTTP {response.status_code}: {response.text}")
-            return False
-            
-    except requests.exceptions.RequestException as e:
-        print_result(False, f"Connection failed: {str(e)}")
-        return False
-
-def test_cors_headers():
-    """Test 3: Verify CORS headers are working correctly"""
-    print_test_header("CORS Headers Verification")
-    
-    try:
-        # Test preflight request
-        headers = {
-            'Origin': 'http://217.154.0.82',
-            'Access-Control-Request-Method': 'POST',
-            'Access-Control-Request-Headers': 'Content-Type,Authorization'
-        }
-        
-        response = requests.options(f"{BACKEND_URL}/auth/login", headers=headers, timeout=10)
-        
-        cors_headers = {
-            'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
-            'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
-            'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers'),
-            'Access-Control-Allow-Credentials': response.headers.get('Access-Control-Allow-Credentials')
-        }
-        
-        print(f"   CORS Headers received:")
-        for header, value in cors_headers.items():
-            print(f"     {header}: {value}")
-        
-        # Check if CORS is properly configured
-        if cors_headers['Access-Control-Allow-Origin']:
-            print_result(True, "CORS headers are present and configured")
-            return True
-        else:
-            print_result(False, "CORS headers missing or misconfigured")
-            return False
-            
-    except requests.exceptions.RequestException as e:
-        print_result(False, f"CORS test failed: {str(e)}")
-        return False
-
-def test_admin_authentication():
-    """Test 2: POST /api/auth/login - Test admin login with admin@marketplace.com / admin123"""
-    print_test_header("Admin Authentication Test")
-    
-    try:
-        login_data = {
-            "email": ADMIN_EMAIL,
-            "password": ADMIN_PASSWORD
-        }
-        
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        
-        response = requests.post(
-            f"{BACKEND_URL}/auth/login", 
-            json=login_data, 
-            headers=headers,
-            timeout=10
-        )
-        
-        if response.status_code == 200:
-            data = response.json()
-            
-            # Verify response structure
-            required_fields = ['access_token', 'token_type', 'user']
-            missing_fields = [field for field in required_fields if field not in data]
-            
-            if missing_fields:
-                print_result(False, f"Missing required fields: {missing_fields}")
-                return False, None
-            
-            # Verify user data
-            user = data['user']
-            if user.get('email') == ADMIN_EMAIL and user.get('role') == 'admin':
-                print_result(True, f"Admin authentication successful")
-                print(f"   User ID: {user.get('id')}")
-                print(f"   User Role: {user.get('role')}")
-                print(f"   Full Name: {user.get('full_name')}")
-                print(f"   Token Type: {data.get('token_type')}")
-                print(f"   Token Length: {len(data.get('access_token', ''))}")
-                
-                return True, data['access_token']
-            else:
-                print_result(False, f"User data mismatch - Email: {user.get('email')}, Role: {user.get('role')}")
-                return False, None
-                
-        elif response.status_code == 401:
-            print_result(False, "Authentication failed - Invalid credentials")
-            print(f"   Response: {response.text}")
-            return False, None
-        else:
-            print_result(False, f"HTTP {response.status_code}: {response.text}")
-            return False, None
-            
-    except requests.exceptions.RequestException as e:
-        print_result(False, f"Authentication request failed: {str(e)}")
-        return False, None
-
-def test_authenticated_endpoint(token):
-    """Test authenticated endpoint to verify token works"""
-    print_test_header("Token Validation Test")
-    
-    try:
-        headers = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json'
-        }
-        
-        # Test a protected endpoint
-        response = requests.get(f"{BACKEND_URL}/admin/stats", headers=headers, timeout=10)
-        
-        if response.status_code == 200:
-            data = response.json()
-            print_result(True, "Token validation successful - Admin endpoint accessible")
-            print(f"   Stats retrieved: {list(data.keys())}")
-            return True
-        elif response.status_code == 403:
-            print_result(False, "Token valid but insufficient permissions")
-            return False
-        elif response.status_code == 401:
-            print_result(False, "Token validation failed - Invalid or expired token")
-            return False
-        else:
-            print_result(False, f"Unexpected response: HTTP {response.status_code}")
-            return False
-            
-    except requests.exceptions.RequestException as e:
-        print_result(False, f"Token validation request failed: {str(e)}")
-        return False
-
-def main():
-    print("🚀 URGENT AUTHENTICATION TESTING - POST URL FIX VERIFICATION")
-    print(f"Backend URL: {BACKEND_URL}")
-    print(f"Testing Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"Admin Credentials: {ADMIN_EMAIL} / {ADMIN_PASSWORD}")
-    
-    results = []
-    
-    # Test 1: Basic Connectivity
-    connectivity_result = test_basic_connectivity()
-    results.append(("Basic Connectivity", connectivity_result))
-    
-    # Test 2: Admin Authentication
-    auth_result, token = test_admin_authentication()
-    results.append(("Admin Authentication", auth_result))
-    
-    # Test 3: CORS Headers
-    cors_result = test_cors_headers()
-    results.append(("CORS Headers", cors_result))
-    
-    # Test 4: Token Validation (if authentication succeeded)
-    if auth_result and token:
-        token_result = test_authenticated_endpoint(token)
-        results.append(("Token Validation", token_result))
-    else:
-        results.append(("Token Validation", False))
-        print_test_header("Token Validation Test")
-        print_result(False, "Skipped - Authentication failed")
-    
-    # Summary
-    print(f"\n{'='*60}")
-    print("📊 TEST SUMMARY")
-    print(f"{'='*60}")
-    
-    passed = sum(1 for _, result in results if result)
-    total = len(results)
-    
-    for test_name, result in results:
-        status = "✅ PASS" if result else "❌ FAIL"
-        print(f"{status} {test_name}")
-    
-    print(f"\nOverall Result: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
-    
-    if passed == total:
-        print("🎉 ALL TESTS PASSED - Authentication system is working correctly!")
-        print("✅ Backend is ready for frontend integration")
-        return True
-    else:
-        print("⚠️  SOME TESTS FAILED - Authentication issues detected")
-        print("❌ Backend needs attention before frontend can work properly")
-        return False
-
-if __name__ == "__main__":
-    success = main()
-    sys.exit(0 if success else 1)
-"""
-Backend API Testing Script for Cataloro Marketplace
-Focus: Core endpoints verification after recent changes
-"""
-
-import requests
-import json
-import sys
-from datetime import datetime
-
-# Configuration
-BACKEND_URL = "https://revived-cataloro.preview.emergentagent.com/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
-
-class BackendTester:
+class SEOEndpointsTester:
     def __init__(self):
         self.session = requests.Session()
         self.admin_token = None
         self.test_results = []
         
-    def log_test(self, test_name, success, message, details=None):
-        """Log test result"""
+    def log_test(self, test_name, success, details=""):
+        """Log test results"""
         status = "✅ PASS" if success else "❌ FAIL"
-        result = {
-            "test": test_name,
-            "status": status,
-            "message": message,
-            "details": details,
-            "timestamp": datetime.now().isoformat()
-        }
-        self.test_results.append(result)
-        print(f"{status}: {test_name} - {message}")
-        if details and not success:
+        print(f"{status}: {test_name}")
+        if details:
             print(f"   Details: {details}")
+        
+        self.test_results.append({
+            "test": test_name,
+            "success": success,
+            "details": details
+        })
     
-    def test_basic_connectivity(self):
-        """Test 1: Basic connectivity - GET /api/ endpoint"""
+    def authenticate_admin(self):
+        """Authenticate as admin user"""
         try:
-            response = self.session.get(f"{BACKEND_URL}/")
-            
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("message") == "Marketplace API":
-                    self.log_test("Basic Connectivity", True, "Root API endpoint responding correctly")
-                    return True
-                else:
-                    self.log_test("Basic Connectivity", False, f"Unexpected response: {data}")
-                    return False
-            else:
-                self.log_test("Basic Connectivity", False, f"HTTP {response.status_code}: {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("Basic Connectivity", False, f"Connection error: {str(e)}")
-            return False
-    
-    def test_admin_authentication(self):
-        """Test 2: Authentication endpoints - POST /api/auth/login"""
-        try:
-            login_data = {
+            response = self.session.post(f"{BACKEND_URL}/auth/login", json={
                 "email": ADMIN_EMAIL,
                 "password": ADMIN_PASSWORD
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.admin_token = data["access_token"]
+                self.session.headers.update({
+                    "Authorization": f"Bearer {self.admin_token}"
+                })
+                self.log_test("Admin Authentication", True, f"Token: {self.admin_token[:20]}...")
+                return True
+            else:
+                self.log_test("Admin Authentication", False, f"Status: {response.status_code}, Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin Authentication", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_seo_settings_default(self):
+        """Test GET /api/admin/seo - should return defaults if none exist"""
+        try:
+            response = self.session.get(f"{BACKEND_URL}/admin/seo")
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check if default values are returned
+                expected_defaults = {
+                    "site_title": "Cataloro - Your Trusted Marketplace",
+                    "meta_description": "Buy and sell with confidence on Cataloro marketplace",
+                    "meta_keywords": "marketplace, buy, sell, ecommerce, cataloro",
+                    "og_title": "Cataloro Marketplace",
+                    "og_description": "Your trusted marketplace for amazing deals"
+                }
+                
+                all_defaults_correct = True
+                for key, expected_value in expected_defaults.items():
+                    if data.get(key) != expected_value:
+                        all_defaults_correct = False
+                        break
+                
+                if all_defaults_correct:
+                    self.log_test("GET SEO Settings (Default)", True, f"Returned default values correctly")
+                else:
+                    self.log_test("GET SEO Settings (Default)", False, f"Default values incorrect. Got: {json.dumps(data, indent=2)}")
+                
+                return data
+            else:
+                self.log_test("GET SEO Settings (Default)", False, f"Status: {response.status_code}, Response: {response.text}")
+                return None
+                
+        except Exception as e:
+            self.log_test("GET SEO Settings (Default)", False, f"Exception: {str(e)}")
+            return None
+    
+    def test_post_seo_settings(self):
+        """Test POST /api/admin/seo - save SEO settings with sample data"""
+        try:
+            # Sample SEO data as specified in the review request
+            sample_seo_data = {
+                "site_title": "Cataloro Test - SEO Update",
+                "meta_description": "Test meta description for SEO",
+                "meta_keywords": "test, seo, marketplace",
+                "og_title": "Test OG Title",
+                "og_description": "Test OG Description"
             }
             
-            response = self.session.post(f"{BACKEND_URL}/auth/login", json=login_data)
+            response = self.session.post(f"{BACKEND_URL}/admin/seo", json=sample_seo_data)
             
             if response.status_code == 200:
                 data = response.json()
-                if "access_token" in data and "user" in data:
-                    self.admin_token = data["access_token"]
-                    user = data["user"]
-                    if user.get("role") == "admin":
-                        self.log_test("Admin Authentication", True, f"Admin login successful for {user.get('email')}")
-                        return True
-                    else:
-                        self.log_test("Admin Authentication", False, f"User role is {user.get('role')}, expected 'admin'")
-                        return False
-                else:
-                    self.log_test("Admin Authentication", False, f"Missing token or user in response: {data}")
-                    return False
-            else:
-                self.log_test("Admin Authentication", False, f"HTTP {response.status_code}: {response.text}")
-                return False
                 
-        except Exception as e:
-            self.log_test("Admin Authentication", False, f"Authentication error: {str(e)}")
-            return False
-    
-    def test_listings_endpoint(self):
-        """Test 3: Core marketplace endpoints - GET /api/listings"""
-        try:
-            response = self.session.get(f"{BACKEND_URL}/listings")
-            
-            if response.status_code == 200:
-                data = response.json()
-                if isinstance(data, list):
-                    self.log_test("Listings Endpoint", True, f"Retrieved {len(data)} listings successfully")
+                if data.get("message") == "SEO settings saved successfully":
+                    self.log_test("POST SEO Settings (Save)", True, f"Successfully saved SEO settings")
                     return True
                 else:
-                    self.log_test("Listings Endpoint", False, f"Expected list, got: {type(data)}")
+                    self.log_test("POST SEO Settings (Save)", False, f"Unexpected response: {json.dumps(data, indent=2)}")
                     return False
             else:
-                self.log_test("Listings Endpoint", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_test("POST SEO Settings (Save)", False, f"Status: {response.status_code}, Response: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_test("Listings Endpoint", False, f"Request error: {str(e)}")
+            self.log_test("POST SEO Settings (Save)", False, f"Exception: {str(e)}")
             return False
     
-    def test_categories_endpoint(self):
-        """Test 4: Core marketplace endpoints - GET /api/categories"""
+    def test_get_seo_settings_saved(self):
+        """Test GET /api/admin/seo - verify saved SEO settings persistence"""
         try:
-            response = self.session.get(f"{BACKEND_URL}/categories")
+            response = self.session.get(f"{BACKEND_URL}/admin/seo")
             
             if response.status_code == 200:
                 data = response.json()
-                if isinstance(data, list) and len(data) > 0:
-                    expected_categories = ["Electronics", "Fashion", "Home & Garden", "Sports", "Books"]
-                    found_categories = [cat for cat in expected_categories if cat in data]
-                    if len(found_categories) >= 3:  # At least 3 expected categories found
-                        self.log_test("Categories Endpoint", True, f"Retrieved {len(data)} categories including {found_categories}")
-                        return True
-                    else:
-                        self.log_test("Categories Endpoint", False, f"Missing expected categories. Got: {data}")
-                        return False
-                else:
-                    self.log_test("Categories Endpoint", False, f"Expected non-empty list, got: {data}")
-                    return False
-            else:
-                self.log_test("Categories Endpoint", False, f"HTTP {response.status_code}: {response.text}")
-                return False
                 
-        except Exception as e:
-            self.log_test("Categories Endpoint", False, f"Request error: {str(e)}")
-            return False
-    
-    def test_admin_stats_endpoint(self):
-        """Test 5: Admin endpoints - GET /api/admin/stats (with admin credentials)"""
-        if not self.admin_token:
-            self.log_test("Admin Stats Endpoint", False, "No admin token available")
-            return False
-            
-        try:
-            headers = {"Authorization": f"Bearer {self.admin_token}"}
-            response = self.session.get(f"{BACKEND_URL}/admin/stats", headers=headers)
-            
-            if response.status_code == 200:
-                data = response.json()
-                required_fields = ["total_users", "active_users", "total_listings", "active_listings", "total_orders", "total_revenue"]
-                missing_fields = [field for field in required_fields if field not in data]
+                # Check if saved values are returned correctly
+                expected_saved_values = {
+                    "site_title": "Cataloro Test - SEO Update",
+                    "meta_description": "Test meta description for SEO",
+                    "meta_keywords": "test, seo, marketplace",
+                    "og_title": "Test OG Title",
+                    "og_description": "Test OG Description"
+                }
                 
-                if not missing_fields:
-                    stats_summary = {k: data[k] for k in required_fields}
-                    self.log_test("Admin Stats Endpoint", True, f"Admin stats retrieved successfully: {stats_summary}")
+                all_saved_correct = True
+                incorrect_fields = []
+                
+                for key, expected_value in expected_saved_values.items():
+                    if data.get(key) != expected_value:
+                        all_saved_correct = False
+                        incorrect_fields.append(f"{key}: expected '{expected_value}', got '{data.get(key)}'")
+                
+                if all_saved_correct:
+                    self.log_test("GET SEO Settings (Saved)", True, f"All saved values retrieved correctly")
                     return True
                 else:
-                    self.log_test("Admin Stats Endpoint", False, f"Missing required fields: {missing_fields}")
+                    self.log_test("GET SEO Settings (Saved)", False, f"Saved values incorrect: {', '.join(incorrect_fields)}")
                     return False
-            elif response.status_code == 403:
-                self.log_test("Admin Stats Endpoint", False, "Access denied - admin authentication failed")
-                return False
             else:
-                self.log_test("Admin Stats Endpoint", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_test("GET SEO Settings (Saved)", False, f"Status: {response.status_code}, Response: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_test("Admin Stats Endpoint", False, f"Request error: {str(e)}")
+            self.log_test("GET SEO Settings (Saved)", False, f"Exception: {str(e)}")
             return False
     
-    def test_cms_settings_endpoint(self):
-        """Test 6: CMS settings endpoint - GET /api/cms/settings (important for Footer)"""
+    def test_seo_settings_data_integrity(self):
+        """Test that all SEO settings fields are properly handled"""
         try:
-            response = self.session.get(f"{BACKEND_URL}/cms/settings")
+            # Test with comprehensive SEO data
+            comprehensive_seo_data = {
+                "site_title": "Comprehensive Test Title",
+                "meta_description": "Comprehensive test meta description",
+                "meta_keywords": "comprehensive, test, keywords",
+                "favicon_url": "/test-favicon.ico",
+                "og_title": "Comprehensive OG Title",
+                "og_description": "Comprehensive OG Description",
+                "og_image": "https://example.com/og-image.jpg",
+                "twitter_card": "summary",
+                "robots_txt": "User-agent: *\nDisallow: /admin",
+                "canonical_url": "https://cataloro.com",
+                "structured_data": '{"@context": "https://schema.org", "@type": "Organization", "name": "Test Cataloro"}'
+            }
+            
+            # Save comprehensive data
+            response = self.session.post(f"{BACKEND_URL}/admin/seo", json=comprehensive_seo_data)
+            
+            if response.status_code != 200:
+                self.log_test("SEO Data Integrity (Save)", False, f"Failed to save comprehensive data: {response.status_code}")
+                return False
+            
+            # Retrieve and verify
+            response = self.session.get(f"{BACKEND_URL}/admin/seo")
             
             if response.status_code == 200:
                 data = response.json()
-                # Check for key fields that Footer component depends on
-                required_fields = ["site_name", "font_color", "global_font_family"]
-                missing_fields = [field for field in required_fields if field not in data]
                 
-                if not missing_fields:
-                    footer_relevant = {
-                        "site_name": data.get("site_name"),
-                        "font_color": data.get("font_color"),
-                        "global_font_family": data.get("global_font_family"),
-                        "primary_color": data.get("primary_color"),
-                        "secondary_color": data.get("secondary_color")
-                    }
-                    self.log_test("CMS Settings Endpoint", True, f"CMS settings retrieved successfully. Footer fields: {footer_relevant}")
+                all_fields_correct = True
+                incorrect_fields = []
+                
+                for key, expected_value in comprehensive_seo_data.items():
+                    if data.get(key) != expected_value:
+                        all_fields_correct = False
+                        incorrect_fields.append(f"{key}: expected '{expected_value}', got '{data.get(key)}'")
+                
+                if all_fields_correct:
+                    self.log_test("SEO Data Integrity", True, f"All comprehensive SEO fields handled correctly")
                     return True
                 else:
-                    self.log_test("CMS Settings Endpoint", False, f"Missing required fields for Footer: {missing_fields}")
+                    self.log_test("SEO Data Integrity", False, f"Field integrity issues: {', '.join(incorrect_fields)}")
                     return False
             else:
-                self.log_test("CMS Settings Endpoint", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_test("SEO Data Integrity (Retrieve)", False, f"Status: {response.status_code}")
                 return False
                 
         except Exception as e:
-            self.log_test("CMS Settings Endpoint", False, f"Request error: {str(e)}")
+            self.log_test("SEO Data Integrity", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_seo_authentication_required(self):
+        """Test that SEO endpoints require admin authentication"""
+        try:
+            # Remove authorization header temporarily
+            original_headers = self.session.headers.copy()
+            if 'Authorization' in self.session.headers:
+                del self.session.headers['Authorization']
+            
+            # Test GET without auth
+            response = self.session.get(f"{BACKEND_URL}/admin/seo")
+            get_auth_required = response.status_code == 403
+            
+            # Test POST without auth
+            response = self.session.post(f"{BACKEND_URL}/admin/seo", json={"site_title": "Test"})
+            post_auth_required = response.status_code == 403
+            
+            # Restore headers
+            self.session.headers.update(original_headers)
+            
+            if get_auth_required and post_auth_required:
+                self.log_test("SEO Authentication Required", True, "Both GET and POST properly require admin authentication")
+                return True
+            else:
+                self.log_test("SEO Authentication Required", False, f"GET auth required: {get_auth_required}, POST auth required: {post_auth_required}")
+                return False
+                
+        except Exception as e:
+            self.log_test("SEO Authentication Required", False, f"Exception: {str(e)}")
             return False
     
     def run_all_tests(self):
-        """Run all backend tests"""
-        print("=" * 80)
-        print("CATALORO BACKEND API TESTING")
-        print("=" * 80)
+        """Run all SEO endpoint tests"""
+        print("=" * 60)
+        print("SEO SETTINGS ENDPOINTS TESTING")
+        print("=" * 60)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Admin Credentials: {ADMIN_EMAIL}")
-        print("=" * 80)
+        print(f"Admin Credentials: {ADMIN_EMAIL} / {ADMIN_PASSWORD}")
+        print(f"Test Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print()
         
-        # Run tests in sequence
-        tests = [
-            self.test_basic_connectivity,
-            self.test_admin_authentication,
-            self.test_listings_endpoint,
-            self.test_categories_endpoint,
-            self.test_admin_stats_endpoint,
-            self.test_cms_settings_endpoint
-        ]
+        # Step 1: Authenticate
+        if not self.authenticate_admin():
+            print("\n❌ CRITICAL: Admin authentication failed. Cannot proceed with tests.")
+            return False
         
-        passed = 0
-        total = len(tests)
+        print()
         
-        for test in tests:
-            if test():
-                passed += 1
-            print()  # Add spacing between tests
+        # Step 2: Test authentication requirement
+        self.test_seo_authentication_required()
+        print()
+        
+        # Step 3: Test GET default settings
+        print("Testing GET /api/admin/seo (default values)...")
+        default_settings = self.test_get_seo_settings_default()
+        print()
+        
+        # Step 4: Test POST save settings
+        print("Testing POST /api/admin/seo (save sample data)...")
+        save_success = self.test_post_seo_settings()
+        print()
+        
+        # Step 5: Test GET saved settings
+        print("Testing GET /api/admin/seo (verify persistence)...")
+        persistence_success = self.test_get_seo_settings_saved()
+        print()
+        
+        # Step 6: Test comprehensive data integrity
+        print("Testing SEO data integrity...")
+        integrity_success = self.test_seo_settings_data_integrity()
+        print()
         
         # Summary
-        print("=" * 80)
+        print("=" * 60)
         print("TEST SUMMARY")
-        print("=" * 80)
-        print(f"Tests Passed: {passed}/{total}")
-        print(f"Success Rate: {(passed/total)*100:.1f}%")
+        print("=" * 60)
         
-        if passed == total:
-            print("🎉 ALL TESTS PASSED - Backend API is fully operational!")
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        total_tests = len(self.test_results)
+        success_rate = (passed_tests / total_tests) * 100 if total_tests > 0 else 0
+        
+        print(f"Tests Passed: {passed_tests}/{total_tests} ({success_rate:.1f}%)")
+        print()
+        
+        for result in self.test_results:
+            status = "✅" if result["success"] else "❌"
+            print(f"{status} {result['test']}")
+            if result["details"] and not result["success"]:
+                print(f"   {result['details']}")
+        
+        print()
+        
+        # Overall assessment
+        if success_rate >= 100:
+            print("🎉 ALL TESTS PASSED - SEO endpoints are working perfectly!")
+            return True
+        elif success_rate >= 80:
+            print("⚠️  MOSTLY WORKING - SEO endpoints have minor issues")
+            return True
         else:
-            print("⚠️  SOME TESTS FAILED - Check details above")
-        
-        print("=" * 80)
-        
-        return passed == total
+            print("❌ CRITICAL ISSUES - SEO endpoints have major problems")
+            return False
 
 def main():
     """Main test execution"""
-    tester = BackendTester()
+    tester = SEOEndpointsTester()
     success = tester.run_all_tests()
     
     # Exit with appropriate code
