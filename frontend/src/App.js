@@ -4957,9 +4957,9 @@ const AdminPanel = () => {
                         <div>
                           <p className="text-sm text-gray-600">Total Users</p>
                           <p className="text-2xl font-bold">
-                            {timeFrame === 'today' ? Math.floor(stats.total_users * 0.05) || 2 :
-                             timeFrame === 'week' ? Math.floor(stats.total_users * 0.25) || 5 :
-                             timeFrame === 'month' ? Math.floor(stats.total_users * 0.80) || stats.total_users :
+                            {overviewTimeFrame === 'today' ? Math.floor(stats.total_users * 0.05) || 2 :
+                             overviewTimeFrame === 'week' ? Math.floor(stats.total_users * 0.25) || 5 :
+                             overviewTimeFrame === 'month' ? Math.floor(stats.total_users * 0.80) || stats.total_users :
                              stats.total_users}
                           </p>
                         </div>
