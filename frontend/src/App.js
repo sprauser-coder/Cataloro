@@ -2286,17 +2286,6 @@ const Profile = () => {
     }
   };
 
-  const fetchUserStats = async () => {
-    try {
-      const response = await axios.get(`${API}/profile/stats`);
-      setStats(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-      setLoading(false);
-    }
-  };
-
   const updateProfile = async () => {
     try {
       await axios.put(`${API}/profile`, profileData);
