@@ -1336,11 +1336,14 @@ const Home = () => {
             {/* Results Count and Pagination */}
             <div className="ml-auto flex items-center space-x-4">
               <div className="text-sm text-gray-600">
-                {loading ? 'Loading...' : `${listings.length} items found`}
+                {loading ? 'Loading...' : `${totalListings || listings.length} items found (showing ${Math.min(listingsPerPage, listings.length)})`}
               </div>
               <div className="flex items-center space-x-2">
                 <Label className="text-sm text-gray-600">Show:</Label>
-                <Select value={listingsPerPage.toString()} onValueChange={(value) => setListingsPerPage(parseInt(value))}>
+                <Select value={listingsPerPage.toString()} onValueChange={(value) => {
+                  setListingsPerPage(parseInt(value));
+                  setCurrentPage(1); // Reset to first page when changing items per page
+                }}>
                   <SelectTrigger className="w-20">
                     <SelectValue />
                   </SelectTrigger>
