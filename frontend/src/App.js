@@ -87,11 +87,26 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken && storedToken !== token) {
+      setToken(storedToken);
+    }
+    
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
+        const currentTime = Date.now() / 1000;
+        
+        // Check if token is expired
+        if (payload.exp < currentTime) {
+          console.log('Token expired, logging out');
+          logout();
+          setLoading(false);
+          return;
+        }
+        
         const savedUser = localStorage.getItem('user');
         if (savedUser) {
           setUser(JSON.parse(savedUser));
