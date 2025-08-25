@@ -387,7 +387,7 @@ class NotificationDebugTester:
         if hasattr(self, 'notifications') and self.notifications:
             # Handle case where notifications might be a string (error response)
             if isinstance(self.notifications, list):
-                unread_count = len([n for n in self.notifications if isinstance(n, dict) and not n.get('is_read', True)])
+                unread_count = len([n for n in self.notifications if isinstance(n, dict) and not n.get('read', True)])
                 print(f"   - Found {len(self.notifications)} total notifications")
                 print(f"   - {unread_count} notifications are unread")
                 
