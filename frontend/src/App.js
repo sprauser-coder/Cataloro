@@ -8143,6 +8143,11 @@ function App() {
                 <Favorites />
               </ProtectedRoute>
             } />
+            <Route path="/listing/:id" element={
+              <ProtectedRoute>
+                <ListingDetail />
+              </ProtectedRoute>
+            } />
             <Route path="/sell" element={
               <ProtectedRoute>
                 <Sell />
