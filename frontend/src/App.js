@@ -8202,9 +8202,10 @@ function App() {
 
   return (
     <AuthProvider>
-      <div className="App">
+      <div className="App min-h-screen flex flex-col">
         <HashRouter>
-          <Routes>
+          <div className="flex-1">
+            <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={
               <ProtectedRoute>
