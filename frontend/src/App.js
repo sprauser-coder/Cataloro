@@ -5085,7 +5085,10 @@ const AdminPanel = () => {
                           variant="outline" 
                           size="sm" 
                           className="w-full justify-start"
-                          onClick={() => navigator.clipboard.writeText(window.location.origin)}
+                          onClick={() => {
+                            navigator.clipboard.writeText(window.location.origin);
+                            toast({ title: "Success!", description: "Site URL copied to clipboard" });
+                          }}
                         >
                           📋 Copy Site URL
                         </Button>
@@ -5102,7 +5105,7 @@ const AdminPanel = () => {
                               revenue: stats.total_revenue
                             };
                             navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-                            toast({ title: "Dashboard data copied to clipboard!" });
+                            toast({ title: "Success!", description: "Dashboard data copied to clipboard!" });
                           }}
                         >
                           📊 Export Dashboard Data
@@ -5111,7 +5114,10 @@ const AdminPanel = () => {
                           variant="outline" 
                           size="sm" 
                           className="w-full justify-start"
-                          onClick={() => window.open('/admin', '_blank')}
+                          onClick={() => {
+                            window.open('/admin', '_blank');
+                            toast({ title: "Success!", description: "Admin panel opened in new tab" });
+                          }}
                         >
                           🔗 Open Admin in New Tab
                         </Button>
