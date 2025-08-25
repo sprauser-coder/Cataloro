@@ -8151,7 +8151,7 @@ function App() {
             } />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
         <Toaster />
       </div>
     </AuthProvider>
