@@ -2575,38 +2575,6 @@ const Profile = () => {
             </nav>
           </div>
         </div>
-      // Only send fields that the backend ProfileUpdate model accepts
-      const updateData = {
-        username: profileData.username,
-        full_name: profileData.full_name,
-        phone: profileData.phone,
-        bio: profileData.bio,
-        location: profileData.location,
-        is_business: profileData.is_business,
-        company_name: profileData.company_name,
-        country: profileData.country,
-        vat_number: profileData.vat_number
-      };
-      
-      const response = await axios.put(`${API}/profile`, updateData);
-      
-      // Update the local profileData with the response to ensure consistency
-      setProfileData(response.data);
-      
-      toast({
-        title: "Success",
-        description: "Profile updated successfully"
-      });
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Profile update error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update profile",
-        variant: "destructive"
-      });
-    }
-  };
 
   const handleChangePassword = async () => {
     if (passwordData.new_password !== passwordData.confirm_password) {
