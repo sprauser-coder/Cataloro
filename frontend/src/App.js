@@ -1816,8 +1816,10 @@ const Profile = () => {
     is_business: false,
     company_name: '',
     country: '',
-    vat_number: ''
+    vat_number: '',
+    profile_picture_url: ''
   });
+  const [profilePictureUploading, setProfilePictureUploading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [listings, setListings] = useState([]);
   const [stats, setStats] = useState({
