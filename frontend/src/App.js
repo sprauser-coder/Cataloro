@@ -8122,6 +8122,11 @@ function App() {
                 <Home />
               </ProtectedRoute>
             } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
             <Route path="/admin" element={
               <AdminProtectedRoute>
                 <AdminPanel />
