@@ -269,9 +269,8 @@ const AdminProtectedRoute = ({ children }) => {
 
 // Footer Component with Version
 const Footer = ({ siteSettings }) => {
-  const currentVersion = "1.2.1";
-  // Use deployment/completion time instead of current time
-  const deploymentDateTime = "24/01/2025 15:20";
+  const currentVersion = "1.3.0"; // Updated to reflect new features
+  const deploymentDateTime = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour12: false });
 
   return (
     <footer className="bg-white border-t border-gray-200 mt-auto">
@@ -285,7 +284,7 @@ const Footer = ({ siteSettings }) => {
                 fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
               }}
             >
-              © {new Date().getFullYear()} {siteSettings?.site_title || 'Cataloro Marketplace'}. All rights reserved.
+              © {new Date().getFullYear()} {siteSettings?.site_name || 'Cataloro Marketplace'}. All rights reserved.
             </p>
           </div>
           <div className="flex items-center space-x-6">
