@@ -3105,6 +3105,24 @@ const AdminPanel = () => {
   const [dashboardTimeRange, setDashboardTimeRange] = useState('7days'); // New: Dashboard time range
   const [userSearchTerm, setUserSearchTerm] = useState(''); // New: User search
   const [userSortBy, setUserSortBy] = useState('created_desc'); // New: User sorting
+  const [seoSettings, setSeoSettings] = useState({
+    site_title: 'Cataloro - Your Trusted Marketplace',
+    meta_description: 'Buy and sell with confidence on Cataloro marketplace',
+    meta_keywords: 'marketplace, buy, sell, ecommerce, cataloro',
+    favicon_url: '/favicon.ico',
+    og_title: 'Cataloro Marketplace',
+    og_description: 'Your trusted marketplace for amazing deals',
+    og_image: '',
+    twitter_card: 'summary_large_image',
+    robots_txt: 'User-agent: *\nAllow: /',
+    canonical_url: '',
+    structured_data: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Cataloro",
+      "description": "Your trusted marketplace"
+    })
+  });
   const { user } = useAuth();
   const { toast } = useToast();
 
