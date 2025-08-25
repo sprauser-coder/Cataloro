@@ -1330,18 +1330,7 @@ const Home = () => {
               </Select>
             </div>
 
-            {/* Toggle Advanced Filters */}
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2"
-            >
-              <Search className="h-4 w-4" />
-              <span>More Filters</span>
-              {showFilters ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-            </Button>
-
-            {/* Results Count and Per Page Selector */}
+            {/* Results Count and Pagination */}
             <div className="ml-auto flex items-center space-x-4">
               <div className="text-sm text-gray-600">
                 {loading ? 'Loading...' : `${listings.length} items found`}
@@ -1354,8 +1343,8 @@ const Home = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="25">25</SelectItem>
                     <SelectItem value="50">50</SelectItem>
-                    <SelectItem value="100">100</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
