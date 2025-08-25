@@ -1,480 +1,256 @@
 #!/usr/bin/env python3
 """
-FINAL COMPREHENSIVE BACKEND TESTING FOR CATALORO MARKETPLACE DEPLOYMENT
-Testing all backend functionality as requested in the review:
-
-1. Complete API Endpoint Coverage
-   - All authentication endpoints (/api/auth/*)
-   - All admin panel endpoints (/api/admin/*)
-   - All marketplace endpoints (/api/listings/*, /api/categories/*, /api/orders/*)
-   - All user profile endpoints (/api/profile/*)
-   - SEO settings endpoints (/api/admin/seo)
-   - File upload endpoints (logo uploads, profile pictures)
-
-2. Data Integrity Testing
-   - User management (creation, modification, deletion)
-   - Product/listing management
-   - Order processing workflow
-   - Category management
-   - Settings management (site settings, SEO settings)
-
-3. File Upload Systems
-   - Logo upload functionality
-   - Profile picture upload system
-   - Image upload for listings
-   - File size and type validations
-
-4. Admin Panel Backend Support
-   - Dashboard analytics data
-   - User statistics and management
-   - Content management system
-   - Database operations
-
-5. Security and Performance
-   - Authentication token validation
-   - Authorization checks for admin functions
-   - CORS configuration
-   - Input validation and sanitization
+Backend API Testing Script for Cataloro Marketplace
+Focus: Core endpoints verification after recent changes
 """
 
 import requests
 import json
 import sys
-import os
-import tempfile
-import io
 from datetime import datetime
-from pathlib import Path
 
-# Configuration - Use frontend environment for backend URL
-BACKEND_URL = 'http://217.154.0.82/api'
+# Configuration
+BACKEND_URL = "https://revived-cataloro.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
-class BackendConnectivityTester:
+class BackendTester:
     def __init__(self):
         self.session = requests.Session()
         self.admin_token = None
-        self.admin_user = None
         self.test_results = []
         
-    def log_test(self, test_name, success, details=""):
-        """Log test results"""
+    def log_test(self, test_name, success, message, details=None):
+        """Log test result"""
         status = "✅ PASS" if success else "❌ FAIL"
-        self.test_results.append({
+        result = {
             "test": test_name,
-            "success": success,
-            "details": details
-        })
-        print(f"{status}: {test_name}")
-        if details:
+            "status": status,
+            "message": message,
+            "details": details,
+            "timestamp": datetime.now().isoformat()
+        }
+        self.test_results.append(result)
+        print(f"{status}: {test_name} - {message}")
+        if details and not success:
             print(f"   Details: {details}")
-        print()
     
-    def test_basic_api_connectivity(self):
-        """Test 1: Basic API Connectivity - GET /api/"""
-        print("🌐 Testing Basic API Connectivity...")
-        
+    def test_basic_connectivity(self):
+        """Test 1: Basic connectivity - GET /api/ endpoint"""
         try:
-            response = self.session.get(f"{BACKEND_URL}/", timeout=10)
+            response = self.session.get(f"{BACKEND_URL}/")
             
             if response.status_code == 200:
                 data = response.json()
-                
-                # Check for expected API root response
-                if "message" in data:
-                    self.log_test(
-                        "Basic API Connectivity", 
-                        True, 
-                        f"API root accessible. Response: {data.get('message')}"
-                    )
+                if data.get("message") == "Marketplace API":
+                    self.log_test("Basic Connectivity", True, "Root API endpoint responding correctly")
                     return True
                 else:
-                    self.log_test("Basic API Connectivity", False, "Unexpected API root response format")
+                    self.log_test("Basic Connectivity", False, f"Unexpected response: {data}")
                     return False
             else:
-                self.log_test(
-                    "Basic API Connectivity", 
-                    False, 
-                    f"API root failed with status {response.status_code}: {response.text}"
-                )
+                self.log_test("Basic Connectivity", False, f"HTTP {response.status_code}: {response.text}")
                 return False
                 
-        except requests.exceptions.ConnectTimeout:
-            self.log_test("Basic API Connectivity", False, "Connection timeout - server may be unreachable")
-            return False
-        except requests.exceptions.ConnectionError as e:
-            self.log_test("Basic API Connectivity", False, f"Connection error: {str(e)}")
-            return False
         except Exception as e:
-            self.log_test("Basic API Connectivity", False, f"Exception occurred: {str(e)}")
+            self.log_test("Basic Connectivity", False, f"Connection error: {str(e)}")
             return False
-
-    def test_admin_login(self):
-        """Test 2: Admin Authentication - POST /api/auth/login with admin credentials"""
-        print("🔐 Testing Admin Authentication...")
-        
+    
+    def test_admin_authentication(self):
+        """Test 2: Authentication endpoints - POST /api/auth/login"""
         try:
             login_data = {
                 "email": ADMIN_EMAIL,
                 "password": ADMIN_PASSWORD
             }
             
-            response = self.session.post(f"{BACKEND_URL}/auth/login", json=login_data, timeout=10)
+            response = self.session.post(f"{BACKEND_URL}/auth/login", json=login_data)
             
             if response.status_code == 200:
                 data = response.json()
-                
-                # Check response structure
                 if "access_token" in data and "user" in data:
                     self.admin_token = data["access_token"]
-                    self.admin_user = data["user"]
-                    
-                    # Verify token type and user role
-                    if data.get("token_type") == "bearer" and self.admin_user.get("role") == "admin":
-                        self.log_test(
-                            "Admin Authentication", 
-                            True, 
-                            f"Successfully authenticated as {self.admin_user.get('email')} with admin role. JWT token received."
-                        )
+                    user = data["user"]
+                    if user.get("role") == "admin":
+                        self.log_test("Admin Authentication", True, f"Admin login successful for {user.get('email')}")
                         return True
                     else:
-                        self.log_test("Admin Authentication", False, f"Invalid token type or role. Token type: {data.get('token_type')}, Role: {self.admin_user.get('role')}")
+                        self.log_test("Admin Authentication", False, f"User role is {user.get('role')}, expected 'admin'")
                         return False
                 else:
-                    self.log_test("Admin Authentication", False, "Missing access_token or user in response")
+                    self.log_test("Admin Authentication", False, f"Missing token or user in response: {data}")
                     return False
             else:
-                self.log_test(
-                    "Admin Authentication", 
-                    False, 
-                    f"Authentication failed with status {response.status_code}: {response.text}"
-                )
+                self.log_test("Admin Authentication", False, f"HTTP {response.status_code}: {response.text}")
                 return False
                 
-        except requests.exceptions.ConnectTimeout:
-            self.log_test("Admin Authentication", False, "Connection timeout during authentication")
-            return False
-        except requests.exceptions.ConnectionError as e:
-            self.log_test("Admin Authentication", False, f"Connection error during authentication: {str(e)}")
-            return False
         except Exception as e:
-            self.log_test("Admin Authentication", False, f"Exception occurred: {str(e)}")
+            self.log_test("Admin Authentication", False, f"Authentication error: {str(e)}")
             return False
     
-    def test_cms_settings(self):
-        """Test 3: CMS Settings - GET /api/cms/settings for frontend initialization"""
-        print("⚙️ Testing CMS Settings Endpoint...")
-        
+    def test_listings_endpoint(self):
+        """Test 3: Core marketplace endpoints - GET /api/listings"""
         try:
-            response = self.session.get(f"{BACKEND_URL}/cms/settings", timeout=10)
+            response = self.session.get(f"{BACKEND_URL}/listings")
             
             if response.status_code == 200:
                 data = response.json()
-                
-                # Check for essential CMS settings that frontend needs
-                essential_fields = ["site_name", "primary_color", "secondary_color", "hero_title", "hero_subtitle"]
-                missing_fields = [field for field in essential_fields if field not in data]
-                
-                if not missing_fields:
-                    site_name = data.get("site_name", "Unknown")
-                    self.log_test(
-                        "CMS Settings", 
-                        True, 
-                        f"CMS settings accessible. Site name: '{site_name}'. All essential fields present."
-                    )
+                if isinstance(data, list):
+                    self.log_test("Listings Endpoint", True, f"Retrieved {len(data)} listings successfully")
                     return True
                 else:
-                    self.log_test(
-                        "CMS Settings", 
-                        False, 
-                        f"Missing essential CMS fields: {missing_fields}"
-                    )
+                    self.log_test("Listings Endpoint", False, f"Expected list, got: {type(data)}")
                     return False
             else:
-                self.log_test(
-                    "CMS Settings", 
-                    False, 
-                    f"CMS settings failed with status {response.status_code}: {response.text}"
-                )
+                self.log_test("Listings Endpoint", False, f"HTTP {response.status_code}: {response.text}")
                 return False
                 
-        except requests.exceptions.ConnectTimeout:
-            self.log_test("CMS Settings", False, "Connection timeout accessing CMS settings")
-            return False
-        except requests.exceptions.ConnectionError as e:
-            self.log_test("CMS Settings", False, f"Connection error accessing CMS settings: {str(e)}")
-            return False
         except Exception as e:
-            self.log_test("CMS Settings", False, f"Exception occurred: {str(e)}")
+            self.log_test("Listings Endpoint", False, f"Request error: {str(e)}")
             return False
     
     def test_categories_endpoint(self):
-        """Test 4: Categories Data - GET /api/categories"""
-        print("📂 Testing Categories Endpoint...")
-        
+        """Test 4: Core marketplace endpoints - GET /api/categories"""
         try:
-            response = self.session.get(f"{BACKEND_URL}/categories", timeout=10)
+            response = self.session.get(f"{BACKEND_URL}/categories")
             
             if response.status_code == 200:
                 data = response.json()
-                
-                # Check if categories are returned as a list
                 if isinstance(data, list) and len(data) > 0:
-                    categories_count = len(data)
-                    sample_categories = data[:3]  # Show first 3 categories
-                    self.log_test(
-                        "Categories Data", 
-                        True, 
-                        f"Categories endpoint accessible. {categories_count} categories available. Sample: {sample_categories}"
-                    )
-                    return True
+                    expected_categories = ["Electronics", "Fashion", "Home & Garden", "Sports", "Books"]
+                    found_categories = [cat for cat in expected_categories if cat in data]
+                    if len(found_categories) >= 3:  # At least 3 expected categories found
+                        self.log_test("Categories Endpoint", True, f"Retrieved {len(data)} categories including {found_categories}")
+                        return True
+                    else:
+                        self.log_test("Categories Endpoint", False, f"Missing expected categories. Got: {data}")
+                        return False
                 else:
-                    self.log_test(
-                        "Categories Data", 
-                        False, 
-                        f"Categories endpoint returned unexpected data format or empty list: {data}"
-                    )
+                    self.log_test("Categories Endpoint", False, f"Expected non-empty list, got: {data}")
                     return False
             else:
-                self.log_test(
-                    "Categories Data", 
-                    False, 
-                    f"Categories endpoint failed with status {response.status_code}: {response.text}"
-                )
+                self.log_test("Categories Endpoint", False, f"HTTP {response.status_code}: {response.text}")
                 return False
                 
-        except requests.exceptions.ConnectTimeout:
-            self.log_test("Categories Data", False, "Connection timeout accessing categories")
-            return False
-        except requests.exceptions.ConnectionError as e:
-            self.log_test("Categories Data", False, f"Connection error accessing categories: {str(e)}")
-            return False
         except Exception as e:
-            self.log_test("Categories Data", False, f"Exception occurred: {str(e)}")
+            self.log_test("Categories Endpoint", False, f"Request error: {str(e)}")
             return False
     
-    def test_cors_headers(self):
-        """Test 5: CORS Headers - Check if backend properly handles CORS for frontend communication"""
-        print("🌐 Testing CORS Headers...")
-        
-        try:
-            # Test preflight request (OPTIONS)
-            headers = {
-                'Origin': 'http://217.154.0.82',
-                'Access-Control-Request-Method': 'POST',
-                'Access-Control-Request-Headers': 'Content-Type,Authorization'
-            }
-            
-            response = self.session.options(f"{BACKEND_URL}/auth/login", headers=headers, timeout=10)
-            
-            # Check CORS headers in response
-            cors_headers = {
-                'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
-                'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
-                'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers'),
-                'Access-Control-Allow-Credentials': response.headers.get('Access-Control-Allow-Credentials')
-            }
-            
-            # Check if CORS is properly configured
-            allow_origin = cors_headers.get('Access-Control-Allow-Origin')
-            if allow_origin and (allow_origin == '*' or '217.154.0.82' in allow_origin):
-                self.log_test(
-                    "CORS Headers", 
-                    True, 
-                    f"CORS properly configured. Allow-Origin: {allow_origin}. Status: {response.status_code}"
-                )
-                return True
-            else:
-                self.log_test(
-                    "CORS Headers", 
-                    False, 
-                    f"CORS may not be properly configured. Headers: {cors_headers}. Status: {response.status_code}"
-                )
-                return False
-                
-        except requests.exceptions.ConnectTimeout:
-            self.log_test("CORS Headers", False, "Connection timeout during CORS test")
-            return False
-        except requests.exceptions.ConnectionError as e:
-            self.log_test("CORS Headers", False, f"Connection error during CORS test: {str(e)}")
-            return False
-        except Exception as e:
-            self.log_test("CORS Headers", False, f"Exception occurred: {str(e)}")
-            return False
-    
-    def test_authenticated_endpoints(self):
-        """Test 6: Authenticated Endpoints - Test protected endpoints with admin token"""
-        print("🔐 Testing Authenticated Endpoints...")
-        
+    def test_admin_stats_endpoint(self):
+        """Test 5: Admin endpoints - GET /api/admin/stats (with admin credentials)"""
         if not self.admin_token:
-            self.log_test("Authenticated Endpoints", False, "No admin token available")
+            self.log_test("Admin Stats Endpoint", False, "No admin token available")
             return False
-        
+            
         try:
             headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(f"{BACKEND_URL}/admin/stats", headers=headers)
             
-            # Test multiple authenticated endpoints
-            endpoints_to_test = [
-                ("/profile", "User Profile"),
-                ("/admin/stats", "Admin Stats"),
-                ("/listings/my-listings", "My Listings")
-            ]
-            
-            successful_endpoints = []
-            failed_endpoints = []
-            
-            for endpoint, description in endpoints_to_test:
-                try:
-                    response = self.session.get(f"{BACKEND_URL}{endpoint}", headers=headers, timeout=10)
-                    if response.status_code == 200:
-                        successful_endpoints.append(f"{description} ({endpoint})")
-                    elif response.status_code == 401:
-                        failed_endpoints.append(f"{description} ({endpoint}) - 401 Unauthorized")
-                    elif response.status_code == 403:
-                        failed_endpoints.append(f"{description} ({endpoint}) - 403 Forbidden")
-                    else:
-                        failed_endpoints.append(f"{description} ({endpoint}) - Status: {response.status_code}")
-                except Exception as e:
-                    failed_endpoints.append(f"{description} ({endpoint}) - Error: {str(e)}")
-            
-            if len(successful_endpoints) >= 2:  # At least 2 out of 3 should work
-                self.log_test(
-                    "Authenticated Endpoints", 
-                    True, 
-                    f"JWT authentication working. Accessible endpoints: {', '.join(successful_endpoints)}"
-                )
-                if failed_endpoints:
-                    print(f"   Note: Some endpoints had issues: {', '.join(failed_endpoints)}")
-                return True
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ["total_users", "active_users", "total_listings", "active_listings", "total_orders", "total_revenue"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if not missing_fields:
+                    stats_summary = {k: data[k] for k in required_fields}
+                    self.log_test("Admin Stats Endpoint", True, f"Admin stats retrieved successfully: {stats_summary}")
+                    return True
+                else:
+                    self.log_test("Admin Stats Endpoint", False, f"Missing required fields: {missing_fields}")
+                    return False
+            elif response.status_code == 403:
+                self.log_test("Admin Stats Endpoint", False, "Access denied - admin authentication failed")
+                return False
             else:
-                self.log_test(
-                    "Authenticated Endpoints", 
-                    False, 
-                    f"JWT authentication failing. Working: {len(successful_endpoints)}, Failed: {len(failed_endpoints)}"
-                )
+                self.log_test("Admin Stats Endpoint", False, f"HTTP {response.status_code}: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_test("Authenticated Endpoints", False, f"Exception occurred: {str(e)}")
+            self.log_test("Admin Stats Endpoint", False, f"Request error: {str(e)}")
             return False
     
-    def test_frontend_critical_endpoints(self):
-        """Test 7: Frontend Critical Endpoints - Test endpoints essential for frontend initialization"""
-        print("🎯 Testing Frontend Critical Endpoints...")
-        
+    def test_cms_settings_endpoint(self):
+        """Test 6: CMS settings endpoint - GET /api/cms/settings (important for Footer)"""
         try:
-            # Test endpoints that frontend needs to initialize properly
-            critical_endpoints = [
-                ("/", "API Root"),
-                ("/categories", "Categories List"),
-                ("/cms/settings", "Site Settings"),
-                ("/listings", "Public Listings")
-            ]
+            response = self.session.get(f"{BACKEND_URL}/cms/settings")
             
-            successful_endpoints = []
-            failed_endpoints = []
-            
-            for endpoint, description in critical_endpoints:
-                try:
-                    response = self.session.get(f"{BACKEND_URL}{endpoint}", timeout=10)
-                    if response.status_code == 200:
-                        successful_endpoints.append(f"{description} ({endpoint})")
-                    else:
-                        failed_endpoints.append(f"{description} ({endpoint}) - Status: {response.status_code}")
-                except Exception as e:
-                    failed_endpoints.append(f"{description} ({endpoint}) - Error: {str(e)}")
-            
-            if len(successful_endpoints) >= 3:  # At least 3 out of 4 should work
-                self.log_test(
-                    "Frontend Critical Endpoints", 
-                    True, 
-                    f"Frontend initialization endpoints working. Accessible: {', '.join(successful_endpoints)}"
-                )
-                if failed_endpoints:
-                    print(f"   Note: Some endpoints had issues: {', '.join(failed_endpoints)}")
-                return True
+            if response.status_code == 200:
+                data = response.json()
+                # Check for key fields that Footer component depends on
+                required_fields = ["site_name", "font_color", "global_font_family"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if not missing_fields:
+                    footer_relevant = {
+                        "site_name": data.get("site_name"),
+                        "font_color": data.get("font_color"),
+                        "global_font_family": data.get("global_font_family"),
+                        "primary_color": data.get("primary_color"),
+                        "secondary_color": data.get("secondary_color")
+                    }
+                    self.log_test("CMS Settings Endpoint", True, f"CMS settings retrieved successfully. Footer fields: {footer_relevant}")
+                    return True
+                else:
+                    self.log_test("CMS Settings Endpoint", False, f"Missing required fields for Footer: {missing_fields}")
+                    return False
             else:
-                self.log_test(
-                    "Frontend Critical Endpoints", 
-                    False, 
-                    f"Critical frontend endpoints failing. This could cause white screen. Working: {len(successful_endpoints)}, Failed: {len(failed_endpoints)}"
-                )
+                self.log_test("CMS Settings Endpoint", False, f"HTTP {response.status_code}: {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_test("Frontend Critical Endpoints", False, f"Exception occurred: {str(e)}")
+            self.log_test("CMS Settings Endpoint", False, f"Request error: {str(e)}")
             return False
     
     def run_all_tests(self):
-        """Run all backend connectivity tests for 217.154.0.82"""
+        """Run all backend tests"""
         print("=" * 80)
-        print("🚀 BACKEND API CONNECTIVITY TEST FOR 217.154.0.82")
-        print("Diagnosing frontend white screen and authentication issues")
+        print("CATALORO BACKEND API TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Admin Email: {ADMIN_EMAIL}")
-        print(f"Test Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"Admin Credentials: {ADMIN_EMAIL}")
         print("=" * 80)
-        print()
         
-        # Run tests in sequence - order matters for dependencies
+        # Run tests in sequence
         tests = [
-            self.test_basic_api_connectivity,
-            self.test_admin_login,
-            self.test_cms_settings,
+            self.test_basic_connectivity,
+            self.test_admin_authentication,
+            self.test_listings_endpoint,
             self.test_categories_endpoint,
-            self.test_cors_headers,
-            self.test_authenticated_endpoints,
-            self.test_frontend_critical_endpoints
+            self.test_admin_stats_endpoint,
+            self.test_cms_settings_endpoint
         ]
         
+        passed = 0
+        total = len(tests)
+        
         for test in tests:
-            test()
+            if test():
+                passed += 1
+            print()  # Add spacing between tests
         
         # Summary
         print("=" * 80)
-        print("📊 BACKEND CONNECTIVITY TEST SUMMARY")
+        print("TEST SUMMARY")
         print("=" * 80)
+        print(f"Tests Passed: {passed}/{total}")
+        print(f"Success Rate: {(passed/total)*100:.1f}%")
         
-        passed_tests = [r for r in self.test_results if r["success"]]
-        failed_tests = [r for r in self.test_results if not r["success"]]
-        
-        print(f"Total Tests: {len(self.test_results)}")
-        print(f"Passed: {len(passed_tests)}")
-        print(f"Failed: {len(failed_tests)}")
-        print(f"Success Rate: {len(passed_tests)/len(self.test_results)*100:.1f}%")
-        print()
-        
-        if failed_tests:
-            print("❌ FAILED TESTS:")
-            for test in failed_tests:
-                print(f"  - {test['test']}: {test['details']}")
-            print()
-        
-        # Diagnosis based on results
-        if len(passed_tests) == len(self.test_results):
-            print("🎉 ALL TESTS PASSED! Backend is fully accessible from 217.154.0.82")
-            print("✅ Frontend white screen issue is NOT caused by backend connectivity problems.")
-            print("🔍 Investigate frontend code, React app initialization, or client-side issues.")
-        elif len(passed_tests) >= 5:  # Most tests passing
-            print("⚠️  MOSTLY WORKING: Backend is largely accessible but has some issues.")
-            print("✅ Core functionality available, but some features may cause frontend problems.")
-            print("🔍 Check specific failed endpoints and CORS configuration.")
-        elif len(passed_tests) >= 3:  # Basic connectivity working
-            print("🚨 PARTIAL CONNECTIVITY: Basic backend access working but authentication/data issues.")
-            print("⚠️  Frontend may load but fail during authentication or data fetching.")
-            print("🔍 Focus on authentication endpoints and data retrieval issues.")
+        if passed == total:
+            print("🎉 ALL TESTS PASSED - Backend API is fully operational!")
         else:
-            print("🚨 CRITICAL BACKEND ISSUES: Server connectivity problems detected.")
-            print("❌ Frontend white screen likely caused by backend being unreachable or misconfigured.")
-            print("🔍 Check server status, network connectivity, and backend deployment.")
+            print("⚠️  SOME TESTS FAILED - Check details above")
         
         print("=" * 80)
         
-        return len(failed_tests) == 0
+        return passed == total
+
+def main():
+    """Main test execution"""
+    tester = BackendTester()
+    success = tester.run_all_tests()
+    
+    # Exit with appropriate code
+    sys.exit(0 if success else 1)
 
 if __name__ == "__main__":
-    tester = BackendConnectivityTester()
-    success = tester.run_all_tests()
-    sys.exit(0 if success else 1)
+    main()
