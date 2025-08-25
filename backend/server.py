@@ -485,49 +485,7 @@ async def get_my_listings(current_user: User = Depends(get_current_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve user listings: {str(e)}")
 
-@api_router.get("/listings/count")
-async def get_listings_count(
-    category: Optional[str] = None,
-    search: Optional[str] = None,
-    listing_type: Optional[ListingType] = None,
-    min_price: Optional[float] = None,
-    max_price: Optional[float] = None,
-    condition: Optional[str] = None,
-    region: Optional[str] = None
-):
-    """Get total count of active listings matching filters"""
-    query = {"status": ListingStatus.ACTIVE}
-    
-    # Apply same filters as get_listings
-    if category:
-        query["category"] = category
-    if listing_type:
-        query["listing_type"] = listing_type
-    if search:
-        query["$or"] = [
-            {"title": {"$regex": search, "$options": "i"}},
-            {"description": {"$regex": search, "$options": "i"}}
-        ]
-    if condition:
-        query["condition"] = condition
-    if region:
-        query["region"] = region
-    
-    # Price filtering
-    if min_price is not None or max_price is not None:
-        price_query = {}
-        if min_price is not None:
-            price_query["$gte"] = min_price
-        if max_price is not None:
-            price_query["$lte"] = max_price
-        
-        query["$or"] = [
-            {"price": price_query, "listing_type": "fixed_price"},
-            {"current_bid": price_query, "listing_type": "auction"}
-        ]
-    
-    count = await db.listings.count_documents(query)
-    return {"total_count": count}
+
 
 @api_router.get("/listings/{listing_id}", response_model=ProductListing)
 async def get_listing(listing_id: str):
