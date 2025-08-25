@@ -131,7 +131,7 @@ class LogoUploadInvestigator:
             
             # Test 1a: Valid PNG upload
             png_image = self.create_test_image('PNG', (200, 200))
-            files = {'logo': ('test_logo.png', png_image, 'image/png')}
+            files = {'file': ('test_logo.png', png_image, 'image/png')}
             
             response = self.session.post(f"{BACKEND_URL}/admin/cms/upload-logo", headers=headers, files=files, timeout=30)
             
