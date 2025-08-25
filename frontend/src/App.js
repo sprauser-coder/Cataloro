@@ -3436,6 +3436,7 @@ const AdminPanel = () => {
   useEffect(() => {
     if (activeTab === 'dashboard') {
       fetchStats();
+      fetchTimeBasedStats(overviewTimeFrame); // Fetch initial time-based stats
     } else if (activeTab === 'users') {
       fetchUsers();
     } else if (activeTab === 'products') {
@@ -3457,6 +3458,13 @@ const AdminPanel = () => {
       loadSeoSettings();
     }
   }, [activeTab]);
+
+  // Separate useEffect to handle timeframe changes
+  useEffect(() => {
+    if (activeTab === 'dashboard') {
+      fetchTimeBasedStats(overviewTimeFrame);
+    }
+  }, [overviewTimeFrame, performanceTimeFrame, activityTimeFrame]);
 
   const fetchStats = async () => {
     try {
