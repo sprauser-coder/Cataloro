@@ -1435,7 +1435,7 @@ const Home = () => {
                   <SelectContent>
                     <SelectItem value="12">12</SelectItem>
                     <SelectItem value="24">24</SelectItem>
-                    <parameter name="48">48</SelectItem>
+                    <SelectItem value="48">48</SelectItem>
                     <SelectItem value="all">All</SelectItem>
                   </SelectContent>
                 </Select>
