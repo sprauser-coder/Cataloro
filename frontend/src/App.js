@@ -8116,7 +8116,7 @@ function App() {
   return (
     <AuthProvider>
       <div className="App">
-        <BrowserRouter>
+        <HashRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={
