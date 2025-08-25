@@ -364,18 +364,10 @@ const NotificationCenter = () => {
       
       await axios.put(`${API}/orders/${orderId}/${endpoint}`, payload);
       
-      // Mark the notification as read/clear it
-      if (notificationId) {
-        await markAsRead(notificationId);
-      }
-      
       toast({
         title: "Success",
         description: `Order ${action}d successfully. ${action === 'approve' ? 'Order added to completed orders.' : 'Order cancelled.'}`
       });
-      
-      // Refresh notifications to remove completed ones
-      fetchNotifications();
       
     } catch (error) {
       toast({
@@ -383,6 +375,14 @@ const NotificationCenter = () => {
         description: `Failed to ${action} order`,
         variant: "destructive"
       });
+    } finally {
+      // Always clear the notification after action attempt (success or failure)
+      if (notificationId) {
+        await markAsRead(notificationId);
+      }
+      
+      // Refresh notifications to update the list
+      fetchNotifications();
     }
   };
 
