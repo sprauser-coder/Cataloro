@@ -30,8 +30,9 @@ const getImageUrl = (imageUrl) => {
   if (!imageUrl) return '';
   if (imageUrl.startsWith('http')) return imageUrl;
   if (imageUrl.startsWith('/uploads/')) {
-    // For production deployment - use server IP for images
-    return `http://217.154.0.82:8001${imageUrl}`;
+    // Use environment variable for backend URL
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+    return `${backendUrl}${imageUrl}`;
   }
   return imageUrl;
 };
