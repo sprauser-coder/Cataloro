@@ -1097,7 +1097,7 @@ const Home = () => {
     if (user) {
       fetchUserFavorites();
     }
-  }, [searchTerm, selectedCategory, listingType, sortBy, priceRange, selectedCondition, selectedRegion, maxDistance, listingsPerPage, user]);
+  }, [searchTerm, selectedCategory, listingType, sortBy, priceRange, selectedCondition, selectedRegion, maxDistance, listingsPerPage, currentPage, user]);
 
   const fetchCategories = async () => {
     try {
