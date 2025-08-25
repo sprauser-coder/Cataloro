@@ -1195,13 +1195,6 @@ const Home = () => {
           }
         }
       }
-    } catch (error) {
-      console.error('Error fetching listings:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch listings",
-        variant: "destructive"
-      });
     } finally {
       setLoading(false);
     }
