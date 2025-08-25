@@ -3391,6 +3391,8 @@ const AdminPanel = () => {
       fetchSiteSettings();
     } else if (activeTab === 'appearance') {
       fetchSiteSettings();
+    } else if (activeTab === 'seo') {
+      loadSeoSettings();
     }
   }, [activeTab]);
 
