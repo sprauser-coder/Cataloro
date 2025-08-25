@@ -272,6 +272,9 @@ const Footer = ({ siteSettings }) => {
   const currentVersion = "1.3.0"; // Updated to reflect new features
   const deploymentDateTime = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour12: false });
 
+  // Safely handle siteSettings that might be null or undefined
+  const safeSettings = siteSettings || {};
+
   return (
     <footer className="bg-white border-t border-gray-200 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -280,11 +283,11 @@ const Footer = ({ siteSettings }) => {
             <p 
               className="text-sm"
               style={{
-                color: siteSettings?.font_color || '#6b7280',
-                fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
+                color: safeSettings.font_color || '#6b7280',
+                fontFamily: safeSettings.global_font_family ? `${safeSettings.global_font_family}, sans-serif` : undefined
               }}
             >
-              © {new Date().getFullYear()} {siteSettings?.site_name || 'Cataloro Marketplace'}. All rights reserved.
+              © {new Date().getFullYear()} {safeSettings.site_name || 'Cataloro Marketplace'}. All rights reserved.
             </p>
           </div>
           <div className="flex items-center space-x-6">
