@@ -254,7 +254,7 @@ class LogoUploadInvestigator:
                     
                     # Test 2c: Invalid format (GIF) should be rejected
                     gif_image = self.create_test_image('PNG', (200, 200))  # Create as PNG but name as GIF
-                    files = {'image': ('test_listing.gif', gif_image, 'image/gif')}
+                    files = {'file': ('test_listing.gif', gif_image, 'image/gif')}
                     
                     response = self.session.post(f"{BACKEND_URL}/listings/upload-image", headers=headers, files=files, timeout=30)
                     
