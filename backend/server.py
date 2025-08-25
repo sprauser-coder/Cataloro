@@ -126,6 +126,57 @@ class User(BaseModel):
     trust_score: int = Field(default=50)  # 0-100 scale
     account_level: str = Field(default="Bronze")  # Bronze, Silver, Gold, Platinum
 
+class UserActivity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    activity_type: str  # 'listing_created', 'order_completed', 'review_received', etc.
+    title: str
+    description: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)  # Additional data
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class UserStats(BaseModel):
+    user_id: str
+    total_orders: int = Field(default=0)
+    total_listings: int = Field(default=0)
+    total_spent: float = Field(default=0.0)
+    total_earned: float = Field(default=0.0)
+    avg_rating: float = Field(default=0.0)
+    total_reviews: int = Field(default=0)
+    successful_transactions: int = Field(default=0)
+    response_rate: float = Field(default=0.0)  # Percentage
+    avg_response_time: float = Field(default=0.0)  # Hours
+    badges_earned: int = Field(default=0)
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class Review(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    reviewer_id: str
+    reviewed_user_id: str
+    order_id: Optional[str] = None
+    listing_id: Optional[str] = None
+    rating: int = Field(ge=1, le=5)  # 1-5 stars
+    comment: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class Message(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    sender_id: str
+    receiver_id: str
+    subject: Optional[str] = None
+    message: str
+    read: bool = Field(default=False)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ProfileUpdateRequest(BaseModel):
+    full_name: Optional[str] = None
+    bio: Optional[str] = None
+    location: Optional[str] = None
+    website: Optional[str] = None
+    phone: Optional[str] = None
+    social_links: Optional[Dict[str, str]] = None
+    preferences: Optional[Dict[str, Any]] = None
+
 class UserCreate(BaseModel):
     email: EmailStr
     username: str
