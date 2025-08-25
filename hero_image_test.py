@@ -211,13 +211,13 @@ class HeroImageTester:
                 content_type = response.headers.get('content-type', '')
                 if 'image' in content_type:
                     self.log_result("Hero Image Accessibility", True, "Hero image accessible via HTTP", 
-                                  {"url": hero_url, "content_type": content_type, "size": len(response.content)})
+                                  {"url": full_url, "content_type": content_type, "size": len(response.content)})
                 else:
                     self.log_result("Hero Image Accessibility", False, "URL returns non-image content", 
                                   {"content_type": content_type, "content_preview": response.text[:200]})
             else:
                 self.log_result("Hero Image Accessibility", False, f"Image not accessible, status {response.status_code}",
-                              {"url": hero_url, "response": response.text[:200]})
+                              {"url": full_url, "response": response.text[:200]})
                 
         except Exception as e:
             self.log_result("Hero Image Accessibility", False, f"Exception accessing image: {str(e)}")
