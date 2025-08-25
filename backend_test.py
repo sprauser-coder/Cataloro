@@ -34,9 +34,48 @@ class BackendConnectivityTester:
             print(f"   Details: {details}")
         print()
     
+    def test_basic_api_connectivity(self):
+        """Test 1: Basic API Connectivity - GET /api/"""
+        print("🌐 Testing Basic API Connectivity...")
+        
+        try:
+            response = self.session.get(f"{BACKEND_URL}/", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check for expected API root response
+                if "message" in data:
+                    self.log_test(
+                        "Basic API Connectivity", 
+                        True, 
+                        f"API root accessible. Response: {data.get('message')}"
+                    )
+                    return True
+                else:
+                    self.log_test("Basic API Connectivity", False, "Unexpected API root response format")
+                    return False
+            else:
+                self.log_test(
+                    "Basic API Connectivity", 
+                    False, 
+                    f"API root failed with status {response.status_code}: {response.text}"
+                )
+                return False
+                
+        except requests.exceptions.ConnectTimeout:
+            self.log_test("Basic API Connectivity", False, "Connection timeout - server may be unreachable")
+            return False
+        except requests.exceptions.ConnectionError as e:
+            self.log_test("Basic API Connectivity", False, f"Connection error: {str(e)}")
+            return False
+        except Exception as e:
+            self.log_test("Basic API Connectivity", False, f"Exception occurred: {str(e)}")
+            return False
+
     def test_admin_login(self):
-        """Test 1: Admin Login Test - POST /api/auth/login with admin credentials"""
-        print("🔐 Testing Admin Login...")
+        """Test 2: Admin Authentication - POST /api/auth/login with admin credentials"""
+        print("🔐 Testing Admin Authentication...")
         
         try:
             login_data = {
@@ -44,7 +83,7 @@ class BackendConnectivityTester:
                 "password": ADMIN_PASSWORD
             }
             
-            response = self.session.post(f"{BACKEND_URL}/auth/login", json=login_data)
+            response = self.session.post(f"{BACKEND_URL}/auth/login", json=login_data, timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
@@ -54,30 +93,36 @@ class BackendConnectivityTester:
                     self.admin_token = data["access_token"]
                     self.admin_user = data["user"]
                     
-                    # Verify token type
-                    if data.get("token_type") == "bearer":
+                    # Verify token type and user role
+                    if data.get("token_type") == "bearer" and self.admin_user.get("role") == "admin":
                         self.log_test(
-                            "Admin Login", 
+                            "Admin Authentication", 
                             True, 
-                            f"Successfully logged in as {self.admin_user.get('email')}. Token received."
+                            f"Successfully authenticated as {self.admin_user.get('email')} with admin role. JWT token received."
                         )
                         return True
                     else:
-                        self.log_test("Admin Login", False, "Invalid token type returned")
+                        self.log_test("Admin Authentication", False, f"Invalid token type or role. Token type: {data.get('token_type')}, Role: {self.admin_user.get('role')}")
                         return False
                 else:
-                    self.log_test("Admin Login", False, "Missing access_token or user in response")
+                    self.log_test("Admin Authentication", False, "Missing access_token or user in response")
                     return False
             else:
                 self.log_test(
-                    "Admin Login", 
+                    "Admin Authentication", 
                     False, 
-                    f"Login failed with status {response.status_code}: {response.text}"
+                    f"Authentication failed with status {response.status_code}: {response.text}"
                 )
                 return False
                 
+        except requests.exceptions.ConnectTimeout:
+            self.log_test("Admin Authentication", False, "Connection timeout during authentication")
+            return False
+        except requests.exceptions.ConnectionError as e:
+            self.log_test("Admin Authentication", False, f"Connection error during authentication: {str(e)}")
+            return False
         except Exception as e:
-            self.log_test("Admin Login", False, f"Exception occurred: {str(e)}")
+            self.log_test("Admin Authentication", False, f"Exception occurred: {str(e)}")
             return False
     
     def test_admin_role_verification(self):
