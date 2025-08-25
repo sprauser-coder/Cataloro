@@ -8242,14 +8242,43 @@ function App() {
         }
       }
       
+      // Remove specific GitHub avatar/favicon images used by Emergent
+      const emergentImages = document.querySelectorAll('img[src*="avatars.githubusercontent.com"]');
+      emergentImages.forEach(img => {
+        if (img.src.includes('avatars.githubusercontent.com/in/1201222') || 
+            img.src.includes('avatars.githubusercontent.com') && 
+            (img.style.width === '20px' || img.width === 20)) {
+          img.remove();
+        }
+      });
+      
+      // Remove any small fixed positioned images that look like branding icons
+      const smallImages = document.querySelectorAll('img');
+      smallImages.forEach(img => {
+        const computedStyle = window.getComputedStyle(img);
+        if (computedStyle.position === 'fixed' && 
+            (computedStyle.width === '20px' || computedStyle.height === '20px') &&
+            (computedStyle.bottom || computedStyle.right)) {
+          img.remove();
+        }
+      });
+      
       // Remove fixed positioned elements in bottom right that look like branding
       const fixedElements = document.querySelectorAll('div[style*="position: fixed"]');
       fixedElements.forEach(el => {
         const style = el.style;
         if (style.position === 'fixed' && 
             (style.bottom || style.right) && 
-            el.textContent && 
-            el.textContent.toLowerCase().includes('made with')) {
+            (el.textContent && el.textContent.toLowerCase().includes('made with') ||
+             el.querySelector('img[src*="avatars.githubusercontent.com"]'))) {
+          el.remove();
+        }
+      });
+      
+      // Remove any element containing the specific GitHub avatar URL
+      const elementsWithGitHubAvatar = document.querySelectorAll('*');
+      elementsWithGitHubAvatar.forEach(el => {
+        if (el.innerHTML && el.innerHTML.includes('avatars.githubusercontent.com/in/1201222')) {
           el.remove();
         }
       });
