@@ -1372,17 +1372,18 @@ const Home = () => {
                 </Select>
               </div>
               {/* Page indicator */}
-              {!loading && totalListings > listingsPerPage && listingsPerPage < 1000 && (
+              {!loading && totalListings > 10 && ( // Always show if more than 10 items
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-600">
-                    {Math.ceil(totalListings / listingsPerPage) > 1 && `${currentPage}/${Math.ceil(totalListings / listingsPerPage)}`}
+                    {listingsPerPage >= 1000 ? 'All items' : 
+                     Math.ceil(totalListings / listingsPerPage) > 1 && `${currentPage}/${Math.ceil(totalListings / listingsPerPage)}`}
                   </span>
                   <div className="flex space-x-1">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                      disabled={currentPage === 1}
+                      disabled={currentPage === 1 || listingsPerPage >= 1000}
                       className="w-8 h-8 p-0"
                     >
                       ←
@@ -1391,7 +1392,7 @@ const Home = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalListings / listingsPerPage), prev + 1))}
-                      disabled={currentPage === Math.ceil(totalListings / listingsPerPage)}
+                      disabled={currentPage === Math.ceil(totalListings / listingsPerPage) || listingsPerPage >= 1000}
                       className="w-8 h-8 p-0"
                     >
                       →
