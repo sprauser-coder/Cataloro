@@ -402,6 +402,26 @@ const NotificationCenter = () => {
     }
   };
 
+  const clearAllNotifications = async () => {
+    try {
+      // Since there's no clear endpoint, we'll mark as read and clear locally
+      await axios.put(`${API}/notifications/mark-all-read`);
+      setNotifications([]);
+      setUnreadCount(0);
+      toast({
+        title: "Notifications cleared",
+        description: "All notifications have been cleared",
+      });
+    } catch (error) {
+      console.error('Error clearing notifications:', error);
+      toast({
+        title: "Error",
+        description: "Failed to clear notifications",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleOrderAction = async (orderId, action, notificationId, reason = null) => {
     try {
       const endpoint = action === 'approve' ? 'approve' : 'reject';
