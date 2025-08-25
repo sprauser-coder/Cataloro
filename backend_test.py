@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-Admin Authentication and Role Verification Test
-Testing admin login, role verification, token validation, and admin endpoint access
-to resolve admin panel white screen issue.
+Backend API Connectivity Test for 217.154.0.82 Server
+Testing critical endpoints to diagnose frontend authentication issues and white screen problem.
 """
 
 import requests
@@ -10,8 +9,8 @@ import json
 import sys
 from datetime import datetime
 
-# Configuration
-BACKEND_URL = "https://shopfix-deploy-1.preview.emergentagent.com/api"
+# Configuration - Updated for 217.154.0.82 server
+BACKEND_URL = "http://217.154.0.82/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
