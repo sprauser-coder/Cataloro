@@ -2254,6 +2254,8 @@ async def get_favorites_count(current_user: User = Depends(get_current_user)):
         return {"count": count}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get favorites count: {str(e)}")
+
+@api_router.get("/profile/activity")
 async def get_user_activity(current_user: User = Depends(get_current_user)):
     """Get user activity timeline"""
     user_id = current_user.id
