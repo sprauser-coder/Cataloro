@@ -2284,9 +2284,11 @@ const Profile = () => {
         { type: 'profile_updated', title: 'Updated profile information', time: '1 week ago', icon: '👤' },
       ]);
     }
-  }; {
+  };
+
+  const fetchUserListings = async () => {
     try {
-      const response = await axios.get(`${API}/listings/my-listings`);
+      const response = await axios.get(`${API}/listings/user`);
       setListings(response.data);
     } catch (error) {
       console.error('Error fetching listings:', error);
