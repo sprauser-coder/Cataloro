@@ -216,7 +216,7 @@ class LogoUploadInvestigator:
             
             # Test 2a: Valid PNG upload
             png_image = self.create_test_image('PNG', (300, 300))
-            files = {'image': ('test_listing.png', png_image, 'image/png')}
+            files = {'file': ('test_listing.png', png_image, 'image/png')}
             
             response = self.session.post(f"{BACKEND_URL}/listings/upload-image", headers=headers, files=files, timeout=30)
             
