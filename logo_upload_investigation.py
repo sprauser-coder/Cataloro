@@ -233,7 +233,7 @@ class LogoUploadInvestigator:
                     
                     # Test 2b: Valid JPEG upload
                     jpeg_image = self.create_test_image('JPEG', (300, 300))
-                    files = {'image': ('test_listing.jpg', jpeg_image, 'image/jpeg')}
+                    files = {'file': ('test_listing.jpg', jpeg_image, 'image/jpeg')}
                     
                     response = self.session.post(f"{BACKEND_URL}/listings/upload-image", headers=headers, files=files, timeout=30)
                     
