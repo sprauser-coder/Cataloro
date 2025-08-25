@@ -1054,7 +1054,18 @@ const Home = () => {
     
     try {
       const response = await axios.get(`${API}/favorites`);
-      setUserFavorites(response.data.map(fav => fav.listing.id));
+      const favorites = response.data;
+      
+      // Create array of listing IDs for quick checks
+      setUserFavorites(favorites.map(fav => fav.listing.id));
+      
+      // Create mapping from listing_id to favorite_id for deletion
+      const favMap = {};
+      favorites.forEach(fav => {
+        favMap[fav.listing.id] = fav.favorite_id;
+      });
+      setFavoritesMap(favMap);
+      
     } catch (error) {
       console.error('Error fetching user favorites:', error);
     }
