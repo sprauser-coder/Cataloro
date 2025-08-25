@@ -2093,6 +2093,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [showClearStatsDialog, setShowClearStatsDialog] = useState(false);
 
   // Enhanced Profile Data State
   const [profileData, setProfileData] = useState({
