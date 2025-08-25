@@ -3437,6 +3437,7 @@ const AdminPanel = () => {
       console.log('📊 Using fallback stats - new endpoint not available');
       // Fallback to admin stats
       try {
+        const token = localStorage.getItem('token');
         const response = await axios.get(`${API}/admin/stats`, {
           headers: {
             Authorization: `Bearer ${token}`
