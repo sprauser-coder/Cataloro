@@ -29,8 +29,8 @@ const getImageUrl = (imageUrl) => {
   if (!imageUrl) return '';
   if (imageUrl.startsWith('http')) return imageUrl;
   if (imageUrl.startsWith('/uploads/')) {
-    // Route uploads through backend to bypass nginx routing issue
-    return `${BACKEND_URL}${imageUrl}`;
+    // Use the direct server IP for image serving to bypass infrastructure routing issues
+    return `http://217.154.0.82:8001${imageUrl}`;
   }
   return imageUrl;
 };
