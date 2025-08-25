@@ -3487,6 +3487,9 @@ const AdminPanel = () => {
   const [bulkAction, setBulkAction] = useState('');
   const [bulkActionData, setBulkActionData] = useState({});
   const [timeFrame, setTimeFrame] = useState('today'); // Add time frame state
+  const [overviewTimeFrame, setOverviewTimeFrame] = useState('today'); // Individual time frame for overview cards
+  const [performanceTimeFrame, setPerformanceTimeFrame] = useState('today'); // Individual time frame for performance summary
+  const [activityTimeFrame, setActivityTimeFrame] = useState('today'); // Individual time frame for activity feed
   const [siteSettings, setSiteSettings] = useState(null);
   const [pages, setPages] = useState([]);
   const [navigation, setNavigation] = useState([]);
