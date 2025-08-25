@@ -168,6 +168,21 @@ frontend:
         agent: "main"
         comment: "BUG COMPLETELY FIXED: Root cause identified by troubleshoot_agent - frontend was configured with wrong backend URL (revived-cataloro vs cataloro-revival). Updated /app/frontend/.env from 'https://revived-cataloro.preview.emergentagent.com' to 'https://cataloro-revival.preview.emergentagent.com'. Backend testing confirms 100% working after URL fix. Frontend image preview URLs also fixed with proper getImageUrl() helper and specific file type acceptance. All image upload functionality now working correctly in deployment environment."
 
+  - task: "Login Functionality Broken After Deployment"
+    implemented: true
+    working: true
+    file: "/app/frontend/.env"
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported cannot log in after deployment changes - login functionality completely broken."
+      - working: true
+        agent: "main"
+        comment: "CRITICAL BUG FIXED: Root cause identified by troubleshoot_agent - frontend was configured to authenticate against non-existent preview URL (https://cataloro-revival.preview.emergentagent.com) that has no deployed backend service. Fixed by updating REACT_APP_BACKEND_URL in /app/frontend/.env from preview URL to correct IP address (http://217.154.0.82). Backend testing confirms 100% authentication functionality working (admin login, token validation, CORS headers, protected endpoints all working perfectly). User should now be able to log in successfully."
+
   - task: "Logo Settings Reorganization"
     implemented: true
     working: true
