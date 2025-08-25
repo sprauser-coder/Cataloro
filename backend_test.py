@@ -125,37 +125,51 @@ class BackendConnectivityTester:
             self.log_test("Admin Authentication", False, f"Exception occurred: {str(e)}")
             return False
     
-    def test_admin_role_verification(self):
-        """Test 2: Admin Role Verification - Verify returned user object contains role='admin'"""
-        print("👤 Testing Admin Role Verification...")
-        
-        if not self.admin_user:
-            self.log_test("Admin Role Verification", False, "No admin user data available")
-            return False
+    def test_cms_settings(self):
+        """Test 3: CMS Settings - GET /api/cms/settings for frontend initialization"""
+        print("⚙️ Testing CMS Settings Endpoint...")
         
         try:
-            user_role = self.admin_user.get("role")
-            user_email = self.admin_user.get("email")
-            user_id = self.admin_user.get("id")
-            user_username = self.admin_user.get("username")
+            response = self.session.get(f"{BACKEND_URL}/cms/settings", timeout=10)
             
-            if user_role == "admin":
-                self.log_test(
-                    "Admin Role Verification", 
-                    True, 
-                    f"User role correctly set to 'admin'. User details: email={user_email}, username={user_username}, id={user_id}"
-                )
-                return True
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check for essential CMS settings that frontend needs
+                essential_fields = ["site_name", "primary_color", "secondary_color", "hero_title", "hero_subtitle"]
+                missing_fields = [field for field in essential_fields if field not in data]
+                
+                if not missing_fields:
+                    site_name = data.get("site_name", "Unknown")
+                    self.log_test(
+                        "CMS Settings", 
+                        True, 
+                        f"CMS settings accessible. Site name: '{site_name}'. All essential fields present."
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "CMS Settings", 
+                        False, 
+                        f"Missing essential CMS fields: {missing_fields}"
+                    )
+                    return False
             else:
                 self.log_test(
-                    "Admin Role Verification", 
+                    "CMS Settings", 
                     False, 
-                    f"Expected role 'admin' but got '{user_role}'"
+                    f"CMS settings failed with status {response.status_code}: {response.text}"
                 )
                 return False
                 
+        except requests.exceptions.ConnectTimeout:
+            self.log_test("CMS Settings", False, "Connection timeout accessing CMS settings")
+            return False
+        except requests.exceptions.ConnectionError as e:
+            self.log_test("CMS Settings", False, f"Connection error accessing CMS settings: {str(e)}")
+            return False
         except Exception as e:
-            self.log_test("Admin Role Verification", False, f"Exception occurred: {str(e)}")
+            self.log_test("CMS Settings", False, f"Exception occurred: {str(e)}")
             return False
     
     def test_token_validation(self):
