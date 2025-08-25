@@ -8192,6 +8192,8 @@ function App() {
       setSiteSettings(response.data);
     } catch (error) {
       console.error('Error fetching site settings:', error);
+      // Set empty object as fallback to prevent undefined errors
+      setSiteSettings({});
     }
   };
 
