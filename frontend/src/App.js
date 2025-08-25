@@ -2272,6 +2272,28 @@ const Profile = () => {
     }
   };
 
+  const handleClearStatistics = async () => {
+    try {
+      await axios.post(`${API}/profile/clear-stats`);
+      
+      toast({
+        title: "Success",
+        description: "Statistics cleared successfully"
+      });
+      
+      setShowClearStatsDialog(false);
+      
+      // Refresh profile data to show updated (cleared) stats
+      fetchProfileData();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to clear statistics",
+        variant: "destructive"
+      });
+    }
+  };
+
   const getBadgeColor = (level) => {
     switch (level) {
       case 'Bronze': return 'bg-amber-100 text-amber-800';
