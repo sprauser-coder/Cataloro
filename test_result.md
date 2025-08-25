@@ -1081,6 +1081,18 @@ frontend:
         agent: "testing"
         comment: "TESTED: Image display and preview system working perfectly. ✅ HEADER LOGO: Cataloro logo displays correctly via /api/uploads/ route (1x1 dimensions loaded). ✅ HERO IMAGES: Hero section images load correctly from uploads directory (512x512 dimensions). ✅ PRODUCT LISTING IMAGES: Product images display correctly including both uploaded images (/uploads/listing_*.jpg) and external Unsplash images (4256x2832 dimensions). ✅ IMAGE SERVING: All image types working - uploaded PNG/JPG files via backend static serving and external image URLs. ✅ IMAGE LOADING: All 8 tested images loaded successfully with proper dimensions and no broken images detected. ✅ IMAGE INTEGRATION: Images properly integrated into listing cards, hero section, and header components. Image serving infrastructure working correctly with proper content delivery."
 
+  - task: "NEW Profile Database Endpoints Testing"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "NEW PROFILE DATABASE ENDPOINTS TESTING COMPLETED: Comprehensive testing of new comprehensive profile endpoints with 50% success rate (4/8 tests passed). ✅ WORKING ENDPOINTS: GET /api/profile/stats working with basic statistics (total_orders, total_listings, total_spent, total_earned, avg_rating, total_reviews), PUT /api/profile working correctly for profile updates with enhanced fields, GET /api/orders working with full order details including nested buyer/seller/listing objects, GET /api/listings/my-listings working as alternative to /listings/user with complete listing data. ❌ MISSING ENDPOINTS (404 ERRORS): GET /api/profile/activity endpoint not implemented, POST /api/profile/upload-picture endpoint not implemented, GET /api/messages endpoint not implemented, GET /api/reviews/user endpoint not implemented. ❌ IMPLEMENTATION ISSUES: Multiple duplicate endpoints found in backend code causing routing conflicts, some profile endpoints expect current_user as dict but get_current_user returns User object (type mismatch), broken profile endpoints at lines 2199-2546 are not accessible due to FastAPI routing priority. ✅ LIVE DATABASE INTEGRATION: All working endpoints successfully connect to live database and return real user data, authentication working perfectly with admin@marketplace.com/admin123 credentials, data persistence confirmed across all working endpoints. CRITICAL FINDING: The comprehensive profile page will have limited functionality due to missing endpoints - activity timeline, profile picture upload, messages, and user reviews are not available. Main agent needs to implement the missing endpoints or fix the duplicate routing issues to achieve full profile functionality."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
