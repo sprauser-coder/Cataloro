@@ -397,21 +397,6 @@ async def get_listings_count(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error counting listings: {str(e)}")
 
-@api_router.get("/listings/my-listings")
-async def get_my_listings(current_user: User = Depends(get_current_user)):
-    """Get current user's listings"""
-    try:
-        cursor = db.listings.find({"seller_id": current_user.id})
-        listings = []
-        async for listing_doc in cursor:
-            listing_data = parse_from_mongo(listing_doc)
-            listings.append(listing_data)
-        
-        return listings
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve user listings: {str(e)}")
-
 @api_router.post("/listings", response_model=ProductListing)
 async def create_listing(listing_data: ListingCreate, current_user: User = Depends(get_current_user)):
     if current_user.role not in [UserRole.SELLER, UserRole.BOTH, UserRole.ADMIN]:
