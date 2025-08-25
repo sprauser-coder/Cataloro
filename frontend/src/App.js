@@ -3384,6 +3384,7 @@ const AdminPanel = () => {
   const [overviewTimeFrame, setOverviewTimeFrame] = useState('today'); // Individual time frame for overview cards
   const [performanceTimeFrame, setPerformanceTimeFrame] = useState('today'); // Individual time frame for performance summary
   const [activityTimeFrame, setActivityTimeFrame] = useState('today'); // Individual time frame for activity feed
+  const [realtimeStats, setRealtimeStats] = useState(null); // Real-time individual stats
   const [siteSettings, setSiteSettings] = useState(null);
   const [pages, setPages] = useState([]);
   const [navigation, setNavigation] = useState([]);
