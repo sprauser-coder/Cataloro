@@ -105,20 +105,23 @@
 user_problem_statement: "Phase 1 Critical Infrastructure Issues Resolution: Persistent frontend caching preventing updated JavaScript from loading, authentication session management issues causing login redirects, individual listing navigation not working, image display/preview problems, and notification clearing functionality not working properly."
 
 backend:
-  - task: "User Authentication System"
+  - task: "Authentication Session Management Fix"
     implemented: true
-    working: true
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
+    working: false
+    file: "/app/frontend/src/App.js"
+    stuck_count: 3
+    priority: "critical"
+    needs_retesting: true
     status_history:
-      - working: true
+      - working: false
         agent: "main"
-        comment: "Complete JWT-based auth system with login/register endpoints"
-      - working: true
-        agent: "testing"
-        comment: "TESTED: Registration and login endpoints working perfectly. JWT token generation successful. Proper validation for duplicate users, invalid credentials, and token security. All authentication edge cases handled correctly."
+        comment: "Discovered React.StrictMode causing useEffect race conditions in AuthProvider, fixed by removing StrictMode from production builds and refactoring token dependency loops"
+      - working: false
+        agent: "main"
+        comment: "Fixed backend URL configuration from https://cataloro-revival.preview.emergentagent.com to http://217.154.0.82 to match current server setup"
+      - working: false
+        agent: "main"
+        comment: "Despite multiple fixes (StrictMode removal, useEffect refactoring, backend URL correction), persistent authentication issues remain. Users can input credentials but login does not complete successfully, staying on /auth page. Added debugging logs to track login flow."
 
   - task: "Product Listings API"
     implemented: true
