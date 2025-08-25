@@ -2201,6 +2201,14 @@ async def get_user_comprehensive_stats(current_user: User = Depends(get_current_
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get user statistics: {str(e)}")
 
+@api_router.get("/admin/stats-by-timeframe")
+async def get_admin_time_based_stats_test(
+    time_frame: str = "today",  # today, week, month, year
+    admin: User = Depends(get_admin_user)
+):
+    """Get admin statistics with logical time-based validation - TEST ROUTE"""
+    return {"message": "Test endpoint working", "time_frame": time_frame}
+
 @api_router.get("/admin/stats/time-based")
 async def get_admin_time_based_stats(
     time_frame: str = "today",  # today, week, month, year
