@@ -2267,9 +2267,9 @@ async def get_user_stats(current_user: User = Depends(get_current_user)):
     }
 
 @api_router.get("/profile/activity")
-async def get_user_activity(current_user: dict = Depends(get_current_user)):
+async def get_user_activity(current_user: User = Depends(get_current_user)):
     """Get user activity timeline"""
-    user_id = current_user["id"]
+    user_id = current_user.id
     
     activities = []
     
