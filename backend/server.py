@@ -1068,6 +1068,21 @@ class AdminStats(BaseModel):
     total_orders: int
     total_revenue: float
 
+class SEOSettings(BaseModel):
+    site_title: str = Field(default="Cataloro - Your Trusted Marketplace")
+    meta_description: str = Field(default="Buy and sell with confidence on Cataloro marketplace")
+    meta_keywords: str = Field(default="marketplace, buy, sell, ecommerce, cataloro")
+    favicon_url: str = Field(default="/favicon.ico")
+    og_title: str = Field(default="Cataloro Marketplace")
+    og_description: str = Field(default="Your trusted marketplace for amazing deals")
+    og_image: str = Field(default="")
+    twitter_card: str = Field(default="summary_large_image")
+    robots_txt: str = Field(default="User-agent: *\nAllow: /")
+    canonical_url: str = Field(default="")
+    structured_data: str = Field(default='{"@context": "https://schema.org", "@type": "Organization", "name": "Cataloro", "description": "Your trusted marketplace"}')
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 class UserManagement(BaseModel):
     id: str
     user_id: str
