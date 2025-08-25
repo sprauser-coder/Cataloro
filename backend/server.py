@@ -2522,9 +2522,9 @@ async def get_user_orders(current_user: User = Depends(get_current_user)):
     return result
 
 @api_router.get("/listings/user")
-async def get_user_listings(current_user: dict = Depends(get_current_user)):
+async def get_user_listings(current_user: User = Depends(get_current_user)):
     """Get user's listings with enhanced details"""
-    user_id = current_user["id"]
+    user_id = current_user.id
     
     listings = await db.listings.find({"seller_id": user_id}).sort("created_at", -1).to_list(None)
     
