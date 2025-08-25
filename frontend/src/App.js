@@ -942,6 +942,31 @@ const Home = () => {
   };
 
   // Phase 3D: Enhanced Filtering & Sorting
+  // Advanced Features State
+  const [dashboardInsights, setDashboardInsights] = useState({
+    trending_categories: [],
+    popular_searches: [],
+    conversion_rate: 0,
+    avg_order_value: 0,
+    customer_satisfaction: 0,
+    growth_metrics: {
+      users_growth: 0,
+      sales_growth: 0,
+      listings_growth: 0
+    }
+  });
+  const [bulkActions, setBulkActions] = useState({
+    selectedItems: [],
+    actionType: '',
+    isProcessing: false
+  });
+  const [advancedFilters, setAdvancedFilters] = useState({
+    dateRange: '7days',
+    category: '',
+    priceRange: { min: 0, max: 10000 },
+    location: '',
+    rating: 0
+  });
   const [sortBy, setSortBy] = useState('created_desc'); // newest first by default
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [selectedCondition, setSelectedCondition] = useState('');
