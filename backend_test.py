@@ -217,50 +217,53 @@ class BackendConnectivityTester:
             self.log_test("Categories Data", False, f"Exception occurred: {str(e)}")
             return False
     
-    def test_admin_profile(self):
-        """Test 4: Admin Profile - Test GET /api/profile with admin token"""
-        print("📋 Testing Admin Profile Access...")
-        
-        if not self.admin_token:
-            self.log_test("Admin Profile Access", False, "No admin token available")
-            return False
+    def test_cors_headers(self):
+        """Test 5: CORS Headers - Check if backend properly handles CORS for frontend communication"""
+        print("🌐 Testing CORS Headers...")
         
         try:
-            headers = {"Authorization": f"Bearer {self.admin_token}"}
-            response = self.session.get(f"{BACKEND_URL}/profile", headers=headers)
+            # Test preflight request (OPTIONS)
+            headers = {
+                'Origin': 'http://217.154.0.82',
+                'Access-Control-Request-Method': 'POST',
+                'Access-Control-Request-Headers': 'Content-Type,Authorization'
+            }
             
-            if response.status_code == 200:
-                profile_data = response.json()
-                
-                # Verify role persistence in profile
-                profile_role = profile_data.get("role")
-                profile_email = profile_data.get("email")
-                user_id = profile_data.get("user_id", "Not set")
-                
-                if profile_role == "admin":
-                    self.log_test(
-                        "Admin Profile Access", 
-                        True, 
-                        f"Profile endpoint working. Role persisted as 'admin'. Email: {profile_email}, User ID: {user_id}"
-                    )
-                    return True
-                else:
-                    self.log_test(
-                        "Admin Profile Access", 
-                        False, 
-                        f"Role not persisted correctly. Expected 'admin', got '{profile_role}'"
-                    )
-                    return False
+            response = self.session.options(f"{BACKEND_URL}/auth/login", headers=headers, timeout=10)
+            
+            # Check CORS headers in response
+            cors_headers = {
+                'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+                'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
+                'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers'),
+                'Access-Control-Allow-Credentials': response.headers.get('Access-Control-Allow-Credentials')
+            }
+            
+            # Check if CORS is properly configured
+            allow_origin = cors_headers.get('Access-Control-Allow-Origin')
+            if allow_origin and (allow_origin == '*' or '217.154.0.82' in allow_origin):
+                self.log_test(
+                    "CORS Headers", 
+                    True, 
+                    f"CORS properly configured. Allow-Origin: {allow_origin}. Status: {response.status_code}"
+                )
+                return True
             else:
                 self.log_test(
-                    "Admin Profile Access", 
+                    "CORS Headers", 
                     False, 
-                    f"Profile endpoint failed with status {response.status_code}: {response.text}"
+                    f"CORS may not be properly configured. Headers: {cors_headers}. Status: {response.status_code}"
                 )
                 return False
                 
+        except requests.exceptions.ConnectTimeout:
+            self.log_test("CORS Headers", False, "Connection timeout during CORS test")
+            return False
+        except requests.exceptions.ConnectionError as e:
+            self.log_test("CORS Headers", False, f"Connection error during CORS test: {str(e)}")
+            return False
         except Exception as e:
-            self.log_test("Admin Profile Access", False, f"Exception occurred: {str(e)}")
+            self.log_test("CORS Headers", False, f"Exception occurred: {str(e)}")
             return False
     
     def test_admin_stats_access(self):
