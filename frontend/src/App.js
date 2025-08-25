@@ -1067,6 +1067,8 @@ const Home = () => {
   const [selectedCondition, setSelectedCondition] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [listingsPerPage, setListingsPerPage] = useState(10); // New: listings per page
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalListings, setTotalListings] = useState(0);
   
   // Future Phase 3D Infrastructure
   const [selectedRegion, setSelectedRegion] = useState('');
