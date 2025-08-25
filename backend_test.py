@@ -1,13 +1,40 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend API Testing for Cataloro Marketplace
+FINAL COMPREHENSIVE BACKEND TESTING FOR CATALORO MARKETPLACE DEPLOYMENT
 Testing all backend functionality as requested in the review:
-- Authentication System (admin@marketplace.com / admin123)
-- Admin Panel Features
-- Core Marketplace Functions
-- API Endpoints Testing
-- Notification System
-- File Upload Functionality
+
+1. Complete API Endpoint Coverage
+   - All authentication endpoints (/api/auth/*)
+   - All admin panel endpoints (/api/admin/*)
+   - All marketplace endpoints (/api/listings/*, /api/categories/*, /api/orders/*)
+   - All user profile endpoints (/api/profile/*)
+   - SEO settings endpoints (/api/admin/seo)
+   - File upload endpoints (logo uploads, profile pictures)
+
+2. Data Integrity Testing
+   - User management (creation, modification, deletion)
+   - Product/listing management
+   - Order processing workflow
+   - Category management
+   - Settings management (site settings, SEO settings)
+
+3. File Upload Systems
+   - Logo upload functionality
+   - Profile picture upload system
+   - Image upload for listings
+   - File size and type validations
+
+4. Admin Panel Backend Support
+   - Dashboard analytics data
+   - User statistics and management
+   - Content management system
+   - Database operations
+
+5. Security and Performance
+   - Authentication token validation
+   - Authorization checks for admin functions
+   - CORS configuration
+   - Input validation and sanitization
 """
 
 import requests
@@ -15,11 +42,12 @@ import json
 import sys
 import os
 import tempfile
+import io
 from datetime import datetime
 from pathlib import Path
 
-# Configuration - Use environment variable for backend URL
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://marketplace-ready.preview.emergentagent.com') + '/api'
+# Configuration - Use frontend environment for backend URL
+BACKEND_URL = 'https://marketplace-ready.preview.emergentagent.com/api'
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
