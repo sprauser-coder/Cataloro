@@ -667,6 +667,19 @@ async def remove_from_cart(item_id: str, current_user: User = Depends(get_curren
         raise HTTPException(status_code=404, detail="Cart item not found")
     return {"message": "Item removed from cart"}
 
+# Individual Listing Route - MUST come after all specific routes
+@api_router.get("/listings/{listing_id}", response_model=ProductListing)
+async def get_listing(listing_id: str):
+    """Get a specific listing by ID"""
+    listing = await db.listings.find_one({"id": listing_id})
+    if not listing:
+        raise HTTPException(status_code=404, detail="Listing not found")
+    
+    # Increment views
+    await db.listings.update_one({"id": listing_id}, {"$inc": {"views": 1}})
+    
+    return ProductListing(**parse_from_mongo(listing))
+
 # Order Routes
 @api_router.post("/orders", response_model=Order)
 async def create_order(order_data: OrderCreate, current_user: User = Depends(get_current_user)):
