@@ -4979,7 +4979,14 @@ const AdminPanel = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm text-gray-600">Total Revenue</p>
-                          <p className="text-2xl font-bold">€{stats?.total_revenue?.toFixed(2) || '0.00'}</p>
+                          <p className="text-2xl font-bold">
+                            €{(timeBasedStats?.total_revenue || stats?.total_revenue || 0).toFixed(2)}
+                          </p>
+                          {timeBasedStats?.time_frame && (
+                            <p className="text-xs text-gray-500">
+                              {overviewTimeFrame} revenue
+                            </p>
+                          )}
                         </div>
                         <Euro className="h-8 w-8 text-yellow-600" />
                       </div>
