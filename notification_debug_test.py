@@ -333,7 +333,7 @@ class NotificationDebugTester:
             self.test_get_notifications()
             unread_notifications = []
             if isinstance(self.notifications, list):
-                unread_notifications = [n for n in self.notifications if isinstance(n, dict) and not n.get('is_read', True)]
+                unread_notifications = [n for n in self.notifications if isinstance(n, dict) and not n.get('read', True)]
             if not unread_notifications:
                 self.log_result("Mark All Notifications Read Verification", True, "All notifications successfully marked as read")
             else:
