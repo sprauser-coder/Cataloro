@@ -185,6 +185,8 @@ class RealTimeStatsService:
             start = now - timedelta(days=30)
         elif time_frame == "year":
             start = now - timedelta(days=365)
+        elif time_frame == "all":
+            start = None  # No date filter for all-time stats
         else:
             start = None
         
