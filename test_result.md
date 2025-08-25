@@ -132,20 +132,38 @@ frontend:
         agent: "main"
         comment: "BUG FIXED: Added DELETE /api/notifications/clear-all endpoint to backend for permanent notification deletion. Updated frontend clearAllNotifications function to use new endpoint. Backend testing confirms notifications are permanently deleted from database (not just marked as read). Users can now clear notifications forever across page navigation."
 
-  - task: "Hide Made with Emergent Branding - Enhanced"
+  - task: "Hide Made with Emergent Branding - Complete Removal"
     implemented: true
     working: true
     file: "/app/frontend/src/index.css, /app/frontend/src/App.js"
-    stuck_count: 1
+    stuck_count: 2
     priority: "medium"
     needs_retesting: false
     status_history:
       - working: false
         agent: "user"
         comment: "User reported Emergent branding still visible despite CSS rules added previously."
+      - working: false
+        agent: "user"  
+        comment: "User reported partial fix - text removed but GitHub avatar/favicon still visible with specific HTML: <img style=\"width:20px;height:20px;margin-right:8px\" src=\"https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4\">"
       - working: true
         agent: "main"
-        comment: "BUG FIXED: Added JavaScript-based branding removal in App.js useEffect with periodic checks and DOM mutation observer. Comprehensive removal strategy using multiple targeting approaches including text content matching, fixed positioning detection, and periodic cleanup. Enhanced CSS rules also added for additional coverage."
+        comment: "BUG COMPLETELY FIXED: Enhanced JavaScript removal to specifically target GitHub avatar images (avatars.githubusercontent.com/in/1201222). Added comprehensive targeting for 20px x 20px images in fixed positions. Enhanced CSS rules with aggressive targeting of avatar images. Complete multi-layer removal strategy: JavaScript DOM manipulation + CSS hiding + periodic cleanup + mutation observer."
+
+  - task: "Logo Settings Cleanup - Remove Duplicates"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 1
+    priority: "low"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User requested removal of logo settings from Settings tab to avoid confusion since all logo settings are now in dedicated LOGO tab."
+      - working: true
+        agent: "main"
+        comment: "CLEANUP COMPLETED: Removed duplicate logo settings section from Site Settings tab (lines 6200-6235). All logo functionality now exclusively available in Appearance > Logo Settings tab. Clean interface with no duplicate or conflicting settings."
 
   - task: "Logo Settings Reorganization"
     implemented: true
