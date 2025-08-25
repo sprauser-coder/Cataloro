@@ -2385,10 +2385,10 @@ async def update_profile(
 @api_router.post("/profile/upload-picture")
 async def upload_profile_picture(
     file: UploadFile = File(...),
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Upload user profile picture"""
-    user_id = current_user["id"]
+    user_id = current_user.id
     
     # Validate file type
     if not file.content_type.startswith('image/'):
