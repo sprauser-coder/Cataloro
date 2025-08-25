@@ -221,6 +221,9 @@ class ProfileEndpointTester:
                 else:
                     self.log_test("GET /api/messages", False, f"Expected list, got: {type(data)}")
                     return False
+            elif response.status_code == 404:
+                self.log_test("GET /api/messages", False, "ENDPOINT NOT IMPLEMENTED - Returns 404")
+                return False
             else:
                 self.log_test("GET /api/messages", False, f"Status: {response.status_code}, Response: {response.text}")
                 return False
