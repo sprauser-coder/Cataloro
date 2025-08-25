@@ -3427,9 +3427,7 @@ const AdminPanel = () => {
       "description": "Your trusted marketplace"
     })
   });
-  console.log('🔧 AdminPanel: All state initialized');
   const { user } = useAuth();
-  console.log('🔧 AdminPanel: useAuth called, user:', user ? 'exists' : 'null');
   const { toast } = useToast();
 
   useEffect(() => {
