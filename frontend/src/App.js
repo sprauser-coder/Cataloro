@@ -2087,7 +2087,12 @@ const ListingDetail = () => {
 
 // Profile Component - Enhanced User Dashboard
 const Profile = () => {
-  return <ComprehensiveProfile />;
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <ComprehensiveProfile />
+    </div>
+  );
 };
 const Sell = () => {
   const [formData, setFormData] = useState({
