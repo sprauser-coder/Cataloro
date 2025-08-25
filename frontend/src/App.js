@@ -7829,6 +7829,27 @@ const AdminPanel = () => {
                                   placeholder="e.g., Cataloro Logo"
                                 />
                               </div>
+                              
+                              {/* Logo Size Picker */}
+                              <div>
+                                <label className="block text-sm font-medium mb-1">Logo Size</label>
+                                <Select 
+                                  value={siteSettings?.header_logo_size || 'h-8'} 
+                                  onValueChange={(value) => setSiteSettings({...siteSettings, header_logo_size: value})}
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select logo size" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="h-6">Small (24px)</SelectItem>
+                                    <SelectItem value="h-8">Medium (32px)</SelectItem>
+                                    <SelectItem value="h-10">Large (40px)</SelectItem>
+                                    <SelectItem value="h-12">Extra Large (48px)</SelectItem>
+                                    <SelectItem value="h-16">XXL (64px)</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <p className="text-xs text-gray-500 mt-1">Choose the size of your logo in the header</p>
+                              </div>
                             </div>
                           </div>
                         </div>
