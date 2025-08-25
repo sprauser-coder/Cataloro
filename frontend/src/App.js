@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
+
+// FORCE FULL INTERFACE MARKER - 2025-08-25 07:20:00
+console.log('🎯 LOADING CATALORO FULL MARKETPLACE INTERFACE - 7644 LINES - 2025-08-25');
+window.CATALORO_INTERFACE_VERSION = 'FULL_MARKETPLACE_7644_LINES_2025_08_25_0720';
+
 import './App.css';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
