@@ -3572,6 +3572,108 @@ const AdminPanel = () => {
     }
   };
 
+  // Bulk Actions for Orders
+  const executeOrderBulkAction = async () => {
+    if (!bulkAction || selectedOrders.length === 0) return;
+
+    try {
+      let endpoint = '';
+      let payload = {
+        order_ids: selectedOrders
+      };
+
+      switch (bulkAction) {
+        case 'mark-completed':
+          endpoint = '/admin/orders/bulk-update';
+          payload.status = 'completed';
+          break;
+        case 'mark-pending':
+          endpoint = '/admin/orders/bulk-update';
+          payload.status = 'pending';
+          break;
+        case 'mark-cancelled':
+          endpoint = '/admin/orders/bulk-update';
+          payload.status = 'cancelled';
+          break;
+        case 'mark-shipped':
+          endpoint = '/admin/orders/bulk-update';
+          payload.status = 'shipped';
+          break;
+        case 'delete':
+          endpoint = '/admin/orders/bulk-delete';
+          break;
+        case 'export':
+          await exportOrders();
+          return;
+        default:
+          return;
+      }
+
+      const response = await axios.post(`${API}${endpoint}`, payload);
+      
+      toast({
+        title: "Success",
+        description: `Bulk action applied to ${selectedOrders.length} orders`
+      });
+
+      // Reset selections and fetch updated data
+      setSelectedOrders([]);
+      setBulkAction('');
+      setBulkActionData({});
+      fetchOrders();
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `Failed to execute bulk action: ${error.response?.data?.detail || 'Unknown error'}`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const exportOrders = async () => {
+    try {
+      const ordersToExport = orders.filter(o => selectedOrders.includes(o.order.id));
+      
+      const csvContent = [
+        ['Order ID', 'Listing', 'Seller', 'Buyer', 'Quantity', 'Amount', 'Status', 'Date'].join(','),
+        ...ordersToExport.map(orderData => [
+          orderData.order.id,
+          `"${orderData.listing?.title || 'Unknown'}"`,
+          `"${orderData.seller?.full_name || 'Unknown'}"`,
+          `"${orderData.buyer?.full_name || 'Unknown'}"`, 
+          orderData.order.quantity,
+          orderData.order.total_amount?.toFixed(2) || '0.00',
+          orderData.order.status,
+          new Date(orderData.order.created_at).toLocaleDateString()
+        ].join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `orders-export-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "Success",
+        description: `${selectedOrders.length} orders exported to CSV`
+      });
+
+      setSelectedOrders([]);
+    } catch (error) {
+      toast({
+        title: "Error", 
+        description: "Failed to export orders",
+        variant: "destructive"
+      });
+    }
+  };
+
   const blockUser = async (userId) => {
     try {
       await axios.put(`${API}/admin/users/${userId}/block`);
