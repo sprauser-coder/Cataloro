@@ -2464,9 +2464,9 @@ async def get_user_messages(current_user: User = Depends(get_current_user)):
     return result
 
 @api_router.get("/reviews/user")
-async def get_user_reviews(current_user: dict = Depends(get_current_user)):
+async def get_user_reviews(current_user: User = Depends(get_current_user)):
     """Get reviews for the current user"""
-    user_id = current_user["id"]
+    user_id = current_user.id
     
     reviews = await db.reviews.find({"reviewed_user_id": user_id}).sort("created_at", -1).to_list(None)
     
