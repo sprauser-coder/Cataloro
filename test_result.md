@@ -120,38 +120,47 @@ frontend:
   - task: "Clear All Notifications Button"
     implemented: true
     working: true
-    file: "/app/frontend/src/App.js"
+    file: "/app/frontend/src/App.js, /app/backend/server.py"
     stuck_count: 0
     priority: "medium"
     needs_retesting: false
     status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported that clear notifications button was working but notifications reappeared when navigating to different pages - not permanently cleared."
       - working: true
         agent: "main"
-        comment: "Added 'Clear all' button to notifications dropdown that appears when notifications exist. Button calls clearAllNotifications function which marks all as read and clears the local notifications array. Provides user feedback via toast notification."
+        comment: "BUG FIXED: Added DELETE /api/notifications/clear-all endpoint to backend for permanent notification deletion. Updated frontend clearAllNotifications function to use new endpoint. Backend testing confirms notifications are permanently deleted from database (not just marked as read). Users can now clear notifications forever across page navigation."
 
-  - task: "Hide Made with Emergent Branding"
+  - task: "Hide Made with Emergent Branding - Enhanced"
     implemented: true
     working: true
-    file: "/app/frontend/src/index.css"
-    stuck_count: 0
+    file: "/app/frontend/src/index.css, /app/frontend/src/App.js"
+    stuck_count: 1
     priority: "medium"
     needs_retesting: false
     status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported Emergent branding still visible despite CSS rules added previously."
       - working: true
         agent: "main"
-        comment: "Added comprehensive CSS rules to hide 'Made with Emergent' branding text from all pages. Multiple targeting strategies implemented including position-based selectors, content-based selectors, and attribute-based selectors to ensure complete removal."
+        comment: "BUG FIXED: Added JavaScript-based branding removal in App.js useEffect with periodic checks and DOM mutation observer. Comprehensive removal strategy using multiple targeting approaches including text content matching, fixed positioning detection, and periodic cleanup. Enhanced CSS rules also added for additional coverage."
 
-  - task: "Logo Size Picker in Admin Panel"
+  - task: "Logo Settings Reorganization"
     implemented: true
     working: true
-    file: "/app/frontend/src/App.js"
+    file: "/app/frontend/src/App.js, /app/backend/server.py"
     stuck_count: 0
     priority: "medium"
     needs_retesting: false
     status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported logo size picker not visible and requested all logo settings moved to dedicated LOGO tab in Appearance section."
       - working: true
         agent: "main"
-        comment: "Added logo size picker to Admin Panel > Settings > Site Settings > Logo Settings section. Allows selection of Small (h-6), Medium (h-8), Large (h-10), Extra Large (h-12), and XXL (h-16) sizes. Backend field header_logo_size added to SiteSettings model with default 'h-8'. Header component updated to use dynamic logo size from settings."
+        comment: "BUG FIXED: Created new LOGO tab under Appearance section with complete logo management interface. Moved all logo settings (upload, alt text, size picker) from Site Settings to dedicated Logo Settings section. Added backend header_logo_size field (tested and working). Logo size picker now prominently displayed with 5 size options (Small to XXL). All logo functionality consolidated in single intuitive location."
 
 backend:
   - task: "Authentication Session Management Fix"
