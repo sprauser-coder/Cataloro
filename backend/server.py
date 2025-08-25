@@ -2349,10 +2349,10 @@ async def get_user_activity(current_user: User = Depends(get_current_user)):
 @api_router.put("/profile")
 async def update_profile(
     profile_update: ProfileUpdateRequest,
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Update user profile information"""
-    user_id = current_user["id"]
+    user_id = current_user.id
     
     update_data = {}
     if profile_update.full_name is not None:
