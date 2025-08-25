@@ -256,7 +256,7 @@ class NotificationDebugTester:
         
         initial_unread_count = 0
         if isinstance(self.notifications, list):
-            initial_unread_count = len([n for n in self.notifications if isinstance(n, dict) and not n.get('is_read', True)])
+            initial_unread_count = len([n for n in self.notifications if isinstance(n, dict) and not n.get('read', True)])
         print(f"Initial unread notifications: {initial_unread_count}")
         
         # Step 2: Test mark single notification as read (if any exist)
