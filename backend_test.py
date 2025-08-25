@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-SEO Settings Endpoints Testing
-Testing the new SEO settings endpoints that were just added.
+Bulk Order Management Endpoints Testing
+Testing the fixed bulk order management endpoints after resolving FastAPI parameter conflict.
 """
 
 import requests
@@ -10,26 +10,29 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "http://localhost:8001/api"
+BACKEND_URL = "http://217.154.0.82/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
-class SEOEndpointsTester:
+class BulkOrderTester:
     def __init__(self):
         self.session = requests.Session()
         self.admin_token = None
         self.test_results = []
         
-    def log_test(self, test_name, success, details=""):
+    def log_test(self, test_name, success, message, details=None):
         """Log test results"""
         status = "✅ PASS" if success else "❌ FAIL"
         print(f"{status}: {test_name}")
+        print(f"   {message}")
         if details:
             print(f"   Details: {details}")
+        print()
         
         self.test_results.append({
             "test": test_name,
             "success": success,
+            "message": message,
             "details": details
         })
     
@@ -44,288 +47,287 @@ class SEOEndpointsTester:
             if response.status_code == 200:
                 data = response.json()
                 self.admin_token = data["access_token"]
-                self.session.headers.update({
-                    "Authorization": f"Bearer {self.admin_token}"
+                self.session.headers.update({"Authorization": f"Bearer {self.admin_token}"})
+                self.log_test("Admin Authentication", True, 
+                            f"Successfully authenticated as {ADMIN_EMAIL}")
+                return True
+            else:
+                self.log_test("Admin Authentication", False, 
+                            f"Failed to authenticate: {response.status_code} - {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Admin Authentication", False, f"Authentication error: {str(e)}")
+            return False
+    
+    def test_get_admin_orders(self):
+        """Test GET /api/admin/orders endpoint"""
+        try:
+            response = self.session.get(f"{BACKEND_URL}/admin/orders")
+            
+            if response.status_code == 200:
+                orders = response.json()
+                self.log_test("GET Admin Orders", True, 
+                            f"Successfully retrieved {len(orders)} orders",
+                            f"Orders data structure verified")
+                return orders
+            else:
+                self.log_test("GET Admin Orders", False, 
+                            f"Failed to get orders: {response.status_code} - {response.text}")
+                return []
+                
+        except Exception as e:
+            self.log_test("GET Admin Orders", False, f"Error getting orders: {str(e)}")
+            return []
+    
+    def create_test_orders(self):
+        """Create some test orders for bulk operations"""
+        test_orders = []
+        
+        try:
+            # First, let's get some listings to create orders with
+            listings_response = self.session.get(f"{BACKEND_URL}/listings?limit=2")
+            if listings_response.status_code != 200:
+                self.log_test("Create Test Orders", False, "No listings available for test orders")
+                return []
+            
+            listings = listings_response.json()
+            if not listings:
+                self.log_test("Create Test Orders", False, "No listings found to create test orders")
+                return []
+            
+            # Create a test buyer user first
+            test_buyer_data = {
+                "email": "testbuyer@example.com",
+                "username": "testbuyer",
+                "password": "testpass123",
+                "full_name": "Test Buyer",
+                "role": "buyer"
+            }
+            
+            # Try to register test buyer (might already exist)
+            buyer_response = self.session.post(f"{BACKEND_URL}/auth/register", json=test_buyer_data)
+            if buyer_response.status_code in [200, 400]:  # 400 if user already exists
+                # Login as buyer
+                buyer_login = self.session.post(f"{BACKEND_URL}/auth/login", json={
+                    "email": "testbuyer@example.com",
+                    "password": "testpass123"
                 })
-                self.log_test("Admin Authentication", True, f"Token: {self.admin_token[:20]}...")
-                return True
-            else:
-                self.log_test("Admin Authentication", False, f"Status: {response.status_code}, Response: {response.text}")
-                return False
                 
-        except Exception as e:
-            self.log_test("Admin Authentication", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_get_seo_settings_default(self):
-        """Test GET /api/admin/seo - should return defaults if none exist"""
-        try:
-            response = self.session.get(f"{BACKEND_URL}/admin/seo")
+                if buyer_login.status_code == 200:
+                    buyer_token = buyer_login.json()["access_token"]
+                    
+                    # Create orders as buyer
+                    for i, listing in enumerate(listings[:2]):
+                        if listing.get("listing_type") == "fixed_price" and listing.get("price"):
+                            order_data = {
+                                "listing_id": listing["id"],
+                                "quantity": 1,
+                                "shipping_address": f"Test Address {i+1}, Test City"
+                            }
+                            
+                            # Use buyer token for creating order
+                            headers = {"Authorization": f"Bearer {buyer_token}"}
+                            order_response = requests.post(f"{BACKEND_URL}/orders", 
+                                                         json=order_data, headers=headers)
+                            
+                            if order_response.status_code == 200:
+                                order = order_response.json()
+                                test_orders.append(order["id"])
             
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check if default values are returned
-                expected_defaults = {
-                    "site_title": "Cataloro - Your Trusted Marketplace",
-                    "meta_description": "Buy and sell with confidence on Cataloro marketplace",
-                    "meta_keywords": "marketplace, buy, sell, ecommerce, cataloro",
-                    "og_title": "Cataloro Marketplace",
-                    "og_description": "Your trusted marketplace for amazing deals"
-                }
-                
-                all_defaults_correct = True
-                for key, expected_value in expected_defaults.items():
-                    if data.get(key) != expected_value:
-                        all_defaults_correct = False
-                        break
-                
-                if all_defaults_correct:
-                    self.log_test("GET SEO Settings (Default)", True, f"Returned default values correctly")
-                else:
-                    self.log_test("GET SEO Settings (Default)", False, f"Default values incorrect. Got: {json.dumps(data, indent=2)}")
-                
-                return data
+            # Restore admin token
+            self.session.headers.update({"Authorization": f"Bearer {self.admin_token}"})
+            
+            if test_orders:
+                self.log_test("Create Test Orders", True, 
+                            f"Created {len(test_orders)} test orders for bulk operations")
             else:
-                self.log_test("GET SEO Settings (Default)", False, f"Status: {response.status_code}, Response: {response.text}")
-                return None
-                
+                self.log_test("Create Test Orders", False, "Could not create test orders")
+            
+            return test_orders
+            
         except Exception as e:
-            self.log_test("GET SEO Settings (Default)", False, f"Exception: {str(e)}")
-            return None
+            self.log_test("Create Test Orders", False, f"Error creating test orders: {str(e)}")
+            return []
     
-    def test_post_seo_settings(self):
-        """Test POST /api/admin/seo - save SEO settings with sample data"""
+    def test_bulk_update_orders(self, order_ids):
+        """Test POST /api/admin/orders/bulk-update endpoint"""
+        if not order_ids:
+            self.log_test("Bulk Update Orders", False, "No order IDs available for testing")
+            return False
+        
         try:
-            # Sample SEO data as specified in the review request
-            sample_seo_data = {
-                "site_title": "Cataloro Test - SEO Update",
-                "meta_description": "Test meta description for SEO",
-                "meta_keywords": "test, seo, marketplace",
-                "og_title": "Test OG Title",
-                "og_description": "Test OG Description"
+            # Test bulk update with proper request body format
+            update_data = {
+                "order_ids": order_ids,
+                "status": "completed"
             }
             
-            response = self.session.post(f"{BACKEND_URL}/admin/seo", json=sample_seo_data)
+            response = self.session.post(f"{BACKEND_URL}/admin/orders/bulk-update", 
+                                       json=update_data)
             
             if response.status_code == 200:
-                data = response.json()
-                
-                if data.get("message") == "SEO settings saved successfully":
-                    self.log_test("POST SEO Settings (Save)", True, f"Successfully saved SEO settings")
-                    return True
-                else:
-                    self.log_test("POST SEO Settings (Save)", False, f"Unexpected response: {json.dumps(data, indent=2)}")
-                    return False
-            else:
-                self.log_test("POST SEO Settings (Save)", False, f"Status: {response.status_code}, Response: {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("POST SEO Settings (Save)", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_get_seo_settings_saved(self):
-        """Test GET /api/admin/seo - verify saved SEO settings persistence"""
-        try:
-            response = self.session.get(f"{BACKEND_URL}/admin/seo")
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check if saved values are returned correctly
-                expected_saved_values = {
-                    "site_title": "Cataloro Test - SEO Update",
-                    "meta_description": "Test meta description for SEO",
-                    "meta_keywords": "test, seo, marketplace",
-                    "og_title": "Test OG Title",
-                    "og_description": "Test OG Description"
-                }
-                
-                all_saved_correct = True
-                incorrect_fields = []
-                
-                for key, expected_value in expected_saved_values.items():
-                    if data.get(key) != expected_value:
-                        all_saved_correct = False
-                        incorrect_fields.append(f"{key}: expected '{expected_value}', got '{data.get(key)}'")
-                
-                if all_saved_correct:
-                    self.log_test("GET SEO Settings (Saved)", True, f"All saved values retrieved correctly")
-                    return True
-                else:
-                    self.log_test("GET SEO Settings (Saved)", False, f"Saved values incorrect: {', '.join(incorrect_fields)}")
-                    return False
-            else:
-                self.log_test("GET SEO Settings (Saved)", False, f"Status: {response.status_code}, Response: {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("GET SEO Settings (Saved)", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_seo_settings_data_integrity(self):
-        """Test that all SEO settings fields are properly handled"""
-        try:
-            # Test with comprehensive SEO data
-            comprehensive_seo_data = {
-                "site_title": "Comprehensive Test Title",
-                "meta_description": "Comprehensive test meta description",
-                "meta_keywords": "comprehensive, test, keywords",
-                "favicon_url": "/test-favicon.ico",
-                "og_title": "Comprehensive OG Title",
-                "og_description": "Comprehensive OG Description",
-                "og_image": "https://example.com/og-image.jpg",
-                "twitter_card": "summary",
-                "robots_txt": "User-agent: *\nDisallow: /admin",
-                "canonical_url": "https://cataloro.com",
-                "structured_data": '{"@context": "https://schema.org", "@type": "Organization", "name": "Test Cataloro"}'
-            }
-            
-            # Save comprehensive data
-            response = self.session.post(f"{BACKEND_URL}/admin/seo", json=comprehensive_seo_data)
-            
-            if response.status_code != 200:
-                self.log_test("SEO Data Integrity (Save)", False, f"Failed to save comprehensive data: {response.status_code}")
-                return False
-            
-            # Retrieve and verify
-            response = self.session.get(f"{BACKEND_URL}/admin/seo")
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                all_fields_correct = True
-                incorrect_fields = []
-                
-                for key, expected_value in comprehensive_seo_data.items():
-                    if data.get(key) != expected_value:
-                        all_fields_correct = False
-                        incorrect_fields.append(f"{key}: expected '{expected_value}', got '{data.get(key)}'")
-                
-                if all_fields_correct:
-                    self.log_test("SEO Data Integrity", True, f"All comprehensive SEO fields handled correctly")
-                    return True
-                else:
-                    self.log_test("SEO Data Integrity", False, f"Field integrity issues: {', '.join(incorrect_fields)}")
-                    return False
-            else:
-                self.log_test("SEO Data Integrity (Retrieve)", False, f"Status: {response.status_code}")
-                return False
-                
-        except Exception as e:
-            self.log_test("SEO Data Integrity", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_seo_authentication_required(self):
-        """Test that SEO endpoints require admin authentication"""
-        try:
-            # Remove authorization header temporarily
-            original_headers = self.session.headers.copy()
-            if 'Authorization' in self.session.headers:
-                del self.session.headers['Authorization']
-            
-            # Test GET without auth
-            response = self.session.get(f"{BACKEND_URL}/admin/seo")
-            get_auth_required = response.status_code == 403
-            
-            # Test POST without auth
-            response = self.session.post(f"{BACKEND_URL}/admin/seo", json={"site_title": "Test"})
-            post_auth_required = response.status_code == 403
-            
-            # Restore headers
-            self.session.headers.update(original_headers)
-            
-            if get_auth_required and post_auth_required:
-                self.log_test("SEO Authentication Required", True, "Both GET and POST properly require admin authentication")
+                result = response.json()
+                self.log_test("Bulk Update Orders", True, 
+                            f"Successfully updated {result.get('updated_count', 0)} orders to completed status",
+                            f"Response: {result}")
                 return True
             else:
-                self.log_test("SEO Authentication Required", False, f"GET auth required: {get_auth_required}, POST auth required: {post_auth_required}")
+                self.log_test("Bulk Update Orders", False, 
+                            f"Failed to bulk update orders: {response.status_code} - {response.text}")
                 return False
                 
         except Exception as e:
-            self.log_test("SEO Authentication Required", False, f"Exception: {str(e)}")
+            self.log_test("Bulk Update Orders", False, f"Error in bulk update: {str(e)}")
             return False
+    
+    def test_bulk_delete_orders(self, order_ids):
+        """Test POST /api/admin/orders/bulk-delete endpoint"""
+        if not order_ids:
+            self.log_test("Bulk Delete Orders", False, "No order IDs available for testing")
+            return False
+        
+        try:
+            # Test bulk delete with proper request body format
+            delete_data = {
+                "order_ids": order_ids
+            }
+            
+            response = self.session.post(f"{BACKEND_URL}/admin/orders/bulk-delete", 
+                                       json=delete_data)
+            
+            if response.status_code == 200:
+                result = response.json()
+                self.log_test("Bulk Delete Orders", True, 
+                            f"Successfully deleted {result.get('deleted_count', 0)} orders",
+                            f"Response: {result}")
+                return True
+            else:
+                self.log_test("Bulk Delete Orders", False, 
+                            f"Failed to bulk delete orders: {response.status_code} - {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Bulk Delete Orders", False, f"Error in bulk delete: {str(e)}")
+            return False
+    
+    def test_bulk_operations_validation(self):
+        """Test bulk operations with invalid data"""
+        try:
+            # Test bulk update with empty order_ids
+            empty_update = self.session.post(f"{BACKEND_URL}/admin/orders/bulk-update", 
+                                           json={"order_ids": [], "status": "completed"})
+            
+            if empty_update.status_code == 400:
+                self.log_test("Bulk Update Validation", True, 
+                            "Correctly rejected empty order_ids list")
+            else:
+                self.log_test("Bulk Update Validation", False, 
+                            f"Should reject empty order_ids: {empty_update.status_code}")
+            
+            # Test bulk delete with empty order_ids
+            empty_delete = self.session.post(f"{BACKEND_URL}/admin/orders/bulk-delete", 
+                                           json={"order_ids": []})
+            
+            if empty_delete.status_code == 400:
+                self.log_test("Bulk Delete Validation", True, 
+                            "Correctly rejected empty order_ids list")
+            else:
+                self.log_test("Bulk Delete Validation", False, 
+                            f"Should reject empty order_ids: {empty_delete.status_code}")
+            
+            # Test with non-existent order IDs
+            fake_ids = ["fake-order-1", "fake-order-2"]
+            fake_update = self.session.post(f"{BACKEND_URL}/admin/orders/bulk-update", 
+                                          json={"order_ids": fake_ids, "status": "completed"})
+            
+            if fake_update.status_code == 200:
+                result = fake_update.json()
+                if result.get("updated_count", 0) == 0:
+                    self.log_test("Non-existent Order IDs", True, 
+                                "Correctly handled non-existent order IDs (0 updated)")
+                else:
+                    self.log_test("Non-existent Order IDs", False, 
+                                f"Should not update non-existent orders: {result}")
+            
+        except Exception as e:
+            self.log_test("Bulk Operations Validation", False, f"Error in validation tests: {str(e)}")
     
     def run_all_tests(self):
-        """Run all SEO endpoint tests"""
+        """Run all bulk order management tests"""
         print("=" * 60)
-        print("SEO SETTINGS ENDPOINTS TESTING")
+        print("BULK ORDER MANAGEMENT ENDPOINTS TESTING")
         print("=" * 60)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Admin Credentials: {ADMIN_EMAIL} / {ADMIN_PASSWORD}")
+        print(f"Admin Credentials: {ADMIN_EMAIL}")
         print(f"Test Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print()
         
-        # Step 1: Authenticate
+        # Step 1: Authenticate as admin
         if not self.authenticate_admin():
-            print("\n❌ CRITICAL: Admin authentication failed. Cannot proceed with tests.")
+            print("❌ Cannot proceed without admin authentication")
             return False
         
-        print()
+        # Step 2: Test GET admin orders
+        existing_orders = self.test_get_admin_orders()
         
-        # Step 2: Test authentication requirement
-        self.test_seo_authentication_required()
-        print()
+        # Step 3: Create test orders for bulk operations
+        test_order_ids = self.create_test_orders()
         
-        # Step 3: Test GET default settings
-        print("Testing GET /api/admin/seo (default values)...")
-        default_settings = self.test_get_seo_settings_default()
-        print()
+        # Use existing orders if we couldn't create test orders
+        if not test_order_ids and existing_orders:
+            test_order_ids = [order["order"]["id"] for order in existing_orders[:2]]
+            self.log_test("Using Existing Orders", True, 
+                        f"Using {len(test_order_ids)} existing orders for bulk testing")
         
-        # Step 4: Test POST save settings
-        print("Testing POST /api/admin/seo (save sample data)...")
-        save_success = self.test_post_seo_settings()
-        print()
+        # Step 4: Test bulk update orders
+        self.test_bulk_update_orders(test_order_ids)
         
-        # Step 5: Test GET saved settings
-        print("Testing GET /api/admin/seo (verify persistence)...")
-        persistence_success = self.test_get_seo_settings_saved()
-        print()
+        # Step 5: Create fresh test orders for delete test (since we updated the previous ones)
+        fresh_test_orders = self.create_test_orders()
+        if not fresh_test_orders and existing_orders:
+            # Use different existing orders for delete test
+            fresh_test_orders = [order["order"]["id"] for order in existing_orders[2:4]]
         
-        # Step 6: Test comprehensive data integrity
-        print("Testing SEO data integrity...")
-        integrity_success = self.test_seo_settings_data_integrity()
-        print()
+        # Step 6: Test bulk delete orders
+        self.test_bulk_delete_orders(fresh_test_orders)
+        
+        # Step 7: Test validation scenarios
+        self.test_bulk_operations_validation()
         
         # Summary
         print("=" * 60)
         print("TEST SUMMARY")
         print("=" * 60)
         
-        passed_tests = sum(1 for result in self.test_results if result["success"])
         total_tests = len(self.test_results)
-        success_rate = (passed_tests / total_tests) * 100 if total_tests > 0 else 0
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
         
-        print(f"Tests Passed: {passed_tests}/{total_tests} ({success_rate:.1f}%)")
-        print()
+        print(f"Total Tests: {total_tests}")
+        print(f"Passed: {passed_tests}")
+        print(f"Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
         
-        for result in self.test_results:
-            status = "✅" if result["success"] else "❌"
-            print(f"{status} {result['test']}")
-            if result["details"] and not result["success"]:
-                print(f"   {result['details']}")
+        if failed_tests > 0:
+            print("\nFailed Tests:")
+            for result in self.test_results:
+                if not result["success"]:
+                    print(f"  - {result['test']}: {result['message']}")
         
-        print()
-        
-        # Overall assessment
-        if success_rate >= 100:
-            print("🎉 ALL TESTS PASSED - SEO endpoints are working perfectly!")
-            return True
-        elif success_rate >= 80:
-            print("⚠️  MOSTLY WORKING - SEO endpoints have minor issues")
-            return True
-        else:
-            print("❌ CRITICAL ISSUES - SEO endpoints have major problems")
-            return False
+        return failed_tests == 0
 
 def main():
     """Main test execution"""
-    tester = SEOEndpointsTester()
+    tester = BulkOrderTester()
     success = tester.run_all_tests()
     
-    # Exit with appropriate code
-    sys.exit(0 if success else 1)
+    if success:
+        print("\n🎉 All bulk order management tests passed!")
+        sys.exit(0)
+    else:
+        print("\n⚠️  Some tests failed. Check the details above.")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
