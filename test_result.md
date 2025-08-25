@@ -551,6 +551,21 @@ backend:
         agent: "testing"
         comment: "LOGO UPLOAD FUNCTIONALITY CONFIRMED WORKING: Comprehensive testing confirms logo upload system is fully operational. POST /api/admin/cms/upload-logo working perfectly with admin authentication, PNG file validation working correctly, file size limits enforced, uploaded files properly saved to disk and accessible via static serving with correct content-type headers. The previous static file serving issue has been RESOLVED - logo upload functionality is production-ready."
 
+  - task: "User Profile Data Investigation and Fix"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL BUG DISCOVERED: Profile stats endpoint at line 2199 was using incorrect field names for database queries. The endpoint used 'user_id' field instead of 'buyer_id' for counting orders and calculating spending, causing incorrect profile statistics. Two duplicate /profile/stats endpoints found at lines 2199 and 2744, with the first one (comprehensive stats) having the bug while the second one (basic UserStats) was correct."
+      - working: true
+        agent: "testing"
+        comment: "BUG COMPLETELY FIXED: Updated profile stats endpoint queries to use correct field names - changed 'user_id' to 'buyer_id' in lines 2205 and 2218. Comprehensive testing confirms fix is successful with 100% test pass rate. Users now get accurate individual profile data including correct order counts, spending calculations, and earnings. Database associations verified working correctly with different users having different orders/listings. Profile data isolation is now functioning properly - each user sees only their own statistics."
+
   - task: "Listing Image Upload Functionality"
     implemented: true
     working: true
