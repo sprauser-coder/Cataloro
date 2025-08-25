@@ -14,7 +14,7 @@ BACKEND_URL = "http://217.154.0.82/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
-class AdminAuthTester:
+class BackendConnectivityTester:
     def __init__(self):
         self.session = requests.Session()
         self.admin_token = None
