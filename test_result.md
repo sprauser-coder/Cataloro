@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "User Data Issue Investigation: Investigate the user data issue where all users see the same profile data. Check multiple user authentication, user database contents, profile stats endpoint duplication issue, and data integrity."
+user_problem_statement: "Comprehensive Real-Time Statistics Enhancement: Implement individual user statistics tracking, real-time favorites/actions/purchases tracking, logical time-based analytics validation, and ensure all connections work on http://217.154.0.82. Fixed URL configuration and working on route registration issues for new statistics endpoints."
 
 frontend:
   - task: "Browse Page Picker Options Update"
