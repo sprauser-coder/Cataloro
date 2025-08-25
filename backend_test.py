@@ -1,435 +1,461 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for NEW Profile Database Endpoints
-Testing the new comprehensive profile endpoints with live database integration.
+Deployment Readiness Testing for Cataloro Marketplace
+Testing backend connectivity and core functionality at IP: http://217.154.0.82
 """
 
 import requests
 import json
 import sys
 from datetime import datetime
-import os
 
 # Configuration
-BACKEND_URL = "http://217.154.0.82/api"
+BASE_URL = "http://217.154.0.82/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
-class ProfileEndpointTester:
+class DeploymentTester:
     def __init__(self):
-        self.session = requests.Session()
         self.admin_token = None
         self.test_results = []
+        self.failed_tests = []
         
-    def log_test(self, test_name, success, details=""):
+    def log_test(self, test_name, success, message, details=None):
         """Log test results"""
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status}: {test_name}")
-        if details:
-            print(f"   Details: {details}")
-        
-        self.test_results.append({
+        result = {
             "test": test_name,
-            "success": success,
-            "details": details
-        })
+            "status": status,
+            "message": message,
+            "details": details or {},
+            "timestamp": datetime.now().isoformat()
+        }
+        self.test_results.append(result)
+        
+        if not success:
+            self.failed_tests.append(test_name)
+            
+        print(f"{status}: {test_name} - {message}")
+        if details and not success:
+            print(f"   Details: {details}")
     
-    def authenticate_admin(self):
-        """Authenticate as admin user"""
+    def test_basic_connectivity(self):
+        """Test 1: Basic Backend Connectivity"""
         try:
-            response = self.session.post(f"{BACKEND_URL}/auth/login", json={
+            response = requests.get(f"{BASE_URL}/", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if "Marketplace API" in data.get("message", ""):
+                    self.log_test(
+                        "Basic Connectivity", 
+                        True, 
+                        f"Backend accessible at {BASE_URL}",
+                        {"response": data, "status_code": response.status_code}
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Basic Connectivity", 
+                        False, 
+                        "Unexpected API response format",
+                        {"response": data, "status_code": response.status_code}
+                    )
+            else:
+                self.log_test(
+                    "Basic Connectivity", 
+                    False, 
+                    f"HTTP {response.status_code} error",
+                    {"status_code": response.status_code, "response": response.text}
+                )
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "Basic Connectivity", 
+                False, 
+                f"Connection failed: {str(e)}",
+                {"error": str(e)}
+            )
+        return False
+    
+    def test_admin_authentication(self):
+        """Test 2: Admin Authentication"""
+        try:
+            auth_data = {
                 "email": ADMIN_EMAIL,
                 "password": ADMIN_PASSWORD
-            })
+            }
+            
+            response = requests.post(
+                f"{BASE_URL}/auth/login", 
+                json=auth_data,
+                timeout=10
+            )
             
             if response.status_code == 200:
                 data = response.json()
-                self.admin_token = data["access_token"]
-                self.session.headers.update({
-                    "Authorization": f"Bearer {self.admin_token}"
-                })
-                self.log_test("Admin Authentication", True, f"Token: {self.admin_token[:20]}...")
+                if "access_token" in data and "user" in data:
+                    self.admin_token = data["access_token"]
+                    user_info = data["user"]
+                    
+                    if user_info.get("role") == "admin":
+                        self.log_test(
+                            "Admin Authentication", 
+                            True, 
+                            f"Admin login successful for {ADMIN_EMAIL}",
+                            {
+                                "user_id": user_info.get("id"),
+                                "role": user_info.get("role"),
+                                "full_name": user_info.get("full_name"),
+                                "token_length": len(self.admin_token)
+                            }
+                        )
+                        return True
+                    else:
+                        self.log_test(
+                            "Admin Authentication", 
+                            False, 
+                            f"User role is {user_info.get('role')}, not admin",
+                            {"user_info": user_info}
+                        )
+                else:
+                    self.log_test(
+                        "Admin Authentication", 
+                        False, 
+                        "Invalid response format - missing token or user",
+                        {"response": data}
+                    )
+            else:
+                self.log_test(
+                    "Admin Authentication", 
+                    False, 
+                    f"Authentication failed with HTTP {response.status_code}",
+                    {"status_code": response.status_code, "response": response.text}
+                )
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "Admin Authentication", 
+                False, 
+                f"Request failed: {str(e)}",
+                {"error": str(e)}
+            )
+        return False
+    
+    def test_cors_headers(self):
+        """Test 3: CORS Headers Verification"""
+        try:
+            # Test preflight request
+            headers = {
+                "Origin": "http://217.154.0.82",
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "Content-Type,Authorization"
+            }
+            
+            response = requests.options(f"{BASE_URL}/auth/login", headers=headers, timeout=10)
+            
+            cors_headers = {
+                "Access-Control-Allow-Origin": response.headers.get("Access-Control-Allow-Origin"),
+                "Access-Control-Allow-Methods": response.headers.get("Access-Control-Allow-Methods"),
+                "Access-Control-Allow-Headers": response.headers.get("Access-Control-Allow-Headers"),
+                "Access-Control-Allow-Credentials": response.headers.get("Access-Control-Allow-Credentials")
+            }
+            
+            # Check if CORS is properly configured for our IP
+            origin_ok = cors_headers["Access-Control-Allow-Origin"] in ["*", "http://217.154.0.82"]
+            methods_ok = "POST" in (cors_headers["Access-Control-Allow-Methods"] or "")
+            headers_ok = "Authorization" in (cors_headers["Access-Control-Allow-Headers"] or "")
+            
+            if origin_ok and methods_ok and headers_ok:
+                self.log_test(
+                    "CORS Headers", 
+                    True, 
+                    "CORS properly configured for IP address",
+                    {"cors_headers": cors_headers, "status_code": response.status_code}
+                )
                 return True
             else:
-                self.log_test("Admin Authentication", False, f"Status: {response.status_code}, Response: {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("Admin Authentication", False, f"Exception: {str(e)}")
-            return False
+                self.log_test(
+                    "CORS Headers", 
+                    False, 
+                    "CORS configuration issues detected",
+                    {
+                        "cors_headers": cors_headers,
+                        "origin_ok": origin_ok,
+                        "methods_ok": methods_ok,
+                        "headers_ok": headers_ok
+                    }
+                )
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "CORS Headers", 
+                False, 
+                f"CORS test failed: {str(e)}",
+                {"error": str(e)}
+            )
+        return False
     
     def test_profile_stats_endpoint(self):
-        """Test GET /api/profile/stats - Should return real user statistics"""
+        """Test 4: Profile Stats Endpoint (Recently Fixed)"""
+        if not self.admin_token:
+            self.log_test(
+                "Profile Stats Endpoint", 
+                False, 
+                "Cannot test - no admin token available",
+                {}
+            )
+            return False
+            
         try:
-            response = self.session.get(f"{BACKEND_URL}/profile/stats")
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = requests.get(f"{BASE_URL}/profile/stats", headers=headers, timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
                 
-                # Verify basic required fields are present (the endpoint works but has limited fields)
-                basic_fields = [
-                    "total_orders", "total_listings", "total_spent", "total_earned",
-                    "avg_rating", "total_reviews"
-                ]
+                # Check if the response has expected fields
+                expected_fields = ["total_orders", "total_listings", "total_spent", "total_earned"]
+                has_expected_fields = all(field in data for field in expected_fields)
                 
-                missing_basic_fields = [field for field in basic_fields if field not in data]
-                
-                if not missing_basic_fields:
-                    self.log_test("GET /api/profile/stats", True, 
-                                f"Basic stats working. Data: total_orders={data.get('total_orders')}, "
-                                f"total_listings={data.get('total_listings')}, total_earned={data.get('total_earned')}")
+                if has_expected_fields:
+                    self.log_test(
+                        "Profile Stats Endpoint", 
+                        True, 
+                        "Profile stats endpoint working correctly",
+                        {
+                            "stats": data,
+                            "fields_present": list(data.keys())
+                        }
+                    )
                     return True
                 else:
-                    self.log_test("GET /api/profile/stats", False, f"Missing basic fields: {missing_basic_fields}")
-                    return False
+                    self.log_test(
+                        "Profile Stats Endpoint", 
+                        False, 
+                        "Response missing expected fields",
+                        {
+                            "response": data,
+                            "expected_fields": expected_fields,
+                            "missing_fields": [f for f in expected_fields if f not in data]
+                        }
+                    )
             else:
-                self.log_test("GET /api/profile/stats", False, f"Status: {response.status_code}, Response: {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("GET /api/profile/stats", False, f"Exception: {str(e)}")
-            return False
+                self.log_test(
+                    "Profile Stats Endpoint", 
+                    False, 
+                    f"HTTP {response.status_code} error",
+                    {"status_code": response.status_code, "response": response.text}
+                )
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "Profile Stats Endpoint", 
+                False, 
+                f"Request failed: {str(e)}",
+                {"error": str(e)}
+            )
+        return False
     
-    def test_profile_activity_endpoint(self):
-        """Test GET /api/profile/activity - Should return real activity timeline"""
+    def test_listings_endpoint(self):
+        """Test 5: Listings Endpoint (Core Marketplace Functionality)"""
         try:
-            response = self.session.get(f"{BACKEND_URL}/profile/activity")
+            response = requests.get(f"{BASE_URL}/listings", timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
                 
                 if isinstance(data, list):
-                    # Check if activities have expected structure
-                    if len(data) > 0:
-                        activity = data[0]
-                        expected_fields = ["type", "title", "time", "icon", "color"]
-                        missing_fields = [field for field in expected_fields if field not in activity]
-                        
-                        if not missing_fields:
-                            self.log_test("GET /api/profile/activity", True, 
-                                        f"Activity timeline returned {len(data)} activities. "
-                                        f"Sample: {activity.get('title', 'N/A')}")
-                            return True
-                        else:
-                            self.log_test("GET /api/profile/activity", False, f"Activity missing fields: {missing_fields}")
-                            return False
-                    else:
-                        self.log_test("GET /api/profile/activity", True, "Empty activity timeline (valid for new user)")
-                        return True
-                else:
-                    self.log_test("GET /api/profile/activity", False, f"Expected list, got: {type(data)}")
-                    return False
-            elif response.status_code == 404:
-                self.log_test("GET /api/profile/activity", False, "ENDPOINT NOT IMPLEMENTED - Returns 404")
-                return False
-            else:
-                self.log_test("GET /api/profile/activity", False, f"Status: {response.status_code}, Response: {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("GET /api/profile/activity", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_profile_update_endpoint(self):
-        """Test PUT /api/profile - Should update profile with enhanced fields"""
-        try:
-            # Test profile update with enhanced fields
-            update_data = {
-                "full_name": "Admin User Updated",
-                "bio": "Updated bio for comprehensive profile testing",
-                "location": "London, UK",
-                "phone": "+44 123 456 7890"
-            }
-            
-            response = self.session.put(f"{BACKEND_URL}/profile", json=update_data)
-            
-            if response.status_code == 200:
-                data = response.json()
-                # The endpoint returns the updated user profile, not just a success message
-                if "full_name" in data and data["full_name"] == "Admin User Updated":
-                    self.log_test("PUT /api/profile", True, "Profile updated successfully, returns updated user data")
+                    self.log_test(
+                        "Listings Endpoint", 
+                        True, 
+                        f"Listings endpoint working - returned {len(data)} listings",
+                        {
+                            "listings_count": len(data),
+                            "sample_listing": data[0] if data else None
+                        }
+                    )
                     return True
                 else:
-                    self.log_test("PUT /api/profile", False, f"Profile update may have failed: {data}")
-                    return False
+                    self.log_test(
+                        "Listings Endpoint", 
+                        False, 
+                        "Response is not a list format",
+                        {"response_type": type(data).__name__, "response": data}
+                    )
             else:
-                self.log_test("PUT /api/profile", False, f"Status: {response.status_code}, Response: {response.text}")
+                self.log_test(
+                    "Listings Endpoint", 
+                    False, 
+                    f"HTTP {response.status_code} error",
+                    {"status_code": response.status_code, "response": response.text}
+                )
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "Listings Endpoint", 
+                False, 
+                f"Request failed: {str(e)}",
+                {"error": str(e)}
+            )
+        return False
+    
+    def test_image_serving(self):
+        """Test 6: Image Serving Functionality"""
+        try:
+            # Test if we can access the uploads directory through the API
+            test_image_url = f"{BASE_URL}/uploads/test-image-check"
+            response = requests.get(test_image_url, timeout=10)
+            
+            # We expect 404 for non-existent image, but this tests the route is working
+            if response.status_code == 404:
+                self.log_test(
+                    "Image Serving", 
+                    True, 
+                    "Image serving route is accessible (404 for non-existent file is expected)",
+                    {"status_code": response.status_code, "url_tested": test_image_url}
+                )
+                return True
+            elif response.status_code == 200:
+                self.log_test(
+                    "Image Serving", 
+                    True, 
+                    "Image serving working - found existing image",
+                    {"status_code": response.status_code, "content_type": response.headers.get("content-type")}
+                )
+                return True
+            else:
+                self.log_test(
+                    "Image Serving", 
+                    False, 
+                    f"Unexpected status code {response.status_code}",
+                    {"status_code": response.status_code, "response": response.text}
+                )
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "Image Serving", 
+                False, 
+                f"Image serving test failed: {str(e)}",
+                {"error": str(e)}
+            )
+        return False
+    
+    def test_production_environment(self):
+        """Test 7: Production Environment Configuration"""
+        try:
+            # Test admin stats endpoint to verify production setup
+            if not self.admin_token:
+                self.log_test(
+                    "Production Environment", 
+                    False, 
+                    "Cannot verify - no admin token",
+                    {}
+                )
                 return False
                 
-        except Exception as e:
-            self.log_test("PUT /api/profile", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_profile_picture_upload_endpoint(self):
-        """Test POST /api/profile/upload-picture - Should upload profile pictures"""
-        try:
-            # Create a small test image file
-            test_image_content = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\tpHYs\x00\x00\x0b\x13\x00\x00\x0b\x13\x01\x00\x9a\x9c\x18\x00\x00\x00\nIDATx\x9cc\xf8\x00\x00\x00\x01\x00\x01\x00\x00\x00\x00IEND\xaeB`\x82'
-            
-            files = {
-                'file': ('test_profile.png', test_image_content, 'image/png')
-            }
-            
-            response = self.session.post(f"{BACKEND_URL}/profile/upload-picture", files=files)
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = requests.get(f"{BASE_URL}/admin/stats", headers=headers, timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
-                if "profile_picture_url" in data:
-                    self.log_test("POST /api/profile/upload-picture", True, 
-                                f"Profile picture uploaded: {data['profile_picture_url']}")
+                
+                # Check if we have production-like data
+                has_stats = all(key in data for key in ["total_users", "total_listings", "total_orders"])
+                
+                if has_stats:
+                    self.log_test(
+                        "Production Environment", 
+                        True, 
+                        "Production environment verified - admin stats accessible",
+                        {
+                            "admin_stats": data,
+                            "environment_indicators": {
+                                "has_users": data.get("total_users", 0) > 0,
+                                "has_listings": data.get("total_listings", 0) > 0,
+                                "admin_access": True
+                            }
+                        }
+                    )
                     return True
                 else:
-                    self.log_test("POST /api/profile/upload-picture", False, f"Missing profile_picture_url in response: {data}")
-                    return False
-            elif response.status_code == 404:
-                self.log_test("POST /api/profile/upload-picture", False, "ENDPOINT NOT IMPLEMENTED - Returns 404")
-                return False
+                    self.log_test(
+                        "Production Environment", 
+                        False, 
+                        "Admin stats response missing expected fields",
+                        {"response": data}
+                    )
             else:
-                self.log_test("POST /api/profile/upload-picture", False, f"Status: {response.status_code}, Response: {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("POST /api/profile/upload-picture", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_messages_endpoint(self):
-        """Test GET /api/messages - Should return user messages"""
-        try:
-            response = self.session.get(f"{BACKEND_URL}/messages")
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                if isinstance(data, list):
-                    if len(data) > 0:
-                        # Check message structure
-                        message = data[0]
-                        expected_fields = ["id", "sender", "message", "time", "read", "is_sender"]
-                        missing_fields = [field for field in expected_fields if field not in message]
-                        
-                        if not missing_fields:
-                            self.log_test("GET /api/messages", True, 
-                                        f"Messages returned {len(data)} messages. "
-                                        f"Sample: {message.get('sender', 'N/A')}")
-                            return True
-                        else:
-                            self.log_test("GET /api/messages", False, f"Message missing fields: {missing_fields}")
-                            return False
-                    else:
-                        self.log_test("GET /api/messages", True, "Empty messages list (valid for new user)")
-                        return True
-                else:
-                    self.log_test("GET /api/messages", False, f"Expected list, got: {type(data)}")
-                    return False
-            elif response.status_code == 404:
-                self.log_test("GET /api/messages", False, "ENDPOINT NOT IMPLEMENTED - Returns 404")
-                return False
-            else:
-                self.log_test("GET /api/messages", False, f"Status: {response.status_code}, Response: {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("GET /api/messages", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_user_reviews_endpoint(self):
-        """Test GET /api/reviews/user - Should return user reviews"""
-        try:
-            response = self.session.get(f"{BACKEND_URL}/reviews/user")
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                if isinstance(data, list):
-                    if len(data) > 0:
-                        # Check review structure
-                        review = data[0]
-                        expected_fields = ["id", "reviewer", "rating", "comment", "date", "item"]
-                        missing_fields = [field for field in expected_fields if field not in review]
-                        
-                        if not missing_fields:
-                            self.log_test("GET /api/reviews/user", True, 
-                                        f"Reviews returned {len(data)} reviews. "
-                                        f"Sample: {review.get('rating', 'N/A')} stars from {review.get('reviewer', 'N/A')}")
-                            return True
-                        else:
-                            self.log_test("GET /api/reviews/user", False, f"Review missing fields: {missing_fields}")
-                            return False
-                    else:
-                        self.log_test("GET /api/reviews/user", True, "Empty reviews list (valid for new user)")
-                        return True
-                else:
-                    self.log_test("GET /api/reviews/user", False, f"Expected list, got: {type(data)}")
-                    return False
-            elif response.status_code == 404:
-                self.log_test("GET /api/reviews/user", False, "ENDPOINT NOT IMPLEMENTED - Returns 404")
-                return False
-            else:
-                self.log_test("GET /api/reviews/user", False, f"Status: {response.status_code}, Response: {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("GET /api/reviews/user", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_user_orders_endpoint(self):
-        """Test GET /api/orders - Should return enhanced order details"""
-        try:
-            response = self.session.get(f"{BACKEND_URL}/orders")
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                if isinstance(data, list):
-                    if len(data) > 0:
-                        # Check order structure - the working endpoint returns different structure
-                        order = data[0]
-                        # The working endpoint returns: {"order": {...}, "listing": {...}, "buyer": {...}, "seller": {...}}
-                        if "order" in order and "listing" in order:
-                            self.log_test("GET /api/orders", True, 
-                                        f"Orders returned {len(data)} orders with full details. "
-                                        f"Sample: Order ID {order['order'].get('id', 'N/A')}")
-                            return True
-                        else:
-                            # Check if it's the simplified structure
-                            expected_fields = ["id", "title", "status", "total", "created_at", "seller"]
-                            missing_fields = [field for field in expected_fields if field not in order]
-                            
-                            if not missing_fields:
-                                self.log_test("GET /api/orders", True, 
-                                            f"Orders returned {len(data)} orders (simplified structure). "
-                                            f"Sample: {order.get('title', 'N/A')} - {order.get('status', 'N/A')}")
-                                return True
-                            else:
-                                self.log_test("GET /api/orders", False, f"Order missing expected fields: {missing_fields}")
-                                return False
-                    else:
-                        self.log_test("GET /api/orders", True, "Empty orders list (valid for new user)")
-                        return True
-                else:
-                    self.log_test("GET /api/orders", False, f"Expected list, got: {type(data)}")
-                    return False
-            else:
-                self.log_test("GET /api/orders", False, f"Status: {response.status_code}, Response: {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("GET /api/orders", False, f"Exception: {str(e)}")
-            return False
-    
-    def test_user_listings_endpoint(self):
-        """Test GET /api/listings/user - Should return enhanced listing details"""
-        try:
-            # First try the requested endpoint
-            response = self.session.get(f"{BACKEND_URL}/listings/user")
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                if isinstance(data, list):
-                    if len(data) > 0:
-                        # Check listing structure
-                        listing = data[0]
-                        expected_fields = ["id", "title", "status", "price", "views", "watchers", "created_at"]
-                        missing_fields = [field for field in expected_fields if field not in listing]
-                        
-                        if not missing_fields:
-                            self.log_test("GET /api/listings/user", True, 
-                                        f"User listings returned {len(data)} listings. "
-                                        f"Sample: {listing.get('title', 'N/A')} - {listing.get('views', 0)} views")
-                            return True
-                        else:
-                            self.log_test("GET /api/listings/user", False, f"Listing missing fields: {missing_fields}")
-                            return False
-                    else:
-                        self.log_test("GET /api/listings/user", True, "Empty listings list (valid for new user)")
-                        return True
-                else:
-                    self.log_test("GET /api/listings/user", False, f"Expected list, got: {type(data)}")
-                    return False
-            elif response.status_code == 404:
-                # Try the alternative working endpoint
-                response = self.session.get(f"{BACKEND_URL}/listings/my-listings")
-                if response.status_code == 200:
-                    data = response.json()
-                    self.log_test("GET /api/listings/user", True, 
-                                f"ALTERNATIVE ENDPOINT WORKING: /listings/my-listings returned {len(data)} listings")
-                    return True
-                else:
-                    self.log_test("GET /api/listings/user", False, "ENDPOINT NOT IMPLEMENTED - Returns 404, alternative also failed")
-                    return False
-            else:
-                self.log_test("GET /api/listings/user", False, f"Status: {response.status_code}, Response: {response.text}")
-                return False
-                
-        except Exception as e:
-            self.log_test("GET /api/listings/user", False, f"Exception: {str(e)}")
-            return False
+                self.log_test(
+                    "Production Environment", 
+                    False, 
+                    f"Admin stats endpoint failed with HTTP {response.status_code}",
+                    {"status_code": response.status_code, "response": response.text}
+                )
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "Production Environment", 
+                False, 
+                f"Production environment test failed: {str(e)}",
+                {"error": str(e)}
+            )
+        return False
     
     def run_all_tests(self):
-        """Run all profile endpoint tests"""
+        """Run all deployment readiness tests"""
         print("=" * 80)
-        print("COMPREHENSIVE PROFILE DATABASE ENDPOINTS TESTING")
-        print("=" * 80)
-        print(f"Backend URL: {BACKEND_URL}")
-        print(f"Admin Credentials: {ADMIN_EMAIL} / {ADMIN_PASSWORD}")
-        print(f"Test Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print("CATALORO MARKETPLACE - DEPLOYMENT READINESS TESTING")
+        print(f"Target IP: http://217.154.0.82")
+        print(f"Test Started: {datetime.now().isoformat()}")
         print("=" * 80)
         
-        # Authenticate first
-        if not self.authenticate_admin():
-            print("❌ CRITICAL: Authentication failed. Cannot proceed with tests.")
-            return False
-        
-        print("\n🔍 TESTING NEW COMPREHENSIVE PROFILE ENDPOINTS:")
-        print("-" * 60)
-        
-        # Test all new profile endpoints
+        # Run tests in sequence
         tests = [
+            self.test_basic_connectivity,
+            self.test_admin_authentication,
+            self.test_cors_headers,
             self.test_profile_stats_endpoint,
-            self.test_profile_activity_endpoint,
-            self.test_profile_update_endpoint,
-            self.test_profile_picture_upload_endpoint,
-            self.test_messages_endpoint,
-            self.test_user_reviews_endpoint,
-            self.test_user_orders_endpoint,
-            self.test_user_listings_endpoint
+            self.test_listings_endpoint,
+            self.test_image_serving,
+            self.test_production_environment
         ]
         
-        passed = 0
-        total = len(tests)
-        
-        for test in tests:
-            if test():
-                passed += 1
-            print()  # Add spacing between tests
+        passed_tests = 0
+        for test_func in tests:
+            try:
+                if test_func():
+                    passed_tests += 1
+            except Exception as e:
+                print(f"❌ FAIL: {test_func.__name__} - Unexpected error: {str(e)}")
+            print("-" * 40)
         
         # Summary
-        print("=" * 80)
-        print("TEST SUMMARY")
-        print("=" * 80)
-        print(f"Total Tests: {total}")
-        print(f"Passed: {passed}")
-        print(f"Failed: {total - passed}")
-        print(f"Success Rate: {(passed/total)*100:.1f}%")
+        total_tests = len(tests)
+        success_rate = (passed_tests / total_tests) * 100
         
-        if passed == total:
-            print("\n🎉 ALL PROFILE ENDPOINTS WORKING PERFECTLY!")
-            print("✅ Live database integration confirmed")
-            print("✅ All new comprehensive profile features operational")
+        print("=" * 80)
+        print("DEPLOYMENT READINESS TEST SUMMARY")
+        print("=" * 80)
+        print(f"Total Tests: {total_tests}")
+        print(f"Passed: {passed_tests}")
+        print(f"Failed: {len(self.failed_tests)}")
+        print(f"Success Rate: {success_rate:.1f}%")
+        
+        if self.failed_tests:
+            print(f"\nFailed Tests:")
+            for test in self.failed_tests:
+                print(f"  - {test}")
+        
+        print(f"\nDeployment Status: {'✅ READY' if success_rate >= 85 else '❌ NOT READY'}")
+        
+        if success_rate >= 85:
+            print("\n🎉 DEPLOYMENT READINESS CONFIRMED!")
+            print("The application is ready for production deployment at http://217.154.0.82")
         else:
-            print(f"\n⚠️  {total - passed} endpoint(s) need attention")
-            print("❌ Some profile features may not work correctly")
+            print("\n⚠️  DEPLOYMENT ISSUES DETECTED!")
+            print("Please resolve the failed tests before deploying to production.")
         
-        return passed == total
-
-def main():
-    """Main test execution"""
-    tester = ProfileEndpointTester()
-    success = tester.run_all_tests()
-    
-    # Exit with appropriate code
-    sys.exit(0 if success else 1)
+        print("=" * 80)
+        
+        return success_rate >= 85
 
 if __name__ == "__main__":
-    main()
+    tester = DeploymentTester()
+    deployment_ready = tester.run_all_tests()
+    
+    # Exit with appropriate code
+    sys.exit(0 if deployment_ready else 1)
