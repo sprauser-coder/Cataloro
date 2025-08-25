@@ -165,12 +165,12 @@ class ComprehensiveBackendTester:
             headers = {"Authorization": f"Bearer {self.admin_token}"}
             response = requests.get(f"{BACKEND_URL}/profile", headers=headers)
             
-            if response.status_code == 404:
-                self.log_test("Profile Get", True, "Profile endpoint not implemented (404) - expected for current version")
-                return True
-            elif response.status_code == 200:
+            if response.status_code == 200:
                 data = response.json()
                 self.log_test("Profile Get", True, f"Profile retrieved for user: {data.get('email', 'Unknown')}")
+                return True
+            elif response.status_code == 404:
+                self.log_test("Profile Get", True, "Profile endpoint not implemented (404) - expected for current version")
                 return True
             else:
                 self.log_test("Profile Get", False, error=f"Status: {response.status_code}, Response: {response.text}")
@@ -185,14 +185,14 @@ class ComprehensiveBackendTester:
         try:
             headers = {"Authorization": f"Bearer {self.admin_token}"}
             response = requests.put(f"{BACKEND_URL}/profile", 
-                                  json={"full_name": "Updated Admin User", "bio": "Test bio"},
+                                  json={"full_name": "Updated Admin User", "bio": "Test bio update"},
                                   headers=headers)
             
-            if response.status_code == 404:
-                self.log_test("Profile Update", True, "Profile update endpoint not implemented (404) - expected for current version")
-                return True
-            elif response.status_code == 200:
+            if response.status_code == 200:
                 self.log_test("Profile Update", True, "Profile updated successfully")
+                return True
+            elif response.status_code == 404:
+                self.log_test("Profile Update", True, "Profile update endpoint not implemented (404) - expected for current version")
                 return True
             else:
                 self.log_test("Profile Update", False, error=f"Status: {response.status_code}, Response: {response.text}")
