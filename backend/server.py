@@ -536,17 +536,6 @@ async def get_my_listings(current_user: User = Depends(get_current_user)):
 
 
 
-@api_router.get("/listings/{listing_id}", response_model=ProductListing)
-async def get_listing(listing_id: str):
-    listing = await db.listings.find_one({"id": listing_id})
-    if not listing:
-        raise HTTPException(status_code=404, detail="Listing not found")
-    
-    # Increment views
-    await db.listings.update_one({"id": listing_id}, {"$inc": {"views": 1}})
-    
-    return ProductListing(**parse_from_mongo(listing))
-
 # Bidding Routes
 @api_router.post("/bids", response_model=Bid)
 async def place_bid(bid_data: BidCreate, current_user: User = Depends(get_current_user)):
