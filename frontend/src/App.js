@@ -1367,14 +1367,17 @@ const Home = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Label className="text-sm text-gray-600">Show:</Label>
-                <Select value={listingsPerPage.toString()} onValueChange={(value) => {
-                  if (value === 'all') {
-                    setListingsPerPage(1000); // Set a large number for "show all"
-                  } else {
-                    setListingsPerPage(parseInt(value));
-                  }
-                  setCurrentPage(1); // Reset to first page when changing items per page
-                }}>
+                <Select 
+                  value={listingsPerPage >= 1000 ? 'all' : listingsPerPage.toString()} 
+                  onValueChange={(value) => {
+                    if (value === 'all') {
+                      setListingsPerPage(1000); // Set a large number for "show all"
+                    } else {
+                      setListingsPerPage(parseInt(value));
+                    }
+                    setCurrentPage(1); // Reset to first page when changing items per page
+                  }}
+                >
                   <SelectTrigger className="w-20">
                     <SelectValue />
                   </SelectTrigger>
