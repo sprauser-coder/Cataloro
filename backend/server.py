@@ -496,10 +496,22 @@ async def get_listings_count(
         if max_price is not None:
             price_query["$lte"] = max_price
         
-        query["$or"] = [
-            {"price": price_query, "listing_type": "fixed_price"},
-            {"current_bid": price_query, "listing_type": "auction"}
-        ]
+        # If there's already an $or query (from search), we need to combine them
+        if "$or" in query:
+            # Combine search and price filters using $and
+            search_or = query.pop("$or")
+            query["$and"] = [
+                {"$or": search_or},
+                {"$or": [
+                    {"price": price_query, "listing_type": "fixed_price"},
+                    {"current_bid": price_query, "listing_type": "auction"}
+                ]}
+            ]
+        else:
+            query["$or"] = [
+                {"price": price_query, "listing_type": "fixed_price"},
+                {"current_bid": price_query, "listing_type": "auction"}
+            ]
     
     count = await db.listings.count_documents(query)
     return {"total_count": count}
