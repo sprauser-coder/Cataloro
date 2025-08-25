@@ -2428,7 +2428,124 @@ async def increment_profile_view(profile_user_id: str):
     )
     return {"message": "Profile view incremented"}
 
-# Profile-related endpoints (existing ones to keep)
+# Messages and Reviews Endpoints
+
+@api_router.get("/messages")
+async def get_user_messages(current_user: dict = Depends(get_current_user)):
+    """Get user messages"""
+    user_id = current_user["id"]
+    
+    messages = await db.messages.find({
+        "$or": [
+            {"sender_id": user_id},
+            {"receiver_id": user_id}
+        ]
+    }).sort("created_at", -1).limit(20).to_list(20)
+    
+    result = []
+    for msg in messages:
+        # Get sender info
+        sender = await db.users.find_one({"id": msg["sender_id"]})
+        sender_name = sender["full_name"] if sender else "Unknown User"
+        
+        time_diff = datetime.now(timezone.utc) - msg["created_at"]
+        hours_ago = int(time_diff.total_seconds() / 3600)
+        time_str = f"{hours_ago}h ago" if hours_ago < 24 else f"{int(hours_ago/24)}d ago"
+        
+        result.append({
+            "id": msg["id"],
+            "sender": sender_name,
+            "message": msg["message"],
+            "time": time_str,
+            "read": msg.get("read", False),
+            "is_sender": msg["sender_id"] == user_id
+        })
+    
+    return result
+
+@api_router.get("/reviews/user")
+async def get_user_reviews(current_user: dict = Depends(get_current_user)):
+    """Get reviews for the current user"""
+    user_id = current_user["id"]
+    
+    reviews = await db.reviews.find({"reviewed_user_id": user_id}).sort("created_at", -1).to_list(None)
+    
+    result = []
+    for review in reviews:
+        # Get reviewer info
+        reviewer = await db.users.find_one({"id": review["reviewer_id"]})
+        reviewer_name = reviewer["full_name"] if reviewer else "Anonymous"
+        
+        # Get item info if available
+        item = "Unknown Item"
+        if review.get("listing_id"):
+            listing = await db.listings.find_one({"id": review["listing_id"]})
+            item = listing["title"] if listing else "Unknown Item"
+        
+        result.append({
+            "id": review["id"],
+            "reviewer": reviewer_name,
+            "rating": review["rating"],
+            "comment": review.get("comment", ""),
+            "date": review["created_at"].strftime("%Y-%m-%d"),
+            "item": item
+        })
+    
+    return result
+
+@api_router.get("/orders")
+async def get_user_orders(current_user: dict = Depends(get_current_user)):
+    """Get user's orders with enhanced details"""
+    user_id = current_user["id"]
+    
+    orders = await db.orders.find({"user_id": user_id}).sort("created_at", -1).to_list(None)
+    
+    result = []
+    for order in orders:
+        # Get listing info
+        listing = await db.listings.find_one({"id": order["listing_id"]})
+        title = listing["title"] if listing else "Unknown Item"
+        
+        # Get seller info
+        seller = await db.users.find_one({"id": order.get("seller_id", "")})
+        seller_name = seller["full_name"] if seller else "Unknown Seller"
+        
+        result.append({
+            "id": order["id"],
+            "title": title,
+            "status": order["status"],
+            "total": order["total_amount"],
+            "created_at": order["created_at"].strftime("%Y-%m-%d"),
+            "seller": seller_name
+        })
+    
+    return result
+
+@api_router.get("/listings/user")
+async def get_user_listings(current_user: dict = Depends(get_current_user)):
+    """Get user's listings with enhanced details"""
+    user_id = current_user["id"]
+    
+    listings = await db.listings.find({"seller_id": user_id}).sort("created_at", -1).to_list(None)
+    
+    result = []
+    for listing in listings:
+        # Calculate watchers (users who favorited this listing)
+        watchers = await db.favorites.count_documents({"listing_id": listing["id"]})
+        
+        result.append({
+            "id": listing["id"],
+            "title": listing["title"],
+            "status": listing["status"],
+            "price": listing["price"],
+            "views": listing.get("views", 0),
+            "watchers": watchers,
+            "created_at": listing["created_at"].strftime("%Y-%m-%d")
+        })
+    
+    return result
+
+# Update existing profile endpoint to return enhanced data
 
 class ProfileUpdate(BaseModel):
     """User profile update model"""
