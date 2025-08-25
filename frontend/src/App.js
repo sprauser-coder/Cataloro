@@ -1117,7 +1117,7 @@ const Home = () => {
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [selectedCondition, setSelectedCondition] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [listingsPerPage, setListingsPerPage] = useState(10); // New: listings per page
+  const [listingsPerPage, setListingsPerPage] = useState(12); // New: listings per page
   const [currentPage, setCurrentPage] = useState(1);
   const [totalListings, setTotalListings] = useState(0);
   
