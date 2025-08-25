@@ -2194,7 +2194,82 @@ const Profile = () => {
     }
   };
 
-  const getBadgeColor = (level) => {
+  const updateProfile = async () => {
+    try {
+      await axios.put(`${API}/profile`, {
+        full_name: profileData.full_name,
+        bio: profileData.bio,
+        location: profileData.location,
+        website: profileData.website,
+        phone: profileData.phone,
+        social_links: profileData.social_links,
+        preferences: profileData.preferences
+      });
+      
+      toast({
+        title: "Success",
+        description: "Profile updated successfully"
+      });
+      setIsEditing(false);
+      
+      // Refresh profile data
+      fetchProfileData();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleProfilePictureUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please select an image smaller than 5MB",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post(`${API}/profile/upload-picture`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      setProfileData(prev => ({
+        ...prev,
+        profile_picture_url: response.data.profile_picture_url
+      }));
+
+      toast({
+        title: "Success",
+        description: "Profile picture updated successfully"
+      });
+    } catch (error) {
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload profile picture",
+        variant: "destructive"
+      });
+    }
+  };
     switch (level) {
       case 'Bronze': return 'bg-amber-100 text-amber-800';
       case 'Silver': return 'bg-gray-100 text-gray-800';
