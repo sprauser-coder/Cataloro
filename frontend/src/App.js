@@ -1021,6 +1021,33 @@ const Home = () => {
     }
   };
 
+  const removeFromFavoritesBrowse = async (listing) => {
+    try {
+      await axios.delete(`${API}/favorites/${listing.id}`);
+      toast({
+        title: "Removed from Favorites",
+        description: `"${listing.title}" has been removed from your favorites`
+      });
+      
+      // Update local favorites state
+      fetchUserFavorites();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: formatErrorMessage(error, "Failed to remove from favorites"),
+        variant: "destructive"
+      });
+    }
+  };
+
+  const toggleFavoritesBrowse = async (listing) => {
+    if (isListingFavorited(listing.id)) {
+      await removeFromFavoritesBrowse(listing);
+    } else {
+      await addToFavoritesBrowse(listing);
+    }
+  };
+
   const fetchUserFavorites = async () => {
     if (!user) return;
     
