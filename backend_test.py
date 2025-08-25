@@ -438,7 +438,7 @@ class BackendConnectivityTester:
         return len(failed_tests) == 0
 
 if __name__ == "__main__":
-    tester = AdminAuthTester()
+    tester = BackendConnectivityTester()
     success = tester.run_all_tests()
     sys.exit(0 if success else 1)
 """
