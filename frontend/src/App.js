@@ -809,66 +809,60 @@ const Auth = () => {
               
               {!isLogin && (
                 <>
-                  <div className="space-y-2">
-                    <Label htmlFor="username" className="text-sm font-semibold text-gray-700">Username</Label>
+                  <div>
+                    <Label htmlFor="username">Username</Label>
                     <Input
                       id="username"
                       value={formData.username}
                       onChange={(e) => setFormData({...formData, username: e.target.value})}
                       required
-                      placeholder="Choose a unique username"
-                      className="h-12 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-purple-500 transition-all duration-300 bg-gray-50 focus:bg-white"
+                      className="mt-1"
                     />
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="full_name" className="text-sm font-semibold text-gray-700">Full Name</Label>
+                  <div>
+                    <Label htmlFor="full_name">Full Name</Label>
                     <Input
                       id="full_name"
                       value={formData.full_name}
                       onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                       required
-                      placeholder="Enter your full name"
-                      className="h-12 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-purple-500 transition-all duration-300 bg-gray-50 focus:bg-white"
+                      className="mt-1"
                     />
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="role" className="text-sm font-semibold text-gray-700">Account Type</Label>
+                  <div>
+                    <Label htmlFor="role">I want to</Label>
                     <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
-                      <SelectTrigger className="h-12 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-purple-500 transition-all duration-300 bg-gray-50 focus:bg-white">
-                        <SelectValue placeholder="Choose your account type" />
+                      <SelectTrigger className="mt-1">
+                        <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="rounded-xl border-2">
-                        <SelectItem value="buyer" className="rounded-lg">🛒 Buy items</SelectItem>
-                        <SelectItem value="seller" className="rounded-lg">💰 Sell items</SelectItem>
-                        <SelectItem value="both" className="rounded-lg">🚀 Both buy and sell</SelectItem>
+                      <SelectContent>
+                        <SelectItem value="buyer">Buy items</SelectItem>
+                        <SelectItem value="seller">Sell items</SelectItem>
+                        <SelectItem value="both">Both buy and sell</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">Phone <span className="text-gray-400">(Optional)</span></Label>
-                      <Input
-                        id="phone"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                        placeholder="Your phone number"
-                        className="h-12 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-purple-500 transition-all duration-300 bg-gray-50 focus:bg-white"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="address" className="text-sm font-semibold text-gray-700">Address <span className="text-gray-400">(Optional)</span></Label>
-                      <Input
-                        id="address"
-                        value={formData.address}
-                        onChange={(e) => setFormData({...formData, address: e.target.value})}
-                        placeholder="Your address"
-                        className="h-12 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-purple-500 transition-all duration-300 bg-gray-50 focus:bg-white"
-                      />
-                    </div>
+                  <div>
+                    <Label htmlFor="phone">Phone (Optional)</Label>
+                    <Input
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="address">Address (Optional)</Label>
+                    <Input
+                      id="address"
+                      value={formData.address}
+                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                      className="mt-1"
+                    />
                   </div>
                 </>
               )}
