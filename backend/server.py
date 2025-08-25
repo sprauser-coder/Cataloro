@@ -2431,9 +2431,9 @@ async def increment_profile_view(profile_user_id: str):
 # Messages and Reviews Endpoints
 
 @api_router.get("/messages")
-async def get_user_messages(current_user: dict = Depends(get_current_user)):
+async def get_user_messages(current_user: User = Depends(get_current_user)):
     """Get user messages"""
-    user_id = current_user["id"]
+    user_id = current_user.id
     
     messages = await db.messages.find({
         "$or": [
