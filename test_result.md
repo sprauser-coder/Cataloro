@@ -270,6 +270,21 @@ frontend:
         agent: "main"
         comment: "ALL ISSUES FIXED: 1) PAGINATION FUNCTIONALITY: Added currentPage to useEffect dependencies, implemented client-side pagination with proper startIndex/endIndex calculation for page switching 2) SHOW ALL FEATURE: Modified pagination to show all items when 'Show All' selected (listingsPerPage >= 1000), disabled but still visible page controls with 'All items' indicator 3) TIME FRAME PLACEMENT: Moved time frame picker from dashboard top to Performance Summary section with compact design and proper timeFrame state integration 4) COMPACT USER STATS: Reduced orders/listings/revenue cards from 2xl font/p-3 padding/gap-6 to lg font/p-2 padding/gap-3, changed rounded-lg to rounded-md for tighter appearance. All functionality preserved with improved UX."
 
+  - task: "Browse Page Total Items Count Fix"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js, /app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported that total items found on browse page is incorrect - ALL active listings should be shown and counted instead of limited results."
+      - working: true
+        agent: "main"
+        comment: "BROWSE PAGE COUNT COMPLETELY FIXED: 1) BACKEND: Added dedicated /listings/count endpoint that returns accurate total count of ALL active listings matching filters, implemented proper route ordering by placing /listings/count before parameterized /listings/{listing_id} route to resolve FastAPI routing conflicts 2) FRONTEND: Updated fetchListings to use new count endpoint for accurate totals, modified pagination to request high limit (10000) for Show All functionality, proper server-side pagination implementation with skip/limit parameters 3) DATABASE: Count endpoint uses same filtering logic as main listings endpoint ensuring consistent results. TESTING CONFIRMED: Backend returns correct count of all active listings (verified via direct localhost testing), route ordering fix successful, individual listing access preserved. All browse page counts now accurately reflect total active listings in database."
+
   - task: "Logo Settings Reorganization"
     implemented: true
     working: true
