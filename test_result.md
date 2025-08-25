@@ -709,6 +709,18 @@ backend:
         agent: "testing"
         comment: "HEADER LOGO SIZE FIELD TESTING COMPLETED: Comprehensive testing of new header_logo_size field in CMS settings endpoint with 100% success rate (8/8 tests passed). ✅ DEFAULT VALUE VERIFICATION: GET /api/cms/settings returns header_logo_size field with correct default value 'h-8' as specified in SiteSettings model. ✅ UPDATE FUNCTIONALITY: PUT /api/admin/cms/settings successfully updates header_logo_size to different values ('h-12', 'h-6', 'h-10', 'h-16') with proper persistence in database. ✅ DATA PERSISTENCE: Updated header_logo_size values persist correctly across multiple GET requests, confirming proper database storage and retrieval. ✅ MULTIPLE VALUE TESTING: Successfully tested various Tailwind CSS height classes (h-6, h-8, h-10, h-12, h-16) with all values saving and retrieving correctly. ✅ ADMIN AUTHENTICATION: Proper admin authentication enforced for CMS settings updates - unauthenticated requests correctly rejected with 403/401 status codes. ✅ FIELD INTEGRATION: header_logo_size field properly integrated into existing CMS settings system alongside other logo-related fields (header_logo_url, header_logo_alt). ✅ PUBLIC API ACCESS: Updated header_logo_size values immediately available via public GET /api/cms/settings endpoint for frontend consumption. ✅ RESET FUNCTIONALITY: Successfully reset header_logo_size back to default 'h-8' value, confirming bidirectional update capability. The new header_logo_size field is fully functional and ready for frontend integration, allowing dynamic control of header logo sizing through the CMS admin panel."
 
+  - task: "Bulk Order Management Endpoints"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "BULK ORDER MANAGEMENT ENDPOINTS TESTING COMPLETED: Mixed results with critical backend routing issue identified. ✅ BASIC ORDER MANAGEMENT: GET /api/admin/orders working perfectly - successfully retrieved 10 orders with complete data structure, all filter parameters functional (status_filter: pending/completed, time_frame: today/last_week), proper admin authentication enforced, order data includes buyer/seller/listing relationships. ✅ ORDER FILTERING: All order filtering options working correctly - pending orders (6), completed orders (4), time-based filters (today, last_week) all functional with proper query handling. ❌ CRITICAL BULK ENDPOINTS ISSUE: Both bulk endpoints return 404 Not Found - POST /api/admin/orders/bulk-update and POST /api/admin/orders/bulk-delete are not accessible despite being defined in server.py code. ROOT CAUSE IDENTIFIED: FastAPI parameter conflict in bulk endpoint models - AssertionError 'Param: order_ids can only be a request body, using Body()' found in server logs. The bulk endpoints are properly defined in code (lines 2613-2669) but FastAPI routing fails due to parameter name conflicts between BulkOrderUpdate/BulkOrderDelete models and existing bulk listing models. IMMEDIATE ACTION REQUIRED: Fix FastAPI parameter conflict by renaming bulk order models (e.g., OrderBulkUpdateRequest, OrderBulkDeleteRequest) to avoid conflicts with existing BulkListingUpdate models. Backend infrastructure is ready but routing issue prevents endpoint accessibility."
+
 frontend:
   - task: "Frontend URL Configuration Fix"
     implemented: true
