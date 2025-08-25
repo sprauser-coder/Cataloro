@@ -504,6 +504,12 @@ async def get_listings_count(
     count = await db.listings.count_documents(query)
     return {"total_count": count}
 
+@api_router.get("/listings/total")
+async def get_listings_total():
+    """Alternative count endpoint for testing"""
+    count = await db.listings.count_documents({"status": "active"})
+    return {"total_count": count}
+
 @api_router.get("/listings/debug-count")
 async def debug_listings_count():
     """Debug endpoint to test route registration"""
