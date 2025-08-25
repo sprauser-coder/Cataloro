@@ -2294,7 +2294,7 @@ async def get_user_activity(current_user: User = Depends(get_current_user)):
     
     # Get recent orders
     recent_orders = await db.orders.find(
-        {"user_id": user_id}
+        {"$or": [{"buyer_id": user_id}, {"seller_id": user_id}]}
     ).sort("created_at", -1).limit(5).to_list(5)
     
     for order in recent_orders:
