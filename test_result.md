@@ -225,6 +225,21 @@ frontend:
         agent: "main"
         comment: "COMPREHENSIVE UI IMPROVEMENTS COMPLETED: 1) ADMIN DASHBOARD: Made listing performance section smaller and more compact, added 'Listings Created' metric to overview (5-column layout), added cool frontend functionalities (Quick Actions card with copy site URL/export data/open new tab, System Health monitor with status indicators, Activity Feed with recent actions) 2) BROWSE PAGE: Removed '+ more filters' button, fixed items found ticker to show all found items not just displayed, added pagination system with Previous/Next buttons and page numbers, items per page selector updated 3) USER MANAGEMENT: Enhanced bulk actions with selected users section (Block/Unblock/Delete/Export Selected), improved system actions layout, added CSV export for selected users, fixed left-alignment of orders/listings/revenue stats in user cards. All improvements maintain existing functionality while enhancing user experience."
 
+  - task: "Dashboard & Browse Page Bug Fixes"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported multiple issues: non-functioning links on admin panel dashboard, incorrect item counts and pagination on browse page ('10 items found (showing 10)' should be '52 items found'), need proper page ticker (1/5) with arrows, and alignment issues with bulk options."
+      - working: true
+        agent: "main"
+        comment: "CRITICAL BUGS FIXED: 1) ADMIN DASHBOARD: Added time frame ticker (today/week/month/year) to marketplace overview with dynamic numbers based on selection, fixed Quick Actions links with proper toast notifications and functionality 2) BROWSE PAGE: Fixed items count display to show total items found instead of showing count, added 'Show All' option to dropdown, improved pagination controls with compact arrow buttons and page indicators (1/5 format) 3) USER MANAGEMENT: Added proper spacing (mt-4) between bulk action buttons and order/listings/revenue statistics for better visual separation. All dashboard links now function correctly with user feedback."
+
   - task: "Logo Settings Reorganization"
     implemented: true
     working: true
