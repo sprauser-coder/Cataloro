@@ -2278,7 +2278,8 @@ async def get_user_activity(current_user: User = Depends(get_current_user)):
         {"seller_id": user_id}
     ).sort("created_at", -1).limit(5).to_list(5)
     
-    for listing in recent_listings:
+    for listing_doc in recent_listings:
+        listing = parse_from_mongo(listing_doc)
         time_diff = datetime.now(timezone.utc) - listing["created_at"]
         hours_ago = int(time_diff.total_seconds() / 3600)
         time_str = f"{hours_ago}h ago" if hours_ago < 24 else f"{int(hours_ago/24)}d ago"
