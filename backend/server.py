@@ -336,14 +336,9 @@ async def login(credentials: UserLogin):
     
     return Token(access_token=access_token, token_type="bearer", user=user)
 
-# Listing Routes
-@api_router.get("/listings/test-endpoint")
-async def test_endpoint():
-    """Test endpoint to verify route ordering"""
-    return {"message": "Test endpoint working", "route": "/listings/test-endpoint"}
-
+# Listing Routes - Count endpoint MUST come first before parameterized routes
 @api_router.get("/listings/count")
-async def get_listings_count_fixed(
+async def get_listings_count(
     category: Optional[str] = None,
     search: Optional[str] = None,
     listing_type: Optional[ListingType] = None,
@@ -352,8 +347,8 @@ async def get_listings_count_fixed(
     condition: Optional[str] = None,
     region: Optional[str] = None
 ):
-    """Get total count of active listings matching filters - FIXED VERSION"""
-    query = {"status": "active"}
+    """Get total count of active listings matching filters"""
+    query = {"status": ListingStatus.ACTIVE}
     
     # Apply same filters as get_listings
     if category:
@@ -370,7 +365,7 @@ async def get_listings_count_fixed(
     if region:
         query["region"] = region
     
-    # Price filtering
+    # Price filtering - fix the query structure
     if min_price is not None or max_price is not None:
         price_query = {}
         if min_price is not None:
@@ -378,13 +373,44 @@ async def get_listings_count_fixed(
         if max_price is not None:
             price_query["$lte"] = max_price
         
-        query["$or"] = [
-            {"price": price_query, "listing_type": "fixed_price"},
-            {"current_bid": price_query, "listing_type": "auction"}
-        ]
+        # Don't overwrite existing $or queries
+        if "$or" in query:
+            # Add price conditions to existing $or
+            existing_or = query["$or"]
+            query["$and"] = [
+                {"$or": existing_or},
+                {"$or": [
+                    {"price": price_query, "listing_type": "fixed_price"},
+                    {"current_bid": price_query, "listing_type": "auction"}
+                ]}
+            ]
+            del query["$or"]
+        else:
+            query["$or"] = [
+                {"price": price_query, "listing_type": "fixed_price"},
+                {"current_bid": price_query, "listing_type": "auction"}
+            ]
     
-    count = await db.listings.count_documents(query)
-    return {"total_count": count}
+    try:
+        count = await db.listings.count_documents(query)
+        return {"total_count": count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error counting listings: {str(e)}")
+
+@api_router.get("/listings/my-listings")
+async def get_my_listings(current_user: User = Depends(get_current_user)):
+    """Get current user's listings"""
+    try:
+        cursor = db.listings.find({"seller_id": current_user.id})
+        listings = []
+        async for listing_doc in cursor:
+            listing_data = parse_from_mongo(listing_doc)
+            listings.append(listing_data)
+        
+        return listings
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve user listings: {str(e)}")
 
 @api_router.post("/listings", response_model=ProductListing)
 async def create_listing(listing_data: ListingCreate, current_user: User = Depends(get_current_user)):
