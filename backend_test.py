@@ -322,50 +322,51 @@ class BackendConnectivityTester:
             self.log_test("Authenticated Endpoints", False, f"Exception occurred: {str(e)}")
             return False
     
-    def test_additional_admin_endpoints(self):
-        """Test additional admin endpoints to ensure comprehensive access"""
-        print("🔧 Testing Additional Admin Endpoints...")
+    def test_frontend_critical_endpoints(self):
+        """Test 7: Frontend Critical Endpoints - Test endpoints essential for frontend initialization"""
+        print("🎯 Testing Frontend Critical Endpoints...")
         
-        if not self.admin_token:
-            self.log_test("Additional Admin Endpoints", False, "No admin token available")
-            return False
-        
-        headers = {"Authorization": f"Bearer {self.admin_token}"}
-        admin_endpoints = [
-            ("/admin/users", "Users Management"),
-            ("/admin/listings", "Listings Management"),
-            ("/admin/orders", "Orders Management"),
-            ("/admin/cms/settings", "CMS Settings")
-        ]
-        
-        successful_endpoints = []
-        failed_endpoints = []
-        
-        for endpoint, description in admin_endpoints:
-            try:
-                response = self.session.get(f"{BACKEND_URL}{endpoint}", headers=headers)
-                if response.status_code == 200:
-                    successful_endpoints.append(f"{description} ({endpoint})")
-                else:
-                    failed_endpoints.append(f"{description} ({endpoint}) - Status: {response.status_code}")
-            except Exception as e:
-                failed_endpoints.append(f"{description} ({endpoint}) - Error: {str(e)}")
-        
-        if len(successful_endpoints) >= 3:  # At least 3 out of 4 should work
-            self.log_test(
-                "Additional Admin Endpoints", 
-                True, 
-                f"Working endpoints: {', '.join(successful_endpoints)}"
-            )
-            if failed_endpoints:
-                print(f"   Note: Some endpoints had issues: {', '.join(failed_endpoints)}")
-            return True
-        else:
-            self.log_test(
-                "Additional Admin Endpoints", 
-                False, 
-                f"Too many endpoints failed. Working: {len(successful_endpoints)}, Failed: {len(failed_endpoints)}"
-            )
+        try:
+            # Test endpoints that frontend needs to initialize properly
+            critical_endpoints = [
+                ("/", "API Root"),
+                ("/categories", "Categories List"),
+                ("/cms/settings", "Site Settings"),
+                ("/listings", "Public Listings")
+            ]
+            
+            successful_endpoints = []
+            failed_endpoints = []
+            
+            for endpoint, description in critical_endpoints:
+                try:
+                    response = self.session.get(f"{BACKEND_URL}{endpoint}", timeout=10)
+                    if response.status_code == 200:
+                        successful_endpoints.append(f"{description} ({endpoint})")
+                    else:
+                        failed_endpoints.append(f"{description} ({endpoint}) - Status: {response.status_code}")
+                except Exception as e:
+                    failed_endpoints.append(f"{description} ({endpoint}) - Error: {str(e)}")
+            
+            if len(successful_endpoints) >= 3:  # At least 3 out of 4 should work
+                self.log_test(
+                    "Frontend Critical Endpoints", 
+                    True, 
+                    f"Frontend initialization endpoints working. Accessible: {', '.join(successful_endpoints)}"
+                )
+                if failed_endpoints:
+                    print(f"   Note: Some endpoints had issues: {', '.join(failed_endpoints)}")
+                return True
+            else:
+                self.log_test(
+                    "Frontend Critical Endpoints", 
+                    False, 
+                    f"Critical frontend endpoints failing. This could cause white screen. Working: {len(successful_endpoints)}, Failed: {len(failed_endpoints)}"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test("Frontend Critical Endpoints", False, f"Exception occurred: {str(e)}")
             return False
     
     def run_all_tests(self):
