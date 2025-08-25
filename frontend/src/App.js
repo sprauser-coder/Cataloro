@@ -1610,7 +1610,7 @@ const Home = () => {
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        addToFavoritesBrowse(listing);
+                        toggleFavoritesBrowse(listing);
                       }}
                     >
                       <Star className={`h-4 w-4 ${
