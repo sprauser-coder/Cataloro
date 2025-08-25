@@ -168,7 +168,7 @@ class LogoUploadInvestigator:
                     # Test 1c: Large file size (should be rejected)
                     try:
                         large_image = self.create_test_image('PNG', (1000, 1000), file_size_mb=6)
-                        files = {'logo': ('large_logo.png', large_image, 'image/png')}
+                        files = {'file': ('large_logo.png', large_image, 'image/png')}
                         
                         response = self.session.post(f"{BACKEND_URL}/admin/cms/upload-logo", headers=headers, files=files, timeout=30)
                         
