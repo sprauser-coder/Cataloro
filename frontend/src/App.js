@@ -87,41 +87,54 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    if (storedToken && storedToken !== token) {
-      setToken(storedToken);
-    }
-    
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    const initializeAuth = () => {
+      const storedToken = localStorage.getItem('token');
       
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const currentTime = Date.now() / 1000;
+      if (storedToken && storedToken !== token) {
+        setToken(storedToken);
+        return; // Exit early, let the next useEffect handle the token validation
+      }
+      
+      if (token) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         
-        // Check if token is expired
-        if (payload.exp < currentTime) {
-          console.log('Token expired, logging out');
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const currentTime = Date.now() / 1000;
+          
+          // Check if token is expired
+          if (payload.exp < currentTime) {
+            console.log('Token expired, logging out');
+            logout();
+            setLoading(false);
+            return;
+          }
+          
+          const savedUser = localStorage.getItem('user');
+          if (savedUser) {
+            setUser(JSON.parse(savedUser));
+            setLoading(false);
+          } else {
+            // If no saved user data, fetch from API
+            fetchUserProfile();
+          }
+        } catch (error) {
+          console.error('Invalid token');
           logout();
           setLoading(false);
-          return;
         }
-        
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-          setUser(JSON.parse(savedUser));
-          setLoading(false);
-        } else {
-          // If no saved user data, fetch from API
-          fetchUserProfile();
-        }
-      } catch (error) {
-        console.error('Invalid token');
-        logout();
+      } else {
         setLoading(false);
       }
-    } else {
-      setLoading(false);
+    };
+    
+    initializeAuth();
+  }, []); // CRITICAL FIX: Remove token dependency to prevent infinite loops
+  
+  // Separate effect to handle token changes from external sources
+  useEffect(() => {
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
   }, [token]);
 
