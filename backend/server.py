@@ -1948,7 +1948,7 @@ async def get_seo_settings(current_user: User = Depends(get_admin_user)):
         
         if seo_doc:
             # Convert MongoDB document to SEOSettings model
-            seo_settings = SEOSettings(**seo_doc)
+            seo_settings = SEOSettings(**parse_from_mongo(seo_doc))
             return seo_settings.dict()
         else:
             # Return default settings
