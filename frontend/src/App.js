@@ -1133,9 +1133,9 @@ const Home = () => {
         if (priceRange.max) params.append('max_price', priceRange.max);
         if (selectedCondition) params.append('condition', selectedCondition);
         
-        // Listings per page and offset for pagination
-        params.append('limit', listingsPerPage.toString());
-        params.append('offset', ((currentPage - 1) * listingsPerPage).toString());
+        // Don't send pagination params to backend for now (implement client-side)
+        // params.append('limit', listingsPerPage.toString());
+        // params.append('offset', ((currentPage - 1) * listingsPerPage).toString());
         
         // Future infrastructure 
         if (selectedRegion) params.append('region', selectedRegion);
