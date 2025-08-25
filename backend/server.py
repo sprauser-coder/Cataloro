@@ -348,6 +348,7 @@ async def get_listings_count(
     region: Optional[str] = None
 ):
     """Get total count of active listings matching filters"""
+    print(f"DEBUG: get_listings_count called with params: category={category}, search={search}, listing_type={listing_type}")
     query = {"status": ListingStatus.ACTIVE}
     
     # Apply same filters as get_listings
