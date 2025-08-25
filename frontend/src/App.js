@@ -7690,7 +7690,7 @@ const AdminPanel = () => {
                               {siteSettings?.header_logo_url && (
                                 <div className="flex items-center space-x-3 p-3 border rounded-md bg-gray-50">
                                   <img
-                                    src={`${BACKEND_URL}${siteSettings.header_logo_url}`}
+                                    src={getImageUrl(siteSettings.header_logo_url)}
                                     alt="Current Logo"
                                     className="h-12 w-auto object-contain"
                                   />
