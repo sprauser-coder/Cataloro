@@ -8226,6 +8226,7 @@ function App() {
           </Routes>
         </HashRouter>
         <Toaster />
+        <Footer siteSettings={null} />
       </div>
     </AuthProvider>
   );
