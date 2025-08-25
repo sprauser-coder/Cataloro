@@ -184,3 +184,20 @@ div[style*="position: fixed"][style*="bottom"][style*="right"] > a,
 div[style*="position: fixed"][style*="bottom"][style*="right"] > span {
   display: none !important;
 }
+
+/* More specific targeting for watermark/branding elements */
+div[style*="position: fixed"][style*="bottom"][style*="right"][style*="color"][style*="text-decoration"] {
+  display: none !important;
+}
+
+/* Target any fixed positioned element in bottom right that looks like branding */
+div[style*="position: fixed"][style*="bottom: 16px"][style*="right: 16px"],
+div[style*="position: fixed"][style*="bottom: 20px"][style*="right: 20px"],
+div[style*="position: fixed"][style*="bottom: 24px"][style*="right: 24px"] {
+  display: none !important;
+}
+
+/* Hide any text that says "Made with" followed by anything */
+*[innerHTML*="Made with"] {
+  display: none !important;
+}
