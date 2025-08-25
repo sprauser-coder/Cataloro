@@ -370,9 +370,10 @@ class BackendConnectivityTester:
             return False
     
     def run_all_tests(self):
-        """Run all admin authentication tests"""
+        """Run all backend connectivity tests for 217.154.0.82"""
         print("=" * 80)
-        print("🚀 ADMIN AUTHENTICATION & ROLE VERIFICATION TEST SUITE")
+        print("🚀 BACKEND API CONNECTIVITY TEST FOR 217.154.0.82")
+        print("Diagnosing frontend white screen and authentication issues")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
         print(f"Admin Email: {ADMIN_EMAIL}")
@@ -380,14 +381,15 @@ class BackendConnectivityTester:
         print("=" * 80)
         print()
         
-        # Run tests in sequence
+        # Run tests in sequence - order matters for dependencies
         tests = [
+            self.test_basic_api_connectivity,
             self.test_admin_login,
-            self.test_admin_role_verification,
-            self.test_token_validation,
-            self.test_admin_profile,
-            self.test_admin_stats_access,
-            self.test_additional_admin_endpoints
+            self.test_cms_settings,
+            self.test_categories_endpoint,
+            self.test_cors_headers,
+            self.test_authenticated_endpoints,
+            self.test_frontend_critical_endpoints
         ]
         
         for test in tests:
@@ -395,7 +397,7 @@ class BackendConnectivityTester:
         
         # Summary
         print("=" * 80)
-        print("📊 TEST SUMMARY")
+        print("📊 BACKEND CONNECTIVITY TEST SUMMARY")
         print("=" * 80)
         
         passed_tests = [r for r in self.test_results if r["success"]]
@@ -413,15 +415,23 @@ class BackendConnectivityTester:
                 print(f"  - {test['test']}: {test['details']}")
             print()
         
+        # Diagnosis based on results
         if len(passed_tests) == len(self.test_results):
-            print("🎉 ALL TESTS PASSED! Admin authentication is working correctly.")
-            print("✅ Admin panel should be accessible without white screen issues.")
-        elif len(passed_tests) >= 4:  # At least core functionality working
-            print("⚠️  MOSTLY WORKING: Core admin authentication is functional.")
-            print("✅ Admin panel should be accessible, but some features may have issues.")
+            print("🎉 ALL TESTS PASSED! Backend is fully accessible from 217.154.0.82")
+            print("✅ Frontend white screen issue is NOT caused by backend connectivity problems.")
+            print("🔍 Investigate frontend code, React app initialization, or client-side issues.")
+        elif len(passed_tests) >= 5:  # Most tests passing
+            print("⚠️  MOSTLY WORKING: Backend is largely accessible but has some issues.")
+            print("✅ Core functionality available, but some features may cause frontend problems.")
+            print("🔍 Check specific failed endpoints and CORS configuration.")
+        elif len(passed_tests) >= 3:  # Basic connectivity working
+            print("🚨 PARTIAL CONNECTIVITY: Basic backend access working but authentication/data issues.")
+            print("⚠️  Frontend may load but fail during authentication or data fetching.")
+            print("🔍 Focus on authentication endpoints and data retrieval issues.")
         else:
-            print("🚨 CRITICAL ISSUES FOUND: Admin authentication has significant problems.")
-            print("❌ Admin panel white screen issue likely caused by authentication failures.")
+            print("🚨 CRITICAL BACKEND ISSUES: Server connectivity problems detected.")
+            print("❌ Frontend white screen likely caused by backend being unreachable or misconfigured.")
+            print("🔍 Check server status, network connectivity, and backend deployment.")
         
         print("=" * 80)
         
