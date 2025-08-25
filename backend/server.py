@@ -987,6 +987,7 @@ class SiteSettings(BaseModel):
     # Logo Settings
     header_logo_url: Optional[str] = Field(default=None)  # Main header logo
     header_logo_alt: str = Field(default="Cataloro Logo")  # Alt text for header logo
+    header_logo_size: str = Field(default="h-8")  # Logo size class (h-6, h-8, h-10, etc.)
     
     # Color Settings
     primary_color: str = Field(default="#6366f1")  # indigo-600
