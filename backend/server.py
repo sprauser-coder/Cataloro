@@ -2195,6 +2195,34 @@ async def get_public_navigation():
     return [NavigationItem(**parse_from_mongo(item)).dict() for item in nav_items]
 
 # Enhanced Profile Management Endpoints
+from real_time_stats import RealTimeStatsService
+
+# Initialize real-time stats service
+stats_service = RealTimeStatsService(db)
+
+@api_router.get("/profile/stats")
+async def get_user_comprehensive_stats(current_user: User = Depends(get_current_user)):
+    """Get comprehensive real-time user statistics"""
+    try:
+        stats = await stats_service.get_user_comprehensive_stats(current_user.id)
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get user statistics: {str(e)}")
+
+@api_router.get("/admin/stats/time-based")
+async def get_admin_time_based_stats(
+    time_frame: str = "today",  # today, week, month, year
+    admin: User = Depends(get_admin_user)
+):
+    """Get admin statistics with logical time-based validation"""
+    try:
+        if time_frame not in ["today", "week", "month", "year"]:
+            time_frame = "today"
+        
+        stats = await stats_service.get_admin_time_based_stats(time_frame)
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get admin statistics: {str(e)}")
 
 @api_router.get("/profile/activity")
 async def get_user_activity(current_user: User = Depends(get_current_user)):
