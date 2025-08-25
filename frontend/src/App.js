@@ -1024,7 +1024,19 @@ const Home = () => {
 
   const removeFromFavoritesBrowse = async (listing) => {
     try {
-      await axios.delete(`${API}/favorites/${listing.id}`);
+      // Get the favorite_id from the mapping
+      const favoriteId = favoritesMap[listing.id];
+      
+      if (!favoriteId) {
+        toast({
+          title: "Error",
+          description: "Favorite record not found",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      await axios.delete(`${API}/favorites/${favoriteId}`);
       toast({
         title: "Removed from Favorites",
         description: `"${listing.title}" has been removed from your favorites`
