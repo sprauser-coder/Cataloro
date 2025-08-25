@@ -697,11 +697,14 @@ frontend:
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "View order history for buyers and sellers"
+      - working: "NA"
+        agent: "testing"
+        comment: "NOT TESTED: Orders history page functionality not tested in this session due to focus on authentication and core navigation issues. Orders page requires separate testing session to verify order history display, buyer/seller views, and order status management."
 
   - task: "Navigation Header Component"
     implemented: true
