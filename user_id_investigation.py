@@ -8,7 +8,7 @@ import requests
 import json
 
 # Configuration
-BACKEND_URL = "https://shopfix-deploy-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-debug.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 

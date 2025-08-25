@@ -27,7 +27,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://shopfix-deploy-1.preview.emergentagent.com/api"
+BASE_URL = "https://cataloro-debug.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
