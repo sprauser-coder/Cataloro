@@ -1571,6 +1571,57 @@ const Home = () => {
             </Button>
           </div>
         )}
+
+        {/* Pagination Controls */}
+        {!loading && listings.length > 0 && totalListings > listingsPerPage && (
+          <div className="flex items-center justify-center space-x-2 mt-8">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="flex items-center space-x-1"
+            >
+              <span>←</span>
+              <span>Previous</span>
+            </Button>
+            
+            <div className="flex items-center space-x-1">
+              {Array.from({ length: Math.min(5, Math.ceil(totalListings / listingsPerPage)) }, (_, i) => {
+                const pageNum = currentPage <= 3 
+                  ? i + 1 
+                  : currentPage >= Math.ceil(totalListings / listingsPerPage) - 2
+                    ? Math.ceil(totalListings / listingsPerPage) - 4 + i
+                    : currentPage - 2 + i;
+                    
+                if (pageNum > Math.ceil(totalListings / listingsPerPage) || pageNum < 1) return null;
+                
+                return (
+                  <Button
+                    key={pageNum}
+                    variant={currentPage === pageNum ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(pageNum)}
+                    className="w-10 h-10"
+                  >
+                    {pageNum}
+                  </Button>
+                );
+              })}
+            </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalListings / listingsPerPage), prev + 1))}
+              disabled={currentPage === Math.ceil(totalListings / listingsPerPage)}
+              className="flex items-center space-x-1"
+            >
+              <span>Next</span>
+              <span>→</span>
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
