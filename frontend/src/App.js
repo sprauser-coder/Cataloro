@@ -5943,7 +5943,21 @@ const AdminPanel = () => {
                               <Card key={order.order.id}>
                                 <CardContent className="p-4">
                                   <div className="flex items-center justify-between mb-3">
-                                    <p className="font-medium">Order #{order.order.id.slice(-8)}</p>
+                                    <div className="flex items-center space-x-3">
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedOrders.includes(order.order.id)}
+                                        onChange={(e) => {
+                                          if (e.target.checked) {
+                                            setSelectedOrders([...selectedOrders, order.order.id]);
+                                          } else {
+                                            setSelectedOrders(selectedOrders.filter(id => id !== order.order.id));
+                                          }
+                                        }}
+                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                      />
+                                      <p className="font-medium">Order #{order.order.id.slice(-8)}</p>
+                                    </div>
                                     <Badge variant={
                                       order.order.status === 'completed' ? 'default' :
                                       order.order.status === 'pending' ? 'secondary' :
