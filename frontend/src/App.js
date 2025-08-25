@@ -7202,6 +7202,108 @@ const AdminPanel = () => {
                     </CardContent>
                   </Card>
                 )}
+
+                {/* Logo Settings Section */}
+                {appearanceTab === 'logo' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Logo Management</CardTitle>
+                      <CardDescription>Upload and customize your logo settings</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {/* Current Logo Display */}
+                        {siteSettings?.header_logo_url && (
+                          <div className="flex items-center space-x-3 p-4 border rounded-md bg-gray-50">
+                            <img
+                              src={getImageUrl(siteSettings.header_logo_url)}
+                              alt="Current Logo"
+                              className={`${siteSettings?.header_logo_size || 'h-8'} w-auto object-contain`}
+                            />
+                            <div>
+                              <p className="text-sm font-medium">Current Logo</p>
+                              <p className="text-xs text-gray-500">{siteSettings.header_logo_alt || 'No alt text'}</p>
+                              <p className="text-xs text-gray-500">Size: {siteSettings?.header_logo_size || 'h-8'}</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Logo Upload */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Upload Logo</label>
+                          <input
+                            type="file"
+                            accept=".png"
+                            onChange={(e) => handleLogoUpload(e, 'header')}
+                            disabled={uploading}
+                            className="hidden"
+                            id="logo-upload-section"
+                          />
+                          <label
+                            htmlFor="logo-upload-section"
+                            className={`inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer ${
+                              uploading ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                          >
+                            {uploading ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600 mr-2"></div>
+                                Uploading...
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Upload Logo (PNG only)
+                              </>
+                            )}
+                          </label>
+                          <p className="text-xs text-gray-500 mt-1">PNG files only, max 5MB</p>
+                        </div>
+                        
+                        {/* Logo Alt Text */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Logo Alt Text</label>
+                          <input
+                            type="text"
+                            className="w-full p-3 border rounded-md"
+                            value={siteSettings?.header_logo_alt || ''}
+                            onChange={(e) => setSiteSettings({...siteSettings, header_logo_alt: e.target.value})}
+                            placeholder="e.g., Cataloro Logo"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Alt text for accessibility and SEO</p>
+                        </div>
+                        
+                        {/* Logo Size Picker */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Logo Size</label>
+                          <Select 
+                            value={siteSettings?.header_logo_size || 'h-8'} 
+                            onValueChange={(value) => setSiteSettings({...siteSettings, header_logo_size: value})}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select logo size" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="h-6">Small (24px)</SelectItem>
+                              <SelectItem value="h-8">Medium (32px)</SelectItem>
+                              <SelectItem value="h-10">Large (40px)</SelectItem>
+                              <SelectItem value="h-12">Extra Large (48px)</SelectItem>
+                              <SelectItem value="h-16">XXL (64px)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-gray-500 mt-1">Choose the size of your logo in the header</p>
+                        </div>
+
+                        <Button 
+                          onClick={() => updateSiteSettings(siteSettings)}
+                          className="w-full"
+                        >
+                          Save Logo Settings
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             ) : (
               <div className="text-center py-12">
