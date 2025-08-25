@@ -2691,51 +2691,6 @@ async def update_user_profile(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update profile: {str(e)}")
 
-@api_router.get("/profile/stats", response_model=UserStats)
-async def get_user_stats(current_user: User = Depends(get_current_user)):
-    """Get current user's statistics"""
-    try:
-        stats = UserStats()
-        
-        # Count user's orders
-        orders_count = await db.orders.count_documents({"buyer_id": current_user.id})
-        stats.total_orders = orders_count
-        
-        # Calculate total spent
-        orders_cursor = db.orders.find({"buyer_id": current_user.id})
-        total_spent = 0.0
-        async for order in orders_cursor:
-            if order.get("total_amount"):
-                total_spent += float(order["total_amount"])
-        stats.total_spent = total_spent
-        
-        # Count user's listings  
-        listings_count = await db.listings.count_documents({"seller_id": current_user.id})
-        stats.total_listings = listings_count
-        
-        # Calculate total earned (from completed orders of user's listings)
-        listings_cursor = db.listings.find({"seller_id": current_user.id})
-        total_earned = 0.0
-        async for listing in listings_cursor:
-            # Find completed orders for this listing
-            completed_orders = db.orders.find({
-                "listing_id": listing["id"],
-                "status": "completed"
-            })
-            async for order in completed_orders:
-                if order.get("total_amount"):
-                    total_earned += float(order["total_amount"])
-        stats.total_earned = total_earned
-        
-        # Get user rating and reviews
-        stats.avg_rating = getattr(current_user, 'rating', 0.0)
-        stats.total_reviews = getattr(current_user, 'total_reviews', 0)
-        
-        return stats
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve user statistics: {str(e)}")
-
 # ===========================
 # BULK ACTIONS ENDPOINTS (Phase 3B)
 # ===========================
