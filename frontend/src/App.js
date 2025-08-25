@@ -2085,12 +2085,594 @@ const ListingDetail = () => {
   );
 };
 
-// Profile Component - Enhanced User Dashboard
+// Profile Component - Enhanced User Dashboard with Header Integration
 const Profile = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Enhanced Profile Data State
+  const [profileData, setProfileData] = useState({
+    user_id: user?.user_id || '',
+    username: user?.username || '',
+    full_name: user?.full_name || '',
+    email: user?.email || '',
+    phone: '',
+    bio: '',
+    location: '',
+    website: '',
+    joined_date: user?.created_at || '',
+    is_business: false,
+    company_name: '',
+    country: '',
+    vat_number: '',
+    profile_picture_url: '',
+    preferences: {
+      email_notifications: true,
+      sms_notifications: false,
+      marketing_emails: true,
+      theme: 'light',
+      language: 'en',
+      currency: 'EUR'
+    },
+    verification: {
+      email_verified: true,
+      phone_verified: false,
+      identity_verified: false,
+      business_verified: false
+    }
+  });
+
+  // Enhanced Statistics State
+  const [stats, setStats] = useState({
+    total_orders: 0,
+    total_listings: 0,
+    total_spent: 0,
+    total_earned: 0,
+    avg_rating: 0,
+    total_reviews: 0,
+    successful_transactions: 0,
+    profile_views: 0,
+    trust_score: 85,
+    account_level: 'Bronze',
+    badges_earned: 3
+  });
+
+  const [orders, setOrders] = useState([]);
+  const [listings, setListings] = useState([]);
+  const [activityData, setActivityData] = useState([]);
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      const response = await axios.get(`${API}/profile`);
+      setProfileData(prev => ({ ...prev, ...response.data }));
+    } catch (error) {
+      console.error('Profile fetch error:', error);
+    }
+
+    // Enhanced mock data for demonstration
+    setStats({
+      total_orders: 24,
+      total_listings: 15,
+      total_spent: 1847.50,
+      total_earned: 1234.80,
+      avg_rating: 4.8,
+      total_reviews: 47,
+      successful_transactions: 39,
+      profile_views: 1205,
+      trust_score: 92,
+      account_level: 'Gold',
+      badges_earned: 7
+    });
+
+    setActivityData([
+      { type: 'listing_created', title: 'Created new listing: Vintage Film Camera', time: '2 hours ago', icon: '📦', color: 'green' },
+      { type: 'order_completed', title: 'Completed purchase of MacBook Pro', time: '5 hours ago', icon: '✅', color: 'blue' },
+      { type: 'review_received', title: 'Received 5-star review from Alice Johnson', time: '1 day ago', icon: '⭐', color: 'yellow' },
+      { type: 'message_sent', title: 'Replied to inquiry about vintage camera', time: '1 day ago', icon: '💬', color: 'purple' },
+      { type: 'badge_earned', title: 'Earned "Trusted Seller" badge', time: '1 week ago', icon: '🏆', color: 'gold' },
+    ]);
+
+    setLoading(false);
+  };
+
+  const getBadgeColor = (level) => {
+    switch (level) {
+      case 'Bronze': return 'bg-amber-100 text-amber-800';
+      case 'Silver': return 'bg-gray-100 text-gray-800';
+      case 'Gold': return 'bg-yellow-100 text-yellow-800';
+      case 'Platinum': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading your profile...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <ComprehensiveProfile />
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Enhanced Profile Header */}
+        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-8 text-white mb-8 shadow-xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden ring-4 ring-white/30">
+                  {profileData.profile_picture_url ? (
+                    <img 
+                      src={getImageUrl(profileData.profile_picture_url)}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-12 h-12 text-white/70" />
+                  )}
+                </div>
+                {/* Online Status Indicator */}
+                <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full border-3 border-white flex items-center justify-center">
+                  <Zap className="w-3 h-3 text-white" />
+                </div>
+                {/* Level Badge */}
+                <div className={`absolute -top-2 -right-2 px-2 py-1 rounded-full text-xs font-bold ${getBadgeColor(stats.account_level)}`}>
+                  {stats.account_level}
+                </div>
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold mb-1">{profileData.full_name || profileData.username}</h1>
+                <p className="text-blue-100 text-lg mb-2">@{profileData.username}</p>
+                <div className="flex items-center space-x-6 text-sm">
+                  <span className="flex items-center bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Joined {new Date(profileData.joined_date).toLocaleDateString()}
+                  </span>
+                  <span className="flex items-center bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    {profileData.location || 'Location not set'}
+                  </span>
+                  <span className="flex items-center bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                    <Shield className="w-4 h-4 mr-2" />
+                    Trust Score: {stats.trust_score}%
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="flex items-center justify-end space-x-3 mb-3">
+                <div className="text-center">
+                  <div className="text-3xl font-bold">{stats.avg_rating.toFixed(1)}</div>
+                  <div className="flex items-center justify-center">
+                    <Star className="w-4 h-4 text-yellow-300 fill-current mr-1" />
+                    <span className="text-blue-100 text-sm">({stats.total_reviews})</span>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold">{stats.successful_transactions}</div>
+                  <div className="text-blue-100 text-sm">Transactions</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold">{stats.badges_earned}</div>
+                  <div className="text-blue-100 text-sm">Badges</div>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                >
+                  <Edit className="w-4 h-4 mr-1" />
+                  {isEditing ? 'Cancel Edit' : 'Edit Profile'}
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                >
+                  <Eye className="w-4 h-4 mr-1" />
+                  Public View
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Stats Overview */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+          {[
+            { label: 'Profile Views', value: stats.profile_views, icon: Eye, color: 'blue' },
+            { label: 'Active Listings', value: stats.total_listings, icon: Package, color: 'green' },
+            { label: 'Total Orders', value: stats.total_orders, icon: ShoppingCart, color: 'purple' },
+            { label: 'Total Earned', value: `€${stats.total_earned}`, icon: Euro, color: 'yellow' },
+            { label: 'Trust Score', value: `${stats.trust_score}%`, icon: Shield, color: 'red' },
+            { label: 'Account Level', value: stats.account_level, icon: Award, color: 'indigo' },
+          ].map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardContent className="p-4 text-center">
+                  <Icon className={`w-8 h-8 mx-auto mb-2 text-${stat.color}-600`} />
+                  <div className={`text-2xl font-bold text-${stat.color}-800`}>{stat.value}</div>
+                  <div className={`text-sm text-${stat.color}-600`}>{stat.label}</div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Navigation Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <div className="bg-white rounded-lg shadow-sm">
+            <TabsList className="grid grid-cols-4 lg:grid-cols-8 w-full h-auto p-1">
+              {[
+                { id: 'overview', label: 'Overview', icon: HomeIcon },
+                { id: 'activity', label: 'Activity', icon: Activity },
+                { id: 'listings', label: 'Listings', icon: Package },
+                { id: 'orders', label: 'Orders', icon: ShoppingCart },
+                { id: 'favorites', label: 'Favorites', icon: Heart },
+                { id: 'messages', label: 'Messages', icon: MessageCircle },
+                { id: 'reviews', label: 'Reviews', icon: Star },
+                { id: 'settings', label: 'Settings', icon: Settings }
+              ].map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <TabsTrigger
+                    key={tab.id}
+                    value={tab.id}
+                    className="flex flex-col items-center space-y-1 py-3 data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="text-xs">{tab.label}</span>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </div>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                {/* Profile Information Card */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <User className="w-5 h-5 mr-2" />
+                      Profile Information
+                    </CardTitle>
+                    <CardDescription>Your personal details and preferences</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Full Name</p>
+                          <p className="text-lg">{profileData.full_name || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Username</p>
+                          <p className="text-lg">@{profileData.username}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Bio</p>
+                        <p className="text-gray-900">{profileData.bio || 'No bio added yet.'}</p>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Location</p>
+                          <p className="text-lg flex items-center">
+                            <MapPin className="w-4 h-4 mr-1" />
+                            {profileData.location || 'Not specified'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Website</p>
+                          <p className="text-lg flex items-center">
+                            <Globe className="w-4 h-4 mr-1" />
+                            {profileData.website ? (
+                              <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                {profileData.website}
+                              </a>
+                            ) : 'Not provided'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Recent Activity */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Activity className="w-5 w-5 mr-2" />
+                      Recent Activity
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {activityData.slice(0, 5).map((activity, index) => (
+                        <div key={index} className={`flex items-center space-x-4 p-3 rounded-lg border-l-4 border-l-${activity.color}-500 bg-${activity.color}-50`}>
+                          <div className="text-2xl">{activity.icon}</div>
+                          <div className="flex-1">
+                            <p className="font-medium">{activity.title}</p>
+                            <p className="text-sm text-gray-500">{activity.time}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="w-full mt-4"
+                      onClick={() => setActiveTab('activity')}
+                    >
+                      View All Activity
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Sidebar */}
+              <div className="space-y-6">
+                {/* Account Level & Badges */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Award className="w-5 h-5 mr-2" />
+                      Account Status
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="text-center">
+                      <div className={`inline-flex items-center px-4 py-2 rounded-full text-lg font-bold ${getBadgeColor(stats.account_level)}`}>
+                        <Award className="w-5 h-5 mr-2" />
+                        {stats.account_level} Member
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2">Trust Score: {stats.trust_score}%</p>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Progress to Platinum</span>
+                        <span>78%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-blue-600 h-2 rounded-full" style={{ width: '78%' }}></div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Verification Status */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Shield className="w-5 h-5 mr-2" />
+                      Verification
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {[
+                      { label: 'Email Verified', status: profileData.verification?.email_verified, icon: Mail },
+                      { label: 'Phone Verified', status: profileData.verification?.phone_verified, icon: Phone },
+                      { label: 'Identity Verified', status: profileData.verification?.identity_verified, icon: Shield },
+                      { label: 'Business Verified', status: profileData.verification?.business_verified, icon: Award }
+                    ].map((item, index) => {
+                      const Icon = item.icon;
+                      return (
+                        <div key={index} className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <Icon className="w-4 h-4 mr-2 text-gray-400" />
+                            <span className="text-sm">{item.label}</span>
+                          </div>
+                          <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                            item.status ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                          }`}>
+                            {item.status ? '✓' : '○'}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <Button size="sm" variant="outline" className="w-full mt-2">
+                      Complete Verification
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Activity Tab */}
+          <TabsContent value="activity" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Activity className="w-5 h-5 mr-2" />
+                  Complete Activity History
+                </CardTitle>
+                <CardDescription>All your marketplace activities and interactions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {activityData.map((activity, index) => (
+                    <div key={index} className={`flex items-center space-x-4 p-4 rounded-lg border-l-4 border-l-${activity.color}-500 bg-${activity.color}-50`}>
+                      <div className="text-3xl">{activity.icon}</div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">{activity.title}</p>
+                        <p className="text-sm text-gray-500">{activity.time}</p>
+                      </div>
+                      <div className={`px-2 py-1 rounded-full text-xs font-medium bg-${activity.color}-100 text-${activity.color}-800`}>
+                        {activity.type.replace('_', ' ').toUpperCase()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Other placeholder tabs */}
+          <TabsContent value="listings">
+            <Card>
+              <CardHeader>
+                <CardTitle>My Listings</CardTitle>
+                <CardDescription>Manage your marketplace listings</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Package className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 mb-4">No listings found</p>
+                  <Button>Create Your First Listing</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="orders">
+            <Card>
+              <CardHeader>
+                <CardTitle>My Orders</CardTitle>
+                <CardDescription>Track your purchase history</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <ShoppingCart className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 mb-4">No orders found</p>
+                  <Button onClick={() => navigate('/browse')}>Start Shopping</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="favorites">
+            <Card>
+              <CardHeader>
+                <CardTitle>My Favorites</CardTitle>
+                <CardDescription>Items you've saved for later</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Heart className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 mb-4">No favorites yet</p>
+                  <Button onClick={() => navigate('/browse')}>Discover Items</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="messages">
+            <Card>
+              <CardHeader>
+                <CardTitle>Messages</CardTitle>
+                <CardDescription>Communication with other users</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 mb-4">No messages yet</p>
+                  <Button>Start a Conversation</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="reviews">
+            <Card>
+              <CardHeader>
+                <CardTitle>Reviews & Ratings</CardTitle>
+                <CardDescription>Feedback from other users</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Star className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p className="text-gray-600 mb-4">No reviews yet</p>
+                  <Button>Complete Your First Transaction</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <Card>
+              <CardHeader>
+                <CardTitle>Account Settings</CardTitle>
+                <CardDescription>Manage your account preferences</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-medium mb-3">Notifications</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Email notifications</span>
+                        <Switch checked={profileData.preferences?.email_notifications} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">SMS notifications</span>
+                        <Switch checked={profileData.preferences?.sms_notifications} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Marketing emails</span>
+                        <Switch checked={profileData.preferences?.marketing_emails} />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-3">Preferences</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="language">Language</Label>
+                        <Select defaultValue={profileData.preferences?.language}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="en">English</SelectItem>
+                            <SelectItem value="de">German</SelectItem>
+                            <SelectItem value="fr">French</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="currency">Currency</Label>
+                        <Select defaultValue={profileData.preferences?.currency}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="EUR">Euro (€)</SelectItem>
+                            <SelectItem value="USD">US Dollar ($)</SelectItem>
+                            <SelectItem value="GBP">British Pound (£)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
