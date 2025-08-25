@@ -2336,10 +2336,124 @@ async def get_public_navigation():
 
 @api_router.get("/profile/stats")
 async def get_user_comprehensive_stats(current_user: User = Depends(get_current_user)):
-    """Get comprehensive real-time user statistics"""
+    """Get comprehensive real-time user statistics with enhanced features"""
     try:
-        stats = await stats_service.get_user_comprehensive_stats(current_user.id)
-        return stats
+        # Try using real-time stats service first
+        try:
+            stats = await stats_service.get_user_comprehensive_stats(current_user.id)
+            # Add real-time favorites count
+            favorites_count = await db.favorites.count_documents({"user_id": current_user.id})
+            stats["favorites_count"] = favorites_count
+            return stats
+        except Exception as service_error:
+            print(f"RealTimeStatsService error for user stats: {service_error}")
+            # Fallback to direct implementation with enhanced features
+            
+            user_id = current_user.id
+            
+            # Basic counts with individual user filtering
+            total_orders_as_buyer = await db.orders.count_documents({"buyer_id": user_id})
+            total_orders_as_seller = await db.orders.count_documents({"seller_id": user_id})
+            total_listings = await db.listings.count_documents({"seller_id": user_id})
+            active_listings = await db.listings.count_documents({
+                "seller_id": user_id, 
+                "status": "active"
+            })
+            
+            # Real-time favorites count
+            favorites_count = await db.favorites.count_documents({"user_id": user_id})
+            
+            # Calculate spending (as buyer) with proper user filtering
+            spending_pipeline = [
+                {"$match": {"buyer_id": user_id, "status": {"$in": ["completed", "pending"]}}},
+                {"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}
+            ]
+            spending_result = await db.orders.aggregate(spending_pipeline).to_list(1)
+            total_spent = spending_result[0]["total"] if spending_result else 0.0
+            
+            # Calculate earnings (as seller) with proper user filtering
+            earnings_pipeline = [
+                {"$match": {"seller_id": user_id, "status": "completed"}},
+                {"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}
+            ]
+            earnings_result = await db.orders.aggregate(earnings_pipeline).to_list(1)
+            total_earned = earnings_result[0]["total"] if earnings_result else 0.0
+            
+            # Get reviews and rating - individual user specific
+            reviews = await db.reviews.find({"reviewed_user_id": user_id}).to_list(None)
+            total_reviews = len(reviews)
+            avg_rating = sum(r["rating"] for r in reviews) / total_reviews if total_reviews > 0 else 0.0
+            
+            # Get user profile data for additional stats
+            user_profile = await db.users.find_one({"id": user_id})
+            profile_views = user_profile.get("profile_views", 0) if user_profile else 0
+            trust_score = user_profile.get("trust_score", 50) if user_profile else 50
+            
+            # Calculate account level based on activity
+            account_level = "Bronze"
+            activity_score = total_listings * 2 + total_reviews * 3 + (avg_rating * 10)
+            if activity_score >= 100: account_level = "Platinum"
+            elif activity_score >= 50: account_level = "Gold"
+            elif activity_score >= 20: account_level = "Silver"
+            
+            # Calculate badges based on achievements
+            badges_earned = 0
+            if total_listings >= 10: badges_earned += 1  # Active Seller
+            if total_reviews >= 20: badges_earned += 1   # Trusted User
+            if avg_rating >= 4.5: badges_earned += 1     # Top Rated
+            if (total_orders_as_buyer + total_orders_as_seller) >= 50: badges_earned += 1  # Super Trader
+            if trust_score >= 90: badges_earned += 1     # Verified Expert
+            if total_listings >= 100: badges_earned += 1  # Power Seller
+            if favorites_count >= 50: badges_earned += 1  # Collector
+            
+            # Calculate response rate and recent activity
+            response_rate = min(95.0, 60.0 + (trust_score * 0.4))
+            avg_response_time = max(0.5, 5.0 - (trust_score * 0.05))
+            
+            # Recent activity (last 7 days)
+            from datetime import timedelta
+            seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
+            recent_listings = await db.listings.count_documents({
+                "seller_id": user_id,
+                "created_at": {"$gte": seven_days_ago}
+            })
+            recent_orders = await db.orders.count_documents({
+                "$or": [{"buyer_id": user_id}, {"seller_id": user_id}],
+                "created_at": {"$gte": seven_days_ago}
+            })
+            recent_favorites = await db.favorites.count_documents({
+                "user_id": user_id,
+                "created_at": {"$gte": seven_days_ago}
+            })
+            
+            return {
+                "user_id": user_id,
+                "total_orders": total_orders_as_buyer + total_orders_as_seller,
+                "total_orders_as_buyer": total_orders_as_buyer,
+                "total_orders_as_seller": total_orders_as_seller,
+                "total_listings": total_listings,
+                "active_listings": active_listings,
+                "favorites_count": favorites_count,
+                "total_spent": round(total_spent, 2),
+                "total_earned": round(total_earned, 2),
+                "net_balance": round(total_earned - total_spent, 2),
+                "avg_rating": round(avg_rating, 1),
+                "total_reviews": total_reviews,
+                "profile_views": profile_views,
+                "trust_score": trust_score,
+                "account_level": account_level,
+                "badges_earned": badges_earned,
+                "response_rate": round(response_rate, 1),
+                "avg_response_time": round(avg_response_time, 1),
+                "recent_activity": {
+                    "listings": recent_listings,
+                    "orders": recent_orders, 
+                    "favorites": recent_favorites,
+                    "total": recent_listings + recent_orders + recent_favorites
+                },
+                "last_updated": datetime.now(timezone.utc).isoformat()
+            }
+            
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get user statistics: {str(e)}")
 
