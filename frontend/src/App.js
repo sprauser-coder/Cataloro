@@ -1133,9 +1133,23 @@ const Home = () => {
         if (priceRange.max) params.append('max_price', priceRange.max);
         if (selectedCondition) params.append('condition', selectedCondition);
         
-        // Request all listings by setting high limit to get all active listings
-        params.append('limit', '10000'); // Request up to 10000 listings to get all
-        params.append('skip', '0'); // Start from beginning
+        // Get total count first
+        const countParams = new URLSearchParams();
+        if (searchTerm) countParams.append('search', searchTerm);
+        if (selectedCategory) countParams.append('category', selectedCategory);
+        if (listingType !== 'all') countParams.append('listing_type', listingType);
+        if (priceRange.min > 0) countParams.append('min_price', priceRange.min.toString());
+        if (priceRange.max < 10000) countParams.append('max_price', priceRange.max.toString());
+        if (selectedCondition !== 'all') countParams.append('condition', selectedCondition);
+        if (selectedRegion) countParams.append('region', selectedRegion);
+        
+        const countResponse = await axios.get(`${API}/listings/count?${countParams}`);
+        const totalCount = countResponse.data.total_count;
+        setTotalListings(totalCount);
+        
+        // Now get the listings with pagination
+        params.append('limit', listingsPerPage >= 1000 ? '10000' : listingsPerPage.toString());
+        params.append('skip', listingsPerPage >= 1000 ? '0' : ((currentPage - 1) * listingsPerPage).toString());
         
         // Future infrastructure 
         if (selectedRegion) params.append('region', selectedRegion);
