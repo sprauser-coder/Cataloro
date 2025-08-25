@@ -148,7 +148,7 @@ class LogoUploadInvestigator:
                     
                     # Test 1b: Invalid format (JPEG) should be rejected
                     jpeg_image = self.create_test_image('JPEG', (200, 200))
-                    files = {'logo': ('test_logo.jpg', jpeg_image, 'image/jpeg')}
+                    files = {'file': ('test_logo.jpg', jpeg_image, 'image/jpeg')}
                     
                     response = self.session.post(f"{BACKEND_URL}/admin/cms/upload-logo", headers=headers, files=files, timeout=30)
                     
