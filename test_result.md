@@ -732,10 +732,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Final Comprehensive Backend Testing for Deployment - COMPLETED"
+    - "Notification Clearing Functionality Debug - COMPLETED"
   stuck_tasks: []
   test_all: false
-  test_priority: "deployment_ready"
+  test_priority: "critical_first"
   completed_testing:
     - "Phase 1 Admin Panel Backend Support"
     - "Admin Dashboard Access and Analytics"
