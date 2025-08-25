@@ -1133,9 +1133,9 @@ const Home = () => {
         if (priceRange.max) params.append('max_price', priceRange.max);
         if (selectedCondition) params.append('condition', selectedCondition);
         
-        // Don't send pagination params to backend for now (implement client-side)
-        // params.append('limit', listingsPerPage.toString());
-        // params.append('offset', ((currentPage - 1) * listingsPerPage).toString());
+        // Request all listings by setting high limit to bypass backend pagination
+        params.append('limit', '1000'); // Request up to 1000 listings
+        params.append('skip', '0'); // Start from beginning
         
         // Future infrastructure 
         if (selectedRegion) params.append('region', selectedRegion);
