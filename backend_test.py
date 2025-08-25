@@ -47,7 +47,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Configuration - Use frontend environment for backend URL
-BACKEND_URL = 'https://marketplace-ready.preview.emergentagent.com/api'
+BACKEND_URL = 'https://cataloro-revival.preview.emergentagent.com/api'
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 

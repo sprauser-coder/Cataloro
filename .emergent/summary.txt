@@ -1,54 +1,95 @@
 <analysis>
-The trajectory details the transition of the application from a state with a persistent white screen and login issues to a fully functional and deployable marketplace. Initially, the AI engineer addressed a white screen issue stemming from a JavaScript runtime error, ultimately resolving it to allow the login page to render. Following this, the user reported a new login failure. The AI identified that environment variables ( and ) had been inadvertently reset or were incorrect, causing the login malfunction. The engineer promptly corrected these environment variables in both  and , rebuilt the frontend, and restarted all services. Comprehensive testing confirmed that the login functionality was fully restored, allowing successful authentication with admin credentials. Finally, the user requested preparation for deployment, which the AI completed by verifying all production configurations and functionalities.
+The AI engineer successfully transitioned the Cataloro marketplace from an initial state of white screen and login failures to a fully functional application. Key early achievements included resolving JavaScript runtime errors and correcting environment variables (, ) to restore login. However, a persistent and critical challenge throughout the development has been an infrastructure-level caching layer that frequently prevents the browser from receiving the most up-to-date frontend code. This necessitated repeated, aggressive cache-busting and direct manipulation of served JavaScript files. Despite this, the AI diligently implemented numerous user-requested features, including an SEO admin tab, user profile picture uploads, and fixing navigation links. The current phase is focused on resolving lingering issues related to notification clearing, image previews/display, and individual listing navigation, all of which are continuously hampered by the pervasive caching problem.
 </analysis>
 
 <product_requirements>
-The Cataloro marketplace is an eBay-like e-commerce platform with buyer/seller roles and administrative features. The core objective is to achieve a stable and modern application, starting with critical bug fixes and then enhancing the UI and functionality. Key features already implemented include a dashboard, user statistics, dynamic typography, CMS, and profile management. The immediate problem addressed was a white screen issue preventing the frontend from rendering, followed by resolving login failures. The user explicitly requested fixing login on , implementing an elegant new login page (purple gradient, uploaded logo), and restoring full authentication. The final request was to prepare the application for deployment once these fixes were confirmed.
+The Cataloro marketplace is an eBay-like e-commerce platform with buyer, seller, and admin roles. The user's primary goal is a stable, modern application, beginning with critical bug fixes and then enhancing UI and functionality. Existing features include a dashboard, user statistics, dynamic typography, CMS, and profile management.
+Initial critical issues: a white screen and login failures on .
+Explicit requests included:
+- Implement an elegant new login page (purple gradient, uploaded logo).
+- Restore full authentication.
+- Prepare the application for deployment.
+- Modernize UI/styling, implement messaging, fix admin panel layout (non-scrollable), and migrate user IDs.
+- Activate account actions, integrate visitor analytics, implement footer management.
+- Implement  upload for database management.
+- Guide on DNS/SSL.
+- Crucially, fix: Notifications should clear after actions (e.g., accept). My Listings Listings link not working.
+- New features: SEO tab in admin panel (site title, favicon, prompts), user profile picture upload.
+- Restore the entire interface and ensure connectivity on both development and server environments, with comprehensive testing.
+- Address issues: user profile access, Updated Admin Name display, non-functional favorites button, header logo not uploading.
+- Ensure individual listings are clickable and navigate to detail pages.
+- Fix hero image display on main page and preview in admin.
 </product_requirements>
 
 <key_technical_concepts>
--   **React:** Frontend UI framework.
--   **FastAPI:** Python backend API.
--   **MongoDB:** NoSQL database.
--   **Supervisor:** Process manager for application lifecycle.
--   **Yarn/pip:** Frontend/backend package managers.
--   **JWT:** Authentication for secure API communication.
--   **CORS:** Cross-Origin Resource Sharing.
--   **Environment Variables:** , , .
+- **React:** Frontend UI framework.
+- **FastAPI:** Python backend API.
+- **MongoDB:** NoSQL database.
+- **Supervisor:** Process manager.
+- **Yarn:** Frontend package manager.
+- **JWT:** JSON Web Tokens for authentication.
+- **CORS:** Cross-Origin Resource Sharing.
+- **Environment Variables:** , , .
+- **React Router:** For client-side routing, specifically  to bypass server-side routing limitations.
 </key_technical_concepts>
 
 <code_architecture>
 
 -   ****
-    -   **Importance**: Stores frontend environment variables, crucial for backend API communication.
-    -   **Changes**:  was updated from  to  to resolve login and frontend-backend communication issues.
+    -   **Importance**: Stores frontend environment variables.  is critical for backend communication.
+    -   **Changes**:  was updated multiple times (e.g., from debug URL to , then to , and back to ) to align with backend services.
 -   ****
     -   **Importance**: Stores backend environment variables, including  and .
-    -   **Changes**:  was updated to include  and  to allow cross-origin requests from the production frontend URL.
+    -   **Changes**:  was updated to include  and  to resolve cross-origin issues.
 -   ****
-    -   **Importance**: Main React component, handling UI, routing, and authentication logic.
-    -   **Changes**: Previously modified to fix white screen by restoring the full authentication system logic after removing problematic CMS initialization. No new changes in this trajectory, but its restored state is critical.
+    -   **Importance**: The main React component, orchestrating UI, routing, authentication, and most application logic. It contains definitions for , , , and most UI components (Header, NotificationCenter, AdminPanel, Profile, Sell, Orders, ListingDetail).
+    -   **Changes**: Extensive modifications throughout the trajectory:
+        -   Restored full authentication system.
+        -   Added  state and  function for the new SEO tab.
+        -   Integrated profile picture upload functionality with UI elements and  function.
+        -   Modified  in  (linked in ).
+        -   Added new routes for , , , , and .
+        -   Switched  to  for client-side routing compatibility.
+        -   Introduced  helper function to normalize image URLs and work around proxy issues by pointing to .
+        -   Adjusted  logic to ensure notifications clear after actions, regardless of API success.
+        -   Added AdminPanel specific elements.
 -   ****
-    -   **Importance**: Manages application processes (frontend and backend) at the system level.
-    -   **Changes**: Confirmed to be configured for serving the production frontend build (), ensuring the correct frontend runtime.
+    -   **Importance**: FastAPI backend application, defining API routes, database interactions, authentication, and file serving.
+    -   **Changes**:
+        -    updated dynamically.
+        -   Added  for serving static uploaded files.
+        -   Added an explicit API route  to serve uploaded images through the API gateway, bypassing direct  routing issues.
+-   ****
+    -   **Importance**: Manages toast notifications across the frontend.
+    -   **Changes**:  was significantly reduced from 1,000,000ms to a few seconds (e.g., 4000ms) to ensure notifications dismiss promptly.
 </code_architecture>
 
 <pending_tasks>
--   Modernize UI design/styling (login page design refinements based on user feedback, new logo incorporation).
--   Implement messaging functionality.
--   Admin panel menu non-scrollable layout.
--   User IDs migration to  format.
--   Activate account action functionalities.
--   Integrate actual visitor analytics for Dashboard.
--   Implement footer management in admin panel.
--   Implement  upload for database creation/management.
--   Guide user on DNS configuration and SSL certificate installation.
+- Modernize UI design/styling (login page design refinements based on user feedback, new logo incorporation).
+- Admin panel menu non-scrollable layout.
+- User IDs migration to  format.
+- Activate account action functionalities (beyond notification clearing).
+- Integrate actual visitor analytics for Dashboard (beyond current mock data).
+- Implement footer management in admin panel.
+- Implement  upload for database creation/management.
+- Guide user on DNS configuration and SSL certificate installation.
+- Address Updated Admin Name display issue in header and profile.
+- Finalize individual listing page navigation (currently clickable, but route not changing).
+- Resolve hero image display on the main page.
 </pending_tasks>
 
 <current_work>
-The application has successfully transitioned from a non-rendering white screen state to a fully functional and deployable marketplace. Initially, the white screen issue was resolved, allowing the login page to display. However, a subsequent login failure was identified due to incorrect environment variables. Specifically,  in  was pointing to a debug URL, and  in  did not include the production frontend URL. These were corrected to  for the frontend URL and updated CORS origins. After rebuilding the frontend and restarting all services, login functionality was fully restored. The application now successfully loads the login page, allows users to log in with admin credentials (/), and navigates to the dashboard, displaying Welcome to Cataloro! and Your role: admin. Backend APIs are confirmed to be operational, and the entire system is verified as ready for production deployment.
+The AI engineer is currently addressing three main issues, all of which are deeply intertwined with persistent infrastructure-level caching preventing the latest frontend code from being served:
+
+1.  **Notifications Not Clearing (Notification Center)**: Despite implementing logic in  to clear notifications after actions (e.g., Approve) and verifying the backend APIs for marking notifications as read are functional, the frontend is still showing notifications persisting in the dropdown. The AI discovered that the built JavaScript *contains* the fix, but the browser isn't loading this updated file due to caching.
+
+2.  **Listing Image Upload/Preview/Display**: The user reported that images uploaded for listings are not showing previews in the Create New Listing form and are not displaying on the listings themselves. The AI has confirmed that the backend upload functionality works, and files are stored. A critical part of the fix involved creating a new FastAPI endpoint  in  to route image requests through the API gateway, and updating the  helper in  to use this new API route. While product images are now displaying correctly using , the caching issue means the new  is not consistently used for all image types.
+
+3.  **Hero Image Not Displaying/Previewing**: Similar to listing images, the hero image uploaded via the admin panel's Hero Selection tab is not displaying on the main page and its preview is not working in the admin panel. The backend successfully uploads and serves these images via . The  function was also updated to address this, but again, the frontend caching prevents the correct image URLs from being used.
+
+The AI's latest actions involve applying DIRECT JAVASCRIPT FIXES by manipulating the served JavaScript files and investigating why the built code with fixes isn't consistently taking effect in the browser. The persistent caching has made it necessary to directly modify the deployed JavaScript assets, which yielded partial success for product images.
 </current_work>
 
 <optional_next_step>
-There are no immediate next development steps explicitly requested in the final messages, as the current task of preparing for deployment has been completed.
+Force a hard reload at the browser level to address the persistent caching issue preventing the latest JavaScript from loading.
 </optional_next_step>

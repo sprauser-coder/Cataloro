@@ -15,7 +15,7 @@ import sys
 from datetime import datetime
 
 # Configuration - Use the production URL from frontend/.env
-BACKEND_URL = "https://marketplace-ready.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-revival.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
