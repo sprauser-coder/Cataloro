@@ -304,7 +304,9 @@ class NotificationDebugTester:
                     notifications_after = len(self.notifications)
                     
                     # Check if new notification was created for buyer
-                    new_notifications = [n for n in self.notifications if n.get('type') == 'order_approved']
+                    new_notifications = []
+                    if isinstance(self.notifications, list):
+                        new_notifications = [n for n in self.notifications if isinstance(n, dict) and n.get('type') == 'order_approved']
                     if new_notifications:
                         self.log_result(
                             "Order Approval Notification Creation", 
