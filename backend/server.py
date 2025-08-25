@@ -1043,6 +1043,16 @@ async def add_to_favorites(
     
     return {"message": "Added to favorites", "favorite_id": favorite_data["id"]}
 
+# Real-time Favorites Management
+@api_router.get("/favorites/count")
+async def get_favorites_count(current_user: User = Depends(get_current_user)):
+    """Get real-time favorites count"""
+    try:
+        count = await db.favorites.count_documents({"user_id": current_user.id})
+        return {"count": count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get favorites count: {str(e)}")
+
 @api_router.get("/favorites")
 async def get_user_favorites(current_user: User = Depends(get_current_user)):
     """Get user's favorite items (only active listings)"""
