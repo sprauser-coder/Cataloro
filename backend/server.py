@@ -337,6 +337,11 @@ async def login(credentials: UserLogin):
     return Token(access_token=access_token, token_type="bearer", user=user)
 
 # Listing Routes
+@api_router.get("/listings/test-endpoint")
+async def test_endpoint():
+    """Test endpoint to verify route ordering"""
+    return {"message": "Test endpoint working", "route": "/listings/test-endpoint"}
+
 @api_router.get("/listings/count")
 async def get_listings_count_fixed(
     category: Optional[str] = None,
