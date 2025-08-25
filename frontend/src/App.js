@@ -1160,19 +1160,10 @@ const Home = () => {
         }
         
         const response = await axios.get(`${API}/listings?${params}`);
-        const allListings = response.data;
-        setTotalListings(allListings.length);
+        const fetchedListings = response.data;
         
-        // Client-side pagination
-        if (listingsPerPage >= 1000) {
-          // Show all
-          setListings(allListings);
-        } else {
-          // Paginate
-          const startIndex = (currentPage - 1) * listingsPerPage;
-          const endIndex = startIndex + listingsPerPage;
-          setListings(allListings.slice(startIndex, endIndex));
-        }
+        // No need for client-side pagination anymore since backend handles it properly
+        setListings(fetchedListings);
       }
     } catch (error) {
       console.error('Error fetching listings:', error);
