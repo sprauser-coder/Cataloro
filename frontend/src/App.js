@@ -778,23 +778,10 @@ const Auth = () => {
         {/* Logo and Brand Section */}
         <div className="text-center mb-8">
           <div className="mx-auto mb-6 p-4 bg-white rounded-3xl w-fit shadow-2xl transform hover:scale-105 transition-transform duration-300">
-            {siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? (
-              <img 
-                src={siteSettings.header_logo_url.startsWith('/uploads/') 
-                  ? `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'}${siteSettings.header_logo_url}` 
-                  : siteSettings.header_logo_url} 
-                alt={siteSettings.header_logo_alt || 'Logo'} 
-                className="h-16 w-auto object-contain"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
-            ) : (
-              <Package className="h-12 w-12 text-purple-600" />
-            )}
+            <Package className="h-12 w-12 text-purple-600" />
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 bg-clip-text text-transparent mb-2">
-            {siteSettings?.site_name || 'Cataloro'}
+            Cataloro
           </h1>
           <p className="text-gray-600 text-lg">Premium Marketplace Experience</p>
         </div>
