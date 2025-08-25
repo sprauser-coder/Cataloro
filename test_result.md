@@ -576,6 +576,19 @@ backend:
       - working: true
         agent: "testing"
         comment: "CORE BACKEND API ENDPOINTS VERIFICATION COMPLETED: Comprehensive testing of all requested core endpoints with 100% success rate (6/6 tests passed). ✅ BASIC CONNECTIVITY: GET /api/ endpoint responding correctly with 'Marketplace API' message, backend server fully accessible at https://revived-cataloro.preview.emergentagent.com/api. ✅ AUTHENTICATION ENDPOINTS: POST /api/auth/login working perfectly with admin credentials (admin@marketplace.com/admin123), JWT token generation successful, admin role verification confirmed. ✅ CORE MARKETPLACE ENDPOINTS: GET /api/listings returning 19 active listings successfully, GET /api/categories returning all 10 categories including Electronics, Fashion, Home & Garden, Sports, Books. ✅ ADMIN ENDPOINTS: GET /api/admin/stats working with admin credentials, returning complete analytics data (total_users: 19, active_users: 19, total_listings: 24, active_listings: 19, total_orders: 15, total_revenue: 1824.87). ✅ CMS SETTINGS ENDPOINT: GET /api/cms/settings working correctly and returning all Footer-required fields (site_name: 'cataloro', font_color: '#123456', global_font_family: 'Inter', primary_color: '#6366f1', secondary_color: '#8b5cf6'). ✅ FOOTER COMPONENT SUPPORT: All CMS settings fields required for Footer component are present and properly configured. All core backend endpoints are fully operational and ready for production use after recent changes."
+
+  - task: "Header Logo Size Field Testing"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "HEADER LOGO SIZE FIELD TESTING COMPLETED: Comprehensive testing of new header_logo_size field in CMS settings endpoint with 100% success rate (8/8 tests passed). ✅ DEFAULT VALUE VERIFICATION: GET /api/cms/settings returns header_logo_size field with correct default value 'h-8' as specified in SiteSettings model. ✅ UPDATE FUNCTIONALITY: PUT /api/admin/cms/settings successfully updates header_logo_size to different values ('h-12', 'h-6', 'h-10', 'h-16') with proper persistence in database. ✅ DATA PERSISTENCE: Updated header_logo_size values persist correctly across multiple GET requests, confirming proper database storage and retrieval. ✅ MULTIPLE VALUE TESTING: Successfully tested various Tailwind CSS height classes (h-6, h-8, h-10, h-12, h-16) with all values saving and retrieving correctly. ✅ ADMIN AUTHENTICATION: Proper admin authentication enforced for CMS settings updates - unauthenticated requests correctly rejected with 403/401 status codes. ✅ FIELD INTEGRATION: header_logo_size field properly integrated into existing CMS settings system alongside other logo-related fields (header_logo_url, header_logo_alt). ✅ PUBLIC API ACCESS: Updated header_logo_size values immediately available via public GET /api/cms/settings endpoint for frontend consumption. ✅ RESET FUNCTIONALITY: Successfully reset header_logo_size back to default 'h-8' value, confirming bidirectional update capability. The new header_logo_size field is fully functional and ready for frontend integration, allowing dynamic control of header logo sizing through the CMS admin panel."
+
 frontend:
   - task: "Frontend URL Configuration Fix"
     implemented: true
