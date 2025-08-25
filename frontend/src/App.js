@@ -1134,7 +1134,7 @@ const Home = () => {
         if (selectedCondition) params.append('condition', selectedCondition);
         
         // Request all listings by setting high limit to bypass backend pagination
-        params.append('limit', '1000'); // Request up to 1000 listings
+        params.append('limit', '10000'); // Request up to 10000 listings to get all
         params.append('skip', '0'); // Start from beginning
         
         // Future infrastructure 
