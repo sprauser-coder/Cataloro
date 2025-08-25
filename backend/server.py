@@ -2549,6 +2549,41 @@ async def get_user_listings(current_user: User = Depends(get_current_user)):
     
     return result
 
+@api_router.post("/profile/clear-stats")
+async def clear_user_statistics(current_user: User = Depends(get_current_user)):
+    """Clear user statistics for testing purposes"""
+    user_id = current_user.id
+    
+    try:
+        # Reset user statistics fields
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "profile_views": 0,
+                "trust_score": 50,  # Reset to default
+                "account_level": "Bronze",  # Reset to default
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        
+        # Optionally clear related data (uncomment if you want to clear everything)
+        # await db.orders.delete_many({"user_id": user_id})
+        # await db.listings.delete_many({"seller_id": user_id})
+        # await db.reviews.delete_many({"reviewed_user_id": user_id})
+        # await db.messages.delete_many({"$or": [{"sender_id": user_id}, {"receiver_id": user_id}]})
+        
+        return {
+            "message": "User statistics cleared successfully",
+            "reset_values": {
+                "profile_views": 0,
+                "trust_score": 50,
+                "account_level": "Bronze"
+            }
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to clear statistics: {str(e)}")
+
 # Update existing profile endpoint to return enhanced data
 
 class ProfileUpdate(BaseModel):
