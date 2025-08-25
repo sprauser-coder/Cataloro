@@ -8134,6 +8134,16 @@ function App() {
                 <Favorites />
               </ProtectedRoute>
             } />
+            <Route path="/sell" element={
+              <ProtectedRoute>
+                <Sell />
+              </ProtectedRoute>
+            } />
+            <Route path="/orders" element={
+              <ProtectedRoute>
+                <Orders />
+              </ProtectedRoute>
+            } />
             <Route path="/admin" element={
               <AdminProtectedRoute>
                 <AdminPanel />
