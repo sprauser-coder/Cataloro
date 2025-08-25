@@ -24,6 +24,10 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Import and initialize real-time stats service
+from real_time_stats import RealTimeStatsService
+stats_service = RealTimeStatsService(db)
+
 # Create the main app without a prefix
 app = FastAPI()
 
