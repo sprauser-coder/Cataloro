@@ -658,7 +658,7 @@ const Header = () => {
               <img 
                 src={getImageUrl(siteSettings.header_logo_url)}
                 alt={siteSettings.header_logo_alt || 'Logo'} 
-                className="h-8 w-auto object-contain"
+                className={`${siteSettings?.header_logo_size || 'h-8'} w-auto object-contain`}
                 onError={(e) => {
                   // If image fails to load, hide it and show fallback
                   e.target.style.display = 'none';
