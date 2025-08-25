@@ -4812,6 +4812,29 @@ const AdminPanel = () => {
               <div className="flex justify-center py-8">Loading...</div>
             ) : stats ? (
               <div className="space-y-6">
+                {/* Time Frame Selector */}
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">Quick Marketplace Overview</h3>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600">Time frame:</span>
+                        <Select value={timeFrame} onValueChange={setTimeFrame}>
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="today">Today</SelectItem>
+                            <SelectItem value="week">This Week</SelectItem>
+                            <SelectItem value="month">This Month</SelectItem>
+                            <SelectItem value="year">This Year</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Key Metrics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                   <Card>
