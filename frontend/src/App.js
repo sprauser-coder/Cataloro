@@ -2264,7 +2264,7 @@ const Profile = () => {
                           </svg>
                           <input
                             type="file"
-                            accept="image/*"
+                            accept="image/png,image/jpeg,image/jpg"
                             onChange={handleProfilePictureUpload}
                             className="hidden"
                             disabled={profilePictureUploading}
