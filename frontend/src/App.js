@@ -5088,6 +5088,78 @@ const AdminPanel = () => {
                     {/* Bulk Actions */}
                     <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                       <h4 className="font-medium mb-3">Bulk Actions & System Tools</h4>
+                      
+                      {/* Selected Users Actions */}
+                      {selectedUsers.length > 0 && (
+                        <div className="mb-4">
+                          <Badge variant="secondary" className="mb-3">{selectedUsers.length} users selected</Badge>
+                          <div className="flex flex-wrap gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={bulkBlockUsers}
+                              className="text-red-600 border-red-300 hover:bg-red-50"
+                            >
+                              Block Selected
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={bulkUnblockUsers}
+                              className="text-green-600 border-green-300 hover:bg-green-50"
+                            >
+                              Unblock Selected
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={bulkDeleteUsers}
+                              className="text-red-700 border-red-400 hover:bg-red-100"
+                            >
+                              Delete Selected
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const csvContent = [
+                                  ['Name', 'Email', 'Username', 'Role', 'User ID', 'Total Orders', 'Total Listings', 'Created Date'].join(','),
+                                  ...users.filter(u => selectedUsers.includes(u.id)).map(user => [
+                                    `"${user.full_name || ''}"`,
+                                    user.email,
+                                    user.username,
+                                    user.role,
+                                    user.user_id || 'Not assigned',
+                                    user.total_orders || 0,
+                                    user.total_listings || 0,
+                                    new Date(user.created_at).toLocaleDateString()
+                                  ].join(','))
+                                ].join('\n');
+                                
+                                const blob = new Blob([csvContent], { type: 'text/csv' });
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `selected-users-${new Date().toISOString().split('T')[0]}.csv`;
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                window.URL.revokeObjectURL(url);
+                                
+                                toast({
+                                  title: "Export Complete",
+                                  description: `${selectedUsers.length} users exported to CSV`
+                                });
+                              }}
+                              className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                            >
+                              Export Selected
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* System Actions */}
                       <div className="flex flex-wrap gap-2">
                         <Button
                           variant="outline"
@@ -5101,14 +5173,21 @@ const AdminPanel = () => {
                           size="sm"
                           onClick={selectAllUsers}
                         >
-                          Select All
+                          {selectedUsers.length === users.length ? 'Deselect All' : 'Select All'}
                         </Button>
                         <Button
                           variant="destructive"
                           size="sm"
                           onClick={bulkDeactivateAll}
                         >
-                          Deactivate All
+                          Deactivate All Users
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={bulkActivateAll}
+                        >
+                          Activate All Users
                         </Button>
                         <Button
                           variant="destructive"
