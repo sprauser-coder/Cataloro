@@ -172,42 +172,49 @@ class BackendConnectivityTester:
             self.log_test("CMS Settings", False, f"Exception occurred: {str(e)}")
             return False
     
-    def test_token_validation(self):
-        """Test 3: Token Validation - Test if JWT token is valid for protected routes"""
-        print("🔑 Testing Token Validation...")
-        
-        if not self.admin_token:
-            self.log_test("Token Validation", False, "No admin token available")
-            return False
+    def test_categories_endpoint(self):
+        """Test 4: Categories Data - GET /api/categories"""
+        print("📂 Testing Categories Endpoint...")
         
         try:
-            # Test token with a simple protected endpoint
-            headers = {"Authorization": f"Bearer {self.admin_token}"}
-            response = self.session.get(f"{BACKEND_URL}/listings/my-listings", headers=headers)
+            response = self.session.get(f"{BACKEND_URL}/categories", timeout=10)
             
             if response.status_code == 200:
-                self.log_test(
-                    "Token Validation", 
-                    True, 
-                    "JWT token is valid and accepted by protected endpoints"
-                )
-                return True
-            elif response.status_code == 401:
-                self.log_test("Token Validation", False, "Token rejected - 401 Unauthorized")
-                return False
-            elif response.status_code == 403:
-                self.log_test("Token Validation", False, "Token rejected - 403 Forbidden")
-                return False
+                data = response.json()
+                
+                # Check if categories are returned as a list
+                if isinstance(data, list) and len(data) > 0:
+                    categories_count = len(data)
+                    sample_categories = data[:3]  # Show first 3 categories
+                    self.log_test(
+                        "Categories Data", 
+                        True, 
+                        f"Categories endpoint accessible. {categories_count} categories available. Sample: {sample_categories}"
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Categories Data", 
+                        False, 
+                        f"Categories endpoint returned unexpected data format or empty list: {data}"
+                    )
+                    return False
             else:
                 self.log_test(
-                    "Token Validation", 
+                    "Categories Data", 
                     False, 
-                    f"Unexpected response status: {response.status_code}"
+                    f"Categories endpoint failed with status {response.status_code}: {response.text}"
                 )
                 return False
                 
+        except requests.exceptions.ConnectTimeout:
+            self.log_test("Categories Data", False, "Connection timeout accessing categories")
+            return False
+        except requests.exceptions.ConnectionError as e:
+            self.log_test("Categories Data", False, f"Connection error accessing categories: {str(e)}")
+            return False
         except Exception as e:
-            self.log_test("Token Validation", False, f"Exception occurred: {str(e)}")
+            self.log_test("Categories Data", False, f"Exception occurred: {str(e)}")
             return False
     
     def test_admin_profile(self):
