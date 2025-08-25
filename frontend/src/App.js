@@ -2547,6 +2547,17 @@ const Profile = () => {
                         <div className="bg-blue-600 h-2 rounded-full" style={{ width: '78%' }}></div>
                       </div>
                     </div>
+                    <div className="pt-3 border-t">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="w-full text-red-600 border-red-200 hover:bg-red-50"
+                        onClick={() => setShowClearStatsDialog(true)}
+                      >
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Clear Statistics
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
 
