@@ -85,12 +85,15 @@ class NotificationDebugTester:
             )
             
             if response.status_code == 200:
-                self.notifications = response.json()
+                data = response.json()
+                self.notifications = data.get('notifications', [])
+                unread_count = data.get('unread_count', 0)
+                
                 self.log_result(
                     "Get Notifications", 
                     True, 
-                    f"Retrieved {len(self.notifications)} notifications",
-                    {"notification_count": len(self.notifications), "first_few_notifications": self.notifications[:3] if len(self.notifications) > 3 else self.notifications}
+                    f"Retrieved {len(self.notifications)} notifications, {unread_count} unread",
+                    {"notification_count": len(self.notifications), "unread_count": unread_count, "first_few_notifications": self.notifications[:3] if len(self.notifications) > 3 else self.notifications}
                 )
                 
                 # Log notification details
@@ -100,7 +103,7 @@ class NotificationDebugTester:
                         print(f"   {i+1}. ID: {notif.get('id', 'N/A')}")
                         print(f"      Type: {notif.get('type', 'N/A')}")
                         print(f"      Title: {notif.get('title', 'N/A')}")
-                        print(f"      Read: {notif.get('is_read', 'N/A')}")
+                        print(f"      Read: {notif.get('read', 'N/A')}")  # Note: backend uses 'read', not 'is_read'
                         print(f"      Created: {notif.get('created_at', 'N/A')}")
                         print()
                 
