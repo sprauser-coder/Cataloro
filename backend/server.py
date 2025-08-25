@@ -38,7 +38,18 @@ app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 api_router = APIRouter(prefix="/api")
 
 # Also serve uploads through API route for proxy compatibility
-api_router.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="api_uploads")
+# api_router.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="api_uploads")
+
+# Alternative: Add API endpoint for serving images
+from fastapi.responses import FileResponse
+
+@api_router.get("/uploads/{filename}")
+async def serve_upload_file(filename: str):
+    """Serve uploaded files through API route for proxy compatibility"""
+    file_path = UPLOAD_DIR / filename
+    if file_path.exists():
+        return FileResponse(file_path)
+    raise HTTPException(status_code=404, detail="File not found")
 
 # JWT Configuration
 SECRET_KEY = os.environ.get('JWT_SECRET', 'your-secret-key')
