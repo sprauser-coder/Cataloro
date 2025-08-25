@@ -3362,7 +3362,6 @@ const Favorites = () => {
 
 // Admin Panel Component
 const AdminPanel = () => {
-  console.log('🎯 AdminPanel: Component function called');
   const [activeTab, setActiveTab] = useState('dashboard');
   const [appearanceTab, setAppearanceTab] = useState('typography');
   const [stats, setStats] = useState(null);
