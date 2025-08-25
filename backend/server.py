@@ -2446,7 +2446,8 @@ async def get_user_messages(current_user: User = Depends(get_current_user)):
     }).sort("created_at", -1).limit(20).to_list(20)
     
     result = []
-    for msg in messages:
+    for msg_doc in messages:
+        msg = parse_from_mongo(msg_doc)
         # Get sender info
         sender = await db.users.find_one({"id": msg["sender_id"]})
         sender_name = sender["full_name"] if sender else "Unknown User"
