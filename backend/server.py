@@ -2202,7 +2202,7 @@ async def get_user_stats(current_user: User = Depends(get_current_user)):
     user_id = current_user.id
     
     # Get basic stats from database
-    total_orders = await db.orders.count_documents({"user_id": user_id})
+    total_orders = await db.orders.count_documents({"buyer_id": user_id})
     total_listings = await db.listings.count_documents({"seller_id": user_id})
     
     # Calculate earnings from completed orders
