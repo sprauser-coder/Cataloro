@@ -5446,7 +5446,7 @@ const AdminPanel = () => {
                                   </div>
                                   
                                   {/* Order Statistics Left-aligned */}
-                                  <div className="mb-3">
+                                  <div className="mb-3 mt-4">
                                     <div className="grid grid-cols-3 gap-6">
                                       <div className="bg-blue-50 rounded-lg p-3 text-left">
                                         <div className="text-2xl font-bold text-blue-600">{user.total_orders || 0}</div>
