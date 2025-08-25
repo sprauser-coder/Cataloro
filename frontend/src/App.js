@@ -2982,7 +2982,7 @@ const Sell = () => {
                     <div>
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/png,image/jpeg,image/jpg"
                         onChange={handleImageUpload}
                         disabled={uploading}
                         className="hidden"
