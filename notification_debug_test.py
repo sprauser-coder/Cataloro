@@ -90,7 +90,7 @@ class NotificationDebugTester:
                     "Get Notifications", 
                     True, 
                     f"Retrieved {len(self.notifications)} notifications",
-                    {"notification_count": len(self.notifications), "notifications": self.notifications[:3]}  # Show first 3
+                    {"notification_count": len(self.notifications), "first_few_notifications": self.notifications[:3] if len(self.notifications) > 3 else self.notifications}
                 )
                 
                 # Log notification details
