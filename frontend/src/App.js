@@ -25,14 +25,13 @@ import { Package, User, Users, Settings, ShoppingCart, Plus, Eye, Edit, Trash2, 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 const API = `${BACKEND_URL}/api`;
 
-// Image URL helper function to ensure proper image serving
+// Image URL helper function for production deployment
 const getImageUrl = (imageUrl) => {
   if (!imageUrl) return '';
   if (imageUrl.startsWith('http')) return imageUrl;
   if (imageUrl.startsWith('/uploads/')) {
-    // Use backend URL for image serving, remove /api suffix for image URLs
-    const backendUrl = (process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001').replace('/api', '');
-    return `${backendUrl}${imageUrl}`;
+    // For production deployment - use server IP for images
+    return `http://217.154.0.82:8001${imageUrl}`;
   }
   return imageUrl;
 };
