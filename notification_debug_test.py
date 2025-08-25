@@ -258,7 +258,9 @@ class NotificationDebugTester:
         
         # Step 2: Test mark single notification as read (if any exist)
         if isinstance(self.notifications, list) and self.notifications:
-            first_unread = next((n for n in self.notifications if not n.get('is_read', True)), None)
+            first_unread = None
+            if isinstance(self.notifications, list):
+                first_unread = next((n for n in self.notifications if isinstance(n, dict) and not n.get('is_read', True)), None)
             if first_unread:
                 print(f"\nStep 2: Testing mark single notification as read...")
                 notification_id = first_unread.get('id')
