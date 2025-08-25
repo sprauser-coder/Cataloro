@@ -1966,6 +1966,62 @@ const Profile = () => {
     }
   };
 
+  const handleProfilePictureUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please select an image smaller than 5MB",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setProfilePictureUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post(`${API}/profile/upload-picture`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      setProfileData({
+        ...profileData,
+        profile_picture_url: response.data.profile_picture_url
+      });
+
+      toast({
+        title: "Success",
+        description: "Profile picture updated successfully"
+      });
+    } catch (error) {
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload profile picture",
+        variant: "destructive"
+      });
+    } finally {
+      setProfilePictureUploading(false);
+    }
+  };
+
   const handleDownloadData = async () => {
     try {
       const response = await axios.get(`${API}/profile/export-data`, {
