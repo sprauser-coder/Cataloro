@@ -2306,6 +2306,293 @@ const Profile = () => {
 
   const updateProfile = async () => {
     try {
+      await axios.put(`${API}/profile`, profileData);
+      toast({
+        title: "Success",
+        description: "Profile updated successfully"
+      });
+      setIsEditing(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: formatErrorMessage(error, "Failed to update profile"),
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (passwordData.new_password !== passwordData.confirm_password) {
+      toast({
+        title: "Error",
+        description: "New passwords do not match",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (passwordData.new_password.length < 6) {
+      toast({
+        title: "Error", 
+        description: "Password must be at least 6 characters long",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      await axios.put(`${API}/auth/change-password`, {
+        current_password: passwordData.current_password,
+        new_password: passwordData.new_password
+      });
+      
+      toast({
+        title: "Success",
+        description: "Password changed successfully"
+      });
+      
+      setShowPasswordDialog(false);
+      setPasswordData({
+        current_password: '',
+        new_password: '',
+        confirm_password: ''
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: formatErrorMessage(error, "Failed to change password"),
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleProfilePictureUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please select an image smaller than 5MB",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setProfilePictureUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post(`${API}/profile/upload-picture`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      setProfileData({
+        ...profileData,
+        profile_picture_url: response.data.profile_picture_url
+      });
+
+      toast({
+        title: "Success",
+        description: "Profile picture updated successfully"
+      });
+    } catch (error) {
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload profile picture",
+        variant: "destructive"
+      });
+    } finally {
+      setProfilePictureUploading(false);
+    }
+  };
+
+  const handleDownloadData = async () => {
+    try {
+      const response = await axios.get(`${API}/profile/export-data`, {
+        responseType: 'blob'
+      });
+      
+      const blob = new Blob([response.data], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `cataloro-data-${user.username}-${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Success",
+        description: "Your data has been downloaded successfully"
+      });
+    } catch (error) {
+      // Fallback: create data export manually if backend endpoint doesn't exist
+      const exportData = {
+        profile: profileData,
+        orders: orders,
+        listings: listings,
+        stats: stats,
+        exported_at: new Date().toISOString()
+      };
+      
+      const dataStr = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `cataloro-data-${user.username}-${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Success",
+        description: "Your data has been downloaded successfully"
+      });
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      await axios.delete(`${API}/profile/delete-account`);
+      toast({
+        title: "Account Deleted",
+        description: "Your account has been permanently deleted"
+      });
+      // Logout and redirect
+      navigate('/');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete account",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleViewAllListings = () => {
+    navigate('/browse?user_listings=true');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex justify-center">
+            <div className="text-center">Loading profile...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Profile Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="relative">
+                <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
+                  {profileData.profile_picture_url ? (
+                    <img 
+                      src={getImageUrl(profileData.profile_picture_url)}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-8 h-8 text-white/70" />
+                  )}
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold">{profileData.full_name || profileData.username}</h1>
+                <p className="text-blue-100 mt-1">@{profileData.username}</p>
+                <div className="flex items-center mt-2 space-x-4 text-sm">
+                  <span className="flex items-center">
+                    <Calendar className="w-4 h-4 mr-1" />
+                    Joined {new Date(profileData.joined_date).toLocaleDateString()}
+                  </span>
+                  <span className="flex items-center">
+                    <MapPin className="w-4 h-4 mr-1" />
+                    {profileData.location || 'Location not set'}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="flex items-center space-x-2 mb-2">
+                <Star className="w-5 h-5 text-yellow-300 fill-current" />
+                <span className="text-xl font-bold">{stats.avg_rating.toFixed(1)}</span>
+                <span className="text-blue-100">({stats.total_reviews} reviews)</span>
+              </div>
+              <div className="text-sm text-blue-100">
+                {stats.successful_transactions} successful transactions
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="bg-white rounded-lg shadow-sm mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="flex space-x-8 px-6">
+              {[
+                { id: 'overview', label: 'Overview', icon: Home },
+                { id: 'activity', label: 'Activity', icon: Activity },
+                { id: 'listings', label: 'My Listings', icon: Package },
+                { id: 'orders', label: 'Orders', icon: ShoppingCart },
+                { id: 'favorites', label: 'Favorites', icon: Heart },
+                { id: 'messages', label: 'Messages', icon: MessageCircle },
+                { id: 'reviews', label: 'Reviews', icon: Star },
+                { id: 'settings', label: 'Settings', icon: Settings }
+              ].map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center space-x-2 py-4 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === tab.id
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{tab.label}</span>
+                    {tab.id === 'messages' && messages.filter(m => !m.read).length > 0 && (
+                      <span className="bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
+                        {messages.filter(m => !m.read).length}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
       // Only send fields that the backend ProfileUpdate model accepts
       const updateData = {
         username: profileData.username,
