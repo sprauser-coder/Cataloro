@@ -30,8 +30,9 @@ const getImageUrl = (imageUrl) => {
   if (!imageUrl) return '';
   if (imageUrl.startsWith('http')) return imageUrl;
   if (imageUrl.startsWith('/uploads/')) {
-    // Use backend URL for image serving 
-    return `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'}${imageUrl}`;
+    // Use backend URL for image serving, remove /api suffix if present
+    const backendUrl = (process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001').replace('/api', '');
+    return `${backendUrl}${imageUrl}`;
   }
   return imageUrl;
 };
