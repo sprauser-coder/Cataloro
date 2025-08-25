@@ -505,7 +505,7 @@ class LogoUploadInvestigator:
         try:
             # Test logo upload without authentication
             png_image = self.create_test_image('PNG', (100, 100))
-            files = {'logo': ('test_logo.png', png_image, 'image/png')}
+            files = {'file': ('test_logo.png', png_image, 'image/png')}
             
             response = self.session.post(f"{BACKEND_URL}/admin/cms/upload-logo", files=files, timeout=10)
             
