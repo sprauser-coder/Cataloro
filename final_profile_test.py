@@ -9,7 +9,7 @@ import json
 import time
 
 # Configuration
-BACKEND_URL = "https://emarket-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-market.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
