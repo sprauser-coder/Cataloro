@@ -1363,7 +1363,7 @@ const Home = () => {
             {/* Results Count and Pagination */}
             <div className="ml-auto flex items-center space-x-4">
               <div className="text-sm text-gray-600">
-                {loading ? 'Loading...' : `${totalListings || listings.length} items found`}
+                {loading ? 'Loading...' : `${totalListings} items found`}
               </div>
               <div className="flex items-center space-x-2">
                 <Label className="text-sm text-gray-600">Show:</Label>
@@ -1386,12 +1386,12 @@ const Home = () => {
                   </SelectContent>
                 </Select>
               </div>
-              {/* Page indicator */}
-              {!loading && totalListings > 10 && ( // Always show if more than 10 items
+              {/* Page indicator - always show if more than minimum items */}
+              {!loading && totalListings > 10 && ( 
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-600">
-                    {listingsPerPage >= 1000 ? 'All items' : 
-                     Math.ceil(totalListings / listingsPerPage) > 1 && `${currentPage}/${Math.ceil(totalListings / listingsPerPage)}`}
+                    {listingsPerPage >= 1000 ? `All ${totalListings} items` : 
+                     `Page ${currentPage}/${Math.ceil(totalListings / listingsPerPage)}`}
                   </span>
                   <div className="flex space-x-1">
                     <Button
