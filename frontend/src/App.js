@@ -8233,6 +8233,49 @@ function App() {
 
   useEffect(() => {
     fetchSiteSettings();
+    
+    // Remove Emergent branding elements
+    const removeEmergentBranding = () => {
+      // Remove elements containing "Made with Emergent" text
+      const allElements = document.getElementsByTagName('*');
+      for (let i = allElements.length - 1; i >= 0; i--) {
+        const element = allElements[i];
+        if (element.textContent && element.textContent.includes('Made with Emergent')) {
+          element.remove();
+        }
+        if (element.textContent && element.textContent.includes('Made with emergent')) {
+          element.remove();
+        }
+        if (element.innerHTML && element.innerHTML.includes('Made with Emergent')) {
+          element.remove();
+        }
+      }
+      
+      // Remove fixed positioned elements in bottom right that look like branding
+      const fixedElements = document.querySelectorAll('div[style*="position: fixed"]');
+      fixedElements.forEach(el => {
+        const style = el.style;
+        if (style.position === 'fixed' && 
+            (style.bottom || style.right) && 
+            el.textContent && 
+            el.textContent.toLowerCase().includes('made with')) {
+          el.remove();
+        }
+      });
+    };
+
+    // Run immediately and set up periodic checks
+    removeEmergentBranding();
+    const brandingInterval = setInterval(removeEmergentBranding, 1000);
+    
+    // Also run on DOM mutations
+    const observer = new MutationObserver(removeEmergentBranding);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      clearInterval(brandingInterval);
+      observer.disconnect();
+    };
   }, []);
 
   const fetchSiteSettings = async () => {
