@@ -154,11 +154,21 @@ const AuthProvider = ({ children }) => {
 const ProtectedRoute = ({ children }) => {
   const { token, loading } = useAuth();
   
+  // CRITICAL FIX: Also check localStorage directly as backup for authentication state
+  const localStorageToken = localStorage.getItem('token');
+  
+  console.log('🔒 ProtectedRoute Debug:', { 
+    authToken: !!token, 
+    localStorageToken: !!localStorageToken, 
+    loading 
+  });
+  
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   }
   
-  return token ? children : <Navigate to="/auth" />;
+  // If either token exists, allow access (fixes session persistence issues)
+  return (token || localStorageToken) ? children : <Navigate to="/auth" />;
 };
 
 // Admin Protected Route Component (requires admin role)
