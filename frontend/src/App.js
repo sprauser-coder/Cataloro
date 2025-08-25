@@ -6197,42 +6197,6 @@ const AdminPanel = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
-                    {/* Logo Upload Section */}
-                    <div className="border rounded-lg p-4 bg-gray-50">
-                      <h3 className="text-lg font-medium mb-4">Logo Settings</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium mb-2">Header Logo</label>
-                          {siteSettings.header_logo_url && (
-                            <div className="mb-2">
-                              <img 
-                                src={siteSettings.header_logo_url ? `${BACKEND_URL}${siteSettings.header_logo_url}` : ''} 
-                                alt="Current Header Logo" 
-                                className="max-h-16 object-contain border rounded"
-                              />
-                            </div>
-                          )}
-                          <input
-                            type="file"
-                            accept=".png"
-                            onChange={(e) => handleLogoUpload(e, 'header')}
-                            className="w-full p-2 border rounded-md"
-                          />
-                          <p className="text-xs text-gray-500 mt-1">PNG files only, max 5MB</p>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium mb-2">Logo Alt Text</label>
-                          <input
-                            type="text"
-                            className="w-full p-2 border rounded-md"
-                            value={siteSettings.header_logo_alt || ''}
-                            onChange={(e) => setSiteSettings({...siteSettings, header_logo_alt: e.target.value})}
-                            placeholder="Cataloro Logo"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium mb-2">Site Name</label>
