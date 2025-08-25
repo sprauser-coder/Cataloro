@@ -3494,6 +3494,21 @@ const AdminPanel = () => {
     }
   };
 
+  // Fetch real-time time-based statistics
+  const fetchTimeBasedStats = async (timeFrame) => {
+    try {
+      const response = await axios.get(`${API}/admin/stats/time-based?time_frame=${timeFrame}`);
+      setTimeBasedStats(response.data);
+    } catch (error) {
+      console.error('Error fetching time-based stats:', error);
+      toast({
+        title: "Error",
+        description: `Failed to fetch ${timeFrame} statistics`,
+        variant: "destructive"
+      });
+    }
+  };
+
   // New: Generate dashboard chart data based on time range
   const generateDashboardData = () => {
     const now = new Date();
