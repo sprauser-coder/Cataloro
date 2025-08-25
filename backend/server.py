@@ -2191,10 +2191,6 @@ async def get_public_navigation():
     return [NavigationItem(**parse_from_mongo(item)).dict() for item in nav_items]
 
 # Enhanced Profile Management Endpoints
-from real_time_stats import RealTimeStatsService
-
-# Initialize real-time stats service
-stats_service = RealTimeStatsService(db)
 
 @api_router.get("/profile/stats")
 async def get_user_comprehensive_stats(current_user: User = Depends(get_current_user)):
