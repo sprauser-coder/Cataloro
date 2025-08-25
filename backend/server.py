@@ -2197,9 +2197,9 @@ async def get_public_navigation():
 # Enhanced Profile Management Endpoints
 
 @api_router.get("/profile/stats")
-async def get_user_stats(current_user: dict = Depends(get_current_user)):
+async def get_user_stats(current_user: User = Depends(get_current_user)):
     """Get comprehensive user statistics"""
-    user_id = current_user["id"]
+    user_id = current_user.id
     
     # Get basic stats from database
     total_orders = await db.orders.count_documents({"user_id": user_id})
