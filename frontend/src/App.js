@@ -4395,13 +4395,14 @@ const AdminPanel = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="overflow-x-auto pb-2">
-            <TabsList className="grid w-max grid-cols-8 min-w-[800px]">
+            <TabsList className="grid w-max grid-cols-9 min-w-[900px]">
               <TabsTrigger value="dashboard" className="text-xs">📊 Dashboard</TabsTrigger>
               <TabsTrigger value="users" className="text-xs">👥 Users</TabsTrigger>
               <TabsTrigger value="products" className="text-xs">🛍️ Products</TabsTrigger>
               <TabsTrigger value="content-listings" className="text-xs">🏷️ Categories</TabsTrigger>
               <TabsTrigger value="appearance" className="text-xs">🎨 Appearance</TabsTrigger>
               <TabsTrigger value="pages" className="text-xs">📄 Content</TabsTrigger>
+              <TabsTrigger value="seo" className="text-xs">🔍 SEO</TabsTrigger>
               <TabsTrigger value="settings" className="text-xs">⚙️ Settings</TabsTrigger>
               <TabsTrigger value="database" className="text-xs">🗄️ Database</TabsTrigger>
             </TabsList>
