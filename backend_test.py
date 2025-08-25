@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
 """
-Backend API Connectivity Test for 217.154.0.82 Server
-Testing critical endpoints to diagnose frontend authentication issues and white screen problem.
+Comprehensive Backend API Testing for Cataloro Marketplace
+Testing all backend functionality as requested in the review:
+- Authentication System (admin@marketplace.com / admin123)
+- Admin Panel Features
+- Core Marketplace Functions
+- API Endpoints Testing
+- Notification System
+- File Upload Functionality
 """
 
 import requests
 import json
 import sys
+import os
+import tempfile
 from datetime import datetime
+from pathlib import Path
 
-# Configuration - Updated for 217.154.0.82 server
-BACKEND_URL = "http://217.154.0.82/api"
+# Configuration - Use environment variable for backend URL
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://marketplace-ready.preview.emergentagent.com') + '/api'
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
