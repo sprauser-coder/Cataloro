@@ -781,31 +781,29 @@ const Auth = () => {
             </CardDescription>
           </CardHeader>
           
-          <CardContent className="px-8 pb-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-gray-700">Email Address</Label>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                   required
-                  placeholder="Enter your email address"
-                  className="h-12 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-purple-500 transition-all duration-300 bg-gray-50 focus:bg-white"
+                  className="mt-1"
                 />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold text-gray-700">Password</Label>
+              <div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                   required
-                  placeholder="Enter your password"
-                  className="h-12 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-purple-500 transition-all duration-300 bg-gray-50 focus:bg-white"
+                  className="mt-1"
                 />
               </div>
               
