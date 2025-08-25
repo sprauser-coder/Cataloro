@@ -4908,8 +4908,9 @@ const AdminPanel = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="overflow-x-auto pb-2">
-            <TabsList className="grid w-max grid-cols-9 min-w-[900px]">
+            <TabsList className="grid w-max grid-cols-10 min-w-[1000px]">
               <TabsTrigger value="dashboard" className="text-xs">📊 Dashboard</TabsTrigger>
+              <TabsTrigger value="activity" className="text-xs">🔔 Activity</TabsTrigger>
               <TabsTrigger value="users" className="text-xs">👥 Users</TabsTrigger>
               <TabsTrigger value="products" className="text-xs">🛍️ Products</TabsTrigger>
               <TabsTrigger value="content-listings" className="text-xs">🏷️ Categories</TabsTrigger>
