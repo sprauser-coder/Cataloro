@@ -92,6 +92,7 @@ class User(BaseModel):
     address: Optional[str] = None
     bio: Optional[str] = None  # Phase 3A: User biography
     location: Optional[str] = None  # Phase 3A: User location
+    website: Optional[str] = None
     rating: float = Field(default=0.0)
     total_reviews: int = Field(default=0)
     is_blocked: bool = Field(default=False)
@@ -102,6 +103,28 @@ class User(BaseModel):
     company_name: Optional[str] = None
     country: Optional[str] = None
     vat_number: Optional[str] = None
+    # Enhanced profile fields
+    social_links: Optional[Dict[str, str]] = Field(default_factory=dict)
+    preferences: Optional[Dict[str, Any]] = Field(default_factory=lambda: {
+        "email_notifications": True,
+        "sms_notifications": False,
+        "marketing_emails": True,
+        "push_notifications": True,
+        "theme": "light",
+        "language": "en",
+        "currency": "EUR",
+        "timezone": "Europe/London"
+    })
+    verification: Optional[Dict[str, bool]] = Field(default_factory=lambda: {
+        "email_verified": False,
+        "phone_verified": False,
+        "identity_verified": False,
+        "business_verified": False
+    })
+    # Statistics tracking
+    profile_views: int = Field(default=0)
+    trust_score: int = Field(default=50)  # 0-100 scale
+    account_level: str = Field(default="Bronze")  # Bronze, Silver, Gold, Platinum
 
 class UserCreate(BaseModel):
     email: EmailStr
