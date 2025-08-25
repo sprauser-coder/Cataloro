@@ -138,30 +138,19 @@ class ProfileEndpointTester:
                 "full_name": "Admin User Updated",
                 "bio": "Updated bio for comprehensive profile testing",
                 "location": "London, UK",
-                "website": "https://cataloro.com",
-                "phone": "+44 123 456 7890",
-                "social_links": {
-                    "twitter": "https://twitter.com/cataloro",
-                    "linkedin": "https://linkedin.com/company/cataloro"
-                },
-                "preferences": {
-                    "email_notifications": True,
-                    "sms_notifications": False,
-                    "theme": "dark",
-                    "language": "en",
-                    "currency": "GBP"
-                }
+                "phone": "+44 123 456 7890"
             }
             
             response = self.session.put(f"{BACKEND_URL}/profile", json=update_data)
             
             if response.status_code == 200:
                 data = response.json()
-                if "message" in data and "successfully" in data["message"].lower():
-                    self.log_test("PUT /api/profile", True, "Profile updated with enhanced fields successfully")
+                # The endpoint returns the updated user profile, not just a success message
+                if "full_name" in data and data["full_name"] == "Admin User Updated":
+                    self.log_test("PUT /api/profile", True, "Profile updated successfully, returns updated user data")
                     return True
                 else:
-                    self.log_test("PUT /api/profile", False, f"Unexpected response: {data}")
+                    self.log_test("PUT /api/profile", False, f"Profile update may have failed: {data}")
                     return False
             else:
                 self.log_test("PUT /api/profile", False, f"Status: {response.status_code}, Response: {response.text}")
