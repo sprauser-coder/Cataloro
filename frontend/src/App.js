@@ -24,6 +24,17 @@ import { Package, User, Users, Settings, ShoppingCart, Plus, Eye, Edit, Trash2, 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 const API = `${BACKEND_URL}/api`;
 
+// Image URL helper function to ensure proper image serving
+const getImageUrl = (imageUrl) => {
+  if (!imageUrl) return '';
+  if (imageUrl.startsWith('http')) return imageUrl;
+  if (imageUrl.startsWith('/uploads/')) {
+    // Route uploads through backend to bypass nginx routing issue
+    return `${BACKEND_URL}${imageUrl}`;
+  }
+  return imageUrl;
+};
+
 // Utility function to format error messages
 const formatErrorMessage = (error, fallbackMessage) => {
   try {
