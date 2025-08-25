@@ -372,17 +372,22 @@ class NotificationDebugTester:
         
         # Check if notifications exist
         if hasattr(self, 'notifications') and self.notifications:
-            unread_count = len([n for n in self.notifications if not n.get('is_read', True)])
-            print(f"   - Found {len(self.notifications)} total notifications")
-            print(f"   - {unread_count} notifications are unread")
-            
-            # Check notification types
-            notification_types = {}
-            for notif in self.notifications:
-                notif_type = notif.get('type', 'unknown')
-                notification_types[notif_type] = notification_types.get(notif_type, 0) + 1
-            
-            print(f"   - Notification types: {notification_types}")
+            # Handle case where notifications might be a string (error response)
+            if isinstance(self.notifications, list):
+                unread_count = len([n for n in self.notifications if isinstance(n, dict) and not n.get('is_read', True)])
+                print(f"   - Found {len(self.notifications)} total notifications")
+                print(f"   - {unread_count} notifications are unread")
+                
+                # Check notification types
+                notification_types = {}
+                for notif in self.notifications:
+                    if isinstance(notif, dict):
+                        notif_type = notif.get('type', 'unknown')
+                        notification_types[notif_type] = notification_types.get(notif_type, 0) + 1
+                
+                print(f"   - Notification types: {notification_types}")
+            else:
+                print(f"   - Notifications response was not a list: {type(self.notifications)}")
         else:
             print("   - No notifications found in the system")
         
