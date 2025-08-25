@@ -1336,12 +1336,16 @@ const Home = () => {
             {/* Results Count and Pagination */}
             <div className="ml-auto flex items-center space-x-4">
               <div className="text-sm text-gray-600">
-                {loading ? 'Loading...' : `${totalListings || listings.length} items found (showing ${Math.min(listingsPerPage, listings.length)})`}
+                {loading ? 'Loading...' : `${totalListings || listings.length} items found`}
               </div>
               <div className="flex items-center space-x-2">
                 <Label className="text-sm text-gray-600">Show:</Label>
                 <Select value={listingsPerPage.toString()} onValueChange={(value) => {
-                  setListingsPerPage(parseInt(value));
+                  if (value === 'all') {
+                    setListingsPerPage(1000); // Set a large number for "show all"
+                  } else {
+                    setListingsPerPage(parseInt(value));
+                  }
                   setCurrentPage(1); // Reset to first page when changing items per page
                 }}>
                   <SelectTrigger className="w-20">
@@ -1351,8 +1355,38 @@ const Home = () => {
                     <SelectItem value="10">10</SelectItem>
                     <SelectItem value="25">25</SelectItem>
                     <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              {/* Page indicator */}
+              {!loading && totalListings > listingsPerPage && listingsPerPage < 1000 && (
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600">
+                    {Math.ceil(totalListings / listingsPerPage) > 1 && `${currentPage}/${Math.ceil(totalListings / listingsPerPage)}`}
+                  </span>
+                  <div className="flex space-x-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      className="w-8 h-8 p-0"
+                    >
+                      ←
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalListings / listingsPerPage), prev + 1))}
+                      disabled={currentPage === Math.ceil(totalListings / listingsPerPage)}
+                      className="w-8 h-8 p-0"
+                    >
+                      →
+                    </Button>
+                  </div>
+                </div>
+              )}
               </div>
             </div>
           </div>
