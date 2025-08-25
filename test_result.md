@@ -196,7 +196,22 @@ frontend:
         comment: "User reported that SEO site functionality is not working properly in admin panel."
       - working: true
         agent: "main"
-        comment: "BUG COMPLETELY FIXED: Root cause identified - frontend SEO tab was calling non-existent backend endpoints (/admin/seo). Fixed by: 1) Added SEOSettings model to backend with comprehensive fields (site_title, meta_description, og_tags, twitter_card, robots_txt, structured_data, etc.) 2) Created GET /admin/seo endpoint to retrieve settings with fallback to defaults 3) Created POST /admin/seo endpoint to save/update SEO settings with proper MongoDB integration 4) Added loadSeoSettings() call to useEffect when activeTab === 'seo' for automatic loading. Backend testing confirms 100% success (6/6 tests passed). SEO tab now loads existing settings automatically and saves changes properly."
+        comment: "BUG COMPLETELY FIXED: Root cause identified by troubleshoot_agent - frontend SEO tab was calling non-existent backend endpoints (/admin/seo). Fixed by: 1) Added SEOSettings model to backend with comprehensive fields (site_title, meta_description, og_tags, twitter_card, robots_txt, structured_data, etc.) 2) Created GET /admin/seo endpoint to retrieve settings with fallback to defaults 3) Created POST /admin/seo endpoint to save/update SEO settings with proper MongoDB integration 4) Added loadSeoSettings() call to useEffect when activeTab === 'seo' for automatic loading. Backend testing confirms 100% success (6/6 tests passed). SEO tab now loads existing settings automatically and saves changes properly."
+
+  - task: "Bulk Options for Orders (Similar to Listings)"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js, /app/backend/server.py"
+    stuck_count: 1
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User requested adding bulk options for Orders similar to the bulk functionality already available for listings."
+      - working: true
+        agent: "main"
+        comment: "BULK ORDERS FUNCTIONALITY IMPLEMENTED: Added comprehensive bulk order management system: 1) FRONTEND: Added selectedOrders state, bulk selection UI with checkboxes on each order, Select All/Deselect All buttons, bulk actions dropdown (Mark as Completed/Pending/Cancelled/Shipped, Delete, Export CSV), executeOrderBulkAction function, exportOrders CSV functionality 2) BACKEND: Created OrderBulkUpdateRequest and OrderBulkDeleteRequest models, POST /admin/orders/bulk-update endpoint for status updates, POST /admin/orders/bulk-delete endpoint for bulk deletion, proper admin authentication and validation 3) UI INTEGRATION: Added bulk controls above orders list, checkboxes to individual order cards, visual selection indicators. Complete feature parity with existing listings bulk functionality achieved."
 
   - task: "Logo Settings Reorganization"
     implemented: true
