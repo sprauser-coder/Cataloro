@@ -2216,7 +2216,44 @@ async def get_admin_time_based_stats(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get admin statistics: {str(e)}")
 
-@api_router.get("/profile/activity")
+# Real-time Activity Tracking
+@api_router.post("/track-activity")
+async def track_user_activity(
+    activity_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Track user activity for real-time statistics"""
+    try:
+        activity = {
+            "id": str(uuid.uuid4()),
+            "user_id": current_user.id,
+            "activity_type": activity_data.get("type", "unknown"),
+            "activity_data": activity_data,
+            "timestamp": datetime.now(timezone.utc)
+        }
+        
+        await db.user_activities.insert_one(prepare_for_mongo(activity))
+        
+        # Update user's last activity
+        await db.users.update_one(
+            {"id": current_user.id},
+            {"$set": {"last_activity": datetime.now(timezone.utc)}}
+        )
+        
+        return {"message": "Activity tracked successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to track activity: {str(e)}")
+
+# Real-time Favorites Management
+@api_router.get("/favorites/count")
+async def get_favorites_count(current_user: User = Depends(get_current_user)):
+    """Get real-time favorites count"""
+    try:
+        count = await db.favorites.count_documents({"user_id": current_user.id})
+        return {"count": count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get favorites count: {str(e)}")
 async def get_user_activity(current_user: User = Depends(get_current_user)):
     """Get user activity timeline"""
     user_id = current_user.id
