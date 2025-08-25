@@ -362,7 +362,12 @@ class ComprehensiveBackendTester:
                 self.log_test("Orders Create", False, error="No test listing available")
                 return False
             
-            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            # Use the registered test user (buyer role) instead of admin
+            if not self.user_token:
+                self.log_test("Orders Create", False, error="No buyer user token available")
+                return False
+            
+            headers = {"Authorization": f"Bearer {self.user_token}"}
             order_data = {
                 "listing_id": self.test_listing_id,
                 "quantity": 1,
