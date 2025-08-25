@@ -2603,15 +2603,21 @@ async def clear_all_notifications(current_user: User = Depends(get_current_user)
         raise HTTPException(status_code=500, detail=f"Failed to clear notifications: {str(e)}")
 
 # Bulk Order Management Endpoints
+class BulkOrderUpdate(BaseModel):
+    order_ids: List[str]
+    status: Optional[str] = None
+
+class BulkOrderDelete(BaseModel):
+    order_ids: List[str]
+
 @api_router.post("/admin/orders/bulk-update")
 async def bulk_update_orders(
-    order_ids: List[str] = Field(..., description="List of order IDs to update"),
-    status: Optional[str] = Field(None, description="New status for orders"),
+    request: BulkOrderUpdate,
     admin: User = Depends(get_admin_user)
 ):
     """Bulk update order status"""
     try:
-        if not order_ids:
+        if not request.order_ids:
             raise HTTPException(status_code=400, detail="No order IDs provided")
         
         # Build update query
@@ -2619,21 +2625,21 @@ async def bulk_update_orders(
             "updated_at": datetime.now(timezone.utc)
         }
         
-        if status:
-            update_data["status"] = status
-            if status == "completed":
+        if request.status:
+            update_data["status"] = request.status
+            if request.status == "completed":
                 update_data["completed_at"] = datetime.now(timezone.utc)
         
         # Update orders
         result = await db.orders.update_many(
-            {"id": {"$in": order_ids}},
+            {"id": {"$in": request.order_ids}},
             {"$set": update_data}
         )
         
         return {
             "message": f"Successfully updated {result.modified_count} orders",
             "updated_count": result.modified_count,
-            "status": status
+            "status": request.status
         }
         
     except Exception as e:
@@ -2641,17 +2647,17 @@ async def bulk_update_orders(
 
 @api_router.post("/admin/orders/bulk-delete")
 async def bulk_delete_orders(
-    order_ids: List[str] = Field(..., description="List of order IDs to delete"),
+    request: BulkOrderDelete,
     admin: User = Depends(get_admin_user)
 ):
     """Bulk delete orders"""
     try:
-        if not order_ids:
+        if not request.order_ids:
             raise HTTPException(status_code=400, detail="No order IDs provided")
         
         # Delete orders
         result = await db.orders.delete_many(
-            {"id": {"$in": order_ids}}
+            {"id": {"$in": request.order_ids}}
         )
         
         return {
