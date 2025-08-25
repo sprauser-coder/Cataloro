@@ -15,7 +15,7 @@ from pathlib import Path
 from PIL import Image
 
 class ImageUploadTester:
-    def __init__(self, base_url="https://cataloro-market.preview.emergentagent.com"):
+    def __init__(self, base_url="https://api-connect-fix-5.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.admin_token = None
