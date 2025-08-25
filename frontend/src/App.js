@@ -19,7 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './components/ui/dialog';
 import { useToast } from './hooks/use-toast';
 import { Toaster } from './components/ui/toaster';
-import { Package, User, Users, Settings, ShoppingCart, Plus, Eye, Edit, Trash2, Search, Star, Bell, Check, X, TrendingUp, Calendar, DollarSign, Heart, Clock, CheckCircle, Upload, Euro, Gavel, MapPin, RefreshCw, Home as HomeIcon, Activity, MessageCircle } from 'lucide-react';
+import { Package, User, Users, Settings, ShoppingCart, Plus, Eye, Edit, Trash2, Search, Star, Bell, Check, X, TrendingUp, Calendar, DollarSign, Heart, Clock, CheckCircle, Upload, Euro, Gavel, MapPin, RefreshCw, Home as HomeIcon, Activity, MessageCircle, Zap, Award, Shield, Globe, Phone, Mail, Camera, AlertTriangle } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 const API = `${BACKEND_URL}/api`;
