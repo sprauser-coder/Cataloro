@@ -30,8 +30,8 @@ const getImageUrl = (imageUrl) => {
   if (!imageUrl) return '';
   if (imageUrl.startsWith('http')) return imageUrl;
   if (imageUrl.startsWith('/uploads/')) {
-    // Force API route for image serving - bypasses all infrastructure caching issues
-    return `/api${imageUrl}`;
+    // Use backend URL for image serving 
+    return `${process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'}${imageUrl}`;
   }
   return imageUrl;
 };
