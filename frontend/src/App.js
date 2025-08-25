@@ -404,13 +404,13 @@ const NotificationCenter = () => {
 
   const clearAllNotifications = async () => {
     try {
-      // Since there's no clear endpoint, we'll mark as read and clear locally
-      await axios.put(`${API}/notifications/mark-all-read`);
+      // Use the new clear-all endpoint to permanently delete notifications
+      await axios.delete(`${API}/notifications/clear-all`);
       setNotifications([]);
       setUnreadCount(0);
       toast({
         title: "Notifications cleared",
-        description: "All notifications have been cleared",
+        description: "All notifications have been permanently cleared",
       });
     } catch (error) {
       console.error('Error clearing notifications:', error);
