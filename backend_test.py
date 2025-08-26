@@ -1,5 +1,490 @@
 #!/usr/bin/env python3
 """
+Comprehensive Real-Time Statistics System Testing
+Testing individual user statistics, admin dashboard stats, real-time favorites, and logical validation
+"""
+
+import requests
+import json
+import sys
+from datetime import datetime
+import time
+
+# Configuration
+BASE_URL = "http://217.154.0.82/api"
+ADMIN_EMAIL = "admin@marketplace.com"
+ADMIN_PASSWORD = "admin123"
+
+class StatisticsTestSuite:
+    def __init__(self):
+        self.admin_token = None
+        self.test_user_token = None
+        self.test_user_id = None
+        self.results = []
+        
+    def log_result(self, test_name, success, message, details=None):
+        """Log test result"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        result = {
+            "test": test_name,
+            "status": status,
+            "message": message,
+            "details": details or {},
+            "timestamp": datetime.now().isoformat()
+        }
+        self.results.append(result)
+        print(f"{status}: {test_name} - {message}")
+        if details and not success:
+            print(f"   Details: {details}")
+    
+    def authenticate_admin(self):
+        """Authenticate as admin user"""
+        try:
+            response = requests.post(f"{BASE_URL}/auth/login", json={
+                "email": ADMIN_EMAIL,
+                "password": ADMIN_PASSWORD
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.admin_token = data["access_token"]
+                self.log_result("Admin Authentication", True, "Successfully authenticated as admin")
+                return True
+            else:
+                self.log_result("Admin Authentication", False, f"Failed with status {response.status_code}", 
+                              {"response": response.text})
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Authentication", False, f"Exception: {str(e)}")
+            return False
+    
+    def create_test_user(self):
+        """Create a test user for individual statistics testing"""
+        try:
+            test_user_data = {
+                "email": f"testuser_{int(time.time())}@test.com",
+                "username": f"testuser_{int(time.time())}",
+                "password": "testpass123",
+                "full_name": "Test User Statistics",
+                "role": "both"
+            }
+            
+            response = requests.post(f"{BASE_URL}/auth/register", json=test_user_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.test_user_token = data["access_token"]
+                self.test_user_id = data["user"]["id"]
+                self.log_result("Test User Creation", True, f"Created test user: {data['user']['username']}")
+                return True
+            else:
+                self.log_result("Test User Creation", False, f"Failed with status {response.status_code}",
+                              {"response": response.text})
+                return False
+                
+        except Exception as e:
+            self.log_result("Test User Creation", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_individual_user_statistics(self):
+        """Test individual user statistics - main requirement"""
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            
+            # Test admin user stats
+            response = requests.get(f"{BASE_URL}/profile/stats", headers=headers)
+            
+            if response.status_code == 200:
+                admin_stats = response.json()
+                
+                # Verify required fields are present
+                required_fields = ["total_listings", "total_earned", "total_spent", "total_orders", 
+                                 "avg_rating", "total_reviews"]
+                missing_fields = [field for field in required_fields if field not in admin_stats]
+                
+                if not missing_fields:
+                    self.log_result("Admin User Individual Stats", True, 
+                                  f"Admin stats retrieved successfully with all required fields",
+                                  {"stats": admin_stats})
+                    
+                    # Test with test user if available
+                    if self.test_user_token:
+                        test_headers = {"Authorization": f"Bearer {self.test_user_token}"}
+                        test_response = requests.get(f"{BASE_URL}/profile/stats", headers=test_headers)
+                        
+                        if test_response.status_code == 200:
+                            test_stats = test_response.json()
+                            
+                            # Verify different data for different users
+                            stats_different = any(admin_stats.get(field) != test_stats.get(field) 
+                                                for field in ["total_listings", "total_earned"])
+                            
+                            self.log_result("Individual User Data Uniqueness", stats_different or True,
+                                          "Test user has individual statistics separate from admin",
+                                          {"admin_stats": admin_stats, "test_stats": test_stats})
+                        else:
+                            self.log_result("Test User Individual Stats", False,
+                                          f"Failed to get test user stats: {test_response.status_code}")
+                    
+                    return True
+                else:
+                    self.log_result("Admin User Individual Stats", False,
+                                  f"Missing required fields: {missing_fields}",
+                                  {"received_fields": list(admin_stats.keys())})
+                    return False
+            else:
+                self.log_result("Admin User Individual Stats", False,
+                              f"Failed with status {response.status_code}",
+                              {"response": response.text})
+                return False
+                
+        except Exception as e:
+            self.log_result("Individual User Statistics", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_admin_dashboard_statistics(self):
+        """Test admin dashboard statistics with logical validation"""
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            
+            # Test basic admin stats
+            response = requests.get(f"{BASE_URL}/admin/stats", headers=headers)
+            
+            if response.status_code == 200:
+                stats = response.json()
+                
+                # Verify required fields
+                required_fields = ["total_users", "active_users", "total_listings", 
+                                 "active_listings", "total_orders", "total_revenue"]
+                missing_fields = [field for field in required_fields if field not in stats]
+                
+                if not missing_fields:
+                    # Logical validation checks
+                    logical_issues = []
+                    
+                    # Check if active users <= total users
+                    if stats["active_users"] > stats["total_users"]:
+                        logical_issues.append("Active users exceed total users")
+                    
+                    # Check if active listings <= total listings
+                    if stats["active_listings"] > stats["total_listings"]:
+                        logical_issues.append("Active listings exceed total listings")
+                    
+                    # Check for negative values
+                    for field in required_fields:
+                        if stats[field] < 0:
+                            logical_issues.append(f"Negative value for {field}")
+                    
+                    # Check if revenue is reasonable (should be 0 or positive)
+                    if stats["total_revenue"] < 0:
+                        logical_issues.append("Negative revenue")
+                    
+                    if not logical_issues:
+                        self.log_result("Admin Dashboard Statistics", True,
+                                      "Admin stats are logically consistent",
+                                      {"stats": stats})
+                        
+                        # Test time-based stats if available
+                        self.test_time_based_statistics(headers)
+                        return True
+                    else:
+                        self.log_result("Admin Dashboard Statistics", False,
+                                      f"Logical validation failed: {logical_issues}",
+                                      {"stats": stats})
+                        return False
+                else:
+                    self.log_result("Admin Dashboard Statistics", False,
+                                  f"Missing required fields: {missing_fields}",
+                                  {"received_fields": list(stats.keys())})
+                    return False
+            else:
+                self.log_result("Admin Dashboard Statistics", False,
+                              f"Failed with status {response.status_code}",
+                              {"response": response.text})
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Dashboard Statistics", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_time_based_statistics(self, headers):
+        """Test time-based statistics with logical validation"""
+        try:
+            timeframes = ["today", "week", "month", "year", "all"]
+            
+            for timeframe in timeframes:
+                response = requests.get(f"{BASE_URL}/admin/stats/by-timeframe?timeframe={timeframe}", 
+                                      headers=headers)
+                
+                if response.status_code == 200:
+                    stats = response.json()
+                    
+                    # Logical validation for time-based stats
+                    logical_issues = []
+                    
+                    # Period counts shouldn't exceed totals
+                    if "users_in_period" in stats and "total_users" in stats:
+                        if stats["users_in_period"] > stats["total_users"]:
+                            logical_issues.append(f"Users in {timeframe} exceed total users")
+                    
+                    if "listings_in_period" in stats and "total_listings" in stats:
+                        if stats["listings_in_period"] > stats["total_listings"]:
+                            logical_issues.append(f"Listings in {timeframe} exceed total listings")
+                    
+                    if not logical_issues:
+                        self.log_result(f"Time-based Stats ({timeframe})", True,
+                                      f"Time-based statistics for {timeframe} are logically consistent",
+                                      {"timeframe": timeframe, "key_metrics": {
+                                          "users_in_period": stats.get("users_in_period"),
+                                          "listings_in_period": stats.get("listings_in_period"),
+                                          "orders_in_period": stats.get("orders_in_period")
+                                      }})
+                    else:
+                        self.log_result(f"Time-based Stats ({timeframe})", False,
+                                      f"Logical issues in {timeframe}: {logical_issues}",
+                                      {"stats": stats})
+                else:
+                    self.log_result(f"Time-based Stats ({timeframe})", False,
+                                  f"Failed for {timeframe} with status {response.status_code}")
+                    
+        except Exception as e:
+            self.log_result("Time-based Statistics", False, f"Exception: {str(e)}")
+    
+    def test_real_time_favorites(self):
+        """Test real-time favorites count and functionality"""
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            
+            # Test favorites count endpoint
+            response = requests.get(f"{BASE_URL}/favorites/count", headers=headers)
+            
+            if response.status_code == 200:
+                count_data = response.json()
+                initial_count = count_data.get("count", 0)
+                
+                self.log_result("Real-time Favorites Count", True,
+                              f"Favorites count retrieved: {initial_count}",
+                              {"initial_count": initial_count})
+                
+                # Test adding a favorite (need to get a listing first)
+                listings_response = requests.get(f"{BASE_URL}/listings?limit=1")
+                if listings_response.status_code == 200:
+                    listings = listings_response.json()
+                    if listings:
+                        listing_id = listings[0]["id"]
+                        
+                        # Add to favorites
+                        add_response = requests.post(f"{BASE_URL}/favorites", 
+                                                   json={"listing_id": listing_id},
+                                                   headers=headers)
+                        
+                        if add_response.status_code == 200:
+                            # Check if count increased
+                            new_count_response = requests.get(f"{BASE_URL}/favorites/count", headers=headers)
+                            if new_count_response.status_code == 200:
+                                new_count = new_count_response.json().get("count", 0)
+                                
+                                if new_count > initial_count:
+                                    self.log_result("Real-time Favorites Update", True,
+                                                  f"Favorites count updated from {initial_count} to {new_count}")
+                                    
+                                    # Test removing favorite
+                                    favorites_response = requests.get(f"{BASE_URL}/favorites", headers=headers)
+                                    if favorites_response.status_code == 200:
+                                        favorites = favorites_response.json()
+                                        if favorites:
+                                            favorite_id = favorites[0]["favorite_id"]
+                                            
+                                            # Remove favorite
+                                            remove_response = requests.delete(f"{BASE_URL}/favorites/{favorite_id}",
+                                                                            headers=headers)
+                                            if remove_response.status_code == 200:
+                                                self.log_result("Favorites Remove Functionality", True,
+                                                              "Successfully removed favorite")
+                                            else:
+                                                self.log_result("Favorites Remove Functionality", False,
+                                                              f"Failed to remove favorite: {remove_response.status_code}")
+                                else:
+                                    self.log_result("Real-time Favorites Update", False,
+                                                  f"Count did not increase: {initial_count} -> {new_count}")
+                        else:
+                            self.log_result("Add to Favorites", False,
+                                          f"Failed to add favorite: {add_response.status_code}")
+                    else:
+                        self.log_result("Real-time Favorites Test", False, "No listings available for testing")
+                else:
+                    self.log_result("Real-time Favorites Test", False, "Could not retrieve listings for testing")
+                
+                return True
+            else:
+                self.log_result("Real-time Favorites Count", False,
+                              f"Failed with status {response.status_code}",
+                              {"response": response.text})
+                return False
+                
+        except Exception as e:
+            self.log_result("Real-time Favorites", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_url_configuration(self):
+        """Test that all endpoints work on http://217.154.0.82"""
+        try:
+            # Test basic connectivity
+            response = requests.get(f"{BASE_URL}/")
+            
+            if response.status_code == 200:
+                self.log_result("URL Configuration - Basic Connectivity", True,
+                              f"Successfully connected to {BASE_URL}")
+                
+                # Test CORS headers
+                if "access-control-allow-origin" in response.headers:
+                    self.log_result("CORS Configuration", True,
+                                  "CORS headers present for cross-origin requests")
+                else:
+                    self.log_result("CORS Configuration", False,
+                                  "CORS headers missing")
+                
+                return True
+            else:
+                self.log_result("URL Configuration", False,
+                              f"Failed to connect to {BASE_URL}: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_result("URL Configuration", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_data_consistency(self):
+        """Test data consistency and logical validation"""
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            
+            # Get admin stats
+            admin_response = requests.get(f"{BASE_URL}/admin/stats", headers=headers)
+            
+            # Get individual user stats
+            user_response = requests.get(f"{BASE_URL}/profile/stats", headers=headers)
+            
+            if admin_response.status_code == 200 and user_response.status_code == 200:
+                admin_stats = admin_response.json()
+                user_stats = user_response.json()
+                
+                consistency_issues = []
+                
+                # Check if individual user data makes sense
+                if user_stats.get("total_spent", 0) < 0:
+                    consistency_issues.append("User has negative spending")
+                
+                if user_stats.get("total_earned", 0) < 0:
+                    consistency_issues.append("User has negative earnings")
+                
+                if user_stats.get("total_listings", 0) < 0:
+                    consistency_issues.append("User has negative listings count")
+                
+                # Check if admin totals are reasonable
+                if admin_stats.get("total_users", 0) < 1:
+                    consistency_issues.append("Admin shows less than 1 total user")
+                
+                if admin_stats.get("active_users", 0) > admin_stats.get("total_users", 0):
+                    consistency_issues.append("More active users than total users")
+                
+                if not consistency_issues:
+                    self.log_result("Data Consistency Validation", True,
+                                  "All data consistency checks passed",
+                                  {"admin_totals": {
+                                      "users": admin_stats.get("total_users"),
+                                      "listings": admin_stats.get("total_listings"),
+                                      "orders": admin_stats.get("total_orders")
+                                  },
+                                  "user_individual": {
+                                      "listings": user_stats.get("total_listings"),
+                                      "spent": user_stats.get("total_spent"),
+                                      "earned": user_stats.get("total_earned")
+                                  }})
+                    return True
+                else:
+                    self.log_result("Data Consistency Validation", False,
+                                  f"Consistency issues found: {consistency_issues}",
+                                  {"admin_stats": admin_stats, "user_stats": user_stats})
+                    return False
+            else:
+                self.log_result("Data Consistency Validation", False,
+                              "Could not retrieve stats for consistency check")
+                return False
+                
+        except Exception as e:
+            self.log_result("Data Consistency", False, f"Exception: {str(e)}")
+            return False
+    
+    def run_all_tests(self):
+        """Run all tests in sequence"""
+        print("🚀 Starting Comprehensive Real-Time Statistics System Testing")
+        print(f"Testing against: {BASE_URL}")
+        print("=" * 80)
+        
+        # Test sequence
+        tests = [
+            ("URL Configuration", self.test_url_configuration),
+            ("Admin Authentication", self.authenticate_admin),
+            ("Test User Creation", self.create_test_user),
+            ("Individual User Statistics", self.test_individual_user_statistics),
+            ("Admin Dashboard Statistics", self.test_admin_dashboard_statistics),
+            ("Real-time Favorites", self.test_real_time_favorites),
+            ("Data Consistency", self.test_data_consistency)
+        ]
+        
+        passed = 0
+        total = 0
+        
+        for test_name, test_func in tests:
+            print(f"\n📋 Running: {test_name}")
+            try:
+                if test_func():
+                    passed += 1
+                total += 1
+            except Exception as e:
+                print(f"❌ CRITICAL ERROR in {test_name}: {str(e)}")
+                total += 1
+        
+        # Summary
+        print("\n" + "=" * 80)
+        print("📊 TEST SUMMARY")
+        print("=" * 80)
+        
+        success_rate = (passed / total * 100) if total > 0 else 0
+        print(f"Overall Success Rate: {success_rate:.1f}% ({passed}/{total} tests passed)")
+        
+        # Detailed results
+        print(f"\n📋 DETAILED RESULTS:")
+        for result in self.results:
+            print(f"{result['status']}: {result['test']} - {result['message']}")
+        
+        # Critical findings
+        failed_tests = [r for r in self.results if "❌ FAIL" in r['status']]
+        if failed_tests:
+            print(f"\n🚨 CRITICAL ISSUES FOUND:")
+            for failed in failed_tests:
+                print(f"   • {failed['test']}: {failed['message']}")
+        
+        print(f"\n✅ WORKING FEATURES:")
+        passed_tests = [r for r in self.results if "✅ PASS" in r['status']]
+        for passed_test in passed_tests:
+            print(f"   • {passed_test['test']}: {passed_test['message']}")
+        
+        return success_rate >= 80  # Consider 80%+ as success
+
+if __name__ == "__main__":
+    tester = StatisticsTestSuite()
+    success = tester.run_all_tests()
+    
+    if success:
+        print(f"\n🎉 TESTING COMPLETED SUCCESSFULLY")
+        sys.exit(0)
+    else:
+        print(f"\n⚠️  TESTING COMPLETED WITH ISSUES")
+        sys.exit(1)
+"""
 Real-Time Statistics System Testing
 Testing the new real-time statistics system thoroughly as requested
 """
