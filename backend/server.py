@@ -2249,6 +2249,168 @@ async def get_user_stats(current_user: User = Depends(get_current_user)):
         badges_earned=0
     )
 
+# Profile Tab Endpoints
+@api_router.get("/profile/activity")
+async def get_user_activity(current_user: User = Depends(get_current_user)):
+    """Get user's activity history"""
+    try:
+        activities = []
+        
+        # Get recent listings created by user
+        recent_listings = await db.listings.find(
+            {"seller_id": current_user.id}
+        ).sort("created_at", -1).limit(10).to_list(10)
+        
+        for listing in recent_listings:
+            activities.append({
+                "type": "listing_created",
+                "title": f"Created listing: {listing['title']}",
+                "description": f"Listed for €{listing['price']}",
+                "timestamp": listing['created_at'].isoformat(),
+                "icon": "📦",
+                "color": "green"
+            })
+        
+        # Get recent orders as buyer
+        recent_orders = await db.orders.find(
+            {"buyer_id": current_user.id}
+        ).sort("created_at", -1).limit(10).to_list(10)
+        
+        for order in recent_orders:
+            activities.append({
+                "type": "order_placed",
+                "title": f"Purchased item for €{order['total_amount']}",
+                "description": f"Order #{order['id'][:8]}...",
+                "timestamp": order['created_at'].isoformat(),
+                "icon": "🛒",
+                "color": "blue"
+            })
+        
+        # Get recent favorites
+        recent_favorites = await db.favorites.find(
+            {"user_id": current_user.id}
+        ).sort("created_at", -1).limit(5).to_list(5)
+        
+        for favorite in recent_favorites:
+            # Get listing details
+            listing = await db.listings.find_one({"id": favorite["listing_id"]})
+            if listing:
+                activities.append({
+                    "type": "item_favorited",
+                    "title": f"Added to favorites: {listing['title']}",
+                    "description": f"Price: €{listing['price']}",
+                    "timestamp": favorite['created_at'].isoformat(),
+                    "icon": "❤️",
+                    "color": "red"
+                })
+        
+        # Sort activities by timestamp (newest first)
+        activities.sort(key=lambda x: x['timestamp'], reverse=True)
+        
+        return {"activities": activities[:20]}  # Return max 20 activities
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get user activity: {str(e)}")
+
+@api_router.get("/profile/listings")
+async def get_user_listings(current_user: User = Depends(get_current_user)):
+    """Get user's listings"""
+    try:
+        listings = await db.listings.find(
+            {"seller_id": current_user.id}
+        ).sort("created_at", -1).to_list(None)
+        
+        result = []
+        for listing_doc in listings:
+            listing = ProductListing(**parse_from_mongo(listing_doc))
+            result.append(listing)
+        
+        return {"listings": result}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get user listings: {str(e)}")
+
+@api_router.get("/profile/orders") 
+async def get_user_orders(current_user: User = Depends(get_current_user)):
+    """Get user's orders (as buyer)"""
+    try:
+        orders = await db.orders.find(
+            {"buyer_id": current_user.id}
+        ).sort("created_at", -1).to_list(None)
+        
+        result = []
+        for order_doc in orders:
+            # Get listing details for each order
+            listing = None
+            if order_doc.get("listing_id"):
+                listing_doc = await db.listings.find_one({"id": order_doc["listing_id"]})
+                if listing_doc:
+                    listing = ProductListing(**parse_from_mongo(listing_doc))
+            
+            result.append({
+                "id": order_doc["id"],
+                "total_amount": order_doc["total_amount"],
+                "status": order_doc["status"],
+                "created_at": order_doc["created_at"].isoformat(),
+                "listing": listing
+            })
+        
+        return {"orders": result}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get user orders: {str(e)}")
+
+@api_router.get("/profile/favorites")
+async def get_user_favorites(current_user: User = Depends(get_current_user)):
+    """Get user's favorite items"""
+    try:
+        favorites = await db.favorites.find({"user_id": current_user.id}).to_list(None)
+        
+        result = []
+        for favorite in favorites:
+            # Get the listing details
+            listing = await db.listings.find_one({"id": favorite["listing_id"]})
+            
+            # Only include favorites for existing listings
+            if listing:
+                result.append({
+                    "favorite_id": favorite["id"],
+                    "listing": ProductListing(**parse_from_mongo(listing)),
+                    "added_at": favorite["created_at"].isoformat()
+                })
+        
+        return {"favorites": result}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get user favorites: {str(e)}")
+
+@api_router.put("/profile/update")
+async def update_user_profile(
+    profile_update: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Update user profile information"""
+    try:
+        # Only allow certain fields to be updated
+        allowed_fields = ["full_name", "bio", "location", "phone", "company_name", "website"]
+        update_data = {k: v for k, v in profile_update.items() if k in allowed_fields}
+        
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No valid fields to update")
+        
+        # Update in database
+        await db.users.update_one(
+            {"id": current_user.id},
+            {"$set": update_data}
+        )
+        
+        # Return updated user data
+        updated_user = await db.users.find_one({"id": current_user.id})
+        return {"message": "Profile updated successfully", "user": parse_from_mongo(updated_user)}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update profile: {str(e)}")
+
 @api_router.get("/profile/activity")
 async def get_user_activity(current_user: User = Depends(get_current_user)):
     """Get user activity timeline"""
