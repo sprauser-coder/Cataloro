@@ -2600,14 +2600,7 @@ class UserProfile(BaseModel):
     country: Optional[str] = None
     vat_number: Optional[str] = None
 
-class UserStats(BaseModel):
-    """User statistics model"""
-    total_orders: int = 0
-    total_listings: int = 0
-    total_spent: float = 0.0
-    total_earned: float = 0.0
-    avg_rating: float = 0.0
-    total_reviews: int = 0
+
 
 @api_router.get("/profile", response_model=UserProfile)
 async def get_user_profile(current_user: User = Depends(get_current_user)):
