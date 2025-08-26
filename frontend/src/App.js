@@ -2091,6 +2091,7 @@ const ListingDetail = () => {
 const ActivityTabContent = () => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchActivity = async () => {
@@ -2110,7 +2111,7 @@ const ActivityTabContent = () => {
     };
 
     fetchActivity();
-  }, []);
+  }, [toast]);
 
   if (loading) {
     return <div className="text-center py-8">Loading activity...</div>;
@@ -2151,6 +2152,7 @@ const ActivityTabContent = () => {
 const ListingsTabContent = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -2170,7 +2172,7 @@ const ListingsTabContent = () => {
     };
 
     fetchListings();
-  }, []);
+  }, [toast]);
 
   if (loading) {
     return <div className="text-center py-8">Loading your listings...</div>;
@@ -2228,6 +2230,7 @@ const ListingsTabContent = () => {
 const OrdersTabContent = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -2247,7 +2250,7 @@ const OrdersTabContent = () => {
     };
 
     fetchOrders();
-  }, []);
+  }, [toast]);
 
   if (loading) {
     return <div className="text-center py-8">Loading your orders...</div>;
@@ -2312,6 +2315,7 @@ const OrdersTabContent = () => {
 const FavoritesTabContent = () => {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -2331,7 +2335,7 @@ const FavoritesTabContent = () => {
     };
 
     fetchFavorites();
-  }, []);
+  }, [toast]);
 
   if (loading) {
     return <div className="text-center py-8">Loading your favorites...</div>;
@@ -2393,6 +2397,7 @@ const SettingsTabContent = () => {
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchProfile = async () => {
