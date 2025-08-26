@@ -2209,11 +2209,8 @@ async def get_public_navigation():
 @api_router.get("/profile/stats", response_model=UserStats)
 async def get_user_stats(current_user: User = Depends(get_current_user)):
     """Get current user's statistics - simple working version"""
-    stats = UserStats()
-    
     # Count user's orders
     orders_count = await db.orders.count_documents({"buyer_id": current_user.id})
-    stats.total_orders = orders_count
     
     # Calculate total spent
     orders_cursor = db.orders.find({"buyer_id": current_user.id})
@@ -2221,11 +2218,9 @@ async def get_user_stats(current_user: User = Depends(get_current_user)):
     async for order in orders_cursor:
         if order.get("total_amount"):
             total_spent += float(order["total_amount"])
-    stats.total_spent = total_spent
     
     # Count user's listings  
     listings_count = await db.listings.count_documents({"seller_id": current_user.id})
-    stats.total_listings = listings_count
     
     # Calculate total earned (from completed orders of user's listings)
     earnings_pipeline = [
@@ -2233,22 +2228,26 @@ async def get_user_stats(current_user: User = Depends(get_current_user)):
         {"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}
     ]
     earnings_result = await db.orders.aggregate(earnings_pipeline).to_list(1)
-    stats.total_earned = earnings_result[0]["total"] if earnings_result else 0.0
+    total_earned = earnings_result[0]["total"] if earnings_result else 0.0
     
     # Get user rating and reviews
-    stats.avg_rating = getattr(current_user, 'rating', 0.0)
-    stats.total_reviews = getattr(current_user, 'total_reviews', 0)
+    avg_rating = getattr(current_user, 'rating', 0.0)
+    total_reviews = getattr(current_user, 'total_reviews', 0)
     
-    # Simple calculated values
-    stats.successful_transactions = orders_count
-    stats.profile_views = getattr(current_user, 'profile_views', 0)
-    stats.trust_score = getattr(current_user, 'trust_score', 50)
-    stats.account_level = "Bronze"
-    stats.badges_earned = 0
-    stats.response_rate = 80.0
-    stats.avg_response_time = 2.5
-    
-    return stats
+    # Create UserStats object
+    return UserStats(
+        user_id=current_user.id,
+        total_orders=orders_count,
+        total_spent=total_spent,
+        total_listings=listings_count,
+        total_earned=total_earned,
+        avg_rating=avg_rating,
+        total_reviews=total_reviews,
+        successful_transactions=orders_count,
+        response_rate=80.0,
+        avg_response_time=2.5,
+        badges_earned=0
+    )
 
 @api_router.get("/profile/activity")
 async def get_user_activity(current_user: User = Depends(get_current_user)):
