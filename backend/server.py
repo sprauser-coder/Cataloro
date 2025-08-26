@@ -1267,154 +1267,30 @@ class ListingManagement(BaseModel):
 # Admin Analytics Endpoints
 @api_router.get("/admin/stats", response_model=AdminStats)
 async def get_admin_stats(admin: User = Depends(get_admin_user)):
-    """Get platform statistics - enhanced with real-time data and logical validation"""
-    try:
-        # Try using real-time stats service first
-        try:
-            realtime_stats = await stats_service.get_admin_time_based_stats("all")
-            return AdminStats(
-                total_users=realtime_stats["total_users"],
-                active_users=realtime_stats["active_users"],
-                blocked_users=realtime_stats["blocked_users"],
-                total_listings=realtime_stats["total_listings"],
-                active_listings=realtime_stats["active_listings"],
-                total_orders=realtime_stats["total_orders"],
-                total_revenue=realtime_stats["total_revenue"]
-            )
-        except Exception as service_error:
-            print(f"RealTimeStatsService error: {service_error}")
-            # Fallback to direct database queries with logical validation
-            
-            # Count users
-            total_users = await db.users.count_documents({})
-            active_users = await db.users.count_documents({"is_blocked": False})
-            blocked_users = await db.users.count_documents({"is_blocked": True})
-            
-            # Ensure logical consistency
-            if active_users + blocked_users != total_users:
-                # Fix inconsistency by adjusting active users
-                active_users = max(0, total_users - blocked_users)
-            
-            # Count listings
-            total_listings = await db.listings.count_documents({})
-            active_listings = await db.listings.count_documents({"status": "active"})
-            
-            # Ensure active listings don't exceed total
-            active_listings = min(active_listings, total_listings)
-            
-            # Count orders and revenue
-            total_orders = await db.orders.count_documents({})
-            
-            # Calculate revenue with proper aggregation
-            revenue_pipeline = [
-                {"$match": {"status": "completed"}},
-                {"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}
-            ]
-            revenue_result = await db.orders.aggregate(revenue_pipeline).to_list(1)
-            total_revenue = revenue_result[0]["total"] if revenue_result else 0.0
-            
-            return AdminStats(
-                total_users=total_users,
-                active_users=active_users,
-                blocked_users=blocked_users,
-                total_listings=total_listings,
-                active_listings=active_listings,
-                total_orders=total_orders,
-                total_revenue=round(total_revenue, 2)
-            )
-            
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get admin stats: {str(e)}")
-
-# Enhanced admin stats with time frame support
-@api_router.get("/admin/stats/by-timeframe")
-async def get_admin_stats_by_timeframe(
-    timeframe: str = "today",  # today, week, month, year, all
-    admin: User = Depends(get_admin_user)
-):
-    """Get admin statistics for specific timeframe with logical validation"""
-    try:
-        from datetime import timedelta
-        
-        now = datetime.now(timezone.utc)
-        
-        # Define time ranges
-        if timeframe == "today":
-            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        elif timeframe == "week":
-            start_date = now - timedelta(days=7)
-        elif timeframe == "month":
-            start_date = now - timedelta(days=30)
-        elif timeframe == "year":
-            start_date = now - timedelta(days=365)
-        else:  # all
-            start_date = None
-        
-        # Build query filter
-        date_filter = {"created_at": {"$gte": start_date}} if start_date else {}
-        
-        # Get period-specific statistics
-        if start_date:
-            users_in_period = await db.users.count_documents(date_filter)
-            listings_in_period = await db.listings.count_documents(date_filter)
-            orders_in_period = await db.orders.count_documents(date_filter)
-        else:
-            users_in_period = await db.users.count_documents({})
-            listings_in_period = await db.listings.count_documents({})
-            orders_in_period = await db.orders.count_documents({})
-        
-        # Get total counts for validation
-        total_users = await db.users.count_documents({})
-        total_listings = await db.listings.count_documents({})
-        total_orders = await db.orders.count_documents({})
-        
-        # Apply logical validation - period counts cannot exceed totals
-        users_in_period = min(users_in_period, total_users)
-        listings_in_period = min(listings_in_period, total_listings)  
-        orders_in_period = min(orders_in_period, total_orders)
-        
-        # Calculate revenue for the period
-        revenue_query = {"status": "completed"}
-        if start_date:
-            revenue_query["created_at"] = {"$gte": start_date}
-            
-        revenue_pipeline = [
-            {"$match": revenue_query},
-            {"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}
-        ]
-        revenue_result = await db.orders.aggregate(revenue_pipeline).to_list(1)
-        revenue_in_period = revenue_result[0]["total"] if revenue_result else 0.0
-        
-        # Get other statistics
-        active_users = await db.users.count_documents({"is_blocked": False})
-        blocked_users = await db.users.count_documents({"is_blocked": True})
-        active_listings = await db.listings.count_documents({"status": "active"})
-        
-        return {
-            "timeframe": timeframe,
-            "period_start": start_date.isoformat() if start_date else None,
-            "total_users": total_users,
-            "active_users": active_users,
-            "blocked_users": blocked_users,
-            "users_in_period": users_in_period,
-            "total_listings": total_listings,
-            "active_listings": active_listings,
-            "listings_in_period": listings_in_period,
-            "total_orders": total_orders,
-            "orders_in_period": orders_in_period,
-            "total_revenue": round((await db.orders.aggregate([
-                {"$match": {"status": "completed"}},
-                {"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}
-            ]).to_list(1))[0]["total"] if await db.orders.aggregate([
-                {"$match": {"status": "completed"}},
-                {"$group": {"_id": None, "total": {"$sum": "$total_amount"}}}
-            ]).to_list(1) else 0.0, 2),
-            "revenue_in_period": round(revenue_in_period, 2),
-            "last_updated": now.isoformat()
-        }
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get timeframe stats: {str(e)}")
+    """Get platform statistics - simple working version"""
+    # Count users
+    total_users = await db.users.count_documents({})
+    active_users = await db.users.count_documents({"is_blocked": False})
+    blocked_users = await db.users.count_documents({"is_blocked": True})
+    
+    # Count listings
+    total_listings = await db.listings.count_documents({})
+    active_listings = await db.listings.count_documents({"status": "active"})
+    
+    # Count orders and revenue
+    total_orders = await db.orders.count_documents({})
+    orders = await db.orders.find({}).to_list(length=None)
+    total_revenue = sum(order.get('total_amount', 0) for order in orders)
+    
+    return AdminStats(
+        total_users=total_users,
+        active_users=active_users,
+        blocked_users=blocked_users,
+        total_listings=total_listings,
+        active_listings=active_listings,
+        total_orders=total_orders,
+        total_revenue=total_revenue
+    )
 
 # Admin User Management
 @api_router.get("/admin/users", response_model=List[UserManagement])
