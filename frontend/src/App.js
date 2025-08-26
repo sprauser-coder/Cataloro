@@ -3384,7 +3384,7 @@ const AdminPanel = () => {
 
 
 
-  const [realtimeStats, setRealtimeStats] = useState(null); // Real-time individual stats
+
   const [siteSettings, setSiteSettings] = useState(null);
   const [pages, setPages] = useState([]);
   const [navigation, setNavigation] = useState([]);
