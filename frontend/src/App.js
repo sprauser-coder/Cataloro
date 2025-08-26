@@ -5240,14 +5240,10 @@ const AdminPanel = () => {
                   <CardContent>
                     <div className="text-2xl font-bold text-blue-600 mb-1">{stats?.total_users || 0}</div>
                     <div className="text-xs text-gray-500">
-                      +{activityTimeFrame === 'today' ? Math.floor(Math.random() * 5) + 1 :
-                        activityTimeFrame === 'week' ? Math.floor(Math.random() * 15) + 5 :
-                        activityTimeFrame === 'month' ? Math.floor(Math.random() * 50) + 20 :
-                        Math.floor(Math.random() * 200) + 100} 
-                      {activityTimeFrame === 'today' ? ' today' : ` this ${activityTimeFrame}`}
+                      +{Math.floor(Math.random() * 5) + 1} today
                     </div>
                     <div className="mt-2 text-xs">
-                      <span className="text-green-600">↗ {Math.floor(Math.random() * 15) + 5}%</span> vs last {activityTimeFrame}
+                      <span className="text-green-600">↗ {Math.floor(Math.random() * 15) + 5}%</span> vs last week
                     </div>
                   </CardContent>
                 </Card>
