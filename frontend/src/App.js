@@ -4865,19 +4865,7 @@ const AdminPanel = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm text-gray-600">Total Users</p>
-                          <p className="text-2xl font-bold">
-                            {timeBasedStats ? (
-                              overviewTimeFrame === 'today' ? timeBasedStats.users_in_period :
-                              overviewTimeFrame === 'week' ? timeBasedStats.users_in_period :
-                              overviewTimeFrame === 'month' ? timeBasedStats.users_in_period :
-                              timeBasedStats.total_users
-                            ) : (stats?.total_users || 0)}
-                          </p>
-                          {timeBasedStats?.growth_metrics && (
-                            <p className="text-xs text-green-600">
-                              +{timeBasedStats.growth_metrics.users_growth}% vs last {overviewTimeFrame}
-                            </p>
-                          )}
+                          <p className="text-2xl font-bold">{stats?.total_users || 0}</p>
                         </div>
                         <User className="h-8 w-8 text-blue-600" />
                       </div>
@@ -4889,19 +4877,7 @@ const AdminPanel = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm text-gray-600">Active Listings</p>
-                          <p className="text-2xl font-bold">
-                            {timeBasedStats ? (
-                              overviewTimeFrame === 'today' ? timeBasedStats.listings_in_period :
-                              overviewTimeFrame === 'week' ? timeBasedStats.listings_in_period :
-                              overviewTimeFrame === 'month' ? timeBasedStats.listings_in_period :
-                              timeBasedStats.active_listings
-                            ) : (stats?.active_listings || 0)}
-                          </p>
-                          {timeBasedStats?.growth_metrics && (
-                            <p className="text-xs text-green-600">
-                              +{timeBasedStats.growth_metrics.listings_growth}% vs last {overviewTimeFrame}
-                            </p>
-                          )}
+                          <p className="text-2xl font-bold">{stats?.active_listings || 0}</p>
                         </div>
                         <Package className="h-8 w-8 text-green-600" />
                       </div>
@@ -4912,15 +4888,8 @@ const AdminPanel = () => {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-gray-600">Listings Created</p>
-                          <p className="text-2xl font-bold">
-                            {timeBasedStats?.listings_in_period || 0}
-                          </p>
-                          {timeBasedStats?.growth_metrics && (
-                            <p className="text-xs text-green-600">
-                              +{timeBasedStats.growth_metrics.listings_growth}% vs previous
-                            </p>
-                          )}
+                          <p className="text-sm text-gray-600">Total Listings</p>
+                          <p className="text-2xl font-bold">{stats?.total_listings || 0}</p>
                         </div>
                         <Plus className="h-8 w-8 text-indigo-600" />
                       </div>
@@ -4931,20 +4900,8 @@ const AdminPanel = () => {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-gray-600">Completed Orders</p>
-                          <p className="text-2xl font-bold">
-                            {timeBasedStats ? (
-                              overviewTimeFrame === 'today' ? timeBasedStats.orders_in_period :
-                              overviewTimeFrame === 'week' ? timeBasedStats.orders_in_period :
-                              overviewTimeFrame === 'month' ? timeBasedStats.orders_in_period :
-                              timeBasedStats.total_orders
-                            ) : (stats?.total_orders || 0)}
-                          </p>
-                          {timeBasedStats?.growth_metrics && (
-                            <p className="text-xs text-green-600">
-                              +{timeBasedStats.growth_metrics.orders_growth}% vs last {overviewTimeFrame}
-                            </p>
-                          )}
+                          <p className="text-sm text-gray-600">Total Orders</p>
+                          <p className="text-2xl font-bold">{stats?.total_orders || 0}</p>
                         </div>
                         <Gavel className="h-8 w-8 text-purple-600" />
                       </div>
