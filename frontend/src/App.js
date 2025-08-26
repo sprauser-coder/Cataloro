@@ -3458,13 +3458,6 @@ const AdminPanel = () => {
     }
   }, [activeTab]);
 
-  // Separate useEffect to handle timeframe changes
-  useEffect(() => {
-    if (activeTab === 'dashboard') {
-      fetchTimeBasedStats(overviewTimeFrame);
-    }
-  }, [overviewTimeFrame, performanceTimeFrame, activityTimeFrame]);
-
   const fetchStats = async () => {
     try {
       setLoading(true);
