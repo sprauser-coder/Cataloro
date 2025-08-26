@@ -410,12 +410,7 @@ async def login(credentials: UserLogin):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     user = User(**parse_from_mongo(user_doc))
-    print(f"DEBUG LOGIN: Database user ID: {user_doc.get('id', 'NO_ID')}")
-    print(f"DEBUG LOGIN: Parsed user ID: {user.id}")
-    print(f"DEBUG LOGIN: User email: {user.email}")
-    
     access_token = create_access_token(data={"sub": user.id})
-    print(f"DEBUG LOGIN: Token created with user ID: {user.id}")
     
     return Token(access_token=access_token, token_type="bearer", user=user)
 
