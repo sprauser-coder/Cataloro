@@ -998,7 +998,7 @@ async def get_categories():
 
 @api_router.get("/")
 async def root():
-    return {"message": "Marketplace API", "version": "v1.5.1"}
+    return {"message": "Marketplace API", "version": "v1.5.2"}
 
 @api_router.get("/test-bulk-endpoints")
 async def test_bulk_endpoints():
