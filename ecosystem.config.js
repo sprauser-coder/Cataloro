@@ -21,7 +21,7 @@ module.exports = {
     {
       name: 'cataloro-frontend',
       script: 'serve',
-      args: '-s build -p 3000',
+      args: ['-s', 'build', '-l', '3000'],
       cwd: '/var/www/cataloro/frontend',
       exec_mode: 'fork',
       instances: 1,
