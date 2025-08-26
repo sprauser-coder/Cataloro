@@ -3366,7 +3366,7 @@ const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [appearanceTab, setAppearanceTab] = useState('typography');
   const [stats, setStats] = useState(null);
-  const [timeBasedStats, setTimeBasedStats] = useState(null);
+
   const [users, setUsers] = useState([]);
   const [listings, setListings] = useState([]);
   const [orders, setOrders] = useState([]);
