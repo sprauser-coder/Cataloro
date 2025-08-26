@@ -2087,6 +2087,429 @@ const ListingDetail = () => {
 };
 
 // Profile Component - Enhanced User Dashboard with Header Integration
+// Profile Tab Components
+const ActivityTabContent = () => {
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchActivity = async () => {
+      try {
+        const response = await axios.get(`${API}/profile/activity`);
+        setActivities(response.data.activities);
+      } catch (error) {
+        console.error('Error fetching activity:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load activity history",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchActivity();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center py-8">Loading activity...</div>;
+  }
+
+  if (activities.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <Activity className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+        <p>No activity yet. Start by creating listings or making purchases!</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {activities.map((activity, index) => (
+        <div key={index} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
+            activity.color === 'green' ? 'bg-green-100' :
+            activity.color === 'blue' ? 'bg-blue-100' :
+            activity.color === 'red' ? 'bg-red-100' :
+            activity.color === 'yellow' ? 'bg-yellow-100' : 'bg-gray-100'
+          }`}>
+            {activity.icon}
+          </div>
+          <div className="flex-1">
+            <p className="font-medium">{activity.title}</p>
+            <p className="text-sm text-gray-600">{activity.description}</p>
+            <p className="text-xs text-gray-400">{new Date(activity.timestamp).toLocaleDateString()}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const ListingsTabContent = () => {
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const response = await axios.get(`${API}/profile/listings`);
+        setListings(response.data.listings);
+      } catch (error) {
+        console.error('Error fetching listings:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load your listings",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchListings();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center py-8">Loading your listings...</div>;
+  }
+
+  if (listings.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <Package className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+        <p>No listings yet. Create your first listing to start selling!</p>
+        <Button className="mt-4" onClick={() => window.location.href = '/create-listing'}>
+          Create Listing
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {listings.map((listing) => (
+        <Card key={listing.id} className="overflow-hidden">
+          <div className="aspect-video bg-gray-200 relative">
+            {listing.images && listing.images.length > 0 ? (
+              <img 
+                src={getImageUrl(listing.images[0])} 
+                alt={listing.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <Package className="w-8 h-8 text-gray-400" />
+              </div>
+            )}
+            <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium ${
+              listing.status === 'active' ? 'bg-green-100 text-green-800' :
+              listing.status === 'sold' ? 'bg-red-100 text-red-800' :
+              'bg-gray-100 text-gray-800'
+            }`}>
+              {listing.status}
+            </div>
+          </div>
+          <CardContent className="p-4">
+            <h3 className="font-semibold text-sm mb-2">{listing.title}</h3>
+            <p className="text-lg font-bold text-blue-600">€{listing.price}</p>
+            <p className="text-xs text-gray-500 mt-2">
+              Created {new Date(listing.created_at).toLocaleDateString()}
+            </p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
+const OrdersTabContent = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get(`${API}/profile/orders`);
+        setOrders(response.data.orders);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load your orders",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center py-8">Loading your orders...</div>;
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <ShoppingCart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+        <p>No orders yet. Start shopping to see your purchase history!</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {orders.map((order) => (
+        <Card key={order.id}>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                {order.listing && order.listing.images && order.listing.images.length > 0 ? (
+                  <img 
+                    src={getImageUrl(order.listing.images[0])} 
+                    alt={order.listing.title}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                ) : (
+                  <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+                    <Package className="w-8 h-8 text-gray-400" />
+                  </div>
+                )}
+                <div>
+                  <h3 className="font-semibold">
+                    {order.listing ? order.listing.title : 'Item no longer available'}
+                  </h3>
+                  <p className="text-sm text-gray-600">Order #{order.id.substring(0, 8)}...</p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(order.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-lg font-bold">€{order.total_amount}</p>
+                <div className={`px-2 py-1 rounded text-xs font-medium ${
+                  order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                  order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}>
+                  {order.status}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
+const FavoritesTabContent = () => {
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const response = await axios.get(`${API}/profile/favorites`);
+        setFavorites(response.data.favorites);
+      } catch (error) {
+        console.error('Error fetching favorites:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load your favorites",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center py-8">Loading your favorites...</div>;
+  }
+
+  if (favorites.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <Heart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+        <p>No favorites yet. Start browsing and save items you love!</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {favorites.map((favorite) => (
+        <Card key={favorite.favorite_id} className="overflow-hidden">
+          <div className="aspect-video bg-gray-200 relative">
+            {favorite.listing.images && favorite.listing.images.length > 0 ? (
+              <img 
+                src={getImageUrl(favorite.listing.images[0])} 
+                alt={favorite.listing.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <Package className="w-8 h-8 text-gray-400" />
+              </div>
+            )}
+            <button 
+              className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50"
+              onClick={() => {/* Remove from favorites */}}
+            >
+              <Heart className="w-4 h-4 text-red-500" fill="currentColor" />
+            </button>
+          </div>
+          <CardContent className="p-4">
+            <h3 className="font-semibold text-sm mb-2">{favorite.listing.title}</h3>
+            <p className="text-lg font-bold text-blue-600">€{favorite.listing.price}</p>
+            <p className="text-xs text-gray-500 mt-2">
+              Added {new Date(favorite.added_at).toLocaleDateString()}
+            </p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
+const SettingsTabContent = () => {
+  const [profileData, setProfileData] = useState({
+    full_name: '',
+    bio: '',
+    location: '',
+    phone: '',
+    company_name: '',
+    website: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get(`${API}/profile`);
+        setProfileData(response.data);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await axios.put(`${API}/profile/update`, profileData);
+      toast({
+        title: "Success",
+        description: "Profile updated successfully!",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive"
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChange = (field, value) => {
+    setProfileData(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Personal Information</CardTitle>
+          <CardDescription>Update your personal details</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Full Name</label>
+            <input
+              type="text"
+              value={profileData.full_name || ''}
+              onChange={(e) => handleChange('full_name', e.target.value)}
+              className="w-full p-2 border rounded-md"
+              placeholder="Enter your full name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Bio</label>
+            <textarea
+              value={profileData.bio || ''}
+              onChange={(e) => handleChange('bio', e.target.value)}
+              className="w-full p-2 border rounded-md h-24"
+              placeholder="Tell us about yourself"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Location</label>
+            <input
+              type="text"
+              value={profileData.location || ''}
+              onChange={(e) => handleChange('location', e.target.value)}
+              className="w-full p-2 border rounded-md"
+              placeholder="Your location"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Phone</label>
+            <input
+              type="tel"
+              value={profileData.phone || ''}
+              onChange={(e) => handleChange('phone', e.target.value)}
+              className="w-full p-2 border rounded-md"
+              placeholder="Your phone number"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Company Name</label>
+            <input
+              type="text"
+              value={profileData.company_name || ''}
+              onChange={(e) => handleChange('company_name', e.target.value)}
+              className="w-full p-2 border rounded-md"
+              placeholder="Your company (optional)"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Website</label>
+            <input
+              type="url"
+              value={profileData.website || ''}
+              onChange={(e) => handleChange('website', e.target.value)}
+              className="w-full p-2 border rounded-md"
+              placeholder="Your website (optional)"
+            />
+          </div>
+          <div className="pt-4">
+            <Button onClick={handleSave} disabled={saving} className="w-full">
+              {saving ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 const Profile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
