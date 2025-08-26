@@ -2234,7 +2234,7 @@ async def get_user_stats(current_user: User = Depends(get_current_user)):
     avg_rating = getattr(current_user, 'rating', 0.0)
     total_reviews = getattr(current_user, 'total_reviews', 0)
     
-    # Create UserStats object
+    # Create UserStats object with all fields
     return UserStats(
         user_id=current_user.id,
         total_orders=orders_count,
@@ -2246,7 +2246,9 @@ async def get_user_stats(current_user: User = Depends(get_current_user)):
         successful_transactions=orders_count,
         response_rate=80.0,
         avg_response_time=2.5,
-        badges_earned=0
+        badges_earned=0,
+        profile_views=0,  # Set to 0 for now
+        trust_score=50    # Default trust score
     )
 
 @api_router.get("/profile/activity")
