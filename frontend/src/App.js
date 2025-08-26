@@ -5276,14 +5276,10 @@ const AdminPanel = () => {
                   <CardContent>
                     <div className="text-2xl font-bold text-purple-600 mb-1">{stats?.total_orders || 0}</div>
                     <div className="text-xs text-gray-500">
-                      +{activityTimeFrame === 'today' ? Math.floor(Math.random() * 2) + 1 :
-                        activityTimeFrame === 'week' ? Math.floor(Math.random() * 8) + 2 :
-                        activityTimeFrame === 'month' ? Math.floor(Math.random() * 25) + 8 :
-                        Math.floor(Math.random() * 80) + 30} 
-                      {activityTimeFrame === 'today' ? ' today' : ` this ${activityTimeFrame}`}
+                      +{Math.floor(Math.random() * 8) + 2} today
                     </div>
                     <div className="mt-2 text-xs">
-                      <span className="text-green-600">↗ {Math.floor(Math.random() * 12) + 8}%</span> vs last {activityTimeFrame}
+                      <span className="text-green-600">↗ {Math.floor(Math.random() * 12) + 8}%</span> vs last week
                     </div>
                   </CardContent>
                 </Card>
