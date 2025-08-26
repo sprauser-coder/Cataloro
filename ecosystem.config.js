@@ -4,7 +4,7 @@ module.exports = {
       name: 'cataloro-backend',
       script: 'vps-server.py',
       cwd: '/var/www/cataloro',
-      interpreter: '/var/www/cataloro/venv/bin/python',
+      interpreter: '/usr/bin/python3.11',
       instances: 1,
       autorestart: true,
       watch: false,
