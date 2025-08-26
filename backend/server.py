@@ -2338,26 +2338,12 @@ async def get_public_navigation():
 async def get_user_comprehensive_stats(current_user: User = Depends(get_current_user)):
     """Get comprehensive real-time user statistics with enhanced features"""
     try:
-        print(f"DEBUG: Profile stats called for user_id: {current_user.id}")
-        print(f"DEBUG: User email: {current_user.email}")
-        print(f"DEBUG: User username: {current_user.username}")
-        
-        # Verify user exists in database
-        user_check = await db.users.find_one({"id": current_user.id})
-        print(f"DEBUG: User found in database: {user_check is not None}")
-        
-        if user_check is None:
-            print(f"ERROR: User {current_user.id} not found in database but passed authentication!")
-            # This should never happen, but let's handle it
-            raise HTTPException(status_code=500, detail="User authentication inconsistency detected")
-        
         # Try using real-time stats service first
         try:
             stats = await stats_service.get_user_comprehensive_stats(current_user.id)
             # Add real-time favorites count
             favorites_count = await db.favorites.count_documents({"user_id": current_user.id})
             stats["favorites_count"] = favorites_count
-            print(f"DEBUG: Stats service returned data for user {current_user.id}")
             return stats
         except Exception as service_error:
             print(f"RealTimeStatsService error for user stats: {service_error}")
