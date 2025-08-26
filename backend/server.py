@@ -2266,7 +2266,7 @@ async def get_user_activity(current_user: User = Depends(get_current_user)):
                 "type": "listing_created",
                 "title": f"Created listing: {listing['title']}",
                 "description": f"Listed for €{listing['price']}",
-                "timestamp": listing['created_at'].isoformat(),
+                "timestamp": listing['created_at'].isoformat() if hasattr(listing['created_at'], 'isoformat') else str(listing['created_at']),
                 "icon": "📦",
                 "color": "green"
             })
@@ -2281,7 +2281,7 @@ async def get_user_activity(current_user: User = Depends(get_current_user)):
                 "type": "order_placed",
                 "title": f"Purchased item for €{order['total_amount']}",
                 "description": f"Order #{order['id'][:8]}...",
-                "timestamp": order['created_at'].isoformat(),
+                "timestamp": order['created_at'].isoformat() if hasattr(order['created_at'], 'isoformat') else str(order['created_at']),
                 "icon": "🛒",
                 "color": "blue"
             })
@@ -2299,7 +2299,7 @@ async def get_user_activity(current_user: User = Depends(get_current_user)):
                     "type": "item_favorited",
                     "title": f"Added to favorites: {listing['title']}",
                     "description": f"Price: €{listing['price']}",
-                    "timestamp": favorite['created_at'].isoformat(),
+                    "timestamp": favorite['created_at'].isoformat() if hasattr(favorite['created_at'], 'isoformat') else str(favorite['created_at']),
                     "icon": "❤️",
                     "color": "red"
                 })
