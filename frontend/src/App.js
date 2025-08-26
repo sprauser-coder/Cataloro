@@ -9618,6 +9618,26 @@ function App() {
       </div>
     </AuthProvider>
   );
-}
+};
+
+const MessagesTabContent = () => {
+  return (
+    <div className="text-center py-8 text-gray-500">
+      <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+      <p>Messages feature coming soon!</p>
+      <p className="text-sm">Connect with buyers and sellers directly</p>
+    </div>
+  );
+};
+
+const ReviewsTabContent = () => {
+  return (
+    <div className="text-center py-8 text-gray-500">
+      <Star className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+      <p>No reviews yet</p>
+      <p className="text-sm">Complete transactions to receive reviews</p>
+    </div>
+  );
+};
 
 export default App;
