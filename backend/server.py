@@ -2351,7 +2351,7 @@ async def get_user_orders(current_user: User = Depends(get_current_user)):
                 "id": order_doc["id"],
                 "total_amount": order_doc["total_amount"],
                 "status": order_doc["status"],
-                "created_at": order_doc["created_at"].isoformat(),
+                "created_at": order_doc["created_at"].isoformat() if hasattr(order_doc["created_at"], 'isoformat') else str(order_doc["created_at"]),
                 "listing": listing
             })
         
