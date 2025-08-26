@@ -2647,25 +2647,12 @@ const Profile = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Activity className="w-5 h-5 mr-2" />
-                  Complete Activity History
+                  Activity History
                 </CardTitle>
-                <CardDescription>All your marketplace activities and interactions</CardDescription>
+                <CardDescription>Your recent marketplace activity</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {activityData.map((activity, index) => (
-                    <div key={index} className={`flex items-center space-x-4 p-4 rounded-lg border-l-4 border-l-${activity.color}-500 bg-${activity.color}-50`}>
-                      <div className="text-3xl">{activity.icon}</div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">{activity.title}</p>
-                        <p className="text-sm text-gray-500">{activity.time}</p>
-                      </div>
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium bg-${activity.color}-100 text-${activity.color}-800`}>
-                        {activity.type.replace('_', ' ').toUpperCase()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <ActivityTabContent />
               </CardContent>
             </Card>
           </TabsContent>
