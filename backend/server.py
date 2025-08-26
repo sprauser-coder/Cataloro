@@ -2250,42 +2250,6 @@ async def get_user_stats(current_user: User = Depends(get_current_user)):
     
     return stats
 
-@api_router.get("/admin/stats-by-timeframe")
-async def get_admin_time_based_stats_test(
-    time_frame: str = "today",  # today, week, month, year
-    admin: User = Depends(get_admin_user)
-):
-    """Get admin statistics with logical time-based validation - TEST ROUTE"""
-    return {"message": "Test endpoint working", "time_frame": time_frame}
-
-# Real-time Activity Tracking
-@api_router.post("/activity/track")
-async def track_user_activity_simple(
-    activity_type: str,
-    current_user: User = Depends(get_current_user)
-):
-    """Track user activity for real-time statistics - simplified version"""
-    try:
-        activity = {
-            "id": str(uuid.uuid4()),
-            "user_id": current_user.id,
-            "activity_type": activity_type,
-            "timestamp": datetime.now(timezone.utc)
-        }
-        
-        await db.user_activities.insert_one(prepare_for_mongo(activity))
-        
-        # Update user's last activity
-        await db.users.update_one(
-            {"id": current_user.id},
-            {"$set": {"last_activity": datetime.now(timezone.utc)}}
-        )
-        
-        return {"message": "Activity tracked successfully", "activity_type": activity_type}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to track activity: {str(e)}")
-
 @api_router.get("/profile/activity")
 async def get_user_activity(current_user: User = Depends(get_current_user)):
     """Get user activity timeline"""
