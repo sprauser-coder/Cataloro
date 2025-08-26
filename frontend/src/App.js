@@ -5003,24 +5003,10 @@ const AdminPanel = () => {
                 {/* Compact Listing Performance */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <Card className="lg:col-span-1">
-                    <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                    <CardHeader className="pb-3">
                       <div>
                         <CardTitle className="text-lg">Performance Summary</CardTitle>
                         <CardDescription className="text-sm">Quick marketplace overview</CardDescription>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs text-gray-600">Time:</span>
-                        <Select value={performanceTimeFrame} onValueChange={setPerformanceTimeFrame}>
-                          <SelectTrigger className="w-24">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="today">Today</SelectItem>
-                            <SelectItem value="week">Week</SelectItem>
-                            <SelectItem value="month">Month</SelectItem>
-                            <SelectItem value="year">Year</SelectItem>
-                          </SelectContent>
-                        </Select>
                       </div>
                     </CardHeader>
                     <CardContent>
