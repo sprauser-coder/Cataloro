@@ -2262,21 +2262,6 @@ async def get_admin_time_based_stats_test(
     """Get admin statistics with logical time-based validation - TEST ROUTE"""
     return {"message": "Test endpoint working", "time_frame": time_frame}
 
-@api_router.get("/admin/stats/time-based")
-async def get_admin_time_based_stats(
-    time_frame: str = "today",  # today, week, month, year
-    admin: User = Depends(get_admin_user)
-):
-    """Get admin statistics with logical time-based validation"""
-    try:
-        if time_frame not in ["today", "week", "month", "year"]:
-            time_frame = "today"
-        
-        stats = await stats_service.get_admin_time_based_stats(time_frame)
-        return stats
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get admin statistics: {str(e)}")
-
 # Real-time Activity Tracking
 @api_router.post("/activity/track")
 async def track_user_activity_simple(
