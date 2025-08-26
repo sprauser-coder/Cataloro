@@ -274,8 +274,8 @@ const AdminProtectedRoute = ({ children }) => {
 
 // Footer Component with Version
 const Footer = ({ siteSettings }) => {
-  const currentVersion = "1.5.0"; // Updated to version 1.5.0
-  const deploymentDateTime = "25/08/2025 18:52"; // Updated timestamp for version 1.5.0
+  const currentVersion = "1.5.1"; // Updated to version 1.5.1
+  const deploymentDateTime = "26/08/2025 06:25"; // Updated timestamp for version 1.5.1
 
   // Safely handle siteSettings that might be null or undefined
   const safeSettings = siteSettings || {};
