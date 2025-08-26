@@ -3436,7 +3436,6 @@ const AdminPanel = () => {
   useEffect(() => {
     if (activeTab === 'dashboard') {
       fetchStats();
-      fetchTimeBasedStats(overviewTimeFrame); // Fetch initial time-based stats
     } else if (activeTab === 'users') {
       fetchUsers();
     } else if (activeTab === 'products') {
