@@ -2376,7 +2376,7 @@ async def get_user_favorites(current_user: User = Depends(get_current_user)):
                 result.append({
                     "favorite_id": favorite["id"],
                     "listing": ProductListing(**parse_from_mongo(listing)),
-                    "added_at": favorite["created_at"].isoformat()
+                    "added_at": favorite["created_at"].isoformat() if hasattr(favorite["created_at"], 'isoformat') else str(favorite["created_at"])
                 })
         
         return {"favorites": result}
