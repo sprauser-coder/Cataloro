@@ -5294,14 +5294,10 @@ const AdminPanel = () => {
                   <CardContent>
                     <div className="text-2xl font-bold text-yellow-600 mb-1">€{stats?.total_revenue?.toFixed(2) || '0.00'}</div>
                     <div className="text-xs text-gray-500">
-                      +€{activityTimeFrame === 'today' ? Math.floor(Math.random() * 100) + 20 :
-                          activityTimeFrame === 'week' ? Math.floor(Math.random() * 500) + 100 :
-                          activityTimeFrame === 'month' ? Math.floor(Math.random() * 2000) + 500 :
-                          Math.floor(Math.random() * 8000) + 2000}.{Math.floor(Math.random() * 99).toString().padStart(2, '0')} 
-                      {activityTimeFrame === 'today' ? ' today' : ` this ${activityTimeFrame}`}
+                      +€{Math.floor(Math.random() * 500) + 100} today
                     </div>
                     <div className="mt-2 text-xs">
-                      <span className="text-green-600">↗ {Math.floor(Math.random() * 18) + 12}%</span> vs last {activityTimeFrame}
+                      <span className="text-green-600">↗ {Math.floor(Math.random() * 18) + 12}%</span> vs last week
                     </div>
                   </CardContent>
                 </Card>
