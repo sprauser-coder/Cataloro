@@ -3086,143 +3086,98 @@ const Profile = () => {
           </TabsContent>
 
           {/* Other placeholder tabs */}
-          <TabsContent value="listings">
+          {/* Listings Tab */}
+          <TabsContent value="listings" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>My Listings</CardTitle>
+                <CardTitle className="flex items-center">
+                  <Package className="w-5 h-5 mr-2" />
+                  My Listings
+                </CardTitle>
                 <CardDescription>Manage your marketplace listings</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <Package className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600 mb-4">No listings found</p>
-                  <Button>Create Your First Listing</Button>
-                </div>
+                <ListingsTabContent />
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="orders">
+          {/* Orders Tab */}
+          <TabsContent value="orders" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>My Orders</CardTitle>
+                <CardTitle className="flex items-center">
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  My Orders
+                </CardTitle>
                 <CardDescription>Track your purchase history</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <ShoppingCart className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600 mb-4">No orders found</p>
-                  <Button onClick={() => navigate('/browse')}>Start Shopping</Button>
-                </div>
+                <OrdersTabContent />
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="favorites">
+          {/* Favorites Tab */}
+          <TabsContent value="favorites" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>My Favorites</CardTitle>
+                <CardTitle className="flex items-center">
+                  <Heart className="w-5 h-5 mr-2" />
+                  Favorites
+                </CardTitle>
                 <CardDescription>Items you've saved for later</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <Heart className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600 mb-4">No favorites yet</p>
-                  <Button onClick={() => navigate('/browse')}>Discover Items</Button>
-                </div>
+                <FavoritesTabContent />
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="messages">
+          {/* Messages Tab */}
+          <TabsContent value="messages" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Messages</CardTitle>
+                <CardTitle className="flex items-center">
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  Messages
+                </CardTitle>
                 <CardDescription>Communication with other users</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600 mb-4">No messages yet</p>
-                  <Button>Start a Conversation</Button>
-                </div>
+                <MessagesTabContent />
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="reviews">
+          {/* Reviews Tab */}
+          <TabsContent value="reviews" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Reviews & Ratings</CardTitle>
+                <CardTitle className="flex items-center">
+                  <Star className="w-5 h-5 mr-2" />
+                  Reviews & Ratings
+                </CardTitle>
                 <CardDescription>Feedback from other users</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <Star className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600 mb-4">No reviews yet</p>
-                  <Button>Complete Your First Transaction</Button>
-                </div>
+                <ReviewsTabContent />
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="settings">
+          {/* Settings Tab */}
+          <TabsContent value="settings" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Account Settings</CardTitle>
-                <CardDescription>Manage your account preferences</CardDescription>
+                <CardTitle className="flex items-center">
+                  <Settings className="w-5 h-5 mr-2" />
+                  Profile Settings
+                </CardTitle>
+                <CardDescription>Update your profile information</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="font-medium mb-3">Notifications</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Email notifications</span>
-                        <Switch checked={profileData.preferences?.email_notifications} />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">SMS notifications</span>
-                        <Switch checked={profileData.preferences?.sms_notifications} />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Marketing emails</span>
-                        <Switch checked={profileData.preferences?.marketing_emails} />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-3">Preferences</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="language">Language</Label>
-                        <Select defaultValue={profileData.preferences?.language}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="en">English</SelectItem>
-                            <SelectItem value="de">German</SelectItem>
-                            <SelectItem value="fr">French</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="currency">Currency</Label>
-                        <Select defaultValue={profileData.preferences?.currency}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="EUR">Euro (€)</SelectItem>
-                            <SelectItem value="USD">US Dollar ($)</SelectItem>
-                            <SelectItem value="GBP">British Pound (£)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <SettingsTabContent />
               </CardContent>
             </Card>
           </TabsContent>
