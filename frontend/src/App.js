@@ -3410,6 +3410,7 @@ const AdminPanel = () => {
   const [listingCategoryFilter, setListingCategoryFilter] = useState('all');
   const [listingSortBy, setListingSortBy] = useState('created_desc');
   const [dashboardTimeRange, setDashboardTimeRange] = useState('7days'); // New: Dashboard time range
+  const [activityTimeFrame, setActivityTimeFrame] = useState('week'); // Activity time frame
   const [userSearchTerm, setUserSearchTerm] = useState(''); // New: User search
   const [userSortBy, setUserSortBy] = useState('created_desc'); // New: User sorting
   const [seoSettings, setSeoSettings] = useState({
