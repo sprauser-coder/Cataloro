@@ -1315,62 +1315,245 @@ const AdminPanel = () => {
 
           {/* Media Management Tab */}
           <TabsContent value="media">
-            <Card className="border-0 shadow-sm bg-white">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-slate-900">
-                  <Image className="h-5 w-5 text-purple-600" />
-                  Media Library
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {/* Upload Area */}
-                <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center mb-6">
-                  <Upload className="h-12 w-12 mx-auto text-slate-400 mb-4" />
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">Upload Media Files</h3>
-                  <p className="text-slate-600 mb-4">Drag and drop files here, or click to browse</p>
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*,video/*"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    id="media-upload"
-                  />
-                  <label htmlFor="media-upload">
-                    <Button variant="outline" className="cursor-pointer" disabled={uploading}>
-                      {uploading ? 'Uploading...' : 'Choose Files'}
-                    </Button>
-                  </label>
-                </div>
+            <div className="space-y-6">
+              {/* Media Library */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Image className="h-5 w-5 text-purple-600" />
+                      Media Library Manager
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-slate-600">
+                        {mediaFiles.length} Files
+                      </Badge>
+                      <Badge variant="outline" className="text-slate-600">
+                        {Math.round(mediaFiles.reduce((acc, file) => acc + parseFloat(file.size.replace('KB', '')), 0))} KB Total
+                      </Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {/* Upload Area */}
+                  <div className="border-2 border-dashed border-purple-300 rounded-lg p-8 text-center mb-6 bg-purple-50">
+                    <Upload className="h-12 w-12 mx-auto text-purple-500 mb-4" />
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Upload Media Files</h3>
+                    <p className="text-slate-600 mb-4">Drag and drop files here, or click to browse</p>
+                    <div className="space-y-2 text-sm text-slate-500">
+                      <p>Supported formats: JPG, PNG, GIF, SVG, MP4, WebM</p>
+                      <p>Maximum file size: 10MB per file</p>
+                    </div>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*,video/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      id="media-upload"
+                    />
+                    <label htmlFor="media-upload">
+                      <Button variant="outline" className="cursor-pointer mt-4 border-purple-300 text-purple-600 hover:bg-purple-100" disabled={uploading}>
+                        {uploading ? (
+                          <>
+                            <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 mr-2"></div>
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Choose Files
+                          </>
+                        )}
+                      </Button>
+                    </label>
+                  </div>
 
-                {/* Media Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {mediaFiles.map((file) => (
-                    <Card key={file.id} className="border-0 shadow-sm">
-                      <CardContent className="p-4">
-                        <div className="aspect-square bg-slate-100 rounded-lg mb-3 flex items-center justify-center">
-                          {file.type.startsWith('image/') ? (
-                            <img src={file.url} alt={file.name} className="w-full h-full object-cover rounded-lg" />
-                          ) : (
-                            <Image className="h-8 w-8 text-slate-400" />
-                          )}
-                        </div>
-                        <h4 className="font-medium text-sm text-slate-900 truncate">{file.name}</h4>
-                        <p className="text-xs text-slate-500">{file.size} • {file.uploaded}</p>
-                        <div className="flex gap-2 mt-2">
-                          <Button size="sm" variant="outline" className="flex-1">
-                            <Eye className="h-3 w-3" />
-                          </Button>
-                          <Button size="sm" variant="outline" className="flex-1">
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  {/* Media Filters */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <Input
+                        placeholder="Search media files..."
+                        className="max-w-sm border-slate-200"
+                      />
+                      <select className="px-3 py-2 border border-slate-200 rounded-md text-sm bg-white">
+                        <option value="all">All Types</option>
+                        <option value="images">Images</option>
+                        <option value="videos">Videos</option>
+                        <option value="documents">Documents</option>
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm" className="text-slate-600">
+                        <Grid3X3 className="h-4 w-4 mr-2" />
+                        Grid View
+                      </Button>
+                      <Button variant="outline" size="sm" className="text-slate-600">
+                        <Filter className="h-4 w-4 mr-2" />
+                        Filter
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Media Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {mediaFiles.map((file) => (
+                      <Card key={file.id} className="border-0 shadow-sm hover:shadow-md transition-shadow group">
+                        <CardContent className="p-3">
+                          <div className="aspect-square bg-slate-100 rounded-lg mb-3 flex items-center justify-center relative overflow-hidden">
+                            {file.type.startsWith('image/') ? (
+                              <img 
+                                src={file.url} 
+                                alt={file.name} 
+                                className="w-full h-full object-cover rounded-lg"
+                              />
+                            ) : file.type.startsWith('video/') ? (
+                              <div className="w-full h-full bg-slate-200 flex items-center justify-center rounded-lg">
+                                <Play className="h-8 w-8 text-slate-500" />
+                              </div>
+                            ) : (
+                              <div className="w-full h-full bg-slate-200 flex items-center justify-center rounded-lg">
+                                <Image className="h-8 w-8 text-slate-400" />
+                              </div>
+                            )}
+                            
+                            {/* Overlay Actions */}
+                            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                              <div className="flex gap-2">
+                                <Button size="sm" variant="outline" className="bg-white text-slate-900 border-white hover:bg-slate-100">
+                                  <Eye className="h-3 w-3" />
+                                </Button>
+                                <Button size="sm" variant="outline" className="bg-white text-slate-900 border-white hover:bg-slate-100">
+                                  <Download className="h-3 w-3" />
+                                </Button>
+                                <Button size="sm" variant="outline" className="bg-white text-red-600 border-white hover:bg-red-50">
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <h4 className="font-medium text-sm text-slate-900 truncate" title={file.name}>
+                              {file.name}
+                            </h4>
+                            <div className="flex items-center justify-between text-xs text-slate-500">
+                              <span>{file.size}</span>
+                              <span>{file.uploaded}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-xs">
+                              <Badge variant="outline" className="text-xs px-1 py-0">
+                                {file.type.split('/')[1]?.toUpperCase()}
+                              </Badge>
+                              {file.type.startsWith('image/') && (
+                                <Badge variant="outline" className="text-xs px-1 py-0 bg-green-50 text-green-600 border-green-200">
+                                  Image
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    
+                    {/* Add more placeholder media files for demo */}
+                    {Array.from({ length: 8 }, (_, index) => (
+                      <Card key={`demo-${index}`} className="border-0 shadow-sm hover:shadow-md transition-shadow group">
+                        <CardContent className="p-3">
+                          <div className="aspect-square bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg mb-3 flex items-center justify-center">
+                            <Image className="h-8 w-8 text-purple-400" />
+                          </div>
+                          <div className="space-y-1">
+                            <h4 className="font-medium text-sm text-slate-900">demo-image-{index + 1}.jpg</h4>
+                            <div className="flex items-center justify-between text-xs text-slate-500">
+                              <span>{Math.floor(Math.random() * 500) + 100}KB</span>
+                              <span>2025-01-{String(15 + index).padStart(2, '0')}</span>
+                            </div>
+                            <Badge variant="outline" className="text-xs px-1 py-0 bg-green-50 text-green-600 border-green-200">
+                              JPG
+                            </Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {mediaFiles.length === 0 && (
+                    <div className="text-center py-12">
+                      <Image className="h-16 w-16 mx-auto text-slate-400 mb-4" />
+                      <h3 className="text-xl font-semibold text-slate-700 mb-2">No Media Files</h3>
+                      <p className="text-slate-500">Upload your first media file to get started</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Image Optimization Tools */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <Settings className="h-5 w-5 text-purple-600" />
+                    Media Optimization & Tools
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-slate-700">Auto Image Compression</Label>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-sm text-slate-500">Automatically optimize uploaded images</span>
+                        <Switch defaultChecked />
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-slate-700">Image Quality (%)</Label>
+                      <Input
+                        type="number"
+                        placeholder="85"
+                        className="border-slate-200 mt-2"
+                        min="10"
+                        max="100"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-slate-700">Max Image Width (px)</Label>
+                      <Input
+                        type="number"
+                        placeholder="1920"
+                        className="border-slate-200 mt-2"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-700">CDN Integration</Label>
+                      <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                        <option value="local">Local Storage</option>
+                        <option value="cloudinary">Cloudinary</option>
+                        <option value="aws">AWS S3</option>
+                        <option value="gcs">Google Cloud Storage</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 pt-4 border-t border-slate-200">
+                    <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Settings
+                    </Button>
+                    <Button variant="outline">
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Bulk Optimize
+                    </Button>
+                    <Button variant="outline">
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Library
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Analytics Tab */}
