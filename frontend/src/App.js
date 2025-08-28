@@ -10062,17 +10062,17 @@ const Orders = () => {
         ) : (
           <div className="space-y-6">
             {orders.map((orderData) => (
-              <Card key={orderData.order.id}>
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
+              <Card key={orderData.order.id} className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="p-8">
+                  <div className="flex items-start justify-between mb-6">
                     <div>
-                      <h3 className="font-semibold text-lg">{orderData.listing?.title}</h3>
-                      <p className="text-gray-600">Order #{orderData.order.id}</p>
-                      <p className="text-sm text-gray-500">
+                      <h3 className="font-medium text-xl text-slate-900 mb-2">{orderData.listing?.title}</h3>
+                      <p className="text-slate-600 font-light mb-1">Order #{orderData.order.id}</p>
+                      <p className="text-sm text-slate-500 font-light">
                         Placed on {new Date(orderData.order.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <Badge variant={orderData.order.status === 'completed' ? 'default' : 'secondary'}>
+                    <Badge variant={orderData.order.status === 'completed' ? 'default' : 'secondary'} className={`${orderData.order.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-800'} font-light rounded-lg px-3 py-1`}>
                       {orderData.order.status}
                     </Badge>
                   </div>
