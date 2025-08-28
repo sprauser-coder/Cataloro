@@ -39,7 +39,28 @@ const AdminPanel = () => {
 
   // User Management
   const [users, setUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [userSearchTerm, setUserSearchTerm] = useState('');
+  const [userFilter, setUserFilter] = useState('all');
+  
+  // Product Management
+  const [listings, setListings] = useState([]);
+  const [selectedListings, setSelectedListings] = useState([]);
+  const [listingSearchTerm, setListingSearchTerm] = useState('');
+  const [listingFilter, setListingFilter] = useState('all');
+  
+  // Orders Management
+  const [orders, setOrders] = useState([]);
+  const [selectedOrders, setSelectedOrders] = useState([]);
+  
+  // Analytics Data
+  const [analyticsData, setAnalyticsData] = useState({
+    revenue_chart: [],
+    user_activity: [],
+    top_categories: [],
+    conversion_metrics: {}
+  });
 
   // Content Management
   const [siteContent, setSiteContent] = useState({
