@@ -3716,8 +3716,8 @@ const Profile = () => {
               </ul>
             </div>
             
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <p className="text-sm text-yellow-800 flex items-center">
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+              <p className="text-sm text-slate-800 flex items-center">
                 <AlertTriangle className="w-4 h-4 mr-2" />
                 <strong>Warning:</strong> This action cannot be undone!
               </p>
