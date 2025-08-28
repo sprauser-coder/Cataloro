@@ -669,23 +669,21 @@ class MarketplaceTestSuite:
             return False
         
         try:
-            # Debug: Print the test_image_url to understand its format
-            print(f"DEBUG: test_image_url = '{self.test_image_url}'")
-            
             # Test direct image access through base URL (without /api prefix)
             base_url = "http://217.154.0.82"
             
-            # Handle case where test_image_url might be a relative path starting with /uploads/
-            if self.test_image_url.startswith('/uploads/'):
+            # Handle case where test_image_url might be a full URL or relative path
+            if self.test_image_url.startswith('http://'):
+                # It's already a full URL, convert API path to direct path
+                image_url = self.test_image_url.replace('/api/uploads/', '/uploads/')
+            elif self.test_image_url.startswith('/uploads/'):
                 image_url = f"{base_url}{self.test_image_url}"
             elif self.test_image_url.startswith('/api/uploads/'):
                 # Convert API path to direct path
                 image_url = f"{base_url}{self.test_image_url.replace('/api', '')}"
             else:
-                # Assume it's already a full URL or relative path
+                # Assume it's a relative path
                 image_url = f"{base_url}{self.test_image_url}"
-            
-            print(f"DEBUG: final image_url = '{image_url}'")
             
             image_response = self.session.get(image_url)
             
