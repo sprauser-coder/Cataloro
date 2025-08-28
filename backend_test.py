@@ -40,22 +40,99 @@ class BackendAPITestSuite:
         if details and not success:
             print(f"   Details: {details}")
     
-    def authenticate_admin(self):
-        """Authenticate as admin user"""
+    def test_basic_connectivity(self):
+        """Test basic API connectivity"""
         try:
-            response = requests.post(f"{BASE_URL}/auth/login", json={
+            response = self.session.get(f"{BASE_URL}/")
+            
+            if response.status_code == 200:
+                data = response.json()
+                expected_message = "Marketplace API"
+                if expected_message in data.get("message", ""):
+                    self.log_result("Basic API Connectivity", True, 
+                                  f"API accessible at {BASE_URL}, version: {data.get('version', 'unknown')}")
+                    return True
+                else:
+                    self.log_result("Basic API Connectivity", False, 
+                                  f"Unexpected response: {data}")
+                    return False
+            else:
+                self.log_result("Basic API Connectivity", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Basic API Connectivity", False, f"Connection failed: {str(e)}")
+            return False
+    
+    def test_cors_configuration(self):
+        """Test CORS configuration for frontend communication"""
+        try:
+            # Test with Origin header to trigger CORS
+            headers = {"Origin": "http://217.154.0.82"}
+            response = self.session.get(f"{BASE_URL}/", headers=headers)
+            
+            cors_headers = {
+                "Access-Control-Allow-Origin": response.headers.get("Access-Control-Allow-Origin"),
+                "Access-Control-Allow-Methods": response.headers.get("Access-Control-Allow-Methods"),
+                "Access-Control-Allow-Headers": response.headers.get("Access-Control-Allow-Headers"),
+                "Access-Control-Allow-Credentials": response.headers.get("Access-Control-Allow-Credentials")
+            }
+            
+            # Check if CORS headers are present
+            if cors_headers["Access-Control-Allow-Origin"]:
+                self.log_result("CORS Configuration", True, 
+                              f"CORS headers configured correctly", 
+                              {"cors_headers": cors_headers})
+                return True
+            else:
+                self.log_result("CORS Configuration", False, 
+                              "CORS headers missing or misconfigured",
+                              {"received_headers": dict(response.headers)})
+                return False
+                
+        except Exception as e:
+            self.log_result("CORS Configuration", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_admin_authentication(self):
+        """Test admin login and token generation"""
+        try:
+            response = self.session.post(f"{BASE_URL}/auth/login", json={
                 "email": ADMIN_EMAIL,
                 "password": ADMIN_PASSWORD
             })
             
             if response.status_code == 200:
                 data = response.json()
-                self.admin_token = data["access_token"]
-                self.log_result("Admin Authentication", True, "Successfully authenticated as admin")
-                return True
+                
+                # Validate response structure
+                required_fields = ["access_token", "token_type", "user"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if not missing_fields:
+                    self.admin_token = data["access_token"]
+                    user_data = data["user"]
+                    
+                    # Validate user data
+                    if (user_data.get("role") == "admin" and 
+                        user_data.get("email") == ADMIN_EMAIL):
+                        self.log_result("Admin Authentication", True, 
+                                      f"Admin login successful, token generated (length: {len(self.admin_token)})",
+                                      {"user_id": user_data.get("id"), "role": user_data.get("role")})
+                        return True
+                    else:
+                        self.log_result("Admin Authentication", False, 
+                                      "Invalid user data in response",
+                                      {"user_data": user_data})
+                        return False
+                else:
+                    self.log_result("Admin Authentication", False, 
+                                  f"Missing fields in response: {missing_fields}")
+                    return False
             else:
-                self.log_result("Admin Authentication", False, f"Failed with status {response.status_code}", 
-                              {"response": response.text})
+                self.log_result("Admin Authentication", False, 
+                              f"HTTP {response.status_code}: {response.text}")
                 return False
                 
         except Exception as e:
