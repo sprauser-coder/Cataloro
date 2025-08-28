@@ -3937,13 +3937,13 @@ const Sell = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
       <Header />
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Create New Listing</CardTitle>
-            <CardDescription>List your item on Cataloro and reach thousands of potential buyers</CardDescription>
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm">
+          <CardHeader className="border-b border-slate-100 pb-6">
+            <CardTitle className="text-2xl font-light text-slate-900">Create New Listing</CardTitle>
+            <CardDescription className="text-slate-600 font-light">List your item on Cataloro and reach thousands of potential buyers</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
