@@ -5816,19 +5816,21 @@ const AdminPanel = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="overflow-x-auto pb-2">
-            <TabsList className="admin-tab-navigation">
-              <TabsTrigger value="dashboard" className="admin-tab-button">📊 Dashboard</TabsTrigger>
-              <TabsTrigger value="activity" className="admin-tab-button">🔔 Activity</TabsTrigger>
-              <TabsTrigger value="users" className="admin-tab-button">👥 Users</TabsTrigger>
-              <TabsTrigger value="products" className="admin-tab-button">🛍️ Products</TabsTrigger>
-              <TabsTrigger value="content-listings" className="admin-tab-button">🏷️ Categories</TabsTrigger>
-              <TabsTrigger value="appearance" className="admin-tab-button">🎨 Appearance</TabsTrigger>
-              <TabsTrigger value="pages" className="admin-tab-button">📄 Content</TabsTrigger>
-              <TabsTrigger value="seo" className="admin-tab-button">🔍 SEO</TabsTrigger>
-              <TabsTrigger value="settings" className="admin-tab-button">⚙️ Settings</TabsTrigger>
-              <TabsTrigger value="database" className="text-xs">🗄️ Database</TabsTrigger>
-            </TabsList>
+          <div className="overflow-x-auto pb-4">
+            <div className="bg-white rounded-2xl border border-slate-200 p-2">
+              <div className="flex space-x-1 flex-wrap">
+                <button onClick={() => setActiveTab("dashboard")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "dashboard" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>📊 Dashboard</button>
+                <button onClick={() => setActiveTab("activity")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "activity" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🔔 Activity</button>
+                <button onClick={() => setActiveTab("users")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "users" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>👥 Users</button>
+                <button onClick={() => setActiveTab("products")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "products" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🛍️ Products</button>
+                <button onClick={() => setActiveTab("content-listings")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "content-listings" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🏷️ Categories</button>
+                <button onClick={() => setActiveTab("appearance")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "appearance" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🎨 Appearance</button>
+                <button onClick={() => setActiveTab("pages")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "pages" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>📄 Content</button>
+                <button onClick={() => setActiveTab("seo")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "seo" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🔍 SEO</button>
+                <button onClick={() => setActiveTab("settings")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "settings" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>⚙️ Settings</button>
+                <button onClick={() => setActiveTab("database")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "database" ? "bg-slate-900 text-white shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🗄️ Database</button>
+              </div>
+            </div>
           </div>
 
           {/* Dashboard Tab */}
