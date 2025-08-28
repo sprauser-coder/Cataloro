@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { adminAPI } from '../../services/api';
+import { adminAPI, marketplaceAPI } from '../../services/api';
 import { useToast } from '../../hooks/use-toast';
 import Header from '../../components/layout/Header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { Textarea } from '../../components/ui/textarea';
+import { Switch } from '../../components/ui/switch';
+import { Badge } from '../../components/ui/badge';
+import { 
+  Users, Package, ShoppingCart, TrendingUp, Settings, Image, 
+  Upload, Edit, Trash2, Save, RefreshCw, Download, Eye, EyeOff,
+  Search, Filter, Plus, AlertCircle, CheckCircle, Clock, DollarSign,
+  BarChart3, PieChart, Activity, Mail, Phone, MapPin, Calendar,
+  Shield, Star, Flag, MessageSquare, Globe, Palette, Layout
+} from 'lucide-react';
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
