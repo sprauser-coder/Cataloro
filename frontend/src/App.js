@@ -3941,7 +3941,7 @@ const Sell = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+    <div className="sell-page min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
       <Header />
       <div className="max-w-2xl mx-auto px-4 py-12">
         <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm">
