@@ -43,6 +43,20 @@ EOF
 
 echo "✅ Backend environment configured for production"
 
+# CRITICAL FIX: Update frontend .env for production
+echo "🔧 Configuring frontend for production..."
+cd "$PROJECT_ROOT/frontend"
+
+# Ensure .env exists and has correct backend URL for production
+cat > .env << EOF
+REACT_APP_BACKEND_URL=http://217.154.0.82
+REACT_APP_SITE_NAME=Cataloro
+REACT_APP_VERSION=3.0
+REACT_APP_ARCHITECTURE=clean
+EOF
+
+echo "✅ Frontend environment configured for production"
+
 # Show current version info
 echo "📋 Version Info:"
 if [ -f "$PROJECT_ROOT/frontend/package.json" ]; then
