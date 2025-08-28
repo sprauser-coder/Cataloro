@@ -862,43 +862,43 @@ const Auth = () => {
   };
 
   return (
-    <div className="login-page-professional">
-      <div className="login-card-professional animate-fadeIn">
-        <div className="login-header-professional">
-          <div className="login-logo-professional">
+    <div className="login-page-sleek-purple">
+      <div className="login-card-sleek-purple animate-fadeIn">
+        <div className="login-header-sleek-purple">
+          <div className="login-logo-sleek-purple">
             <Package className="h-8 w-8 text-white" />
           </div>
-          <h1 className="login-title-professional">
+          <h1 className="login-title-sleek-purple">
             {isLogin ? 'Welcome Back' : 'Join Cataloro'}
           </h1>
-          <p className="login-subtitle-professional">
+          <p className="login-subtitle-sleek-purple">
             {isLogin ? 'Sign in to your account to continue' : 'Create your account and start trading on our marketplace'}
           </p>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <Label htmlFor="email" className="text-sm font-medium text-contrast-safe">Email Address</Label>
+            <Label htmlFor="email" className="text-sm font-medium text-high-contrast">Email Address</Label>
             <Input
               id="email"
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               required
-              className="mt-1 form-professional"
+              className="mt-1 form-sleek-purple"
               placeholder="Enter your email address"
             />
           </div>
           
           <div>
-            <Label htmlFor="password" className="text-sm font-medium text-contrast-safe">Password</Label>
+            <Label htmlFor="password" className="text-sm font-medium text-high-contrast">Password</Label>
             <Input
               id="password"
               type="password"
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
               required
-              className="mt-1 form-professional"
+              className="mt-1 form-sleek-purple"
               placeholder="Enter your password"
             />
           </div>
