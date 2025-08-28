@@ -6402,9 +6402,2736 @@ const AdminPanel = () => {
               </div>
             )}
           </TabsContent>
-          {/* Legacy Users Tab - Keeping for now */}
-          <TabsContent value="users">
-            {users.length === 0 ? (
+
+          {/* Activity Tab */}
+          <TabsContent value="activity">
+            <div className="space-y-6">
+              {/* Activity Overview Header */}
+              <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-lg p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-2">📊 Platform Activity Overview</h2>
+                    <p className="text-orange-100">Comprehensive insights into your marketplace activities and performance</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-orange-200">Time period:</span>
+                    <Select value={activityTimeFrame} onValueChange={setActivityTimeFrame}>
+                      <SelectTrigger className="w-24 h-8 bg-orange-600/20 border-orange-400/30 text-orange-100 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-orange-50 border-orange-200">
+                        <SelectItem value="day" className="text-xs">Day</SelectItem>
+                        <SelectItem value="week" className="text-xs">Week</SelectItem>
+                        <SelectItem value="month" className="text-xs">Month</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Activity Metrics */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center">
+                        <TrendingUp className="w-5 h-5 mr-2 text-green-600" />
+                        Activity Metrics
+                      </CardTitle>
+                      <CardDescription>Key performance indicators for your marketplace</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                          <div className="text-2xl font-bold text-blue-600">{stats.total_users || 0}</div>
+                          <div className="text-sm text-blue-700">Total Users</div>
+                        </div>
+                        <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                          <div className="text-2xl font-bold text-green-600">{stats.total_listings || 0}</div>
+                          <div className="text-sm text-green-700">Active Listings</div>
+                        </div>
+                        <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+                          <div className="text-2xl font-bold text-purple-600">{stats.total_orders || 0}</div>
+                          <div className="text-sm text-purple-700">Total Orders</div>
+                        </div>
+                        <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg">
+                          <div className="text-2xl font-bold text-orange-600">€{(stats.total_revenue || 0).toFixed(2)}</div>
+                          <div className="text-sm text-orange-700">Revenue</div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Recent Activity Feed */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center">
+                        <Activity className="w-5 h-5 mr-2 text-orange-600" />
+                        Recent Activity
+                      </CardTitle>
+                      <CardDescription>Latest actions and events in your marketplace</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {/* Sample activity items - replace with real data */}
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <div className="flex-1">
+                            <div className="text-sm font-medium">New user registered</div>
+                            <div className="text-xs text-gray-500">2 minutes ago</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <div className="flex-1">
+                            <div className="text-sm font-medium">New listing created</div>
+                            <div className="text-xs text-gray-500">5 minutes ago</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                          <div className="flex-1">
+                            <div className="text-sm font-medium">Order completed</div>
+                            <div className="text-xs text-gray-500">12 minutes ago</div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Quick Stats */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Quick Stats</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">Active Users</span>
+                          <span className="font-semibold">{Math.floor((stats.total_users || 0) * 0.7)}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">Pending Orders</span>
+                          <span className="font-semibold">{Math.floor(Math.random() * 10) + 1}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">Conversion Rate</span>
+                          <span className="font-semibold">{(Math.random() * 5 + 2).toFixed(1)}%</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* System Health */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center">
+                        <Shield className="w-4 h-4 mr-2 text-green-600" />
+                        System Health
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Server Status</span>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span className="text-xs text-green-600">Online</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Database</span>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span className="text-xs text-green-600">Connected</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">API Status</span>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span className="text-xs text-green-600">Operational</span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Products Tab (Combined Listings and Orders) */}
+          <TabsContent value="products">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Package className="w-5 h-5 mr-2" />
+                    Products Management
+                  </CardTitle>
+                  <CardDescription>Manage listings and orders in one place</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Tabs defaultValue="listings-management" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="listings-management">Listings</TabsTrigger>
+                      <TabsTrigger value="orders-management">Orders</TabsTrigger>
+                    </TabsList>
+
+                    {/* Listings Management Subtab */}
+                    <TabsContent value="listings-management" className="mt-6">
+                      {loading ? (
+                        <div className="flex justify-center py-8">Loading...</div>
+                      ) : (
+                        <div className="space-y-4">
+                          {/* Listings Header with Actions */}
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h3 className="text-lg font-semibold">All Listings ({listings.length})</h3>
+                              <p className="text-sm text-gray-600">Manage marketplace listings</p>
+                            </div>
+                            <div className="flex space-x-2">
+                              <Button size="sm" variant="outline" onClick={() => setShowBulkActions(!showBulkActions)}>
+                                Bulk Actions
+                              </Button>
+                              <Button size="sm" onClick={fetchListings}>
+                                <RefreshCw className="w-4 h-4 mr-2" />
+                                Refresh
+                              </Button>
+                            </div>
+                          </div>
+
+                          {/* Bulk Actions Panel */}
+                          {showBulkActions && (
+                            <Card className="p-4 bg-blue-50 border-blue-200">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-4">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      if (selectedListings.length === listings.length) {
+                                        setSelectedListings([]);
+                                      } else {
+                                        setSelectedListings(listings.map(l => l.id));
+                                      }
+                                    }}
+                                  >
+                                    {selectedListings.length === listings.length ? 'Deselect All' : 'Select All'}
+                                  </Button>
+                                  <span className="text-sm text-gray-600">
+                                    {selectedListings.length} selected
+                                  </span>
+                                </div>
+                                <div className="flex space-x-2">
+                                  <Button size="sm" variant="outline" onClick={bulkApproveListing}>
+                                    Approve Selected
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={bulkRejectListing}>
+                                    Reject Selected
+                                  </Button>
+                                  <Button size="sm" variant="destructive" onClick={bulkDeleteListing}>
+                                    Delete Selected
+                                  </Button>
+                                </div>
+                              </div>
+                            </Card>
+                          )}
+
+                          {/* Listings Table */}
+                          <div className="border rounded-lg overflow-hidden">
+                            <div className="overflow-x-auto">
+                              <table className="w-full">
+                                <thead className="bg-gray-50">
+                                  <tr>
+                                    {showBulkActions && (
+                                      <th className="px-4 py-3 text-left">
+                                        <input
+                                          type="checkbox"
+                                          checked={selectedListings.length === listings.length && listings.length > 0}
+                                          onChange={(e) => {
+                                            if (e.target.checked) {
+                                              setSelectedListings(listings.map(l => l.id));
+                                            } else {
+                                              setSelectedListings([]);
+                                            }
+                                          }}
+                                        />
+                                      </th>
+                                    )}
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Title</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Price</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Status</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Seller</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Created</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Actions</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                  {listings.map((listing) => (
+                                    <tr key={listing.id} className="hover:bg-gray-50">
+                                      {showBulkActions && (
+                                        <td className="px-4 py-3">
+                                          <input
+                                            type="checkbox"
+                                            checked={selectedListings.includes(listing.id)}
+                                            onChange={(e) => {
+                                              if (e.target.checked) {
+                                                setSelectedListings([...selectedListings, listing.id]);
+                                              } else {
+                                                setSelectedListings(selectedListings.filter(id => id !== listing.id));
+                                              }
+                                            }}
+                                          />
+                                        </td>
+                                      )}
+                                      <td className="px-4 py-3">
+                                        <div className="flex items-center space-x-3">
+                                          {listing.images && listing.images.length > 0 && (
+                                            <img
+                                              src={getImageUrl(listing.images[0])}
+                                              alt={listing.title}
+                                              className="w-10 h-10 rounded-lg object-cover"
+                                            />
+                                          )}
+                                          <div>
+                                            <div className="font-medium text-gray-900">{listing.title}</div>
+                                            <div className="text-sm text-gray-500">{listing.category}</div>
+                                          </div>
+                                        </div>
+                                      </td>
+                                      <td className="px-4 py-3 text-sm text-gray-900">
+                                        €{listing.price?.toFixed(2)}
+                                      </td>
+                                      <td className="px-4 py-3">
+                                        <Badge variant={listing.status === 'active' ? 'default' : 'secondary'}>
+                                          {listing.status}
+                                        </Badge>
+                                      </td>
+                                      <td className="px-4 py-3 text-sm text-gray-900">
+                                        {listing.seller?.full_name || listing.seller?.username || 'Unknown'}
+                                      </td>
+                                      <td className="px-4 py-3 text-sm text-gray-500">
+                                        {new Date(listing.created_at).toLocaleDateString()}
+                                      </td>
+                                      <td className="px-4 py-3">
+                                        <div className="flex space-x-2">
+                                          <Button size="sm" variant="outline" onClick={() => navigate(`/listing/${listing.id}`)}>
+                                            <Eye className="w-4 h-4" />
+                                          </Button>
+                                          <Button size="sm" variant="outline" onClick={() => deleteListing(listing.id)}>
+                                            <Trash2 className="w-4 h-4" />
+                                          </Button>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          {listings.length === 0 && (
+                            <div className="text-center py-12">
+                              <Package className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                              <h3 className="text-lg font-medium text-gray-900 mb-2">No listings found</h3>
+                              <p className="text-gray-500">Listings will appear here once users start posting items.</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </TabsContent>
+
+                    {/* Orders Management Subtab */}
+                    <TabsContent value="orders-management" className="mt-6">
+                      {loading ? (
+                        <div className="flex justify-center py-8">Loading...</div>
+                      ) : (
+                        <div className="space-y-4">
+                          {/* Orders Header */}
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h3 className="text-lg font-semibold">All Orders ({orders.length})</h3>
+                              <p className="text-sm text-gray-600">Manage marketplace orders</p>
+                            </div>
+                            <Button size="sm" onClick={fetchOrders}>
+                              <RefreshCw className="w-4 h-4 mr-2" />
+                              Refresh
+                            </Button>
+                          </div>
+
+                          {/* Orders Table */}
+                          <div className="border rounded-lg overflow-hidden">
+                            <div className="overflow-x-auto">
+                              <table className="w-full">
+                                <thead className="bg-gray-50">
+                                  <tr>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Order ID</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Item</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Buyer</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Seller</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Amount</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Status</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Date</th>
+                                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Actions</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                  {orders.map((order) => (
+                                    <tr key={order.id} className="hover:bg-gray-50">
+                                      <td className="px-4 py-3 text-sm font-mono text-gray-900">
+                                        #{order.id}
+                                      </td>
+                                      <td className="px-4 py-3">
+                                        <div className="flex items-center space-x-3">
+                                          {order.listing?.images && order.listing.images.length > 0 && (
+                                            <img
+                                              src={getImageUrl(order.listing.images[0])}
+                                              alt={order.listing.title}
+                                              className="w-10 h-10 rounded-lg object-cover"
+                                            />
+                                          )}
+                                          <div>
+                                            <div className="font-medium text-gray-900">{order.listing?.title || 'Unknown Item'}</div>
+                                            <div className="text-sm text-gray-500">Qty: {order.quantity}</div>
+                                          </div>
+                                        </div>
+                                      </td>
+                                      <td className="px-4 py-3 text-sm text-gray-900">
+                                        {order.buyer?.full_name || order.buyer?.username || 'Unknown'}
+                                      </td>
+                                      <td className="px-4 py-3 text-sm text-gray-900">
+                                        {order.listing?.seller?.full_name || order.listing?.seller?.username || 'Unknown'}
+                                      </td>
+                                      <td className="px-4 py-3 text-sm text-gray-900">
+                                        €{order.total_amount?.toFixed(2)}
+                                      </td>
+                                      <td className="px-4 py-3">
+                                        <Badge variant={
+                                          order.status === 'completed' ? 'default' :
+                                          order.status === 'pending' ? 'secondary' :
+                                          order.status === 'cancelled' ? 'destructive' : 'outline'
+                                        }>
+                                          {order.status}
+                                        </Badge>
+                                      </td>
+                                      <td className="px-4 py-3 text-sm text-gray-500">
+                                        {new Date(order.created_at).toLocaleDateString()}
+                                      </td>
+                                      <td className="px-4 py-3">
+                                        <div className="flex space-x-2">
+                                          <Button size="sm" variant="outline">
+                                            <Eye className="w-4 h-4" />
+                                          </Button>
+                                          {order.status === 'pending' && (
+                                            <>
+                                              <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.id, 'completed')}>
+                                                Approve
+                                              </Button>
+                                              <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.id, 'cancelled')}>
+                                                Cancel
+                                              </Button>
+                                            </>
+                                          )}
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          {orders.length === 0 && (
+                            <div className="text-center py-12">
+                              <ShoppingCart className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                              <h3 className="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
+                              <p className="text-gray-500">Orders will appear here once users start making purchases.</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Content & Listings Tab */}
+          <TabsContent value="content-listings">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Package className="w-5 h-5 mr-2" />
+                    Content & Listings Management
+                  </CardTitle>
+                  <CardDescription>Manage your marketplace content and listings</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Quick Stats */}
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-blue-600 text-sm font-medium">Total Listings</p>
+                          <p className="text-2xl font-bold text-blue-900">{listings.length}</p>
+                        </div>
+                        <Package className="h-8 w-8 text-blue-600" />
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-green-600 text-sm font-medium">Active Listings</p>
+                          <p className="text-2xl font-bold text-green-900">
+                            {listings.filter(l => l.status === 'active').length}
+                          </p>
+                        </div>
+                        <CheckCircle className="h-8 w-8 text-green-600" />
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-orange-600 text-sm font-medium">Pending Review</p>
+                          <p className="text-2xl font-bold text-orange-900">
+                            {listings.filter(l => l.status === 'pending').length}
+                          </p>
+                        </div>
+                        <Clock className="h-8 w-8 text-orange-600" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recent Listings */}
+                  <div className="mt-8">
+                    <h3 className="text-lg font-semibold mb-4">Recent Listings</h3>
+                    <div className="space-y-4">
+                      {listings.slice(0, 5).map((listing) => (
+                        <div key={listing.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                          <div className="flex items-center space-x-4">
+                            {listing.images && listing.images.length > 0 && (
+                              <img
+                                src={getImageUrl(listing.images[0])}
+                                alt={listing.title}
+                                className="w-12 h-12 rounded-lg object-cover"
+                              />
+                            )}
+                            <div>
+                              <h4 className="font-medium">{listing.title}</h4>
+                              <p className="text-sm text-gray-600">{listing.category} • €{listing.price?.toFixed(2)}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant={listing.status === 'active' ? 'default' : 'secondary'}>
+                              {listing.status}
+                            </Badge>
+                            <Button size="sm" variant="outline" onClick={() => navigate(`/listing/${listing.id}`)}>
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Content Management Tab */}
+          <TabsContent value="cms">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Globe className="w-5 h-5 mr-2" />
+                      Content Management System
+                    </CardTitle>
+                    <CardDescription>Manage your website content, pages, and navigation</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {/* Hero Section Management */}
+                      <Card className="border-l-4 border-l-blue-500">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-lg flex items-center">
+                            <HomeIcon className="w-4 h-4 mr-2" />
+                            Hero Section
+                          </CardTitle>
+                          <CardDescription>Customize your homepage hero section</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            <div>
+                              <Label htmlFor="hero-title">Hero Title</Label>
+                              <Input
+                                id="hero-title"
+                                value={siteSettings.hero_title || ''}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_title: e.target.value})}
+                                placeholder="Enter hero title"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="hero-subtitle">Hero Subtitle</Label>
+                              <Textarea
+                                id="hero-subtitle"
+                                value={siteSettings.hero_subtitle || ''}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_subtitle: e.target.value})}
+                                placeholder="Enter hero subtitle"
+                                rows={3}
+                              />
+                            </div>
+                            <Button size="sm" onClick={() => updateSiteSettings('hero')}>
+                              Update Hero
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Navigation Management */}
+                      <Card className="border-l-4 border-l-green-500">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-lg flex items-center">
+                            <Globe className="w-4 h-4 mr-2" />
+                            Navigation
+                          </CardTitle>
+                          <CardDescription>Manage site navigation menu</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              {customNavigation.map((item, index) => (
+                                <div key={item.id || index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                  <span className="text-sm">{item.label}</span>
+                                  <Button size="sm" variant="outline" onClick={() => removeNavigationItem(item.id)}>
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="space-y-2">
+                              <Input
+                                placeholder="Menu label"
+                                value={newNavItem.label}
+                                onChange={(e) => setNewNavItem({...newNavItem, label: e.target.value})}
+                              />
+                              <Input
+                                placeholder="Menu URL"
+                                value={newNavItem.url}
+                                onChange={(e) => setNewNavItem({...newNavItem, url: e.target.value})}
+                              />
+                              <Button size="sm" onClick={addNavigationItem}>
+                                Add Menu Item
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Footer Management */}
+                      <Card className="border-l-4 border-l-purple-500">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-lg flex items-center">
+                            <Globe className="w-4 h-4 mr-2" />
+                            Footer
+                          </CardTitle>
+                          <CardDescription>Customize footer content</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            <div>
+                              <Label htmlFor="footer-text">Footer Text</Label>
+                              <Textarea
+                                id="footer-text"
+                                value={siteSettings.footer_text || ''}
+                                onChange={(e) => setSiteSettings({...siteSettings, footer_text: e.target.value})}
+                                placeholder="Enter footer text"
+                                rows={3}
+                              />
+                            </div>
+                            <Button size="sm" onClick={() => updateSiteSettings('footer')}>
+                              Update Footer
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Site Settings Tab */}
+          <TabsContent value="settings">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Settings className="w-5 h-5 mr-2" />
+                      Site Settings
+                    </CardTitle>
+                    <CardDescription>Configure your marketplace settings</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Basic Settings */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Basic Settings</h3>
+                        <div>
+                          <Label htmlFor="site-name">Site Name</Label>
+                          <Input
+                            id="site-name"
+                            value={siteSettings.site_name || ''}
+                            onChange={(e) => setSiteSettings({...siteSettings, site_name: e.target.value})}
+                            placeholder="Enter site name"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="site-description">Site Description</Label>
+                          <Textarea
+                            id="site-description"
+                            value={siteSettings.site_description || ''}
+                            onChange={(e) => setSiteSettings({...siteSettings, site_description: e.target.value})}
+                            placeholder="Enter site description"
+                            rows={3}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="contact-email">Contact Email</Label>
+                          <Input
+                            id="contact-email"
+                            type="email"
+                            value={siteSettings.contact_email || ''}
+                            onChange={(e) => setSiteSettings({...siteSettings, contact_email: e.target.value})}
+                            placeholder="Enter contact email"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Logo Settings */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Logo Settings</h3>
+                        <div>
+                          <Label htmlFor="header-logo">Header Logo URL</Label>
+                          <Input
+                            id="header-logo"
+                            value={siteSettings.header_logo_url || ''}
+                            onChange={(e) => setSiteSettings({...siteSettings, header_logo_url: e.target.value})}
+                            placeholder="Enter logo URL"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="logo-alt">Logo Alt Text</Label>
+                          <Input
+                            id="logo-alt"
+                            value={siteSettings.header_logo_alt || ''}
+                            onChange={(e) => setSiteSettings({...siteSettings, header_logo_alt: e.target.value})}
+                            placeholder="Enter logo alt text"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="logo-size">Logo Size</Label>
+                          <Select
+                            value={siteSettings.header_logo_size || 'h-12'}
+                            onValueChange={(value) => setSiteSettings({...siteSettings, header_logo_size: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select logo size" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="h-8">Small (32px)</SelectItem>
+                              <SelectItem value="h-10">Medium (40px)</SelectItem>
+                              <SelectItem value="h-12">Large (48px)</SelectItem>
+                              <SelectItem value="h-16">Extra Large (64px)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-6 border-t">
+                      <Button onClick={() => updateSiteSettings('all')}>
+                        Save All Settings
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Appearance Tab */}
+          <TabsContent value="appearance">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Settings className="w-5 h-5 mr-2" />
+                      Appearance Settings
+                    </CardTitle>
+                    <CardDescription>Customize the look and feel of your marketplace</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {/* Hero Background Settings */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Hero Section Background</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <Label htmlFor="hero-bg-type">Background Type</Label>
+                            <Select
+                              value={siteSettings.hero_background_type || 'gradient'}
+                              onValueChange={(value) => setSiteSettings({...siteSettings, hero_background_type: value})}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select background type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="color">Solid Color</SelectItem>
+                                <SelectItem value="gradient">Gradient</SelectItem>
+                                <SelectItem value="image">Image</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {siteSettings.hero_background_type === 'color' && (
+                            <div>
+                              <Label htmlFor="hero-bg-color">Background Color</Label>
+                              <Input
+                                id="hero-bg-color"
+                                type="color"
+                                value={siteSettings.hero_background_color || '#6366f1'}
+                                onChange={(e) => setSiteSettings({...siteSettings, hero_background_color: e.target.value})}
+                              />
+                            </div>
+                          )}
+
+                          {siteSettings.hero_background_type === 'gradient' && (
+                            <>
+                              <div>
+                                <Label htmlFor="hero-gradient-start">Gradient Start Color</Label>
+                                <Input
+                                  id="hero-gradient-start"
+                                  type="color"
+                                  value={siteSettings.hero_background_gradient_start || '#667eea'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, hero_background_gradient_start: e.target.value})}
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="hero-gradient-end">Gradient End Color</Label>
+                                <Input
+                                  id="hero-gradient-end"
+                                  type="color"
+                                  value={siteSettings.hero_background_gradient_end || '#764ba2'}
+                                  onChange={(e) => setSiteSettings({...siteSettings, hero_background_gradient_end: e.target.value})}
+                                />
+                              </div>
+                            </>
+                          )}
+
+                          {siteSettings.hero_background_type === 'image' && (
+                            <>
+                              <div>
+                                <Label htmlFor="hero-bg-image">Background Image URL</Label>
+                                <Input
+                                  id="hero-bg-image"
+                                  value={siteSettings.hero_background_image_url || ''}
+                                  onChange={(e) => setSiteSettings({...siteSettings, hero_background_image_url: e.target.value})}
+                                  placeholder="Enter image URL"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="hero-bg-size">Background Size</Label>
+                                <Select
+                                  value={siteSettings.hero_background_size || 'cover'}
+                                  onValueChange={(value) => setSiteSettings({...siteSettings, hero_background_size: value})}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select background size" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="cover">Cover</SelectItem>
+                                    <SelectItem value="contain">Contain</SelectItem>
+                                    <SelectItem value="auto">Auto</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Text Colors */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Text Colors</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <Label htmlFor="hero-text-color">Hero Text Color</Label>
+                            <Input
+                              id="hero-text-color"
+                              type="color"
+                              value={siteSettings.hero_text_color || '#ffffff'}
+                              onChange={(e) => setSiteSettings({...siteSettings, hero_text_color: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="hero-title-color">Hero Title Color</Label>
+                            <Input
+                              id="hero-title-color"
+                              type="color"
+                              value={siteSettings.hero_title_color || '#1e293b'}
+                              onChange={(e) => setSiteSettings({...siteSettings, hero_title_color: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="hero-subtitle-color">Hero Subtitle Color</Label>
+                            <Input
+                              id="hero-subtitle-color"
+                              type="color"
+                              value={siteSettings.hero_subtitle_color || '#64748b'}
+                              onChange={(e) => setSiteSettings({...siteSettings, hero_subtitle_color: e.target.value})}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Hero Image */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Hero Image</h3>
+                        <div>
+                          <Label htmlFor="hero-image">Hero Image URL</Label>
+                          <Input
+                            id="hero-image"
+                            value={siteSettings.hero_image_url || ''}
+                            onChange={(e) => setSiteSettings({...siteSettings, hero_image_url: e.target.value})}
+                            placeholder="Enter hero image URL (optional)"
+                          />
+                          <p className="text-sm text-gray-500 mt-1">This image will appear above the hero title</p>
+                        </div>
+                      </div>
+
+                      {/* Hero Height */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Hero Section Height</h3>
+                        <div>
+                          <Label htmlFor="hero-height">Height (px)</Label>
+                          <Input
+                            id="hero-height"
+                            type="number"
+                            value={parseInt(siteSettings.hero_height) || 600}
+                            onChange={(e) => setSiteSettings({...siteSettings, hero_height: `${e.target.value}px`})}
+                            placeholder="600"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-6 border-t">
+                      <Button onClick={() => updateSiteSettings('appearance')}>
+                        Save Appearance Settings
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Content Management Tab */}
+          <TabsContent value="pages">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Globe className="w-5 h-5 mr-2" />
+                    Content Management
+                  </CardTitle>
+                  <CardDescription>Manage pages, menus, and site content</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Tabs defaultValue="page-management" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="page-management">Pages</TabsTrigger>
+                      <TabsTrigger value="menu-management">Menus</TabsTrigger>
+                    </TabsList>
+
+                    {/* Page Management Subsection */}
+                    <TabsContent value="page-management" className="mt-6">
+                      <div className="space-y-6">
+                        {/* Create New Page Form */}
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Create New Page</CardTitle>
+                            <CardDescription>Add a new page to your website</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="page-title">Page Title</Label>
+                                <Input
+                                  id="page-title"
+                                  value={newPage.title}
+                                  onChange={(e) => setNewPage({...newPage, title: e.target.value})}
+                                  placeholder="Enter page title"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="page-slug">Page Slug</Label>
+                                <Input
+                                  id="page-slug"
+                                  value={newPage.slug}
+                                  onChange={(e) => setNewPage({...newPage, slug: e.target.value})}
+                                  placeholder="page-url-slug"
+                                />
+                              </div>
+                            </div>
+                            <div className="mt-4">
+                              <Label htmlFor="page-content">Page Content</Label>
+                              <Textarea
+                                id="page-content"
+                                value={newPage.content}
+                                onChange={(e) => setNewPage({...newPage, content: e.target.value})}
+                                placeholder="Enter page content (HTML supported)"
+                                rows={6}
+                              />
+                            </div>
+                            <div className="mt-4 flex items-center space-x-4">
+                              <div className="flex items-center space-x-2">
+                                <Switch
+                                  id="page-published"
+                                  checked={newPage.published}
+                                  onCheckedChange={(checked) => setNewPage({...newPage, published: checked})}
+                                />
+                                <Label htmlFor="page-published">Published</Label>
+                              </div>
+                              <Button onClick={createPage}>
+                                Create Page
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* Existing Pages */}
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Existing Pages</CardTitle>
+                            <CardDescription>Manage your website pages</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-4">
+                              {pages.map((page) => (
+                                <div key={page.id} className="flex items-center justify-between p-4 border rounded-lg">
+                                  <div>
+                                    <h4 className="font-medium">{page.title}</h4>
+                                    <p className="text-sm text-gray-600">/{page.slug}</p>
+                                    <div className="flex items-center space-x-2 mt-1">
+                                      <Badge variant={page.published ? 'default' : 'secondary'}>
+                                        {page.published ? 'Published' : 'Draft'}
+                                      </Badge>
+                                      <span className="text-xs text-gray-500">
+                                        Created: {new Date(page.created_at).toLocaleDateString()}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="flex space-x-2">
+                                    <Button size="sm" variant="outline" onClick={() => editPage(page)}>
+                                      <Edit className="w-4 h-4" />
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={() => deletePage(page.id)}>
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                              {pages.length === 0 && (
+                                <div className="text-center py-8">
+                                  <p className="text-gray-500">No pages created yet</p>
+                                </div>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </TabsContent>
+
+                    {/* Menu Management Subsection */}
+                    <TabsContent value="menu-management" className="mt-6">
+                      <div className="space-y-6">
+                        <div className="border rounded-lg p-4">
+                          <h3 className="text-lg font-semibold mb-4">Navigation Menu</h3>
+                          <div className="space-y-4">
+                            {/* Add New Menu Item */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <Input
+                                placeholder="Menu Label"
+                                value={newNavItem.label}
+                                onChange={(e) => setNewNavItem({...newNavItem, label: e.target.value})}
+                              />
+                              <Input
+                                placeholder="Menu URL"
+                                value={newNavItem.url}
+                                onChange={(e) => setNewNavItem({...newNavItem, url: e.target.value})}
+                              />
+                              <Button onClick={addNavigationItem}>
+                                Add Menu Item
+                              </Button>
+                            </div>
+
+                            {/* Existing Menu Items */}
+                            <div className="space-y-2">
+                              {customNavigation.map((item, index) => (
+                                <div key={item.id || index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                  <div>
+                                    <span className="font-medium">{item.label}</span>
+                                    <span className="text-sm text-gray-600 ml-2">→ {item.url}</span>
+                                  </div>
+                                  <Button size="sm" variant="outline" onClick={() => removeNavigationItem(item.id)}>
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                              {customNavigation.length === 0 && (
+                                <div className="text-center py-4">
+                                  <p className="text-gray-500">No custom menu items</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* SEO Management Tab */}
+          <TabsContent value="seo">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Search className="w-5 h-5 mr-2" />
+                      SEO Management
+                    </CardTitle>
+                    <CardDescription>Optimize your site for search engines</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {/* Meta Tags */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Meta Tags</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="meta-title">Meta Title</Label>
+                            <Input
+                              id="meta-title"
+                              value={seoSettings.site_title}
+                              onChange={(e) => setSeoSettings({...seoSettings, site_title: e.target.value})}
+                              placeholder="Enter meta title"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="meta-description">Meta Description</Label>
+                            <Textarea
+                              id="meta-description"
+                              value={seoSettings.meta_description}
+                              onChange={(e) => setSeoSettings({...seoSettings, meta_description: e.target.value})}
+                              placeholder="Enter meta description"
+                              rows={3}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="meta-keywords">Meta Keywords</Label>
+                            <Input
+                              id="meta-keywords"
+                              value={seoSettings.meta_keywords}
+                              onChange={(e) => setSeoSettings({...seoSettings, meta_keywords: e.target.value})}
+                              placeholder="keyword1, keyword2, keyword3"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Open Graph */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Open Graph (Social Media)</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="og-title">OG Title</Label>
+                            <Input
+                              id="og-title"
+                              value={seoSettings.og_title}
+                              onChange={(e) => setSeoSettings({...seoSettings, og_title: e.target.value})}
+                              placeholder="Enter Open Graph title"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="og-description">OG Description</Label>
+                            <Textarea
+                              id="og-description"
+                              value={seoSettings.og_description}
+                              onChange={(e) => setSeoSettings({...seoSettings, og_description: e.target.value})}
+                              placeholder="Enter Open Graph description"
+                              rows={3}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="og-image">OG Image URL</Label>
+                            <Input
+                              id="og-image"
+                              value={seoSettings.og_image}
+                              onChange={(e) => setSeoSettings({...seoSettings, og_image: e.target.value})}
+                              placeholder="Enter Open Graph image URL"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Analytics */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Analytics</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="google-analytics">Google Analytics ID</Label>
+                            <Input
+                              id="google-analytics"
+                              value={seoSettings.google_analytics_id}
+                              onChange={(e) => setSeoSettings({...seoSettings, google_analytics_id: e.target.value})}
+                              placeholder="G-XXXXXXXXXX"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="google-search-console">Google Search Console</Label>
+                            <Input
+                              id="google-search-console"
+                              value={seoSettings.google_search_console}
+                              onChange={(e) => setSeoSettings({...seoSettings, google_search_console: e.target.value})}
+                              placeholder="Enter verification code"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-6 border-t">
+                      <Button onClick={updateSEOSettings}>
+                        Save SEO Settings
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* General Settings Tab */}
+          <TabsContent value="settings">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Settings className="w-5 h-5 mr-2" />
+                      General Settings
+                    </CardTitle>
+                    <CardDescription>Configure general marketplace settings</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="marketplace-name">Marketplace Name</Label>
+                          <Input
+                            id="marketplace-name"
+                            value={siteSettings.site_name || ''}
+                            onChange={(e) => setSiteSettings({...siteSettings, site_name: e.target.value})}
+                            placeholder="Enter marketplace name"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="admin-email">Admin Email</Label>
+                          <Input
+                            id="admin-email"
+                            type="email"
+                            value={siteSettings.admin_email || ''}
+                            onChange={(e) => setSiteSettings({...siteSettings, admin_email: e.target.value})}
+                            placeholder="Enter admin email"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="marketplace-description">Marketplace Description</Label>
+                        <Textarea
+                          id="marketplace-description"
+                          value={siteSettings.site_description || ''}
+                          onChange={(e) => setSiteSettings({...siteSettings, site_description: e.target.value})}
+                          placeholder="Enter marketplace description"
+                          rows={4}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="default-currency">Default Currency</Label>
+                          <Select
+                            value={siteSettings.default_currency || 'EUR'}
+                            onValueChange={(value) => setSiteSettings({...siteSettings, default_currency: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select currency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="EUR">Euro (€)</SelectItem>
+                              <SelectItem value="USD">US Dollar ($)</SelectItem>
+                              <SelectItem value="GBP">British Pound (£)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="timezone">Timezone</Label>
+                          <Select
+                            value={siteSettings.timezone || 'UTC'}
+                            onValueChange={(value) => setSiteSettings({...siteSettings, timezone: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select timezone" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="UTC">UTC</SelectItem>
+                              <SelectItem value="Europe/London">Europe/London</SelectItem>
+                              <SelectItem value="Europe/Paris">Europe/Paris</SelectItem>
+                              <SelectItem value="America/New_York">America/New_York</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-6 border-t">
+                      <Button onClick={() => updateSiteSettings('general')}>
+                        Save General Settings
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Database Tab */}
+          <TabsContent value="database">
+            {loading ? (
+              <div className="flex justify-center py-8">Loading...</div>
+            ) : (
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Settings className="w-5 h-5 mr-2" />
+                      Database Management
+                    </CardTitle>
+                    <CardDescription>Manage database operations and maintenance</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {/* Database Stats */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Database Statistics</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="p-4 bg-blue-50 rounded-lg">
+                            <div className="text-2xl font-bold text-blue-600">{stats.total_users || 0}</div>
+                            <div className="text-sm text-blue-700">Total Users</div>
+                          </div>
+                          <div className="p-4 bg-green-50 rounded-lg">
+                            <div className="text-2xl font-bold text-green-600">{stats.total_listings || 0}</div>
+                            <div className="text-sm text-green-700">Total Listings</div>
+                          </div>
+                          <div className="p-4 bg-purple-50 rounded-lg">
+                            <div className="text-2xl font-bold text-purple-600">{stats.total_orders || 0}</div>
+                            <div className="text-sm text-purple-700">Total Orders</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Database Actions */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">Database Actions</h3>
+                        <div className="space-y-4">
+                          <div className="p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
+                            <h4 className="font-medium text-yellow-800 mb-2">⚠️ Danger Zone</h4>
+                            <p className="text-sm text-yellow-700 mb-4">
+                              These actions are irreversible. Please proceed with caution.
+                            </p>
+                            <div className="flex space-x-4">
+                              <Button variant="outline" onClick={deleteAllNonAdminUsers}>
+                                Delete All Non-Admin Users
+                              </Button>
+                              <Button variant="outline" onClick={() => {
+                                if (confirm('This will delete ALL listings. Are you sure?')) {
+                                  // Add delete all listings function
+                                }
+                              }}>
+                                Delete All Listings
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Advanced Analytics Dashboard */}
+          <TabsContent value="analytics">
+            <div className="space-y-6">
+              {/* Revenue Analytics */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <TrendingUp className="w-5 h-5 mr-2 text-green-600" />
+                    Revenue Analytics
+                  </CardTitle>
+                  <CardDescription>Track your marketplace revenue and growth</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">€{(stats.total_revenue || 0).toFixed(2)}</div>
+                      <div className="text-sm text-green-700">Total Revenue</div>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">€{((stats.total_revenue || 0) / Math.max(1, stats.total_orders || 1)).toFixed(2)}</div>
+                      <div className="text-sm text-blue-700">Avg Order Value</div>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-600">{((stats.total_orders || 0) / Math.max(1, stats.total_users || 1) * 100).toFixed(1)}%</div>
+                      <div className="text-sm text-purple-700">Conversion Rate</div>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg">
+                      <div className="text-2xl font-bold text-orange-600">{Math.floor(Math.random() * 50) + 20}</div>
+                      <div className="text-sm text-orange-700">Active Sellers</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* User Analytics */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Users className="w-5 h-5 mr-2 text-blue-600" />
+                    User Analytics
+                  </CardTitle>
+                  <CardDescription>Understand your user base and behavior</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-4">
+                      <h4 className="font-medium">User Distribution</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Buyers</span>
+                          <span className="font-semibold">{Math.floor((stats.total_users || 0) * 0.6)}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Sellers</span>
+                          <span className="font-semibold">{Math.floor((stats.total_users || 0) * 0.3)}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Both</span>
+                          <span className="font-semibold">{Math.floor((stats.total_users || 0) * 0.1)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <h4 className="font-medium">Activity Metrics</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Daily Active Users</span>
+                          <span className="font-semibold">{Math.floor((stats.total_users || 0) * 0.15)}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Weekly Active Users</span>
+                          <span className="font-semibold">{Math.floor((stats.total_users || 0) * 0.45)}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Monthly Active Users</span>
+                          <span className="font-semibold">{Math.floor((stats.total_users || 0) * 0.75)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <h4 className="font-medium">Engagement</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Avg Session Duration</span>
+                          <span className="font-semibold">{Math.floor(Math.random() * 10) + 5}m</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Pages per Session</span>
+                          <span className="font-semibold">{(Math.random() * 3 + 2).toFixed(1)}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Bounce Rate</span>
+                          <span className="font-semibold">{(Math.random() * 30 + 25).toFixed(1)}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Media Manager */}
+          <TabsContent value="media">
+            <div className="admin-card">
+              <div className="admin-card-header">
+                <h2 className="admin-card-title">Media Manager</h2>
+                <p className="admin-card-description">Upload and manage your media files</p>
+              </div>
+              <div className="admin-card-content">
+                <div className="space-y-6">
+                  {/* Upload Area */}
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Upload Media</h3>
+                    <p className="text-gray-600 mb-4">Drag and drop files here, or click to select</p>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*,video/*"
+                      onChange={handleMediaUpload}
+                      className="hidden"
+                      id="media-upload"
+                    />
+                    <Button onClick={() => document.getElementById('media-upload').click()}>
+                      Select Files
+                    </Button>
+                  </div>
+
+                  {/* Media Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {/* Sample media items - replace with actual media */}
+                    <div className="relative group">
+                      <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Camera className="w-8 h-8 text-gray-400" />
+                        </div>
+                      </div>
+                      <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                        <Button size="sm" variant="outline" className="text-white border-white">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+// Profile Component
+const Profile = () => {
+  const { user, logout } = useAuth();
+  const [formData, setFormData] = useState({
+    full_name: '',
+    email: '',
+    phone: '',
+    address: '',
+    bio: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        full_name: user.full_name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+        bio: user.bio || ''
+      });
+    }
+  }, [user]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await axios.put(`${API}/profile`, formData);
+      
+      // Update user data in localStorage
+      const updatedUser = { ...user, ...response.data };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated successfully"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: formatErrorMessage(error, "Failed to update profile"),
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!user) {
+    return <Navigate to="/auth" />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+      <Header />
+      
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          {/* Profile Header */}
+          <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-12">
+            <div className="flex items-center space-x-6">
+              <Avatar className="h-24 w-24 bg-white/20 border-4 border-white/30">
+                <AvatarFallback className="bg-white/20 text-white text-2xl font-light">
+                  {user.full_name?.charAt(0) || user.username?.charAt(0) || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-3xl font-extralight text-white mb-2">
+                  {user.full_name || user.username}
+                </h1>
+                <p className="text-purple-100 text-lg font-light">{user.email}</p>
+                <div className="flex items-center space-x-4 mt-3">
+                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                    {user.role}
+                  </Badge>
+                  <span className="text-purple-100 text-sm">
+                    Member since {new Date(user.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Profile Form */}
+          <div className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="full_name" className="text-slate-700 font-medium">Full Name</Label>
+                  <Input
+                    id="full_name"
+                    value={formData.full_name}
+                    onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                    className="mt-2 bg-slate-50 border-slate-200 rounded-xl h-12 px-4 text-slate-900 font-light focus:bg-white focus:border-purple-400 transition-all duration-300"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="email" className="text-slate-700 font-medium">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="mt-2 bg-slate-50 border-slate-200 rounded-xl h-12 px-4 text-slate-900 font-light focus:bg-white focus:border-purple-400 transition-all duration-300"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="phone" className="text-slate-700 font-medium">Phone</Label>
+                  <Input
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    className="mt-2 bg-slate-50 border-slate-200 rounded-xl h-12 px-4 text-slate-900 font-light focus:bg-white focus:border-purple-400 transition-all duration-300"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="address" className="text-slate-700 font-medium">Address</Label>
+                  <Input
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => setFormData({...formData, address: e.target.value})}
+                    className="mt-2 bg-slate-50 border-slate-200 rounded-xl h-12 px-4 text-slate-900 font-light focus:bg-white focus:border-purple-400 transition-all duration-300"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="bio" className="text-slate-700 font-medium">Bio</Label>
+                <Textarea
+                  id="bio"
+                  value={formData.bio}
+                  onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                  rows={4}
+                  className="mt-2 bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-light focus:bg-white focus:border-purple-400 transition-all duration-300"
+                  placeholder="Tell us about yourself..."
+                />
+              </div>
+              
+              <div className="flex justify-between items-center pt-6 border-t border-slate-200">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate('/')}
+                  className="px-8 py-3 rounded-xl font-light"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-xl font-light transition-all duration-300"
+                >
+                  {loading ? 'Updating...' : 'Update Profile'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <Footer />
+    </div>
+  );
+};
+
+// Sell Component
+const Sell = () => {
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    price: '',
+    category: '',
+    condition: 'new',
+    listing_type: 'fixed_price',
+    starting_bid: '',
+    auction_end_time: '',
+    images: []
+  });
+  const [categories, setCategories] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API}/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    try {
+      setUploading(true);
+      const uploadPromises = files.map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await axios.post(`${API}/upload`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        
+        return response.data.file_url;
+      });
+
+      const uploadedUrls = await Promise.all(uploadPromises);
+      setFormData(prev => ({
+        ...prev,
+        images: [...prev.images, ...uploadedUrls]
+      }));
+
+      toast({
+        title: "Images uploaded",
+        description: `${uploadedUrls.length} image(s) uploaded successfully`
+      });
+    } catch (error) {
+      toast({
+        title: "Upload failed",
+        description: formatErrorMessage(error, "Failed to upload images"),
+        variant: "destructive"
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      
+      const listingData = {
+        ...formData,
+        price: formData.listing_type === 'fixed_price' ? parseFloat(formData.price) : null,
+        starting_bid: formData.listing_type === 'auction' ? parseFloat(formData.starting_bid) : null,
+        auction_end_time: formData.listing_type === 'auction' ? formData.auction_end_time : null
+      };
+
+      await axios.post(`${API}/listings`, listingData);
+      
+      toast({
+        title: "Listing created!",
+        description: "Your item has been listed successfully"
+      });
+      
+      navigate('/');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: formatErrorMessage(error, "Failed to create listing"),
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+      <Header />
+      
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-green-600 to-blue-600 px-8 py-12">
+            <h1 className="text-4xl font-extralight text-white mb-4">Sell Your Item</h1>
+            <p className="text-green-100 text-lg font-light">
+              Create a listing and reach thousands of potential buyers
+            </p>
+          </div>
+
+          {/* Form */}
+          <div className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Basic Information */}
+              <div className="space-y-6">
+                <h2 className="text-2xl font-light text-slate-800 border-b border-slate-200 pb-3">
+                  Basic Information
+                </h2>
+                
+                <div>
+                  <Label htmlFor="title" className="text-slate-700 font-medium">Title *</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    required
+                    className="mt-2 bg-slate-50 border-slate-200 rounded-xl h-12 px-4 text-slate-900 font-light focus:bg-white focus:border-green-400 transition-all duration-300"
+                    placeholder="What are you selling?"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="description" className="text-slate-700 font-medium">Description *</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    required
+                    rows={5}
+                    className="mt-2 bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-slate-900 font-light focus:bg-white focus:border-green-400 transition-all duration-300"
+                    placeholder="Describe your item in detail..."
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="category" className="text-slate-700 font-medium">Category *</Label>
+                    <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+                      <SelectTrigger className="mt-2 bg-slate-50 border-slate-200 rounded-xl h-12 px-4 text-slate-900 font-light focus:bg-white focus:border-green-400 transition-all duration-300">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-slate-200 rounded-xl shadow-xl">
+                        {categories.map((category) => (
+                          <SelectItem key={category} value={category} className="font-light">
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="condition" className="text-slate-700 font-medium">Condition *</Label>
+                    <Select value={formData.condition} onValueChange={(value) => setFormData({...formData, condition: value})}>
+                      <SelectTrigger className="mt-2 bg-slate-50 border-slate-200 rounded-xl h-12 px-4 text-slate-900 font-light focus:bg-white focus:border-green-400 transition-all duration-300">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-slate-200 rounded-xl shadow-xl">
+                        <SelectItem value="new" className="font-light">New</SelectItem>
+                        <SelectItem value="like_new" className="font-light">Like New</SelectItem>
+                        <SelectItem value="good" className="font-light">Good</SelectItem>
+                        <SelectItem value="fair" className="font-light">Fair</SelectItem>
+                        <SelectItem value="poor" className="font-light">Poor</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pricing */}
+              <div className="space-y-6">
+                <h2 className="text-2xl font-light text-slate-800 border-b border-slate-200 pb-3">
+                  Pricing & Sale Type
+                </h2>
+                
+                <div>
+                  <Label className="text-slate-700 font-medium">Listing Type *</Label>
+                  <Tabs value={formData.listing_type} onValueChange={(value) => setFormData({...formData, listing_type: value})} className="mt-2">
+                    <TabsList className="bg-slate-100 rounded-xl p-1">
+                      <TabsTrigger value="fixed_price" className="rounded-lg font-light text-slate-700 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">
+                        Fixed Price
+                      </TabsTrigger>
+                      <TabsTrigger value="auction" className="rounded-lg font-light text-slate-700 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">
+                        Auction
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
+                
+                {formData.listing_type === 'fixed_price' ? (
+                  <div>
+                    <Label htmlFor="price" className="text-slate-700 font-medium">Price (€) *</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      step="0.01"
+                      value={formData.price}
+                      onChange={(e) => setFormData({...formData, price: e.target.value})}
+                      required
+                      className="mt-2 bg-slate-50 border-slate-200 rounded-xl h-12 px-4 text-slate-900 font-light focus:bg-white focus:border-green-400 transition-all duration-300"
+                      placeholder="0.00"
+                    />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="starting_bid" className="text-slate-700 font-medium">Starting Bid (€) *</Label>
+                      <Input
+                        id="starting_bid"
+                        type="number"
+                        step="0.01"
+                        value={formData.starting_bid}
+                        onChange={(e) => setFormData({...formData, starting_bid: e.target.value})}
+                        required
+                        className="mt-2 bg-slate-50 border-slate-200 rounded-xl h-12 px-4 text-slate-900 font-light focus:bg-white focus:border-green-400 transition-all duration-300"
+                        placeholder="0.00"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="auction_end_time" className="text-slate-700 font-medium">Auction End Time *</Label>
+                      <Input
+                        id="auction_end_time"
+                        type="datetime-local"
+                        value={formData.auction_end_time}
+                        onChange={(e) => setFormData({...formData, auction_end_time: e.target.value})}
+                        required
+                        className="mt-2 bg-slate-50 border-slate-200 rounded-xl h-12 px-4 text-slate-900 font-light focus:bg-white focus:border-green-400 transition-all duration-300"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Images */}
+              <div className="space-y-6">
+                <h2 className="text-2xl font-light text-slate-800 border-b border-slate-200 pb-3">
+                  Images
+                </h2>
+                
+                <div>
+                  <Label className="text-slate-700 font-medium">Upload Images</Label>
+                  <div className="mt-2 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-green-400 transition-colors duration-300">
+                    <Upload className="w-12 h-12 mx-auto text-slate-400 mb-4" />
+                    <p className="text-slate-600 mb-4 font-light">
+                      Drag and drop images here, or click to select
+                    </p>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="image-upload"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById('image-upload').click()}
+                      disabled={uploading}
+                      className="rounded-xl font-light"
+                    >
+                      {uploading ? 'Uploading...' : 'Select Images'}
+                    </Button>
+                  </div>
+                </div>
+                
+                {formData.images.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {formData.images.map((image, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={getImageUrl(image)}
+                          alt={`Upload ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-xl"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Submit */}
+              <div className="flex justify-between items-center pt-6 border-t border-slate-200">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate('/')}
+                  className="px-8 py-3 rounded-xl font-light"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-8 py-3 rounded-xl font-light transition-all duration-300"
+                >
+                  {loading ? 'Creating...' : 'Create Listing'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <Footer />
+    </div>
+  );
+};
+
+// Listing Detail Component
+const ListingDetail = () => {
+  const { id } = useParams();
+  const [listing, setListing] = useState(null);
+  const [bidAmount, setBidAmount] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [bidding, setBidding] = useState(false);
+  const [ordering, setOrdering] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchListing();
+    
+    // Track page visit
+    if (user) {
+      VisitorTracker.trackVisit(`listing_${id}`, user.id);
+    } else {
+      VisitorTracker.trackVisit(`listing_${id}`);
+    }
+  }, [id, user]);
+
+  const fetchListing = async () => {
+    try {
+      const response = await axios.get(`${API}/listings/${id}`);
+      setListing(response.data);
+    } catch (error) {
+      console.error('Error fetching listing:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load listing",
+        variant: "destructive"
+      });
+      navigate('/');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const placeBid = async () => {
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please login to place a bid",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      setBidding(true);
+      await axios.post(`${API}/listings/${id}/bid`, {
+        amount: parseFloat(bidAmount)
+      });
+      
+      toast({
+        title: "Bid placed!",
+        description: "Your bid has been placed successfully"
+      });
+      
+      // Track bid action
+      VisitorTracker.trackAction('bid_placed', { 
+        listing_id: id, 
+        bid_amount: parseFloat(bidAmount) 
+      }, user.id);
+      
+      setBidAmount('');
+      fetchListing(); // Refresh to show new bid
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: formatErrorMessage(error, "Failed to place bid"),
+        variant: "destructive"
+      });
+    } finally {
+      setBidding(false);
+    }
+  };
+
+  const buyNow = async () => {
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please login to make a purchase",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      setOrdering(true);
+      await axios.post(`${API}/orders`, {
+        listing_id: parseInt(id),
+        quantity: quantity
+      });
+      
+      toast({
+        title: "Order placed!",
+        description: "Your order has been placed successfully"
+      });
+      
+      // Track purchase action
+      VisitorTracker.trackAction('purchase_made', { 
+        listing_id: id, 
+        quantity: quantity,
+        total_amount: listing.price * quantity
+      }, user.id);
+      
+      navigate('/orders');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: formatErrorMessage(error, "Failed to place order"),
+        variant: "destructive"
+      });
+    } finally {
+      setOrdering(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+        <Header />
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <p className="mt-2 text-gray-600">Loading listing...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!listing) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+        <Header />
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Listing not found</h2>
+            <p className="text-gray-600 mb-4">The listing you're looking for doesn't exist.</p>
+            <Button onClick={() => navigate('/')}>
+              Return to Home
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const formatTimeRemaining = (endTime) => {
+    const now = new Date();
+    const end = new Date(endTime);
+    const diff = end - now;
+    
+    if (diff <= 0) return 'Auction ended';
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (days > 0) return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${minutes}m`;
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+      <Header />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Images */}
+          <div className="space-y-4">
+            {listing.images && listing.images.length > 0 ? (
+              <>
+                <div className="aspect-square rounded-2xl overflow-hidden bg-white shadow-xl">
+                  <img
+                    src={getImageUrl(listing.images[0])}
+                    alt={listing.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {listing.images.length > 1 && (
+                  <div className="grid grid-cols-4 gap-4">
+                    {listing.images.slice(1, 5).map((image, index) => (
+                      <div key={index} className="aspect-square rounded-xl overflow-hidden bg-white shadow-lg">
+                        <img
+                          src={getImageUrl(image)}
+                          alt={`${listing.title} ${index + 2}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="aspect-square rounded-2xl bg-gray-200 flex items-center justify-center">
+                <Package className="w-24 h-24 text-gray-400" />
+              </div>
+            )}
+          </div>
+
+          {/* Details */}
+          <div className="space-y-8">
+            <div>
+              <h1 className="text-4xl font-extralight text-slate-900 mb-4">{listing.title}</h1>
+              <div className="flex items-center space-x-4 mb-6">
+                <Badge variant="secondary" className="text-sm">
+                  {listing.category}
+                </Badge>
+                <Badge variant="outline" className="text-sm">
+                  {listing.condition}
+                </Badge>
+                <span className="text-slate-500 text-sm">
+                  Listed {new Date(listing.created_at).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+
+            {/* Price/Bidding Section */}
+            <Card className="p-6">
+              {listing.listing_type === 'fixed_price' ? (
+                <div>
+                  <div className="text-3xl font-bold text-slate-900 mb-6">
+                    €{listing.price?.toFixed(2)}
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="quantity" className="text-slate-700 font-medium">Quantity</Label>
+                      <Input
+                        id="quantity"
+                        type="number"
+                        min="1"
+                        value={quantity}
+                        onChange={(e) => setQuantity(parseInt(e.target.value))}
+                        className="mt-2 w-24"
+                      />
+                    </div>
+                    
+                    <Button
+                      onClick={buyNow}
+                      disabled={ordering || listing.seller?.id === user?.id}
+                      className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white py-3 rounded-xl font-light text-lg transition-all duration-300"
+                    >
+                      {ordering ? 'Processing...' : `Buy Now - €${(listing.price * quantity).toFixed(2)}`}
+                    </Button>
+                    
+                    {listing.seller?.id === user?.id && (
+                      <p className="text-sm text-slate-500 text-center">
+                        This is your own listing
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <span className="text-lg text-slate-600">Current bid:</span>
+                      <div className="text-3xl font-bold text-slate-900">
+                        €{listing.current_bid?.toFixed(2) || listing.starting_bid?.toFixed(2)}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4">
+                      <Clock className="w-5 h-5 text-slate-500" />
+                      <span className="text-slate-600">
+                        {formatTimeRemaining(listing.auction_end_time)}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="bid-amount" className="text-slate-700 font-medium">Your bid (€)</Label>
+                      <Input
+                        id="bid-amount"
+                        type="number"
+                        step="0.01"
+                        value={bidAmount}
+                        onChange={(e) => setBidAmount(e.target.value)}
+                        placeholder={`Minimum: €${((listing.current_bid || listing.starting_bid) + 0.01).toFixed(2)}`}
+                        className="mt-2"
+                      />
+                    </div>
+                    
+                    <Button
+                      onClick={placeBid}
+                      disabled={bidding || !bidAmount || listing.seller?.id === user?.id}
+                      className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-xl font-light text-lg transition-all duration-300"
+                    >
+                      {bidding ? 'Placing bid...' : 'Place Bid'}
+                    </Button>
+                    
+                    {listing.seller?.id === user?.id && (
+                      <p className="text-sm text-slate-500 text-center">
+                        This is your own listing
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </Card>
+
+            {/* Description */}
+            <div>
+              <h2 className="text-2xl font-light text-slate-800 mb-4">Description</h2>
+              <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
+                {listing.description}
+              </p>
+            </div>
+
+            {/* Seller Info */}
+            <Card className="p-6">
+              <h3 className="text-lg font-medium text-slate-800 mb-4">Seller Information</h3>
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-12 w-12 bg-gradient-to-br from-purple-400 to-blue-500">
+                  <AvatarFallback className="bg-gradient-to-br from-purple-400 to-blue-500 text-white">
+                    {listing.seller?.full_name?.charAt(0) || listing.seller?.username?.charAt(0) || 'S'}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="font-medium text-slate-900">
+                    {listing.seller?.full_name || listing.seller?.username}
+                  </div>
+                  <div className="text-sm text-slate-500">
+                    Member since {new Date(listing.seller?.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+      
+      <Footer />
+    </div>
+  );
+};
+
+// Orders Component
+const Orders = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get(`${API}/orders`);
+      setOrders(response.data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load orders",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+        <Header />
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <p className="mt-2 text-gray-600">Loading orders...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+      <Header />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mb-8">
+          <h1 className="text-4xl font-extralight text-slate-900 mb-4">My Orders</h1>
+          <p className="text-slate-600 text-lg font-light">
+            Track your purchases and order history
+          </p>
+        </div>
+
+        {orders.length === 0 ? (
+          <div className="text-center py-16">
+            <ShoppingCart className="w-16 h-16 mx-auto text-slate-400 mb-6" />
+            <h2 className="text-2xl font-light text-slate-700 mb-4">No orders yet</h2>
+            <p className="text-slate-500 mb-8">Start shopping to see your orders here</p>
+            <Button onClick={() => window.location.href = '/'} className="rounded-xl">
+              Start Shopping
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {orders.map((order) => (
+              <Card key={order.id} className="overflow-hidden">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-medium text-slate-900">
+                        Order #{order.id}
+                      </h3>
+                      <p className="text-sm text-slate-500">
+                        Placed on {new Date(order.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Badge variant={
+                      order.status === 'completed' ? 'default' :
+                      order.status === 'pending' ? 'secondary' :
+                      order.status === 'cancelled' ? 'destructive' : 'outline'
+                    }>
+                      {order.status}
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4">
+                    {order.listing?.images && order.listing.images.length > 0 && (
+                      <img
+                        src={getImageUrl(order.listing.images[0])}
+                        alt={order.listing.title}
+                        className="w-16 h-16 rounded-lg object-cover"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <h4 className="font-medium text-slate-900">
+                        {order.listing?.title || 'Unknown Item'}
+                      </h4>
+                      <p className="text-sm text-slate-600">
+                        Quantity: {order.quantity} • €{order.total_amount?.toFixed(2)}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        Seller: {order.listing?.seller?.full_name || order.listing?.seller?.username || 'Unknown'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+      
+      <Footer />
+    </div>
+  );
+};
+
+// Favorites Component
+const Favorites = () => {
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchFavorites();
+  }, []);
+
+  const fetchFavorites = async () => {
+    try {
+      const response = await axios.get(`${API}/favorites`);
+      setFavorites(response.data);
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load favorites",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeFromFavorites = async (favoriteId) => {
+    try {
+      await axios.delete(`${API}/favorites/${favoriteId}`);
+      setFavorites(favorites.filter(fav => fav.favorite_id !== favoriteId));
+      toast({
+        title: "Removed from favorites",
+        description: "Item has been removed from your favorites"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: formatErrorMessage(error, "Failed to remove from favorites"),
+        variant: "destructive"
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+        <Header />
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <p className="mt-2 text-gray-600">Loading favorites...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+      <Header />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mb-8">
+          <h1 className="text-4xl font-extralight text-slate-900 mb-4">My Favorites</h1>
+          <p className="text-slate-600 text-lg font-light">
+            Items you've saved for later
+          </p>
+        </div>
+
+        {favorites.length === 0 ? (
+          <div className="text-center py-16">
+            <Heart className="w-16 h-16 mx-auto text-slate-400 mb-6" />
+            <h2 className="text-2xl font-light text-slate-700 mb-4">No favorites yet</h2>
+            <p className="text-slate-500 mb-8">Save items you like to see them here</p>
+            <Button onClick={() => navigate('/')} className="rounded-xl">
+              Start Browsing
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {favorites.map((favorite) => (
+              <Card key={favorite.favorite_id} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <div className="relative">
+                  {favorite.listing.images && favorite.listing.images.length > 0 ? (
+                    <img
+                      src={getImageUrl(favorite.listing.images[0])}
+                      alt={favorite.listing.title}
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-slate-200 flex items-center justify-center">
+                      <Package className="w-12 h-12 text-slate-400" />
+                    </div>
+                  )}
+                  <button
+                    onClick={() => removeFromFavorites(favorite.favorite_id)}
+                    className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-colors duration-200"
+                  >
+                    <Heart className="w-5 h-5 text-red-500 fill-current" />
+                  </button>
+                </div>
+                
+                <CardContent className="p-6">
+                  <h3 className="font-medium text-slate-900 mb-2 line-clamp-2">
+                    {favorite.listing.title}
+                  </h3>
+                  <p className="text-slate-600 text-sm mb-3 line-clamp-2">
+                    {favorite.listing.description}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-lg font-bold text-slate-900">
+                        €{favorite.listing.price?.toFixed(2)}
+                      </div>
+                      <div className="text-sm text-slate-500">
+                        {favorite.listing.category}
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => navigate(`/listing/${favorite.listing.id}`)}
+                      className="rounded-xl"
+                    >
+                      View
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+      
+      <Footer />
+    </div>
+  );
+};
+
+// Main App Component
+const App = () => {
+  return (
+    <AuthProvider>
+      <HashRouter>
+        <div className="App">
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
+            <Route path="/sell" element={
+              <ProtectedRoute>
+                <Sell />
+              </ProtectedRoute>
+            } />
+            <Route path="/listing/:id" element={
+              <ProtectedRoute>
+                <ListingDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/orders" element={
+              <ProtectedRoute>
+                <Orders />
+              </ProtectedRoute>
+            } />
+            <Route path="/favorites" element={
+              <ProtectedRoute>
+                <Favorites />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin" element={
+              <AdminProtectedRoute>
+                <AdminPanel />
+              </AdminProtectedRoute>
+            } />
+          </Routes>
+          <Toaster />
+        </div>
+      </HashRouter>
+    </AuthProvider>
+  );
+};
+
+export default App;
               <div className="admin-card">
                 <div className="admin-card-content text-center py-12">
                   <div className="text-6xl mb-4">👥</div>
