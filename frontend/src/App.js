@@ -3290,15 +3290,15 @@ const Profile = () => {
                 <h1 className="text-4xl font-light text-slate-900 mb-1">{profileData.full_name || profileData.username}</h1>
                 <p className="text-slate-600 text-lg font-light mb-2">@{profileData.username}</p>
                 <div className="flex items-center space-x-6 text-sm">
-                  <span className="flex items-center bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="flex items-center bg-slate-100 px-3 py-1 rounded-full text-slate-700 font-light">
                     <Calendar className="w-4 h-4 mr-2" />
                     Joined {new Date(profileData.joined_date).toLocaleDateString()}
                   </span>
-                  <span className="flex items-center bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="flex items-center bg-slate-100 px-3 py-1 rounded-full text-slate-700 font-light">
                     <MapPin className="w-4 h-4 mr-2" />
                     {profileData.location || 'Location not set'}
                   </span>
-                  <span className="flex items-center bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="flex items-center bg-slate-100 px-3 py-1 rounded-full text-slate-700 font-light">
                     <Shield className="w-4 h-4 mr-2" />
                     Trust Score: {stats.trust_score}%
                   </span>
@@ -3306,29 +3306,29 @@ const Profile = () => {
               </div>
             </div>
             <div className="text-right">
-              <div className="flex items-center justify-end space-x-3 mb-3">
+              <div className="flex items-center justify-end space-x-6 mb-4">
                 <div className="text-center">
-                  <div className="text-3xl font-bold">{stats.avg_rating.toFixed(1)}</div>
+                  <div className="text-3xl font-light text-slate-900">{stats.avg_rating.toFixed(1)}</div>
                   <div className="flex items-center justify-center">
-                    <Star className="w-4 h-4 text-yellow-300 fill-current mr-1" />
-                    <span className="text-blue-100 text-sm">({stats.total_reviews})</span>
+                    <Star className="w-4 h-4 text-slate-800 fill-current mr-1" />
+                    <span className="text-slate-600 text-sm font-light">({stats.total_reviews})</span>
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">{stats.successful_transactions}</div>
-                  <div className="text-blue-100 text-sm">Transactions</div>
+                  <div className="text-3xl font-light text-slate-900">{stats.successful_transactions}</div>
+                  <div className="text-slate-600 text-sm font-light">Transactions</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold">{stats.badges_earned}</div>
-                  <div className="text-blue-100 text-sm">Badges</div>
+                  <div className="text-3xl font-light text-slate-900">{stats.badges_earned}</div>
+                  <div className="text-slate-600 text-sm font-light">Badges</div>
                 </div>
               </div>
-              <div className="flex space-x-2">
+              <div className="flex space-x-3">
                 <Button 
                   variant="secondary" 
                   size="sm"
                   onClick={() => setIsEditing(!isEditing)}
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-900 border-slate-200 font-light"
                 >
                   <Edit className="w-4 h-4 mr-1" />
                   {isEditing ? 'Cancel Edit' : 'Edit Profile'}
@@ -3336,7 +3336,7 @@ const Profile = () => {
                 <Button 
                   variant="secondary" 
                   size="sm"
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-900 border-slate-200 font-light"
                 >
                   <Eye className="w-4 h-4 mr-1" />
                   Public View
