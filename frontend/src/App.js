@@ -906,36 +906,36 @@ const Auth = () => {
           {!isLogin && (
             <>
               <div>
-                <Label htmlFor="username" className="text-sm font-medium text-contrast-safe">Username</Label>
+                <Label htmlFor="username" className="text-sm font-medium text-high-contrast">Username</Label>
                 <Input
                   id="username"
                   value={formData.username}
                   onChange={(e) => setFormData({...formData, username: e.target.value})}
                   required
-                  className="mt-1 form-professional"
+                  className="mt-1 form-sleek-purple"
                   placeholder="Choose a username"
                 />
               </div>
               
               <div>
-                <Label htmlFor="full_name" className="text-sm font-medium text-contrast-safe">Full Name</Label>
+                <Label htmlFor="full_name" className="text-sm font-medium text-high-contrast">Full Name</Label>
                 <Input
                   id="full_name"
                   value={formData.full_name}
                   onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                   required
-                  className="mt-1 form-professional"
+                  className="mt-1 form-sleek-purple"
                   placeholder="Enter your full name"
                 />
               </div>
               
               <div>
-                <Label htmlFor="role" className="text-sm font-medium text-contrast-safe">I want to</Label>
+                <Label htmlFor="role" className="text-sm font-medium text-high-contrast">I want to</Label>
                 <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
-                  <SelectTrigger className="mt-1 form-professional">
+                  <SelectTrigger className="mt-1 form-sleek-purple">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="notification-professional">
+                  <SelectContent className="notification-sleek-purple">
                     <SelectItem value="buyer">Buy items</SelectItem>
                     <SelectItem value="seller">Sell items</SelectItem>
                     <SelectItem value="both">Both buy and sell</SelectItem>
@@ -944,23 +944,23 @@ const Auth = () => {
               </div>
               
               <div>
-                <Label htmlFor="phone" className="text-sm font-medium text-contrast-safe">Phone (Optional)</Label>
+                <Label htmlFor="phone" className="text-sm font-medium text-high-contrast">Phone (Optional)</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="mt-1 form-professional"
+                  className="mt-1 form-sleek-purple"
                   placeholder="Enter your phone number"
                 />
               </div>
               
               <div>
-                <Label htmlFor="address" className="text-sm font-medium text-contrast-safe">Address (Optional)</Label>
+                <Label htmlFor="address" className="text-sm font-medium text-high-contrast">Address (Optional)</Label>
                 <Input
                   id="address"
                   value={formData.address}
                   onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  className="mt-1 form-professional"
+                  className="mt-1 form-sleek-purple"
                   placeholder="Enter your address"
                 />
               </div>
@@ -969,7 +969,7 @@ const Auth = () => {
           
           <Button 
             type="submit" 
-            className="w-full mt-6 btn-professional-primary h-12 text-base font-semibold"
+            className="w-full mt-6 btn-sleek-primary h-12 text-base font-semibold"
           >
             {isLogin ? 'Sign In' : 'Create Account'}
           </Button>
@@ -979,7 +979,7 @@ const Auth = () => {
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-slate-600 hover:text-slate-800 font-medium transition-colors duration-200 text-sm"
+            className="text-medium-contrast hover:text-purple-600 font-medium transition-colors duration-200 text-sm"
           >
             {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
           </button>
