@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Comprehensive Backend Testing Suite for Cataloro Marketplace
-Testing all critical functionality with real data as requested
+Testing all critical functionality including Catalyst Database System
 """
 
 import requests
@@ -10,8 +10,8 @@ import time
 import sys
 from datetime import datetime
 
-# Configuration
-BASE_URL = "http://localhost:8001/api"
+# Configuration - Use production URL from frontend .env
+BASE_URL = "https://cataloro-hub.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
