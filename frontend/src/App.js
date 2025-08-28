@@ -1610,7 +1610,7 @@ const Home = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {listings.map((listing) => (
-              <Card key={listing.id} className="hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => navigate(`/listing/${listing.id}`)}>
+              <Card key={listing.id} className="card-purple-modern cursor-pointer group" onClick={() => navigate(`/listing/${listing.id}`)}>
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img
                     src={
