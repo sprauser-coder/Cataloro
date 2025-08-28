@@ -1,7 +1,7 @@
-/* Import Google Fonts */
+/* Import Google Fonts for Modern Purple Theme */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
-/* Reset and base styles */
+/* Reset and Modern Purple Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -15,32 +15,37 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  background: linear-gradient(135deg, #f8faff 0%, #f1f5ff 100%);
 }
 
 .App {
   min-height: 100vh;
-  background-color: #ffffff;
+  background: linear-gradient(135deg, #f8faff 0%, #f1f5ff 100%);
 }
 
-/* Custom scrollbar */
+/* Modern Purple Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
+  background-clip: padding-box;
 }
 
-/* Line clamp utilities */
+/* Line clamp utilities with purple accents */
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -62,10 +67,10 @@ body {
   overflow: hidden;
 }
 
-/* Custom animations */
+/* Modern Purple Animations */
 @keyframes slideInUp {
   from {
-    transform: translateY(20px);
+    transform: translateY(30px);
     opacity: 0;
   }
   to {
@@ -74,251 +79,315 @@ body {
   }
 }
 
-@keyframes fadeIn {
+@keyframes fadeInPurple {
   from {
     opacity: 0;
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
+    transform: scale(1);
   }
 }
 
-@keyframes pulse {
+@keyframes pulseGlow {
   0%, 100% {
-    opacity: 1;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+    transform: scale(1);
   }
   50% {
-    opacity: 0.5;
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.5);
+    transform: scale(1.02);
   }
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .animate-slideInUp {
-  animation: slideInUp 0.5s ease-out;
+  animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
+.animate-fadeInPurple {
+  animation: fadeInPurple 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.animate-pulseGlow {
+  animation: pulseGlow 3s ease-in-out infinite;
 }
 
-/* Glass morphism effects */
-.glass {
-  background: rgba(255, 255, 255, 0.25);
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientAnimation 6s ease infinite;
+}
+
+/* Modern Glass Morphism Effects */
+.glass-purple {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
+}
+
+.glass-purple-strong {
+  background: rgba(139, 92, 246, 0.1);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
+}
+
+/* Enhanced Purple Button Effects */
+.btn-purple-modern {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-purple-modern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.btn-purple-modern:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4);
+  background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
+}
+
+.btn-purple-modern:hover::before {
+  left: 100%;
+}
+
+.btn-purple-modern:active {
+  transform: translateY(-1px) scale(1.01);
+}
+
+/* Modern Card Hover Effects */
+.card-purple-modern {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-/* Custom button hover effects */
-.btn-hover-scale {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.card-purple-modern:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.3);
+  background: rgba(255, 255, 255, 0.95);
 }
 
-.btn-hover-scale:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+/* Purple Gradient Text Effects */
+.gradient-text-purple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
 }
 
-/* Card hover effects */
-.card-hover {
-  transition: all 0.3s ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-}
-
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.gradient-text-purple-light {
+  background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Hero section background patterns */
-.hero-pattern {
-  background-image: 
-    radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.1) 2px, transparent 0),
-    radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.1) 2px, transparent 0);
-  background-size: 100px 100px;
-}
-
-/* Custom focus states */
-.custom-focus:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-  border-color: #6366f1;
-}
-
-/* Loading states */
-.skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-/* Custom shadows */
-.shadow-soft {
-  box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.1);
-}
-
-.shadow-medium {
-  box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
-}
-
-.shadow-strong {
-  box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.15);
-}
-
-/* Responsive utilities */
-@media (max-width: 640px) {
-  .text-responsive {
-    font-size: 0.875rem;
-  }
-  
-  .grid-responsive {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Image optimization */
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-.image-cover {
-  object-fit: cover;
-  object-position: center;
-}
-
-/* Interactive elements */
-.interactive {
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.interactive:hover {
-  transform: scale(1.02);
-}
-
-/* Status indicators */
-.status-online {
+/* Modern Hero Section with Purple Patterns */
+.hero-purple-pattern {
+  background: 
+    linear-gradient(135deg, #667eea 0%, #764ba2 100%),
+    radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.15) 2px, transparent 0),
+    radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.1) 1px, transparent 0);
+  background-size: cover, 50px 50px, 100px 100px;
   position: relative;
 }
 
-.status-online::after {
+.hero-purple-pattern::before {
   content: '';
   position: absolute;
   top: 0;
+  left: 0;
   right: 0;
-  width: 12px;
-  height: 12px;
-  background: #10b981;
-  border: 2px solid white;
-  border-radius: 50%;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%);
+  pointer-events: none;
 }
 
-/* Custom spacing */
-.space-y-6 > * + * {
-  margin-top: 1.5rem;
+/* Enhanced Focus States */
+.focus-purple-modern:focus {
+  outline: none;
+  box-shadow: 
+    0 0 0 4px rgba(139, 92, 246, 0.2),
+    0 8px 25px rgba(139, 92, 246, 0.15);
+  border-color: #8b5cf6;
+  transform: translateY(-1px);
 }
 
-.space-y-8 > * + * {
-  margin-top: 2rem;
+/* Modern Loading States */
+.skeleton-purple-modern {
+  background: linear-gradient(
+    90deg, 
+    rgba(139, 92, 246, 0.08) 25%, 
+    rgba(168, 85, 247, 0.15) 50%, 
+    rgba(139, 92, 246, 0.08) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading-purple-modern 2s infinite;
+  border-radius: 12px;
 }
 
-/* Typography improvements */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Playfair Display', serif;
-  font-weight: 600;
-  line-height: 1.2;
+@keyframes loading-purple-modern {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-.font-display {
-  font-family: 'Playfair Display', serif;
+/* Enhanced Purple Shadows */
+.shadow-purple-soft {
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1);
 }
 
-.font-body {
-  font-family: 'Inter', sans-serif;
+.shadow-purple-medium {
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.15);
 }
 
-/* Form enhancements */
-.form-group {
-  margin-bottom: 1rem;
+.shadow-purple-strong {
+  box-shadow: 0 15px 50px rgba(139, 92, 246, 0.25);
 }
 
-.form-floating {
+.shadow-purple-glow {
+  box-shadow: 
+    0 0 30px rgba(139, 92, 246, 0.3),
+    0 8px 25px rgba(139, 92, 246, 0.2);
+}
+
+/* Interactive Purple Elements */
+.interactive-purple {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.interactive-purple:hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.05);
+}
+
+/* Modern Status Indicators */
+.status-purple-modern {
   position: relative;
 }
 
-.form-floating input {
-  padding-top: 1.625rem;
-  padding-bottom: 0.625rem;
-}
-
-.form-floating label {
+.status-purple-modern::after {
+  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  padding: 1rem 0.75rem;
-  pointer-events: none;
-  border: 1px solid transparent;
-  transform-origin: 0 0;
-  transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+  top: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  border: 3px solid white;
+  border-radius: 50%;
+  animation: pulseGlow 2s ease-in-out infinite;
 }
 
-/* Mobile optimizations */
+/* Typography Improvements with Purple Accents */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #312e81;
+}
+
+.font-display-purple {
+  font-family: 'Playfair Display', serif;
+  background: linear-gradient(135deg, #312e81 0%, #1e1b4b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.font-body-purple {
+  font-family: 'Inter', sans-serif;
+  color: #4c1d95;
+}
+
+/* Enhanced Form Elements */
+.form-purple-modern {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(139, 92, 246, 0.2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.form-purple-modern:focus {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #8b5cf6;
+  box-shadow: 
+    0 0 0 4px rgba(139, 92, 246, 0.1),
+    0 8px 25px rgba(139, 92, 246, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Responsive Purple Design */
 @media (max-width: 768px) {
-  .mobile-padding {
+  .mobile-purple-padding {
     padding-left: 1rem;
     padding-right: 1rem;
   }
   
-  .mobile-text-sm {
+  .mobile-purple-text {
     font-size: 0.875rem;
+    color: #6b46c1;
   }
   
-  .mobile-hidden {
-    display: none;
+  .card-purple-modern:hover {
+    transform: translateY(-4px) scale(1.01);
   }
 }
 
-/* Dark mode preparation */
+/* Purple Theme Dark Mode Preparation */
 @media (prefers-color-scheme: dark) {
-  .dark-mode {
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
+  .dark-purple-mode {
+    --bg-primary: #0f0b1f;
+    --bg-secondary: #1a1332;
+    --text-primary: #f1f5ff;
+    --text-secondary: #c4b5fd;
+    --accent-primary: #a855f7;
+    --accent-secondary: #8b5cf6;
   }
 }
 
-/* Performance optimizations */
-.will-change-transform {
-  will-change: transform;
+/* Performance Optimizations */
+.will-change-transform-purple {
+  will-change: transform, box-shadow, filter;
 }
 
-.will-change-opacity {
-  will-change: opacity;
+.will-change-opacity-purple {
+  will-change: opacity, transform;
 }
 
-/* Accessibility improvements */
+/* Accessibility with Purple Theme */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -331,15 +400,50 @@ h1, h2, h3, h4, h5, h6 {
   border: 0;
 }
 
-/* Focus indicators */
-.focus-visible:focus {
-  outline: 2px solid #6366f1;
-  outline-offset: 2px;
+.focus-visible-purple:focus {
+  outline: 3px solid #a855f7;
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 
-/* Custom border gradients */
-.border-gradient {
-  border: 2px solid transparent;
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(135deg, #667eea, #764ba2) border-box;
+/* Modern Border Effects */
+.border-purple-gradient {
+  border: 3px solid transparent;
+  background: 
+    linear-gradient(white, white) padding-box,
+    linear-gradient(135deg, #8b5cf6, #a855f7) border-box;
+  border-radius: 16px;
+}
+
+/* Floating Action Buttons */
+.fab-purple {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+.fab-purple:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 15px 35px rgba(139, 92, 246, 0.5);
+}
+
+/* Purple Selection Styling */
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: #1e1b4b;
+}
+
+::-moz-selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: #1e1b4b;
 }
