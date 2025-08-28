@@ -925,7 +925,7 @@ const Auth = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     required
-                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/50 focus:text-slate-800 focus:placeholder-slate-600 focus:border-purple-400 transition-all duration-500"
                     placeholder="Email address"
                   />
                 </div>
@@ -937,7 +937,7 @@ const Auth = () => {
                     value={formData.password}
                     onChange={(e) => setFormData({...formData, password: e.target.value})}
                     required
-                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/50 focus:text-slate-800 focus:placeholder-slate-600 focus:border-purple-400 transition-all duration-500"
                     placeholder="Password"
                   />
                 </div>
