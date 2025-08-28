@@ -43,6 +43,35 @@ h1, h2, h3, h4, h5, h6 {
   color: #1e293b !important;
 }
 
+/* AGGRESSIVE YELLOW/GOLD COLOR REMOVAL */
+* {
+  /* Override any yellow/gold backgrounds */
+  --tw-bg-opacity: 1;
+}
+
+/* Target all yellow background classes */
+.bg-yellow-50, .bg-yellow-100, .bg-yellow-200, .bg-yellow-300,
+.bg-amber-50, .bg-amber-100, .bg-amber-200, .bg-amber-300 {
+  background-color: #f8fafc !important; /* Replace with slate-50 */
+}
+
+/* Target all yellow text classes */
+.text-yellow-600, .text-yellow-700, .text-yellow-800, .text-yellow-900,
+.text-amber-600, .text-amber-700, .text-amber-800, .text-amber-900 {
+  color: #1e293b !important; /* Replace with slate-900 */
+}
+
+/* Override yellow borders */
+.border-yellow-200, .border-yellow-300, .border-amber-200, .border-amber-300 {
+  border-color: #e2e8f0 !important; /* Replace with slate-200 */
+}
+
+/* Fix any remaining yellow/gold elements */
+*[class*="yellow"], *[class*="amber"], *[style*="yellow"], *[style*="amber"] {
+  background-color: #f1f5f9 !important; /* Clean gray background */
+  color: #1e293b !important; /* Dark text */
+}
+
 /* Sleek Purple Professional Theme */
 * {
   margin: 0;
