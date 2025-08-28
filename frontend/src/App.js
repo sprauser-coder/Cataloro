@@ -1359,14 +1359,14 @@ const Home = () => {
                     placeholder="Search for anything..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-12 h-14 form-purple-modern text-gray-900 placeholder-purple-400 text-lg shadow-purple-lg"
+                    className="pl-12 h-14 search-sleek-purple text-high-contrast placeholder-gray-400 text-lg"
                   />
                 </div>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-56 h-14 form-purple-modern text-gray-900 shadow-purple-lg">
+                  <SelectTrigger className="w-56 h-14 search-sleek-purple text-high-contrast">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
-                  <SelectContent className="glass-purple-strong">
+                  <SelectContent className="notification-sleek-purple">
                     <SelectItem value="all">All Categories</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category} value={category}>
