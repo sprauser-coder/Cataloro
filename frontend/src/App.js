@@ -12,7 +12,7 @@ import AuthPage from './features/auth/AuthPage';
 import ProtectedRoute from './features/auth/ProtectedRoute';
 import AdminProtectedRoute from './features/auth/AdminProtectedRoute';
 import HomePage from './features/marketplace/HomePage';
-import BrowsePageSimple from './features/marketplace/BrowsePageSimple';
+import BrowsePage from './features/marketplace/BrowsePage';
 import SellPage from './features/listings/SellPage';
 import FavoritesPage from './features/favorites/FavoritesPage';
 import OrdersPage from './features/orders/OrdersPage';
