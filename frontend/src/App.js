@@ -73,6 +73,12 @@ function App() {
               </ProtectedRoute>
             } />
             
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            } />
+            
             {/* Admin Routes */}
             <Route path="/admin" element={
               <AdminProtectedRoute>
