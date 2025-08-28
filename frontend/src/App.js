@@ -4321,13 +4321,13 @@ const AdminPanel = () => {
   const [listings, setListings] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-
-
-
-
-
-
-  const [siteSettings, setSiteSettings] = useState(null);
+  
+  const [siteSettings, setSiteSettings] = useState({
+    site_name: 'Cataloro',
+    primary_color: '#8b5cf6',
+    secondary_color: '#06b6d4',
+    font_family: 'Inter'
+  });
   const [pages, setPages] = useState([]);
   const [navigation, setNavigation] = useState([]);
   const [selectedPage, setSelectedPage] = useState(null);
