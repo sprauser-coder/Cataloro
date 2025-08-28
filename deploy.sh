@@ -27,6 +27,22 @@ fi
 
 echo "✅ Latest code pulled successfully from GitHub"
 
+# CRITICAL FIX: Update backend .env for production MongoDB
+echo "🔧 Configuring backend for production..."
+cd "$PROJECT_ROOT/backend"
+
+# Ensure .env exists and has correct MongoDB URL for production
+cat > .env << EOF
+MONGO_URL=mongodb://localhost:27017
+DB_NAME=cataloro_production
+JWT_SECRET=cataloro-dev-secret-key
+CORS_ORIGINS=http://217.154.0.82,https://217.154.0.82
+ENVIRONMENT=production
+BACKEND_BASE_URL=http://217.154.0.82
+EOF
+
+echo "✅ Backend environment configured for production"
+
 # Show current version info
 echo "📋 Version Info:"
 if [ -f "$PROJECT_ROOT/frontend/package.json" ]; then
