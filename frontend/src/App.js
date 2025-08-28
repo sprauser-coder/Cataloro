@@ -10043,10 +10043,10 @@ const Orders = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
       <Header />
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">My Orders</h1>
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <h1 className="text-4xl font-light text-slate-900 mb-8 tracking-tight">My Orders</h1>
         
         {orders.length === 0 ? (
           <div className="text-center py-12">
