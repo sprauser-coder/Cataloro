@@ -1639,7 +1639,10 @@ const AdminPanel = () => {
                         {/* Actions */}
                         <div className="flex gap-2">
                           <Button
-                            onClick={() => setSelectedUser(user)}
+                            onClick={() => {
+                              setEditingUser(user);
+                              setShowUserEditModal(true);
+                            }}
                             variant="outline"
                             size="sm"
                             className="flex-1"
