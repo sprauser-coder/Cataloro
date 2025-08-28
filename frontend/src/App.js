@@ -31,7 +31,7 @@ const getImageUrl = (imageUrl) => {
   if (imageUrl.startsWith('http')) return imageUrl;
   if (imageUrl.startsWith('/uploads/')) {
     // Use environment variable for backend URL
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://217.154.0.82';
     return `${backendUrl}${imageUrl}`;
   }
   return imageUrl;
