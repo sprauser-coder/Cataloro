@@ -6186,7 +6186,7 @@ const AdminPanel = () => {
           </TabsContent>
           {/* Old Dashboard Content - Needs to be moved or removed */}
           <TabsContent value="legacy-dashboard">
-                  <Card className="lg:col-span-2">
+            <Card className="lg:col-span-2">
                     <CardHeader className="pb-3">
                       <div>
                         <CardTitle className="text-lg">Performance Summary</CardTitle>
