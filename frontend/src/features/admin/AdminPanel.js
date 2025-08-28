@@ -439,53 +439,316 @@ const AdminPanel = () => {
     }));
   };
 
-  // Helper functions for analytics
-  const generateRevenueChart = (stats) => {
-    const last7Days = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      last7Days.push({
-        date: date.toISOString().split('T')[0],
-        revenue: Math.random() * 2000 + 500, // Mock data for now
-        orders: Math.floor(Math.random() * 20) + 5
+  // LIVE FUNCTIONS - USER MANAGEMENT
+  const handleUserEdit = async (userId, updatedData) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(updatedData)
       });
+
+      if (response.ok) {
+        toast({ title: "Success", description: "User updated successfully" });
+        await fetchUsers();
+        setSelectedUser(null);
+      } else {
+        throw new Error('Failed to update user');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update user",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
-    return last7Days;
   };
 
-  const processUserActivity = (users) => {
-    const activity = users?.reduce((acc, user) => {
-      const date = user.created_at?.split('T')[0] || new Date().toISOString().split('T')[0];
-      acc[date] = (acc[date] || 0) + 1;
-      return acc;
-    }, {});
-    
-    return Object.entries(activity || {}).map(([date, count]) => ({ date, users: count }));
+  const handleUserAction = async (userId, action, additionalData = {}) => {
+    try {
+      setLoading(true);
+      let endpoint = '';
+      let method = 'PUT';
+      let body = {};
+
+      switch(action) {
+        case 'block':
+          endpoint = `/api/admin/users/${userId}/block`;
+          break;
+        case 'unblock':
+          endpoint = `/api/admin/users/${userId}/unblock`;
+          break;
+        case 'delete':
+          endpoint = `/api/admin/users/${userId}`;
+          method = 'DELETE';
+          break;
+        case 'reset-password':
+          endpoint = `/api/admin/users/${userId}/reset-password`;
+          method = 'POST';
+          break;
+        case 'change-role':
+          endpoint = `/api/admin/users/${userId}/role`;
+          body = { role: additionalData.role };
+          break;
+        case 'update-profile':
+          endpoint = `/api/admin/users/${userId}`;
+          body = additionalData;
+          break;
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${endpoint}`, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: method !== 'DELETE' ? JSON.stringify(body) : undefined
+      });
+
+      if (response.ok) {
+        toast({ title: "Success", description: `User ${action.replace('-', ' ')} successful` });
+        await fetchUsers();
+      } else {
+        throw new Error(`Failed to ${action} user`);
+      }
+    } catch (error) {
+      console.error(`Error ${action} user:`, error);
+      toast({
+        title: "Error",
+        description: `Failed to ${action.replace('-', ' ')} user`,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const processTopCategories = (listings) => {
-    const categories = listings?.reduce((acc, listing) => {
-      const category = listing.category || 'Other';
-      acc[category] = (acc[category] || 0) + 1;
-      return acc;
-    }, {});
-    
-    return Object.entries(categories || {})
-      .map(([category, count]) => ({ category, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+  const handleBulkUserAction = async (action, userIds = selectedUsers) => {
+    if (userIds.length === 0) {
+      toast({
+        title: "No Selection",
+        description: "Please select users first",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      let endpoint = '';
+      
+      switch(action) {
+        case 'bulk-block':
+          endpoint = '/api/admin/users/bulk-block';
+          break;
+        case 'bulk-unblock':
+          endpoint = '/api/admin/users/bulk-unblock';
+          break;
+        case 'bulk-delete':
+          endpoint = '/api/admin/users/bulk-delete';
+          break;
+        case 'bulk-role-change':
+          endpoint = '/api/admin/users/bulk-role-change';
+          break;
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ user_ids: userIds })
+      });
+
+      if (response.ok) {
+        toast({ title: "Success", description: `Bulk action completed for ${userIds.length} users` });
+        setSelectedUsers([]);
+        await fetchUsers();
+      } else {
+        throw new Error('Bulk action failed');
+      }
+    } catch (error) {
+      console.error(`Error in bulk ${action}:`, error);
+      toast({
+        title: "Error",
+        description: `Failed to execute bulk action`,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const calculateConversionMetrics = (stats) => {
-    return {
-      conversion_rate: stats?.total_orders && stats?.total_users ? 
-        ((stats.total_orders / stats.total_users) * 100).toFixed(2) : '0.00',
-      avg_order_value: stats?.total_revenue && stats?.total_orders ? 
-        (stats.total_revenue / stats.total_orders).toFixed(2) : '0.00',
-      repeat_customer_rate: '23.5', // Mock for now
-      cart_abandonment_rate: '68.2' // Mock for now
-    };
+  // LIVE FUNCTIONS - PRODUCT MANAGEMENT
+  const handleProductEdit = async (productId, updatedData) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/listings/${productId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(updatedData)
+      });
+
+      if (response.ok) {
+        toast({ title: "Success", description: "Product updated successfully" });
+        await fetchListings();
+      } else {
+        throw new Error('Failed to update product');
+      }
+    } catch (error) {
+      console.error('Error updating product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update product",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProductAction = async (productId, action, additionalData = {}) => {
+    try {
+      setLoading(true);
+      let endpoint = '';
+      let method = 'PUT';
+
+      switch(action) {
+        case 'approve':
+          endpoint = `/api/admin/listings/${productId}/approve`;
+          break;
+        case 'feature':
+          endpoint = `/api/admin/listings/${productId}/feature`;
+          break;
+        case 'delete':
+          endpoint = `/api/admin/listings/${productId}`;
+          method = 'DELETE';
+          break;
+        case 'update-status':
+          endpoint = `/api/admin/listings/${productId}/status`;
+          break;
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${endpoint}`, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: method !== 'DELETE' ? JSON.stringify(additionalData) : undefined
+      });
+
+      if (response.ok) {
+        toast({ title: "Success", description: `Product ${action} successful` });
+        await fetchListings();
+      } else {
+        throw new Error(`Failed to ${action} product`);
+      }
+    } catch (error) {
+      console.error(`Error ${action} product:`, error);
+      toast({
+        title: "Error",
+        description: `Failed to ${action} product`,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // LIVE FUNCTIONS - ORDERS MANAGEMENT  
+  const handleOrderAction = async (orderId, action, additionalData = {}) => {
+    try {
+      setLoading(true);
+      let endpoint = '';
+      let method = 'PUT';
+
+      switch(action) {
+        case 'update-status':
+          endpoint = `/api/admin/orders/${orderId}/status`;
+          break;
+        case 'cancel':
+          endpoint = `/api/admin/orders/${orderId}/cancel`;
+          break;
+        case 'refund':
+          endpoint = `/api/admin/orders/${orderId}/refund`;
+          method = 'POST';
+          break;
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${endpoint}`, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(additionalData)
+      });
+
+      if (response.ok) {
+        toast({ title: "Success", description: `Order ${action} successful` });
+        await fetchOrders();
+      } else {
+        throw new Error(`Failed to ${action} order`);
+      }
+    } catch (error) {
+      console.error(`Error ${action} order:`, error);
+      toast({
+        title: "Error", 
+        description: `Failed to ${action} order`,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // LIVE FUNCTIONS - DASHBOARD ACTIONS
+  const handleDashboardAction = async (action) => {
+    try {
+      setLoading(true);
+      
+      switch(action) {
+        case 'refresh-stats':
+          await fetchDashboardData();
+          await updateLiveStats();
+          break;
+        case 'clear-cache':
+          await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/system/clear-cache`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          });
+          break;
+        case 'backup-database':
+          await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/system/backup`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          });
+          break;
+      }
+      
+      toast({ title: "Success", description: "Action completed successfully" });
+    } catch (error) {
+      console.error('Dashboard action error:', error);
+      toast({
+        title: "Error",
+        description: "Action failed",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   // User Management Functions
