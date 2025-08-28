@@ -687,10 +687,10 @@ const Header = () => {
   const siteName = siteSettings?.site_name || 'Cataloro';
 
   return (
-    <header className="header-professional sticky top-0 z-50">
+    <header className="header-purple-sleek sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="header-logo-professional">
+          <Link to="/" className="header-logo-sleek">
             {siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? (
               <img 
                 src={getImageUrl(siteSettings.header_logo_url)}
@@ -705,10 +705,10 @@ const Header = () => {
               />
             ) : null}
             <div className={`logo-fallback flex items-center space-x-3 ${siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? 'hidden' : ''}`}>
-              <div className="w-10 h-10 bg-gradient-business rounded-lg flex items-center justify-center shadow-professional">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-700 rounded-xl flex items-center justify-center shadow-lg">
                 <Package className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-readable">
+              <span className="text-xl font-bold text-high-contrast">
                 {siteName}
               </span>
             </div>
@@ -717,22 +717,22 @@ const Header = () => {
           {/* Right side: Navigation + User Info */}
           <div className="flex items-center space-x-4">
             {/* Main Navigation - moved to right */}
-            <nav className="header-nav-professional">
+            <nav className="header-nav-sleek">
               <Link 
                 to="/" 
-                className="header-nav-link-professional"
+                className="header-nav-link-sleek"
               >
                 Browse
               </Link>
               <Link 
                 to="/sell" 
-                className="header-nav-link-professional"
+                className="header-nav-link-sleek"
               >
                 Sell
               </Link>
               <Link 
                 to="/orders" 
-                className="header-nav-link-professional"
+                className="header-nav-link-sleek"
               >
                 My Orders
               </Link>
@@ -741,7 +741,7 @@ const Header = () => {
                 <Link
                   key={navItem.id}
                   to={navItem.url}
-                  className="header-nav-link-professional"
+                  className="header-nav-link-sleek"
                   target={navItem.target}
                 >
                   {navItem.label}
@@ -750,7 +750,7 @@ const Header = () => {
               {user?.role === 'admin' && (
                 <Link 
                   to="/admin" 
-                  className="header-nav-link-professional text-red-600 hover:text-red-500"
+                  className="header-nav-link-sleek text-red-600 hover:text-red-500"
                 >
                   Admin Panel
                 </Link>
