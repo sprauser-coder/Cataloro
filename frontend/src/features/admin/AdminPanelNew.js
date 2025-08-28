@@ -201,24 +201,80 @@ const AdminPanel = () => {
     };
   };
 
-  const fetchAnalyticsData = async () => {
+  // User Management Functions
+  const handleUserAction = async (userId, action) => {
     try {
-      // Fetch comprehensive analytics data
-      const statsResponse = await adminAPI.getStats();
-      const usersResponse = await adminAPI.getUsers();
-      const listingsResponse = await adminAPI.getListings();
+      setLoading(true);
       
-      // Process analytics data
-      const analytics = {
-        revenue_chart: generateRevenueChart(statsResponse.data),
-        user_activity: processUserActivity(usersResponse.data),
-        top_categories: processTopCategories(listingsResponse.data),
-        conversion_metrics: calculateConversionMetrics(statsResponse.data)
-      };
+      switch(action) {
+        case 'block':
+          await adminAPI.blockUser(userId);
+          toast({ title: "Success", description: "User blocked successfully" });
+          break;
+        case 'unblock':
+          await adminAPI.unblockUser(userId);
+          toast({ title: "Success", description: "User unblocked successfully" });
+          break;
+        case 'delete':
+          await adminAPI.deleteUser(userId);
+          toast({ title: "Success", description: "User deleted successfully" });
+          break;
+        case 'reset-password':
+          await adminAPI.resetUserPassword(userId);
+          toast({ title: "Success", description: "Password reset email sent" });
+          break;
+      }
       
-      setAnalyticsData(analytics);
+      await fetchUsers();
     } catch (error) {
-      console.error('Error fetching analytics:', error);
+      console.error(`Error ${action} user:`, error);
+      toast({
+        title: "Error",
+        description: `Failed to ${action} user`,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkUserAction = async (action) => {
+    if (selectedUsers.length === 0) {
+      toast({
+        title: "No Selection",
+        description: "Please select users first",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      
+      switch(action) {
+        case 'bulk-block':
+          await adminAPI.bulkBlockUsers(selectedUsers);
+          break;
+        case 'bulk-unblock':
+          await adminAPI.bulkUnblockUsers(selectedUsers);
+          break;
+        case 'bulk-delete':
+          await adminAPI.bulkDeleteUsers(selectedUsers);
+          break;
+      }
+      
+      toast({ title: "Success", description: `Bulk action completed for ${selectedUsers.length} users` });
+      setSelectedUsers([]);
+      await fetchUsers();
+    } catch (error) {
+      console.error(`Error in bulk ${action}:`, error);
+      toast({
+        title: "Error",
+        description: `Failed to execute bulk action`,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
