@@ -68,8 +68,22 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Fix any remaining yellow/gold elements */
 *[class*="yellow"], *[class*="amber"], *[style*="yellow"], *[style*="amber"] {
-  background-color: #f1f5f9 !important; /* Clean gray background */
+  background-color: #ffffff !important; /* Clean white background */
   color: #1e293b !important; /* Dark text */
+}
+
+/* CRITICAL: Override all card backgrounds in admin panel */
+.admin-panel .bg-yellow-50, .admin-panel .bg-yellow-100, 
+.admin-panel .bg-amber-50, .admin-panel .bg-amber-100,
+.admin-panel [style*="background: yellow"], .admin-panel [style*="background-color: yellow"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+/* Force all admin cards to be white */
+.admin-panel Card, .admin-panel CardContent, .admin-panel CardHeader {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
 }
 
 /* ADMIN PANEL FORM VISIBILITY FIX */
