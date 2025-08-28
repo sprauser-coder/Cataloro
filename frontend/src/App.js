@@ -5876,23 +5876,46 @@ const AdminPanel = () => {
         </div>
       </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="overflow-x-auto pb-4">
-            <div className="bg-white rounded-2xl border border-slate-200 p-2">
-              <div className="flex space-x-1 flex-wrap">
-                <button onClick={() => setActiveTab("dashboard")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "dashboard" ? "bg-slate-200 text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>📊 Dashboard</button>
-                <button onClick={() => setActiveTab("activity")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "activity" ? "bg-slate-200 text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🔔 Activity</button>
-                <button onClick={() => setActiveTab("users")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "users" ? "bg-slate-200 text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>👥 Users</button>
-                <button onClick={() => setActiveTab("products")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "products" ? "bg-slate-200 text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🛍️ Products</button>
-                <button onClick={() => setActiveTab("content-listings")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "content-listings" ? "bg-slate-200 text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🏷️ Categories</button>
-                <button onClick={() => setActiveTab("appearance")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "appearance" ? "bg-slate-200 text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🎨 Appearance</button>
-                <button onClick={() => setActiveTab("pages")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "pages" ? "bg-slate-200 text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>📄 Content</button>
-                <button onClick={() => setActiveTab("seo")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "seo" ? "bg-slate-200 text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🔍 SEO</button>
-                <button onClick={() => setActiveTab("settings")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "settings" ? "bg-slate-200 text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>⚙️ Settings</button>
-                <button onClick={() => setActiveTab("database")} className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${activeTab === "database" ? "bg-slate-200 text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>🗄️ Database</button>
-              </div>
-            </div>
+      {/* Ultra-Modern Navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-lg p-3">
+          <div className="flex space-x-2 flex-wrap justify-center lg:justify-start">
+            <button onClick={() => setActiveTab("dashboard")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "dashboard" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
+              <span className="flex items-center space-x-2"><span>📊</span><span>Dashboard</span></span>
+            </button>
+            <button onClick={() => setActiveTab("activity")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "activity" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
+              <span className="flex items-center space-x-2"><span>🔔</span><span>Activity</span></span>
+            </button>
+            <button onClick={() => setActiveTab("users")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "users" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
+              <span className="flex items-center space-x-2"><span>👥</span><span>Users</span></span>
+            </button>
+            <button onClick={() => setActiveTab("products")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "products" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
+              <span className="flex items-center space-x-2"><span>🛍️</span><span>Products</span></span>
+            </button>
+            <button onClick={() => setActiveTab("content-listings")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "content-listings" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
+              <span className="flex items-center space-x-2"><span>🏷️</span><span>Categories</span></span>
+            </button>
+            <button onClick={() => setActiveTab("appearance")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "appearance" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
+              <span className="flex items-center space-x-2"><span>🎨</span><span>Appearance</span></span>
+            </button>
+            <button onClick={() => setActiveTab("pages")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "pages" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
+              <span className="flex items-center space-x-2"><span>📄</span><span>Content</span></span>
+            </button>
+            <button onClick={() => setActiveTab("seo")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "seo" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
+              <span className="flex items-center space-x-2"><span>🔍</span><span>SEO</span></span>
+            </button>
+            <button onClick={() => setActiveTab("settings")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "settings" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
+              <span className="flex items-center space-x-2"><span>⚙️</span><span>Settings</span></span>
+            </button>
+            <button onClick={() => setActiveTab("database")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "database" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
+              <span className="flex items-center space-x-2"><span>🗄️</span><span>Database</span></span>
+            </button>
           </div>
+        </div>
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard">
