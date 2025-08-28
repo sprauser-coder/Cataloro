@@ -532,34 +532,46 @@ const AdminPanel = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-7 bg-white shadow-sm mb-8">
-            <TabsTrigger value="dashboard" className="flex items-center gap-2 text-slate-700">
-              <BarChart3 className="h-4 w-4" />
+          <TabsList className="grid w-full grid-cols-10 bg-white shadow-sm mb-8 text-xs">
+            <TabsTrigger value="dashboard" className="flex items-center gap-1 text-slate-700 px-2">
+              <BarChart3 className="h-3 w-3" />
               Dashboard
             </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2 text-slate-700">
-              <Users className="h-4 w-4" />
-              Users
+            <TabsTrigger value="users" className="flex items-center gap-1 text-slate-700 px-2">
+              <Users className="h-3 w-3" />
+              Users Pro
             </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center gap-2 text-slate-700">
-              <Package className="h-4 w-4" />
+            <TabsTrigger value="products" className="flex items-center gap-1 text-slate-700 px-2">
+              <Package className="h-3 w-3" />
               Products
             </TabsTrigger>
-            <TabsTrigger value="content" className="flex items-center gap-2 text-slate-700">
-              <Layout className="h-4 w-4" />
-              Content
+            <TabsTrigger value="orders" className="flex items-center gap-1 text-slate-700 px-2">
+              <ShoppingCart className="h-3 w-3" />
+              Orders
             </TabsTrigger>
-            <TabsTrigger value="media" className="flex items-center gap-2 text-slate-700">
-              <Image className="h-4 w-4" />
-              Media
+            <TabsTrigger value="financial" className="flex items-center gap-1 text-slate-700 px-2">
+              <DollarSign className="h-3 w-3" />
+              Financial
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2 text-slate-700">
-              <TrendingUp className="h-4 w-4" />
+            <TabsTrigger value="marketing" className="flex items-center gap-1 text-slate-700 px-2">
+              <TrendingUp className="h-3 w-3" />
+              Marketing
+            </TabsTrigger>
+            <TabsTrigger value="communication" className="flex items-center gap-1 text-slate-700 px-2">
+              <MessageSquare className="h-3 w-3" />
+              Comms
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-1 text-slate-700 px-2">
+              <PieChart className="h-3 w-3" />
               Analytics
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2 text-slate-700">
-              <Settings className="h-4 w-4" />
-              Settings
+            <TabsTrigger value="system" className="flex items-center gap-1 text-slate-700 px-2">
+              <Settings className="h-3 w-3" />
+              System
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="flex items-center gap-1 text-slate-700 px-2">
+              <Download className="h-3 w-3" />
+              Reports
             </TabsTrigger>
           </TabsList>
 
