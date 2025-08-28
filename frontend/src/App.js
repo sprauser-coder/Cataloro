@@ -1688,7 +1688,7 @@ const Home = () => {
                       }}
                     >
                       <Star className={`h-4 w-4 ${
-                        isListingFavorited(listing.id) ? 'fill-amber-400 text-amber-400' : ''
+                        isListingFavorited(listing.id) ? 'fill-slate-800 text-slate-800' : 'text-slate-600 hover:text-slate-800'
                       }`} />
                     </Button>
                   </div>
