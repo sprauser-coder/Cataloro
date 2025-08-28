@@ -54,13 +54,70 @@ const AdminPanel = () => {
   // Orders Management
   const [orders, setOrders] = useState([]);
   const [selectedOrders, setSelectedOrders] = useState([]);
+  const [orderSearchTerm, setOrderSearchTerm] = useState('');
+  const [orderFilter, setOrderFilter] = useState('all');
   
-  // Analytics Data
+  // Financial Management
+  const [financialData, setFinancialData] = useState({
+    revenue: { total: 0, monthly: 0, daily: 0 },
+    commissions: { total: 0, pending: 0, paid: 0 },
+    payouts: { scheduled: 0, completed: 0, failed: 0 },
+    transactions: []
+  });
+  
+  // Marketing Tools
+  const [campaigns, setCampaigns] = useState([]);
+  const [promotions, setPromotions] = useState([]);
+  const [discountCodes, setDiscountCodes] = useState([]);
+  
+  // Communication Center
+  const [messages, setMessages] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  
+  // System Administration
+  const [systemLogs, setSystemLogs] = useState([]);
+  const [backups, setBackups] = useState([]);
+  const [securityEvents, setSecurityEvents] = useState([]);
+  
+  // Business Intelligence & Reports
+  const [reports, setReports] = useState([]);
+  const [customReports, setCustomReports] = useState([]);
+  const [exportHistory, setExportHistory] = useState([]);
+  
+  // Inventory Management
+  const [inventory, setInventory] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
+  const [stockAlerts, setStockAlerts] = useState([]);
+  
+  // Live Analytics Data - REAL-TIME
+  const [liveStats, setLiveStats] = useState({
+    activeUsers: 0,
+    currentOrders: 0,
+    revenueToday: 0,
+    conversionRate: 0,
+    avgOrderValue: 0,
+    repeatCustomerRate: 0,
+    cartAbandonmentRate: 0,
+    topSellingProducts: [],
+    recentActivity: []
+  });
+  
+  // Analytics Data - ENHANCED
   const [analyticsData, setAnalyticsData] = useState({
     revenue_chart: [],
     user_activity: [],
     top_categories: [],
-    conversion_metrics: {}
+    conversion_metrics: {},
+    sales_funnel: {},
+    geographic_data: [],
+    device_analytics: {},
+    traffic_sources: {},
+    customer_lifetime_value: {},
+    product_performance: [],
+    seasonal_trends: [],
+    competitor_analysis: {}
   });
 
   // Content Management
