@@ -10077,18 +10077,18 @@ const Orders = () => {
                     </Badge>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600">Quantity</p>
-                      <p className="font-semibold">{orderData.order.quantity}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-slate-50 rounded-xl p-4">
+                      <p className="text-sm text-slate-600 font-light mb-1">Quantity</p>
+                      <p className="font-light text-lg text-slate-900">{orderData.order.quantity}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Total Amount</p>
-                      <p className="font-semibold">€{orderData.order.total_amount?.toFixed(2) || '0.00'}</p>
+                    <div className="bg-slate-50 rounded-xl p-4">
+                      <p className="text-sm text-slate-600 font-light mb-1">Total Amount</p>
+                      <p className="font-light text-lg text-slate-900">€{orderData.order.total_amount?.toFixed(2) || '0.00'}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Seller</p>
-                      <p className="font-semibold">{orderData.seller?.full_name || 'Unknown Seller'}</p>
+                    <div className="bg-slate-50 rounded-xl p-4">
+                      <p className="text-sm text-slate-600 font-light mb-1">Seller</p>
+                      <p className="font-light text-lg text-slate-900">{orderData.seller?.full_name || 'Unknown Seller'}</p>
                     </div>
                   </div>
                   
