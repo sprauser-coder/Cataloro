@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "passed": 9,
+    "total": 9,
+    "success_rate": 100.0,
+    "timestamp": "2025-08-26T13:03:14.704445"
+  },
+  "results": [
+    {
+      "test": "Service Health",
+      "success": true,
+      "message": "Service responsive in 0.08s",
+      "timestamp": "2025-08-26T13:03:09.643740",
+      "response_data": null
+    },
+    {
+      "test": "Version Endpoint",
+      "success": true,
+      "message": "Version correctly shows v1.6.5",
+      "timestamp": "2025-08-26T13:03:10.153166",
+      "response_data": {
+        "message": "Marketplace API",
+        "version": "v1.6.5"
+      }
+    },
+    {
+      "test": "Database Connectivity",
+      "success": true,
+      "message": "Database accessible - 3/3 endpoints working",
+      "timestamp": "2025-08-26T13:03:10.683749",
+      "response_data": null
+    },
+    {
+      "test": "Categories Endpoint",
+      "success": true,
+      "message": "Categories loaded successfully: 10 categories",
+      "timestamp": "2025-08-26T13:03:11.193484",
+      "response_data": [
+        "Electronics",
+        "Fashion",
+        "Home & Garden",
+        "Sports",
+        "Books"
+      ]
+    },
+    {
+      "test": "Listings Endpoint",
+      "success": true,
+      "message": "Listings endpoint working, returned 6 listings",
+      "timestamp": "2025-08-26T13:03:11.707448",
+      "response_data": null
+    },
+    {
+      "test": "Listings Count Endpoint",
+      "success": true,
+      "message": "Count endpoint working, total: 6",
+      "timestamp": "2025-08-26T13:03:12.215139",
+      "response_data": null
+    },
+    {
+      "test": "User Registration",
+      "success": true,
+      "message": "User registered successfully: testusercfa4a2a6",
+      "timestamp": "2025-08-26T13:03:12.957308",
+      "response_data": null
+    },
+    {
+      "test": "User Login",
+      "success": true,
+      "message": "User logged in successfully: testusercfa4a2a6",
+      "timestamp": "2025-08-26T13:03:13.694325",
+      "response_data": null
+    },
+    {
+      "test": "Protected Endpoint",
+      "success": true,
+      "message": "Protected endpoint accessible, returned 0 listings",
+      "timestamp": "2025-08-26T13:03:14.204080",
+      "response_data": null
+    }
+  ]
+}
