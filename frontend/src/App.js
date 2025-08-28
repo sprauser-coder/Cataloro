@@ -8230,54 +8230,54 @@ const AdminPanel = () => {
               <div className="flex justify-center py-8">Loading...</div>
             ) : siteSettings ? (
               <div className="space-y-6">
-                {/* Sub-navigation for Appearance sections */}
-                <div className="border-b border-gray-200">
-                  <nav className="-mb-px flex space-x-8">
+                {/* Sub-navigation for Appearance sections - Ultra-Modern */}
+                <div className="bg-white rounded-xl border border-slate-200 p-1 mb-6">
+                  <nav className="flex space-x-1 flex-wrap">
                     <button
-                      className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
+                      className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${
                         appearanceTab === 'typography' 
-                          ? 'border-indigo-500 text-indigo-600' 
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          ? 'bg-slate-900 text-white shadow-sm' 
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                       onClick={() => setAppearanceTab('typography')}
                     >
                       Typography
                     </button>
                     <button
-                      className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
+                      className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${
                         appearanceTab === 'colors' 
-                          ? 'border-indigo-500 text-indigo-600' 
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          ? 'bg-slate-900 text-white shadow-sm' 
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                       onClick={() => setAppearanceTab('colors')}
                     >
                       Theme Colours
                     </button>
                     <button
-                      className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
+                      className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${
                         appearanceTab === 'hero' 
-                          ? 'border-indigo-500 text-indigo-600' 
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          ? 'bg-slate-900 text-white shadow-sm' 
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                       onClick={() => setAppearanceTab('hero')}
                     >
                       Hero Selection
                     </button>
                     <button
-                      className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
+                      className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${
                         appearanceTab === 'logo' 
-                          ? 'border-indigo-500 text-indigo-600' 
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          ? 'bg-slate-900 text-white shadow-sm' 
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                       onClick={() => setAppearanceTab('logo')}
                     >
                       Logo Settings
                     </button>
                     <button
-                      className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${
+                      className={`px-4 py-2 rounded-lg text-sm font-light transition-all duration-200 ${
                         appearanceTab === 'header' 
-                          ? 'border-indigo-500 text-indigo-600' 
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          ? 'bg-slate-900 text-white shadow-sm' 
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                       }`}
                       onClick={() => setAppearanceTab('header')}
                     >
