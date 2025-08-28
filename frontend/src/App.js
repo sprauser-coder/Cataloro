@@ -1370,8 +1370,8 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
       <Header />
       
-      {/* Ultra-Modern Hero Section - Clean & Conservative */}
-      <div className="bg-white border-b border-gray-200">
+      {/* Dynamic Hero Section - Configurable from Admin Panel */}
+      <div className="border-b border-gray-200" style={getHeroStyle()}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             {/* Hero Image Above Title */}
@@ -1391,10 +1391,10 @@ const Home = () => {
               </div>
             )}
             
-            <h1 className="text-6xl font-extralight text-slate-900 mb-6 tracking-tight">
+            <h1 className="text-6xl font-extralight mb-6 tracking-tight" style={{color: siteSettings?.hero_title_color || siteSettings?.hero_text_color || '#1e293b'}}>
               {heroTitle}
             </h1>
-            <p className="text-xl text-slate-600 mb-12 font-light max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl mb-12 font-light max-w-2xl mx-auto leading-relaxed" style={{color: siteSettings?.hero_subtitle_color || '#64748b'}}>
               {heroSubtitle}
             </p>
             
