@@ -776,46 +776,6 @@ const AdminPanel = () => {
     return Math.floor(Math.random() * 1000) + 50;
   };
 
-  const handleBulkUserAction = async (action) => {
-    if (selectedUsers.length === 0) {
-      toast({
-        title: "No Selection",
-        description: "Please select users first",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      
-      switch(action) {
-        case 'bulk-block':
-          await adminAPI.bulkBlockUsers(selectedUsers);
-          break;
-        case 'bulk-unblock':
-          await adminAPI.bulkUnblockUsers(selectedUsers);
-          break;
-        case 'bulk-delete':
-          await adminAPI.bulkDeleteUsers(selectedUsers);
-          break;
-      }
-      
-      toast({ title: "Success", description: `Bulk action completed for ${selectedUsers.length} users` });
-      setSelectedUsers([]);
-      await fetchUsers();
-    } catch (error) {
-      console.error(`Error in bulk ${action}:`, error);
-      toast({
-        title: "Error",
-        description: `Failed to execute bulk action`,
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // LIVE PRODUCT VIEWS TRACKING - REAL TIME DATA
   const updateProductViews = async (productId) => {
     try {
