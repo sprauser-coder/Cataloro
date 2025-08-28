@@ -2478,7 +2478,7 @@ const ListingsTabContent = () => {
               </div>
               <CardContent className="p-4">
                 <h3 className="font-semibold text-sm mb-2">{listing.title}</h3>
-                <p className="text-lg font-bold text-blue-600">€{listing.price}</p>
+                <p className="price-sleek-purple">€{listing.price}</p>
                 <p className="text-xs text-gray-500 mt-2">
                   Created {new Date(listing.created_at).toLocaleDateString()}
                 </p>
