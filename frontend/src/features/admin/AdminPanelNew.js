@@ -201,6 +201,27 @@ const AdminPanel = () => {
     };
   };
 
+  const fetchAnalyticsData = async () => {
+    try {
+      // Fetch comprehensive analytics data
+      const statsResponse = await adminAPI.getStats();
+      const usersResponse = await adminAPI.getUsers();
+      const listingsResponse = await adminAPI.getListings();
+      
+      // Process analytics data
+      const analytics = {
+        revenue_chart: generateRevenueChart(statsResponse.data),
+        user_activity: processUserActivity(usersResponse.data),
+        top_categories: processTopCategories(listingsResponse.data),
+        conversion_metrics: calculateConversionMetrics(statsResponse.data)
+      };
+      
+      setAnalyticsData(analytics);
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+    }
+  };
+
   const handleRefreshData = async () => {
     setRefreshing(true);
     await fetchDashboardData();
