@@ -1074,185 +1074,243 @@ const AdminPanel = () => {
 
           {/* Content Management Tab */}
           <TabsContent value="content">
-            <Card className="border-0 shadow-sm bg-white">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-slate-900">
-                  <Layout className="h-5 w-5 text-purple-600" />
-                  Site Content Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Basic Site Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              {/* Site Content Management */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <Layout className="h-5 w-5 text-purple-600" />
+                    Site Content Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Basic Site Info */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="site_name" className="text-slate-700">Site Name</Label>
+                      <Input
+                        id="site_name"
+                        value={siteContent.site_name}
+                        onChange={(e) => setSiteContent(prev => ({ ...prev, site_name: e.target.value }))}
+                        className="border-slate-200"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="contact_email" className="text-slate-700">Contact Email</Label>
+                      <Input
+                        id="contact_email"
+                        type="email"
+                        value={siteContent.contact_email}
+                        onChange={(e) => setSiteContent(prev => ({ ...prev, contact_email: e.target.value }))}
+                        className="border-slate-200"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Hero Section */}
                   <div>
-                    <Label htmlFor="site_name" className="text-slate-700">Site Name</Label>
+                    <Label htmlFor="hero_title" className="text-slate-700">Hero Title</Label>
                     <Input
-                      id="site_name"
-                      value={siteContent.site_name}
-                      onChange={(e) => setSiteContent(prev => ({ ...prev, site_name: e.target.value }))}
+                      id="hero_title"
+                      value={siteContent.hero_title}
+                      onChange={(e) => setSiteContent(prev => ({ ...prev, hero_title: e.target.value }))}
                       className="border-slate-200"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="contact_email" className="text-slate-700">Contact Email</Label>
+                    <Label htmlFor="hero_subtitle" className="text-slate-700">Hero Subtitle</Label>
+                    <Textarea
+                      id="hero_subtitle"
+                      value={siteContent.hero_subtitle}
+                      onChange={(e) => setSiteContent(prev => ({ ...prev, hero_subtitle: e.target.value }))}
+                      className="border-slate-200"
+                      rows={3}
+                    />
+                  </div>
+
+                  {/* Logo Management */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Logo & Branding</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <Label className="text-slate-700">Header Logo</Label>
+                        <div className="mt-2 space-y-3">
+                          {siteContent.header_logo_url && (
+                            <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
+                              <img 
+                                src={siteContent.header_logo_url} 
+                                alt="Header Logo" 
+                                className="h-12 object-contain"
+                              />
+                            </div>
+                          )}
+                          <div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleFileUpload(e, 'logo')}
+                              className="hidden"
+                              id="logo-upload"
+                            />
+                            <label htmlFor="logo-upload">
+                              <Button variant="outline" className="w-full cursor-pointer" disabled={uploading}>
+                                <Upload className="h-4 w-4 mr-2" />
+                                {uploading ? 'Uploading...' : 'Upload New Logo'}
+                              </Button>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label className="text-slate-700">Favicon</Label>
+                        <div className="mt-2 space-y-3">
+                          {siteContent.favicon_url && (
+                            <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
+                              <img 
+                                src={siteContent.favicon_url} 
+                                alt="Favicon" 
+                                className="h-8 w-8 object-contain"
+                              />
+                            </div>
+                          )}
+                          <div>
+                            <input
+                              type="file"
+                              accept="image/x-icon,image/png"
+                              onChange={(e) => handleFileUpload(e, 'favicon')}
+                              className="hidden"
+                              id="favicon-upload"
+                            />
+                            <label htmlFor="favicon-upload">
+                              <Button variant="outline" className="w-full cursor-pointer" disabled={uploading}>
+                                <Upload className="h-4 w-4 mr-2" />
+                                {uploading ? 'Uploading...' : 'Upload Favicon'}
+                              </Button>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handleUpdateSiteContent}
+                    disabled={loading}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Saving Changes...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save All Changes
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Announcements & Notifications */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <MessageSquare className="h-5 w-5 text-purple-600" />
+                    Site Announcements & Notifications
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label className="text-slate-700">Global Announcement</Label>
+                    <Textarea
+                      placeholder="Enter site-wide announcement message..."
+                      className="border-slate-200"
+                      rows={3}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-slate-700">Show Announcement Banner</Label>
+                    <Switch />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-slate-700">Announcement Type</Label>
+                      <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white">
+                        <option value="info">Information</option>
+                        <option value="warning">Warning</option>
+                        <option value="success">Success</option>
+                        <option value="error">Error</option>
+                      </select>
+                    </div>
+                    <div>
+                      <Label className="text-slate-700">Display Duration (days)</Label>
+                      <Input
+                        type="number"
+                        placeholder="7"
+                        className="border-slate-200"
+                      />
+                    </div>
+                  </div>
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Announcement
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* SEO & Meta Management */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <Globe className="h-5 w-5 text-purple-600" />
+                    SEO & Meta Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label className="text-slate-700">Meta Description</Label>
+                    <Textarea
+                      placeholder="Site meta description for search engines..."
+                      className="border-slate-200"
+                      rows={2}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-slate-700">Meta Keywords</Label>
+                      <Input
+                        placeholder="marketplace, buy, sell, trade"
+                        className="border-slate-200"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-700">Site Language</Label>
+                      <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-slate-700">Open Graph Image URL</Label>
                     <Input
-                      id="contact_email"
-                      type="email"
-                      value={siteContent.contact_email}
-                      onChange={(e) => setSiteContent(prev => ({ ...prev, contact_email: e.target.value }))}
+                      placeholder="https://example.com/og-image.jpg"
                       className="border-slate-200"
                     />
                   </div>
-                </div>
-
-                {/* Hero Section */}
-                <div>
-                  <Label htmlFor="hero_title" className="text-slate-700">Hero Title</Label>
-                  <Input
-                    id="hero_title"
-                    value={siteContent.hero_title}
-                    onChange={(e) => setSiteContent(prev => ({ ...prev, hero_title: e.target.value }))}
-                    className="border-slate-200"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="hero_subtitle" className="text-slate-700">Hero Subtitle</Label>
-                  <Textarea
-                    id="hero_subtitle"
-                    value={siteContent.hero_subtitle}
-                    onChange={(e) => setSiteContent(prev => ({ ...prev, hero_subtitle: e.target.value }))}
-                    className="border-slate-200"
-                    rows={3}
-                  />
-                </div>
-
-                {/* Logo Management */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-slate-900">Logo & Branding</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label className="text-slate-700">Header Logo</Label>
-                      <div className="mt-2 space-y-3">
-                        {siteContent.header_logo_url && (
-                          <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
-                            <img 
-                              src={siteContent.header_logo_url} 
-                              alt="Header Logo" 
-                              className="h-12 object-contain"
-                            />
-                          </div>
-                        )}
-                        <div>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleFileUpload(e, 'logo')}
-                            className="hidden"
-                            id="logo-upload"
-                          />
-                          <label htmlFor="logo-upload">
-                            <Button variant="outline" className="w-full cursor-pointer" disabled={uploading}>
-                              <Upload className="h-4 w-4 mr-2" />
-                              {uploading ? 'Uploading...' : 'Upload New Logo'}
-                            </Button>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label className="text-slate-700">Favicon</Label>
-                      <div className="mt-2 space-y-3">
-                        {siteContent.favicon_url && (
-                          <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
-                            <img 
-                              src={siteContent.favicon_url} 
-                              alt="Favicon" 
-                              className="h-8 w-8 object-contain"
-                            />
-                          </div>
-                        )}
-                        <div>
-                          <input
-                            type="file"
-                            accept="image/x-icon,image/png"
-                            onChange={(e) => handleFileUpload(e, 'favicon')}
-                            className="hidden"
-                            id="favicon-upload"
-                          />
-                          <label htmlFor="favicon-upload">
-                            <Button variant="outline" className="w-full cursor-pointer" disabled={uploading}>
-                              <Upload className="h-4 w-4 mr-2" />
-                              {uploading ? 'Uploading...' : 'Upload Favicon'}
-                            </Button>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Theme Colors */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-slate-900">Theme Colors</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="primary_color" className="text-slate-700">Primary Color</Label>
-                      <div className="flex items-center gap-3 mt-2">
-                        <input
-                          type="color"
-                          id="primary_color"
-                          value={siteContent.primary_color}
-                          onChange={(e) => setSiteContent(prev => ({ ...prev, primary_color: e.target.value }))}
-                          className="w-16 h-12 rounded-lg border-2 border-slate-200 cursor-pointer"
-                        />
-                        <Input
-                          value={siteContent.primary_color}
-                          onChange={(e) => setSiteContent(prev => ({ ...prev, primary_color: e.target.value }))}
-                          className="flex-1 border-slate-200"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="secondary_color" className="text-slate-700">Secondary Color</Label>
-                      <div className="flex items-center gap-3 mt-2">
-                        <input
-                          type="color"
-                          id="secondary_color"
-                          value={siteContent.secondary_color}
-                          onChange={(e) => setSiteContent(prev => ({ ...prev, secondary_color: e.target.value }))}
-                          className="w-16 h-12 rounded-lg border-2 border-slate-200 cursor-pointer"
-                        />
-                        <Input
-                          value={siteContent.secondary_color}
-                          onChange={(e) => setSiteContent(prev => ({ ...prev, secondary_color: e.target.value }))}
-                          className="flex-1 border-slate-200"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={handleUpdateSiteContent}
-                  disabled={loading}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                >
-                  {loading ? (
-                    <>
-                      <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Saving Changes...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      Save All Changes
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                    <Save className="h-4 w-4 mr-2" />
+                    Save SEO Settings
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Media Management Tab */}
