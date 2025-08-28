@@ -729,48 +729,48 @@ const Header = () => {
               </div>
             </Link>
           
-          {/* Right side: Navigation + User Info */}
-          <div className="flex items-center space-x-4">
-            {/* Main Navigation - moved to right */}
-            <nav className="header-nav-sleek">
-              <Link 
-                to="/" 
-                className="header-nav-link-sleek"
-              >
-                Browse
-              </Link>
-              <Link 
-                to="/sell" 
-                className="header-nav-link-sleek"
-              >
-                Sell
-              </Link>
-              <Link 
-                to="/orders" 
-                className="header-nav-link-sleek"
-              >
-                My Orders
-              </Link>
-              {/* Dynamic Navigation from CMS */}
-              {customNavigation.map((navItem) => (
-                <Link
-                  key={navItem.id}
-                  to={navItem.url}
-                  className="header-nav-link-sleek"
-                  target={navItem.target}
-                >
-                  {navItem.label}
-                </Link>
-              ))}
-              {user?.role === 'admin' && (
+            {/* Right side: Navigation + User Info */}
+            <div className="flex items-center space-x-6">
+              {/* Main Navigation - Ultra-Modern Glass Style */}
+              <nav className="flex items-center space-x-1">
                 <Link 
-                  to="/admin" 
-                  className="header-nav-link-sleek text-red-600 hover:text-red-500"
+                  to="/" 
+                  className="px-4 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl backdrop-blur-sm transition-all duration-300 font-light"
                 >
-                  Admin Panel
+                  Browse
                 </Link>
-              )}
-            </nav>
+                <Link 
+                  to="/sell" 
+                  className="px-4 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl backdrop-blur-sm transition-all duration-300 font-light"
+                >
+                  Sell
+                </Link>
+                <Link 
+                  to="/orders" 
+                  className="px-4 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl backdrop-blur-sm transition-all duration-300 font-light"
+                >
+                  My Orders
+                </Link>
+                {/* Dynamic Navigation from CMS */}
+                {customNavigation.map((navItem) => (
+                  <Link
+                    key={navItem.id}
+                    to={navItem.url}
+                    className="px-4 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl backdrop-blur-sm transition-all duration-300 font-light"
+                    target={navItem.target}
+                  >
+                    {navItem.label}
+                  </Link>
+                ))}
+                {user?.role === 'admin' && (
+                  <Link 
+                    to="/admin" 
+                    className="px-4 py-2 text-red-300 hover:text-red-200 hover:bg-red-500/10 rounded-xl backdrop-blur-sm transition-all duration-300 font-light border border-red-400/30"
+                  >
+                    Admin Panel
+                  </Link>
+                )}
+              </nav>
 
             {/* Favorites Icon */}
             <Link to="/favorites" className="relative">
