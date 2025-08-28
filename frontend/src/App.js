@@ -6184,6 +6184,8 @@ const AdminPanel = () => {
               </div>
             </div>
           </TabsContent>
+          {/* Old Dashboard Content - Needs to be moved or removed */}
+          <TabsContent value="legacy-dashboard">
 
 
 
