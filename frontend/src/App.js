@@ -535,14 +535,13 @@ const NotificationCenter = () => {
       <Button
         variant="ghost"
         size="sm"
-        className="relative"
+        className="relative hover:bg-white/10 transition-all duration-300 p-3 rounded-xl"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <Bell className="h-5 w-5" />
+        <Bell className="h-6 w-6 text-purple-600 hover:text-purple-400" />
         {unreadCount > 0 && (
           <Badge 
-            variant="destructive"
-            className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+            className="absolute -top-1 -right-1 h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs bg-purple-gradient text-white shadow-purple animate-pulse-purple"
           >
             {unreadCount > 9 ? '9+' : unreadCount}
           </Badge>
