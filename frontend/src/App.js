@@ -16,6 +16,7 @@ import BrowsePage from './features/marketplace/BrowsePage';
 import SellPage from './features/listings/SellPage';
 import FavoritesPage from './features/favorites/FavoritesPage';
 import OrdersPage from './features/orders/OrdersPage';
+import ProductDetailPage from './features/marketplace/ProductDetailPage';
 import AdminPanel from './features/admin/AdminPanel';
 
 // Styles
