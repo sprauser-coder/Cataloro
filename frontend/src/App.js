@@ -6191,8 +6191,7 @@ const AdminPanel = () => {
 
 
 
-                {/* Compact Listing Performance */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
                   <Card className="lg:col-span-1">
                     <CardHeader className="pb-3">
                       <div>
