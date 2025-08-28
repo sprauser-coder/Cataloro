@@ -875,7 +875,6 @@ const Auth = () => {
             {isLogin ? 'Sign in to your account to continue' : 'Create your account and start trading on our marketplace'}
           </p>
         </div>
-        </div>
         
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
