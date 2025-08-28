@@ -6186,26 +6186,35 @@ const AdminPanel = () => {
           </TabsContent>
           {/* Legacy Users Tab - Keeping for now */}
           <TabsContent value="users">
-              <CardContent>
-                <div className="grid grid-cols-3 gap-3">
-                        <div className="text-center p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
-                          <div className="w-2 h-2 bg-green-500 rounded-full mx-auto mb-1"></div>
-                          <div className="text-xs text-gray-600 mb-1">Sold</div>
-                          <div className="text-lg font-bold text-green-600">{Math.max(0, stats.total_orders || 0)}</div>
+            {users.length === 0 ? (
+              <div className="admin-card">
+                <div className="admin-card-content text-center py-12">
+                  <div className="text-6xl mb-4">👥</div>
+                  <h3 className="text-xl font-semibold text-neutral-700 mb-2">No Users Yet</h3>
+                  <p className="text-neutral-500">Users will appear here once they register</p>
+                </div>
+              </div>
+            ) : (
+              <div className="admin-card">
+                <div className="admin-card-header">
+                  <h2 className="admin-card-title">User Management</h2>
+                  <p className="admin-card-description">Manage marketplace users and their permissions</p>
+                </div>
+                <div className="admin-card-content">
+                  <div className="space-y-4">
+                    {users.map((user) => (
+                      <div key={user.id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
+                        <div>
+                          <div className="font-medium">{user.full_name || user.username}</div>
+                          <div className="text-sm text-neutral-600">{user.email}</div>
                         </div>
-                        <div className="text-center p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full mx-auto mb-1"></div>
-                          <div className="text-xs text-gray-600 mb-1">Active</div>
-                          <div className="text-lg font-bold text-blue-600">{Math.max(0, stats.total_listings || 0)}</div>
-                        </div>
-                        <div className="text-center p-3 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full mx-auto mb-1"></div>
-                          <div className="text-xs text-gray-600 mb-1">Pending</div>
-                          <div className="text-lg font-bold text-orange-600">{Math.floor(Math.random() * 15) + 3}</div>
-                        </div>
+                        <div className="text-sm text-neutral-500">{user.role}</div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
                   {/* Cool Analytics Widget */}
                   <Card className="lg:col-span-1">
