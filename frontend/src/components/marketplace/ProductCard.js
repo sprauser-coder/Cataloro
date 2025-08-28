@@ -82,8 +82,15 @@ const ProductCard = ({ listing, onFavoriteToggle, isInFavorites = false }) => {
     return type === 'auction' ? '🔨' : '💰';
   };
 
+  const handleCardClick = () => {
+    navigate(`/listing/${listing.id}`);
+  };
+
   return (
-    <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-0 shadow-sm">
+    <Card 
+      className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-0 shadow-sm"
+      onClick={handleCardClick}
+    >
       <CardContent className="p-0">
         {/* Image Container */}
         <div className="relative overflow-hidden rounded-t-lg">
