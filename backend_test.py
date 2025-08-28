@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Comprehensive Real-Time Statistics System Testing
-Testing individual user statistics, admin dashboard stats, real-time favorites, and logical validation
+Comprehensive Backend API Testing After Frontend Architecture Restructure
+Testing complete backend functionality to ensure compatibility with new modular frontend
 """
 
 import requests
@@ -9,8 +9,9 @@ import json
 import sys
 from datetime import datetime
 import time
+import os
 
-# Configuration
+# Configuration - Using correct backend URL from frontend/.env
 BASE_URL = "http://217.154.0.82/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
