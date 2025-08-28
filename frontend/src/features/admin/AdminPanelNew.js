@@ -88,7 +88,14 @@ const AdminPanel = () => {
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+    if (activeTab === 'users') {
+      fetchUsers();
+    } else if (activeTab === 'content') {
+      fetchSiteContent();
+    } else if (activeTab === 'analytics') {
+      fetchAnalyticsData();
+    }
+  }, [activeTab]);
 
   const fetchDashboardData = async () => {
     try {
@@ -108,6 +115,61 @@ const AdminPanel = () => {
       setUsers(response.data || []);
     } catch (error) {
       console.error('Error fetching users:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch users",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const fetchSiteContent = async () => {
+    try {
+      const response = await adminAPI.getSiteSettings();
+      if (response.data) {
+        setSiteContent(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching site content:', error);
+    }
+  };
+
+  const fetchListings = async () => {
+    try {
+      const response = await adminAPI.getListings();
+      setListings(response.data || []);
+    } catch (error) {
+      console.error('Error fetching listings:', error);
+    }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      const response = await adminAPI.getOrders();
+      setOrders(response.data || []);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
+
+  const fetchAnalyticsData = async () => {
+    try {
+      // Fetch comprehensive analytics data
+      const statsResponse = await adminAPI.getStats();
+      const usersResponse = await adminAPI.getUsers();
+      const listingsResponse = await adminAPI.getListings();
+      
+      // Process analytics data
+      const analytics = {
+        revenue_chart: generateRevenueChart(statsResponse.data),
+        user_activity: processUserActivity(usersResponse.data),
+        top_categories: processTopCategories(listingsResponse.data),
+        conversion_metrics: calculateConversionMetrics(statsResponse.data)
+      };
+      
+      setAnalyticsData(analytics);
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
     }
   };
 
