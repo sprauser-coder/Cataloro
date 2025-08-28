@@ -1700,6 +1700,238 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
+          {/* Financial Management Pro Tab */}
+          <TabsContent value="financial">
+            <div className="space-y-6">
+              {/* Financial Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-emerald-100 text-sm">Total Revenue</p>
+                        <p className="text-3xl font-bold">{formatCurrency(stats.total_revenue || 0)}</p>
+                        <p className="text-emerald-200 text-xs">+12.3% from last month</p>
+                      </div>
+                      <DollarSign className="h-8 w-8 text-emerald-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-blue-100 text-sm">Commissions Earned</p>
+                        <p className="text-3xl font-bold">{formatCurrency((stats.total_revenue || 0) * 0.05)}</p>
+                        <p className="text-blue-200 text-xs">5% commission rate</p>
+                      </div>
+                      <PieChart className="h-8 w-8 text-blue-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-orange-100 text-sm">Pending Payouts</p>
+                        <p className="text-3xl font-bold">{formatCurrency((stats.total_revenue || 0) * 0.15)}</p>
+                        <p className="text-orange-200 text-xs">24 sellers waiting</p>
+                      </div>
+                      <Clock className="h-8 w-8 text-orange-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-purple-100 text-sm">Monthly Growth</p>
+                        <p className="text-3xl font-bold">+{(Math.random() * 20 + 5).toFixed(1)}%</p>
+                        <p className="text-purple-200 text-xs">Revenue growth</p>
+                      </div>
+                      <TrendingUp className="h-8 w-8 text-purple-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Commission & Fee Management */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <DollarSign className="h-5 w-5 text-purple-600" />
+                    Commission & Fee Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                      <Label className="text-slate-700">Base Commission Rate (%)</Label>
+                      <Input
+                        type="number"
+                        placeholder="5.0"
+                        className="border-slate-200 mt-2"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-700">Payment Processing Fee (%)</Label>
+                      <Input
+                        type="number"
+                        placeholder="2.9"
+                        className="border-slate-200 mt-2"
+                        min="0"
+                        max="10"
+                        step="0.1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-700">Listing Fee</Label>
+                      <Input
+                        type="number"
+                        placeholder="0.50"
+                        className="border-slate-200 mt-2"
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-700">Featured Listing Fee</Label>
+                      <Input
+                        type="number"
+                        placeholder="5.00"
+                        className="border-slate-200 mt-2"
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-slate-700">Progressive Commission Tiers</Label>
+                      <Switch />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-slate-700">Auto-adjust for High Volume Sellers</Label>
+                      <Switch />
+                    </div>
+                  </div>
+
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Commission Settings
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Transaction History */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Activity className="h-5 w-5 text-purple-600" />
+                      Live Financial Transaction History
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm">
+                        <Download className="h-4 w-4 mr-2" />
+                        Export CSV
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Refresh
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-200">
+                          <th className="text-left p-3 font-medium text-slate-700">Transaction ID</th>
+                          <th className="text-left p-3 font-medium text-slate-700">Type</th>
+                          <th className="text-left p-3 font-medium text-slate-700">User</th>
+                          <th className="text-left p-3 font-medium text-slate-700">Amount</th>
+                          <th className="text-left p-3 font-medium text-slate-700">Commission</th>
+                          <th className="text-left p-3 font-medium text-slate-700">Status</th>
+                          <th className="text-left p-3 font-medium text-slate-700">Date</th>
+                          <th className="text-left p-3 font-medium text-slate-700">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Array.from({length: 10}, (_, i) => {
+                          const transactionTypes = ['Sale', 'Payout', 'Refund', 'Commission', 'Fee'];
+                          const statuses = ['Completed', 'Pending', 'Failed', 'Processing'];
+                          const type = transactionTypes[Math.floor(Math.random() * transactionTypes.length)];
+                          const status = statuses[Math.floor(Math.random() * statuses.length)];
+                          const amount = Math.random() * 500 + 10;
+                          const commission = type === 'Sale' ? amount * 0.05 : 0;
+                          
+                          return (
+                            <tr key={i} className="border-b border-slate-100 hover:bg-slate-50">
+                              <td className="p-3">
+                                <span className="font-mono text-sm text-purple-600">#{`TXN${(1000 + i).toString().padStart(6, '0')}`}</span>
+                              </td>
+                              <td className="p-3">
+                                <Badge variant="outline" className="text-xs">
+                                  {type}
+                                </Badge>
+                              </td>
+                              <td className="p-3">
+                                <span className="text-sm text-slate-900">User {Math.floor(Math.random() * 100) + 1}</span>
+                              </td>
+                              <td className="p-3">
+                                <span className="font-medium text-slate-900">{formatCurrency(amount)}</span>
+                              </td>
+                              <td className="p-3">
+                                <span className="text-sm text-slate-600">{formatCurrency(commission)}</span>
+                              </td>
+                              <td className="p-3">
+                                <Badge 
+                                  variant={status === 'Completed' ? 'default' : 'outline'}
+                                  className={`text-xs ${
+                                    status === 'Completed' ? 'bg-green-600' : 
+                                    status === 'Pending' ? 'bg-orange-600' : 
+                                    status === 'Processing' ? 'bg-blue-600' :
+                                    'bg-red-600'
+                                  }`}
+                                >
+                                  {status}
+                                </Badge>
+                              </td>
+                              <td className="p-3">
+                                <span className="text-sm text-slate-600">
+                                  {new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                                </span>
+                              </td>
+                              <td className="p-3">
+                                <div className="flex items-center gap-2">
+                                  <Button variant="outline" size="sm">
+                                    <Eye className="h-3 w-3" />
+                                  </Button>
+                                  <Button variant="outline" size="sm">
+                                    <Download className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* Content Management Tab */}
           <TabsContent value="content">
             <div className="space-y-6">
