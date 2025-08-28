@@ -9984,7 +9984,7 @@ const AdminPanel = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
                       <div className="flex">
                         <div className="flex-shrink-0">
                           <Eye className="h-5 w-5 text-yellow-400" />
