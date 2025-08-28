@@ -64,8 +64,37 @@ class MarketplaceTestSuite:
             if response.status_code == 200:
                 data = response.json()
                 self.admin_token = data["access_token"]
+                
+                # Create a test buyer user for order testing
+                test_user_data = {
+                    "email": "testbuyer@marketplace.com",
+                    "username": "testbuyer",
+                    "password": "testpass123",
+                    "full_name": "Test Buyer",
+                    "role": "buyer"
+                }
+                
+                # Try to register test user (might already exist)
+                register_response = self.session.post(f"{BASE_URL}/auth/register", json=test_user_data)
+                
+                if register_response.status_code == 200:
+                    buyer_data = register_response.json()
+                    self.test_user_token = buyer_data["access_token"]
+                    self.test_user_id = buyer_data["user"]["id"]
+                else:
+                    # User might already exist, try to login
+                    login_response = self.session.post(f"{BASE_URL}/auth/login", json={
+                        "email": "testbuyer@marketplace.com",
+                        "password": "testpass123"
+                    })
+                    
+                    if login_response.status_code == 200:
+                        buyer_data = login_response.json()
+                        self.test_user_token = buyer_data["access_token"]
+                        self.test_user_id = buyer_data["user"]["id"]
+                
                 self.log_result("Authentication Setup", True, 
-                              f"Admin authentication successful")
+                              f"Admin and test buyer authentication successful")
                 return True
             else:
                 self.log_result("Authentication Setup", False, 
