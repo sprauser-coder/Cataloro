@@ -90,6 +90,8 @@ const AdminPanel = () => {
     fetchDashboardData();
     if (activeTab === 'users') {
       fetchUsers();
+    } else if (activeTab === 'products') {
+      fetchListings();
     } else if (activeTab === 'content') {
       fetchSiteContent();
     } else if (activeTab === 'analytics') {
