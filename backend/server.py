@@ -847,7 +847,7 @@ async def get_listing(listing_id: str):
 # Order Routes
 @api_router.post("/orders", response_model=Order)
 async def create_order(order_data: OrderCreate, current_user: User = Depends(get_current_user)):
-    if current_user.role not in [UserRole.BUYER, UserRole.BOTH]:
+    if current_user.role not in [UserRole.BUYER, UserRole.BOTH, UserRole.ADMIN]:
         raise HTTPException(status_code=403, detail="Only buyers can create orders")
     
     listing = await db.listings.find_one({"id": order_data.listing_id})
