@@ -16,7 +16,7 @@ import os
 from datetime import datetime
 
 # Configuration - Use frontend environment for backend URL
-BACKEND_URL = 'https://cataloro-profile-fix.preview.emergentagent.com/api'
+BACKEND_URL = 'https://marketplace-fix-6.preview.emergentagent.com/api'
 
 # Test credentials
 ADMIN_EMAIL = "admin@marketplace.com"

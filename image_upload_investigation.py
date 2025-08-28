@@ -11,7 +11,7 @@ from PIL import Image
 import io
 
 # Configuration
-BACKEND_URL = "https://cataloro-profile-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-fix-6.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
@@ -181,7 +181,7 @@ class ImageUploadTester:
         try:
             # Convert relative URL to full URL if needed
             if image_url.startswith('/'):
-                full_url = f"https://cataloro-profile-fix.preview.emergentagent.com{image_url}"
+                full_url = f"https://marketplace-fix-6.preview.emergentagent.com{image_url}"
             else:
                 full_url = image_url
             
@@ -210,7 +210,7 @@ class ImageUploadTester:
         
         endpoints_to_test = [
             (f"{BACKEND_URL}/", "Main API endpoint"),
-            (f"https://cataloro-profile-fix.preview.emergentagent.com/uploads/", "Static files endpoint"),
+            (f"https://marketplace-fix-6.preview.emergentagent.com/uploads/", "Static files endpoint"),
             (f"{BACKEND_URL}/categories", "Simple GET endpoint"),
             (f"{BACKEND_URL}/listings", "Listings endpoint")
         ]

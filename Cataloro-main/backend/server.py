@@ -2243,7 +2243,7 @@ async def upload_hero_image(
         buffer.write(content)
     
     # Generate URL
-    base_url = os.environ.get('BACKEND_BASE_URL', 'https://dependency-fixer.preview.emergentagent.com')
+    base_url = os.environ.get('BACKEND_BASE_URL', 'https://marketplace-fix-6.preview.emergentagent.com')
     hero_image_url = f"{base_url}/api/uploads/{unique_filename}"
     
     return {
@@ -2281,7 +2281,7 @@ async def upload_hero_background(
         buffer.write(content)
     
     # Generate URL
-    base_url = os.environ.get('BACKEND_BASE_URL', 'https://dependency-fixer.preview.emergentagent.com')
+    base_url = os.environ.get('BACKEND_BASE_URL', 'https://marketplace-fix-6.preview.emergentagent.com')
     hero_background_image_url = f"{base_url}/api/uploads/{unique_filename}"
     
     return {
@@ -2371,7 +2371,7 @@ async def upload_listing_image(
         raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
     
     # Return the image URL
-    base_url = os.environ.get('BACKEND_BASE_URL', 'https://dependency-fixer.preview.emergentagent.com')
+    base_url = os.environ.get('BACKEND_BASE_URL', 'https://marketplace-fix-6.preview.emergentagent.com')
     image_url = f"{base_url}/api/uploads/{unique_filename}"
     
     return {
@@ -2977,7 +2977,7 @@ async def upload_profile_picture(
         shutil.copyfileobj(file.file, buffer)
     
     # Update user profile with new picture URL
-    base_url = os.environ.get('BACKEND_BASE_URL', 'https://dependency-fixer.preview.emergentagent.com')
+    base_url = os.environ.get('BACKEND_BASE_URL', 'https://marketplace-fix-6.preview.emergentagent.com')
     profile_picture_url = f"{base_url}/api/uploads/{filename}"
     await db.users.update_one(
         {"id": user_id},

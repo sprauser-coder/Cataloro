@@ -82,7 +82,7 @@ If backend crashes after deployment:
 ### Current Production URLs - DO NOT CHANGE:
 ```bash
 # Frontend Environment (/app/frontend/.env)
-REACT_APP_BACKEND_URL=https://dependency-fixer.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://marketplace-fix-6.preview.emergentagent.com
 
 # Backend Environment (/app/backend/.env)  
 CORS_ORIGINS="http://217.154.0.82,https://217.154.0.82,http://localhost:3000"
@@ -117,7 +117,7 @@ error_file: '/var/log/supervisor/backend-error.log'
 **CRITICAL**: Never hardcode domain-specific URLs for image uploads - this creates deployment confusion
 
 **FORBIDDEN APPROACHES**:
-- ❌ Hardcoding `https://dependency-fixer.preview.emergentagent.com/api/uploads/`
+- ❌ Hardcoding `https://marketplace-fix-6.preview.emergentagent.com/api/uploads/`
 - ❌ Using specific domain URLs in image upload code
 - ❌ Absolute URLs that don't work across environments
 
@@ -141,7 +141,7 @@ Image upload paths have been a recurring issue that breaks functionality after d
 
 **CURRENT PRODUCTION CONFIGURATION**:
 - Frontend URL: `http://217.154.0.82` (NO PORT)
-- Backend URL: `https://dependency-fixer.preview.emergentagent.com` (as configured in frontend/.env)
+- Backend URL: `https://marketplace-fix-6.preview.emergentagent.com` (as configured in frontend/.env)
 - Backend CORS: `http://217.154.0.82,https://217.154.0.82,http://localhost:3000`
 
 **NEVER CHANGE** these URLs without explicit user confirmation:
@@ -164,7 +164,7 @@ Image upload paths have been a recurring issue that breaks functionality after d
 - Using localhost URLs in any production context
 - Adding port numbers to production URLs (217.154.0.82)
 - **HARDCODING IMAGE UPLOAD DOMAINS** (creates recurring deployment issues)
-- Using `https://dependency-fixer.preview.emergentagent.com/api/uploads/` directly in code
+- Using `https://marketplace-fix-6.preview.emergentagent.com/api/uploads/` directly in code
 
 ---
 **Remember**: The user is frustrated with this recurring cycle. Following these rules prevents the "works in dev, crashes in production" pattern that has been occurring.**

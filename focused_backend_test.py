@@ -19,7 +19,7 @@ from pathlib import Path
 
 class CataloroFocusedTester:
     def __init__(self):
-        self.base_url = "https://cataloro-profile-fix.preview.emergentagent.com"
+        self.base_url = "https://marketplace-fix-6.preview.emergentagent.com"
         self.api_url = f"{self.base_url}/api"
         self.admin_token = None
         self.user_token = None

@@ -12,7 +12,7 @@ from datetime import datetime
 import uuid
 
 # Configuration
-BASE_URL = "https://dependency-fixer.preview.emergentagent.com/api"
+BASE_URL = "https://marketplace-fix-6.preview.emergentagent.com/api"
 TIMEOUT = 30
 
 class CataloroAPITester:
