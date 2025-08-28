@@ -3964,15 +3964,17 @@ const Sell = () => {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="description">Description</Label>
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-slate-900 font-medium">Product Description</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   required
-                  className="mt-1"
-                  rows={4}
+                  className="bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-light focus:bg-white focus:border-slate-400 transition-all duration-300"
+                  rows={5}
+                  placeholder="Describe your product in detail..."
+                  style={{color: siteSettings?.font_color || '#1e293b'}}
                 />
               </div>
 
