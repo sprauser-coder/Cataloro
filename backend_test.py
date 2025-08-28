@@ -319,6 +319,209 @@ class BackendTester:
         except Exception as e:
             self.log_test("File Upload Endpoints", False, f"Error: {str(e)}")
     
+    def test_catalyst_database_system(self):
+        """Test Catalyst Database System functionality"""
+        try:
+            headers = self.get_auth_headers()
+            
+            print("\n🧪 Testing Catalyst Database System...")
+            
+            # Test 1: Get catalyst data (initially empty)
+            response = requests.get(f"{BASE_URL}/admin/catalyst-data", headers=headers)
+            if response.status_code == 200:
+                initial_data = response.json()
+                self.log_test("Get Catalyst Data (Initial)", True, f"Retrieved {len(initial_data)} catalyst items")
+            else:
+                self.log_test("Get Catalyst Data (Initial)", False, f"Status: {response.status_code}")
+            
+            # Test 2: Get catalyst basis data (default values)
+            response = requests.get(f"{BASE_URL}/admin/catalyst-basis", headers=headers)
+            if response.status_code == 200:
+                basis_data = response.json()
+                required_fields = ['pt_price', 'pd_price', 'rh_price', 'exchange_rate', 
+                                 'renumeration_pt', 'renumeration_pd', 'renumeration_rh']
+                missing_fields = [field for field in required_fields if field not in basis_data]
+                
+                if not missing_fields:
+                    self.log_test("Get Catalyst Basis Data", True, 
+                                f"All required fields present: Pt=${basis_data.get('pt_price', 0)}, "
+                                f"Pd=${basis_data.get('pd_price', 0)}, Rh=${basis_data.get('rh_price', 0)}")
+                else:
+                    self.log_test("Get Catalyst Basis Data", False, f"Missing fields: {missing_fields}")
+            else:
+                self.log_test("Get Catalyst Basis Data", False, f"Status: {response.status_code}")
+            
+            # Test 3: Save catalyst basis data
+            new_basis_data = {
+                "pt_price": 1000.00,
+                "pd_price": 1300.00,
+                "rh_price": 5000.00,
+                "exchange_rate": 0.90,
+                "renumeration_pt": 0.96,
+                "renumeration_pd": 0.95,
+                "renumeration_rh": 0.94
+            }
+            
+            response = requests.post(f"{BASE_URL}/admin/catalyst-basis", headers=headers, json=new_basis_data)
+            if response.status_code == 200:
+                self.log_test("Save Catalyst Basis Data", True, "Successfully saved new basis data")
+            else:
+                self.log_test("Save Catalyst Basis Data", False, f"Status: {response.status_code}")
+            
+            # Test 4: Verify basis data was saved
+            response = requests.get(f"{BASE_URL}/admin/catalyst-basis", headers=headers)
+            if response.status_code == 200:
+                updated_basis = response.json()
+                if (updated_basis.get('pt_price') == 1000.00 and 
+                    updated_basis.get('pd_price') == 1300.00):
+                    self.log_test("Verify Basis Data Update", True, "Basis data correctly updated and persisted")
+                else:
+                    self.log_test("Verify Basis Data Update", False, "Basis data not updated correctly")
+            else:
+                self.log_test("Verify Basis Data Update", False, f"Status: {response.status_code}")
+            
+            # Test 5: Save bulk catalyst data
+            catalyst_bulk_data = {
+                "data": [
+                    {
+                        "cat_id": "CAT001",
+                        "pt_ppm": 1500.0,
+                        "pd_ppm": 800.0,
+                        "rh_ppm": 200.0,
+                        "ceramic_weight": 1200.0,
+                        "add_info": "High performance catalyst",
+                        "name": "Premium Catalytic Converter"
+                    },
+                    {
+                        "cat_id": "CAT002",
+                        "pt_ppm": 1200.0,
+                        "pd_ppm": 600.0,
+                        "rh_ppm": 150.0,
+                        "ceramic_weight": 1000.0,
+                        "add_info": "Standard performance",
+                        "name": "Standard Catalytic Converter"
+                    },
+                    {
+                        "cat_id": "CAT003",
+                        "pt_ppm": 2000.0,
+                        "pd_ppm": 1000.0,
+                        "rh_ppm": 300.0,
+                        "ceramic_weight": 1500.0,
+                        "add_info": "Heavy duty catalyst",
+                        "name": "Heavy Duty Catalytic Converter"
+                    }
+                ]
+            }
+            
+            response = requests.post(f"{BASE_URL}/admin/catalyst-data", headers=headers, json=catalyst_bulk_data)
+            if response.status_code == 200:
+                result = response.json()
+                expected_count = len(catalyst_bulk_data["data"])
+                if result.get("count") == expected_count:
+                    self.log_test("Save Bulk Catalyst Data", True, f"Successfully saved {expected_count} catalyst items")
+                else:
+                    self.log_test("Save Bulk Catalyst Data", False, f"Expected {expected_count}, got {result.get('count')}")
+            else:
+                self.log_test("Save Bulk Catalyst Data", False, f"Status: {response.status_code}")
+            
+            # Test 6: Retrieve saved catalyst data
+            response = requests.get(f"{BASE_URL}/admin/catalyst-data", headers=headers)
+            if response.status_code == 200:
+                saved_data = response.json()
+                if len(saved_data) == 3:
+                    # Verify data structure
+                    first_item = saved_data[0]
+                    required_fields = ['id', 'cat_id', 'pt_ppm', 'pd_ppm', 'rh_ppm', 
+                                     'ceramic_weight', 'add_info', 'name']
+                    missing_fields = [field for field in required_fields if field not in first_item]
+                    
+                    if not missing_fields:
+                        self.log_test("Retrieve Catalyst Data", True, 
+                                    f"Retrieved {len(saved_data)} items with correct structure")
+                        
+                        # Test 7: Update specific catalyst item
+                        item_id = first_item['id']
+                        update_data = {
+                            "cat_id": "CAT001_UPDATED",
+                            "pt_ppm": 1800.0,
+                            "pd_ppm": 900.0,
+                            "rh_ppm": 250.0,
+                            "ceramic_weight": 1300.0,
+                            "add_info": "Updated high performance catalyst",
+                            "name": "Updated Premium Catalytic Converter"
+                        }
+                        
+                        response = requests.put(f"{BASE_URL}/admin/catalyst-data/{item_id}", 
+                                              headers=headers, json=update_data)
+                        if response.status_code == 200:
+                            self.log_test("Update Catalyst Item", True, "Successfully updated catalyst item")
+                        else:
+                            self.log_test("Update Catalyst Item", False, f"Status: {response.status_code}")
+                        
+                        # Test 8: Delete specific catalyst item (use second item)
+                        if len(saved_data) > 1:
+                            second_item_id = saved_data[1]['id']
+                            response = requests.delete(f"{BASE_URL}/admin/catalyst-data/{second_item_id}", 
+                                                     headers=headers)
+                            if response.status_code == 200:
+                                self.log_test("Delete Catalyst Item", True, "Successfully deleted catalyst item")
+                            else:
+                                self.log_test("Delete Catalyst Item", False, f"Status: {response.status_code}")
+                    else:
+                        self.log_test("Retrieve Catalyst Data", False, f"Missing fields: {missing_fields}")
+                else:
+                    self.log_test("Retrieve Catalyst Data", False, f"Expected 3 items, got {len(saved_data)}")
+            else:
+                self.log_test("Retrieve Catalyst Data", False, f"Status: {response.status_code}")
+            
+            # Test 9: Authentication requirements
+            unauth_session = requests.Session()
+            endpoints_to_test = [
+                ("GET", "/admin/catalyst-data"),
+                ("POST", "/admin/catalyst-data"),
+                ("GET", "/admin/catalyst-basis"),
+                ("POST", "/admin/catalyst-basis")
+            ]
+            
+            all_protected = True
+            for method, endpoint in endpoints_to_test:
+                if method == "GET":
+                    response = unauth_session.get(f"{BASE_URL}{endpoint}")
+                else:
+                    response = unauth_session.post(f"{BASE_URL}{endpoint}", json={})
+                
+                if response.status_code not in [401, 403]:
+                    all_protected = False
+                    break
+            
+            if all_protected:
+                self.log_test("Catalyst Authentication Required", True, "All endpoints properly require admin auth")
+            else:
+                self.log_test("Catalyst Authentication Required", False, "Some endpoints not properly protected")
+            
+            # Test 10: Data validation
+            invalid_data = {
+                "data": [
+                    {
+                        "cat_id": "INVALID",
+                        "pt_ppm": "not_a_number",
+                        "pd_ppm": 800.0,
+                        "rh_ppm": 200.0,
+                        "ceramic_weight": 1200.0,
+                        "name": "Invalid Catalyst"
+                    }
+                ]
+            }
+            
+            response = requests.post(f"{BASE_URL}/admin/catalyst-data", headers=headers, json=invalid_data)
+            if response.status_code in [422, 400, 500]:
+                self.log_test("Catalyst Data Validation", True, "Properly handles invalid data types")
+            else:
+                self.log_test("Catalyst Data Validation", False, f"Unexpected response: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Catalyst Database System", False, f"Error: {str(e)}")
+    
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Comprehensive Backend Testing for Cataloro Marketplace")
