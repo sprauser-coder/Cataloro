@@ -543,7 +543,7 @@ const NotificationCenter = () => {
       </div>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 max-h-96 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl z-[9999] max-h-96 overflow-hidden">
           <div className="p-4 border-b border-slate-200 bg-white">
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-slate-900 text-lg">Notifications</h3>
