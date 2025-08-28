@@ -1464,13 +1464,13 @@ const Home = () => {
               </Select>
             </div>
 
-            {/* Results Count and Pagination */}
-            <div className="ml-auto flex items-center space-x-4">
-              <div className="text-sm text-gray-600">
+            {/* Results Count and Pagination - Ultra-Modern */}
+            <div className="ml-auto flex items-center space-x-6">
+              <div className="text-sm text-slate-600 font-light">
                 {loading ? 'Loading...' : `${totalListings} items found`}
               </div>
-              <div className="flex items-center space-x-2">
-                <Label className="text-sm text-gray-600">Show:</Label>
+              <div className="flex items-center space-x-3">
+                <Label className="text-sm text-slate-600 font-light">Show:</Label>
                 <Select 
                   value={listingsPerPage >= 1000 ? 'all' : listingsPerPage.toString()} 
                   onValueChange={(value) => {
@@ -1482,31 +1482,31 @@ const Home = () => {
                     setCurrentPage(1); // Reset to first page when changing items per page
                   }}
                 >
-                  <SelectTrigger className="w-20">
+                  <SelectTrigger className="w-20 bg-slate-50 border-slate-200 rounded-xl font-light">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="12">12</SelectItem>
-                    <SelectItem value="24">24</SelectItem>
-                    <SelectItem value="48">48</SelectItem>
-                    <SelectItem value="all">All</SelectItem>
+                  <SelectContent className="bg-white border-slate-200 rounded-xl shadow-lg">
+                    <SelectItem value="12" className="font-light">12</SelectItem>
+                    <SelectItem value="24" className="font-light">24</SelectItem>
+                    <SelectItem value="48" className="font-light">48</SelectItem>
+                    <SelectItem value="all" className="font-light">All</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               {/* Page indicator - always show if more than minimum items */}
               {!loading && totalListings > 12 && ( 
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm text-slate-600 font-light">
                     {listingsPerPage >= 1000 ? `All ${totalListings} items` : 
                      `Page ${currentPage}/${Math.ceil(totalListings / listingsPerPage)}`}
                   </span>
-                  <div className="flex space-x-1">
+                  <div className="flex space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                       disabled={currentPage === 1 || listingsPerPage >= 1000}
-                      className="w-8 h-8 p-0"
+                      className="w-10 h-10 p-0 bg-slate-50 border-slate-200 rounded-xl hover:bg-slate-100 disabled:bg-slate-100 disabled:text-slate-400"
                     >
                       ←
                     </Button>
@@ -1515,7 +1515,7 @@ const Home = () => {
                       size="sm"
                       onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalListings / listingsPerPage), prev + 1))}
                       disabled={currentPage === Math.ceil(totalListings / listingsPerPage) || listingsPerPage >= 1000}
-                      className="w-8 h-8 p-0"
+                      className="w-10 h-10 p-0 bg-slate-50 border-slate-200 rounded-xl hover:bg-slate-100 disabled:bg-slate-100 disabled:text-slate-400"
                     >
                       →
                     </Button>
