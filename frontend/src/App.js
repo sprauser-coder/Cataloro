@@ -2417,7 +2417,7 @@ const ActivityTabContent = () => {
             activity.color === 'green' ? 'bg-green-100' :
             activity.color === 'blue' ? 'bg-blue-100' :
             activity.color === 'red' ? 'bg-red-100' :
-            activity.color === 'yellow' ? 'bg-yellow-100' : 'bg-gray-100'
+            activity.color === 'yellow' ? 'bg-slate-100' : 'bg-gray-100'
           }`}>
             {activity.icon}
           </div>
