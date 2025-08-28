@@ -9867,7 +9867,7 @@ const AdminPanel = () => {
                             <div className="p-4 bg-blue-50 rounded-lg">
                               <h4 className="font-medium mb-2">Title Length</h4>
                               <div className="text-sm">
-                                <span className={`font-mono ${seoSettings.site_title.length > 60 ? 'text-red-600' : seoSettings.site_title.length > 50 ? 'text-yellow-600' : 'text-green-600'}`}>
+                                <span className={`font-mono ${seoSettings.site_title.length > 60 ? 'text-red-600' : seoSettings.site_title.length > 50 ? 'text-slate-700' : 'text-green-600'}`}>
                                   {seoSettings.site_title.length}
                                 </span>
                                 <span className="text-gray-500"> / 60 characters (optimal: 50-60)</span>
