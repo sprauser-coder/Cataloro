@@ -861,14 +861,20 @@ const Auth = () => {
       });
       
       login(response.data);
-      navigate('/');
       
-      console.log('🔥 CRITICAL DEBUG: Login completed, should navigate to /');
-      
+      // CRITICAL FIX: Add small delay to allow auth context to update before navigation
       toast({
         title: isLogin ? "Welcome back!" : "Account created!",
         description: isLogin ? "You've been logged in successfully." : "Your account has been created and you're now logged in."
       });
+      
+      // Wait for auth context to update, then navigate
+      setTimeout(() => {
+        console.log('🔥 CRITICAL DEBUG: Login completed, navigating after delay...');
+        navigate('/');
+        // Force refresh to ensure auth state is loaded
+        window.location.reload();
+      }, 200);
     } catch (error) {
       console.error('🔥 CRITICAL DEBUG: Login error', error);
       toast({
