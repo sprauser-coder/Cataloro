@@ -6852,7 +6852,7 @@ const AdminPanel = () => {
                                                 <span className="font-semibold">0</span>
                                               </div>
                                             </div>
-                                            <div className="p-3 bg-yellow-50 rounded-lg">
+                                            <div className="p-3 bg-slate-50 rounded-lg">
                                               <div className="flex justify-between items-center">
                                                 <span className="text-sm">Total Spent</span>
                                                 <span className="font-semibold">€0.00</span>
