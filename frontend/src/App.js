@@ -6449,7 +6449,7 @@ const AdminPanel = () => {
                         </div>
                       </div>
 
-                      <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors">
+                      <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
                         <div>
                           <p className="font-medium text-yellow-900">Page Load Speed</p>
                           <p className="text-xs text-yellow-600">Average response</p>
