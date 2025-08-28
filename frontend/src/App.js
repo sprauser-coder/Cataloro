@@ -5757,27 +5757,27 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="admin-panel-conventional">
       <Header />
       
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="text-gray-600">Manage users, listings, and monitor platform activity</p>
+      <div className="admin-main-container">
+        <div className="admin-page-header">
+          <h1 className="admin-page-title">Admin Panel</h1>
+          <p className="admin-page-description">Manage users, listings, and monitor platform activity</p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="overflow-x-auto pb-2">
-            <TabsList className="grid w-max grid-cols-10 min-w-[1000px]">
-              <TabsTrigger value="dashboard" className="text-xs">📊 Dashboard</TabsTrigger>
-              <TabsTrigger value="activity" className="text-xs">🔔 Activity</TabsTrigger>
-              <TabsTrigger value="users" className="text-xs">👥 Users</TabsTrigger>
-              <TabsTrigger value="products" className="text-xs">🛍️ Products</TabsTrigger>
-              <TabsTrigger value="content-listings" className="text-xs">🏷️ Categories</TabsTrigger>
-              <TabsTrigger value="appearance" className="text-xs">🎨 Appearance</TabsTrigger>
-              <TabsTrigger value="pages" className="text-xs">📄 Content</TabsTrigger>
-              <TabsTrigger value="seo" className="text-xs">🔍 SEO</TabsTrigger>
-              <TabsTrigger value="settings" className="text-xs">⚙️ Settings</TabsTrigger>
+            <TabsList className="admin-tab-navigation">
+              <TabsTrigger value="dashboard" className="admin-tab-button">📊 Dashboard</TabsTrigger>
+              <TabsTrigger value="activity" className="admin-tab-button">🔔 Activity</TabsTrigger>
+              <TabsTrigger value="users" className="admin-tab-button">👥 Users</TabsTrigger>
+              <TabsTrigger value="products" className="admin-tab-button">🛍️ Products</TabsTrigger>
+              <TabsTrigger value="content-listings" className="admin-tab-button">🏷️ Categories</TabsTrigger>
+              <TabsTrigger value="appearance" className="admin-tab-button">🎨 Appearance</TabsTrigger>
+              <TabsTrigger value="pages" className="admin-tab-button">📄 Content</TabsTrigger>
+              <TabsTrigger value="seo" className="admin-tab-button">🔍 SEO</TabsTrigger>
+              <TabsTrigger value="settings" className="admin-tab-button">⚙️ Settings</TabsTrigger>
               <TabsTrigger value="database" className="text-xs">🗄️ Database</TabsTrigger>
             </TabsList>
           </div>
