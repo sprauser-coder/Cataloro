@@ -969,34 +969,36 @@ const Auth = () => {
               {!isLogin && (
                 <>
                   <div>
-                    <Label htmlFor="username">Username</Label>
+                    <Label htmlFor="username" className="text-white font-medium">Username</Label>
                     <Input
                       id="username"
                       value={formData.username}
                       onChange={(e) => setFormData({...formData, username: e.target.value})}
                       required
-                      className="mt-1"
+                      className="mt-2 form-purple-modern text-gray-900 placeholder-gray-500"
+                      placeholder="Choose a username"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="full_name">Full Name</Label>
+                    <Label htmlFor="full_name" className="text-white font-medium">Full Name</Label>
                     <Input
                       id="full_name"
                       value={formData.full_name}
                       onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                       required
-                      className="mt-1"
+                      className="mt-2 form-purple-modern text-gray-900 placeholder-gray-500"
+                      placeholder="Enter your full name"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="role">I want to</Label>
+                    <Label htmlFor="role" className="text-white font-medium">I want to</Label>
                     <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
-                      <SelectTrigger className="mt-1">
+                      <SelectTrigger className="mt-2 form-purple-modern">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="glass-purple">
                         <SelectItem value="buyer">Buy items</SelectItem>
                         <SelectItem value="seller">Sell items</SelectItem>
                         <SelectItem value="both">Both buy and sell</SelectItem>
@@ -1005,22 +1007,24 @@ const Auth = () => {
                   </div>
                   
                   <div>
-                    <Label htmlFor="phone">Phone (Optional)</Label>
+                    <Label htmlFor="phone" className="text-white font-medium">Phone (Optional)</Label>
                     <Input
                       id="phone"
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="mt-1"
+                      className="mt-2 form-purple-modern text-gray-900 placeholder-gray-500"
+                      placeholder="Enter your phone number"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="address">Address (Optional)</Label>
+                    <Label htmlFor="address" className="text-white font-medium">Address (Optional)</Label>
                     <Input
                       id="address"
                       value={formData.address}
                       onChange={(e) => setFormData({...formData, address: e.target.value})}
-                      className="mt-1"
+                      className="mt-2 form-purple-modern text-gray-900 placeholder-gray-500"
+                      placeholder="Enter your address"
                     />
                   </div>
                 </>
