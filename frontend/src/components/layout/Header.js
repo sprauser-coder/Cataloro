@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Bell, Heart, Search, User } from 'lucide-react';
+import NotificationCenter from '../shared/NotificationCenter';
+import { Heart, Search, User } from 'lucide-react';
 
 const Header = () => {
   const { user, logout } = useAuth();
