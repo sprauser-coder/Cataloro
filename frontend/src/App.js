@@ -950,27 +950,38 @@ const Auth = () => {
                     value={formData.username}
                     onChange={(e) => setFormData({...formData, username: e.target.value})}
                     required
-                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/50 focus:text-slate-800 focus:placeholder-slate-600 focus:border-purple-400 transition-all duration-500"
                     placeholder="Username"
                   />
                   
-                  <Input
-                    id="full_name"
-                    value={formData.full_name}
-                    onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                    required
-                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
-                    placeholder="Full name"
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      id="first_name"
+                      value={formData.first_name}
+                      onChange={(e) => setFormData({...formData, first_name: e.target.value})}
+                      required
+                      className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/50 focus:text-slate-800 focus:placeholder-slate-600 focus:border-purple-400 transition-all duration-500"
+                      placeholder="First name"
+                    />
+                    
+                    <Input
+                      id="last_name"
+                      value={formData.last_name}
+                      onChange={(e) => setFormData({...formData, last_name: e.target.value})}
+                      required
+                      className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/50 focus:text-slate-800 focus:placeholder-slate-600 focus:border-purple-400 transition-all duration-500"
+                      placeholder="Last name"
+                    />
+                  </div>
                   
                   <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
-                    <SelectTrigger className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white font-light text-lg">
+                    <SelectTrigger className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white font-light text-lg focus:bg-white/50 focus:text-slate-800 focus:border-purple-400 transition-all duration-500 data-[state=open]:bg-white/50 data-[state=open]:text-slate-800">
                       <SelectValue placeholder="I want to..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800/95 backdrop-blur-xl border-slate-600 rounded-xl">
-                      <SelectItem value="buyer">Buy items</SelectItem>
-                      <SelectItem value="seller">Sell items</SelectItem>
-                      <SelectItem value="both">Both buy and sell</SelectItem>
+                    <SelectContent className="bg-slate-800/95 backdrop-blur-xl border-slate-600 rounded-2xl font-light text-lg">
+                      <SelectItem value="buyer" className="font-light text-lg">Buy items</SelectItem>
+                      <SelectItem value="seller" className="font-light text-lg">Sell items</SelectItem>
+                      <SelectItem value="both" className="font-light text-lg">Both buy and sell</SelectItem>
                     </SelectContent>
                   </Select>
                   
