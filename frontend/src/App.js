@@ -766,10 +766,10 @@ const Header = () => {
 
             {/* Favorites Icon */}
             <Link to="/favorites" className="relative">
-              <Button variant="ghost" size="sm" className="relative">
-                <Star className="h-5 w-5" />
+              <Button variant="ghost" size="sm" className="relative hover:bg-white/10 transition-all duration-300 p-3 rounded-xl">
+                <Star className="h-6 w-6 text-purple-600 hover:text-purple-400" />
                 {favoritesCount > 0 && (
-                  <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                  <Badge className="absolute -top-1 -right-1 h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs bg-purple-gradient text-white shadow-purple animate-pulse-purple">
                     {favoritesCount}
                   </Badge>
                 )}
@@ -780,9 +780,9 @@ const Header = () => {
             <NotificationCenter />
             
             {/* User Info */}
-            <div className="flex items-center space-x-2">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback>
+            <div className="flex items-center space-x-3">
+              <Avatar className="h-10 w-10 border-2 border-purple-300 shadow-purple">
+                <AvatarFallback className="bg-purple-gradient text-white font-bold text-lg">
                   {user?.full_name?.charAt(0) || 
                    (user?.role === 'admin' ? 'A' : user?.username?.charAt(0)) || 
                    'U'}
@@ -790,17 +790,18 @@ const Header = () => {
               </Avatar>
               <Link 
                 to="/profile"
-                className="text-sm font-medium transition-colors hover:text-indigo-600"
-                style={{
-                  color: siteSettings?.font_color || '#374151',
-                  fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
-                }}
+                className="text-lg font-semibold text-gray-700 hover:text-purple-600 transition-colors duration-300"
               >
                 {user?.full_name || 
                  (user?.role === 'admin' ? 'System Administrator' : user?.username) || 
                  'User'}
               </Link>
-              <Button variant="ghost" size="sm" onClick={logout}>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={logout}
+                className="btn-purple-secondary px-4 py-2 rounded-xl"
+              >
                 Logout
               </Button>
             </div>
