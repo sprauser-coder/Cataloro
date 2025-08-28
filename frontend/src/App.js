@@ -5914,8 +5914,8 @@ const AdminPanel = () => {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard">
