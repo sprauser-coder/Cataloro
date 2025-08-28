@@ -10049,13 +10049,15 @@ const Orders = () => {
         <h1 className="text-4xl font-light text-slate-900 mb-8 tracking-tight">My Orders</h1>
         
         {orders.length === 0 ? (
-          <div className="text-center py-12">
-            <Package className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
-            <p className="text-gray-500 mb-4">Your order history will appear here</p>
-            <Button onClick={() => navigate('/')} className="bg-gradient-to-r from-indigo-600 to-purple-600">
-              Start Shopping
-            </Button>
+          <div className="text-center py-16">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 max-w-lg mx-auto">
+              <Package className="h-16 w-16 mx-auto text-slate-400 mb-6" />
+              <h3 className="text-xl font-light text-slate-900 mb-3">No orders yet</h3>
+              <p className="text-slate-600 font-light mb-6">Your order history will appear here</p>
+              <Button onClick={() => navigate('/')} className="bg-slate-900 hover:bg-slate-800 text-white font-light px-6 py-3 rounded-xl">
+                Start Shopping
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">
