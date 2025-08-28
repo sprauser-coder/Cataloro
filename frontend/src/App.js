@@ -1369,22 +1369,22 @@ const Home = () => {
             </p>
             
             {/* Search Bar */}
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-3xl mx-auto">
               <div className="flex space-x-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-purple-400" />
                   <Input
                     placeholder="Search for anything..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 h-12 bg-white text-gray-900"
+                    className="pl-12 h-14 form-purple-modern text-gray-900 placeholder-purple-400 text-lg shadow-purple-lg"
                   />
                 </div>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-48 h-12 bg-white text-gray-900">
+                  <SelectTrigger className="w-56 h-14 form-purple-modern text-gray-900 shadow-purple-lg">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="glass-purple-strong">
                     <SelectItem value="all">All Categories</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category} value={category}>
