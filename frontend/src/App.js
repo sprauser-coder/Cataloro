@@ -6184,13 +6184,8 @@ const AdminPanel = () => {
               </div>
             </div>
           </TabsContent>
-          {/* REMOVE ALL OLD BROKEN CONTENT */}
-              <CardHeader className="pb-3">
-                <div>
-                  <CardTitle className="text-lg">Performance Summary</CardTitle>
-                  <CardDescription className="text-sm">Quick marketplace overview</CardDescription>
-                </div>
-              </CardHeader>
+          {/* Legacy Users Tab - Keeping for now */}
+          <TabsContent value="users">
               <CardContent>
                 <div className="grid grid-cols-3 gap-3">
                         <div className="text-center p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
