@@ -687,15 +687,15 @@ const Header = () => {
   const siteName = siteSettings?.site_name || 'Cataloro';
 
   return (
-    <header className="header-purple sticky top-0 z-50 border-0">
+    <header className="header-professional sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-18">
-          <Link to="/" className="flex items-center space-x-3 interactive-purple">
+        <div className="flex justify-between items-center h-16">
+          <Link to="/" className="header-logo-professional">
             {siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? (
               <img 
                 src={getImageUrl(siteSettings.header_logo_url)}
                 alt={siteSettings.header_logo_alt || 'Logo'} 
-                className={`${siteSettings?.header_logo_size || 'h-10'} w-auto object-contain drop-shadow-md`}
+                className={`${siteSettings?.header_logo_size || 'h-10'} w-auto object-contain`}
                 onError={(e) => {
                   // If image fails to load, hide it and show fallback
                   e.target.style.display = 'none';
@@ -705,10 +705,10 @@ const Header = () => {
               />
             ) : null}
             <div className={`logo-fallback flex items-center space-x-3 ${siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? 'hidden' : ''}`}>
-              <div className="p-2 bg-purple-gradient rounded-xl shadow-purple animate-glow">
-                <Package className="h-8 w-8 text-white" />
+              <div className="w-10 h-10 bg-gradient-business rounded-lg flex items-center justify-center shadow-professional">
+                <Package className="h-6 w-6 text-white" />
               </div>
-              <span className="text-3xl font-bold gradient-text-purple">
+              <span className="text-xl font-bold text-readable">
                 {siteName}
               </span>
             </div>
@@ -717,22 +717,22 @@ const Header = () => {
           {/* Right side: Navigation + User Info */}
           <div className="flex items-center space-x-4">
             {/* Main Navigation - moved to right */}
-            <nav className="hidden md:flex items-center space-x-6">
+            <nav className="header-nav-professional">
               <Link 
                 to="/" 
-                className="nav-link-purple font-semibold transition-all duration-300 hover:bg-white/10 px-3 py-2 rounded-lg"
+                className="header-nav-link-professional"
               >
                 Browse
               </Link>
               <Link 
                 to="/sell" 
-                className="nav-link-purple font-semibold transition-all duration-300 hover:bg-white/10 px-3 py-2 rounded-lg"
+                className="header-nav-link-professional"
               >
                 Sell
               </Link>
               <Link 
                 to="/orders" 
-                className="nav-link-purple font-semibold transition-all duration-300 hover:bg-white/10 px-3 py-2 rounded-lg"
+                className="header-nav-link-professional"
               >
                 My Orders
               </Link>
@@ -741,7 +741,7 @@ const Header = () => {
                 <Link
                   key={navItem.id}
                   to={navItem.url}
-                  className="nav-link-purple font-semibold transition-all duration-300 hover:bg-white/10 px-3 py-2 rounded-lg"
+                  className="header-nav-link-professional"
                   target={navItem.target}
                 >
                   {navItem.label}
@@ -750,7 +750,7 @@ const Header = () => {
               {user?.role === 'admin' && (
                 <Link 
                   to="/admin" 
-                  className="font-semibold text-red-500 hover:text-red-400 transition-all duration-300 hover:bg-white/10 px-3 py-2 rounded-lg"
+                  className="header-nav-link-professional text-red-600 hover:text-red-500"
                 >
                   Admin Panel
                 </Link>
