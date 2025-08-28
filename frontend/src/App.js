@@ -6185,74 +6185,7 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
-              <div className="space-y-6">
-                {/* Overview Cards */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold">Marketplace Overview</h2>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                  <Card>
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm text-gray-600">Total Users</p>
-                          <p className="text-2xl font-bold">{stats?.total_users || 0}</p>
-                        </div>
-                        <User className="h-8 w-8 text-blue-600" />
-                      </div>
-                    </CardContent>
-                  </Card>
 
-                  <Card>
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm text-gray-600">Active Listings</p>
-                          <p className="text-2xl font-bold">{stats?.active_listings || 0}</p>
-                        </div>
-                        <Package className="h-8 w-8 text-green-600" />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm text-gray-600">Total Listings</p>
-                          <p className="text-2xl font-bold">{stats?.total_listings || 0}</p>
-                        </div>
-                        <Plus className="h-8 w-8 text-indigo-600" />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm text-gray-600">Total Orders</p>
-                          <p className="text-2xl font-bold">{stats?.total_orders || 0}</p>
-                        </div>
-                        <Gavel className="h-8 w-8 text-purple-600" />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm text-gray-600">Total Revenue</p>
-                          <p className="text-2xl font-bold">€{stats?.total_revenue?.toFixed(2) || '0.00'}</p>
-                        </div>
-                        <Euro className="h-8 w-8 text-yellow-600" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-                </div>
 
                 {/* Analytics Section */}
                 <div className="grid grid-cols-1 gap-6">
