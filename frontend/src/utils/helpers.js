@@ -3,7 +3,7 @@ export const getImageUrl = (imageUrl) => {
   if (!imageUrl) return '';
   if (imageUrl.startsWith('http')) return imageUrl;
   if (imageUrl.startsWith('/uploads/')) {
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://217.154.0.82';
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
     return `${backendUrl}${imageUrl}`;
   }
   return imageUrl;
