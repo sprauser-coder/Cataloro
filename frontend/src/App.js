@@ -549,16 +549,16 @@ const NotificationCenter = () => {
               <h3 className="font-medium text-slate-900 text-lg">Notifications</h3>
               <div className="flex space-x-2">
                 {notifications.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={clearAllNotifications}>
+                  <Button variant="ghost" size="sm" onClick={clearAllNotifications} className="text-slate-600 hover:text-slate-900 hover:bg-slate-100">
                     Clear all
                   </Button>
                 )}
                 {unreadCount > 0 && (
-                  <Button variant="ghost" size="sm" onClick={markAllAsRead}>
+                  <Button variant="ghost" size="sm" onClick={markAllAsRead} className="text-slate-600 hover:text-slate-900 hover:bg-slate-100">
                     Mark all read
                   </Button>
                 )}
-                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-slate-900 hover:bg-slate-100">
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -567,9 +567,9 @@ const NotificationCenter = () => {
 
           <div className="max-h-80 overflow-y-auto">
             {loading ? (
-              <div className="p-4 text-center text-gray-500">Loading...</div>
+              <div className="p-4 text-center text-slate-500 font-light">Loading...</div>
             ) : notifications.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
+              <div className="p-4 text-center text-slate-500 font-light">
                 <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p>No notifications yet</p>
               </div>
@@ -577,7 +577,7 @@ const NotificationCenter = () => {
               notifications.map((notification) => (
                 <div 
                   key={notification.id}
-                  className={`p-4 border-b hover:bg-gray-50 cursor-pointer ${
+                  className={`p-4 border-b border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors duration-200 ${
                     !notification.read ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
                   }`}
                   onClick={() => !notification.read && markAsRead(notification.id)}
@@ -587,9 +587,9 @@ const NotificationCenter = () => {
                       {getNotificationIcon(notification.notification_type)}
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm font-medium">{notification.title}</h4>
-                      <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <h4 className="text-sm font-medium text-slate-900">{notification.title}</h4>
+                      <p className="text-sm text-slate-600 mt-1 font-light">{notification.message}</p>
+                      <p className="text-xs text-slate-500 mt-2 font-light">
                         {new Date(notification.created_at).toLocaleString()}
                       </p>
                       {renderNotificationActions(notification)}
