@@ -4074,9 +4074,9 @@ const Sell = () => {
               <div>
                 <Label>Listing Type</Label>
                 <Tabs value={formData.listing_type} onValueChange={(value) => setFormData({...formData, listing_type: value})}>
-                  <TabsList className="grid w-full grid-cols-2 mt-1">
-                    <TabsTrigger value="fixed_price">Fixed Price</TabsTrigger>
-                    <TabsTrigger value="auction">Auction</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-2 mt-1 bg-slate-100 rounded-xl p-1">
+                    <TabsTrigger value="fixed_price" className="rounded-lg font-light text-slate-700 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">Fixed Price</TabsTrigger>
+                    <TabsTrigger value="auction" className="rounded-lg font-light text-slate-700 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">Auction</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
