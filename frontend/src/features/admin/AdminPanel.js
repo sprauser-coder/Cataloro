@@ -2340,7 +2340,7 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
-          {/* Content Management Tab */}}
+          {/* Content Management Tab */}
           <TabsContent value="content">
             <div className="space-y-6">
               {/* Site Content Management */}
