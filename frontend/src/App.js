@@ -862,101 +862,89 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Ultra-Modern Background Pattern */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-blue-600/20"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-      </div>
-      
-      <div className="w-full max-w-lg relative z-10">
-        {/* Ultra-Modern Glass Card */}
-        <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-2xl p-12 relative">
-          {/* Subtle Inner Border */}
-          <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-b from-white/20 to-transparent opacity-50"></div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-2xl shadow-2xl border border-purple-100 p-8">
+          {/* Elegant Header */}
+          <div className="text-center mb-8">
+            <div className="mx-auto mb-6 w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <Package className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {isLogin ? 'Welcome Back' : 'Create Account'}
+            </h1>
+            <p className="text-gray-600 text-base">
+              {isLogin ? 'Please sign in to your account' : 'Join thousands of successful traders'}
+            </p>
+          </div>
           
-          <div className="relative z-10">
-            {/* Minimalist Header */}
-            <div className="text-center mb-10">
-              <div className="mx-auto mb-8 p-6 bg-gradient-to-br from-purple-400 to-blue-500 rounded-3xl w-fit shadow-xl">
-                <Package className="h-10 w-10 text-white" />
-              </div>
-              <h1 className="text-4xl font-extralight text-white mb-4 tracking-wide">
-                {isLogin ? 'Welcome' : 'Join Us'}
-              </h1>
-              <div className="h-px w-24 bg-gradient-to-r from-transparent via-white/50 to-transparent mx-auto mb-4"></div>
-              <p className="text-white/70 font-light text-lg">
-                {isLogin ? 'Enter your credentials to continue' : 'Create your premium account'}
-              </p>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+              <Input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                required
+                className="w-full h-12 px-4 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-all duration-200 text-gray-900"
+                placeholder="your@email.com"
+              />
             </div>
             
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+              <Input
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                required
+                className="w-full h-12 px-4 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-all duration-200 text-gray-900"
+                placeholder="••••••••"
+              />
+            </div>
+
+            {!isLogin && (
+              <>
                 <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Username</label>
                   <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    value={formData.username}
+                    onChange={(e) => setFormData({...formData, username: e.target.value})}
                     required
-                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
-                    placeholder="Email address"
+                    className="w-full h-12 px-4 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-all duration-200 text-gray-900"
+                    placeholder="username"
                   />
                 </div>
                 
                 <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
                   <Input
-                    id="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({...formData, password: e.target.value})}
-                    required
-                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
-                    placeholder="Password"
-                  />
-                </div>
-              </div>
-
-              {!isLogin && (
-                <div className="space-y-6 pt-4">
-                  <Input
-                    id="username"
-                    value={formData.username}
-                    onChange={(e) => setFormData({...formData, username: e.target.value})}
-                    required
-                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
-                    placeholder="Username"
-                  />
-                  
-                  <Input
-                    id="full_name"
                     value={formData.full_name}
                     onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                     required
-                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
-                    placeholder="Full name"
+                    className="w-full h-12 px-4 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-all duration-200 text-gray-900"
+                    placeholder="John Doe"
                   />
                 </div>
-              )}
-              
-              <Button 
-                type="submit" 
-                className="w-full mt-10 bg-gradient-to-r from-purple-500 via-purple-600 to-blue-600 hover:from-purple-600 hover:via-purple-700 hover:to-blue-700 text-white font-light py-6 px-6 rounded-2xl text-xl transition-all duration-500 transform hover:scale-[1.02] shadow-2xl"
-              >
-                {isLogin ? 'Enter Cataloro' : 'Begin Journey'}
-              </Button>
-            </form>
+              </>
+            )}
             
-            <div className="mt-10 text-center">
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-white/60 hover:text-white font-light transition-colors duration-300 text-lg"
-              >
-                {isLogin ? "New to Cataloro? Join us" : "Already a member? Sign in"}
-              </button>
-            </div>
+            <Button 
+              type="submit" 
+              className="w-full h-14 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              {isLogin ? 'Sign In' : 'Create Account'}
+            </Button>
+          </form>
+          
+          <div className="mt-8 text-center">
+            <button
+              type="button"
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-purple-600 hover:text-purple-800 font-medium transition-colors duration-200"
+            >
+              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+            </button>
           </div>
         </div>
       </div>
