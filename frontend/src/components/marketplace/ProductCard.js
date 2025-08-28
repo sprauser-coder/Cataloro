@@ -12,6 +12,7 @@ import { formatCurrency, getImageUrl, formatDate } from '../../utils/helpers';
 const ProductCard = ({ listing, onFavoriteToggle, isInFavorites = false }) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(isInFavorites);
   const [favoriteId, setFavoriteId] = useState(null);
   const [loading, setLoading] = useState(false);
