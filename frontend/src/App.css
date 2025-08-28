@@ -1,6 +1,32 @@
 /* Import Professional Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
+/* GLOBAL COLOR SYSTEM FIX - Remove All Gold/Brown Colors */
+.text-yellow-600, .text-yellow-700, .text-yellow-500, 
+.text-amber-600, .text-amber-700, .text-amber-500,
+.text-orange-600, .text-orange-700, .text-orange-500,
+.text-yellow-400, .text-amber-400, .text-orange-400 {
+  color: #1e293b !important; /* Slate 800 - Professional black */
+}
+
+.bg-yellow-100, .bg-yellow-50, .bg-amber-100, .bg-amber-50,
+.bg-orange-100, .bg-orange-50 {
+  background-color: #f8fafc !important; /* Slate 50 - Clean white */
+}
+
+.border-yellow-300, .border-amber-300, .border-orange-300 {
+  border-color: #cbd5e1 !important; /* Slate 300 - Professional border */
+}
+
+/* Enhanced Readability - Force Professional Colors */
+.text-indigo-600 {
+  color: #1e293b !important; /* Replace indigo with professional black */
+}
+
+.text-purple-600 {
+  color: #475569 !important; /* Replace purple with slate 600 for better readability */
+}
+
 /* Sleek Purple Professional Theme */
 * {
   margin: 0;
