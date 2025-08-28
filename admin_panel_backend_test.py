@@ -242,9 +242,8 @@ class AdminPanelBackendTester:
             
             # Test update listing status
             try:
-                status_data = {"status": "active"}  # or "sold", "expired"
-                response = requests.put(f"{API_BASE}/admin/listings/{test_listing_id}/status", 
-                                      json=status_data,
+                # Status should be passed as query parameter
+                response = requests.put(f"{API_BASE}/admin/listings/{test_listing_id}/status?status=active", 
                                       headers=self.get_headers())
                 
                 if response.status_code == 200:
