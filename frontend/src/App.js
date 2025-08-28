@@ -3949,16 +3949,18 @@ const Sell = () => {
             <CardTitle className="text-2xl font-light text-slate-900">Create New Listing</CardTitle>
             <CardDescription className="text-slate-600 font-light">List your item on Cataloro and reach thousands of potential buyers</CardDescription>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <Label htmlFor="title">Title</Label>
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-slate-900 font-medium">Product Title</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
                   required
-                  className="mt-1"
+                  className="h-12 bg-slate-50 border-slate-200 rounded-xl text-slate-900 font-light focus:bg-white focus:border-slate-400 transition-all duration-300"
+                  placeholder="Enter a descriptive title for your product"
+                  style={{color: siteSettings?.font_color || '#1e293b'}}
                 />
               </div>
 
