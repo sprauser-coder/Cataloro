@@ -1373,9 +1373,9 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
       <Header />
       
-      {/* Dynamic Hero Section */}
-      <div className="text-white" style={getHeroStyle()}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      {/* Ultra-Modern Hero Section - Clean & Conservative */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             {/* Hero Image Above Title */}
             {siteSettings?.hero_image_url && (
@@ -1394,39 +1394,33 @@ const Home = () => {
               </div>
             )}
             
-            <h1 
-              className="text-6xl font-bold mb-6"
-              style={{color: siteSettings?.hero_title_color || '#ffffff'}}
-            >
+            <h1 className="text-6xl font-extralight text-slate-900 mb-6 tracking-tight">
               {heroTitle}
             </h1>
-            <p 
-              className="text-xl mb-8 opacity-90"
-              style={{color: siteSettings?.hero_subtitle_color || '#f1f5f9'}}
-            >
+            <p className="text-xl text-slate-600 mb-12 font-light max-w-2xl mx-auto leading-relaxed">
               {heroSubtitle}
             </p>
             
-            {/* Search Bar */}
-            <div className="max-w-3xl mx-auto">
+            {/* Ultra-Modern Search Bar */}
+            <div className="max-w-4xl mx-auto">
               <div className="flex space-x-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-purple-400" />
+                  <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-slate-400" />
                   <Input
                     placeholder="Search for anything..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-12 h-14 search-sleek-purple text-high-contrast placeholder-gray-400 text-lg"
+                    className="pl-16 h-16 bg-slate-50 border-slate-200 rounded-2xl text-slate-900 placeholder-slate-500 text-lg font-light focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-all duration-300"
                   />
                 </div>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-56 h-14 search-sleek-purple text-high-contrast">
+                  <SelectTrigger className="w-56 h-16 bg-slate-50 border-slate-200 rounded-2xl text-slate-900 font-light text-lg focus:bg-white focus:border-slate-400 transition-all duration-300">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
-                  <SelectContent className="notification-sleek-purple">
+                  <SelectContent className="bg-white border-slate-200 rounded-xl shadow-xl">
                     <SelectItem value="all">All Categories</SelectItem>
                     {categories.map((category) => (
-                      <SelectItem key={category} value={category}>
+                      <SelectItem key={category} value={category} className="font-light">
                         {category}
                       </SelectItem>
                     ))}
