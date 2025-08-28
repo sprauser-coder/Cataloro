@@ -86,10 +86,11 @@ h1, h2, h3, h4, h5, h6 {
   background: #ffffff !important;
 }
 
-/* ADMIN PANEL FORM VISIBILITY FIX */
-/* Ensure all form fields in admin panel are visible and properly styled */
-input[type="text"], input[type="email"], input[type="url"], input[type="password"], 
-input[type="color"], textarea, select {
+/* ADMIN PANEL FORM VISIBILITY FIX - Exclude Auth Page */
+.admin-panel input[type="text"], .admin-panel input[type="email"], .admin-panel input[type="url"], 
+.admin-panel input[type="password"], .admin-panel input[type="color"], 
+.admin-panel textarea, .admin-panel select,
+.sell-page input, .sell-page textarea, .sell-page select {
   background-color: #ffffff !important;
   color: #1e293b !important;
   border: 1px solid #cbd5e1 !important;
@@ -98,27 +99,29 @@ input[type="color"], textarea, select {
   font-size: 14px !important;
 }
 
-input[type="text"]:focus, input[type="email"]:focus, input[type="url"]:focus, 
-input[type="password"]:focus, textarea:focus, select:focus {
+.admin-panel input:focus, .admin-panel textarea:focus, .admin-panel select:focus,
+.sell-page input:focus, .sell-page textarea:focus, .sell-page select:focus {
   outline: none !important;
   border-color: #6366f1 !important;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
 }
 
-/* Admin panel specific styling */
-.admin-panel input, .admin-panel textarea, .admin-panel select {
-  background-color: #ffffff !important;
-  color: #1e293b !important;
-  border: 2px solid #e2e8f0 !important;
-}
-
 /* Make all labels visible in admin panel */
-label {
+.admin-panel label, .sell-page label {
   color: #374151 !important;
   font-weight: 500 !important;
   font-size: 14px !important;
   margin-bottom: 8px !important;
   display: block !important;
+}
+
+/* LOGIN PAGE - Preserve original styling */
+.auth-page input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.auth-page input:focus::placeholder {
+  color: rgba(100, 116, 139, 0.6) !important;
 }
 
 /* Sleek Purple Professional Theme */
