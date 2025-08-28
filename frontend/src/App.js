@@ -989,7 +989,7 @@ const Auth = () => {
                     id="phone"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/50 focus:text-slate-800 focus:placeholder-slate-600 focus:border-purple-400 transition-all duration-500"
                     placeholder="Phone (optional)"
                   />
                   
@@ -997,7 +997,7 @@ const Auth = () => {
                     id="address"
                     value={formData.address}
                     onChange={(e) => setFormData({...formData, address: e.target.value})}
-                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/50 focus:text-slate-800 focus:placeholder-slate-600 focus:border-purple-400 transition-all duration-500"
                     placeholder="Address (optional)"
                   />
                 </div>
