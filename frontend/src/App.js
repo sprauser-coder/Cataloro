@@ -1030,16 +1030,19 @@ const Auth = () => {
                 </>
               )}
               
-              <Button type="submit" className="w-full mt-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
+              <Button 
+                type="submit" 
+                className="w-full mt-8 btn-purple-modern h-12 text-lg font-semibold"
+              >
                 {isLogin ? 'Sign In' : 'Create Account'}
               </Button>
             </form>
             
-            <div className="mt-6 text-center">
+            <div className="mt-8 text-center">
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-indigo-600 hover:text-indigo-800 font-medium"
+                className="text-white/90 hover:text-white font-medium transition-colors duration-300 text-lg"
               >
                 {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
               </button>
