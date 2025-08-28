@@ -532,27 +532,21 @@ const NotificationCenter = () => {
 
   return (
     <div className="relative">
-      <Button
-        variant="ghost"
-        size="sm"
-        className="relative hover:bg-white/10 transition-all duration-300 p-3 rounded-xl"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <Bell className="h-6 w-6 text-purple-600 hover:text-purple-400" />
+      <div className="relative p-3 bg-white/10 backdrop-blur-xl rounded-xl hover:bg-white/20 transition-all duration-300 border border-white/20 cursor-pointer"
+           onClick={() => setIsOpen(!isOpen)}>
+        <Bell className="h-5 w-5 text-white/80" />
         {unreadCount > 0 && (
-          <Badge 
-            className="absolute -top-1 -right-1 h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs bg-purple-gradient text-white shadow-purple animate-pulse-purple"
-          >
+          <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 flex items-center justify-center text-xs text-white font-medium">
             {unreadCount > 9 ? '9+' : unreadCount}
-          </Badge>
+          </div>
         )}
-      </Button>
+      </div>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 glass-purple-strong border rounded-2xl shadow-purple-xl z-50 max-h-96 overflow-hidden">
-          <div className="p-4 border-b border-purple-200/30 bg-white/10">
+        <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 max-h-96 overflow-hidden">
+          <div className="p-4 border-b border-slate-200 bg-white">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-white text-lg">Notifications</h3>
+              <h3 className="font-medium text-slate-900 text-lg">Notifications</h3>
               <div className="flex space-x-2">
                 {notifications.length > 0 && (
                   <Button variant="ghost" size="sm" onClick={clearAllNotifications}>
