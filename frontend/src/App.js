@@ -349,48 +349,6 @@ const NotificationCenter = () => {
   const [socket, setSocket] = useState(null);
   const { toast } = useToast();
 
-  // Apply theme colors to the entire site
-  const applyThemeColors = (settings) => {
-    const root = document.documentElement;
-    
-    // Apply CSS custom properties for theme colors
-    root.style.setProperty('--primary-color', settings.primary_color || '#6366f1');
-    root.style.setProperty('--secondary-color', settings.secondary_color || '#f59e0b');
-    root.style.setProperty('--accent-color', settings.accent_color || '#10b981');
-    root.style.setProperty('--success-color', settings.success_color || '#10b981');
-    root.style.setProperty('--warning-color', settings.warning_color || '#f59e0b');
-    root.style.setProperty('--error-color', settings.error_color || '#ef4444');
-    root.style.setProperty('--font-color', settings.font_color || '#1f2937');
-    root.style.setProperty('--link-color', settings.link_color || '#3b82f6');
-    root.style.setProperty('--link-hover-color', settings.link_hover_color || '#1d4ed8');
-    
-    // Apply to specific elements that need dynamic colors
-    const buttons = document.querySelectorAll('.btn-primary');
-    buttons.forEach(btn => {
-      btn.style.backgroundColor = settings.primary_color || '#6366f1';
-    });
-    
-    const links = document.querySelectorAll('a');
-    links.forEach(link => {
-      if (!link.classList.contains('no-theme')) {
-        link.style.color = settings.link_color || '#3b82f6';
-      }
-    });
-    
-    // Apply font color to text elements
-    const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span');
-    textElements.forEach(el => {
-      if (!el.classList.contains('no-theme') && !el.style.color) {
-        el.style.color = settings.font_color || '#1f2937';
-      }
-    });
-    
-    // Force refresh to apply changes
-    document.body.style.display = 'none';
-    document.body.offsetHeight; // Trigger reflow
-    document.body.style.display = '';
-  };
-
   useEffect(() => {
     if (user) {
       fetchNotifications();
