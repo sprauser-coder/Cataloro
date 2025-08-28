@@ -2340,6 +2340,312 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
+          {/* Communication Center Pro Tab */}
+          <TabsContent value="communication">
+            <div className="space-y-6">
+              {/* Communication Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-cyan-500 to-cyan-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-cyan-100 text-sm">Unread Messages</p>
+                        <p className="text-3xl font-bold">{Math.floor(Math.random() * 25 + 5)}</p>
+                        <p className="text-cyan-200 text-xs">{Math.floor(Math.random() * 5 + 1)} urgent</p>
+                      </div>
+                      <Mail className="h-8 w-8 text-cyan-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-rose-500 to-rose-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-rose-100 text-sm">Support Tickets</p>
+                        <p className="text-3xl font-bold">{Math.floor(Math.random() * 15 + 3)}</p>
+                        <p className="text-rose-200 text-xs">Avg. 2.3h response</p>
+                      </div>
+                      <MessageSquare className="h-8 w-8 text-rose-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-amber-500 to-amber-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-amber-100 text-sm">Notifications Sent</p>
+                        <p className="text-3xl font-bold">{Math.floor(Math.random() * 500 + 100)}</p>
+                        <p className="text-amber-200 text-xs">Today</p>
+                      </div>
+                      <AlertCircle className="h-8 w-8 text-amber-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-violet-500 to-violet-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-violet-100 text-sm">Active Chats</p>
+                        <p className="text-3xl font-bold">{Math.floor(Math.random() * 8 + 2)}</p>
+                        <p className="text-violet-200 text-xs">Live support</p>
+                      </div>
+                      <MessageSquare className="h-8 w-8 text-violet-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Message Center */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Mail className="h-5 w-5 text-purple-600" />
+                      Message Center & Support Hub
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm">
+                        <Plus className="h-4 w-4 mr-2" />
+                        New Message
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Refresh
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Recent Messages */}
+                    <div className="lg:col-span-2">
+                      <h4 className="font-semibold text-slate-900 mb-4">Recent Messages & Tickets</h4>
+                      <div className="space-y-3">
+                        {Array.from({length: 6}, (_, i) => {
+                          const types = ['Support', 'Sales', 'Complaint', 'Question', 'Feedback'];
+                          const priorities = ['Low', 'Medium', 'High', 'Urgent'];
+                          const type = types[Math.floor(Math.random() * types.length)];
+                          const priority = priorities[Math.floor(Math.random() * priorities.length)];
+                          const user = `User ${Math.floor(Math.random() * 100) + 1}`;
+                          const time = `${Math.floor(Math.random() * 12) + 1}h ago`;
+                          
+                          return (
+                            <Card key={i} className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                              <CardContent className="p-4">
+                                <div className="flex items-start justify-between mb-2">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                                      {user.charAt(0)}
+                                    </div>
+                                    <div>
+                                      <h5 className="font-medium text-slate-900">{user}</h5>
+                                      <p className="text-sm text-slate-500">{type} - {time}</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Badge 
+                                      variant="outline" 
+                                      className={`text-xs ${
+                                        priority === 'Urgent' ? 'border-red-200 text-red-600 bg-red-50' :
+                                        priority === 'High' ? 'border-orange-200 text-orange-600 bg-orange-50' :
+                                        priority === 'Medium' ? 'border-blue-200 text-blue-600 bg-blue-50' :
+                                        'border-slate-200 text-slate-600 bg-slate-50'
+                                      }`}
+                                    >
+                                      {priority}
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs">
+                                      {type}
+                                    </Badge>
+                                  </div>
+                                </div>
+                                <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+                                  {type === 'Support' ? 'I\'m having trouble with my order payment...' :
+                                   type === 'Sales' ? 'Can you help me understand the commission structure?' :
+                                   type === 'Complaint' ? 'The seller is not responding to my messages...' :
+                                   type === 'Question' ? 'How do I upgrade my seller account?' :
+                                   'Great platform! Just wanted to suggest a feature...'}
+                                </p>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                                    <Clock className="h-3 w-3" />
+                                    <span>Response due: {Math.floor(Math.random() * 6) + 1}h</span>
+                                  </div>
+                                  <div className="flex gap-1">
+                                    <Button variant="outline" size="sm" className="h-7 px-2">
+                                      <Eye className="h-3 w-3" />
+                                    </Button>
+                                    <Button variant="outline" size="sm" className="h-7 px-2">
+                                      <MessageSquare className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div>
+                      <h4 className="font-semibold text-slate-900 mb-4">Quick Actions</h4>
+                      <div className="space-y-3">
+                        <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white justify-start">
+                          <MessageSquare className="h-4 w-4 mr-2" />
+                          Send Broadcast Message
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <AlertCircle className="h-4 w-4 mr-2" />
+                          Create System Alert
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <Mail className="h-4 w-4 mr-2" />
+                          Email All Users
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <Megaphone className="h-4 w-4 mr-2" />
+                          Site Announcement
+                        </Button>
+                      </div>
+
+                      <div className="mt-6">
+                        <h5 className="font-medium text-slate-900 mb-3">Templates</h5>
+                        <div className="space-y-2">
+                          {['Welcome Message', 'Order Confirmation', 'Payment Issues', 'Seller Onboarding'].map((template, index) => (
+                            <Button key={index} variant="outline" size="sm" className="w-full text-xs justify-start">
+                              <FileText className="h-3 w-3 mr-2" />
+                              {template}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Notification Management */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <AlertCircle className="h-5 w-5 text-purple-600" />
+                      Push Notification Manager
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label className="text-slate-700">Notification Title</Label>
+                      <Input
+                        placeholder="🎉 New feature available!"
+                        className="border-slate-200 mt-2"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-700">Message Content</Label>
+                      <Textarea
+                        placeholder="Check out our new seller dashboard with advanced analytics..."
+                        className="border-slate-200 mt-2"
+                        rows={3}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-slate-700">Target Audience</Label>
+                        <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                          <option value="all">All Users</option>
+                          <option value="buyers">Buyers Only</option>
+                          <option value="sellers">Sellers Only</option>
+                          <option value="new">New Users</option>
+                          <option value="active">Active Users</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-slate-700">Priority</Label>
+                        <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                          <option value="low">Low</option>
+                          <option value="normal">Normal</option>
+                          <option value="high">High</option>
+                          <option value="urgent">Urgent</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-slate-700">Schedule for Later</Label>
+                      <Switch />
+                    </div>
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                      <AlertCircle className="h-4 w-4 mr-2" />
+                      Send Notification
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Settings className="h-5 w-5 text-purple-600" />
+                      Communication Settings
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-slate-700">Auto-response for Support</Label>
+                          <p className="text-xs text-slate-500">Send automatic acknowledgments</p>
+                        </div>
+                        <Switch defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-slate-700">Email Notifications</Label>
+                          <p className="text-xs text-slate-500">Send emails for important events</p>
+                        </div>
+                        <Switch defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-slate-700">SMS Alerts</Label>
+                          <p className="text-xs text-slate-500">Critical alerts via SMS</p>
+                        </div>
+                        <Switch />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-slate-700">Real-time Chat</Label>
+                          <p className="text-xs text-slate-500">Enable live chat support</p>
+                        </div>
+                        <Switch defaultChecked />
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-200">
+                      <Label className="text-slate-700">Response Time Goal</Label>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Input
+                          type="number"
+                          placeholder="24"
+                          className="border-slate-200 flex-1"
+                        />
+                        <span className="text-sm text-slate-600">hours</span>
+                      </div>
+                    </div>
+
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Settings
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
           {/* Content Management Tab */}
           <TabsContent value="content">
             <div className="space-y-6">
