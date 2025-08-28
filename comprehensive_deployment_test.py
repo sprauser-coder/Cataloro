@@ -47,7 +47,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Configuration - Use frontend environment for backend URL
-BACKEND_URL = 'https://sleek-cataloro.preview.emergentagent.com/api'
+BACKEND_URL = 'https://admin-rebuild.preview.emergentagent.com/api'
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
@@ -471,7 +471,7 @@ class ComprehensiveBackendTester:
             # Test CORS headers
             try:
                 headers = {
-                    'Origin': 'https://sleek-cataloro.preview.emergentagent.com',
+                    'Origin': 'https://admin-rebuild.preview.emergentagent.com',
                     'Access-Control-Request-Method': 'POST',
                     'Access-Control-Request-Headers': 'Content-Type,Authorization'
                 }

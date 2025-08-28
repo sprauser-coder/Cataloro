@@ -11,7 +11,7 @@ from datetime import datetime
 import os
 
 # Configuration - Using the requested backend URL
-BACKEND_URL = "https://sleek-cataloro.preview.emergentagent.com/api"
+BACKEND_URL = "https://admin-rebuild.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
