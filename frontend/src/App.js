@@ -320,16 +320,16 @@ const Footer = ({ siteSettings }) => {
   const safeSettings = siteSettings || {};
 
   return (
-    <footer className="glass-purple border-t border-purple-200/30 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+    <footer className="bg-white border-t border-gray-200 mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
           <div className="flex items-center space-x-4">
-            <p className="text-lg font-semibold text-purple-800">
+            <p className="text-xs text-gray-600 font-light">
               © {new Date().getFullYear()} {safeSettings.site_name || 'Cataloro Marketplace'}. All rights reserved.
             </p>
           </div>
           <div className="flex items-center space-x-6">
-            <div className="text-sm text-purple-600 font-mono bg-white/20 px-3 py-1 rounded-full">
+            <div className="text-xs text-gray-500 font-light">
               Version {currentVersion} • {deploymentDateTime}
             </div>
           </div>
