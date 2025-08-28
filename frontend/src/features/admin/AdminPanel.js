@@ -1933,7 +1933,414 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
-          {/* Content Management Tab */}
+          {/* Marketing Tools Pro Tab */}
+          <TabsContent value="marketing">
+            <div className="space-y-6">
+              {/* Marketing Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-pink-500 to-pink-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-pink-100 text-sm">Active Campaigns</p>
+                        <p className="text-3xl font-bold">{campaigns.length || 5}</p>
+                        <p className="text-pink-200 text-xs">2 ending soon</p>
+                      </div>
+                      <Target className="h-8 w-8 text-pink-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-indigo-500 to-indigo-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-indigo-100 text-sm">Email Subscribers</p>
+                        <p className="text-3xl font-bold">{Math.floor((stats.total_users || 0) * 0.6)}</p>
+                        <p className="text-indigo-200 text-xs">+{Math.floor(Math.random() * 50 + 10)} this week</p>
+                      </div>
+                      <Mail className="h-8 w-8 text-indigo-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-green-500 to-green-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-green-100 text-sm">Promo Conversions</p>
+                        <p className="text-3xl font-bold">{(Math.random() * 15 + 8).toFixed(1)}%</p>
+                        <p className="text-green-200 text-xs">Above 12% target</p>
+                      </div>
+                      <Zap className="h-8 w-8 text-green-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-orange-100 text-sm">Discount Usage</p>
+                        <p className="text-3xl font-bold">{Math.floor(Math.random() * 200 + 50)}</p>
+                        <p className="text-orange-200 text-xs">Total redemptions</p>
+                      </div>
+                      <Tag className="h-8 w-8 text-orange-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Campaign Management */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Target className="h-5 w-5 text-purple-600" />
+                      Marketing Campaign Manager
+                    </CardTitle>
+                    <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Campaign
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                      {
+                        name: 'Summer Sale 2025',
+                        type: 'Email Campaign',
+                        status: 'Active',
+                        opens: '24.5%',
+                        clicks: '8.3%',
+                        conversions: '12',
+                        budget: '$500',
+                        color: 'green'
+                      },
+                      {
+                        name: 'New Seller Promotion',
+                        type: 'Discount Campaign',
+                        status: 'Scheduled',
+                        opens: '0%',
+                        clicks: '0%',
+                        conversions: '0',
+                        budget: '$250',
+                        color: 'blue'
+                      },
+                      {
+                        name: 'Flash Weekend Deal',
+                        type: 'Social Media',
+                        status: 'Ended',
+                        opens: '31.2%',
+                        clicks: '15.7%',
+                        conversions: '67',
+                        budget: '$1,200',
+                        color: 'slate'
+                      }
+                    ].map((campaign, index) => (
+                      <Card key={index} className="border-0 shadow-sm hover:shadow-md transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <div>
+                              <h4 className="font-semibold text-slate-900">{campaign.name}</h4>
+                              <p className="text-sm text-slate-500">{campaign.type}</p>
+                            </div>
+                            <Badge 
+                              variant={campaign.status === 'Active' ? 'default' : 'outline'}
+                              className={`text-xs ${
+                                campaign.status === 'Active' ? 'bg-green-600' : 
+                                campaign.status === 'Scheduled' ? 'bg-blue-600' : 
+                                'bg-slate-600'
+                              }`}
+                            >
+                              {campaign.status}
+                            </Badge>
+                          </div>
+
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Open Rate:</span>
+                              <span className="font-medium">{campaign.opens}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Click Rate:</span>
+                              <span className="font-medium">{campaign.clicks}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Conversions:</span>
+                              <span className="font-medium">{campaign.conversions}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-600">Budget:</span>
+                              <span className="font-bold text-purple-600">{campaign.budget}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2 mt-4">
+                            <Button variant="outline" size="sm" className="flex-1">
+                              <Edit className="h-3 w-3 mr-1" />
+                              Edit
+                            </Button>
+                            <Button variant="outline" size="sm" className="flex-1">
+                              <BarChart3 className="h-3 w-3 mr-1" />
+                              Stats
+                            </Button>
+                            <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50">
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Discount & Promotion Management */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2 text-slate-900">
+                        <Tag className="h-5 w-5 text-purple-600" />
+                        Discount Code Generator
+                      </CardTitle>
+                      <Button variant="outline" size="sm">
+                        <Plus className="h-4 w-4 mr-2" />
+                        New Code
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-slate-700">Discount Type</Label>
+                        <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                          <option value="percentage">Percentage</option>
+                          <option value="fixed">Fixed Amount</option>
+                          <option value="shipping">Free Shipping</option>
+                          <option value="bogo">Buy One Get One</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-slate-700">Discount Value</Label>
+                        <Input
+                          type="number"
+                          placeholder="10"
+                          className="border-slate-200 mt-2"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-slate-700">Promo Code</Label>
+                      <div className="flex gap-2 mt-2">
+                        <Input
+                          placeholder="SUMMER25"
+                          className="border-slate-200 flex-1"
+                        />
+                        <Button variant="outline">
+                          <RefreshCw className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-slate-700">Start Date</Label>
+                        <Input
+                          type="date"
+                          className="border-slate-200 mt-2"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-slate-700">End Date</Label>
+                        <Input
+                          type="date"
+                          className="border-slate-200 mt-2"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-slate-700">Usage Limit</Label>
+                        <Input
+                          type="number"
+                          placeholder="100"
+                          className="border-slate-200 mt-2"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-slate-700">Minimum Order</Label>
+                        <Input
+                          type="number"
+                          placeholder="50.00"
+                          className="border-slate-200 mt-2"
+                        />
+                      </div>
+                    </div>
+
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                      <Save className="h-4 w-4 mr-2" />
+                      Create Discount Code
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Megaphone className="h-5 w-5 text-purple-600" />
+                      Email Marketing Tools
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label className="text-slate-700">Campaign Template</Label>
+                      <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                        <option value="newsletter">Newsletter</option>
+                        <option value="promotional">Promotional</option>
+                        <option value="welcome">Welcome Series</option>
+                        <option value="abandoned">Abandoned Cart</option>
+                        <option value="reactivation">Re-engagement</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <Label className="text-slate-700">Subject Line</Label>
+                      <Input
+                        placeholder="🎉 Summer Sale - 50% Off Everything!"
+                        className="border-slate-200 mt-2"
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-slate-700">Target Audience</Label>
+                      <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                        <option value="all">All Subscribers</option>
+                        <option value="buyers">Buyers Only</option>
+                        <option value="sellers">Sellers Only</option>
+                        <option value="inactive">Inactive Users</option>
+                        <option value="high_value">High-Value Customers</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <Label className="text-slate-700">Send Time</Label>
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        <Input
+                          type="date"
+                          className="border-slate-200"
+                        />
+                        <Input
+                          type="time"
+                          className="border-slate-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-slate-700">A/B Test Subject Lines</Label>
+                        <Switch />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label className="text-slate-700">Auto-personalization</Label>
+                        <Switch defaultChecked />
+                      </div>
+                    </div>
+
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                      <Mail className="h-4 w-4 mr-2" />
+                      Schedule Email Campaign
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* SEO & Content Marketing Tools */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <TrendingUp className="h-5 w-5 text-purple-600" />
+                    SEO & Content Marketing Hub
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-slate-900">SEO Optimization</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                          <span className="text-sm text-slate-700">Meta Titles Optimized</span>
+                          <Badge className="bg-green-600">95%</Badge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                          <span className="text-sm text-slate-700">Product Descriptions</span>
+                          <Badge className="bg-orange-600">78%</Badge>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                          <span className="text-sm text-slate-700">Image Alt Tags</span>
+                          <Badge className="bg-red-600">42%</Badge>
+                        </div>
+                      </div>
+                      <Button variant="outline" className="w-full">
+                        <Search className="h-4 w-4 mr-2" />
+                        Run SEO Audit
+                      </Button>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-slate-900">Keyword Tracking</h4>
+                      <div className="space-y-3">
+                        {['marketplace', 'buy online', 'sell products', 'best deals'].map((keyword, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                            <span className="text-sm text-slate-700">"{keyword}"</span>
+                            <div className="text-right">
+                              <div className="text-sm font-medium text-slate-900">#{Math.floor(Math.random() * 50) + 1}</div>
+                              <div className="text-xs text-green-600">+{Math.floor(Math.random() * 10) + 1}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <Button variant="outline" className="w-full">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Keywords
+                      </Button>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-slate-900">Content Performance</h4>
+                      <div className="space-y-3">
+                        <div className="p-3 bg-slate-50 rounded-lg">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-medium text-slate-900">Blog Posts</span>
+                            <span className="text-sm text-slate-600">12 published</span>
+                          </div>
+                          <div className="text-xs text-slate-500">Avg. 2,340 views/month</div>
+                        </div>
+                        <div className="p-3 bg-slate-50 rounded-lg">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-medium text-slate-900">Product Guides</span>
+                            <span className="text-sm text-slate-600">8 guides</span>
+                          </div>
+                          <div className="text-xs text-slate-500">Avg. 1,850 views/month</div>
+                        </div>
+                      </div>
+                      <Button variant="outline" className="w-full">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Content Calendar
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Content Management Tab */}}
           <TabsContent value="content">
             <div className="space-y-6">
               {/* Site Content Management */}
