@@ -449,12 +449,12 @@ class MarketplaceTestSuite:
     
     def test_orders_apis(self):
         """Test GET/POST /api/orders endpoints for OrdersPage"""
-        if not self.admin_token or not self.test_listing_id:
-            self.log_result("Orders APIs", False, "No admin token or test listing available")
+        if not self.test_user_token or not self.test_listing_id:
+            self.log_result("Orders APIs", False, "No buyer token or test listing available")
             return False
         
         try:
-            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            headers = {"Authorization": f"Bearer {self.test_user_token}"}
             
             # Test GET orders (initially empty)
             get_response = self.session.get(f"{BASE_URL}/orders", headers=headers)
