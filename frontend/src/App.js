@@ -10094,7 +10094,7 @@ const Orders = () => {
                   
                   {/* View Details Button for Completed Orders */}
                   {orderData.order.status === 'completed' && (
-                    <div className="mt-4 pt-4 border-t">
+                    <div className="mt-6 pt-6 border-t border-slate-100">
                       <Button 
                         variant="outline" 
                         size="sm"
@@ -10102,6 +10102,7 @@ const Orders = () => {
                           setSelectedOrder(orderData);
                           setShowOrderDetails(true);
                         }}
+                        className="bg-slate-50 border-slate-200 text-slate-900 hover:bg-slate-100 font-light rounded-xl px-4 py-2"
                       >
                         <Eye className="h-4 w-4 mr-2" />
                         View Details
