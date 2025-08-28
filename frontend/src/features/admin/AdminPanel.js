@@ -190,6 +190,9 @@ const AdminPanel = () => {
       case 'analytics':
         fetchAnalyticsData();
         break;
+      case 'data':
+        // CatalystDatabase handles its own data loading
+        break;
       case 'system':
         fetchSystemData();
         break;
