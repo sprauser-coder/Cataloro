@@ -1648,10 +1648,10 @@ const Home = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {listings.map((listing) => (
-              <Card key={listing.id} className="card-purple-sleek cursor-pointer group" onClick={() => navigate(`/listing/${listing.id}`)}>
-                <div className="relative overflow-hidden rounded-t-lg">
+              <Card key={listing.id} className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-lg cursor-pointer group transition-all duration-300 overflow-hidden" onClick={() => navigate(`/listing/${listing.id}`)}>
+                <div className="relative overflow-hidden">
                   <img
                     src={
                       listing.images?.[0] 
@@ -1661,10 +1661,10 @@ const Home = () => {
                         : 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZ3xlbnwwfHx8fDE3NTU4Njk0MzR8MA&ixlib=rb-4.1.0&q=85'
                     }
                     alt={listing.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-2 left-2">
-                    <Badge variant={listing.listing_type === 'auction' ? 'destructive' : 'default'}>
+                  <div className="absolute top-3 left-3">
+                    <Badge variant={listing.listing_type === 'auction' ? 'destructive' : 'default'} className={`${listing.listing_type === 'auction' ? 'bg-red-500 text-white' : 'bg-slate-900 text-white'} font-light rounded-lg`}>
                       {listing.listing_type === 'auction' ? (
                         <><Gavel className="h-3 w-3 mr-1" /> Auction</>
                       ) : (
@@ -1672,18 +1672,18 @@ const Home = () => {
                       )}
                     </Badge>
                   </div>
-                  <div className="absolute top-2 right-2 flex space-x-2">
-                    <Badge variant="secondary" className="bg-white/90">
+                  <div className="absolute top-3 right-3 flex space-x-2">
+                    <Badge variant="secondary" className="bg-white/95 backdrop-blur-sm text-slate-600 font-light rounded-lg">
                       <Eye className="h-3 w-3 mr-1" />
                       {listing.views}
                     </Badge>
                     <Button
                       variant="outline"
                       size="sm"
-                      className={`hover:bg-white ${
+                      className={`backdrop-blur-sm rounded-lg border-white/70 ${
                         isListingFavorited(listing.id) 
-                          ? 'bg-yellow-100 border-yellow-300 text-yellow-700' 
-                          : 'bg-white/90'
+                          ? 'bg-amber-50 border-amber-300 text-amber-600 hover:bg-amber-100' 
+                          : 'bg-white/95 hover:bg-white'
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1691,48 +1691,48 @@ const Home = () => {
                       }}
                     >
                       <Star className={`h-4 w-4 ${
-                        isListingFavorited(listing.id) ? 'fill-yellow-400 text-yellow-400' : ''
+                        isListingFavorited(listing.id) ? 'fill-amber-400 text-amber-400' : ''
                       }`} />
                     </Button>
                   </div>
                 </div>
                 
-                <CardContent className="p-4">
-                  <h3 className="font-semibold text-lg mb-2 line-clamp-2">{listing.title}</h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">{listing.description}</p>
+                <CardContent className="p-6">
+                  <h3 className="font-medium text-lg mb-2 line-clamp-2 text-slate-900">{listing.title}</h3>
+                  <p className="text-slate-600 text-sm mb-4 line-clamp-2 font-light leading-relaxed">{listing.description}</p>
                   
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-lg font-bold text-indigo-600">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-2xl font-light text-slate-900">
                       {formatPrice(listing)}
                     </span>
-                    <Badge variant="outline">{listing.condition}</Badge>
+                    <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 font-light rounded-lg">{listing.condition}</Badge>
                   </div>
                   
                   {listing.listing_type === 'auction' && listing.auction_end_time && (
-                    <div className="flex items-center text-sm text-gray-500 mb-3">
-                      <Clock className="h-4 w-4 mr-1" />
+                    <div className="flex items-center text-sm text-slate-500 mb-4 font-light">
+                      <Clock className="h-4 w-4 mr-2" />
                       {formatTimeRemaining(listing.auction_end_time)}
                     </div>
                   )}
                   
-                  <div className="flex items-center justify-between mb-3">
-                    <Badge variant="secondary">{listing.category}</Badge>
-                    <span className="text-sm text-gray-500 flex items-center">
+                  <div className="flex items-center justify-between mb-4">
+                    <Badge variant="secondary" className="bg-slate-100 text-slate-700 font-light rounded-lg">{listing.category}</Badge>
+                    <span className="text-sm text-slate-500 flex items-center font-light">
                       <MapPin className="h-3 w-3 mr-1" />
                       {listing.location}
                     </span>
                   </div>
                   
                   {/* Seller Information */}
-                  <div className="flex items-center justify-between pt-2 border-t">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <User className="h-3 w-3 mr-1" />
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div className="flex items-center text-sm text-slate-600 font-light">
+                      <User className="h-3 w-3 mr-2" />
                       <span>Sold by {listing.seller_name || 'Unknown'}</span>
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-xs px-2 py-1 h-6"
+                      className="text-xs px-3 py-1 h-7 bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 font-light rounded-lg"
                       onClick={(e) => {
                         e.stopPropagation();
                         // Navigate to seller profile or show seller info
