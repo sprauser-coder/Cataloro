@@ -901,6 +901,7 @@ const Auth = () => {
               className="mt-1 form-professional"
               placeholder="Enter your password"
             />
+          </div>
           
           {!isLogin && (
             <>
