@@ -6189,76 +6189,7 @@ const AdminPanel = () => {
 
 
 
-                    <CardContent>
-                      <div className={`grid gap-4 ${
-                        dashboardTimeRange === 'today' ? 'grid-cols-1' :
-                        dashboardTimeRange === '7days' ? 'grid-cols-7' :
-                        dashboardTimeRange === 'month' ? 'grid-cols-10' :
-                        'grid-cols-12'
-                      }`}>
-                        {/* Dynamic Chart Data */}
-                        {generateDashboardData().slice(0, 
-                          dashboardTimeRange === 'today' ? 1 :
-                          dashboardTimeRange === '7days' ? 7 :
-                          dashboardTimeRange === 'month' ? 10 :
-                          12
-                        ).map((data, index) => {
-                          const maxValue = Math.max(data.completed, data.active, data.pending, 1);
-                          return (
-                            <div key={index} className="text-center">
-                              <div className="text-xs font-medium text-gray-600 mb-2 truncate">{data.label}</div>
-                              <div className="flex justify-center items-end space-x-1 h-24 mb-2">
-                                {/* Completed Orders Bar */}
-                                <div className="flex flex-col items-center">
-                                  <div 
-                                    className="w-3 bg-green-500 rounded-t-sm transition-all duration-300 hover:bg-green-600"
-                                    style={{ height: `${Math.max((data.completed / maxValue) * 80, 2)}px` }}
-                                    title={`Completed Orders: ${data.completed}`}
-                                  ></div>
-                                </div>
-                                {/* Active Listings Bar */}
-                                <div className="flex flex-col items-center">
-                                  <div 
-                                    className="w-3 bg-blue-500 rounded-t-sm transition-all duration-300 hover:bg-blue-600"
-                                    style={{ height: `${Math.max((data.active / maxValue) * 80, 2)}px` }}
-                                    title={`Active Listings: ${data.active}`}
-                                  ></div>
-                                </div>
-                                {/* Pending Orders Bar */}
-                                <div className="flex flex-col items-center">
-                                  <div 
-                                    className="w-3 bg-orange-500 rounded-t-sm transition-all duration-300 hover:bg-orange-600"
-                                    style={{ height: `${Math.max((data.pending / maxValue) * 80, 2)}px` }}
-                                    title={`Pending Orders: ${data.pending}`}
-                                  ></div>
-                                </div>
-                              </div>
-                              <div className="space-y-1 text-xs">
-                                <div className="text-green-600">{data.completed}</div>
-                                <div className="text-blue-600">{data.active}</div>
-                                <div className="text-orange-600">{data.pending}</div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <div className="flex justify-center mt-6 space-x-6">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                          <span className="text-sm text-gray-600">Completed Orders</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                          <span className="text-sm text-gray-600">Active Listings</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                          <span className="text-sm text-gray-600">Pending Orders</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+
 
                 {/* Compact Listing Performance */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
