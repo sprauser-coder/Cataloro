@@ -10037,8 +10037,8 @@ const AdminPanel = () => {
             )}
           </TabsContent>
         </Tabs>
-        </div>
       </div>
+    </div>
   );
 };
 
