@@ -2977,7 +2977,7 @@ async def upload_profile_picture(
         shutil.copyfileobj(file.file, buffer)
     
     # Update user profile with new picture URL
-    base_url = os.environ.get('BACKEND_BASE_URL', 'http://217.154.0.82')
+    base_url = os.environ.get('BACKEND_BASE_URL')
     profile_picture_url = f"{base_url}/api/uploads/{filename}"
     await db.users.update_one(
         {"id": user_id},
