@@ -2689,7 +2689,7 @@ const OrdersTabContent = () => {
                 </div>
                 <div className={`px-3 py-1 rounded-full text-sm font-medium ${
                   orderDetails.status === 'completed' ? 'bg-green-100 text-green-800' :
-                  orderDetails.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  orderDetails.status === 'pending' ? 'bg-slate-100 text-slate-800' :
                   orderDetails.status === 'cancelled' ? 'bg-red-100 text-red-800' :
                   'bg-gray-100 text-gray-800'
                 }`}>
