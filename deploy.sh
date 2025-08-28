@@ -14,6 +14,19 @@ if [ ! -d "frontend" ] || [ ! -d "backend" ]; then
     exit 1
 fi
 
+# CRITICAL: Pull latest code from GitHub
+echo "📥 Pulling latest code from GitHub..."
+git fetch origin
+git reset --hard origin/main
+
+# Check if git pull was successful
+if [ $? -ne 0 ]; then
+    echo "❌ Git pull failed. Please check GitHub connection and repository status."
+    exit 1
+fi
+
+echo "✅ Latest code pulled successfully from GitHub"
+
 # Show current version info
 echo "📋 Version Info:"
 if [ -f "$PROJECT_ROOT/frontend/package.json" ]; then
