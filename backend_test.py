@@ -1,18 +1,30 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend API Testing After Frontend Architecture Restructure
-Testing complete backend functionality to ensure compatibility with new modular frontend
+Phase 4 Marketplace Features Backend Testing Suite
+Testing comprehensive backend support for new marketplace features including:
+- Product Detail APIs
+- Enhanced Listing APIs  
+- User Profile APIs
+- Order Management
+- Notification System
+- Search and Related Products
+- Enhanced Favorites
+- Advanced Authentication
+- Statistics & Analytics
+- File Management
 """
 
 import requests
 import json
-import sys
-from datetime import datetime
-import time
 import os
+from datetime import datetime
+import uuid
 
-# Configuration - Using correct backend URL from frontend/.env
-BASE_URL = "http://217.154.0.82/api"
+# Configuration
+BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'http://217.154.0.82')
+API_BASE = f"{BACKEND_URL}/api"
+
+# Test credentials
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
