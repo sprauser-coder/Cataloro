@@ -6191,8 +6191,6 @@ const AdminPanel = () => {
 
 
 
-
-                  <Card className="lg:col-span-1">
                     <CardHeader className="pb-3">
                       <div>
                         <CardTitle className="text-lg">Performance Summary</CardTitle>
