@@ -1679,7 +1679,7 @@ const Home = () => {
                       size="sm"
                       className={`backdrop-blur-sm rounded-lg border-white/70 ${
                         isListingFavorited(listing.id) 
-                          ? 'bg-amber-50 border-amber-300 text-amber-600 hover:bg-amber-100' 
+                          ? 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200' 
                           : 'bg-white/95 hover:bg-white'
                       }`}
                       onClick={(e) => {
