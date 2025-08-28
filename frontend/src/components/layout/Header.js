@@ -80,9 +80,7 @@ const Header = () => {
                   <Heart className="h-5 w-5" />
                 </Link>
                 
-                <div className="p-2 text-purple-100 hover:text-white hover:bg-purple-500/20 rounded-xl transition-colors cursor-pointer">
-                  <Bell className="h-5 w-5" />
-                </div>
+                <NotificationCenter />
 
                 <Link to="/profile" className="flex items-center space-x-2 hover:bg-purple-500/20 rounded-xl px-3 py-2 transition-colors">
                   <Avatar className="h-8 w-8 ring-2 ring-white/30">
