@@ -916,17 +916,24 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
+    <div className="min-h-screen bg-purple-gradient flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full animate-float animation-delay-2s"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-white/5 rounded-full animate-float animation-delay-4s"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white/5 rounded-full animate-pulse-purple"></div>
+      </div>
+      
+      <div className="w-full max-w-md relative z-10">
+        <Card className="glass-purple-strong shadow-purple-xl border-0 animate-fadeInPurple">
           <CardHeader className="text-center pb-8">
-            <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full w-fit">
-              <Package className="h-8 w-8 text-white" />
+            <div className="mx-auto mb-6 p-4 bg-white/20 rounded-2xl w-fit backdrop-blur-sm animate-pulseGlow">
+              <Package className="h-10 w-10 text-white" />
             </div>
-            <CardTitle className="text-2xl font-bold">
+            <CardTitle className="text-3xl font-bold text-white mb-2">
               {isLogin ? 'Welcome Back' : 'Join Cataloro'}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-white/80 text-lg">
               {isLogin ? 'Sign in to your account' : 'Create your account and start trading on Cataloro'}
             </CardDescription>
           </CardHeader>
