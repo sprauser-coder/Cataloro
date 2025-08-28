@@ -8721,7 +8721,11 @@ const AdminPanel = () => {
                         </div>
 
                         <Button 
-                          onClick={() => updateSiteSettings(siteSettings)}
+                          onClick={() => {
+                            updateSiteSettings(siteSettings);
+                            // Apply colors immediately to the entire site
+                            applyThemeColors(siteSettings);
+                          }}
                           className="w-full"
                         >
                           Save Color Settings
