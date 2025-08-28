@@ -829,7 +829,7 @@ const Auth = () => {
       const endpoint = isLogin ? '/auth/login' : '/auth/register';
       const data = isLogin ? 
         { email: formData.email, password: formData.password } : 
-        formData;
+        { ...formData, full_name: `${formData.first_name} ${formData.last_name}`.trim() };
       
       console.log('🔥 CRITICAL DEBUG: Login attempt', { 
         endpoint: `${API}${endpoint}`, 
