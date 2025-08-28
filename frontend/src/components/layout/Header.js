@@ -83,7 +83,7 @@ const Header = () => {
                   <Bell className="h-5 w-5" />
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <Link to="/profile" className="flex items-center space-x-2 hover:bg-purple-500/20 rounded-xl px-3 py-2 transition-colors">
                   <Avatar className="h-8 w-8 ring-2 ring-white/30">
                     <AvatarImage src={user?.avatar_url} />
                     <AvatarFallback className="bg-purple-500 text-white text-sm">
@@ -93,7 +93,7 @@ const Header = () => {
                   <span className="hidden md:block text-sm text-purple-100 font-light">
                     {user?.full_name || user?.email}
                   </span>
-                </div>
+                </Link>
 
                 <Button 
                   onClick={handleLogout}
