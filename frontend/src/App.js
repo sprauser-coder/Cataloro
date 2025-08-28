@@ -753,46 +753,11 @@ const Header = () => {
                 >
                   {navItem.label}
                 </Link>
-                  e.target.style.color = siteSettings?.link_color || '#6b7280';
-                }}
-              >
-                My Orders
-              </Link>
-              {/* Dynamic Navigation from CMS */}
-              {customNavigation.map((navItem) => (
-                <Link
-                  key={navItem.id}
-                  to={navItem.url}
-                  className="font-medium transition-colors"
-                  style={{
-                    color: siteSettings?.link_color || '#6b7280',
-                    fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.color = siteSettings?.link_color || '#6b7280';
-                  }}
-                  target={navItem.target}
-                >
-                  {navItem.label}
-                </Link>
               ))}
               {user?.role === 'admin' && (
                 <Link 
                   to="/admin" 
-                  className="font-medium transition-colors"
-                  style={{
-                    color: '#dc2626', // Keep admin link red for visibility
-                    fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.color = '#b91c1c';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.color = '#dc2626';
-                  }}
+                  className="font-semibold text-red-500 hover:text-red-400 transition-all duration-300 hover:bg-white/10 px-3 py-2 rounded-lg"
                 >
                   Admin Panel
                 </Link>
