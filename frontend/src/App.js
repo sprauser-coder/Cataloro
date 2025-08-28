@@ -3258,15 +3258,15 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
       <Header />
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Enhanced Profile Header */}
-        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl p-8 text-white mb-8 shadow-xl">
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        {/* Enhanced Profile Header - Clean & Modern */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
               <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden ring-4 ring-white/30">
+                <div className="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border-2 border-slate-200">
                   {profileData.profile_picture_url ? (
                     <img 
                       src={getImageUrl(profileData.profile_picture_url)}
@@ -3274,21 +3274,21 @@ const Profile = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <User className="w-12 h-12 text-white/70" />
+                    <User className="w-12 h-12 text-slate-600" />
                   )}
                 </div>
                 {/* Online Status Indicator */}
-                <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full border-3 border-white flex items-center justify-center">
+                <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
                   <Zap className="w-3 h-3 text-white" />
                 </div>
                 {/* Level Badge */}
-                <div className={`absolute -top-2 -right-2 px-2 py-1 rounded-full text-xs font-bold ${getBadgeColor(stats.account_level)}`}>
+                <div className="absolute -top-2 -right-2 px-2 py-1 rounded-full text-xs font-medium bg-slate-900 text-white">
                   {stats.account_level}
                 </div>
               </div>
               <div>
-                <h1 className="text-4xl font-bold mb-1">{profileData.full_name || profileData.username}</h1>
-                <p className="text-blue-100 text-lg mb-2">@{profileData.username}</p>
+                <h1 className="text-4xl font-light text-slate-900 mb-1">{profileData.full_name || profileData.username}</h1>
+                <p className="text-slate-600 text-lg font-light mb-2">@{profileData.username}</p>
                 <div className="flex items-center space-x-6 text-sm">
                   <span className="flex items-center bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
                     <Calendar className="w-4 h-4 mr-2" />
