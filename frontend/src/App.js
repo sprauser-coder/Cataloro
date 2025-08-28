@@ -3346,23 +3346,23 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Quick Stats Overview */}
+        {/* Quick Stats Overview - Clean & Professional */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
           {[
-            { label: 'Profile Views', value: stats.profile_views, icon: Eye, color: 'blue' },
-            { label: 'Active Listings', value: stats.total_listings, icon: Package, color: 'green' },
-            { label: 'Total Orders', value: stats.total_orders, icon: ShoppingCart, color: 'purple' },
-            { label: 'Total Earned', value: `€${stats.total_earned}`, icon: Euro, color: 'yellow' },
-            { label: 'Trust Score', value: `${stats.trust_score}%`, icon: Shield, color: 'red' },
-            { label: 'Account Level', value: stats.account_level, icon: Award, color: 'indigo' },
+            { label: 'Profile Views', value: stats.profile_views, icon: Eye },
+            { label: 'Active Listings', value: stats.total_listings, icon: Package },
+            { label: 'Total Orders', value: stats.total_orders, icon: ShoppingCart },
+            { label: 'Total Earned', value: `€${stats.total_earned}`, icon: Euro },
+            { label: 'Trust Score', value: `${stats.trust_score}%`, icon: Shield },
+            { label: 'Account Level', value: stats.account_level, icon: Award },
           ].map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
+              <Card key={index} className="bg-white border border-slate-200 rounded-xl hover:shadow-md transition-shadow">
                 <CardContent className="p-4 text-center">
-                  <Icon className={`w-8 h-8 mx-auto mb-2 text-${stat.color}-600`} />
-                  <div className={`text-2xl font-bold text-${stat.color}-800`}>{stat.value}</div>
-                  <div className={`text-sm text-${stat.color}-600`}>{stat.label}</div>
+                  <Icon className="w-8 h-8 mx-auto mb-2 text-slate-600" />
+                  <div className="text-2xl font-light text-slate-900">{stat.value}</div>
+                  <div className="text-sm text-slate-600 font-light">{stat.label}</div>
                 </CardContent>
               </Card>
             );
