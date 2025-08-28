@@ -2281,7 +2281,7 @@ const SellerProfile = () => {
                   </div>
                   {sellerData.rating > 0 && (
                     <div className="flex items-center">
-                      <Star className="w-4 h-4 mr-1 fill-yellow-400 text-yellow-400" />
+                      <Star className="w-4 h-4 mr-1 fill-slate-800 text-slate-800" />
                       {sellerData.rating.toFixed(1)} ({sellerData.total_reviews} reviews)
                     </div>
                   )}
