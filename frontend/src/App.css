@@ -302,11 +302,7 @@ body {
   line-height: 1.5;
 }
 
-/* Admin Panel Conventional Styling */
-.admin-panel-conventional {
-  background: #f9fafb;
-  min-height: 100vh;
-}
+/* Modern Admin Panel - Replaced conventional */
 
 .admin-main-container {
   max-width: 1200px;
