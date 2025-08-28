@@ -6184,9 +6184,7 @@ const AdminPanel = () => {
               </div>
             </div>
           </TabsContent>
-            {loading ? (
-              <div className="flex justify-center py-8">Loading...</div>
-            ) : stats ? (
+
               <div className="space-y-6">
                 {/* Overview Cards */}
                 <div className="space-y-4">
