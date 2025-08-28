@@ -2371,7 +2371,7 @@ async def upload_listing_image(
         raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
     
     # Return the image URL
-    base_url = os.environ.get('BACKEND_BASE_URL', 'https://marketplace-fix-6.preview.emergentagent.com')
+    base_url = os.environ.get('BACKEND_BASE_URL', 'http://217.154.0.82')
     image_url = f"{base_url}/api/uploads/{unique_filename}"
     
     return {
