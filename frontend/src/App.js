@@ -55,16 +55,7 @@ function App() {
             
             <Route path="/orders" element={
               <ProtectedRoute>
-                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
-                  <div className="max-w-7xl mx-auto px-4 py-16">
-                    <h1 className="text-4xl font-light text-slate-900 mb-8">My Orders</h1>
-                    <div className="bg-white rounded-2xl p-12 text-center">
-                      <div className="text-6xl mb-4">📦</div>
-                      <h3 className="text-xl font-semibold text-slate-700 mb-2">Orders Page</h3>
-                      <p className="text-slate-500">Order management functionality will be implemented here</p>
-                    </div>
-                  </div>
-                </div>
+                <OrdersPage />
               </ProtectedRoute>
             } />
             
