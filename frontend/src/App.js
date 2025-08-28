@@ -22,7 +22,7 @@ import { useToast } from './hooks/use-toast';
 import { Toaster } from './components/ui/toaster';
 import { Package, User, Users, Settings, ShoppingCart, Plus, Eye, Edit, Trash2, Search, Star, Bell, Check, X, TrendingUp, Calendar, DollarSign, Heart, Clock, CheckCircle, Upload, Euro, Gavel, MapPin, RefreshCw, Home as HomeIcon, Activity, MessageCircle, Zap, Award, Shield, Globe, Phone, Mail, Camera, AlertTriangle, ArrowLeft } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://217.154.0.82';
 const API = `${BACKEND_URL}/api`;
 
 // Image URL helper function for production deployment
