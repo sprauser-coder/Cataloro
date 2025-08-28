@@ -1370,7 +1370,7 @@ const Home = () => {
     (siteSettings?.hero_subtitle || 'Buy and sell with confidence on Cataloro - your trusted marketplace for amazing deals');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-purple-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
       <Header />
       
       {/* Dynamic Hero Section */}
