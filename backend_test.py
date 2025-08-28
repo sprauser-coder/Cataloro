@@ -562,6 +562,9 @@ class BackendTester:
         print("\n📁 Testing File Upload Systems...")
         self.test_file_upload_endpoints()
         
+        print("\n🧪 Testing Catalyst Database System...")
+        self.test_catalyst_database_system()
+        
         # Summary
         self.print_summary()
         
