@@ -1432,33 +1432,34 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Phase 3D: Enhanced Filters & Sorting */}
-        <div className="mb-6 space-y-4">
+      {/* Ultra-Modern Conservative Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Clean Modern Filters & Sorting */}
+        <div className="mb-8 space-y-6">
           {/* Primary Filters Row */}
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-6">
             <Tabs value={listingType} onValueChange={setListingType}>
-              <TabsList>
-                <TabsTrigger value="">All Items</TabsTrigger>
-                <TabsTrigger value="fixed_price">Buy Now</TabsTrigger>
-                <TabsTrigger value="auction">Auctions</TabsTrigger>
+              <TabsList className="bg-slate-100 rounded-xl p-1">
+                <TabsTrigger value="" className="rounded-lg font-light data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">All Items</TabsTrigger>
+                <TabsTrigger value="fixed_price" className="rounded-lg font-light data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">Buy Now</TabsTrigger>
+                <TabsTrigger value="auction" className="rounded-lg font-light data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">Auctions</TabsTrigger>
               </TabsList>
             </Tabs>
 
             {/* Sort Options */}
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-gray-700">Sort by:</span>
+            <div className="flex items-center space-x-3">
+              <span className="text-sm font-medium text-slate-700">Sort by:</span>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-48 bg-slate-50 border-slate-200 rounded-xl font-light">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="created_desc">Newest First</SelectItem>
-                  <SelectItem value="created_asc">Oldest First</SelectItem>
-                  <SelectItem value="price_high">Price: High to Low</SelectItem>
-                  <SelectItem value="price_low">Price: Low to High</SelectItem>
-                  <SelectItem value="views_desc">Most Viewed</SelectItem>
-                  <SelectItem value="title_asc">Name: A to Z</SelectItem>
+                <SelectContent className="bg-white border-slate-200 rounded-xl shadow-lg">
+                  <SelectItem value="created_desc" className="font-light">Newest First</SelectItem>
+                  <SelectItem value="created_asc" className="font-light">Oldest First</SelectItem>
+                  <SelectItem value="price_high" className="font-light">Price: High to Low</SelectItem>
+                  <SelectItem value="price_low" className="font-light">Price: Low to High</SelectItem>
+                  <SelectItem value="views_desc" className="font-light">Most Viewed</SelectItem>
+                  <SelectItem value="title_asc" className="font-light">Name: A to Z</SelectItem>
                 </SelectContent>
               </Select>
             </div>
