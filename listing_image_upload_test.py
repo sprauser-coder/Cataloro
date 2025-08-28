@@ -12,7 +12,7 @@ from PIL import Image
 import tempfile
 
 # Configuration
-BACKEND_URL = "https://glassui-market.preview.emergentagent.com/api"
+BACKEND_URL = "https://sleek-cataloro.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
@@ -284,7 +284,7 @@ class ListingImageUploadTester:
         try:
             # Construct full URL
             if image_url.startswith('/uploads/'):
-                full_url = f"https://glassui-market.preview.emergentagent.com{image_url}"
+                full_url = f"https://sleek-cataloro.preview.emergentagent.com{image_url}"
             else:
                 full_url = image_url
             

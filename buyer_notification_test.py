@@ -13,7 +13,7 @@ import os
 from datetime import datetime
 
 # Configuration - Use frontend environment for backend URL
-BACKEND_URL = 'https://glassui-market.preview.emergentagent.com/api'
+BACKEND_URL = 'https://sleek-cataloro.preview.emergentagent.com/api'
 
 # Test credentials
 ADMIN_EMAIL = "admin@marketplace.com"
