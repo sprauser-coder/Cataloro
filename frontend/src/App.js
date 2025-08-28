@@ -722,52 +722,27 @@ const Header = () => {
           </Link>
           
           {/* Right side: Navigation + User Info */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-6">
             {/* Main Navigation - moved to right */}
-            <nav className="hidden md:flex items-center space-x-6">
+            <nav className="hidden md:flex items-center space-x-8">
               <Link 
                 to="/" 
-                className="font-medium transition-colors"
-                style={{
-                  color: siteSettings?.link_color || '#6b7280',
-                  fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.color = siteSettings?.link_color || '#6b7280';
-                }}
+                className="nav-link-purple font-semibold text-lg px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:shadow-purple"
               >
                 Browse
               </Link>
               <Link 
                 to="/sell" 
-                className="font-medium transition-colors"
-                style={{
-                  color: siteSettings?.link_color || '#6b7280',
-                  fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.color = siteSettings?.link_color || '#6b7280';
-                }}
+                className="nav-link-purple font-semibold text-lg px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:shadow-purple"
               >
                 Sell
               </Link>
               <Link 
                 to="/orders" 
-                className="font-medium transition-colors"
-                style={{
-                  color: siteSettings?.link_color || '#6b7280',
-                  fontFamily: siteSettings?.global_font_family ? `${siteSettings.global_font_family}, sans-serif` : undefined
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.color = siteSettings?.link_hover_color || '#4f46e5';
-                }}
-                onMouseLeave={(e) => {
+                className="nav-link-purple font-semibold text-lg px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:shadow-purple"
+              >
+                My Orders
+              </Link>
                   e.target.style.color = siteSettings?.link_color || '#6b7280';
                 }}
               >
