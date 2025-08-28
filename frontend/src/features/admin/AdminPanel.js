@@ -1874,15 +1874,33 @@ const AdminPanel = () => {
 
                         {/* Actions */}
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="flex-1">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1"
+                            onClick={() => {
+                              setEditingProduct(listing);
+                              setShowProductEditModal(true);
+                            }}
+                          >
                             <Edit className="h-3 w-3 mr-1" />
                             Edit
                           </Button>
-                          <Button variant="outline" size="sm" className="text-green-600 border-green-200">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-green-600 border-green-200"
+                            onClick={() => handleProductAction(listing.id, 'approve')}
+                          >
                             <CheckCircle className="h-3 w-3 mr-1" />
                             Approve
                           </Button>
-                          <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-red-600 border-red-200 hover:bg-red-50"
+                            onClick={() => handleProductAction(listing.id, 'delete')}
+                          >
                             <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
