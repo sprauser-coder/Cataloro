@@ -671,7 +671,18 @@ class MarketplaceTestSuite:
         try:
             # Test direct image access through base URL (without /api prefix)
             base_url = "http://217.154.0.82"
-            image_response = self.session.get(f"{base_url}{self.test_image_url}")
+            
+            # Handle case where test_image_url might be a relative path starting with /uploads/
+            if self.test_image_url.startswith('/uploads/'):
+                image_url = f"{base_url}{self.test_image_url}"
+            elif self.test_image_url.startswith('/api/uploads/'):
+                # Convert API path to direct path
+                image_url = f"{base_url}{self.test_image_url.replace('/api', '')}"
+            else:
+                # Assume it's already a full URL or relative path
+                image_url = f"{base_url}{self.test_image_url}"
+            
+            image_response = self.session.get(image_url)
             
             if image_response.status_code != 200:
                 self.log_result("File Handling", False, 
