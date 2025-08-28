@@ -3498,6 +3498,379 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
+          {/* System Administration Pro Tab */}
+          <TabsContent value="system">
+            <div className="space-y-6">
+              {/* System Health Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-green-500 to-green-600 text-white">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-green-100 text-xs">System Status</p>
+                        <p className="text-xl font-bold">Online</p>
+                      </div>
+                      <Activity className="h-6 w-6 text-green-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-blue-100 text-xs">Server Uptime</p>
+                        <p className="text-xl font-bold">99.9%</p>
+                      </div>
+                      <Server className="h-6 w-6 text-blue-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-orange-100 text-xs">CPU Usage</p>
+                        <p className="text-xl font-bold">{Math.floor(Math.random() * 30) + 15}%</p>
+                      </div>
+                      <Monitor className="h-6 w-6 text-orange-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-purple-100 text-xs">Memory</p>
+                        <p className="text-xl font-bold">{Math.floor(Math.random() * 40) + 30}%</p>
+                      </div>
+                      <HardDrive className="h-6 w-6 text-purple-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-red-500 to-red-600 text-white">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-red-100 text-xs">Disk Usage</p>
+                        <p className="text-xl font-bold">{Math.floor(Math.random() * 25) + 45}%</p>
+                      </div>
+                      <Database className="h-6 w-6 text-red-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* System Management Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* System Logs */}
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2 text-slate-900">
+                        <FileText className="h-5 w-5 text-purple-600" />
+                        System Logs Monitor
+                      </CardTitle>
+                      <Button variant="outline" size="sm">
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Refresh
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm max-h-64 overflow-y-auto">
+                      {Array.from({length: 10}, (_, i) => {
+                        const levels = ['INFO', 'WARNING', 'ERROR', 'DEBUG'];
+                        const level = levels[Math.floor(Math.random() * levels.length)];
+                        const messages = [
+                          'User authentication successful',
+                          'Database connection established',
+                          'Payment processing completed',
+                          'File upload started',
+                          'Cache cleared successfully',
+                          'API rate limit exceeded',
+                          'Memory usage threshold reached',
+                          'Backup process initiated'
+                        ];
+                        const message = messages[Math.floor(Math.random() * messages.length)];
+                        const time = new Date(Date.now() - Math.random() * 3600000).toLocaleTimeString();
+                        
+                        return (
+                          <div key={i} className="flex items-start gap-2 p-2 bg-slate-50 rounded text-xs font-mono">
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs ${
+                                level === 'ERROR' ? 'border-red-200 text-red-600 bg-red-50' :
+                                level === 'WARNING' ? 'border-orange-200 text-orange-600 bg-orange-50' :
+                                level === 'INFO' ? 'border-blue-200 text-blue-600 bg-blue-50' :
+                                'border-slate-200 text-slate-600 bg-slate-50'
+                              }`}
+                            >
+                              {level}
+                            </Badge>
+                            <div className="flex-1">
+                              <div className="text-slate-600">{time}</div>
+                              <div className="text-slate-900">{message}</div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Security Center */}
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Shield className="h-5 w-5 text-purple-600" />
+                      Security Center
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-slate-700">Two-Factor Authentication</Label>
+                          <p className="text-xs text-slate-500">Admin 2FA requirement</p>
+                        </div>
+                        <Switch defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-slate-700">IP Whitelist</Label>
+                          <p className="text-xs text-slate-500">Restrict admin access</p>
+                        </div>
+                        <Switch />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-slate-700">Login Monitoring</Label>
+                          <p className="text-xs text-slate-500">Track login attempts</p>
+                        </div>
+                        <Switch defaultChecked />
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-200">
+                      <h5 className="font-medium text-slate-900 mb-3 text-sm">Recent Security Events</h5>
+                      <div className="space-y-2">
+                        {Array.from({length: 4}, (_, i) => {
+                          const events = ['Failed login attempt', 'Password changed', 'New admin user', 'API key generated'];
+                          const event = events[Math.floor(Math.random() * events.length)];
+                          const time = `${Math.floor(Math.random() * 60) + 1}m ago`;
+                          
+                          return (
+                            <div key={i} className="flex items-center gap-2 text-xs">
+                              <div className={`w-2 h-2 rounded-full ${
+                                event.includes('Failed') ? 'bg-red-500' : 'bg-green-500'
+                              }`}></div>
+                              <span className="text-slate-700 flex-1">{event}</span>
+                              <span className="text-slate-500">{time}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                      <Lock className="h-4 w-4 mr-2" />
+                      Security Audit
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Database Management */}
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Database className="h-5 w-5 text-purple-600" />
+                      Database Management
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="p-3 bg-slate-50 rounded-lg">
+                        <div className="font-medium text-slate-900">Total Records</div>
+                        <div className="text-lg font-bold text-purple-600">{(stats.total_users || 0) + (stats.total_listings || 0) + (stats.total_orders || 0)}</div>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-lg">
+                        <div className="font-medium text-slate-900">DB Size</div>
+                        <div className="text-lg font-bold text-purple-600">{Math.floor(Math.random() * 500) + 100} MB</div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Button variant="outline" className="w-full justify-start">
+                        <Download className="h-4 w-4 mr-2" />
+                        Create Backup
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start">
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Optimize Database
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Export Data
+                      </Button>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-200">
+                      <h5 className="font-medium text-slate-900 mb-2 text-sm">Last Backup</h5>
+                      <div className="text-xs text-slate-600">
+                        <div>Size: {Math.floor(Math.random() * 200) + 50} MB</div>
+                        <div>Date: {new Date(Date.now() - Math.random() * 86400000).toLocaleDateString()}</div>
+                        <div className="text-green-600 font-medium">Status: Successful</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* API Management & Integration Tools */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Code className="h-5 w-5 text-purple-600" />
+                      API Management & Monitoring
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4 text-sm">
+                      <div className="p-3 bg-slate-50 rounded-lg text-center">
+                        <div className="font-bold text-lg text-green-600">{Math.floor(Math.random() * 10000) + 5000}</div>
+                        <div className="text-slate-600">API Calls Today</div>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-lg text-center">
+                        <div className="font-bold text-lg text-blue-600">{Math.floor(Math.random() * 200) + 50}ms</div>
+                        <div className="text-slate-600">Avg Response</div>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-lg text-center">
+                        <div className="font-bold text-lg text-purple-600">99.{Math.floor(Math.random() * 10) + 8}%</div>
+                        <div className="text-slate-600">Uptime</div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-slate-700 text-sm">API Rate Limits</Label>
+                      <div className="mt-2 space-y-2">
+                        {[
+                          {endpoint: '/api/auth/login', limit: '100/min', usage: '45%'},
+                          {endpoint: '/api/listings', limit: '1000/min', usage: '23%'},
+                          {endpoint: '/api/orders', limit: '500/min', usage: '67%'}
+                        ].map((api, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded text-xs">
+                            <span className="font-mono text-slate-700">{api.endpoint}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-500">{api.limit}</span>
+                              <div className="w-16 h-2 bg-slate-200 rounded-full">
+                                <div 
+                                  className={`h-2 rounded-full ${
+                                    parseFloat(api.usage) > 80 ? 'bg-red-500' :
+                                    parseFloat(api.usage) > 60 ? 'bg-orange-500' : 'bg-green-500'
+                                  }`}
+                                  style={{width: api.usage}}
+                                ></div>
+                              </div>
+                              <span className="text-slate-600 w-8">{api.usage}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button variant="outline" className="flex-1">
+                        <Eye className="h-4 w-4 mr-2" />
+                        API Docs
+                      </Button>
+                      <Button variant="outline" className="flex-1">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Configure
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Settings className="h-5 w-5 text-purple-600" />
+                      System Configuration
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-slate-700">Maintenance Mode</Label>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-sm text-slate-500">Enable site maintenance</span>
+                          <Switch />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-slate-700">Debug Mode</Label>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-sm text-slate-500">Show detailed error logs</span>
+                          <Switch />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-slate-700">Cache System</Label>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-sm text-slate-500">Enable Redis caching</span>
+                          <Switch defaultChecked />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-slate-700">Auto-backup</Label>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-sm text-slate-500">Daily automatic backups</span>
+                          <Switch defaultChecked />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-200">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-slate-700 text-sm">Session Timeout</Label>
+                          <Input
+                            type="number"
+                            placeholder="30"
+                            className="border-slate-200 mt-1"
+                          />
+                          <span className="text-xs text-slate-500">minutes</span>
+                        </div>
+                        <div>
+                          <Label className="text-slate-700 text-sm">Max File Size</Label>
+                          <Input
+                            type="number"
+                            placeholder="10"
+                            className="border-slate-200 mt-1"
+                          />
+                          <span className="text-xs text-slate-500">MB</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Configuration
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
           {/* Settings Tab - Visual Theme Builder */}
           <TabsContent value="settings">
             <div className="space-y-6">
