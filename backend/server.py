@@ -2243,7 +2243,7 @@ async def upload_hero_image(
         buffer.write(content)
     
     # Generate URL
-    base_url = os.environ.get('BACKEND_BASE_URL', 'http://217.154.0.82')
+    base_url = os.environ.get('BACKEND_BASE_URL')
     hero_image_url = f"{base_url}/api/uploads/{unique_filename}"
     
     return {
