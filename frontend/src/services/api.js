@@ -41,7 +41,11 @@ export const adminAPI = {
 export const marketplaceAPI = {
   getListings: (params) => api.get('/listings', { params }),
   getListingById: (id) => api.get(`/listings/${id}`),
+  getListingsCount: (params) => api.get('/listings/count', { params }),
+  searchListings: (query, params) => api.get('/listings/search', { params: { q: query, ...params } }),
   createListing: (listingData) => api.post('/listings', listingData),
+  updateListing: (id, listingData) => api.put(`/listings/${id}`, listingData),
+  deleteListing: (id) => api.delete(`/listings/${id}`),
   uploadImage: (file) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -50,6 +54,8 @@ export const marketplaceAPI = {
     });
   },
   getCategories: () => api.get('/categories'),
+  addToCart: (listingId, quantity = 1) => api.post('/cart', { listing_id: listingId, quantity }),
+  placeBid: (listingId, bidAmount) => api.post(`/listings/${listingId}/bid`, { amount: bidAmount }),
 };
 
 // Orders API
