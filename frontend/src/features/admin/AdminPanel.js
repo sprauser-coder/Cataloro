@@ -145,23 +145,117 @@ const AdminPanel = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchDashboardData();
-    if (activeTab === 'users') {
-      fetchUsers();
-    } else if (activeTab === 'products') {
-      fetchListings();
-    } else if (activeTab === 'content') {
-      fetchSiteContent();
-    } else if (activeTab === 'analytics') {
-      fetchAnalyticsData();
+    // Initialize all data on component mount
+    initializeAllData();
+    
+    // Set up live data updates every 30 seconds
+    const liveUpdateInterval = setInterval(() => {
+      updateLiveStats();
+    }, 30000);
+    
+    return () => clearInterval(liveUpdateInterval);
+  }, []);
+
+  useEffect(() => {
+    // Fetch data based on active tab
+    switch(activeTab) {
+      case 'dashboard':
+        fetchDashboardData();
+        break;
+      case 'users':
+        fetchUsers();
+        break;
+      case 'products':
+        fetchListings();
+        break;
+      case 'orders':
+        fetchOrders();
+        break;
+      case 'financial':
+        fetchFinancialData();
+        break;
+      case 'marketing':
+        fetchMarketingData();
+        break;
+      case 'communication':
+        fetchCommunicationData();
+        break;
+      case 'analytics':
+        fetchAnalyticsData();
+        break;
+      case 'system':
+        fetchSystemData();
+        break;
+      case 'reports':
+        fetchReportsData();
+        break;
+      default:
+        break;
     }
   }, [activeTab]);
 
+  // COMPREHENSIVE DATA INITIALIZATION
+  const initializeAllData = async () => {
+    try {
+      setLoading(true);
+      
+      // Initialize core data
+      await Promise.all([
+        fetchDashboardData(),
+        fetchUsers(),
+        fetchListings(),
+        fetchOrders(),
+        updateLiveStats()
+      ]);
+      
+    } catch (error) {
+      console.error('Error initializing admin data:', error);
+      toast({
+        title: "Initialization Error",
+        description: "Failed to load some admin data",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // LIVE STATS UPDATE - REAL-TIME FUNCTIONALITY
+  const updateLiveStats = async () => {
+    try {
+      const response = await adminAPI.getStats();
+      const data = response.data;
+      
+      // Calculate live metrics
+      const now = new Date();
+      const todayRevenue = calculateTodayRevenue(data);
+      const activeUsersCount = await getActiveUsersCount();
+      const currentOrdersCount = await getCurrentOrdersCount();
+      
+      setLiveStats({
+        activeUsers: activeUsersCount,
+        currentOrders: currentOrdersCount,
+        revenueToday: todayRevenue,
+        conversionRate: calculateLiveConversionRate(data),
+        avgOrderValue: data.total_revenue / Math.max(data.total_orders, 1),
+        repeatCustomerRate: await calculateRepeatCustomerRate(),
+        cartAbandonmentRate: await calculateCartAbandonmentRate(),
+        topSellingProducts: await getTopSellingProducts(),
+        recentActivity: await getRecentActivity()
+      });
+      
+    } catch (error) {
+      console.error('Error updating live stats:', error);
+    }
+  };
+
+  // COMPREHENSIVE FETCH FUNCTIONS
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       const response = await adminAPI.getStats();
       setStats(response.data || stats);
+      await updateLiveStats();
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -183,17 +277,6 @@ const AdminPanel = () => {
     }
   };
 
-  const fetchSiteContent = async () => {
-    try {
-      const response = await adminAPI.getSiteSettings();
-      if (response.data) {
-        setSiteContent(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching site content:', error);
-    }
-  };
-
   const fetchListings = async () => {
     try {
       const response = await adminAPI.getListings();
@@ -209,6 +292,90 @@ const AdminPanel = () => {
       setOrders(response.data || []);
     } catch (error) {
       console.error('Error fetching orders:', error);
+    }
+  };
+
+  const fetchFinancialData = async () => {
+    try {
+      const [revenueRes, commissionsRes, payoutsRes, transactionsRes] = await Promise.all([
+        adminAPI.getRevenue?.() || { data: {} },
+        adminAPI.getCommissions?.() || { data: {} },
+        adminAPI.getPayouts?.() || { data: {} },
+        adminAPI.getTransactions?.() || { data: [] }
+      ]);
+      
+      setFinancialData({
+        revenue: revenueRes.data,
+        commissions: commissionsRes.data,
+        payouts: payoutsRes.data,
+        transactions: transactionsRes.data
+      });
+    } catch (error) {
+      console.error('Error fetching financial data:', error);
+    }
+  };
+
+  const fetchMarketingData = async () => {
+    try {
+      const [campaignsRes, promotionsRes, discountsRes] = await Promise.all([
+        fetch('/api/admin/marketing/campaigns').then(r => r.json()).catch(() => ({data: []})),
+        fetch('/api/admin/marketing/promotions').then(r => r.json()).catch(() => ({data: []})),
+        fetch('/api/admin/marketing/discounts').then(r => r.json()).catch(() => ({data: []}))
+      ]);
+      
+      setCampaigns(campaignsRes.data || []);
+      setPromotions(promotionsRes.data || []);
+      setDiscountCodes(discountsRes.data || []);
+    } catch (error) {
+      console.error('Error fetching marketing data:', error);
+    }
+  };
+
+  const fetchCommunicationData = async () => {
+    try {
+      const [messagesRes, ticketsRes, notificationsRes] = await Promise.all([
+        fetch('/api/admin/communication/messages').then(r => r.json()).catch(() => ({data: []})),
+        fetch('/api/admin/communication/tickets').then(r => r.json()).catch(() => ({data: []})),
+        fetch('/api/admin/communication/notifications').then(r => r.json()).catch(() => ({data: []}))
+      ]);
+      
+      setMessages(messagesRes.data || []);
+      setTickets(ticketsRes.data || []);
+      setNotifications(notificationsRes.data || []);
+    } catch (error) {
+      console.error('Error fetching communication data:', error);
+    }
+  };
+
+  const fetchSystemData = async () => {
+    try {
+      const [logsRes, backupsRes, securityRes] = await Promise.all([
+        fetch('/api/admin/system/logs').then(r => r.json()).catch(() => ({data: []})),
+        fetch('/api/admin/system/backups').then(r => r.json()).catch(() => ({data: []})),
+        fetch('/api/admin/system/security').then(r => r.json()).catch(() => ({data: []}))
+      ]);
+      
+      setSystemLogs(logsRes.data || []);
+      setBackups(backupsRes.data || []);
+      setSecurityEvents(securityRes.data || []);
+    } catch (error) {
+      console.error('Error fetching system data:', error);
+    }
+  };
+
+  const fetchReportsData = async () => {
+    try {
+      const [reportsRes, customRes, exportsRes] = await Promise.all([
+        fetch('/api/admin/reports').then(r => r.json()).catch(() => ({data: []})),
+        fetch('/api/admin/reports/custom').then(r => r.json()).catch(() => ({data: []})),
+        fetch('/api/admin/reports/exports').then(r => r.json()).catch(() => ({data: []}))
+      ]);
+      
+      setReports(reportsRes.data || []);
+      setCustomReports(customRes.data || []);
+      setExportHistory(exportsRes.data || []);
+    } catch (error) {
+      console.error('Error fetching reports data:', error);
     }
   };
 
