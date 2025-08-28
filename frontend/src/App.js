@@ -5917,6 +5917,273 @@ const AdminPanel = () => {
 
           {/* Overview Dashboard Tab */}
           <TabsContent value="dashboard">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+              <div className="admin-card">
+                <div className="admin-card-content text-center">
+                  <div className="text-3xl font-bold text-primary mb-2">{stats?.total_users || 0}</div>
+                  <div className="text-sm text-neutral-600">Total Users</div>
+                </div>
+              </div>
+              <div className="admin-card">
+                <div className="admin-card-content text-center">
+                  <div className="text-3xl font-bold text-secondary mb-2">{stats?.total_listings || 0}</div>
+                  <div className="text-sm text-neutral-600">Active Listings</div>
+                </div>
+              </div>
+              <div className="admin-card">
+                <div className="admin-card-content text-center">
+                  <div className="text-3xl font-bold text-success mb-2">{stats?.total_orders || 0}</div>
+                  <div className="text-sm text-neutral-600">Transactions</div>
+                </div>
+              </div>
+              <div className="admin-card">
+                <div className="admin-card-content text-center">
+                  <div className="text-3xl font-bold text-warning mb-2">€{stats?.total_revenue || '0'}</div>
+                  <div className="text-sm text-neutral-600">Revenue</div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Revolutionary Theme Builder */}
+          <TabsContent value="theme-builder">
+            <div className="admin-card">
+              <div className="admin-card-header">
+                <h2 className="admin-card-title">🎨 Live Theme Builder</h2>
+                <p className="admin-card-description">Customize your marketplace appearance with real-time preview</p>
+              </div>
+              <div className="admin-card-content">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  
+                  {/* Theme Controls */}
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-semibold mb-4">🎨 Color System</h3>
+                    
+                    {/* Primary Color */}
+                    <div className="admin-form-group">
+                      <label className="admin-form-label">Primary Brand Color</label>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="color"
+                          value={siteSettings?.primary_color || '#6366f1'}
+                          onChange={(e) => {
+                            const newSettings = {...siteSettings, primary_color: e.target.value};
+                            setSiteSettings(newSettings);
+                            applyThemeColors(newSettings);
+                          }}
+                          className="w-16 h-12 rounded-lg border-2 border-neutral-200 cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={siteSettings?.primary_color || '#6366f1'}
+                          onChange={(e) => {
+                            const newSettings = {...siteSettings, primary_color: e.target.value};
+                            setSiteSettings(newSettings);
+                          }}
+                          className="admin-form-input flex-1"
+                          placeholder="#6366f1"
+                        />
+                      </div>
+                      <p className="text-sm text-neutral-500 mt-1">Used for buttons, links, and accents</p>
+                    </div>
+
+                    {/* Secondary Color */}
+                    <div className="admin-form-group">
+                      <label className="admin-form-label">Secondary Color</label>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="color"
+                          value={siteSettings?.secondary_color || '#06b6d4'}
+                          onChange={(e) => {
+                            const newSettings = {...siteSettings, secondary_color: e.target.value};
+                            setSiteSettings(newSettings);
+                            applyThemeColors(newSettings);
+                          }}
+                          className="w-16 h-12 rounded-lg border-2 border-neutral-200 cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={siteSettings?.secondary_color || '#06b6d4'}
+                          onChange={(e) => {
+                            const newSettings = {...siteSettings, secondary_color: e.target.value};
+                            setSiteSettings(newSettings);
+                          }}
+                          className="admin-form-input flex-1"
+                          placeholder="#06b6d4"
+                        />
+                      </div>
+                      <p className="text-sm text-neutral-500 mt-1">Used for highlights and special elements</p>
+                    </div>
+
+                    {/* Typography */}
+                    <div className="mt-8">
+                      <h3 className="text-xl font-semibold mb-4">📝 Typography</h3>
+                      
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">Font Family</label>
+                        <select 
+                          className="admin-form-input"
+                          value={siteSettings?.font_family || 'Inter'}
+                          onChange={(e) => {
+                            const newSettings = {...siteSettings, font_family: e.target.value};
+                            setSiteSettings(newSettings);
+                            applyThemeColors(newSettings);
+                          }}
+                        >
+                          <option value="Inter">Inter (Recommended)</option>
+                          <option value="Roboto">Roboto</option>
+                          <option value="Open Sans">Open Sans</option>
+                          <option value="Poppins">Poppins</option>
+                          <option value="Montserrat">Montserrat</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Quick Theme Presets */}
+                    <div className="mt-8">
+                      <h3 className="text-xl font-semibold mb-4">⚡ Quick Presets</h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button 
+                          onClick={() => {
+                            const preset = {primary_color: '#6366f1', secondary_color: '#06b6d4'};
+                            setSiteSettings({...siteSettings, ...preset});
+                            applyThemeColors({...siteSettings, ...preset});
+                          }}
+                          className="p-4 border rounded-lg hover:shadow-md transition-all"
+                        >
+                          <div className="flex gap-2 mb-2">
+                            <div className="w-6 h-6 rounded" style={{backgroundColor: '#6366f1'}}></div>
+                            <div className="w-6 h-6 rounded" style={{backgroundColor: '#06b6d4'}}></div>
+                          </div>
+                          <div className="text-sm font-medium">Modern Blue</div>
+                        </button>
+                        
+                        <button 
+                          onClick={() => {
+                            const preset = {primary_color: '#10b981', secondary_color: '#059669'};
+                            setSiteSettings({...siteSettings, ...preset});
+                            applyThemeColors({...siteSettings, ...preset});
+                          }}
+                          className="p-4 border rounded-lg hover:shadow-md transition-all"
+                        >
+                          <div className="flex gap-2 mb-2">
+                            <div className="w-6 h-6 rounded" style={{backgroundColor: '#10b981'}}></div>
+                            <div className="w-6 h-6 rounded" style={{backgroundColor: '#059669'}}></div>
+                          </div>
+                          <div className="text-sm font-medium">Fresh Green</div>
+                        </button>
+                        
+                        <button 
+                          onClick={() => {
+                            const preset = {primary_color: '#f59e0b', secondary_color: '#d97706'};
+                            setSiteSettings({...siteSettings, ...preset});
+                            applyThemeColors({...siteSettings, ...preset});
+                          }}
+                          className="p-4 border rounded-lg hover:shadow-md transition-all"
+                        >
+                          <div className="flex gap-2 mb-2">
+                            <div className="w-6 h-6 rounded" style={{backgroundColor: '#f59e0b'}}></div>
+                            <div className="w-6 h-6 rounded" style={{backgroundColor: '#d97706'}}></div>
+                          </div>
+                          <div className="text-sm font-medium">Warm Orange</div>
+                        </button>
+                        
+                        <button 
+                          onClick={() => {
+                            const preset = {primary_color: '#8b5cf6', secondary_color: '#7c3aed'};
+                            setSiteSettings({...siteSettings, ...preset});
+                            applyThemeColors({...siteSettings, ...preset});
+                          }}
+                          className="p-4 border rounded-lg hover:shadow-md transition-all"
+                        >
+                          <div className="flex gap-2 mb-2">
+                            <div className="w-6 h-6 rounded" style={{backgroundColor: '#8b5cf6'}}></div>
+                            <div className="w-6 h-6 rounded" style={{backgroundColor: '#7c3aed'}}></div>
+                          </div>
+                          <div className="text-sm font-medium">Royal Purple</div>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Save Button */}
+                    <div className="mt-8">
+                      <button 
+                        onClick={() => {
+                          updateSiteSettings(siteSettings);
+                          applyThemeColors(siteSettings);
+                        }}
+                        className="btn-primary w-full"
+                      >
+                        💾 Save Theme Changes
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Live Preview */}
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-semibold mb-4">👁️ Live Preview</h3>
+                    
+                    {/* Preview Header */}
+                    <div className="border rounded-lg p-4 bg-white">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg" style={{backgroundColor: siteSettings?.primary_color || '#6366f1'}}></div>
+                          <span className="font-semibold">Cataloro</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <span className="px-3 py-1 rounded text-sm" style={{backgroundColor: siteSettings?.primary_color || '#6366f1', color: 'white'}}>Browse</span>
+                          <span className="px-3 py-1 rounded text-sm border">Sell</span>
+                        </div>
+                      </div>
+                      
+                      {/* Preview Card */}
+                      <div className="border rounded-lg p-4 bg-gray-50">
+                        <h4 className="font-medium mb-2">Sample Product Card</h4>
+                        <p className="text-sm text-gray-600 mb-3">This is how products will appear with your theme</p>
+                        <div className="flex gap-2">
+                          <button 
+                            className="px-4 py-2 rounded text-sm font-medium text-white"
+                            style={{backgroundColor: siteSettings?.primary_color || '#6366f1'}}
+                          >
+                            Add to Cart
+                          </button>
+                          <button 
+                            className="px-4 py-2 rounded text-sm font-medium border"
+                            style={{borderColor: siteSettings?.secondary_color || '#06b6d4', color: siteSettings?.secondary_color || '#06b6d4'}}
+                          >
+                            View Details
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Color Palette Preview */}
+                    <div className="border rounded-lg p-4 bg-white">
+                      <h4 className="font-medium mb-3">Color Palette</h4>
+                      <div className="grid grid-cols-4 gap-3">
+                        <div className="text-center">
+                          <div className="w-12 h-12 rounded-lg mx-auto mb-2" style={{backgroundColor: siteSettings?.primary_color || '#6366f1'}}></div>
+                          <div className="text-xs">Primary</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="w-12 h-12 rounded-lg mx-auto mb-2" style={{backgroundColor: siteSettings?.secondary_color || '#06b6d4'}}></div>
+                          <div className="text-xs">Secondary</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="w-12 h-12 rounded-lg bg-gray-100 mx-auto mb-2"></div>
+                          <div className="text-xs">Neutral</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="w-12 h-12 rounded-lg bg-gray-800 mx-auto mb-2"></div>
+                          <div className="text-xs">Text</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
             {loading ? (
               <div className="flex justify-center py-8">Loading...</div>
             ) : stats ? (
