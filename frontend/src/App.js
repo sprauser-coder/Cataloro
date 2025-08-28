@@ -5912,10 +5912,10 @@ const AdminPanel = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+      <div className="admin-content">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
 
-          {/* Dashboard Tab */}
+          {/* Overview Dashboard Tab */}
           <TabsContent value="dashboard">
             {loading ? (
               <div className="flex justify-center py-8">Loading...</div>
