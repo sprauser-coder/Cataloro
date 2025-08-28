@@ -759,10 +759,10 @@ const Header = () => {
 
             {/* Favorites Icon */}
             <Link to="/favorites" className="relative">
-              <Button variant="ghost" size="sm" className="relative hover:bg-black/5 transition-all duration-200 p-2 rounded-lg">
-                <Star className="h-5 w-5 text-readable" />
+              <Button variant="ghost" size="sm" className="relative hover:bg-purple-50 transition-all duration-200 p-2 rounded-lg">
+                <Star className="h-5 w-5 text-medium-contrast" />
                 {favoritesCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs badge-professional">
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs badge-sleek-purple">
                     {favoritesCount}
                   </Badge>
                 )}
@@ -774,8 +774,8 @@ const Header = () => {
             
             {/* User Info */}
             <div className="flex items-center space-x-3">
-              <Avatar className="h-9 w-9 avatar-professional">
-                <AvatarFallback className="avatar-professional text-sm">
+              <Avatar className="h-9 w-9 avatar-sleek-purple">
+                <AvatarFallback className="avatar-sleek-purple text-sm">
                   {user?.full_name?.charAt(0) || 
                    (user?.role === 'admin' ? 'A' : user?.username?.charAt(0)) || 
                    'U'}
@@ -783,7 +783,7 @@ const Header = () => {
               </Avatar>
               <Link 
                 to="/profile"
-                className="text-sm font-semibold text-readable hover:text-blue-600 transition-colors duration-200"
+                className="text-sm font-semibold text-high-contrast hover:text-purple-600 transition-colors duration-200"
               >
                 {user?.full_name || 
                  (user?.role === 'admin' ? 'System Administrator' : user?.username) || 
@@ -793,7 +793,7 @@ const Header = () => {
                 variant="ghost" 
                 size="sm" 
                 onClick={logout}
-                className="btn-professional-secondary text-sm px-3 py-1"
+                className="btn-sleek-secondary text-sm px-3 py-1"
               >
                 Logout
               </Button>
