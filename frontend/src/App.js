@@ -4321,7 +4321,6 @@ const AdminPanel = () => {
   const [listings, setListings] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [selectedListings, setSelectedListings] = useState([]);
