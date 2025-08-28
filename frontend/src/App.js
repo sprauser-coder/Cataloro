@@ -687,9 +687,24 @@ const Header = () => {
   const siteName = siteSettings?.site_name || 'Cataloro';
 
   return (
-    <header className="header-purple-sleek sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <header className="sticky top-0 z-50 relative overflow-hidden">
+      {/* Ultra-Modern Animated Background - Same as Login */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-blue-600/20"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        
+        {/* Animated Floating Color Movements - Very Blurred */}
+        <div className="absolute top-1/4 left-1/6 w-32 h-32 bg-purple-400/15 rounded-full blur-3xl animate-float-slow"></div>
+        <div className="absolute top-1/3 right-1/5 w-28 h-28 bg-blue-400/12 rounded-full blur-3xl animate-float-medium"></div>
+        <div className="absolute bottom-1/3 left-1/3 w-24 h-24 bg-purple-300/18 rounded-full blur-3xl animate-float-fast"></div>
+      </div>
+      
+      {/* Glass Header Container */}
+      <div className="relative z-10 bg-white/5 backdrop-blur-2xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
           <Link to="/" className="header-logo-sleek">
             {siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? (
               <img 
