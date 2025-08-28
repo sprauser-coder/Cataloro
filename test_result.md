@@ -352,20 +352,18 @@ frontend:
         agent: "main"
         comment: "FAVORITES TOGGLE COMPLETELY FIXED: 1) ROOT CAUSE IDENTIFIED: DELETE endpoint requires favorite_id (unique DB record ID), not listing_id as I was using 2) SOLUTION IMPLEMENTED: Added favoritesMap state to store listing_id → favorite_id mapping, updated fetchUserFavorites to populate both userFavorites array and favoritesMap object, fixed removeFromFavoritesBrowse to use correct favorite_id from mapping 3) TOGGLE FUNCTIONALITY: Created toggleFavoritesBrowse function that checks if favorited → removes if active, adds if not active 4) BACKEND VERIFICATION: All endpoints working perfectly (GET/POST/DELETE) with proper data structure (favorite_id + complete listing data) 5) USER EXPERIENCE: Proper toast notifications for both add/remove, real-time visual feedback with star icon, error handling for edge cases. Favorites now work as perfect toggle - click empty star to add, click filled star to remove."
 
-  - task: "Logo Settings Reorganization"
+frontend:
+  - task: "AdminPanelNew.js - Comprehensive Admin Panel Implementation"
     implemented: true
-    working: true
-    file: "/app/frontend/src/App.js, /app/backend/server.py"
+    working: false
+    file: "/app/frontend/src/features/admin/AdminPanelNew.js"
     stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
+    priority: "critical"
+    needs_retesting: true
     status_history:
       - working: false
-        agent: "user"
-        comment: "User reported logo size picker not visible and requested all logo settings moved to dedicated LOGO tab in Appearance section."
-      - working: true
         agent: "main"
-        comment: "BUG FIXED: Created new LOGO tab under Appearance section with complete logo management interface. Moved all logo settings (upload, alt text, size picker) from Site Settings to dedicated Logo Settings section. Added backend header_logo_size field (tested and working). Logo size picker now prominently displayed with 5 size options (Small to XXL). All logo functionality consolidated in single intuitive location."
+        comment: "MAJOR ADMIN PANEL ENHANCEMENT IN PROGRESS: Implementing comprehensive AdminPanelNew.js with advanced functionality. Added: 1) Enhanced User Management Pro with search/filter, bulk operations (block/unblock/delete), user cards with stats and role management 2) Complete Products Management Pro with search/filter, bulk actions (approve/feature/delete), product cards with images, pricing, seller info 3) Advanced Analytics & KPI Dashboard with conversion metrics, revenue charts, user activity tracking, real-time business metrics, category performance analysis 4) Enhanced dashboard with comprehensive stats and visual indicators. All sections now connect to real backend APIs and provide full CRUD functionality. Still implementing: Site Content Management, Media Manager enhancements, Visual Theme Builder. Current focus: Complete admin panel overhaul to replace old styling and add requested advanced features."
 
 backend:
   - task: "Authentication Session Management Fix"
