@@ -6376,6 +6376,38 @@ const AdminPanel = () => {
               </div>
             )}
           </TabsContent>
+          {/* Legacy Users Tab - Keeping for now */}
+          <TabsContent value="users">
+            {users.length === 0 ? (
+              <div className="admin-card">
+                <div className="admin-card-content text-center py-12">
+                  <div className="text-6xl mb-4">👥</div>
+                  <h3 className="text-xl font-semibold text-neutral-700 mb-2">No Users Yet</h3>
+                  <p className="text-neutral-500">Users will appear here once they register</p>
+                </div>
+              </div>
+            ) : (
+              <div className="admin-card">
+                <div className="admin-card-header">
+                  <h2 className="admin-card-title">User Management</h2>
+                  <p className="admin-card-description">Manage marketplace users and their permissions</p>
+                </div>
+                <div className="admin-card-content">
+                  <div className="space-y-4">
+                    {users.map((user) => (
+                      <div key={user.id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
+                        <div>
+                          <div className="font-medium">{user.full_name || user.username}</div>
+                          <div className="text-sm text-neutral-600">{user.email}</div>
+                        </div>
+                        <div className="text-sm text-neutral-500">{user.role}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </TabsContent>
 
           {/* Activity Tab */}
           <TabsContent value="activity">
