@@ -9877,7 +9877,7 @@ const AdminPanel = () => {
                             <div className="p-4 bg-green-50 rounded-lg">
                               <h4 className="font-medium mb-2">Description Length</h4>
                               <div className="text-sm">
-                                <span className={`font-mono ${seoSettings.meta_description.length > 160 ? 'text-red-600' : seoSettings.meta_description.length > 150 ? 'text-yellow-600' : 'text-green-600'}`}>
+                                <span className={`font-mono ${seoSettings.meta_description.length > 160 ? 'text-red-600' : seoSettings.meta_description.length > 150 ? 'text-slate-700' : 'text-green-600'}`}>
                                   {seoSettings.meta_description.length}
                                 </span>
                                 <span className="text-gray-500"> / 160 characters (optimal: 150-160)</span>
