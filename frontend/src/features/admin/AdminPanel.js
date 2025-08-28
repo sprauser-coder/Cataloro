@@ -4077,6 +4077,11 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
+          {/* Data Tab - Catalyst Database System */}
+          <TabsContent value="data">
+            <CatalystDatabase />
+          </TabsContent>
+
           {/* System Administration Pro Tab */}
           <TabsContent value="system">
             <div className="space-y-6">
