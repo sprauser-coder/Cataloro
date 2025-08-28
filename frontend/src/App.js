@@ -12,6 +12,7 @@ import AuthPage from './features/auth/AuthPage';
 import ProtectedRoute from './features/auth/ProtectedRoute';
 import AdminProtectedRoute from './features/auth/AdminProtectedRoute';
 import HomePage from './features/marketplace/HomePage';
+import BrowsePage from './features/marketplace/BrowsePage';
 import AdminPanel from './features/admin/AdminPanel';
 
 // Styles
