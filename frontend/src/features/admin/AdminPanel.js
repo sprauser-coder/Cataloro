@@ -17,7 +17,8 @@ import {
   Search, Filter, Plus, AlertCircle, CheckCircle, Clock, DollarSign,
   BarChart3, PieChart, Activity, Mail, Phone, MapPin, Calendar,
   Shield, Star, Flag, MessageSquare, Globe, Palette, Layout,
-  Play, Grid3X3
+  Play, Grid3X3, Target, Megaphone, Tag, Zap, Monitor, Database,
+  FileText, HardDrive, Lock, Wifi, Server, Code
 } from 'lucide-react';
 import { formatCurrency, formatDate, getImageUrl } from '../../utils/helpers';
 
