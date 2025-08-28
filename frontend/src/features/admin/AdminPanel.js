@@ -1624,23 +1624,275 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
-          {/* Settings Tab */}
+          {/* Settings Tab - Visual Theme Builder */}
           <TabsContent value="settings">
-            <Card className="border-0 shadow-sm bg-white">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-slate-900">
-                  <Settings className="h-5 w-5 text-purple-600" />
-                  System Settings & Configuration
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Settings className="h-16 w-16 mx-auto text-slate-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-slate-700 mb-2">Advanced System Settings</h3>
-                  <p className="text-slate-500">Complete system configuration and admin tools available</p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              {/* Theme Builder */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <Palette className="h-5 w-5 text-purple-600" />
+                    Visual Theme Builder
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Color Scheme */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Color Scheme</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div>
+                        <Label htmlFor="primary_theme" className="text-slate-700">Primary Color</Label>
+                        <div className="flex items-center gap-3 mt-2">
+                          <input
+                            type="color"
+                            id="primary_theme"
+                            value={siteContent.primary_color}
+                            onChange={(e) => setSiteContent(prev => ({ ...prev, primary_color: e.target.value }))}
+                            className="w-16 h-12 rounded-lg border-2 border-slate-200 cursor-pointer"
+                          />
+                          <Input
+                            value={siteContent.primary_color}
+                            onChange={(e) => setSiteContent(prev => ({ ...prev, primary_color: e.target.value }))}
+                            className="flex-1 border-slate-200"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="secondary_theme" className="text-slate-700">Secondary Color</Label>
+                        <div className="flex items-center gap-3 mt-2">
+                          <input
+                            type="color"
+                            id="secondary_theme"
+                            value={siteContent.secondary_color}
+                            onChange={(e) => setSiteContent(prev => ({ ...prev, secondary_color: e.target.value }))}
+                            className="w-16 h-12 rounded-lg border-2 border-slate-200 cursor-pointer"
+                          />
+                          <Input
+                            value={siteContent.secondary_color}
+                            onChange={(e) => setSiteContent(prev => ({ ...prev, secondary_color: e.target.value }))}
+                            className="flex-1 border-slate-200"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="accent_color" className="text-slate-700">Accent Color</Label>
+                        <div className="flex items-center gap-3 mt-2">
+                          <input
+                            type="color"
+                            id="accent_color"
+                            value="#10b981"
+                            className="w-16 h-12 rounded-lg border-2 border-slate-200 cursor-pointer"
+                          />
+                          <Input
+                            value="#10b981"
+                            className="flex-1 border-slate-200"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Pre-built Theme Presets */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Theme Presets</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {[
+                        { name: 'Purple Pro', primary: '#8b5cf6', secondary: '#06b6d4', bg: 'bg-gradient-to-br from-purple-500 to-purple-600' },
+                        { name: 'Ocean Blue', primary: '#3b82f6', secondary: '#06b6d4', bg: 'bg-gradient-to-br from-blue-500 to-cyan-500' },
+                        { name: 'Forest Green', primary: '#10b981', secondary: '#059669', bg: 'bg-gradient-to-br from-green-500 to-emerald-600' },
+                        { name: 'Sunset Orange', primary: '#f97316', secondary: '#ea580c', bg: 'bg-gradient-to-br from-orange-500 to-red-500' }
+                      ].map((theme, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          className={`h-20 ${theme.bg} text-white border-0 hover:scale-105 transition-transform`}
+                          onClick={() => {
+                            setSiteContent(prev => ({
+                              ...prev,
+                              primary_color: theme.primary,
+                              secondary_color: theme.secondary
+                            }));
+                          }}
+                        >
+                          <div className="text-center">
+                            <div className="font-semibold text-sm">{theme.name}</div>
+                            <div className="text-xs opacity-80">Click to Apply</div>
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Typography Settings */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Typography</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <Label className="text-slate-700">Primary Font Family</Label>
+                        <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                          <option value="inter">Inter (Default)</option>
+                          <option value="roboto">Roboto</option>
+                          <option value="opensans">Open Sans</option>
+                          <option value="lato">Lato</option>
+                          <option value="poppins">Poppins</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-slate-700">Font Size Scale</Label>
+                        <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                          <option value="small">Small</option>
+                          <option value="medium">Medium (Default)</option>
+                          <option value="large">Large</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Layout Options */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Layout Options</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <Label className="text-slate-700">Header Style</Label>
+                        <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                          <option value="glassmorphism">Glassmorphism (Default)</option>
+                          <option value="solid">Solid Background</option>
+                          <option value="transparent">Transparent</option>
+                          <option value="minimal">Minimal</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-slate-700">Border Radius</Label>
+                        <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                          <option value="sharp">Sharp (0px)</option>
+                          <option value="small">Small (4px)</option>
+                          <option value="medium">Medium (8px)</option>
+                          <option value="large">Large (12px)</option>
+                          <option value="rounded">Rounded (16px)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Animation & Effects */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Animation & Effects</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-slate-700">Enable Hover Effects</Label>
+                          <p className="text-sm text-slate-500">Cards and buttons have hover animations</p>
+                        </div>
+                        <Switch defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-slate-700">Enable Page Transitions</Label>
+                          <p className="text-sm text-slate-500">Smooth transitions between pages</p>
+                        </div>
+                        <Switch defaultChecked />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-slate-700">Enable Loading Animations</Label>
+                          <p className="text-sm text-slate-500">Skeleton loaders and spinners</p>
+                        </div>
+                        <Switch defaultChecked />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Theme Actions */}
+                  <div className="flex gap-4 pt-4 border-t border-slate-200">
+                    <Button
+                      onClick={handleUpdateSiteContent}
+                      disabled={loading}
+                      className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                    >
+                      {loading ? (
+                        <>
+                          <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Applying Theme...
+                        </>
+                      ) : (
+                        <>
+                          <Palette className="h-4 w-4 mr-2" />
+                          Apply Theme Changes
+                        </>
+                      )}
+                    </Button>
+                    <Button variant="outline" className="flex-1">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Preview Changes
+                    </Button>
+                    <Button variant="outline" className="flex-1">
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Theme
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Advanced System Settings */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <Settings className="h-5 w-5 text-purple-600" />
+                    Advanced System Settings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-slate-700">Marketplace Commission (%)</Label>
+                      <Input
+                        type="number"
+                        placeholder="5"
+                        className="border-slate-200 mt-2"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-slate-700">Default Currency</Label>
+                      <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="JPY">JPY (¥)</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-slate-700">Enable User Registration</Label>
+                        <p className="text-sm text-slate-500">Allow new users to register</p>
+                      </div>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-slate-700">Require Email Verification</Label>
+                        <p className="text-sm text-slate-500">Users must verify email before activation</p>
+                      </div>
+                      <Switch />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-slate-700">Enable Maintenance Mode</Label>
+                        <p className="text-sm text-slate-500">Temporarily disable site for maintenance</p>
+                      </div>
+                      <Switch />
+                    </div>
+                  </div>
+
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                    <Save className="h-4 w-4 mr-2" />
+                    Save System Settings
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
