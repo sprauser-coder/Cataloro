@@ -863,11 +863,31 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Ultra-Modern Background Pattern */}
+      {/* Enhanced Ultra-Modern Background Pattern with Animated Elements */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-blue-600/20"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        
+        {/* Animated Floating Elements */}
+        <div className="absolute top-1/4 left-1/6 w-8 h-8 bg-purple-400/30 rounded-lg rotate-45 animate-float-slow"></div>
+        <div className="absolute top-1/3 right-1/5 w-6 h-6 bg-blue-400/25 rounded-full animate-float-medium"></div>
+        <div className="absolute bottom-1/3 left-1/3 w-4 h-4 bg-purple-300/40 rounded-full animate-float-fast"></div>
+        <div className="absolute top-2/3 right-1/3 w-10 h-10 bg-gradient-to-br from-purple-400/20 to-blue-400/20 rounded-xl rotate-12 animate-float-slow"></div>
+        <div className="absolute bottom-1/4 left-2/3 w-5 h-5 bg-blue-300/35 rounded-lg animate-float-medium"></div>
+        <div className="absolute top-1/2 left-1/12 w-7 h-7 bg-purple-500/25 rounded-full animate-float-fast"></div>
+        <div className="absolute bottom-1/2 right-1/12 w-6 h-6 bg-gradient-to-r from-purple-400/30 to-blue-400/30 rounded-lg rotate-45 animate-float-slow"></div>
+        <div className="absolute top-3/4 left-1/2 w-3 h-3 bg-blue-400/40 rounded-full animate-float-medium"></div>
+        
+        {/* Additional Floating Particles */}
+        <div className="absolute top-1/6 right-2/3 w-2 h-2 bg-purple-200/50 rounded-full animate-float-particle-1"></div>
+        <div className="absolute bottom-1/6 left-3/4 w-2 h-2 bg-blue-200/50 rounded-full animate-float-particle-2"></div>
+        <div className="absolute top-5/6 right-1/6 w-2 h-2 bg-purple-300/45 rounded-full animate-float-particle-3"></div>
+        <div className="absolute top-2/5 left-4/5 w-2 h-2 bg-blue-300/45 rounded-full animate-float-particle-1"></div>
+        
+        {/* Larger Geometric Shapes */}
+        <div className="absolute top-1/5 right-1/4 w-16 h-16 border border-purple-400/20 rounded-3xl rotate-12 animate-rotate-slow"></div>
+        <div className="absolute bottom-1/5 left-1/4 w-12 h-12 border border-blue-400/20 rounded-2xl rotate-45 animate-rotate-reverse"></div>
       </div>
       
       <div className="w-full max-w-lg relative z-10">
