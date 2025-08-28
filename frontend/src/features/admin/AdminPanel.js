@@ -751,36 +751,91 @@ const AdminPanel = () => {
     }
   };
 
-  // User Management Functions
-  const handleUserAction = async (userId, action) => {
+  // ENHANCED LIVE FUNCTIONS - COMPREHENSIVE USER MANAGEMENT
+  const handleUserEdit = async (userId, updatedData) => {
     try {
       setLoading(true);
-      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(updatedData)
+      });
+
+      if (response.ok) {
+        toast({ title: "Success", description: "User updated successfully" });
+        await fetchUsers();
+        setSelectedUser(null);
+      } else {
+        throw new Error('Failed to update user');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update user",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ENHANCED USER ACTION HANDLER - LIVE FUNCTIONALITY
+  const handleUserAction = async (userId, action, additionalData = {}) => {
+    try {
+      setLoading(true);
+      let endpoint = '';
+      let method = 'PUT';
+      let body = {};
+
       switch(action) {
         case 'block':
-          await adminAPI.blockUser(userId);
-          toast({ title: "Success", description: "User blocked successfully" });
+          endpoint = `/api/admin/users/${userId}/block`;
           break;
         case 'unblock':
-          await adminAPI.unblockUser(userId);
-          toast({ title: "Success", description: "User unblocked successfully" });
+          endpoint = `/api/admin/users/${userId}/unblock`;
           break;
         case 'delete':
-          await adminAPI.deleteUser(userId);
-          toast({ title: "Success", description: "User deleted successfully" });
+          endpoint = `/api/admin/users/${userId}`;
+          method = 'DELETE';
           break;
         case 'reset-password':
-          await adminAPI.resetUserPassword(userId);
-          toast({ title: "Success", description: "Password reset email sent" });
+          endpoint = `/api/admin/users/${userId}/reset-password`;
+          method = 'POST';
+          break;
+        case 'change-role':
+          endpoint = `/api/admin/users/${userId}/role`;
+          body = { role: additionalData.role };
+          break;
+        case 'update-profile':
+          endpoint = `/api/admin/users/${userId}`;
+          body = additionalData;
           break;
       }
-      
-      await fetchUsers();
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${endpoint}`, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: method !== 'DELETE' ? JSON.stringify(body) : undefined
+      });
+
+      if (response.ok) {
+        toast({ title: "Success", description: `User ${action.replace('-', ' ')} successful` });
+        await fetchUsers();
+      } else {
+        throw new Error(`Failed to ${action} user`);
+      }
     } catch (error) {
       console.error(`Error ${action} user:`, error);
       toast({
         title: "Error",
-        description: `Failed to ${action} user`,
+        description: `Failed to ${action.replace('-', ' ')} user`,
         variant: "destructive"
       });
     } finally {
