@@ -641,7 +641,7 @@ class MarketplaceTestSuite:
         
         try:
             # Test direct image access through base URL (without /api prefix)
-            base_url = BASE_URL.replace('/api', '')
+            base_url = "http://217.154.0.82"
             image_response = self.session.get(f"{base_url}{self.test_image_url}")
             
             if image_response.status_code != 200:
