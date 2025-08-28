@@ -8,7 +8,7 @@ import requests
 import json
 
 # Configuration
-BACKEND_URL = "https://cataloro-rebuild.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-hub.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 

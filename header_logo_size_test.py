@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://cataloro-rebuild.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-hub.preview.emergentagent.com/api"
 
 # Admin credentials
 ADMIN_EMAIL = "admin@marketplace.com"

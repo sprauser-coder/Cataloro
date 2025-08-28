@@ -12,7 +12,7 @@ from PIL import Image
 import tempfile
 
 # Configuration
-BACKEND_URL = "https://cataloro-rebuild.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-hub.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
@@ -284,7 +284,7 @@ class ListingImageUploadTester:
         try:
             # Construct full URL
             if image_url.startswith('/uploads/'):
-                full_url = f"https://cataloro-rebuild.preview.emergentagent.com{image_url}"
+                full_url = f"https://cataloro-hub.preview.emergentagent.com{image_url}"
             else:
                 full_url = image_url
             
