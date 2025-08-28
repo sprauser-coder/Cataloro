@@ -862,139 +862,127 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Premium Floating Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Large Floating Orbs */}
-        <div className="absolute -top-20 -left-20 w-96 h-96 bg-gradient-to-br from-purple-400/30 to-pink-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-500/30 rounded-full blur-2xl animate-bounce" style={{animationDuration: '4s'}}></div>
-        
-        {/* Medium Floating Elements */}
-        <div className="absolute top-1/4 left-1/3 w-64 h-64 bg-gradient-to-br from-indigo-400/20 to-purple-400/15 rounded-full blur-xl animate-ping opacity-70"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-gradient-to-br from-purple-300/25 to-blue-400/20 rounded-full blur-lg animate-pulse opacity-60"></div>
-        
-        {/* Small Sparkle Elements */}
-        <div className="absolute top-1/6 right-1/6 w-32 h-32 bg-white/10 rounded-full blur-md animate-bounce opacity-40" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-1/6 left-1/5 w-24 h-24 bg-purple-200/20 rounded-full blur-sm animate-pulse opacity-50" style={{animationDelay: '2s'}}></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Ultra-Modern Background Pattern */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-blue-600/20"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
       </div>
       
       <div className="w-full max-w-lg relative z-10">
-        {/* Premium Glass Card with Glow Effect */}
-        <div className="relative">
-          {/* Outer Glow */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-500 rounded-[2.5rem] blur-lg opacity-50"></div>
+        {/* Ultra-Modern Glass Card */}
+        <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-2xl p-12 relative">
+          {/* Subtle Inner Border */}
+          <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-b from-white/20 to-transparent opacity-50"></div>
           
-          {/* Main Card */}
-          <div className="relative bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2.5rem] shadow-2xl p-10">
-            {/* Inner Glow Border */}
-            <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-b from-white/20 via-transparent to-transparent opacity-60 pointer-events-none"></div>
+          <div className="relative z-10">
+            {/* Minimalist Header */}
+            <div className="text-center mb-10">
+              <div className="mx-auto mb-8 p-6 bg-gradient-to-br from-purple-400 to-blue-500 rounded-3xl w-fit shadow-xl">
+                <Package className="h-10 w-10 text-white" />
+              </div>
+              <h1 className="text-4xl font-extralight text-white mb-4 tracking-wide">
+                {isLogin ? 'Welcome' : 'Join Us'}
+              </h1>
+              <div className="h-px w-24 bg-gradient-to-r from-transparent via-white/50 to-transparent mx-auto mb-4"></div>
+              <p className="text-white/70 font-light text-lg">
+                {isLogin ? 'Enter your credentials to continue' : 'Create your premium account'}
+              </p>
+            </div>
             
-            <div className="relative z-10">
-              {/* Premium Header */}
-              <div className="text-center mb-10">
-                <div className="relative mx-auto mb-8 w-20 h-20 bg-gradient-to-br from-purple-400 via-purple-500 to-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl">
-                  {/* Logo Glow Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-indigo-600 rounded-3xl blur-md opacity-60"></div>
-                  <Package className="relative h-12 w-12 text-white" />
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="space-y-6">
+                <div>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    required
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    placeholder="Email address"
+                  />
                 </div>
                 
-                <h1 className="text-4xl font-bold text-white mb-4 tracking-wide">
-                  {isLogin ? 'Welcome Back' : 'Join Cataloro'}
-                </h1>
-                
-                {/* Decorative Line */}
-                <div className="flex items-center justify-center mb-6">
-                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-purple-300/60 to-transparent"></div>
-                  <div className="w-2 h-2 bg-purple-300/80 rounded-full mx-4"></div>
-                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-purple-300/60 to-transparent"></div>
+                <div>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    required
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    placeholder="Password"
+                  />
                 </div>
-                
-                <p className="text-white/90 text-lg font-light leading-relaxed max-w-sm mx-auto">
-                  {isLogin ? 'Enter your credentials to access your premium marketplace experience' : 'Create your premium account and join our exclusive trading community'}
-                </p>
               </div>
-              
-              <form onSubmit={handleSubmit} className="space-y-7">
-                {/* Premium Form Fields */}
-                <div className="space-y-5">
-                  <div className="relative">
-                    <Input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      required
-                      className="w-full h-16 px-6 bg-white/15 backdrop-blur-xl border border-white/30 rounded-2xl text-white placeholder-white/60 font-medium text-lg focus:bg-white/25 focus:border-purple-300 transition-all duration-500 shadow-lg"
-                      placeholder="Email address"
-                    />
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                  </div>
-                  
-                  <div className="relative">
-                    <Input
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) => setFormData({...formData, password: e.target.value})}
-                      required
-                      className="w-full h-16 px-6 bg-white/15 backdrop-blur-xl border border-white/30 rounded-2xl text-white placeholder-white/60 font-medium text-lg focus:bg-white/25 focus:border-purple-300 transition-all duration-500 shadow-lg"
-                      placeholder="Password"
-                    />
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                  </div>
-                </div>
 
-                {!isLogin && (
-                  <div className="space-y-5 pt-3">
-                    <div className="relative">
-                      <Input
-                        value={formData.username}
-                        onChange={(e) => setFormData({...formData, username: e.target.value})}
-                        required
-                        className="w-full h-16 px-6 bg-white/15 backdrop-blur-xl border border-white/30 rounded-2xl text-white placeholder-white/60 font-medium text-lg focus:bg-white/25 focus:border-purple-300 transition-all duration-500 shadow-lg"
-                        placeholder="Username"
-                      />
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                    </div>
-                    
-                    <div className="relative">
-                      <Input
-                        value={formData.full_name}
-                        onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                        required
-                        className="w-full h-16 px-6 bg-white/15 backdrop-blur-xl border border-white/30 rounded-2xl text-white placeholder-white/60 font-medium text-lg focus:bg-white/25 focus:border-purple-300 transition-all duration-500 shadow-lg"
-                        placeholder="Full name"
-                      />
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Premium Button */}
-                <div className="pt-4">
-                  <Button 
-                    type="submit" 
-                    className="relative w-full h-16 bg-gradient-to-r from-purple-500 via-purple-600 to-indigo-600 hover:from-purple-600 hover:via-purple-700 hover:to-indigo-700 text-white font-bold text-xl rounded-2xl transition-all duration-500 transform hover:scale-[1.02] shadow-2xl overflow-hidden"
-                  >
-                    {/* Button Glow Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-indigo-500 opacity-0 hover:opacity-20 transition-opacity duration-300"></div>
-                    <span className="relative">
-                      {isLogin ? '✨ Enter Cataloro' : '🚀 Begin Your Journey'}
-                    </span>
-                  </Button>
+              {!isLogin && (
+                <div className="space-y-6 pt-4">
+                  <Input
+                    id="username"
+                    value={formData.username}
+                    onChange={(e) => setFormData({...formData, username: e.target.value})}
+                    required
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    placeholder="Username"
+                  />
+                  
+                  <Input
+                    id="full_name"
+                    value={formData.full_name}
+                    onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                    required
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    placeholder="Full name"
+                  />
+                  
+                  <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
+                    <SelectTrigger className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white font-light text-lg">
+                      <SelectValue placeholder="I want to..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800/95 backdrop-blur-xl border-slate-600 rounded-xl">
+                      <SelectItem value="buyer">Buy items</SelectItem>
+                      <SelectItem value="seller">Sell items</SelectItem>
+                      <SelectItem value="both">Both buy and sell</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <Input
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    placeholder="Phone (optional)"
+                  />
+                  
+                  <Input
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => setFormData({...formData, address: e.target.value})}
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    placeholder="Address (optional)"
+                  />
                 </div>
-              </form>
+              )}
               
-              <div className="mt-10 text-center">
-                <button
-                  type="button"
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-white/80 hover:text-white font-medium transition-colors duration-300 text-lg relative"
-                >
-                  <span className="relative z-10">
-                    {isLogin ? "New to Cataloro? Create your account" : "Already have an account? Sign in"}
-                  </span>
-                  <div className="absolute inset-0 bg-white/10 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300 -m-2"></div>
-                </button>
-              </div>
+              <Button 
+                type="submit" 
+                className="w-full mt-10 bg-gradient-to-r from-purple-500 via-purple-600 to-blue-600 hover:from-purple-600 hover:via-purple-700 hover:to-blue-700 text-white font-light py-6 px-6 rounded-2xl text-xl transition-all duration-500 transform hover:scale-[1.02] shadow-2xl"
+              >
+                {isLogin ? 'Enter Cataloro' : 'Begin Journey'}
+              </Button>
+            </form>
+            
+            <div className="mt-10 text-center">
+              <button
+                type="button"
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-white/60 hover:text-white font-light transition-colors duration-300 text-lg"
+              >
+                {isLogin ? "New to Cataloro? Join us" : "Already a member? Sign in"}
+              </button>
             </div>
           </div>
         </div>
