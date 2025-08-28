@@ -4312,12 +4312,10 @@ const Favorites = () => {
 
 
 
-// Admin Panel Component
+// Admin Panel Component - Clean Implementation
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [appearanceTab, setAppearanceTab] = useState('typography');
   const [stats, setStats] = useState(null);
-  const [analytics, setAnalytics] = useState(null);
 
   const [users, setUsers] = useState([]);
   const [listings, setListings] = useState([]);
