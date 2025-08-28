@@ -66,6 +66,12 @@ function App() {
               </ProtectedRoute>
             } />
             
+            <Route path="/listing/:id" element={
+              <ProtectedRoute>
+                <ProductDetailPage />
+              </ProtectedRoute>
+            } />
+            
             {/* Admin Routes */}
             <Route path="/admin" element={
               <AdminProtectedRoute>
