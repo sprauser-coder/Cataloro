@@ -6187,10 +6187,7 @@ const AdminPanel = () => {
 
 
 
-                {/* Analytics Section */}
-                <div className="grid grid-cols-1 gap-6">
-                  {/* Overview Chart with Time Picker */}
-                  <Card>
+
                     <CardHeader className="flex flex-row items-center justify-between">
                       <div>
                         <CardTitle>Overview</CardTitle>
