@@ -9111,6 +9111,143 @@ const AdminPanel = () => {
                     </CardContent>
                   </Card>
                 )}
+
+                {/* Header Settings Section */}
+                {appearanceTab === 'header' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Header Appearance</CardTitle>
+                      <CardDescription>Customize the header style and theme</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        
+                        {/* Header Theme Selector */}
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 mb-3 block">Header Theme</Label>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            
+                            {/* Light Theme */}
+                            <div 
+                              className={`theme-option light cursor-pointer p-4 border-2 rounded-lg transition-all ${
+                                (siteSettings?.header_theme || 'light') === 'light' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                              onClick={() => setSiteSettings({...siteSettings, header_theme: 'light'})}
+                            >
+                              <div className="bg-white border border-gray-200 rounded p-3 mb-3">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-blue-600 rounded"></div>
+                                    <div className="text-gray-800 font-semibold text-sm">Cataloro</div>
+                                  </div>
+                                  <div className="flex space-x-1">
+                                    <div className="w-12 h-2 bg-gray-600 rounded"></div>
+                                    <div className="w-8 h-2 bg-gray-600 rounded"></div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-center">
+                                <h3 className="font-semibold text-gray-800">Light</h3>
+                                <p className="text-sm text-gray-600">Clean white header</p>
+                              </div>
+                            </div>
+                            
+                            {/* Dark Theme */}
+                            <div 
+                              className={`theme-option dark cursor-pointer p-4 border-2 rounded-lg transition-all ${
+                                siteSettings?.header_theme === 'dark' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                              onClick={() => setSiteSettings({...siteSettings, header_theme: 'dark'})}
+                            >
+                              <div className="bg-slate-800 border border-slate-700 rounded p-3 mb-3">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-blue-500 rounded"></div>
+                                    <div className="text-white font-semibold text-sm">Cataloro</div>
+                                  </div>
+                                  <div className="flex space-x-1">
+                                    <div className="w-12 h-2 bg-gray-300 rounded"></div>
+                                    <div className="w-8 h-2 bg-gray-300 rounded"></div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-center">
+                                <h3 className="font-semibold text-gray-800">Dark</h3>
+                                <p className="text-sm text-gray-600">Professional dark header</p>
+                              </div>
+                            </div>
+                            
+                            {/* Business Theme */}
+                            <div 
+                              className={`theme-option business cursor-pointer p-4 border-2 rounded-lg transition-all ${
+                                siteSettings?.header_theme === 'business' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                              onClick={() => setSiteSettings({...siteSettings, header_theme: 'business'})}
+                            >
+                              <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded p-3 mb-3">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-white rounded"></div>
+                                    <div className="text-white font-semibold text-sm">Cataloro</div>
+                                  </div>
+                                  <div className="flex space-x-1">
+                                    <div className="w-12 h-2 bg-white/80 rounded"></div>
+                                    <div className="w-8 h-2 bg-white/80 rounded"></div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-center">
+                                <h3 className="font-semibold text-gray-800">Business</h3>
+                                <p className="text-sm text-gray-600">Professional blue gradient</p>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-2">Choose a header style that matches your brand</p>
+                        </div>
+
+                        {/* Header Transparency */}
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">Header Style</Label>
+                          <div className="mt-2 space-y-2">
+                            <label className="flex items-center">
+                              <input
+                                type="radio"
+                                name="header_style"
+                                value="solid"
+                                checked={(siteSettings?.header_style || 'solid') === 'solid'}
+                                onChange={(e) => setSiteSettings({...siteSettings, header_style: e.target.value})}
+                                className="mr-2"
+                              />
+                              <span className="text-sm text-gray-700">Solid (Opaque)</span>
+                            </label>
+                            <label className="flex items-center">
+                              <input
+                                type="radio"
+                                name="header_style"
+                                value="transparent"
+                                checked={siteSettings?.header_style === 'transparent'}
+                                onChange={(e) => setSiteSettings({...siteSettings, header_style: e.target.value})}
+                                className="mr-2"
+                              />
+                              <span className="text-sm text-gray-700">Transparent (Glass effect)</span>
+                            </label>
+                          </div>
+                        </div>
+
+                        <Button 
+                          onClick={() => {
+                            updateSiteSettings(siteSettings);
+                            // Apply header theme immediately
+                            document.documentElement.setAttribute('data-header-theme', siteSettings?.header_theme || 'light');
+                          }}
+                          className="w-full"
+                        >
+                          Save Header Settings
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             ) : (
               <div className="text-center py-12">
