@@ -705,29 +705,29 @@ const Header = () => {
       <div className="relative z-10 bg-white/5 backdrop-blur-2xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-          <Link to="/" className="header-logo-sleek">
-            {siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? (
-              <img 
-                src={getImageUrl(siteSettings.header_logo_url)}
-                alt={siteSettings.header_logo_alt || 'Logo'} 
-                className={`${siteSettings?.header_logo_size || 'h-10'} w-auto object-contain`}
-                onError={(e) => {
-                  // If image fails to load, hide it and show fallback
-                  e.target.style.display = 'none';
-                  const fallback = e.target.parentElement.querySelector('.logo-fallback');
-                  if (fallback) fallback.style.display = 'flex';
-                }}
-              />
-            ) : null}
-            <div className={`logo-fallback flex items-center space-x-3 ${siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? 'hidden' : ''}`}>
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-700 rounded-xl flex items-center justify-center shadow-lg">
-                <Package className="h-6 w-6 text-white" />
+            <Link to="/" className="flex items-center space-x-4 hover:opacity-80 transition-opacity duration-300">
+              {siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? (
+                <img 
+                  src={getImageUrl(siteSettings.header_logo_url)}
+                  alt={siteSettings.header_logo_alt || 'Logo'} 
+                  className={`${siteSettings?.header_logo_size || 'h-12'} w-auto object-contain`}
+                  onError={(e) => {
+                    // If image fails to load, hide it and show fallback
+                    e.target.style.display = 'none';
+                    const fallback = e.target.parentElement.querySelector('.logo-fallback');
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div className={`logo-fallback flex items-center space-x-3 ${siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? 'hidden' : ''}`}>
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-xl">
+                  <Package className="h-7 w-7 text-white" />
+                </div>
+                <span className="text-2xl font-extralight text-white tracking-wide">
+                  {siteName}
+                </span>
               </div>
-              <span className="text-xl font-bold text-high-contrast">
-                {siteName}
-              </span>
-            </div>
-          </Link>
+            </Link>
           
           {/* Right side: Navigation + User Info */}
           <div className="flex items-center space-x-4">
