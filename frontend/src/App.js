@@ -1437,9 +1437,9 @@ const Home = () => {
           <div className="flex flex-wrap items-center gap-6">
             <Tabs value={listingType} onValueChange={setListingType}>
               <TabsList className="bg-slate-100 rounded-xl p-1">
-                <TabsTrigger value="" className="rounded-lg font-light data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">All Items</TabsTrigger>
-                <TabsTrigger value="fixed_price" className="rounded-lg font-light data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">Buy Now</TabsTrigger>
-                <TabsTrigger value="auction" className="rounded-lg font-light data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">Auctions</TabsTrigger>
+                <TabsTrigger value="" className="rounded-lg font-light text-slate-700 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm hover:text-slate-900 transition-colors">All Items</TabsTrigger>
+                <TabsTrigger value="fixed_price" className="rounded-lg font-light text-slate-700 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm hover:text-slate-900 transition-colors">Buy Now</TabsTrigger>
+                <TabsTrigger value="auction" className="rounded-lg font-light text-slate-700 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm hover:text-slate-900 transition-colors">Auctions</TabsTrigger>
               </TabsList>
             </Tabs>
 
