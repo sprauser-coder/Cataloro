@@ -715,7 +715,8 @@ class MarketplaceTestSuite:
             self.log_result("File Handling", True, 
                           f"Static file serving working correctly",
                           {
-                              "image_url": self.test_image_url,
+                              "image_url": image_url,
+                              "original_url": self.test_image_url,
                               "content_type": content_type,
                               "file_size": content_length,
                               "cache_control": cache_control
