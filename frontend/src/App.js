@@ -812,7 +812,9 @@ const Auth = () => {
     email: '',
     password: '',
     username: '',
-    full_name: '',
+    first_name: '',
+    last_name: '',
+    full_name: '', // Will be constructed from first_name + last_name
     role: 'buyer',
     phone: '',
     address: ''
