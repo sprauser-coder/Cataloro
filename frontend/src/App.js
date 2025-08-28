@@ -862,137 +862,102 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full animate-pulse opacity-70"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-white/5 rounded-full animate-bounce opacity-50" style={{animationDuration: '3s'}}></div>
-        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-purple-400/20 rounded-full animate-ping opacity-30"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-indigo-400/15 rounded-full animate-pulse opacity-40"></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Ultra-Modern Background Pattern */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-blue-600/20"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
       </div>
       
-      <div className="w-full max-w-md relative z-10">
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-8 animate-fadeIn">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="mx-auto mb-6 p-4 bg-white/20 backdrop-blur-sm rounded-2xl w-fit shadow-lg animate-purpleGlow">
-              <Package className="h-12 w-12 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-3 tracking-tight">
-              {isLogin ? 'Welcome Back' : 'Join Cataloro'}
-            </h1>
-            <p className="text-white/80 text-lg leading-relaxed">
-              {isLogin ? 'Sign in to your account to continue your journey' : 'Create your account and start trading on our premium marketplace'}
-            </p>
-          </div>
+      <div className="w-full max-w-lg relative z-10">
+        {/* Ultra-Modern Glass Card */}
+        <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-2xl p-12 relative">
+          {/* Subtle Inner Border */}
+          <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-b from-white/20 to-transparent opacity-50"></div>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <Label htmlFor="email" className="text-white font-semibold text-sm mb-2 block">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                required
-                className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
-                placeholder="Enter your email address"
-              />
+          <div className="relative z-10">
+            {/* Minimalist Header */}
+            <div className="text-center mb-10">
+              <div className="mx-auto mb-8 p-6 bg-gradient-to-br from-purple-400 to-blue-500 rounded-3xl w-fit shadow-xl">
+                <Package className="h-10 w-10 text-white" />
+              </div>
+              <h1 className="text-4xl font-extralight text-white mb-4 tracking-wide">
+                {isLogin ? 'Welcome' : 'Join Us'}
+              </h1>
+              <div className="h-px w-24 bg-gradient-to-r from-transparent via-white/50 to-transparent mx-auto mb-4"></div>
+              <p className="text-white/70 font-light text-lg">
+                {isLogin ? 'Enter your credentials to continue' : 'Create your premium account'}
+              </p>
             </div>
             
-            <div>
-              <Label htmlFor="password" className="text-white font-semibold text-sm mb-2 block">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
-                required
-                className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
-                placeholder="Enter your password"
-              />
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="space-y-6">
+                <div>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    required
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    placeholder="Email address"
+                  />
+                </div>
+                
+                <div>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    required
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    placeholder="Password"
+                  />
+                </div>
+              </div>
+
+              {!isLogin && (
+                <div className="space-y-6 pt-4">
+                  <Input
+                    id="username"
+                    value={formData.username}
+                    onChange={(e) => setFormData({...formData, username: e.target.value})}
+                    required
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    placeholder="Username"
+                  />
+                  
+                  <Input
+                    id="full_name"
+                    value={formData.full_name}
+                    onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                    required
+                    className="bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 px-6 text-white placeholder-white/50 font-light text-lg focus:bg-white/20 focus:border-purple-400 transition-all duration-500"
+                    placeholder="Full name"
+                  />
+                </div>
+              )}
+              
+              <Button 
+                type="submit" 
+                className="w-full mt-10 bg-gradient-to-r from-purple-500 via-purple-600 to-blue-600 hover:from-purple-600 hover:via-purple-700 hover:to-blue-700 text-white font-light py-6 px-6 rounded-2xl text-xl transition-all duration-500 transform hover:scale-[1.02] shadow-2xl"
+              >
+                {isLogin ? 'Enter Cataloro' : 'Begin Journey'}
+              </Button>
+            </form>
+            
+            <div className="mt-10 text-center">
+              <button
+                type="button"
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-white/60 hover:text-white font-light transition-colors duration-300 text-lg"
+              >
+                {isLogin ? "New to Cataloro? Join us" : "Already a member? Sign in"}
+              </button>
             </div>
-          
-          {!isLogin && (
-            <>
-              <div>
-                <Label htmlFor="username" className="text-white font-semibold text-sm mb-2 block">Username</Label>
-                <Input
-                  id="username"
-                  value={formData.username}
-                  onChange={(e) => setFormData({...formData, username: e.target.value})}
-                  required
-                  className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
-                  placeholder="Choose a username"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="full_name" className="text-white font-semibold text-sm mb-2 block">Full Name</Label>
-                <Input
-                  id="full_name"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                  required
-                  className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
-                  placeholder="Enter your full name"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="role" className="text-white font-semibold text-sm mb-2 block">I want to</Label>
-                <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
-                  <SelectTrigger className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 font-medium">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white/95 backdrop-blur-xl border-purple-200 rounded-xl">
-                    <SelectItem value="buyer">Buy items</SelectItem>
-                    <SelectItem value="seller">Sell items</SelectItem>
-                    <SelectItem value="both">Both buy and sell</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label htmlFor="phone" className="text-white font-semibold text-sm mb-2 block">Phone (Optional)</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
-                  placeholder="Enter your phone number"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="address" className="text-white font-semibold text-sm mb-2 block">Address (Optional)</Label>
-                <Input
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
-                  placeholder="Enter your address"
-                />
-              </div>
-            </>
-          )}
-          
-          <Button 
-            type="submit" 
-            className="w-full mt-8 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
-          >
-            {isLogin ? 'Sign In to Cataloro' : 'Create My Account'}
-          </Button>
-        </form>
-        
-        <div className="mt-8 text-center">
-          <button
-            type="button"
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-white/90 hover:text-white font-semibold transition-colors duration-300 text-base underline decoration-white/50 hover:decoration-white"
-          >
-            {isLogin ? "Don't have an account? Sign up here" : "Already have an account? Sign in here"}
-          </button>
+          </div>
         </div>
       </div>
     </div>
