@@ -116,12 +116,24 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* LOGIN PAGE - Preserve original styling */
+.auth-page h1, .auth-page h2, .auth-page h3, .auth-page h4, .auth-page h5, .auth-page h6 {
+  color: #ffffff !important; /* Force Welcome text to be white */
+}
+
+.auth-page p, .auth-page span {
+  color: rgba(255, 255, 255, 0.8) !important; /* Subtitle text white */
+}
+
 .auth-page input::placeholder {
   color: rgba(255, 255, 255, 0.5) !important;
 }
 
 .auth-page input:focus::placeholder {
   color: rgba(100, 116, 139, 0.6) !important;
+}
+
+.auth-page button {
+  color: #ffffff !important; /* Button text white */
 }
 
 /* Sleek Purple Professional Theme */
