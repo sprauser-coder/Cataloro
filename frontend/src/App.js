@@ -9168,85 +9168,111 @@ const AdminPanel = () => {
                         
                         {/* Header Theme Selector */}
                         <div>
-                          <Label className="text-sm font-medium text-gray-700 mb-3 block">Header Theme</Label>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <Label className="text-sm font-medium text-slate-900 mb-3 block">Header Theme</Label>
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             
-                            {/* Light Theme */}
+                            {/* Ultra-Modern Glass (Current) */}
                             <div 
-                              className={`theme-option light cursor-pointer p-4 border-2 rounded-lg transition-all ${
-                                (siteSettings?.header_theme || 'light') === 'light' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                              className={`theme-option glass cursor-pointer p-4 border-2 rounded-xl transition-all ${
+                                (siteSettings?.header_theme || 'glass') === 'glass' ? 'border-slate-900 bg-slate-50' : 'border-slate-200 hover:border-slate-300'
+                              }`}
+                              onClick={() => setSiteSettings({...siteSettings, header_theme: 'glass'})}
+                            >
+                              <div className="bg-gradient-to-br from-purple-900 via-slate-900 to-purple-900 rounded-lg p-3 mb-3 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-white/5 backdrop-blur-sm"></div>
+                                <div className="relative flex items-center justify-between">
+                                  <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-gradient-to-br from-purple-400 to-blue-500 rounded-lg"></div>
+                                    <div className="text-white font-extralight text-sm">Cataloro</div>
+                                  </div>
+                                  <div className="flex space-x-1">
+                                    <div className="w-12 h-2 bg-white/60 rounded-full"></div>
+                                    <div className="w-8 h-2 bg-white/60 rounded-full"></div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-center">
+                                <h3 className="font-semibold text-slate-900">Ultra-Modern Glass</h3>
+                                <p className="text-sm text-slate-600">Current - Purple gradient with glass effect</p>
+                              </div>
+                            </div>
+                            
+                            {/* Clean White */}
+                            <div 
+                              className={`theme-option light cursor-pointer p-4 border-2 rounded-xl transition-all ${
+                                siteSettings?.header_theme === 'light' ? 'border-slate-900 bg-slate-50' : 'border-slate-200 hover:border-slate-300'
                               }`}
                               onClick={() => setSiteSettings({...siteSettings, header_theme: 'light'})}
                             >
-                              <div className="bg-white border border-gray-200 rounded p-3 mb-3">
+                              <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center space-x-2">
-                                    <div className="w-6 h-6 bg-blue-600 rounded"></div>
-                                    <div className="text-gray-800 font-semibold text-sm">Cataloro</div>
+                                    <div className="w-6 h-6 bg-slate-900 rounded-lg"></div>
+                                    <div className="text-slate-900 font-light text-sm">Cataloro</div>
                                   </div>
                                   <div className="flex space-x-1">
-                                    <div className="w-12 h-2 bg-gray-600 rounded"></div>
-                                    <div className="w-8 h-2 bg-gray-600 rounded"></div>
+                                    <div className="w-12 h-2 bg-slate-600 rounded-full"></div>
+                                    <div className="w-8 h-2 bg-slate-600 rounded-full"></div>
                                   </div>
                                 </div>
                               </div>
                               <div className="text-center">
-                                <h3 className="font-semibold text-gray-800">Light</h3>
-                                <p className="text-sm text-gray-600">Clean white header</p>
+                                <h3 className="font-semibold text-slate-900">Clean White</h3>
+                                <p className="text-sm text-slate-600">Minimalist white header</p>
                               </div>
                             </div>
                             
-                            {/* Dark Theme */}
+                            {/* Professional Dark */}
                             <div 
-                              className={`theme-option dark cursor-pointer p-4 border-2 rounded-lg transition-all ${
-                                siteSettings?.header_theme === 'dark' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                              className={`theme-option dark cursor-pointer p-4 border-2 rounded-xl transition-all ${
+                                siteSettings?.header_theme === 'dark' ? 'border-slate-900 bg-slate-50' : 'border-slate-200 hover:border-slate-300'
                               }`}
                               onClick={() => setSiteSettings({...siteSettings, header_theme: 'dark'})}
                             >
-                              <div className="bg-slate-800 border border-slate-700 rounded p-3 mb-3">
+                              <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 mb-3">
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center space-x-2">
-                                    <div className="w-6 h-6 bg-blue-500 rounded"></div>
-                                    <div className="text-white font-semibold text-sm">Cataloro</div>
+                                    <div className="w-6 h-6 bg-slate-600 rounded-lg"></div>
+                                    <div className="text-white font-light text-sm">Cataloro</div>
                                   </div>
                                   <div className="flex space-x-1">
-                                    <div className="w-12 h-2 bg-gray-300 rounded"></div>
-                                    <div className="w-8 h-2 bg-gray-300 rounded"></div>
+                                    <div className="w-12 h-2 bg-slate-400 rounded-full"></div>
+                                    <div className="w-8 h-2 bg-slate-400 rounded-full"></div>
                                   </div>
                                 </div>
                               </div>
                               <div className="text-center">
-                                <h3 className="font-semibold text-gray-800">Dark</h3>
-                                <p className="text-sm text-gray-600">Professional dark header</p>
+                                <h3 className="font-semibold text-slate-900">Professional Dark</h3>
+                                <p className="text-sm text-slate-600">Elegant dark header</p>
                               </div>
                             </div>
                             
-                            {/* Business Theme */}
+                            {/* Business Gradient */}
                             <div 
-                              className={`theme-option business cursor-pointer p-4 border-2 rounded-lg transition-all ${
-                                siteSettings?.header_theme === 'business' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                              className={`theme-option business cursor-pointer p-4 border-2 rounded-xl transition-all ${
+                                siteSettings?.header_theme === 'business' ? 'border-slate-900 bg-slate-50' : 'border-slate-200 hover:border-slate-300'
                               }`}
                               onClick={() => setSiteSettings({...siteSettings, header_theme: 'business'})}
                             >
-                              <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded p-3 mb-3">
+                              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-3 mb-3">
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center space-x-2">
-                                    <div className="w-6 h-6 bg-white rounded"></div>
-                                    <div className="text-white font-semibold text-sm">Cataloro</div>
+                                    <div className="w-6 h-6 bg-white/90 rounded-lg"></div>
+                                    <div className="text-white font-light text-sm">Cataloro</div>
                                   </div>
                                   <div className="flex space-x-1">
-                                    <div className="w-12 h-2 bg-white/80 rounded"></div>
-                                    <div className="w-8 h-2 bg-white/80 rounded"></div>
+                                    <div className="w-12 h-2 bg-white/80 rounded-full"></div>
+                                    <div className="w-8 h-2 bg-white/80 rounded-full"></div>
                                   </div>
                                 </div>
                               </div>
                               <div className="text-center">
-                                <h3 className="font-semibold text-gray-800">Business</h3>
-                                <p className="text-sm text-gray-600">Professional blue gradient</p>
+                                <h3 className="font-semibold text-slate-900">Business Gradient</h3>
+                                <p className="text-sm text-slate-600">Professional blue gradient</p>
                               </div>
                             </div>
                           </div>
-                          <p className="text-xs text-gray-500 mt-2">Choose a header style that matches your brand</p>
+                          <p className="text-xs text-slate-500 mt-2">Choose a header style that matches your brand</p>
                         </div>
 
                         {/* Header Transparency */}
