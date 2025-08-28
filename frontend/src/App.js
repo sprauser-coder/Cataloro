@@ -364,7 +364,7 @@ const NotificationCenter = () => {
 
   const connectWebSocket = () => {
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://217.154.0.82';
       const wsUrl = `${backendUrl.replace('https://', 'wss://').replace('http://', 'ws://')}/api/notifications/${user.id}`;
       const ws = new WebSocket(wsUrl);
       
