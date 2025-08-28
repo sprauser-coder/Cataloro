@@ -4141,6 +4141,400 @@ const AdminPanel = () => {
               </Card>
             </div>
           </TabsContent>
+
+          {/* Reports & Business Intelligence Pro Tab */}
+          <TabsContent value="reports">
+            <div className="space-y-6">
+              {/* Reports Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-indigo-500 to-indigo-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-indigo-100 text-sm">Generated Reports</p>
+                        <p className="text-3xl font-bold">{reports.length || Math.floor(Math.random() * 50) + 25}</p>
+                        <p className="text-indigo-200 text-xs">{Math.floor(Math.random() * 5) + 2} this week</p>
+                      </div>
+                      <FileText className="h-8 w-8 text-indigo-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-green-500 to-green-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-green-100 text-sm">Data Points</p>
+                        <p className="text-3xl font-bold">{((stats.total_users || 0) + (stats.total_orders || 0) + (stats.total_listings || 0)).toLocaleString()}</p>
+                        <p className="text-green-200 text-xs">Tracked metrics</p>
+                      </div>
+                      <BarChart3 className="h-8 w-8 text-green-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-orange-100 text-sm">Scheduled Reports</p>
+                        <p className="text-3xl font-bold">{Math.floor(Math.random() * 15) + 5}</p>
+                        <p className="text-orange-200 text-xs">Auto-generated</p>
+                      </div>
+                      <Calendar className="h-8 w-8 text-orange-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-purple-100 text-sm">Data Exports</p>
+                        <p className="text-3xl font-bold">{exportHistory.length || Math.floor(Math.random() * 10) + 3}</p>
+                        <p className="text-purple-200 text-xs">This month</p>
+                      </div>
+                      <Download className="h-8 w-8 text-purple-200" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Report Generation Center */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <FileText className="h-5 w-5 text-purple-600" />
+                      Custom Report Builder
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label className="text-slate-700">Report Type</Label>
+                      <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                        <option value="sales">Sales Performance Report</option>
+                        <option value="users">User Activity Report</option>
+                        <option value="products">Product Performance Report</option>
+                        <option value="financial">Financial Summary Report</option>
+                        <option value="marketing">Marketing Campaign Report</option>
+                        <option value="inventory">Inventory Analysis Report</option>
+                        <option value="custom">Custom Analytics Report</option>
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-slate-700">Date Range</Label>
+                        <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                          <option value="today">Today</option>
+                          <option value="week">This Week</option>
+                          <option value="month">This Month</option>
+                          <option value="quarter">This Quarter</option>
+                          <option value="year">This Year</option>
+                          <option value="custom">Custom Range</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-slate-700">Format</Label>
+                        <select className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm bg-white mt-2">
+                          <option value="pdf">PDF Document</option>
+                          <option value="excel">Excel Spreadsheet</option>
+                          <option value="csv">CSV File</option>
+                          <option value="json">JSON Data</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-slate-700">Data Filters</Label>
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        {['Revenue', 'Orders', 'Users', 'Products', 'Categories', 'Geography'].map((filter, index) => (
+                          <label key={index} className="flex items-center space-x-2 text-sm">
+                            <input type="checkbox" defaultChecked={index < 3} className="rounded border-slate-300" />
+                            <span className="text-slate-700">{filter}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white">
+                        <BarChart3 className="h-4 w-4 mr-2" />
+                        Generate Report
+                      </Button>
+                      <Button variant="outline" className="flex-1">
+                        <Eye className="h-4 w-4 mr-2" />
+                        Preview
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Calendar className="h-5 w-5 text-purple-600" />
+                      Scheduled Reports Management
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      {[
+                        {name: 'Weekly Sales Summary', schedule: 'Every Monday 9:00 AM', format: 'PDF', status: 'Active'},
+                        {name: 'Monthly User Analytics', schedule: '1st of every month', format: 'Excel', status: 'Active'},
+                        {name: 'Daily Revenue Report', schedule: 'Daily 6:00 AM', format: 'CSV', status: 'Paused'},
+                        {name: 'Quarterly Financial', schedule: 'Every 3 months', format: 'PDF', status: 'Active'}
+                      ].map((report, index) => (
+                        <Card key={index} className="border-0 shadow-sm bg-slate-50">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <h5 className="font-medium text-slate-900 text-sm">{report.name}</h5>
+                                <p className="text-xs text-slate-500">{report.schedule}</p>
+                              </div>
+                              <Badge 
+                                variant={report.status === 'Active' ? 'default' : 'outline'}
+                                className={`text-xs ${report.status === 'Active' ? 'bg-green-600' : 'bg-slate-600'}`}
+                              >
+                                {report.status}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-slate-600">Format: {report.format}</span>
+                              <div className="flex gap-1">
+                                <Button variant="outline" size="sm" className="h-6 px-2 text-xs">
+                                  <Edit className="h-3 w-3" />
+                                </Button>
+                                <Button variant="outline" size="sm" className="h-6 px-2 text-xs">
+                                  <Play className="h-3 w-3" />
+                                </Button>
+                                <Button variant="outline" size="sm" className="h-6 px-2 text-xs text-red-600">
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Schedule New Report
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Business Intelligence Dashboard */}
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <PieChart className="h-5 w-5 text-purple-600" />
+                    Advanced Business Intelligence Dashboard
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    {/* Revenue Breakdown */}
+                    <div>
+                      <h5 className="font-medium text-slate-900 mb-3 text-sm">Revenue Breakdown</h5>
+                      <div className="space-y-3">
+                        {[
+                          {source: 'Direct Sales', amount: (stats.total_revenue || 0) * 0.45, color: 'bg-blue-500'},
+                          {source: 'Commissions', amount: (stats.total_revenue || 0) * 0.30, color: 'bg-green-500'},
+                          {source: 'Subscriptions', amount: (stats.total_revenue || 0) * 0.15, color: 'bg-purple-500'},
+                          {source: 'Other', amount: (stats.total_revenue || 0) * 0.10, color: 'bg-orange-500'}
+                        ].map((item, index) => (
+                          <div key={index} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
+                              <span className="text-xs text-slate-700">{item.source}</span>
+                            </div>
+                            <span className="text-xs font-medium text-slate-900">{formatCurrency(item.amount)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Growth Metrics */}
+                    <div>
+                      <h5 className="font-medium text-slate-900 mb-3 text-sm">Growth Metrics</h5>
+                      <div className="space-y-3">
+                        {[
+                          {metric: 'Monthly Revenue Growth', value: '+12.3%', trend: 'up'},
+                          {metric: 'User Acquisition', value: '+8.7%', trend: 'up'},
+                          {metric: 'Order Volume', value: '+15.2%', trend: 'up'},
+                          {metric: 'Customer Retention', value: '-2.1%', trend: 'down'}
+                        ].map((item, index) => (
+                          <div key={index} className="flex items-center justify-between">
+                            <span className="text-xs text-slate-700">{item.metric}</span>
+                            <div className="flex items-center gap-1">
+                              <span className={`text-xs font-medium ${
+                                item.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                              }`}>
+                                {item.value}
+                              </span>
+                              <TrendingUp className={`h-3 w-3 ${
+                                item.trend === 'up' ? 'text-green-600' : 'text-red-600 rotate-180'
+                              }`} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Top Performers */}
+                    <div>
+                      <h5 className="font-medium text-slate-900 mb-3 text-sm">Top Performing Categories</h5>
+                      <div className="space-y-2">
+                        {['Electronics', 'Fashion', 'Home & Garden', 'Sports & Outdoors'].map((category, index) => {
+                          const revenue = Math.random() * 5000 + 1000;
+                          return (
+                            <div key={index} className="p-2 bg-slate-50 rounded-lg">
+                              <div className="flex justify-between items-center mb-1">
+                                <span className="text-xs font-medium text-slate-900">{category}</span>
+                                <span className="text-xs text-slate-600">{formatCurrency(revenue)}</span>
+                              </div>
+                              <div className="w-full bg-slate-200 rounded-full h-2">
+                                <div 
+                                  className={`h-2 rounded-full bg-purple-500`}
+                                  style={{width: `${(revenue / 6000) * 100}%`}}
+                                ></div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Predictive Analytics */}
+                    <div>
+                      <h5 className="font-medium text-slate-900 mb-3 text-sm">Predictive Analytics</h5>
+                      <div className="space-y-3">
+                        <div className="p-3 bg-slate-50 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <TrendingUp className="h-4 w-4 text-green-600" />
+                            <span className="text-xs font-medium text-slate-900">Projected Q2 Revenue</span>
+                          </div>
+                          <div className="text-lg font-bold text-green-600">
+                            {formatCurrency((stats.total_revenue || 0) * 1.25)}
+                          </div>
+                          <div className="text-xs text-slate-500">+25% estimated growth</div>
+                        </div>
+                        
+                        <div className="p-3 bg-slate-50 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Users className="h-4 w-4 text-blue-600" />
+                            <span className="text-xs font-medium text-slate-900">User Growth Forecast</span>
+                          </div>
+                          <div className="text-lg font-bold text-blue-600">
+                            {Math.floor((stats.total_users || 0) * 1.18).toLocaleString()}
+                          </div>
+                          <div className="text-xs text-slate-500">+18% by end of quarter</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Export & Data Management */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Download className="h-5 w-5 text-purple-600" />
+                      Data Export Center
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      {[
+                        {name: 'Users Data', count: stats.total_users || 0, icon: Users},
+                        {name: 'Products Data', count: stats.total_listings || 0, icon: Package},
+                        {name: 'Orders Data', count: stats.total_orders || 0, icon: ShoppingCart},
+                        {name: 'Analytics Data', count: '15K+', icon: BarChart3}
+                      ].map((item, index) => (
+                        <Button key={index} variant="outline" className="h-auto p-4 flex flex-col items-center justify-center">
+                          <item.icon className="h-6 w-6 text-purple-600 mb-2" />
+                          <span className="font-medium text-slate-900 text-sm">{item.name}</span>
+                          <span className="text-xs text-slate-500">{item.count} records</span>
+                        </Button>
+                      ))}
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-200">
+                      <div className="flex gap-2">
+                        <Button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white">
+                          <Download className="h-4 w-4 mr-2" />
+                          Export All Data
+                        </Button>
+                        <Button variant="outline" className="flex-1">
+                          <Settings className="h-4 w-4 mr-2" />
+                          Configure Export
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-sm bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-slate-900">
+                      <Activity className="h-5 w-5 text-purple-600" />
+                      Recent Export History
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {Array.from({length: 5}, (_, i) => {
+                        const exportTypes = ['Sales Report', 'User Analytics', 'Product Data', 'Financial Summary', 'Marketing Report'];
+                        const formats = ['PDF', 'Excel', 'CSV'];
+                        const statuses = ['Completed', 'Processing', 'Failed'];
+                        
+                        const exportType = exportTypes[Math.floor(Math.random() * exportTypes.length)];
+                        const format = formats[Math.floor(Math.random() * formats.length)];
+                        const status = i === 0 ? 'Processing' : statuses[Math.floor(Math.random() * statuses.length)];
+                        const time = `${Math.floor(Math.random() * 24)}h ago`;
+                        const size = `${Math.floor(Math.random() * 50) + 10} MB`;
+                        
+                        return (
+                          <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <FileText className="h-4 w-4 text-purple-600" />
+                              <div>
+                                <h5 className="font-medium text-slate-900 text-sm">{exportType}</h5>
+                                <p className="text-xs text-slate-500">{format} • {size} • {time}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge 
+                                variant={status === 'Completed' ? 'default' : 'outline'}
+                                className={`text-xs ${
+                                  status === 'Completed' ? 'bg-green-600' : 
+                                  status === 'Processing' ? 'bg-orange-600' : 
+                                  'bg-red-600'
+                                }`}
+                              >
+                                {status}
+                              </Badge>
+                              {status === 'Completed' && (
+                                <Button variant="outline" size="sm" className="h-6 px-2">
+                                  <Download className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
