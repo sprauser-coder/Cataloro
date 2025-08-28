@@ -5856,20 +5856,23 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="admin-panel min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
+    <div className="admin-panel">
       <Header />
       
-      {/* Ultra-Modern Admin Header */}
-      <div className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Modern Admin Header */}
+      <div className="admin-header">
+        <div className="admin-header-content">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-light text-slate-900 tracking-tight">Admin Dashboard</h1>
-              <p className="text-slate-600 font-light mt-2">Manage your marketplace with precision and control</p>
+              <h1 className="admin-title">Cataloro Admin</h1>
+              <p className="admin-subtitle">Complete marketplace management and customization</p>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="bg-gradient-to-r from-slate-900 to-slate-700 text-white px-4 py-2 rounded-xl text-sm font-light">
-                <span className="opacity-75">Version</span> <span className="font-medium">v2.0</span>
+            <div className="flex items-center gap-4">
+              <div className="bg-primary text-white px-4 py-2 rounded-xl text-sm font-medium">
+                <span className="opacity-80">Version</span> <span>v3.0</span>
+              </div>
+              <div className="bg-success text-white px-4 py-2 rounded-xl text-sm font-medium">
+                <span>●</span> <span className="ml-1">Online</span>
               </div>
             </div>
           </div>
