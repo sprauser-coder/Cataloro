@@ -862,55 +862,46 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-purple-gradient flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full animate-float animation-delay-2s"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-white/5 rounded-full animate-float animation-delay-4s"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white/5 rounded-full animate-pulse-purple"></div>
-      </div>
-      
-      <div className="w-full max-w-md relative z-10">
-        <Card className="glass-purple-strong shadow-purple-xl border-0 animate-fadeInPurple">
-          <CardHeader className="text-center pb-8">
-            <div className="mx-auto mb-6 p-4 bg-white/20 rounded-2xl w-fit backdrop-blur-sm animate-pulseGlow">
-              <Package className="h-10 w-10 text-white" />
-            </div>
-            <CardTitle className="text-3xl font-bold text-white mb-2">
-              {isLogin ? 'Welcome Back' : 'Join Cataloro'}
-            </CardTitle>
-            <CardDescription className="text-white/80 text-lg">
-              {isLogin ? 'Sign in to your account' : 'Create your account and start trading on Cataloro'}
-            </CardDescription>
-          </CardHeader>
+    <div className="login-page-professional">
+      <div className="login-card-professional animate-fadeIn">
+        <div className="login-header-professional">
+          <div className="login-logo-professional">
+            <Package className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="login-title-professional">
+            {isLogin ? 'Welcome Back' : 'Join Cataloro'}
+          </h1>
+          <p className="login-subtitle-professional">
+            {isLogin ? 'Sign in to your account to continue' : 'Create your account and start trading on our marketplace'}
+          </p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <Label htmlFor="email" className="text-sm font-medium text-contrast-safe">Email Address</Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              required
+              className="mt-1 form-professional"
+              placeholder="Enter your email address"
+            />
+          </div>
           
-          <CardContent className="p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <Label htmlFor="email" className="text-white font-medium">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  required
-                  className="mt-2 form-purple-modern text-gray-900 placeholder-gray-500"
-                  placeholder="Enter your email"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="password" className="text-white font-medium">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  required
-                  className="mt-2 form-purple-modern text-gray-900 placeholder-gray-500"
-                  placeholder="Enter your password"
-                />
-              </div>
+          <div>
+            <Label htmlFor="password" className="text-sm font-medium text-contrast-safe">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              value={formData.password}
+              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              required
+              className="mt-1 form-professional"
+              placeholder="Enter your password"
+            />
+          </div>
               
               {!isLogin && (
                 <>
