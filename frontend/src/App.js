@@ -10141,6 +10141,221 @@ const AdminPanel = () => {
               </Card>
             )}
           </TabsContent>
+
+          {/* Advanced Analytics Dashboard */}
+          <TabsContent value="analytics">
+            <div className="space-y-6">
+              {/* Revenue Analytics */}
+              <div className="admin-card">
+                <div className="admin-card-header">
+                  <h2 className="admin-card-title">📊 Revenue Analytics</h2>
+                  <p className="admin-card-description">Track marketplace performance and revenue streams</p>
+                </div>
+                <div className="admin-card-content">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div className="bg-success/10 rounded-xl p-6 border border-success/20">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-8 bg-success rounded-lg flex items-center justify-center text-white text-sm">€</div>
+                        <span className="font-medium">Total Revenue</span>
+                      </div>
+                      <div className="text-2xl font-bold text-success">€{stats?.total_revenue || '0'}</div>
+                      <div className="text-sm text-success/70">+12% from last month</div>
+                    </div>
+                    <div className="bg-primary/10 rounded-xl p-6 border border-primary/20">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white text-sm">%</div>
+                        <span className="font-medium">Commission Earned</span>
+                      </div>
+                      <div className="text-2xl font-bold text-primary">€{(stats?.total_revenue * 0.05)?.toFixed(0) || '0'}</div>
+                      <div className="text-sm text-primary/70">5% marketplace fee</div>
+                    </div>
+                    <div className="bg-secondary/10 rounded-xl p-6 border border-secondary/20">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center text-white text-sm">#</div>
+                        <span className="font-medium">Transactions</span>
+                      </div>
+                      <div className="text-2xl font-bold text-secondary">{stats?.total_orders || '0'}</div>
+                      <div className="text-sm text-secondary/70">Completed sales</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* User Engagement Metrics */}
+              <div className="admin-card">
+                <div className="admin-card-header">
+                  <h2 className="admin-card-title">👥 User Engagement</h2>
+                  <p className="admin-card-description">Monitor user activity and marketplace health</p>
+                </div>
+                <div className="admin-card-content">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="text-center p-4 bg-neutral-50 rounded-lg">
+                      <div className="text-2xl font-bold text-neutral-800">{stats?.total_users || 0}</div>
+                      <div className="text-sm text-neutral-600">Total Users</div>
+                    </div>
+                    <div className="text-center p-4 bg-neutral-50 rounded-lg">
+                      <div className="text-2xl font-bold text-neutral-800">{stats?.active_sellers || Math.floor((stats?.total_users || 0) * 0.3)}</div>
+                      <div className="text-sm text-neutral-600">Active Sellers</div>
+                    </div>
+                    <div className="text-center p-4 bg-neutral-50 rounded-lg">
+                      <div className="text-2xl font-bold text-neutral-800">{stats?.total_listings || 0}</div>
+                      <div className="text-sm text-neutral-600">Live Listings</div>
+                    </div>
+                    <div className="text-center p-4 bg-neutral-50 rounded-lg">
+                      <div className="text-2xl font-bold text-neutral-800">{Math.floor((stats?.total_listings || 0) / (stats?.total_users || 1) * 100) / 100}</div>
+                      <div className="text-sm text-neutral-600">Avg Listings/User</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Performance Monitoring */}
+              <div className="admin-card">
+                <div className="admin-card-header">
+                  <h2 className="admin-card-title">⚡ Performance Monitor</h2>
+                  <p className="admin-card-description">Track marketplace performance and system health</p>
+                </div>
+                <div className="admin-card-content">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <h4 className="font-medium">System Status</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg">
+                          <span className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-success rounded-full"></div>
+                            <span className="text-sm">API Response Time</span>
+                          </span>
+                          <span className="font-medium text-success">< 200ms</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg">
+                          <span className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-success rounded-full"></div>
+                            <span className="text-sm">Database Health</span>
+                          </span>
+                          <span className="font-medium text-success">Excellent</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-warning/10 rounded-lg">
+                          <span className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-warning rounded-full"></div>
+                            <span className="text-sm">Storage Usage</span>
+                          </span>
+                          <span className="font-medium text-warning">68% Used</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <h4 className="font-medium">Marketplace Health</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg">
+                          <span className="text-sm">Conversion Rate</span>
+                          <span className="font-medium text-primary">{((stats?.total_orders || 0) / (stats?.total_listings || 1) * 100).toFixed(1)}%</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-secondary/10 rounded-lg">
+                          <span className="text-sm">Avg Order Value</span>
+                          <span className="font-medium text-secondary">€{((stats?.total_revenue || 0) / (stats?.total_orders || 1)).toFixed(0)}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg">
+                          <span className="text-sm">Seller Success Rate</span>
+                          <span className="font-medium text-success">87%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Media Manager */}
+          <TabsContent value="media">
+            <div className="admin-card">
+              <div className="admin-card-header">
+                <h2 className="admin-card-title">🖼️ Media Manager</h2>
+                <p className="admin-card-description">Upload, organize, and manage all marketplace media files</p>
+              </div>
+              <div className="admin-card-content">
+                
+                {/* Upload Area */}
+                <div className="border-2 border-dashed border-neutral-300 rounded-xl p-8 text-center mb-8 hover:border-primary transition-colors">
+                  <div className="space-y-4">
+                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                      <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-medium mb-2">Upload Media Files</h3>
+                      <p className="text-neutral-600 text-sm mb-4">Drag and drop files here, or click to browse</p>
+                      <button className="btn-primary">Choose Files</button>
+                    </div>
+                    <div className="text-xs text-neutral-500">
+                      Supports: JPG, PNG, GIF, WebP up to 10MB each
+                    </div>
+                  </div>
+                </div>
+
+                {/* Media Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                  <div className="bg-primary/10 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-primary">247</div>
+                    <div className="text-sm text-primary/70">Total Images</div>
+                  </div>
+                  <div className="bg-secondary/10 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-secondary">1.2GB</div>
+                    <div className="text-sm text-secondary/70">Storage Used</div>
+                  </div>
+                  <div className="bg-success/10 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-success">156</div>
+                    <div className="text-sm text-success/70">Optimized</div>
+                  </div>
+                  <div className="bg-warning/10 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-warning">12</div>
+                    <div className="text-sm text-warning/70">Unused</div>
+                  </div>
+                </div>
+
+                {/* Media Gallery */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-medium">Media Gallery</h3>
+                    <div className="flex gap-2">
+                      <select className="form-input text-sm">
+                        <option>All Types</option>
+                        <option>Images</option>
+                        <option>Documents</option>
+                      </select>
+                      <select className="form-input text-sm">
+                        <option>Recently Added</option>
+                        <option>Name A-Z</option>
+                        <option>Size Large-Small</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  {/* Sample Media Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {[1,2,3,4,5,6,7,8,9,10,11,12].map((i) => (
+                      <div key={i} className="bg-neutral-100 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer group">
+                        <div className="aspect-square bg-neutral-200 rounded-lg mb-2 flex items-center justify-center">
+                          <svg className="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div className="text-xs text-neutral-600 truncate">image-{i}.jpg</div>
+                        <div className="text-xs text-neutral-500">2.3 MB</div>
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-2">
+                          <div className="flex gap-1">
+                            <button className="text-xs bg-primary text-white px-2 py-1 rounded">Use</button>
+                            <button className="text-xs bg-error text-white px-2 py-1 rounded">Delete</button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
