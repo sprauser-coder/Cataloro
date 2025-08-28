@@ -3369,10 +3369,10 @@ const Profile = () => {
           })}
         </div>
 
-        {/* Navigation Tabs */}
+        {/* Navigation Tabs - Ultra-Modern */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <div className="bg-white rounded-lg shadow-sm">
-            <TabsList className="grid grid-cols-4 lg:grid-cols-8 w-full h-auto p-1">
+          <div className="bg-white rounded-2xl border border-slate-200 p-2">
+            <div className="grid grid-cols-4 lg:grid-cols-8 gap-1">
               {[
                 { id: 'overview', label: 'Overview', icon: HomeIcon },
                 { id: 'activity', label: 'Activity', icon: Activity },
@@ -3385,17 +3385,21 @@ const Profile = () => {
               ].map((tab) => {
                 const Icon = tab.icon;
                 return (
-                  <TabsTrigger
+                  <button
                     key={tab.id}
-                    value={tab.id}
-                    className="flex flex-col items-center space-y-1 py-3 data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex flex-col items-center space-y-1 py-3 px-2 rounded-xl transition-all duration-200 ${
+                      activeTab === tab.id 
+                        ? 'bg-slate-900 text-white shadow-sm' 
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
                   >
                     <Icon className="w-4 h-4" />
-                    <span className="text-xs">{tab.label}</span>
-                  </TabsTrigger>
+                    <span className="text-xs font-light">{tab.label}</span>
+                  </button>
                 );
               })}
-            </TabsList>
+            </div>
           </div>
 
           {/* Overview Tab */}
