@@ -722,27 +722,37 @@ const Header = () => {
           </Link>
           
           {/* Right side: Navigation + User Info */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4">
             {/* Main Navigation - moved to right */}
-            <nav className="hidden md:flex items-center space-x-8">
+            <nav className="hidden md:flex items-center space-x-6">
               <Link 
                 to="/" 
-                className="nav-link-purple font-semibold text-lg px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:shadow-purple"
+                className="nav-link-purple font-semibold transition-all duration-300 hover:bg-white/10 px-3 py-2 rounded-lg"
               >
                 Browse
               </Link>
               <Link 
                 to="/sell" 
-                className="nav-link-purple font-semibold text-lg px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:shadow-purple"
+                className="nav-link-purple font-semibold transition-all duration-300 hover:bg-white/10 px-3 py-2 rounded-lg"
               >
                 Sell
               </Link>
               <Link 
                 to="/orders" 
-                className="nav-link-purple font-semibold text-lg px-3 py-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:shadow-purple"
+                className="nav-link-purple font-semibold transition-all duration-300 hover:bg-white/10 px-3 py-2 rounded-lg"
               >
                 My Orders
               </Link>
+              {/* Dynamic Navigation from CMS */}
+              {customNavigation.map((navItem) => (
+                <Link
+                  key={navItem.id}
+                  to={navItem.url}
+                  className="nav-link-purple font-semibold transition-all duration-300 hover:bg-white/10 px-3 py-2 rounded-lg"
+                  target={navItem.target}
+                >
+                  {navItem.label}
+                </Link>
                   e.target.style.color = siteSettings?.link_color || '#6b7280';
                 }}
               >
