@@ -3235,11 +3235,11 @@ const Profile = () => {
 
   const getBadgeColor = (level) => {
     switch (level) {
-      case 'Bronze': return 'bg-amber-100 text-amber-800';
-      case 'Silver': return 'bg-gray-100 text-gray-800';
-      case 'Gold': return 'bg-yellow-100 text-yellow-800';
-      case 'Platinum': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Bronze': return 'bg-slate-200 text-slate-800';
+      case 'Silver': return 'bg-slate-300 text-slate-900';
+      case 'Gold': return 'bg-slate-400 text-slate-900';
+      case 'Platinum': return 'bg-slate-600 text-white';
+      default: return 'bg-slate-100 text-slate-700';
     }
   };
 
