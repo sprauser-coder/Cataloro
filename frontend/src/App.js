@@ -694,15 +694,15 @@ const Header = () => {
   const siteName = siteSettings?.site_name || 'Cataloro';
 
   return (
-    <header className="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
+    <header className="header-purple sticky top-0 z-50 border-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center space-x-2">
+        <div className="flex justify-between items-center h-18">
+          <Link to="/" className="flex items-center space-x-3 interactive-purple">
             {siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? (
               <img 
                 src={getImageUrl(siteSettings.header_logo_url)}
                 alt={siteSettings.header_logo_alt || 'Logo'} 
-                className={`${siteSettings?.header_logo_size || 'h-8'} w-auto object-contain`}
+                className={`${siteSettings?.header_logo_size || 'h-10'} w-auto object-contain drop-shadow-md`}
                 onError={(e) => {
                   // If image fails to load, hide it and show fallback
                   e.target.style.display = 'none';
@@ -711,9 +711,11 @@ const Header = () => {
                 }}
               />
             ) : null}
-            <div className={`logo-fallback flex items-center space-x-2 ${siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? 'hidden' : ''}`}>
-              <Package className="h-8 w-8 text-indigo-600" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <div className={`logo-fallback flex items-center space-x-3 ${siteSettings?.header_logo_url && siteSettings.header_logo_url.trim() !== '' ? 'hidden' : ''}`}>
+              <div className="p-2 bg-purple-gradient rounded-xl shadow-purple animate-glow">
+                <Package className="h-8 w-8 text-white" />
+              </div>
+              <span className="text-3xl font-bold gradient-text-purple">
                 {siteName}
               </span>
             </div>
