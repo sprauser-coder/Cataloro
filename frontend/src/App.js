@@ -6215,7 +6215,24 @@ const AdminPanel = () => {
                 </div>
               </div>
             )}
+          </TabsContent>
 
+          {/* Activity Tab */}
+          <TabsContent value="activity">
+            <div className="space-y-6">
+              {/* Activity Overview Header */}
+              <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-lg p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-2">Activity Dashboard</h2>
+                    <p className="text-orange-100">Monitor marketplace activity and user engagement</p>
+                  </div>
+                  <Activity className="h-12 w-12 text-orange-200" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-6">
                   {/* Cool Analytics Widget */}
                   <Card className="lg:col-span-1">
                     <CardHeader className="pb-3">
