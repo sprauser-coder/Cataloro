@@ -16,12 +16,13 @@ BASE_URL = "http://217.154.0.82/api"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
-class StatisticsTestSuite:
+class BackendAPITestSuite:
     def __init__(self):
         self.admin_token = None
         self.test_user_token = None
         self.test_user_id = None
         self.results = []
+        self.session = requests.Session()
         
     def log_result(self, test_name, success, message, details=None):
         """Log test result"""
@@ -29,6 +30,7 @@ class StatisticsTestSuite:
         result = {
             "test": test_name,
             "status": status,
+            "success": success,
             "message": message,
             "details": details or {},
             "timestamp": datetime.now().isoformat()
