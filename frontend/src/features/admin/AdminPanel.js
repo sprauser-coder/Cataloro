@@ -21,6 +21,7 @@ import {
   FileText, HardDrive, Lock, Wifi, Server, Code, X
 } from 'lucide-react';
 import { formatCurrency, formatDate, getImageUrl } from '../../utils/helpers';
+import CatalystDatabase from './CatalystDatabase';
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
