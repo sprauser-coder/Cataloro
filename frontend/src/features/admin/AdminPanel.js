@@ -1309,7 +1309,7 @@ const AdminPanel = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-10 bg-white shadow-sm mb-8 text-xs">
+          <TabsList className="grid w-full grid-cols-11 bg-white shadow-sm mb-8 text-xs">
             <TabsTrigger value="dashboard" className="flex items-center gap-1 text-slate-700 px-2">
               <BarChart3 className="h-3 w-3" />
               Dashboard
@@ -1341,6 +1341,10 @@ const AdminPanel = () => {
             <TabsTrigger value="analytics" className="flex items-center gap-1 text-slate-700 px-2">
               <PieChart className="h-3 w-3" />
               Analytics
+            </TabsTrigger>
+            <TabsTrigger value="data" className="flex items-center gap-1 text-slate-700 px-2">
+              <Database className="h-3 w-3" />
+              Data
             </TabsTrigger>
             <TabsTrigger value="system" className="flex items-center gap-1 text-slate-700 px-2">
               <Settings className="h-3 w-3" />
