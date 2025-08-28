@@ -901,91 +901,88 @@ const Auth = () => {
               className="mt-1 form-professional"
               placeholder="Enter your password"
             />
-          </div>
+          
+          {!isLogin && (
+            <>
+              <div>
+                <Label htmlFor="username" className="text-sm font-medium text-contrast-safe">Username</Label>
+                <Input
+                  id="username"
+                  value={formData.username}
+                  onChange={(e) => setFormData({...formData, username: e.target.value})}
+                  required
+                  className="mt-1 form-professional"
+                  placeholder="Choose a username"
+                />
+              </div>
               
-              {!isLogin && (
-                <>
-                  <div>
-                    <Label htmlFor="username" className="text-white font-medium">Username</Label>
-                    <Input
-                      id="username"
-                      value={formData.username}
-                      onChange={(e) => setFormData({...formData, username: e.target.value})}
-                      required
-                      className="mt-2 form-purple-modern text-gray-900 placeholder-gray-500"
-                      placeholder="Choose a username"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="full_name" className="text-white font-medium">Full Name</Label>
-                    <Input
-                      id="full_name"
-                      value={formData.full_name}
-                      onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                      required
-                      className="mt-2 form-purple-modern text-gray-900 placeholder-gray-500"
-                      placeholder="Enter your full name"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="role" className="text-white font-medium">I want to</Label>
-                    <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
-                      <SelectTrigger className="mt-2 form-purple-modern">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="glass-purple">
-                        <SelectItem value="buyer">Buy items</SelectItem>
-                        <SelectItem value="seller">Sell items</SelectItem>
-                        <SelectItem value="both">Both buy and sell</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="phone" className="text-white font-medium">Phone (Optional)</Label>
-                    <Input
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="mt-2 form-purple-modern text-gray-900 placeholder-gray-500"
-                      placeholder="Enter your phone number"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="address" className="text-white font-medium">Address (Optional)</Label>
-                    <Input
-                      id="address"
-                      value={formData.address}
-                      onChange={(e) => setFormData({...formData, address: e.target.value})}
-                      className="mt-2 form-purple-modern text-gray-900 placeholder-gray-500"
-                      placeholder="Enter your address"
-                    />
-                  </div>
-                </>
-              )}
+              <div>
+                <Label htmlFor="full_name" className="text-sm font-medium text-contrast-safe">Full Name</Label>
+                <Input
+                  id="full_name"
+                  value={formData.full_name}
+                  onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                  required
+                  className="mt-1 form-professional"
+                  placeholder="Enter your full name"
+                />
+              </div>
               
-              <Button 
-                type="submit" 
-                className="w-full mt-8 btn-purple-modern h-12 text-lg font-semibold"
-              >
-                {isLogin ? 'Sign In' : 'Create Account'}
-              </Button>
-            </form>
-            
-            <div className="mt-8 text-center">
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-white/90 hover:text-white font-medium transition-colors duration-300 text-lg"
-              >
-                {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-              </button>
-            </div>
-          </CardContent>
-        </Card>
+              <div>
+                <Label htmlFor="role" className="text-sm font-medium text-contrast-safe">I want to</Label>
+                <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
+                  <SelectTrigger className="mt-1 form-professional">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="notification-professional">
+                    <SelectItem value="buyer">Buy items</SelectItem>
+                    <SelectItem value="seller">Sell items</SelectItem>
+                    <SelectItem value="both">Both buy and sell</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="phone" className="text-sm font-medium text-contrast-safe">Phone (Optional)</Label>
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  className="mt-1 form-professional"
+                  placeholder="Enter your phone number"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="address" className="text-sm font-medium text-contrast-safe">Address (Optional)</Label>
+                <Input
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) => setFormData({...formData, address: e.target.value})}
+                  className="mt-1 form-professional"
+                  placeholder="Enter your address"
+                />
+              </div>
+            </>
+          )}
+          
+          <Button 
+            type="submit" 
+            className="w-full mt-6 btn-professional-primary h-12 text-base font-semibold"
+          >
+            {isLogin ? 'Sign In' : 'Create Account'}
+          </Button>
+        </form>
+        
+        <div className="mt-6 text-center">
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-slate-600 hover:text-slate-800 font-medium transition-colors duration-200 text-sm"
+          >
+            {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+          </button>
+        </div>
       </div>
     </div>
   );
