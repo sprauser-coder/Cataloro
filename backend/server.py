@@ -2281,7 +2281,7 @@ async def upload_hero_background(
         buffer.write(content)
     
     # Generate URL
-    base_url = os.environ.get('BACKEND_BASE_URL', 'https://marketplace-fix-6.preview.emergentagent.com')
+    base_url = os.environ.get('BACKEND_BASE_URL', 'http://217.154.0.82')
     hero_background_image_url = f"{base_url}/api/uploads/{unique_filename}"
     
     return {
