@@ -6188,23 +6188,7 @@ const AdminPanel = () => {
 
 
 
-                    <CardHeader className="flex flex-row items-center justify-between">
-                      <div>
-                        <CardTitle>Overview</CardTitle>
-                        <CardDescription>Marketplace activity trends</CardDescription>
-                      </div>
-                      <Select value={dashboardTimeRange} onValueChange={setDashboardTimeRange}>
-                        <SelectTrigger className="w-40">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="today">Today</SelectItem>
-                          <SelectItem value="7days">7 Days</SelectItem>
-                          <SelectItem value="month">This Month</SelectItem>
-                          <SelectItem value="year">This Year</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </CardHeader>
+
                     <CardContent>
                       <div className={`grid gap-4 ${
                         dashboardTimeRange === 'today' ? 'grid-cols-1' :
