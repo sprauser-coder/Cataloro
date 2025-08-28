@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Heart, Eye, MapPin, Clock, Star } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
