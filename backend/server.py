@@ -3715,6 +3715,160 @@ async def bulk_delete_orders(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete orders: {str(e)}")
 
+# Catalyst Database Models
+class CatalystItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    cat_id: str
+    pt_ppm: float  # Platinum parts per million
+    pd_ppm: float  # Palladium parts per million
+    rh_ppm: float  # Rhodium parts per million
+    ceramic_weight: float  # Weight in grams
+    add_info: Optional[str] = Field(default="")  # Hidden from display
+    name: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CatalystBasisData(BaseModel):
+    pt_price: float = Field(default=950.00)        # Platinum price $/toz
+    pd_price: float = Field(default=1200.00)       # Palladium price $/toz
+    rh_price: float = Field(default=4500.00)       # Rhodium price $/toz
+    exchange_rate: float = Field(default=0.92)     # EUR/USD
+    renumeration_pt: float = Field(default=0.95)   # Platinum renumeration %
+    renumeration_pd: float = Field(default=0.94)   # Palladium renumeration %
+    renumeration_rh: float = Field(default=0.93)   # Rhodium renumeration %
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CatalystDataUpload(BaseModel):
+    data: List[Dict[str, Any]]
+
+# Catalyst Database Endpoints
+@api_router.get("/admin/catalyst-data")
+async def get_catalyst_data(admin: User = Depends(get_admin_user)):
+    """Get all catalyst data"""
+    try:
+        items = await db.catalyst_items.find({}).to_list(length=None)
+        return [parse_from_mongo(item) for item in items]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve catalyst data: {str(e)}")
+
+@api_router.post("/admin/catalyst-data")
+async def save_catalyst_data(
+    upload_data: CatalystDataUpload,
+    admin: User = Depends(get_admin_user)
+):
+    """Save catalyst data from Excel upload"""
+    try:
+        # Clear existing data
+        await db.catalyst_items.delete_many({})
+        
+        # Process and save new data
+        processed_items = []
+        for item_data in upload_data.data:
+            catalyst_item = CatalystItem(
+                cat_id=str(item_data.get('cat_id', '')),
+                pt_ppm=float(item_data.get('pt_ppm', 0)),
+                pd_ppm=float(item_data.get('pd_ppm', 0)),
+                rh_ppm=float(item_data.get('rh_ppm', 0)),
+                ceramic_weight=float(item_data.get('ceramic_weight', 0)),
+                add_info=str(item_data.get('add_info', '')),
+                name=str(item_data.get('name', f"Catalyst {item_data.get('cat_id', 'Unknown')}"))
+            )
+            processed_items.append(prepare_for_mongo(catalyst_item.dict()))
+        
+        if processed_items:
+            await db.catalyst_items.insert_many(processed_items)
+        
+        return {"message": f"Saved {len(processed_items)} catalyst items", "count": len(processed_items)}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save catalyst data: {str(e)}")
+
+@api_router.get("/admin/catalyst-basis")
+async def get_catalyst_basis(admin: User = Depends(get_admin_user)):
+    """Get catalyst basis data for price calculations"""
+    try:
+        basis_doc = await db.catalyst_basis.find_one({})
+        if basis_doc:
+            return parse_from_mongo(basis_doc)
+        else:
+            # Return default values
+            return CatalystBasisData().dict()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve basis data: {str(e)}")
+
+@api_router.post("/admin/catalyst-basis")
+async def save_catalyst_basis(
+    basis_data: CatalystBasisData,
+    admin: User = Depends(get_admin_user)
+):
+    """Save catalyst basis data for price calculations"""
+    try:
+        # Clear existing basis data
+        await db.catalyst_basis.delete_many({})
+        
+        # Save new basis data
+        basis_doc = prepare_for_mongo(basis_data.dict())
+        await db.catalyst_basis.insert_one(basis_doc)
+        
+        return {"message": "Catalyst basis data saved successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save basis data: {str(e)}")
+
+@api_router.put("/admin/catalyst-data/{item_id}")
+async def update_catalyst_item(
+    item_id: str,
+    item_data: Dict[str, Any],
+    admin: User = Depends(get_admin_user)
+):
+    """Update a specific catalyst item"""
+    try:
+        # Prepare update data
+        update_data = {
+            "cat_id": str(item_data.get('cat_id', '')),
+            "pt_ppm": float(item_data.get('pt_ppm', 0)),
+            "pd_ppm": float(item_data.get('pd_ppm', 0)),
+            "rh_ppm": float(item_data.get('rh_ppm', 0)),
+            "ceramic_weight": float(item_data.get('ceramic_weight', 0)),
+            "add_info": str(item_data.get('add_info', '')),
+            "name": str(item_data.get('name', '')),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        
+        result = await db.catalyst_items.update_one(
+            {"id": item_id},
+            {"$set": prepare_for_mongo(update_data)}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Catalyst item not found")
+        
+        return {"message": "Catalyst item updated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update catalyst item: {str(e)}")
+
+@api_router.delete("/admin/catalyst-data/{item_id}")
+async def delete_catalyst_item(
+    item_id: str,
+    admin: User = Depends(get_admin_user)
+):
+    """Delete a specific catalyst item"""
+    try:
+        result = await db.catalyst_items.delete_one({"id": item_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Catalyst item not found")
+        
+        return {"message": "Catalyst item deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete catalyst item: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
