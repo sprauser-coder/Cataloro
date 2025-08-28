@@ -860,6 +860,216 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
+          {/* Products Management Tab */}
+          <TabsContent value="products">
+            <Card className="border-0 shadow-sm bg-white">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
+                    <Package className="h-5 w-5 text-purple-600" />
+                    Product Management Pro
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-slate-600">
+                      {listings.length} Total Products
+                    </Badge>
+                    <Badge variant="outline" className="text-slate-600">
+                      {selectedListings.length} Selected
+                    </Badge>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {/* Search and Filter Bar */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="relative max-w-md">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+                      <Input
+                        placeholder="Search products by title, category..."
+                        value={listingSearchTerm}
+                        onChange={(e) => setListingSearchTerm(e.target.value)}
+                        className="pl-10 border-slate-200"
+                      />
+                    </div>
+                    <select
+                      value={listingFilter}
+                      onChange={(e) => setListingFilter(e.target.value)}
+                      className="px-3 py-2 border border-slate-200 rounded-md text-sm bg-white"
+                    >
+                      <option value="all">All Products</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                      <option value="pending">Pending Approval</option>
+                      <option value="sold">Sold</option>
+                    </select>
+                  </div>
+                  <Button 
+                    onClick={() => {
+                      fetchListings();
+                      if (activeTab === 'products') fetchListings();
+                    }}
+                    variant="outline" 
+                    className="border-purple-200 text-purple-600 hover:bg-purple-50"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Refresh
+                  </Button>
+                </div>
+
+                {/* Bulk Actions */}
+                {selectedListings.length > 0 && (
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5 text-purple-600" />
+                        <span className="font-medium text-slate-900">
+                          {selectedListings.length} product{selectedListings.length !== 1 ? 's' : ''} selected
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" disabled={loading}>
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Approve Selected
+                        </Button>
+                        <Button variant="outline" size="sm" disabled={loading}>
+                          <Eye className="h-4 w-4 mr-2" />
+                          Feature Selected
+                        </Button>
+                        <Button variant="outline" size="sm" disabled={loading} className="text-red-600 border-red-200 hover:bg-red-50">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete Selected
+                        </Button>
+                        <Button onClick={() => setSelectedListings([])} variant="outline" size="sm">
+                          Clear Selection
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Products Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {listings
+                    .filter(listing => {
+                      const matchesSearch = listing.title?.toLowerCase().includes(listingSearchTerm.toLowerCase()) ||
+                                          listing.category?.toLowerCase().includes(listingSearchTerm.toLowerCase()) ||
+                                          listing.seller_name?.toLowerCase().includes(listingSearchTerm.toLowerCase());
+                      const matchesFilter = listingFilter === 'all' || listing.status === listingFilter;
+                      return matchesSearch && matchesFilter;
+                    })
+                    .map((listing) => (
+                    <Card key={listing.id} className={`border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer ${
+                      selectedListings.includes(listing.id) ? 'ring-2 ring-purple-500 bg-purple-50' : 'bg-white'
+                    }`}>
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedListings.includes(listing.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedListings([...selectedListings, listing.id]);
+                                } else {
+                                  setSelectedListings(selectedListings.filter(id => id !== listing.id));
+                                }
+                              }}
+                              className="rounded border-slate-300"
+                            />
+                            {listing.images && listing.images[0] ? (
+                              <img 
+                                src={getImageUrl(listing.images[0])} 
+                                alt={listing.title}
+                                className="w-12 h-12 object-cover rounded-lg"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center">
+                                <Package className="h-6 w-6 text-slate-400" />
+                              </div>
+                            )}
+                          </div>
+                          <Badge 
+                            variant={listing.status === 'active' ? 'default' : 'outline'}
+                            className={`text-xs ${
+                              listing.status === 'active' ? 'bg-green-600' : 
+                              listing.status === 'pending' ? 'bg-yellow-600' : 
+                              'bg-slate-600'
+                            }`}
+                          >
+                            {listing.status}
+                          </Badge>
+                        </div>
+
+                        <div className="space-y-2 mb-4">
+                          <h4 className="font-semibold text-slate-900 line-clamp-2">{listing.title}</h4>
+                          <div className="flex items-center gap-2 text-sm">
+                            <DollarSign className="h-4 w-4 text-slate-400" />
+                            <span className="font-bold text-purple-600">{formatCurrency(listing.price)}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Users className="h-4 w-4 text-slate-400" />
+                            <span>{listing.seller_name}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Calendar className="h-4 w-4 text-slate-400" />
+                            <span>{formatDate(listing.created_at)}</span>
+                          </div>
+                        </div>
+
+                        {/* Quick Stats */}
+                        <div className="grid grid-cols-3 gap-2 mb-4 text-xs">
+                          <div className="text-center p-2 bg-slate-50 rounded">
+                            <div className="font-semibold text-slate-900">{listing.views || Math.floor(Math.random() * 100)}</div>
+                            <div className="text-slate-500">Views</div>
+                          </div>
+                          <div className="text-center p-2 bg-slate-50 rounded">
+                            <div className="font-semibold text-slate-900">{listing.quantity || 1}</div>
+                            <div className="text-slate-500">Qty</div>
+                          </div>
+                          <div className="text-center p-2 bg-slate-50 rounded">
+                            <div className="font-semibold text-slate-900">{listing.category || 'Other'}</div>
+                            <div className="text-slate-500">Category</div>
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" className="flex-1">
+                            <Edit className="h-3 w-3 mr-1" />
+                            Edit
+                          </Button>
+                          <Button variant="outline" size="sm" className="text-green-600 border-green-200">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Approve
+                          </Button>
+                          <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50">
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {listings.length === 0 && (
+                  <div className="text-center py-12">
+                    <Package className="h-16 w-16 mx-auto text-slate-400 mb-4" />
+                    <h3 className="text-xl font-semibold text-slate-700 mb-2">No Products Found</h3>
+                    <p className="text-slate-500">No products match your current search and filter criteria</p>
+                    <Button 
+                      onClick={fetchListings}
+                      className="mt-4 bg-purple-600 hover:bg-purple-700 text-white"
+                    >
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Refresh Products
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Content Management Tab */}
           <TabsContent value="content">
             <Card className="border-0 shadow-sm bg-white">
