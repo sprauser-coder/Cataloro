@@ -7168,7 +7168,7 @@ const AdminPanel = () => {
                                     <div className="flex items-center space-x-2">
                                       <h3 className="font-semibold">{listing.title}</h3>
                                       {listing.featured && (
-                                        <Badge variant="default" className="bg-yellow-500">Featured</Badge>
+                                        <Badge variant="default" className="bg-slate-600 text-white">Featured</Badge>
                                       )}
                                     </div>
                                     <p className="text-sm text-gray-600">by {listing.seller_name}</p>
