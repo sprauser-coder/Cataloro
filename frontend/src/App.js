@@ -6194,7 +6194,7 @@ const AdminPanel = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                      <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                         <div className="text-center p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
                           <div className="w-2 h-2 bg-green-500 rounded-full mx-auto mb-1"></div>
                           <div className="text-xs text-gray-600 mb-1">Sold</div>
