@@ -45,12 +45,17 @@ const AdminPanel = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [userSearchTerm, setUserSearchTerm] = useState('');
   const [userFilter, setUserFilter] = useState('all');
+  const [showUserEditModal, setShowUserEditModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
   
   // Product Management
   const [listings, setListings] = useState([]);
   const [selectedListings, setSelectedListings] = useState([]);
   const [listingSearchTerm, setListingSearchTerm] = useState('');
   const [listingFilter, setListingFilter] = useState('all');
+  const [showProductEditModal, setShowProductEditModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [productViews, setProductViews] = useState({});
   
   // Orders Management
   const [orders, setOrders] = useState([]);
