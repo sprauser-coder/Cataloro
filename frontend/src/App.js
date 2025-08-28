@@ -6384,6 +6384,8 @@ const AdminPanel = () => {
             )}
           </TabsContent>
 
+          </TabsContent>
+
           {/* Activity Tab */}
           <TabsContent value="activity">
             <div className="space-y-6">
