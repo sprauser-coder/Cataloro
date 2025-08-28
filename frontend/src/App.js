@@ -772,47 +772,51 @@ const Header = () => {
                 )}
               </nav>
 
-            {/* Favorites Icon */}
-            <Link to="/favorites" className="relative">
-              <Button variant="ghost" size="sm" className="relative hover:bg-purple-50 transition-all duration-200 p-2 rounded-lg">
-                <Star className="h-5 w-5 text-medium-contrast" />
-                {favoritesCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs badge-sleek-purple">
-                    {favoritesCount}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
-            
-            {/* Phase 3C: Notification Center */}
-            <NotificationCenter />
-            
-            {/* User Info */}
-            <div className="flex items-center space-x-3">
-              <Avatar className="h-9 w-9 avatar-sleek-purple">
-                <AvatarFallback className="avatar-sleek-purple text-sm">
-                  {user?.full_name?.charAt(0) || 
-                   (user?.role === 'admin' ? 'A' : user?.username?.charAt(0)) || 
-                   'U'}
-                </AvatarFallback>
-              </Avatar>
-              <Link 
-                to="/profile"
-                className="text-sm font-semibold text-high-contrast hover:text-purple-600 transition-colors duration-200"
-              >
-                {user?.full_name || 
-                 (user?.role === 'admin' ? 'System Administrator' : user?.username) || 
-                 'User'}
+              {/* Favorites Icon */}
+              <Link to="/favorites" className="relative">
+                <div className="relative p-3 bg-white/10 backdrop-blur-xl rounded-xl hover:bg-white/20 transition-all duration-300 border border-white/20">
+                  <Star className="h-5 w-5 text-white/80" />
+                  {favoritesCount > 0 && (
+                    <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 flex items-center justify-center text-xs text-white font-medium">
+                      {favoritesCount}
+                    </div>
+                  )}
+                </div>
               </Link>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={logout}
-                className="btn-sleek-secondary text-sm px-3 py-1"
-              >
-                Logout
-              </Button>
+              
+              {/* Phase 3C: Notification Center */}
+              <NotificationCenter />
+              
+              {/* User Info */}
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-11 w-11 bg-gradient-to-br from-purple-400 to-blue-500 border-2 border-white/20">
+                  <AvatarFallback className="bg-gradient-to-br from-purple-400 to-blue-500 text-white font-light text-lg">
+                    {user?.full_name?.charAt(0) || 
+                     (user?.role === 'admin' ? 'A' : user?.username?.charAt(0)) || 
+                     'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <Link 
+                  to="/profile"
+                  className="text-white/90 hover:text-white font-light transition-colors duration-300"
+                >
+                  {user?.full_name || 
+                   (user?.role === 'admin' ? 'System Administrator' : user?.username) || 
+                   'User'}
+                </Link>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={logout}
+                  className="bg-white/10 backdrop-blur-xl border border-white/20 text-white/80 hover:bg-white/20 hover:text-white font-light px-4 py-2 rounded-xl transition-all duration-300"
+                >
+                  Logout
+                </Button>
+              </div>
             </div>
+          </div>
+        </div>
+      </div>
           </div>
         </div>
       </div>
