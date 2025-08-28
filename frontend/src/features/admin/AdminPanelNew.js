@@ -472,7 +472,7 @@ const AdminPanel = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-6 bg-white shadow-sm mb-8">
+          <TabsList className="grid w-full grid-cols-7 bg-white shadow-sm mb-8">
             <TabsTrigger value="dashboard" className="flex items-center gap-2 text-slate-700">
               <BarChart3 className="h-4 w-4" />
               Dashboard
@@ -480,6 +480,10 @@ const AdminPanel = () => {
             <TabsTrigger value="users" className="flex items-center gap-2 text-slate-700">
               <Users className="h-4 w-4" />
               Users
+            </TabsTrigger>
+            <TabsTrigger value="products" className="flex items-center gap-2 text-slate-700">
+              <Package className="h-4 w-4" />
+              Products
             </TabsTrigger>
             <TabsTrigger value="content" className="flex items-center gap-2 text-slate-700">
               <Layout className="h-4 w-4" />
