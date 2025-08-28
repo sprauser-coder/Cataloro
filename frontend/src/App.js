@@ -5879,41 +5879,36 @@ const AdminPanel = () => {
         </div>
       </div>
 
-      {/* Ultra-Modern Navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-lg p-3">
-          <div className="flex space-x-2 flex-wrap justify-center lg:justify-start">
-            <button onClick={() => setActiveTab("dashboard")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "dashboard" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
-              <span className="flex items-center space-x-2"><span>📊</span><span>Dashboard</span></span>
-            </button>
-            <button onClick={() => setActiveTab("activity")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "activity" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
-              <span className="flex items-center space-x-2"><span>🔔</span><span>Activity</span></span>
-            </button>
-            <button onClick={() => setActiveTab("users")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "users" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
-              <span className="flex items-center space-x-2"><span>👥</span><span>Users</span></span>
-            </button>
-            <button onClick={() => setActiveTab("products")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "products" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
-              <span className="flex items-center space-x-2"><span>🛍️</span><span>Products</span></span>
-            </button>
-            <button onClick={() => setActiveTab("content-listings")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "content-listings" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
-              <span className="flex items-center space-x-2"><span>🏷️</span><span>Categories</span></span>
-            </button>
-            <button onClick={() => setActiveTab("appearance")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "appearance" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
-              <span className="flex items-center space-x-2"><span>🎨</span><span>Appearance</span></span>
-            </button>
-            <button onClick={() => setActiveTab("pages")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "pages" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
-              <span className="flex items-center space-x-2"><span>📄</span><span>Content</span></span>
-            </button>
-            <button onClick={() => setActiveTab("seo")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "seo" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
-              <span className="flex items-center space-x-2"><span>🔍</span><span>SEO</span></span>
-            </button>
-            <button onClick={() => setActiveTab("settings")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "settings" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
-              <span className="flex items-center space-x-2"><span>⚙️</span><span>Settings</span></span>
-            </button>
-            <button onClick={() => setActiveTab("database")} className={`px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 ${activeTab === "database" ? "bg-gradient-to-r from-slate-900 to-slate-700 text-white shadow-lg transform scale-105" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"}`}>
-              <span className="flex items-center space-x-2"><span>🗄️</span><span>Database</span></span>
-            </button>
-          </div>
+      {/* Revolutionary Admin Navigation */}
+      <div className="admin-nav">
+        <div className="admin-nav-items">
+          <button onClick={() => setActiveTab("dashboard")} className={`admin-nav-item ${activeTab === "dashboard" ? "active" : ""}`}>
+            <span>📊</span><span>Overview</span>
+          </button>
+          <button onClick={() => setActiveTab("theme-builder")} className={`admin-nav-item ${activeTab === "theme-builder" ? "active" : ""}`}>
+            <span>🎨</span><span>Theme Builder</span>
+          </button>
+          <button onClick={() => setActiveTab("users")} className={`admin-nav-item ${activeTab === "users" ? "active" : ""}`}>
+            <span>👥</span><span>Users</span>
+          </button>
+          <button onClick={() => setActiveTab("products")} className={`admin-nav-item ${activeTab === "products" ? "active" : ""}`}>
+            <span>🛍️</span><span>Products</span>
+          </button>
+          <button onClick={() => setActiveTab("analytics")} className={`admin-nav-item ${activeTab === "analytics" ? "active" : ""}`}>
+            <span>📈</span><span>Analytics</span>
+          </button>
+          <button onClick={() => setActiveTab("media")} className={`admin-nav-item ${activeTab === "media" ? "active" : ""}`}>
+            <span>🖼️</span><span>Media</span>
+          </button>
+          <button onClick={() => setActiveTab("communication")} className={`admin-nav-item ${activeTab === "communication" ? "active" : ""}`}>
+            <span>💌</span><span>Communication</span>
+          </button>
+          <button onClick={() => setActiveTab("seo")} className={`admin-nav-item ${activeTab === "seo" ? "active" : ""}`}>
+            <span>🔍</span><span>SEO</span>
+          </button>
+          <button onClick={() => setActiveTab("settings")} className={`admin-nav-item ${activeTab === "settings" ? "active" : ""}`}>
+            <span>⚙️</span><span>System</span>
+          </button>
         </div>
       </div>
 
