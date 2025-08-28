@@ -776,26 +776,6 @@ const AdminPanel = () => {
     return Math.floor(Math.random() * 1000) + 50;
   };
 
-  // LIVE PRODUCT VIEWS TRACKING - REAL TIME DATA
-  const updateProductViews = async (productId) => {
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/listings/${productId}/views`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        return data.views || Math.floor(Math.random() * 1000) + 50; // Fallback with simulated data
-      }
-    } catch (error) {
-      console.error('Error fetching product views:', error);
-    }
-    return Math.floor(Math.random() * 1000) + 50;
-  };
-
   // LIVE PRODUCT EDITING MODAL COMPONENT
   const ProductEditModal = ({ product, onClose, onSave }) => {
     const [editData, setEditData] = useState({
