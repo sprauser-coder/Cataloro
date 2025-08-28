@@ -862,80 +862,90 @@ const Auth = () => {
   };
 
   return (
-    <div className="login-page-sleek-purple">
-      <div className="login-card-sleek-purple animate-fadeIn">
-        <div className="login-header-sleek-purple">
-          <div className="login-logo-sleek-purple">
-            <Package className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="login-title-sleek-purple">
-            {isLogin ? 'Welcome Back' : 'Join Cataloro'}
-          </h1>
-          <p className="login-subtitle-sleek-purple">
-            {isLogin ? 'Sign in to your account to continue' : 'Create your account and start trading on our marketplace'}
-          </p>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <Label htmlFor="email" className="text-sm font-medium text-high-contrast">Email Address</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
-              required
-              className="mt-1 form-sleek-purple"
-              placeholder="Enter your email address"
-            />
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full animate-pulse opacity-70"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-white/5 rounded-full animate-bounce opacity-50" style={{animationDuration: '3s'}}></div>
+        <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-purple-400/20 rounded-full animate-ping opacity-30"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-indigo-400/15 rounded-full animate-pulse opacity-40"></div>
+      </div>
+      
+      <div className="w-full max-w-md relative z-10">
+        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-8 animate-fadeIn">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="mx-auto mb-6 p-4 bg-white/20 backdrop-blur-sm rounded-2xl w-fit shadow-lg animate-purpleGlow">
+              <Package className="h-12 w-12 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-white mb-3 tracking-tight">
+              {isLogin ? 'Welcome Back' : 'Join Cataloro'}
+            </h1>
+            <p className="text-white/80 text-lg leading-relaxed">
+              {isLogin ? 'Sign in to your account to continue your journey' : 'Create your account and start trading on our premium marketplace'}
+            </p>
           </div>
           
-          <div>
-            <Label htmlFor="password" className="text-sm font-medium text-high-contrast">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
-              required
-              className="mt-1 form-sleek-purple"
-              placeholder="Enter your password"
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <Label htmlFor="email" className="text-white font-semibold text-sm mb-2 block">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                required
+                className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
+                placeholder="Enter your email address"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="password" className="text-white font-semibold text-sm mb-2 block">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                required
+                className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
+                placeholder="Enter your password"
+              />
+            </div>
           
           {!isLogin && (
             <>
               <div>
-                <Label htmlFor="username" className="text-sm font-medium text-high-contrast">Username</Label>
+                <Label htmlFor="username" className="text-white font-semibold text-sm mb-2 block">Username</Label>
                 <Input
                   id="username"
                   value={formData.username}
                   onChange={(e) => setFormData({...formData, username: e.target.value})}
                   required
-                  className="mt-1 form-sleek-purple"
+                  className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
                   placeholder="Choose a username"
                 />
               </div>
               
               <div>
-                <Label htmlFor="full_name" className="text-sm font-medium text-high-contrast">Full Name</Label>
+                <Label htmlFor="full_name" className="text-white font-semibold text-sm mb-2 block">Full Name</Label>
                 <Input
                   id="full_name"
                   value={formData.full_name}
                   onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                   required
-                  className="mt-1 form-sleek-purple"
+                  className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
                   placeholder="Enter your full name"
                 />
               </div>
               
               <div>
-                <Label htmlFor="role" className="text-sm font-medium text-high-contrast">I want to</Label>
+                <Label htmlFor="role" className="text-white font-semibold text-sm mb-2 block">I want to</Label>
                 <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
-                  <SelectTrigger className="mt-1 form-sleek-purple">
+                  <SelectTrigger className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 font-medium">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="notification-sleek-purple">
+                  <SelectContent className="bg-white/95 backdrop-blur-xl border-purple-200 rounded-xl">
                     <SelectItem value="buyer">Buy items</SelectItem>
                     <SelectItem value="seller">Sell items</SelectItem>
                     <SelectItem value="both">Both buy and sell</SelectItem>
@@ -944,23 +954,23 @@ const Auth = () => {
               </div>
               
               <div>
-                <Label htmlFor="phone" className="text-sm font-medium text-high-contrast">Phone (Optional)</Label>
+                <Label htmlFor="phone" className="text-white font-semibold text-sm mb-2 block">Phone (Optional)</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="mt-1 form-sleek-purple"
+                  className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
                   placeholder="Enter your phone number"
                 />
               </div>
               
               <div>
-                <Label htmlFor="address" className="text-sm font-medium text-high-contrast">Address (Optional)</Label>
+                <Label htmlFor="address" className="text-white font-semibold text-sm mb-2 block">Address (Optional)</Label>
                 <Input
                   id="address"
                   value={formData.address}
                   onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  className="mt-1 form-sleek-purple"
+                  className="bg-white/90 backdrop-blur-sm border-white/30 rounded-xl h-12 px-4 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 focus:bg-white focus:ring-2 focus:ring-purple-300"
                   placeholder="Enter your address"
                 />
               </div>
@@ -969,22 +979,23 @@ const Auth = () => {
           
           <Button 
             type="submit" 
-            className="w-full mt-6 btn-sleek-primary h-12 text-base font-semibold"
+            className="w-full mt-8 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
           >
-            {isLogin ? 'Sign In' : 'Create Account'}
+            {isLogin ? 'Sign In to Cataloro' : 'Create My Account'}
           </Button>
         </form>
         
-        <div className="mt-6 text-center">
+        <div className="mt-8 text-center">
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-medium-contrast hover:text-purple-600 font-medium transition-colors duration-200 text-sm"
+            className="text-white/90 hover:text-white font-semibold transition-colors duration-300 text-base underline decoration-white/50 hover:decoration-white"
           >
-            {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+            {isLogin ? "Don't have an account? Sign up here" : "Already have an account? Sign in here"}
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 };
