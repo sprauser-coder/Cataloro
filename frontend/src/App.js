@@ -40,7 +40,7 @@ function App() {
             
             <Route path="/browse" element={
               <ProtectedRoute>
-                <BrowsePage />
+                <BrowsePageSimple />
               </ProtectedRoute>
             } />
             
