@@ -6787,9 +6787,9 @@ const AdminPanel = () => {
                                         <div className="text-lg font-bold text-green-600">{user.total_listings || 0}</div>
                                         <div className="text-xs text-green-600 font-medium">Listings</div>
                                       </div>
-                                      <div className="bg-yellow-50 rounded-md p-2 text-left">
-                                        <div className="text-lg font-bold text-yellow-600">€{((user.total_orders || 0) * 25.50).toFixed(0)}</div>
-                                        <div className="text-xs text-yellow-600 font-medium">Revenue</div>
+                                      <div className="bg-slate-50 rounded-md p-2 text-left">
+                                        <div className="text-lg font-bold text-slate-900">€{((user.total_orders || 0) * 25.50).toFixed(0)}</div>
+                                        <div className="text-xs text-slate-600 font-medium">Revenue</div>
                                       </div>
                                     </div>
                                   </div>
