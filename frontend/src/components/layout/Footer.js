@@ -248,7 +248,7 @@ function Footer() {
                     href={config.social.instagram} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-pink-400 transition-colors"
+                    className="text-gray-400 hover:text-pink-400"
                   >
                     <Instagram className="w-5 h-5" />
                   </a>
