@@ -272,16 +272,30 @@ function ModernBrowsePage() {
   };
 
   const handleAddToCart = (item) => {
-    // Add to cart logic here
-    alert(`Added ${item.title} to cart!`);
+    addToCart(item);
   };
 
-  const handleAddToFavorites = (itemId) => {
-    // Add to favorites logic here
-    alert(`Added to favorites!`);
+  const handleAddToFavorites = (item) => {
+    addToFavorites(item);
   };
 
-  if (loading) {
+  const updateSearchQuery = (query) => {
+    setGlobalSearchQuery(query);
+  };
+
+  const updateFilters = (newFilters) => {
+    setGlobalFilters(newFilters);
+  };
+
+  const updateSortBy = (sort) => {
+    setGlobalSortBy(sort);
+  };
+
+  const updateViewMode = (mode) => {
+    setGlobalViewMode(mode);
+  };
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
