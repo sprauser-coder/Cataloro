@@ -1316,10 +1316,338 @@ function SiteAdministrationTab({ showToast }) {
 
         {/* Feature Management Section */}
         {activeSection === 'features' && (
-          <div className="space-y-6">{/* Feature Management will be added next */}</div>
+          <div className="space-y-6">
+            
+            {/* Homepage Features */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Globe className="w-5 h-5 mr-2" />
+                Homepage Configuration
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { key: 'heroSectionEnabled', label: 'Hero Section', desc: 'Show main banner/hero section on homepage' },
+                  { key: 'featuredProductsEnabled', label: 'Featured Products', desc: 'Display featured products carousel' },
+                  { key: 'categoriesShowcase', label: 'Categories Showcase', desc: 'Show category grid on homepage' },
+                  { key: 'testimonialSection', label: 'Testimonials', desc: 'Display customer testimonials' },
+                  { key: 'newsletterSignup', label: 'Newsletter Signup', desc: 'Show newsletter subscription form' },
+                  { key: 'searchBarProminent', label: 'Prominent Search', desc: 'Make search bar more prominent' }
+                ].map((setting) => (
+                  <label key={setting.key} className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                    <button
+                      onClick={() => handleConfigChange(setting.key, !siteConfig[setting.key])}
+                      className="mt-1"
+                    >
+                      {siteConfig[setting.key] ? (
+                        <ToggleRight className="w-6 h-6 text-green-600" />
+                      ) : (
+                        <ToggleLeft className="w-6 h-6 text-gray-400" />
+                      )}
+                    </button>
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-white">{setting.label}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">{setting.desc}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Marketplace Features */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Store className="w-5 h-5 mr-2" />
+                Marketplace Features
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { key: 'userRegistration', label: 'User Registration', desc: 'Allow new users to register accounts' },
+                  { key: 'guestBrowsing', label: 'Guest Browsing', desc: 'Allow non-registered users to browse products' },
+                  { key: 'productReviews', label: 'Product Reviews', desc: 'Enable product rating and review system' },
+                  { key: 'wishlistEnabled', label: 'Wishlist/Favorites', desc: 'Allow users to save favorite products' },
+                  { key: 'compareFeature', label: 'Product Compare', desc: 'Side-by-side product comparison tool' },
+                  { key: 'advancedFilters', label: 'Advanced Filters', desc: 'Enhanced search and filter options' },
+                  { key: 'bulkOperations', label: 'Bulk Operations', desc: 'Bulk edit/delete for admin users' },
+                  { key: 'productVariations', label: 'Product Variations', desc: 'Support for size, color, etc. variations' },
+                  { key: 'inventoryTracking', label: 'Inventory Tracking', desc: 'Track product stock levels' }
+                ].map((setting) => (
+                  <label key={setting.key} className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                    <button
+                      onClick={() => handleConfigChange(setting.key, !siteConfig[setting.key])}
+                      className="mt-1"
+                    >
+                      {siteConfig[setting.key] ? (
+                        <ToggleRight className="w-6 h-6 text-green-600" />
+                      ) : (
+                        <ToggleLeft className="w-6 h-6 text-gray-400" />
+                      )}
+                    </button>
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-white">{setting.label}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">{setting.desc}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
 
-        {/* Continue with other sections... */}
+        {/* Security & Privacy Section */}
+        {activeSection === 'security' && (
+          <div className="space-y-6">
+            
+            {/* Authentication & Security */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Lock className="w-5 h-5 mr-2" />
+                Authentication & Security
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password Policy</label>
+                  <select
+                    value={siteConfig.passwordPolicy}
+                    onChange={(e) => handleConfigChange('passwordPolicy', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="weak">Weak (6+ characters)</option>
+                    <option value="medium">Medium (8+ chars, mixed case)</option>
+                    <option value="strong">Strong (12+ chars, symbols)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Session Timeout (minutes)</label>
+                  <input
+                    type="number"
+                    value={siteConfig.sessionTimeout}
+                    onChange={(e) => handleConfigChange('sessionTimeout', parseInt(e.target.value))}
+                    min="15"
+                    max="480"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+              </div>
+              <div className="mt-6 space-y-4">
+                {[
+                  { key: 'twoFactorAuth', label: 'Two-Factor Authentication', desc: 'Require 2FA for enhanced security' },
+                  { key: 'emailVerification', label: 'Email Verification', desc: 'Require email verification for new accounts' },
+                  { key: 'contentModeration', label: 'Content Moderation', desc: 'Enable automatic content moderation' },
+                  { key: 'autoSpamDetection', label: 'Spam Detection', desc: 'Automatically detect and filter spam' }
+                ].map((setting) => (
+                  <label key={setting.key} className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                    <button
+                      onClick={() => handleConfigChange(setting.key, !siteConfig[setting.key])}
+                      className="mt-1"
+                    >
+                      {siteConfig[setting.key] ? (
+                        <ToggleRight className="w-6 h-6 text-green-600" />
+                      ) : (
+                        <ToggleLeft className="w-6 h-6 text-gray-400" />
+                      )}
+                    </button>
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-white">{setting.label}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">{setting.desc}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Performance & SEO Section */}
+        {activeSection === 'performance' && (
+          <div className="space-y-6">
+            
+            {/* Performance Optimization */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Zap className="w-5 h-5 mr-2" />
+                Performance Optimization
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { key: 'cacheEnabled', label: 'Enable Caching', desc: 'Cache static resources for faster loading' },
+                  { key: 'compressionEnabled', label: 'Enable Compression', desc: 'Compress files to reduce bandwidth' },
+                  { key: 'lazyLoading', label: 'Lazy Loading', desc: 'Load images and content as needed' },
+                  { key: 'performanceMonitoring', label: 'Performance Monitoring', desc: 'Track site performance metrics' }
+                ].map((setting) => (
+                  <label key={setting.key} className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                    <button
+                      onClick={() => handleConfigChange(setting.key, !siteConfig[setting.key])}
+                      className="mt-1"
+                    >
+                      {siteConfig[setting.key] ? (
+                        <ToggleRight className="w-6 h-6 text-green-600" />
+                      ) : (
+                        <ToggleLeft className="w-6 h-6 text-gray-400" />
+                      )}
+                    </button>
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-white">{setting.label}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">{setting.desc}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* SEO Configuration */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Search className="w-5 h-5 mr-2" />
+                SEO & Analytics
+              </h4>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Google Analytics ID</label>
+                  <input
+                    type="text"
+                    value={siteConfig.googleAnalytics}
+                    onChange={(e) => handleConfigChange('googleAnalytics', e.target.value)}
+                    placeholder="GA-XXXXXXXXX-X"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Facebook Pixel ID</label>
+                  <input
+                    type="text"
+                    value={siteConfig.facebookPixel}
+                    onChange={(e) => handleConfigChange('facebookPixel', e.target.value)}
+                    placeholder="Enter Facebook Pixel ID"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { key: 'seoOptimization', label: 'SEO Optimization', desc: 'Enable automatic SEO optimizations' },
+                    { key: 'sitemapGeneration', label: 'Sitemap Generation', desc: 'Automatically generate XML sitemap' },
+                    { key: 'robotsTxt', label: 'Robots.txt', desc: 'Enable robots.txt file for search engines' },
+                    { key: 'userBehaviorTracking', label: 'User Behavior Tracking', desc: 'Track user interactions and behavior' }
+                  ].map((setting) => (
+                    <label key={setting.key} className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                      <button
+                        onClick={() => handleConfigChange(setting.key, !siteConfig[setting.key])}
+                        className="mt-1"
+                      >
+                        {siteConfig[setting.key] ? (
+                          <ToggleRight className="w-6 h-6 text-green-600" />
+                        ) : (
+                          <ToggleLeft className="w-6 h-6 text-gray-400" />
+                        )}
+                      </button>
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white">{setting.label}</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">{setting.desc}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Communications Section */}
+        {activeSection === 'communications' && (
+          <div className="space-y-6">
+            
+            {/* Notification Systems */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Bell className="w-5 h-5 mr-2" />
+                Notification Systems
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { key: 'emailNotifications', label: 'Email Notifications', desc: 'Send notifications via email' },
+                  { key: 'pushNotifications', label: 'Push Notifications', desc: 'Browser push notifications' },
+                  { key: 'smsNotifications', label: 'SMS Notifications', desc: 'Send SMS for critical updates' },
+                  { key: 'inAppMessaging', label: 'In-App Messaging', desc: 'Built-in messaging system' },
+                  { key: 'newsletterSystem', label: 'Newsletter System', desc: 'Email newsletter functionality' }
+                ].map((setting) => (
+                  <label key={setting.key} className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                    <button
+                      onClick={() => handleConfigChange(setting.key, !siteConfig[setting.key])}
+                      className="mt-1"
+                    >
+                      {siteConfig[setting.key] ? (
+                        <ToggleRight className="w-6 h-6 text-green-600" />
+                      ) : (
+                        <ToggleLeft className="w-6 h-6 text-gray-400" />
+                      )}
+                    </button>
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-white">{setting.label}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">{setting.desc}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* System & Maintenance Section */}
+        {activeSection === 'system' && (
+          <div className="space-y-6">
+            
+            {/* System Configuration */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Server className="w-5 h-5 mr-2" />
+                System Configuration
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Log Level</label>
+                  <select
+                    value={siteConfig.logLevel}
+                    onChange={(e) => handleConfigChange('logLevel', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="error">Error Only</option>
+                    <option value="warn">Warnings</option>
+                    <option value="info">Info</option>
+                    <option value="debug">Debug (Verbose)</option>
+                  </select>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { key: 'maintenanceMode', label: 'Maintenance Mode', desc: 'Enable site maintenance mode', color: 'red' },
+                    { key: 'debugMode', label: 'Debug Mode', desc: 'Enable detailed error reporting', color: 'yellow' },
+                    { key: 'backupEnabled', label: 'Automatic Backups', desc: 'Schedule regular system backups', color: 'green' },
+                    { key: 'autoUpdates', label: 'Auto Updates', desc: 'Automatically install security updates', color: 'blue' }
+                  ].map((setting) => (
+                    <label key={setting.key} className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                      <button
+                        onClick={() => handleConfigChange(setting.key, !siteConfig[setting.key])}
+                        className="mt-1"
+                      >
+                        {siteConfig[setting.key] ? (
+                          <ToggleRight className={`w-6 h-6 ${
+                            setting.color === 'red' ? 'text-red-600' :
+                            setting.color === 'yellow' ? 'text-yellow-600' :
+                            setting.color === 'blue' ? 'text-blue-600' : 'text-green-600'
+                          }`} />
+                        ) : (
+                          <ToggleLeft className="w-6 h-6 text-gray-400" />
+                        )}
+                      </button>
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white">{setting.label}</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">{setting.desc}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
