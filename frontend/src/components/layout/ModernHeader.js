@@ -334,7 +334,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     
                     <Link
                       to="/my-listings"
-                      className="flex items-center px-6 py-3 text-sm text-white/90 hover:text-white hover:bg-white/5 transition-all duration-300 group"
+                      className="flex items-center px-6 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
                       onClick={() => setShowUserMenu(false)}
                     >
                       <div className="p-2 rounded-lg mr-3 group-hover:bg-white/10 transition-all duration-300" style={{
