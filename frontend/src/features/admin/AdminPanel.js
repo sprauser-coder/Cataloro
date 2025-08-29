@@ -28,6 +28,7 @@ import {
   RefreshCw,
   Download,
   AlertTriangle,
+  Database,
   Shield,
   Palette,
   Globe,
