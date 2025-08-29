@@ -21,8 +21,32 @@ function Footer() {
   // Get footer configuration from localStorage (set by site admin)
   const getFooterConfig = () => {
     try {
-      const config = localStorage.getItem('cataloro_footer_config');
-      return config ? JSON.parse(config) : getDefaultFooterConfig();
+      const savedConfig = localStorage.getItem('cataloro_footer_config');
+      const defaultConfig = getDefaultFooterConfig();
+      
+      if (!savedConfig) {
+        return defaultConfig;
+      }
+      
+      const parsedConfig = JSON.parse(savedConfig);
+      
+      // Merge with defaults to ensure all properties exist
+      return {
+        ...defaultConfig,
+        ...parsedConfig,
+        companyInfo: { ...defaultConfig.companyInfo, ...parsedConfig.companyInfo },
+        contact: { ...defaultConfig.contact, ...parsedConfig.contact },
+        social: { ...defaultConfig.social, ...parsedConfig.social },
+        links: { 
+          ...defaultConfig.links, 
+          ...parsedConfig.links,
+          about: parsedConfig.links?.about || defaultConfig.links.about,
+          marketplace: parsedConfig.links?.marketplace || defaultConfig.links.marketplace,
+          support: parsedConfig.links?.support || defaultConfig.links.support,
+          legal: parsedConfig.links?.legal || defaultConfig.links.legal
+        },
+        style: { ...defaultConfig.style, ...parsedConfig.style }
+      };
     } catch (error) {
       console.error('Error parsing footer config:', error);
       return getDefaultFooterConfig();
