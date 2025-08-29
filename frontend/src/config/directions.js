@@ -4,9 +4,9 @@
  * NO HARDCODED PATHS ALLOWED IN OTHER FILES!
  */
 
-// Environment Detection
-const isDevelopment = process.env.NODE_ENV === 'development';
-const isProduction = process.env.NODE_ENV === 'production';
+// Environment Detection - Force development for localhost
+const isDevelopment = true; // Always use development in this environment
+const isProduction = false;
 
 // API Configuration
 export const API_CONFIG = {
