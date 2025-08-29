@@ -1889,7 +1889,7 @@ function SiteAdministrationTab({ showToast }) {
                 )}
               </button>
               
-              <div className="bg-green-500/90 backdrop-blur-sm p-2 rounded-lg hover:bg-green-600 transition-colors">
+              <div className="bg-green-500/90 backdrop-blur-sm p-2 rounded-lg hover:bg-green-600">
                 <Shield className="w-5 h-5" />
               </div>
             </div>
