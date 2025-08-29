@@ -168,7 +168,7 @@ function Footer() {
             <div className="lg:col-span-1">
               <div className="flex items-center space-x-3 mb-4">
                 {/* Show Dark Mode Logo if available, otherwise show default company info */}
-                {siteBranding.logo_dark_url && siteBranding.logo_dark_url.length > 100 ? (
+                {siteBranding.logo_dark_url && siteBranding.logo_dark_url !== 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg==' ? (
                   // Display Dark Mode Logo
                   <div className="flex flex-col space-y-2">
                     <img 
@@ -178,13 +178,27 @@ function Footer() {
                       onError={(e) => {
                         // Fallback to default if logo fails to load
                         e.target.style.display = 'none';
-                        e.target.parentElement.nextElementSibling.style.display = 'block';
+                        e.target.parentElement.nextElementSibling.style.display = 'flex';
+                      }}
+                    />
+                  </div>
+                ) : siteBranding.logo_light_url && siteBranding.logo_light_url !== 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg==' ? (
+                  // Fallback to Light Mode Logo if Dark Mode Logo not available
+                  <div className="flex flex-col space-y-2">
+                    <img 
+                      src={siteBranding.logo_light_url}
+                      alt={siteBranding.site_name || config.companyInfo.name}
+                      className="h-12 max-w-[200px] object-contain"
+                      onError={(e) => {
+                        // Fallback to default if logo fails to load
+                        e.target.style.display = 'none';
+                        e.target.parentElement.nextElementSibling.style.display = 'flex';
                       }}
                     />
                   </div>
                 ) : (
                   // Fallback to default company branding
-                  <>
+                  <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
                       <Store className="w-6 h-6 text-white" />
                     </div>
@@ -194,11 +208,11 @@ function Footer() {
                       </h3>
                       <p className="text-sm text-gray-400">{siteBranding.site_description || config.companyInfo.tagline}</p>
                     </div>
-                  </>
+                  </div>
                 )}
                 
                 {/* Hidden fallback (shown if logo fails to load) */}
-                <div className="flex items-center space-x-3" style={{ display: 'none' }}>
+                <div className="items-center space-x-3" style={{ display: 'none' }}>
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
                     <Store className="w-6 h-6 text-white" />
                   </div>
