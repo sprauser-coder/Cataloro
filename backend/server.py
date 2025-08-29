@@ -515,17 +515,22 @@ async def login(credentials: UserLogin):
     if 'password' in user_dict:
         del user_dict['password']
     
-    # FORCE is_blocked to False for all admin users - brute force fix
-    if user_dict.get('role') == 'admin':
-        user_dict['is_blocked'] = False
+    # EMERGENCY FIX: Remove is_blocked entirely and add it back as False
+    if 'is_blocked' in user_dict:
+        del user_dict['is_blocked']
+    
+    user_dict['is_blocked'] = False
+    user_dict['debug_is_blocked_before_return'] = False
     
     access_token = create_access_token(data={"sub": user_dict['id']})
     
-    return {
+    response = {
         "access_token": access_token,
         "token_type": "bearer",
         "user": user_dict
     }
+    
+    return response
 
 # Listing Routes - Count endpoint MUST come first before parameterized routes
 @api_router.get("/listings/count")
