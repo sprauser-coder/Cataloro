@@ -62,80 +62,48 @@ body {
   @apply w-full px-4 py-3 rounded-xl border border-white/30 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 bg-white/80 backdrop-blur-md;
 }
 
-/* Navigation Styles */
-.nav-item {
-  @apply flex items-center px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium;
+/* Glass morphism effects */
+.glass-header {
+  @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg;
 }
 
-.nav-item.active {
-  @apply text-blue-600 bg-blue-50;
+.glass-dropdown {
+  @apply bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/30;
 }
 
-.nav-item-admin {
-  @apply nav-item text-purple-600 hover:text-purple-700 hover:bg-purple-50;
+.glass-notification {
+  @apply bg-white/85 backdrop-blur-lg border-l-4 border-blue-500/80 shadow-lg;
 }
 
-/* Tile Pattern for Listings */
-.listings-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
-}
-
+/* Enhanced listing tiles with glassmorphism */
 .listing-tile {
-  @apply cataloro-card overflow-hidden hover:scale-105 transform transition-all duration-200 cursor-pointer;
+  @apply bg-white/80 backdrop-blur-md overflow-hidden hover:scale-105 transform transition-all duration-300 cursor-pointer rounded-2xl shadow-lg border border-white/20 hover:shadow-2xl hover:bg-white/90;
 }
 
-.listing-image {
-  @apply w-full h-48 object-cover;
-}
-
-.listing-content {
-  @apply p-4;
-}
-
-.listing-title {
-  @apply font-semibold text-lg text-gray-900 mb-2 line-clamp-1;
-}
-
-.listing-price {
-  @apply text-2xl font-bold text-blue-600 mb-2;
-}
-
-.listing-description {
-  @apply text-gray-600 text-sm line-clamp-2;
-}
-
-/* Admin Panel Styles */
-.admin-tab {
-  @apply px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 hover:border-blue-600 border-b-2 border-transparent transition-all duration-200;
-}
-
-.admin-tab.active {
-  @apply text-blue-600 border-blue-600;
-}
-
-.kpi-card {
-  @apply cataloro-card p-6 text-center;
-}
-
-.kpi-value {
-  @apply text-3xl font-bold text-gray-900 mb-1;
-}
-
-.kpi-label {
-  @apply text-sm text-gray-600 font-medium;
-}
-
-/* Notification Styles */
+/* Enhanced notification styles with glassmorphism */
 .notification-item {
-  @apply cataloro-card p-4 mb-3 border-l-4 border-blue-500;
+  @apply bg-white/80 backdrop-blur-md p-4 mb-3 border-l-4 border-blue-500/70 rounded-xl shadow-lg;
 }
 
 .notification-unread {
-  @apply bg-blue-50 border-blue-500;
+  @apply bg-blue-50/80 backdrop-blur-md border-blue-500/80 shadow-lg;
 }
 
 .notification-read {
-  @apply border-gray-300;
+  @apply border-gray-300/60;
+}
+
+/* Admin panel enhancements */
+.admin-tab {
+  @apply px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 hover:border-blue-600/80 border-b-2 border-transparent transition-all duration-200 hover:bg-white/50 rounded-t-lg;
+}
+
+.admin-tab.active {
+  @apply text-blue-600 border-blue-600 bg-white/70 backdrop-blur-sm;
+}
+
+.kpi-card {
+  @apply bg-white/80 backdrop-blur-md p-6 text-center rounded-2xl shadow-lg border border-white/20 hover:shadow-xl hover:bg-white/90 transition-all duration-300;
 }
 
 /* Responsive Utilities */
