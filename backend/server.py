@@ -624,6 +624,241 @@ async def upload_listing_image(listing_id: str, file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
 # ============================================================================
+# LIVE FUNCTIONALITY ENDPOINTS
+# ============================================================================
+
+# Favorites endpoints
+@app.get("/api/user/{user_id}/favorites")
+async def get_user_favorites(user_id: str):
+    """Get user's favorite items"""
+    try:
+        favorites = await db.user_favorites.find({"user_id": user_id}).to_list(length=None)
+        
+        for favorite in favorites:
+            favorite['_id'] = str(favorite['_id'])
+        
+        return favorites
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch favorites: {str(e)}")
+
+@app.post("/api/user/{user_id}/favorites/{item_id}")
+async def add_to_favorites(user_id: str, item_id: str):
+    """Add item to user's favorites"""
+    try:
+        favorite_data = {
+            "user_id": user_id,
+            "item_id": item_id,
+            "created_at": datetime.utcnow().isoformat(),
+            "id": str(uuid.uuid4())
+        }
+        
+        # Check if already exists
+        existing = await db.user_favorites.find_one({"user_id": user_id, "item_id": item_id})
+        if existing:
+            return {"message": "Item already in favorites"}
+        
+        await db.user_favorites.insert_one(favorite_data)
+        return {"message": "Added to favorites successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to add to favorites: {str(e)}")
+
+@app.delete("/api/user/{user_id}/favorites/{item_id}")
+async def remove_from_favorites(user_id: str, item_id: str):
+    """Remove item from user's favorites"""
+    try:
+        result = await db.user_favorites.delete_one({"user_id": user_id, "item_id": item_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Favorite not found")
+        
+        return {"message": "Removed from favorites successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to remove from favorites: {str(e)}")
+
+# Cart endpoints  
+@app.get("/api/user/{user_id}/cart")
+async def get_user_cart(user_id: str):
+    """Get user's cart items"""
+    try:
+        cart_items = await db.user_cart.find({"user_id": user_id}).to_list(length=None)
+        
+        for item in cart_items:
+            item['_id'] = str(item['_id'])
+        
+        return cart_items
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch cart: {str(e)}")
+
+@app.post("/api/user/{user_id}/cart")
+async def add_to_cart(user_id: str, cart_item: dict):
+    """Add item to user's cart"""
+    try:
+        cart_data = {
+            "user_id": user_id,
+            "item_id": cart_item.get("item_id"),
+            "quantity": cart_item.get("quantity", 1),
+            "price": cart_item.get("price", 0),
+            "created_at": datetime.utcnow().isoformat(),
+            "id": str(uuid.uuid4())
+        }
+        
+        # Check if item already in cart
+        existing = await db.user_cart.find_one({"user_id": user_id, "item_id": cart_item.get("item_id")})
+        if existing:
+            # Update quantity
+            new_quantity = existing["quantity"] + cart_item.get("quantity", 1)
+            await db.user_cart.update_one(
+                {"user_id": user_id, "item_id": cart_item.get("item_id")},
+                {"$set": {"quantity": new_quantity, "updated_at": datetime.utcnow().isoformat()}}
+            )
+            return {"message": "Cart quantity updated"}
+        
+        await db.user_cart.insert_one(cart_data)
+        return {"message": "Added to cart successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to add to cart: {str(e)}")
+
+@app.put("/api/user/{user_id}/cart/{item_id}")
+async def update_cart_item(user_id: str, item_id: str, update_data: dict):
+    """Update cart item quantity"""
+    try:
+        result = await db.user_cart.update_one(
+            {"user_id": user_id, "item_id": item_id},
+            {"$set": {
+                "quantity": update_data.get("quantity", 1),
+                "updated_at": datetime.utcnow().isoformat()
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Cart item not found")
+        
+        return {"message": "Cart item updated successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update cart item: {str(e)}")
+
+@app.delete("/api/user/{user_id}/cart/{item_id}")
+async def remove_from_cart(user_id: str, item_id: str):
+    """Remove item from cart"""
+    try:
+        result = await db.user_cart.delete_one({"user_id": user_id, "item_id": item_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Cart item not found")
+        
+        return {"message": "Removed from cart successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to remove from cart: {str(e)}")
+
+# Messages endpoints
+@app.get("/api/user/{user_id}/messages")
+async def get_user_messages(user_id: str):
+    """Get user's messages"""
+    try:
+        messages = await db.user_messages.find({"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]}).sort("created_at", -1).to_list(length=None)
+        
+        for message in messages:
+            message['_id'] = str(message['_id'])
+        
+        return messages
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch messages: {str(e)}")
+
+@app.post("/api/user/{user_id}/messages")
+async def send_message(user_id: str, message_data: dict):
+    """Send a message"""
+    try:
+        message = {
+            "sender_id": user_id,
+            "recipient_id": message_data.get("recipient_id"),
+            "subject": message_data.get("subject", ""),
+            "content": message_data.get("content"),
+            "is_read": False,
+            "created_at": datetime.utcnow().isoformat(),
+            "id": str(uuid.uuid4())
+        }
+        
+        await db.user_messages.insert_one(message)
+        return {"message": "Message sent successfully", "id": message["id"]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to send message: {str(e)}")
+
+@app.put("/api/user/{user_id}/messages/{message_id}/read")
+async def mark_message_read(user_id: str, message_id: str):
+    """Mark message as read"""
+    try:
+        result = await db.user_messages.update_one(
+            {"id": message_id, "$or": [{"sender_id": user_id}, {"recipient_id": user_id}]},
+            {"$set": {"is_read": True, "read_at": datetime.utcnow().isoformat()}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Message not found")
+        
+        return {"message": "Message marked as read"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark message as read: {str(e)}")
+
+# Notifications endpoints
+@app.get("/api/user/{user_id}/notifications")
+async def get_user_notifications(user_id: str):
+    """Get user's notifications"""
+    try:
+        notifications = await db.user_notifications.find({"user_id": user_id}).sort("created_at", -1).to_list(length=None)
+        
+        for notification in notifications:
+            notification['_id'] = str(notification['_id'])
+        
+        return notifications
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch notifications: {str(e)}")
+
+@app.post("/api/user/{user_id}/notifications")
+async def create_notification(user_id: str, notification_data: dict):
+    """Create a notification"""
+    try:
+        notification = {
+            "user_id": user_id,
+            "title": notification_data.get("title"),
+            "message": notification_data.get("message"),
+            "type": notification_data.get("type", "info"),
+            "is_read": False,
+            "created_at": datetime.utcnow().isoformat(),
+            "id": str(uuid.uuid4())
+        }
+        
+        await db.user_notifications.insert_one(notification)
+        return {"message": "Notification created successfully", "id": notification["id"]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create notification: {str(e)}")
+
+@app.put("/api/user/{user_id}/notifications/{notification_id}/read")
+async def mark_notification_read(user_id: str, notification_id: str):
+    """Mark notification as read"""
+    try:
+        result = await db.user_notifications.update_one(
+            {"user_id": user_id, "id": notification_id},
+            {"$set": {"is_read": True, "read_at": datetime.utcnow().isoformat()}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Notification not found")
+        
+        return {"message": "Notification marked as read"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark notification as read: {str(e)}")
+
+# ============================================================================
 # CAT DATABASE ENDPOINTS
 # ============================================================================
 
