@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class CataloroAPITester:
-    def __init__(self, base_url="https://d79e004a-2868-4b55-a561-f41324cbae81.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-market-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.user_token = None
