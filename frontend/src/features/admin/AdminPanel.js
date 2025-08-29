@@ -1003,6 +1003,23 @@ function HeroSelectionTab({ showToast }) {
             </p>
           </div>
 
+          {/* Search Placeholder Input */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Search Bar Placeholder Text
+            </label>
+            <input
+              type="text"
+              value={heroContent.search_placeholder}
+              onChange={(e) => handleInputChange('search_placeholder', e.target.value)}
+              placeholder="Enter the placeholder text for the search bar"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              This text appears inside the search bar when it's empty (e.g., "Search for anything you need...")
+            </p>
+          </div>
+
           {/* Height Adjustment */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
