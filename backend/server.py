@@ -504,24 +504,28 @@ async def register(user_data: UserCreate):
     
     return Token(access_token=access_token, token_type="bearer", user=user)
 
-@api_router.post("/auth/login", response_model=Token)
+@api_router.post("/auth/login")
 async def login(credentials: UserLogin):
     user_doc = await db.users.find_one({"email": credentials.email})
     if not user_doc or not verify_password(credentials.password, user_doc['password']):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    # Force is_blocked to False for admin users to bypass whatever is causing this
-    if user_doc.get('role') == 'admin':
-        user_doc['is_blocked'] = False
+    # Parse from mongo
+    user_dict = parse_from_mongo(user_doc)
+    if 'password' in user_dict:
+        del user_dict['password']
     
-    user = User(**parse_from_mongo(user_doc))
-    # Double check - force is_blocked to False for admin users
-    if user.role == UserRole.ADMIN:
-        user.is_blocked = False
+    # FORCE is_blocked to False for all admin users - brute force fix
+    if user_dict.get('role') == 'admin':
+        user_dict['is_blocked'] = False
     
-    access_token = create_access_token(data={"sub": user.id})
+    access_token = create_access_token(data={"sub": user_dict['id']})
     
-    return Token(access_token=access_token, token_type="bearer", user=user)
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user_dict
+    }
 
 # Listing Routes - Count endpoint MUST come first before parameterized routes
 @api_router.get("/listings/count")
