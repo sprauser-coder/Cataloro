@@ -1129,7 +1129,7 @@ function HeroSelectionTab({ showToast }) {
             </button>
             <button
               onClick={handleSave}
-              className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-8 py-3 rounded-xl font-bold transition-all duration-200 hover:scale-105 border border-white/20"
+              className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-8 py-3 rounded-xl font-bold border border-white/20"
             >
               <Save className="w-5 h-5" />
               <span>Save & Apply</span>
