@@ -140,15 +140,6 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
             
             {/* Quick Actions (Desktop) */}
             <div className="hidden lg:flex items-center space-x-2">
-              {/* Create Listing */}
-              <Link
-                to="/create-listing"
-                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Sell</span>
-              </Link>
-
               {/* Messages */}
               <Link
                 to="/messages"
