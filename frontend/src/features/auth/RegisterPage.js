@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { APP_ROUTES, UI_CONFIG } from '../../../config/directions';
+import { APP_ROUTES, UI_CONFIG } from '../../config/directions';
 
 function RegisterPage() {
   const [formData, setFormData] = useState({
