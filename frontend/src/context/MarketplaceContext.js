@@ -316,8 +316,20 @@ export function MarketplaceProvider({ children }) {
     
     try {
       // Try to fetch real listings from API using marketplaceService
-      const apiListings = await marketplaceService.browseListings();
-      console.log('✅ Loaded real listings from API:', apiListings.length);
+      const apiResponse = await marketplaceService.browseListings();
+      console.log('✅ Loaded real listings from API:', apiResponse);
+      
+      // Handle both array and object response formats
+      let apiListings;
+      if (Array.isArray(apiResponse)) {
+        apiListings = apiResponse;
+      } else if (apiResponse && apiResponse.listings) {
+        apiListings = apiResponse.listings;
+      } else {
+        throw new Error('Invalid API response format');
+      }
+      
+      console.log('📋 Processing listings:', apiListings.length);
       
       // Transform API listings to match expected format
       const transformedListings = apiListings.map(listing => ({
@@ -346,6 +358,7 @@ export function MarketplaceProvider({ children }) {
       if (transformedListings.length > 0) {
         dispatch({ type: ACTIONS.SET_PRODUCTS, payload: transformedListings });
         dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+        console.log('🎉 Successfully loaded', transformedListings.length, 'real listings');
         return;
       }
         
