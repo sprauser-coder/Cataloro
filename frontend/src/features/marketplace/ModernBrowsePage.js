@@ -383,22 +383,34 @@ function ModernBrowsePage() {
 function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
 
   const isGridView = viewMode === 'grid';
 
-  const handleNextImage = () => {
+  const handleNextImage = (e) => {
+    e.stopPropagation(); // Prevent navigation when clicking image navigation
     if (item.images && item.images.length > 1) {
       setCurrentImageIndex((prev) => (prev + 1) % item.images.length);
     }
   };
 
+  const handleCardClick = () => {
+    navigate(`/product/${item.id}`);
+  };
+
+  const handleQuickAction = (e, action) => {
+    e.stopPropagation(); // Prevent navigation when clicking action buttons
+    action();
+  };
+
   return (
     <div 
-      className={`group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden ${
+      className={`group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer ${
         isGridView ? 'hover:-translate-y-2' : 'flex space-x-4 p-4'
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleCardClick}
     >
       {/* Image Section */}
       <div className={`relative ${isGridView ? '' : 'w-48 h-48 flex-shrink-0'}`}>
