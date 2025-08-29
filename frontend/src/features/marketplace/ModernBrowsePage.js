@@ -454,12 +454,15 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites }) {
           isHovered ? 'opacity-100' : 'opacity-0'
         }`}>
           <button
-            onClick={() => onAddToFavorites(item.id)}
+            onClick={(e) => handleQuickAction(e, () => onAddToFavorites(item))}
             className="p-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300 hover:text-red-500 rounded-full shadow-sm transition-colors"
           >
             <Heart className="w-5 h-5" />
           </button>
-          <button className="p-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300 hover:text-blue-500 rounded-full shadow-sm transition-colors">
+          <button 
+            onClick={(e) => handleQuickAction(e, () => {})}
+            className="p-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300 hover:text-blue-500 rounded-full shadow-sm transition-colors"
+          >
             <Share2 className="w-5 h-5" />
           </button>
         </div>
