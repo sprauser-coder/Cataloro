@@ -36,6 +36,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   const [cartItems, setCartItems] = useState(3); // Demo count
   const [unreadNotifications, setUnreadNotifications] = useState(5); // Demo count
   const [unreadMessages, setUnreadMessages] = useState(2); // Demo count
+  const [siteBranding, setSiteBranding] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
   const userMenuRef = useRef(null);
