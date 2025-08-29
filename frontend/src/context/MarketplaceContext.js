@@ -537,38 +537,127 @@ export function MarketplaceProvider({ children }) {
   // Action creators
   const actions = {
     // Cart actions
-    addToCart: (product) => {
-      dispatch({ type: ACTIONS.ADD_TO_CART, payload: product });
-      showNotification(`Added ${product.title} to cart!`, 'success');
+    // Cart actions with live API
+    addToCart: async (product, userId = null) => {
+      try {
+        if (userId) {
+          // Use live API
+          await liveService.addToCart(userId, {
+            item_id: product.id,
+            quantity: 1,
+            price: product.price
+          });
+        }
+        dispatch({ type: ACTIONS.ADD_TO_CART, payload: product });
+        showNotification(`Added ${product.title} to cart!`, 'success');
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        // Fallback to local storage
+        dispatch({ type: ACTIONS.ADD_TO_CART, payload: product });
+        showNotification(`Added ${product.title} to cart!`, 'success');
+      }
     },
     
-    removeFromCart: (productId) => {
-      dispatch({ type: ACTIONS.REMOVE_FROM_CART, payload: productId });
-      showNotification('Item removed from cart', 'info');
+    removeFromCart: async (productId, userId = null) => {
+      try {
+        if (userId) {
+          await liveService.removeFromCart(userId, productId);
+        }
+        dispatch({ type: ACTIONS.REMOVE_FROM_CART, payload: productId });
+        showNotification('Item removed from cart', 'info');
+      } catch (error) {
+        console.error('Error removing from cart:', error);
+        // Fallback to local action
+        dispatch({ type: ACTIONS.REMOVE_FROM_CART, payload: productId });
+        showNotification('Item removed from cart', 'info');
+      }
     },
     
-    updateQuantity: (productId, quantity) => {
-      dispatch({ type: ACTIONS.UPDATE_QUANTITY, payload: { id: productId, quantity } });
+    updateQuantity: async (productId, quantity, userId = null) => {
+      try {
+        if (userId) {
+          await liveService.updateCartItem(userId, productId, { quantity });
+        }
+        dispatch({ type: ACTIONS.UPDATE_QUANTITY, payload: { id: productId, quantity } });
+      } catch (error) {
+        console.error('Error updating cart quantity:', error);
+        // Fallback to local action
+        dispatch({ type: ACTIONS.UPDATE_QUANTITY, payload: { id: productId, quantity } });
+      }
     },
     
-    clearCart: () => {
-      dispatch({ type: ACTIONS.CLEAR_CART });
-      showNotification('Cart cleared', 'info');
+    clearCart: async (userId = null) => {
+      try {
+        if (userId) {
+          // Clear cart from backend (would need batch delete or clear endpoint)
+          const cartItems = await liveService.getUserCart(userId);
+          for (const item of cartItems) {
+            await liveService.removeFromCart(userId, item.item_id);
+          }
+        }
+        dispatch({ type: ACTIONS.CLEAR_CART });
+        showNotification('Cart cleared', 'info');
+      } catch (error) {
+        console.error('Error clearing cart:', error);
+        // Fallback to local action
+        dispatch({ type: ACTIONS.CLEAR_CART });
+        showNotification('Cart cleared', 'info');
+      }
     },
     
-    // Favorites actions
-    addToFavorites: (product) => {
+    // Favorites actions with live API
+    addToFavorites: async (product, userId = null) => {
       if (state.favorites.some(item => item.id === product.id)) {
         showNotification('Already in favorites!', 'info');
         return;
       }
-      dispatch({ type: ACTIONS.ADD_TO_FAVORITES, payload: product });
-      showNotification(`Added ${product.title} to favorites!`, 'success');
+      
+      try {
+        if (userId) {
+          await liveService.addToFavorites(userId, product.id);
+        }
+        dispatch({ type: ACTIONS.ADD_TO_FAVORITES, payload: product });
+        showNotification(`Added ${product.title} to favorites!`, 'success');
+      } catch (error) {
+        console.error('Error adding to favorites:', error);
+        // Fallback to local action
+        dispatch({ type: ACTIONS.ADD_TO_FAVORITES, payload: product });
+        showNotification(`Added ${product.title} to favorites!`, 'success');
+      }
     },
     
-    removeFromFavorites: (productId) => {
-      dispatch({ type: ACTIONS.REMOVE_FROM_FAVORITES, payload: productId });
-      showNotification('Removed from favorites', 'info');
+    removeFromFavorites: async (productId, userId = null) => {
+      try {
+        if (userId) {
+          await liveService.removeFromFavorites(userId, productId);
+        }
+        dispatch({ type: ACTIONS.REMOVE_FROM_FAVORITES, payload: productId });
+        showNotification('Removed from favorites', 'info');
+      } catch (error) {
+        console.error('Error removing from favorites:', error);
+        // Fallback to local action
+        dispatch({ type: ACTIONS.REMOVE_FROM_FAVORITES, payload: productId });
+        showNotification('Removed from favorites', 'info');
+      }
+    },
+    
+    // Load live data from backend
+    loadUserFavorites: async (userId) => {
+      try {
+        const favorites = await liveService.getUserFavorites(userId);
+        dispatch({ type: ACTIONS.SET_FAVORITES, payload: favorites });
+      } catch (error) {
+        console.error('Error loading user favorites:', error);
+      }
+    },
+    
+    loadUserCart: async (userId) => {
+      try {
+        const cartItems = await liveService.getUserCart(userId);
+        dispatch({ type: ACTIONS.SET_CART, payload: cartItems });
+      } catch (error) {
+        console.error('Error loading user cart:', error);
+      }
     },
     
     // Search and filter actions
