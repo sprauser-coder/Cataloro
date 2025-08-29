@@ -89,9 +89,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
 
   const navigationItems = [
     { label: 'Browse', path: '/browse', icon: Store },
-    { label: 'Categories', path: '/categories', icon: Grid3X3 },
-    { label: 'My Listings', path: '/my-listings', icon: Package },
-    { label: 'My Orders', path: '/my-orders', icon: DollarSign },
+    { label: 'Listings', path: '/my-listings', icon: Package },
+    { label: 'Orders', path: '/my-orders', icon: DollarSign },
     ...(isAdmin ? [{ label: 'Admin', path: '/admin', icon: Shield }] : []),
   ];
 
