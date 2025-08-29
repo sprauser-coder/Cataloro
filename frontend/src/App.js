@@ -66,7 +66,7 @@ function App() {
                   <Route path={APP_ROUTES.MY_LISTINGS} element={<MyListingsPage />} />
                   <Route path="my-orders" element={<DealsPage />} />
                   <Route path={APP_ROUTES.MY_DEALS} element={<DealsPage />} />
-                  <Route path="messages" element={<NotificationsPage />} />
+                  <Route path="messages" element={<MessagesPage />} />
                   <Route path="analytics" element={<AdminPanel />} />
                   <Route path="performance" element={<AdminPanel />} />
                   <Route path={APP_ROUTES.ADMIN_PANEL} element={<AdminPanel />} />
