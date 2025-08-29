@@ -1,93 +1,59 @@
 /**
- * CATALORO - Minimal App with Login Only
+ * CATALORO - Main Application Component
+ * Clean routing and providers only - following corporate architecture
  */
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
+import Layout from './components/layout/Layout';
+
+// Feature Components
+import BrowsePage from './features/marketplace/BrowsePage';
+import MyListingsPage from './features/marketplace/MyListingsPage';
+import DealsPage from './features/orders/DealsPage';
+import AdminPanel from './features/admin/AdminPanel';
+import FavoritesPage from './features/marketplace/FavoritesPage';
+import NotificationsPage from './features/shared/NotificationsPage';
+import ProfilePage from './features/profile/ProfilePage';
+import LoginPage from './features/auth/LoginPage';
+import RegisterPage from './features/auth/RegisterPage';
+
+// Import centralized configuration
+import { APP_ROUTES } from './config/directions';
+
 import './App.css';
-
-// Simple Login Component
-function SimpleLogin() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-2xl">C</span>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Cataloro</h1>
-          <p className="text-gray-600">Sign in to your marketplace account</p>
-        </div>
-
-        {/* Login Form */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-          <form className="space-y-6">
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
-                placeholder="Enter your email"
-              />
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
-                placeholder="Enter your password"
-              />
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              Sign In
-            </button>
-          </form>
-
-          {/* Demo Login Buttons */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600 text-center mb-4">
-              Try the demo:
-            </p>
-            <div className="space-y-2">
-              <button className="w-full bg-white text-gray-700 px-4 py-2 rounded-lg font-medium border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md text-sm">
-                Demo User Login
-              </button>
-              <button className="w-full bg-purple-100 text-purple-700 px-4 py-2 rounded-lg font-medium hover:bg-purple-200 transition-all duration-200 text-sm">
-                Demo Admin Login
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function App() {
   return (
     <div className="App">
-      <Router>
-        <Routes>
-          <Route path="/*" element={<SimpleLogin />} />
-        </Routes>
-      </Router>
+      <AuthProvider>
+        <NotificationProvider>
+          <Router>
+            <Routes>
+              {/* Public Routes */}
+              <Route path={APP_ROUTES.LOGIN} element={<LoginPage />} />
+              <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
+              
+              {/* Protected Routes with Layout */}
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
+                <Route path={APP_ROUTES.BROWSE} element={<BrowsePage />} />
+                <Route path={APP_ROUTES.MY_LISTINGS} element={<MyListingsPage />} />
+                <Route path={APP_ROUTES.MY_DEALS} element={<DealsPage />} />
+                <Route path={APP_ROUTES.ADMIN_PANEL} element={<AdminPanel />} />
+                <Route path={APP_ROUTES.FAVORITES} element={<FavoritesPage />} />
+                <Route path={APP_ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
+                <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
+              </Route>
+
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
+            </Routes>
+          </Router>
+        </NotificationProvider>
+      </AuthProvider>
     </div>
   );
 }
