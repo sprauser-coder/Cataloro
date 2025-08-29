@@ -1537,7 +1537,7 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
           </div>
           <button
             onClick={handleSaveSettings}
-            className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-2xl hover:scale-105 border border-white/20"
+            className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-bold shadow-lg border border-white/20"
           >
             <Save className="w-6 h-6" />
             <span className="text-lg">Save &amp; Apply Changes</span>
