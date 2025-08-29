@@ -16,6 +16,7 @@ import CategoriesPage from './features/marketplace/CategoriesPage';
 import ShoppingCartPage from './features/marketplace/ShoppingCartPage';
 import ProductDetailPage from './features/marketplace/ProductDetailPage';
 import MyListingsPage from './features/marketplace/MyListingsPage';
+import CreateListingPage from './features/marketplace/CreateListingPage';
 import DealsPage from './features/orders/DealsPage';
 import AdminPanel from './features/admin/AdminPanel';
 import FavoritesPage from './features/marketplace/FavoritesPage';
