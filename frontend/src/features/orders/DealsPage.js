@@ -43,7 +43,17 @@ function DealsPage() {
     { id: 'cancelled', label: 'Cancelled', count: deals.filter(d => d.status === 'cancelled').length }
   ];
 
-  const filteredDeals = activeTab === 'all' ? deals : deals.filter(deal => deal.status === activeTab);
+  // Handle tile clicks for filtering
+  const handleTileClick = (filter) => {
+    setActiveFilter(filter);
+    setActiveTab(filter); // Also update tab
+  };
+
+  // Use activeFilter instead of activeTab for consistency
+  const filteredDeals = activeFilter === 'all' ? deals : deals.filter(deal => {
+    if (activeFilter === 'totalValue') return deal.status === 'completed'; // For total value, show completed deals
+    return deal.status === activeFilter;
+  });
 
   if (loading) {
     return (
