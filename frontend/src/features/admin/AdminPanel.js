@@ -353,31 +353,31 @@ function DashboardTab({ dashboardData, loading }) {
         </div>
 
         {/* Cart Items */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-4">
             <ShoppingCart className="w-10 h-10 text-purple-500" />
-            <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg">
+            <div className="bg-purple-100/80 dark:bg-purple-900/30 p-2 rounded-lg backdrop-blur-md">
               <TrendingUp className="w-5 h-5 text-purple-600" />
             </div>
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             {kpis.cart_items?.toLocaleString() || 0}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Cart Items</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Cart Items</div>
         </div>
 
         {/* Favorites */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-4">
             <Heart className="w-10 h-10 text-red-500" />
-            <div className="bg-red-100 dark:bg-red-900/30 p-2 rounded-lg">
+            <div className="bg-red-100/80 dark:bg-red-900/30 p-2 rounded-lg backdrop-blur-md">
               <Star className="w-5 h-5 text-red-600" />
             </div>
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
             {kpis.favorites_count?.toLocaleString() || 0}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Total Favorites</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Favorites</div>
         </div>
       </div>
 
