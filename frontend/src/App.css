@@ -77,12 +77,25 @@ body:not(.dark) {
 
 body {
   font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Dark Mode Background */
+.dark body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
-  color: var(--light-text);
-  line-height: 1.6;
-  overflow-x: hidden;
+  color: var(--text-primary);
+}
+
+/* Light Mode Background */
+body:not(.dark) {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 50%, #f0f9ff 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  color: var(--text-primary);
 }
 
 @keyframes gradientShift {
