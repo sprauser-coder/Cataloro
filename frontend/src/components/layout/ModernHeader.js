@@ -52,6 +52,16 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
         console.error('Error parsing user data:', error);
       }
     }
+
+    // Load site branding from localStorage
+    const brandingData = localStorage.getItem('cataloro_site_branding');
+    if (brandingData) {
+      try {
+        setSiteBranding(JSON.parse(brandingData));
+      } catch (error) {
+        console.error('Error parsing branding data:', error);
+      }
+    }
   }, []);
 
   // Close dropdowns when clicking outside
