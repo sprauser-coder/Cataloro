@@ -279,14 +279,14 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
 
               {/* Modern Notifications Dropdown - ENHANCED 50% BACKGROUND OPACITY */}
               {showNotifications && (
-                <div className="absolute right-0 mt-3 w-80 rounded-2xl shadow-2xl py-3 z-50" style={{
+                <div className="absolute right-0 mt-3 w-80 rounded-2xl shadow-2xl py-3 z-50 notifications-dropdown-enhanced" style={{
                   background: darkMode 
-                    ? 'linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.4) 100%)'
-                    : 'linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.4) 100%)',
-                  backdropFilter: 'blur(25px)',
+                    ? 'linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.6) 100%) !important'
+                    : 'linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.6) 100%) !important',
+                  backdropFilter: 'blur(25px) !important',
                   border: darkMode 
-                    ? '1px solid rgba(255, 255, 255, 0.2)' 
-                    : '1px solid rgba(255, 255, 255, 0.4)'
+                    ? '1px solid rgba(255, 255, 255, 0.3) !important' 
+                    : '1px solid rgba(255, 255, 255, 0.5) !important'
                 }}>
                   <div className="px-6 py-4 border-b border-white/10">
                     <div className="flex items-center justify-between">
