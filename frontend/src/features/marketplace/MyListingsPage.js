@@ -62,8 +62,8 @@ function MyListingsPage() {
       <div className="mb-8">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">My Listings</h1>
-            <p className="text-gray-600">Manage your marketplace listings</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Listings</h1>
+            <p className="text-gray-600 dark:text-gray-300">Manage your marketplace listings</p>
           </div>
           <button className="cataloro-button-primary flex items-center">
             <Plus className="w-5 h-5 mr-2" />
@@ -74,21 +74,29 @@ function MyListingsPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="kpi-card">
-          <div className="kpi-value text-blue-600">{listings.length}</div>
-          <div className="kpi-label">Total Listings</div>
+        <div className="cataloro-card-glass">
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{listings.length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Listings</div>
+          </div>
         </div>
-        <div className="kpi-card">
-          <div className="kpi-value text-green-600">{listings.filter(l => l.status === 'active').length}</div>
-          <div className="kpi-label">Active</div>
+        <div className="cataloro-card-glass">
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'active').length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Active</div>
+          </div>
         </div>
-        <div className="kpi-card">
-          <div className="kpi-value text-orange-600">{listings.filter(l => l.status === 'draft').length}</div>
-          <div className="kpi-label">Drafts</div>
+        <div className="cataloro-card-glass">
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'draft').length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Drafts</div>
+          </div>
         </div>
-        <div className="kpi-card">
-          <div className="kpi-value text-gray-600">{listings.filter(l => l.status === 'sold').length}</div>
-          <div className="kpi-label">Sold</div>
+        <div className="cataloro-card-glass">
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-gray-600 to-slate-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'sold').length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Sold</div>
+          </div>
         </div>
       </div>
 
