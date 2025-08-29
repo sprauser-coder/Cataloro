@@ -186,7 +186,7 @@ function MyListingsPage() {
         </div>
       ) : (
         <div className="listings-grid">
-          {listings.map((listing) => (
+          {filteredListings.map((listing) => (
             <MyListingCard
               key={listing.id}
               listing={listing}
