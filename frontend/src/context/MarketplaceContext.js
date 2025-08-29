@@ -4,6 +4,7 @@
  */
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { marketplaceService } from '../services/marketplaceService';
 
 // Initial state
 const initialState = {
