@@ -454,7 +454,7 @@ function DashboardTab({ dashboardData, loading }) {
         </div>
 
         {/* Notifications */}
-        <div className="cataloro-card-glass p-6 hover:shadow-2xl transition-all duration-300">
+        <div className="cataloro-card-glass p-6">
           <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
             <div className="flex items-center justify-between w-full mb-2">
               <div className="p-3 bg-amber-100/80 dark:bg-amber-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
