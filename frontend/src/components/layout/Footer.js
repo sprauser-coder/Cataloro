@@ -164,17 +164,50 @@ function Footer() {
         <div className="py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             
-            {/* Company Information */}
+            {/* Company Information - WITH DARK MODE LOGO */}
             <div className="lg:col-span-1">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">C</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    {config.companyInfo.name}
-                  </h3>
-                  <p className="text-sm text-gray-400">{config.companyInfo.tagline}</p>
+                {/* Show Dark Mode Logo if available, otherwise show default company info */}
+                {siteBranding.logo_dark_url && siteBranding.logo_dark_url.length > 100 ? (
+                  // Display Dark Mode Logo
+                  <div className="flex flex-col space-y-2">
+                    <img 
+                      src={siteBranding.logo_dark_url}
+                      alt={siteBranding.site_name || config.companyInfo.name}
+                      className="h-12 max-w-[200px] object-contain"
+                      onError={(e) => {
+                        // Fallback to default if logo fails to load
+                        e.target.style.display = 'none';
+                        e.target.parentElement.nextElementSibling.style.display = 'block';
+                      }}
+                    />
+                  </div>
+                ) : (
+                  // Fallback to default company branding
+                  <>
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                      <Store className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                        {siteBranding.site_name || config.companyInfo.name}
+                      </h3>
+                      <p className="text-sm text-gray-400">{siteBranding.site_description || config.companyInfo.tagline}</p>
+                    </div>
+                  </>
+                )}
+                
+                {/* Hidden fallback (shown if logo fails to load) */}
+                <div className="flex items-center space-x-3" style={{ display: 'none' }}>
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                    <Store className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                      {siteBranding.site_name || config.companyInfo.name}
+                    </h3>
+                    <p className="text-sm text-gray-400">{siteBranding.site_description || config.companyInfo.tagline}</p>
+                  </div>
                 </div>
               </div>
               <p className="text-gray-300 text-sm mb-6 leading-relaxed">
