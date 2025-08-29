@@ -147,7 +147,16 @@ async def login_user(credentials: dict):
 
 @app.get("/api/auth/profile/{user_id}")
 async def get_profile(user_id: str):
+    # Try to find user by id field first, then by _id
     user = await db.users.find_one({"id": user_id})
+    if not user:
+        # Try with _id in case it's stored differently
+        try:
+            from bson import ObjectId
+            user = await db.users.find_one({"_id": ObjectId(user_id)})
+        except:
+            pass
+    
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return serialize_doc(user)
