@@ -1086,6 +1086,28 @@ async def reset_price_calculation(catalyst_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to reset price calculation: {str(e)}")
 
+@app.delete("/api/admin/catalyst/database")
+async def delete_catalyst_database():
+    """Delete all catalyst data from the database"""
+    try:
+        # Delete all catalyst data
+        result_data = await db.catalyst_data.delete_many({})
+        
+        # Delete all price overrides
+        result_overrides = await db.catalyst_price_overrides.delete_many({})
+        
+        # Reset price settings to default (optional - you might want to keep settings)
+        # await db.catalyst_price_settings.delete_many({})
+        
+        return {
+            "message": "Catalyst database deleted successfully",
+            "deleted_records": result_data.deleted_count,
+            "deleted_overrides": result_overrides.deleted_count
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete catalyst database: {str(e)}")
+
 # Run server
 if __name__ == "__main__":
     import uvicorn
