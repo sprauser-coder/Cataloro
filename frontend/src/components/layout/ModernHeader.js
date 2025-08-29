@@ -273,82 +273,107 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
               {darkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
             </button>
 
-            {/* User Menu */}
+            {/* User Profile */}
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-3 p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
+                className="flex items-center space-x-3 p-2 rounded-2xl transition-all duration-300 group"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}
               >
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-medium text-sm">
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center relative overflow-hidden" style={{
+                  background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                  boxShadow: '0 6px 20px rgba(79, 172, 254, 0.4)'
+                }}>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <span className="text-white font-bold text-sm relative z-10">
                     {user?.full_name?.charAt(0) || user?.username?.charAt(0) || 'U'}
                   </span>
                 </div>
                 <div className="hidden sm:block text-left">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  <p className="text-sm font-semibold text-white">
                     {user?.full_name || user?.username || 'User'}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {user?.role?.toUpperCase()}
+                  <p className="text-xs text-white/70 font-medium uppercase tracking-wide">
+                    {user?.role}
                   </p>
                 </div>
+                <ChevronDown className={`w-4 h-4 text-white/80 transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`} />
               </button>
 
-              {/* User Dropdown Menu */}
+              {/* Modern User Dropdown Menu */}
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 z-50">
-                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                <div className="absolute right-0 mt-3 w-72 rounded-2xl shadow-2xl py-2 z-50" style={{
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                  backdropFilter: 'blur(25px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}>
+                  <div className="px-6 py-4 border-b border-white/10">
+                    <p className="text-base font-bold text-white">
                       {user?.full_name || user?.username}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
+                    <p className="text-sm text-white/70">{user?.email}</p>
                   </div>
                   
-                  <Link
-                    to="/profile"
-                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setShowUserMenu(false)}
-                  >
-                    <User className="w-4 h-4 mr-3" />
-                    Profile Settings
-                  </Link>
+                  <div className="py-2">
+                    <Link
+                      to="/profile"
+                      className="flex items-center px-6 py-3 text-sm text-white/90 hover:text-white hover:bg-white/5 transition-all duration-300 group"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <div className="p-2 rounded-lg mr-3 group-hover:bg-white/10 transition-all duration-300" style={{
+                        background: 'linear-gradient(135deg, rgba(79, 172, 254, 0.2), rgba(0, 242, 254, 0.1))'
+                      }}>
+                        <User className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium">Profile Settings</span>
+                    </Link>
+                    
+                    <Link
+                      to="/my-listings"
+                      className="flex items-center px-6 py-3 text-sm text-white/90 hover:text-white hover:bg-white/5 transition-all duration-300 group"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <div className="p-2 rounded-lg mr-3 group-hover:bg-white/10 transition-all duration-300" style={{
+                        background: 'linear-gradient(135deg, rgba(240, 147, 251, 0.2), rgba(245, 87, 108, 0.1))'
+                      }}>
+                        <Package className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium">My Listings</span>
+                    </Link>
+                    
+                    {user?.role === 'admin' && (
+                      <Link
+                        to="/admin"
+                        className="flex items-center px-6 py-3 text-sm text-white/90 hover:text-white hover:bg-white/5 transition-all duration-300 group"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <div className="p-2 rounded-lg mr-3 group-hover:bg-white/10 transition-all duration-300" style={{
+                          background: 'linear-gradient(135deg, rgba(250, 112, 154, 0.2), rgba(254, 225, 64, 0.1))'
+                        }}>
+                          <Shield className="w-4 h-4" />
+                        </div>
+                        <span className="font-medium">Admin Panel</span>
+                      </Link>
+                    )}
+                  </div>
                   
-                  <Link
-                    to="/my-listings"
-                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setShowUserMenu(false)}
-                  >
-                    <Package className="w-4 h-4 mr-3" />
-                    My Listings
-                  </Link>
-                  
-                  <Link
-                    to="/analytics"
-                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setShowUserMenu(false)}
-                  >
-                    <BarChart3 className="w-4 h-4 mr-3" />
-                    Seller Analytics
-                  </Link>
-                  
-                  <Link
-                    to="/settings"
-                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setShowUserMenu(false)}
-                  >
-                    <Settings className="w-4 h-4 mr-3" />
-                    Settings
-                  </Link>
-                  
-                  <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                  
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                  >
-                    <LogOut className="w-4 h-4 mr-3" />
-                    Sign Out
-                  </button>
+                  <div className="border-t border-white/10 pt-2">
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center w-full px-6 py-3 text-sm text-white/90 hover:text-red-300 hover:bg-red-500/10 transition-all duration-300 group"
+                    >
+                      <div className="p-2 rounded-lg mr-3 group-hover:bg-red-500/20 transition-all duration-300" style={{
+                        background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1))'
+                      }}>
+                        <LogOut className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium">Sign Out</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
