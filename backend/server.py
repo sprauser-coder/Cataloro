@@ -506,29 +506,39 @@ async def register(user_data: UserCreate):
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
+    print(f"🚨 LOGIN ENDPOINT HIT - Email: {credentials.email}")
+    
     user_doc = await db.users.find_one({"email": credentials.email})
     if not user_doc or not verify_password(credentials.password, user_doc['password']):
         raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    print(f"🚨 USER FOUND - is_blocked in DB: {user_doc.get('is_blocked')}")
     
     # Parse from mongo
     user_dict = parse_from_mongo(user_doc)
     if 'password' in user_dict:
         del user_dict['password']
     
+    print(f"🚨 PARSED USER - is_blocked: {user_dict.get('is_blocked')}")
+    
     # EMERGENCY FIX: Remove is_blocked entirely and add it back as False
     if 'is_blocked' in user_dict:
         del user_dict['is_blocked']
     
     user_dict['is_blocked'] = False
-    user_dict['debug_is_blocked_before_return'] = False
+    user_dict['debug_timestamp'] = "2025-08-29-04:20:00"
+    
+    print(f"🚨 FINAL USER DICT - is_blocked: {user_dict.get('is_blocked')}")
     
     access_token = create_access_token(data={"sub": user_dict['id']})
     
     response = {
         "access_token": access_token,
-        "token_type": "bearer",
+        "token_type": "bearer", 
         "user": user_dict
     }
+    
+    print(f"🚨 RESPONSE BEFORE RETURN - is_blocked: {response['user']['is_blocked']}")
     
     return response
 
