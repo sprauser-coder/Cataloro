@@ -243,12 +243,15 @@ function AdminPanel() {
   );
 }
 
-// Dashboard Tab Component
+// Enhanced Dashboard Tab Component
 function DashboardTab({ dashboardData, loading }) {
   if (loading || !dashboardData) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="spinner"></div>
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -257,60 +260,129 @@ function DashboardTab({ dashboardData, loading }) {
 
   return (
     <div className="space-y-8">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-6">
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <Users className="w-8 h-8 text-blue-500" />
-            <TrendingUp className="w-5 h-5 text-green-500" />
+      {/* Enhanced KPI Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        
+        {/* Total Users */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <Users className="w-10 h-10 text-blue-500" />
+            <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+              <TrendingUp className="w-5 h-5 text-blue-600" />
+            </div>
           </div>
-          <div className="kpi-value text-blue-600">{kpis.total_users}</div>
-          <div className="kpi-label">Total Users</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            {kpis.total_users?.toLocaleString() || 0}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Total Users</div>
         </div>
 
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <Package className="w-8 h-8 text-green-500" />
-            <TrendingUp className="w-5 h-5 text-green-500" />
+        {/* Total Products */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <Package className="w-10 h-10 text-green-500" />
+            <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg">
+              <TrendingUp className="w-5 h-5 text-green-600" />
+            </div>
           </div>
-          <div className="kpi-value text-green-600">{kpis.total_listings}</div>
-          <div className="kpi-label">Total Listings</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            {kpis.total_products?.toLocaleString() || 0}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Total Products</div>
         </div>
 
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <Activity className="w-8 h-8 text-orange-500" />
-            <TrendingUp className="w-5 h-5 text-green-500" />
+        {/* Active Products */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <Activity className="w-10 h-10 text-orange-500" />
+            <div className="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-lg">
+              <CheckCircle className="w-5 h-5 text-orange-600" />
+            </div>
           </div>
-          <div className="kpi-value text-orange-600">{kpis.active_listings}</div>
-          <div className="kpi-label">Active Listings</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            {kpis.active_products?.toLocaleString() || 0}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Active Products</div>
         </div>
 
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <CheckCircle className="w-8 h-8 text-purple-500" />
-            <TrendingUp className="w-5 h-5 text-green-500" />
+        {/* Cart Items */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <ShoppingCart className="w-10 h-10 text-purple-500" />
+            <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg">
+              <TrendingUp className="w-5 h-5 text-purple-600" />
+            </div>
           </div>
-          <div className="kpi-value text-purple-600">{kpis.total_deals}</div>
-          <div className="kpi-label">Completed Deals</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            {kpis.cart_items?.toLocaleString() || 0}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Cart Items</div>
         </div>
 
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <DollarSign className="w-8 h-8 text-indigo-500" />
-            <TrendingUp className="w-5 h-5 text-green-500" />
+        {/* Favorites */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <Heart className="w-10 h-10 text-red-500" />
+            <div className="bg-red-100 dark:bg-red-900/30 p-2 rounded-lg">
+              <Star className="w-5 h-5 text-red-600" />
+            </div>
           </div>
-          <div className="kpi-value text-indigo-600">${kpis.revenue?.toFixed(2)}</div>
-          <div className="kpi-label">Total Revenue</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+            {kpis.favorites_count?.toLocaleString() || 0}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Total Favorites</div>
+        </div>
+      </div>
+
+      {/* Secondary KPI Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        {/* Total Views */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <Eye className="w-8 h-8 text-indigo-500" />
+            <div className="text-sm text-green-600 font-medium">+15%</div>
+          </div>
+          <div className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+            {kpis.total_views?.toLocaleString() || 0}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Total Views</div>
         </div>
 
-        <div className="kpi-card">
-          <div className="flex items-center justify-between mb-2">
-            <PieChart className="w-8 h-8 text-red-500" />
-            <TrendingUp className="w-5 h-5 text-green-500" />
+        {/* Revenue */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <DollarSign className="w-8 h-8 text-emerald-500" />
+            <div className="text-sm text-green-600 font-medium">+{kpis.growth_rate}%</div>
           </div>
-          <div className="kpi-value text-red-600">{kpis.growth_rate}%</div>
-          <div className="kpi-label">Growth Rate</div>
+          <div className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+            ${kpis.total_revenue?.toLocaleString() || 0}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Total Revenue</div>
+        </div>
+
+        {/* Average Rating */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <Star className="w-8 h-8 text-yellow-500" />
+            <div className="text-sm text-green-600 font-medium">Excellent</div>
+          </div>
+          <div className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+            {kpis.average_rating?.toFixed(1) || '0.0'}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Avg Rating</div>
+        </div>
+
+        {/* Notifications */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <AlertTriangle className="w-8 h-8 text-amber-500" />
+            <div className="text-sm text-blue-600 font-medium">Active</div>
+          </div>
+          <div className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+            {kpis.notifications_count?.toLocaleString() || 0}
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Notifications</div>
         </div>
       </div>
 
