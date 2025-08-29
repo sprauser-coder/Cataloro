@@ -472,7 +472,7 @@ function ProfilePage() {
             {/* Profile Details */}
             <div className="lg:col-span-2">
               <div className="cataloro-card-glass p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Personal Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Personal Information</h3>
                 
                 <form className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
