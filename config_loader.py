@@ -60,10 +60,14 @@ class CataloroConfig:
         """Get complete database connection URL"""
         return self.get('MONGO_URL', 'mongodb://127.0.0.1:27017/cataloro')
     
-    def get_backend_url(self, mode='production') -> str:
+    def get_backend_url(self, mode='active') -> str:
         """Get backend URL based on deployment mode"""
-        if mode == 'production':
+        if mode == 'active':
+            return self.get('ACTIVE_BACKEND_URL', 'https://cataloro-hub.preview.emergentagent.com')
+        elif mode == 'production':
             return self.get('BACKEND_URL_PRODUCTION', 'http://217.154.0.82')
+        elif mode == 'preview':
+            return self.get('PREVIEW_BACKEND_URL', 'https://cataloro-hub.preview.emergentagent.com')
         else:
             return self.get('BACKEND_URL_LOCAL', 'http://localhost:8001')
     
