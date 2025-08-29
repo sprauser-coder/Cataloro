@@ -644,7 +644,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
           </div>
         </div>
         
-        <div className="cataloro-card-glass p-6 hover:shadow-2xl transition-all duration-300">
+        <div className="cataloro-card-glass p-6">
           <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
             <div className="p-4 bg-green-100/80 dark:bg-green-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
               <CheckCircle className="w-8 h-8 text-green-500" />
