@@ -827,6 +827,51 @@ function HeroSelectionTab({ showToast }) {
     }));
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showToast('Please select an image file (PNG, JPG, etc.)', 'error');
+        return;
+      }
+
+      // Validate file size (2MB limit)
+      if (file.size > 2 * 1024 * 1024) {
+        showToast('File size must be less than 2MB', 'error');
+        return;
+      }
+
+      setHeroImageFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target.result;
+        setHeroImagePreview(result);
+        
+        // Update heroContent with the preview URL
+        setHeroContent(prev => ({
+          ...prev,
+          image_url: result
+        }));
+      };
+      reader.readAsDataURL(file);
+      
+      showToast('Hero image ready - click Save & Apply to update the Browse page', 'info');
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setHeroImageFile(null);
+    setHeroImagePreview('');
+    setHeroContent(prev => ({
+      ...prev,
+      image_url: ''
+    }));
+    showToast('Hero image removed', 'info');
+  };
+
   const handleSave = () => {
     try {
       localStorage.setItem('cataloro_hero_content', JSON.stringify(heroContent));
