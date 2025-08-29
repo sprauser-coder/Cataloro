@@ -233,9 +233,9 @@ function AdminPanel() {
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="cataloro-card mb-8">
-        <div className="border-b border-gray-200">
+      {/* Tab Navigation - Ultra Modern */}
+      <div className="cataloro-card-glass mb-8">
+        <div className="border-b border-white/10 dark:border-white/10">
           <nav className="-mb-px flex space-x-8 px-6">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -243,7 +243,11 @@ function AdminPanel() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`admin-tab ${activeTab === tab.id ? 'active' : ''}`}
+                  className={`flex items-center px-6 py-4 text-sm font-medium transition-all duration-300 border-b-2 ${
+                    activeTab === tab.id
+                      ? 'text-gray-900 dark:text-white border-blue-600 bg-white/10 dark:bg-white/10 backdrop-blur-md rounded-t-lg'
+                      : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 rounded-t-lg'
+                  }`}
                 >
                   <Icon className="w-5 h-5 mr-2" />
                   {tab.label}
