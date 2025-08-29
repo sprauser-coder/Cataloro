@@ -205,7 +205,7 @@ function ModernBrowsePage() {
 
           <div className="flex bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
             <button
-              onClick={() => setViewMode('grid')}
+              onClick={() => updateViewMode('grid')}
               className={`p-2 rounded-lg transition-all duration-200 ${
                 viewMode === 'grid' 
                 ? 'bg-white dark:bg-gray-700 shadow-sm text-blue-600' 
