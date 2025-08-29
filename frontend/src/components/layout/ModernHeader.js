@@ -294,14 +294,14 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   </span>
                 </div>
                 <div className="hidden sm:block text-left">
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     {user?.full_name || user?.username || 'User'}
                   </p>
-                  <p className="text-xs text-white/70 font-medium uppercase tracking-wide">
+                  <p className="text-xs text-gray-600 dark:text-white/70 font-medium uppercase tracking-wide">
                     {user?.role}
                   </p>
                 </div>
-                <ChevronDown className={`w-4 h-4 text-white/80 transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-gray-700 dark:text-white/80 transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Modern User Dropdown Menu */}
