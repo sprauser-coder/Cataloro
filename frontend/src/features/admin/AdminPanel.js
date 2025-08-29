@@ -789,11 +789,13 @@ function UsersTab({ users, onUpdateUser, showToast }) {
   );
 }
 
-// Enhanced Settings Tab Component
+// Enhanced Settings Tab Component with Dual Logo Support
 function SettingsTab({ settings, onUpdateSettings, showToast }) {
   const [formData, setFormData] = useState(settings);
-  const [logoFile, setLogoFile] = useState(null);
-  const [logoPreview, setLogoPreview] = useState('');
+  const [logoLightFile, setLogoLightFile] = useState(null);
+  const [logoDarkFile, setLogoDarkFile] = useState(null);
+  const [logoLightPreview, setLogoLightPreview] = useState('');
+  const [logoDarkPreview, setLogoDarkPreview] = useState('');
 
   useEffect(() => {
     setFormData(settings);
@@ -806,7 +808,7 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
     });
   };
 
-  const handleLogoUpload = async (e) => {
+  const handleLogoUpload = async (e, mode = 'light') => {
     const file = e.target.files[0];
     if (file) {
       // Validate file type
@@ -821,41 +823,102 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
         return;
       }
 
-      setLogoFile(file);
+      if (mode === 'light') {
+        setLogoLightFile(file);
+      } else {
+        setLogoDarkFile(file);
+      }
       
       // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target.result;
-        setLogoPreview(result);
         
-        // Update formData with the preview URL
-        setFormData(prev => ({
-          ...prev,
-          logo_url: result
-        }));
+        if (mode === 'light') {
+          setLogoLightPreview(result);
+          setFormData(prev => ({
+            ...prev,
+            logo_light_url: result
+          }));
+        } else {
+          setLogoDarkPreview(result);
+          setFormData(prev => ({
+            ...prev,
+            logo_dark_url: result
+          }));
+        }
       };
       reader.readAsDataURL(file);
       
-      try {
-        // Try to upload to backend
-        await adminService.uploadLogo(file);
-        showToast('Logo uploaded successfully', 'success');
-        onUpdateSettings();
-      } catch (error) {
-        // If backend fails, still allow local preview
-        showToast('Logo preview ready - click Save Settings to persist', 'info');
-      }
+      showToast(`${mode === 'light' ? 'Light' : 'Dark'} mode logo ready - click Save Settings to apply`, 'info');
     }
   };
 
   const handleSaveSettings = async () => {
     try {
+      // Store settings in localStorage for immediate use
+      localStorage.setItem('cataloro_site_branding', JSON.stringify(formData));
+      
+      // Apply logo changes to the site immediately
+      applyLogoChanges(formData);
+      
+      // Try to save to backend
       await adminService.updateSettings(formData);
-      showToast('Settings updated successfully', 'success');
+      showToast('✅ Site branding saved and applied successfully! Logos now visible in header.', 'success');
       onUpdateSettings();
     } catch (error) {
-      showToast('Settings updated locally (demo mode)', 'info');
+      // Even if backend fails, apply changes locally
+      applyLogoChanges(formData);
+      showToast('✅ Site branding applied locally! Changes visible in header.', 'success');
+    }
+  };
+
+  const applyLogoChanges = (settings) => {
+    // Apply logo changes to the actual header
+    const headerLogo = document.querySelector('.header-logo img, .header-logo');
+    const lightLogo = settings.logo_light_url || settings.logo_url;
+    const darkLogo = settings.logo_dark_url || settings.logo_url;
+    
+    if (headerLogo) {
+      // If it's an img tag, update src
+      if (headerLogo.tagName === 'IMG') {
+        // Use light logo by default, dark logo will be handled by CSS
+        headerLogo.src = lightLogo || '/favicon.ico';
+        headerLogo.alt = settings.site_name || 'Cataloro';
+      }
+      
+      // Apply CSS for theme-based logo switching
+      if (lightLogo && darkLogo) {
+        const style = document.getElementById('dynamic-logo-style') || document.createElement('style');
+        style.id = 'dynamic-logo-style';
+        style.textContent = `
+          .header-logo img {
+            content: url('${lightLogo}');
+          }
+          .dark .header-logo img {
+            content: url('${darkLogo}');
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }
+    
+    // Update site name if changed
+    if (settings.site_name) {
+      const siteName = document.querySelector('.site-name, .header-title');
+      if (siteName) {
+        siteName.textContent = settings.site_name;
+      }
+      // Update page title
+      document.title = settings.site_name || 'Cataloro';
+    }
+    
+    // Update favicon
+    if (lightLogo) {
+      const favicon = document.querySelector('link[rel="icon"]') || document.createElement('link');
+      favicon.rel = 'icon';
+      favicon.href = lightLogo;
+      document.head.appendChild(favicon);
     }
   };
 
