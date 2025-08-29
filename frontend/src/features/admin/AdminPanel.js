@@ -1169,18 +1169,28 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
       </div>
 
       {/* Save Button */}
-      <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <div>
-          <h4 className="text-md font-medium text-gray-900 dark:text-white">Save Changes</h4>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Apply all configuration changes to the platform</p>
+      <div className="bg-gradient-to-r from-green-600 to-blue-600 rounded-xl p-6 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="text-lg font-bold text-white mb-2 flex items-center">
+              <Save className="w-6 h-6 mr-2" />
+              Save Site Branding
+            </h4>
+            <p className="text-green-100">
+              Apply all branding changes including logos to the site header. Changes take effect immediately.
+            </p>
+            <div className="mt-2 text-sm text-green-100">
+              ✓ Site Name &amp; Description • ✓ Light &amp; Dark Mode Logos • ✓ Theme Colors • ✓ Platform Settings
+            </div>
+          </div>
+          <button
+            onClick={handleSaveSettings}
+            className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-2xl hover:scale-105 border border-white/20"
+          >
+            <Save className="w-6 h-6" />
+            <span className="text-lg">Save &amp; Apply Changes</span>
+          </button>
         </div>
-        <button
-          onClick={handleSaveSettings}
-          className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
-        >
-          <Save className="w-5 h-5" />
-          <span>Save Settings</span>
-        </button>
       </div>
     </div>
   );
