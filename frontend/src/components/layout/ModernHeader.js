@@ -201,41 +201,63 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
             <div className="relative" ref={notificationRef}>
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all duration-200"
+                className="relative p-3 text-white/80 hover:text-white transition-all duration-300 group"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                }}
               >
-                <Bell className="w-6 h-6" />
+                <Bell className="w-5 h-5" />
                 {unreadNotifications > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                  <span className="absolute -top-2 -right-2 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold text-[10px]" style={{
+                    background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                    boxShadow: '0 4px 15px rgba(250, 112, 154, 0.4)'
+                  }}>
                     {unreadNotifications}
                   </span>
                 )}
               </button>
 
-              {/* Notifications Dropdown */}
+              {/* Modern Notifications Dropdown */}
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 z-50">
-                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                <div className="absolute right-0 mt-3 w-80 rounded-2xl shadow-2xl py-3 z-50" style={{
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                  backdropFilter: 'blur(25px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }}>
+                  <div className="px-6 py-4 border-b border-white/10">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
-                      <button className="text-sm text-blue-600 hover:text-blue-700">Mark all read</button>
+                      <h3 className="font-bold text-white text-lg">Notifications</h3>
+                      <button className="text-sm text-white/80 hover:text-white font-medium">Mark all read</button>
                     </div>
                   </div>
                   <div className="max-h-80 overflow-y-auto">
-                    {/* Demo notifications */}
-                    <div className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-l-4 border-blue-500">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">New message from John</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">About MacBook Pro listing</p>
-                      <p className="text-xs text-blue-600 mt-1">2 min ago</p>
+                    {/* Demo notifications with modern styling */}
+                    <div className="px-6 py-4 hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#667eea'}}>
+                      <p className="text-sm font-semibold text-white">New message from John</p>
+                      <p className="text-xs text-white/70 mt-1">About MacBook Pro listing</p>
+                      <p className="text-xs text-white/80 mt-2 font-medium">2 min ago</p>
                     </div>
-                    <div className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-l-4 border-green-500">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">Item sold successfully</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Vintage guitar sold for $800</p>
-                      <p className="text-xs text-green-600 mt-1">1 hour ago</p>
+                    <div className="px-6 py-4 hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#f093fb'}}>
+                      <p className="text-sm font-semibold text-white">Your listing was favorited</p>
+                      <p className="text-xs text-white/70 mt-1">iPhone 14 Pro Max - Space Black</p>
+                      <p className="text-xs text-white/80 mt-2 font-medium">1 hour ago</p>
+                    </div>
+                    <div className="px-6 py-4 hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#43e97b'}}>
+                      <p className="text-sm font-semibold text-white">Payment received</p>
+                      <p className="text-xs text-white/70 mt-1">$899 for Gaming Laptop sale</p>
+                      <p className="text-xs text-white/80 mt-2 font-medium">3 hours ago</p>
                     </div>
                   </div>
-                  <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
-                    <Link to="/notifications" className="text-sm text-blue-600 hover:text-blue-700">
-                      View all notifications
+                  <div className="px-6 py-3 border-t border-white/10">
+                    <Link
+                      to="/notifications"
+                      className="text-sm text-white/80 hover:text-white font-medium"
+                      onClick={() => setShowNotifications(false)}
+                    >
+                      View all notifications →
                     </Link>
                   </div>
                 </div>
