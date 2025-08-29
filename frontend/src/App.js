@@ -1,59 +1,40 @@
 /**
- * CATALORO - Main Application Component
- * Clean routing and providers only - following corporate architecture
+ * CATALORO - Simplified App for Debugging
  */
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { NotificationProvider } from './context/NotificationContext';
-import Layout from './components/layout/Layout';
-
-// Feature Components
-import BrowsePage from './features/marketplace/BrowsePage';
-import MyListingsPage from './features/marketplace/MyListingsPage';
-import DealsPage from './features/orders/DealsPage';
-import AdminPanel from './features/admin/AdminPanel';
-import FavoritesPage from './features/marketplace/FavoritesPage';
-import NotificationsPage from './features/shared/NotificationsPage';
-import ProfilePage from './features/profile/ProfilePage';
-import LoginPage from './features/auth/LoginPage';
-import RegisterPage from './features/auth/RegisterPage';
-
-// Import centralized configuration
-import { APP_ROUTES } from './config/directions';
-
-import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <AuthProvider>
-        <NotificationProvider>
-          <Router>
-            <Routes>
-              {/* Public Routes */}
-              <Route path={APP_ROUTES.LOGIN} element={<LoginPage />} />
-              <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
-              
-              {/* Protected Routes with Layout */}
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
-                <Route path={APP_ROUTES.BROWSE} element={<BrowsePage />} />
-                <Route path={APP_ROUTES.MY_LISTINGS} element={<MyListingsPage />} />
-                <Route path={APP_ROUTES.MY_DEALS} element={<DealsPage />} />
-                <Route path={APP_ROUTES.ADMIN_PANEL} element={<AdminPanel />} />
-                <Route path={APP_ROUTES.FAVORITES} element={<FavoritesPage />} />
-                <Route path={APP_ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
-                <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
-              </Route>
-
-              {/* Fallback */}
-              <Route path="*" element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
-            </Routes>
-          </Router>
-        </NotificationProvider>
-      </AuthProvider>
+    <div className="min-h-screen bg-gray-50 p-8">
+      <h1 className="text-3xl font-bold text-blue-600">
+        🎉 Cataloro Marketplace - Debug Mode
+      </h1>
+      <p className="text-gray-600 mt-4">
+        React app is working! Now testing full components...
+      </p>
+      
+      <div className="bg-white p-6 rounded-lg shadow-md mt-8 max-w-md">
+        <h2 className="text-xl font-semibold mb-4">Test Login Form</h2>
+        <input 
+          type="email" 
+          name="email"
+          placeholder="Email" 
+          className="w-full p-3 border rounded mb-4"
+        />
+        <input 
+          type="password"
+          name="password" 
+          placeholder="Password" 
+          className="w-full p-3 border rounded mb-4"
+        />
+        <button 
+          type="submit"
+          className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700"
+        >
+          Test Button
+        </button>
+      </div>
     </div>
   );
 }
