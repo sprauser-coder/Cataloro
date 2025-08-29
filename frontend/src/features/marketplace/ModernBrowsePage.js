@@ -215,7 +215,7 @@ function ModernBrowsePage() {
               <Grid3X3 className="w-5 h-5" />
             </button>
             <button
-              onClick={() => setViewMode('list')}
+              onClick={() => updateViewMode('list')}
               className={`p-2 rounded-lg transition-all duration-200 ${
                 viewMode === 'list' 
                 ? 'bg-white dark:bg-gray-700 shadow-sm text-blue-600' 
