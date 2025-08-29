@@ -167,18 +167,18 @@ function MyListingCard({ listing, onDelete }) {
         <div className="absolute top-3 right-3">
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="p-2 bg-white bg-opacity-90 rounded-full hover:bg-opacity-100 transition-all duration-200"
+            className="p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full hover:bg-white dark:hover:bg-gray-800 transition-all duration-200"
           >
-            <MoreHorizontal className="w-4 h-4 text-gray-600" />
+            <MoreHorizontal className="w-4 h-4 text-gray-600 dark:text-gray-300" />
           </button>
 
           {showMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
-              <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center">
+            <div className="absolute right-0 mt-2 w-48 cataloro-card-glass border border-white/20 py-2 z-10">
+              <button className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/10 flex items-center">
                 <Eye className="w-4 h-4 mr-3" />
                 View Details
               </button>
-              <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center">
+              <button className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/10 flex items-center">
                 <Edit className="w-4 h-4 mr-3" />
                 Edit Listing
               </button>
@@ -187,7 +187,7 @@ function MyListingCard({ listing, onDelete }) {
                   onDelete(listing.id);
                   setShowMenu(false);
                 }}
-                className="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 flex items-center"
+                className="w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-500/10 dark:hover:bg-red-500/10 flex items-center"
               >
                 <Trash2 className="w-4 h-4 mr-3" />
                 Delete Listing
@@ -199,15 +199,15 @@ function MyListingCard({ listing, onDelete }) {
 
       {/* Content */}
       <div className="listing-content">
-        <h3 className="listing-title">{listing.title}</h3>
+        <h3 className="listing-title text-gray-900 dark:text-white">{listing.title}</h3>
         <p className="listing-price">${listing.price.toFixed(2)}</p>
-        <p className="listing-description">{listing.description}</p>
+        <p className="listing-description text-gray-600 dark:text-gray-300">{listing.description}</p>
         
         <div className="flex items-center justify-between mt-4">
-          <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+          <span className="inline-block bg-blue-100/80 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs px-3 py-1 rounded-full font-medium backdrop-blur-md">
             {listing.category}
           </span>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500 dark:text-gray-400">
             {new Date(listing.created_at).toLocaleDateString()}
           </span>
         </div>
