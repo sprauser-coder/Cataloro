@@ -917,6 +917,65 @@ function HeroSelectionTab({ showToast }) {
         </h3>
 
         <div className="space-y-6">
+          {/* Hero Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Hero Image (Optional)
+            </label>
+            <div className="space-y-4">
+              {/* Image Preview */}
+              {(heroImagePreview || heroContent.image_url) ? (
+                <div className="relative">
+                  <div className="w-full h-32 bg-gray-100 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden">
+                    <img 
+                      src={heroImagePreview || heroContent.image_url} 
+                      alt="Hero" 
+                      className="w-full h-full object-contain" 
+                    />
+                  </div>
+                  <button
+                    onClick={handleRemoveImage}
+                    className="absolute top-2 right-2 p-1 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full h-32 bg-gray-100 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
+                  <div className="text-center">
+                    <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <span className="text-sm text-gray-500 dark:text-gray-400">No image uploaded</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Upload Button */}
+              <div className="flex items-center space-x-4">
+                <label className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg cursor-pointer transition-colors">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Hero Image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                </label>
+                {(heroImagePreview || heroContent.image_url) && (
+                  <button
+                    onClick={handleRemoveImage}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                  >
+                    Remove Image
+                  </button>
+                )}
+              </div>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Upload a PNG/JPG image to display above the hero title. Recommended size: 200x100px (max 2MB)
+            </p>
+          </div>
+
           {/* Title Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
