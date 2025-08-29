@@ -1238,7 +1238,7 @@ function SiteAdministrationTab({ showToast }) {
                   animationsEnabled: !siteConfig.animationsEnabled,
                   wishlistEnabled: !siteConfig.wishlistEnabled
                 };
-                applyConfigurationToSite(featureTest);
+                applySiteConfiguration(featureTest);
                 setSiteConfig(featureTest);
                 showToast('⚡ Feature Toggle Test: Compact mode, animations, wishlist toggled', 'info');
               }}
