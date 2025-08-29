@@ -343,7 +343,7 @@ function ProfilePage() {
                 <Star className="w-4 h-4 text-yellow-400 mr-1" />
                 {accountStats.avgRating}
               </div>
-              <div className="text-sm text-gray-600">Rating</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Rating</div>
             </div>
           </div>
         </div>
