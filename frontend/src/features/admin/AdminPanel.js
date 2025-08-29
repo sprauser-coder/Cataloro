@@ -3758,6 +3758,15 @@ function CatDatabaseTab({ showToast }) {
             <p className="text-gray-600 dark:text-gray-300">Catalyst database management and price calculations</p>
           </div>
           <div className="flex items-center space-x-4">
+            <button
+              onClick={handleDeleteDatabase}
+              disabled={loading || catalystData.length === 0}
+              className="cataloro-button-danger flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              title={catalystData.length === 0 ? "No data to delete" : "Delete entire catalyst database"}
+            >
+              <Trash2 className="w-5 h-5 mr-2" />
+              Delete Database
+            </button>
             <label className="cataloro-button-primary cursor-pointer">
               <Upload className="w-5 h-5 mr-2" />
               {uploading ? 'Uploading...' : 'Upload Excel'}
