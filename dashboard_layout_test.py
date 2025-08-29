@@ -2,11 +2,12 @@ import requests
 import sys
 import json
 from datetime import datetime, timedelta
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 
 # Configuration
-BACKEND_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class DashboardLayoutTester:
     def __init__(self):
@@ -207,7 +208,7 @@ class DashboardLayoutTester:
                                         
                                         # Test thumbnail accessibility
                                         if first_image.startswith('/uploads/'):
-                                            thumbnail_url = f"http://217.154.0.82{first_image}"
+                                            thumbnail_url = f"get_backend_url(){first_image}"
                                             try:
                                                 img_response = requests.get(thumbnail_url, timeout=3)
                                                 if img_response.status_code == 200:

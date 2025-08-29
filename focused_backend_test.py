@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Focused Backend Test Script for Cataloro Marketplace
 Testing specific endpoints mentioned in the review request:
@@ -19,7 +20,7 @@ from pathlib import Path
 
 class CataloroFocusedTester:
     def __init__(self):
-        self.base_url = "https://cataloro-hub.preview.emergentagent.com"
+        self.base_url = "get_backend_url()"
         self.api_url = f"{self.base_url}/api"
         self.admin_token = None
         self.user_token = None
@@ -113,8 +114,8 @@ class CataloroFocusedTester:
         print("🔐 Testing Admin Authentication...")
         
         admin_credentials = {
-            "email": "admin@marketplace.com",
-            "password": "admin123"
+            "email": "get_admin_credentials()[0]",
+            "password": "get_admin_credentials()[1]"
         }
         
         success, status, response, text = self.make_request('POST', 'auth/login', admin_credentials)

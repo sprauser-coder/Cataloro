@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Phase 2 Backend Testing - Typography Preview and Header Link Colors
 Testing the remaining Phase 2 bug fixes for CMS settings functionality
@@ -10,9 +11,9 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class Phase2BackendTester:
     def __init__(self):

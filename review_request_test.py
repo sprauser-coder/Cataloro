@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 URGENT: Test exact scenario from review request
 Test the specific listing creation data format mentioned in the review.
@@ -9,9 +10,9 @@ import json
 import sys
 
 # Configuration - Use VPS deployment URL from frontend/.env
-BACKEND_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 def test_exact_review_scenario():
     """Test the exact scenario from the review request"""

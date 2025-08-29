@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Comprehensive Backend Testing Script for Listing Image Upload Functionality
 Focus: Testing POST /api/listings/upload-image endpoint with detailed verification
@@ -12,9 +13,9 @@ from PIL import Image
 import tempfile
 
 # Configuration
-BACKEND_URL = "https://cataloro-hub.preview.emergentagent.com/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class ComprehensiveImageUploadTester:
     def __init__(self):
@@ -222,7 +223,7 @@ class ComprehensiveImageUploadTester:
         try:
             # Extract filename from URL
             filename = image_url.split('/')[-1]
-            file_path = f"/app/backend/uploads/{filename}"
+            file_path = f"get_paths()["backend_dir"]/uploads/{filename}"
             
             if os.path.exists(file_path):
                 file_size = os.path.getsize(file_path)

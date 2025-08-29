@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Cataloro Marketplace Backend Test Script
 Focused testing based on review request:
@@ -10,8 +11,8 @@ Focused testing based on review request:
 5. Test listing creation with images
 6. Verify that static file URLs in the database match actual files in the uploads directory
 
-Backend URL: http://217.154.0.82/api
-Admin credentials: admin@marketplace.com / admin123
+Backend URL: get_backend_url()/api
+Admin credentials: get_admin_credentials()[0] / get_admin_credentials()[1]
 """
 
 import requests
@@ -26,7 +27,7 @@ from pathlib import Path
 class CataloroBackendTester:
     def __init__(self):
         # Use the correct backend URL from frontend .env
-        self.base_url = "http://217.154.0.82"
+        self.base_url = "get_backend_url()"
         self.api_url = f"{self.base_url}/api"
         self.admin_token = None
         self.user_token = None
@@ -145,8 +146,8 @@ class CataloroBackendTester:
         print("🔐 Testing Admin Authentication...")
         
         admin_credentials = {
-            "email": "admin@marketplace.com",
-            "password": "admin123"
+            "email": "get_admin_credentials()[0]",
+            "password": "get_admin_credentials()[1]"
         }
         
         success, status, response, text = self.make_request('POST', 'auth/login', admin_credentials)

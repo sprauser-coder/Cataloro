@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 COMPREHENSIVE PRE-DEPLOYMENT BACKEND TESTING
 Testing ALL critical backend endpoints to verify no regressions after comprehensive profile update
@@ -13,9 +14,9 @@ import tempfile
 import os
 
 # Configuration
-BACKEND_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class ComprehensiveBackendTester:
     def __init__(self):
@@ -138,7 +139,7 @@ class ComprehensiveBackendTester:
             # Testing if it returns proper error or works
             headers = {"Authorization": f"Bearer {self.admin_token}"}
             response = requests.put(f"{BACKEND_URL}/auth/change-password", 
-                                  json={"old_password": "admin123", "new_password": "newpass123"},
+                                  json={"old_password": "get_admin_credentials()[1]", "new_password": "newpass123"},
                                   headers=headers)
             
             if response.status_code == 404:

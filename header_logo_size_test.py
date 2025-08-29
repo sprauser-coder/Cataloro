@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Header Logo Size Field Testing
 Test the new header_logo_size field in CMS settings endpoint
@@ -11,11 +12,11 @@ import os
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://cataloro-hub.preview.emergentagent.com/api"
+BACKEND_URL = "get_backend_url()/api"
 
 # Admin credentials
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 def log_test(message, status="INFO"):
     """Log test messages with timestamp"""

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Quick Image Upload Verification Test
 Focus: POST /api/listings/upload-image with PNG file upload and accessibility verification
@@ -15,7 +16,7 @@ from pathlib import Path
 from PIL import Image
 
 class ImageUploadTester:
-    def __init__(self, base_url="https://cataloro-hub.preview.emergentagent.com"):
+    def __init__(self, base_url="get_backend_url()"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.admin_token = None
@@ -149,8 +150,8 @@ class ImageUploadTester:
         
         # Admin login
         admin_data = {
-            "email": "admin@marketplace.com",
-            "password": "admin123"
+            "email": "get_admin_credentials()[0]",
+            "password": "get_admin_credentials()[1]"
         }
         
         success, response = self.run_test("Admin Login", "POST", "auth/login", 200, admin_data)

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 CRITICAL VERIFICATION: Catalyst Database System Testing After CORS Configuration Changes
 Testing after removing prohibited URL from CORS configuration and updating BACKEND_BASE_URL
@@ -11,18 +12,18 @@ import sys
 from datetime import datetime
 
 # DEPLOYMENT RULE COMPLIANT CONFIGURATION
-BASE_URL = "http://217.154.0.82/api"
-FRONTEND_URL = "http://217.154.0.82"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BASE_URL = "get_backend_url()/api"
+FRONTEND_URL = "get_backend_url()"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 print("🚀 URGENT DEPLOYMENT RULE COMPLIANCE VERIFICATION")
 print("Testing Catalyst Database System after removing ALL forbidden URLs and using only allowed deployment URLs.")
 print("📋 CRITICAL CONFIGURATION CHANGES MADE:")
-print("   - Frontend .env: Updated REACT_APP_BACKEND_URL from forbidden emergent.host to allowed http://217.154.0.82")
-print("   - Backend .env: Updated CORS_ORIGINS to ONLY allowed URLs: http://217.154.0.82,https://217.154.0.82")
+print("   - Frontend .env: Updated REACT_APP_BACKEND_URL from forbidden emergent.host to allowed get_backend_url()")
+print("   - Backend .env: Updated CORS_ORIGINS to ONLY allowed URLs: get_backend_url(),https://217.154.0.82")
 print("   - Removed ALL forbidden URLs: localhost:3000, *.emergent.host")
-print("   - Backend Base URL: Updated to http://217.154.0.82")
+print("   - Backend Base URL: Updated to get_backend_url()")
 print("=" * 80)
 
 class BackendTester:
@@ -650,12 +651,12 @@ from datetime import datetime
 import uuid
 
 # Configuration
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'http://217.154.0.82')
+BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'get_backend_url()')
 API_BASE = f"{BACKEND_URL}/api"
 
 # Test credentials
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class Phase4BackendTester:
     def __init__(self):

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 IMAGE UPLOAD INVESTIGATION - Test image upload functionality thoroughly
 Focus: Investigate the "serious connection error" reported by user
@@ -11,9 +12,9 @@ from PIL import Image
 import io
 
 # Configuration
-BACKEND_URL = "https://cataloro-hub.preview.emergentagent.com/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class ImageUploadTester:
     def __init__(self):
@@ -181,7 +182,7 @@ class ImageUploadTester:
         try:
             # Convert relative URL to full URL if needed
             if image_url.startswith('/'):
-                full_url = f"https://cataloro-hub.preview.emergentagent.com{image_url}"
+                full_url = f"get_backend_url(){image_url}"
             else:
                 full_url = image_url
             
@@ -210,7 +211,7 @@ class ImageUploadTester:
         
         endpoints_to_test = [
             (f"{BACKEND_URL}/", "Main API endpoint"),
-            (f"https://cataloro-hub.preview.emergentagent.com/uploads/", "Static files endpoint"),
+            (f"get_backend_url()/uploads/", "Static files endpoint"),
             (f"{BACKEND_URL}/categories", "Simple GET endpoint"),
             (f"{BACKEND_URL}/listings", "Listings endpoint")
         ]

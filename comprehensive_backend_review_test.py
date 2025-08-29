@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Comprehensive Backend Testing Suite for Review Request
 Testing all critical functionality after environment and CORS configuration changes:
@@ -19,12 +20,12 @@ from datetime import datetime
 import uuid
 
 # Configuration - Use environment variables as specified
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'http://localhost:8001')
+BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'get_backend_url("local")')
 API_BASE = f"{BACKEND_URL}/api"
 
 # Test credentials from review request
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class ComprehensiveBackendReviewTester:
     def __init__(self):
@@ -91,7 +92,7 @@ class ComprehensiveBackendReviewTester:
         # Test CORS headers with localhost:3000 origin
         try:
             headers = {
-                'Origin': 'http://localhost:3000',
+                'Origin': 'get_config("FRONTEND_URL_LOCAL")',
                 'Access-Control-Request-Method': 'POST',
                 'Access-Control-Request-Headers': 'Content-Type,Authorization'
             }
@@ -107,7 +108,7 @@ class ComprehensiveBackendReviewTester:
             }
             
             # Check if localhost:3000 is allowed
-            origin_allowed = cors_headers['Access-Control-Allow-Origin'] in ['http://localhost:3000', '*']
+            origin_allowed = cors_headers['Access-Control-Allow-Origin'] in ['get_config("FRONTEND_URL_LOCAL")', '*']
             methods_include_post = 'POST' in (cors_headers['Access-Control-Allow-Methods'] or '')
             headers_include_auth = 'Authorization' in (cors_headers['Access-Control-Allow-Headers'] or '')
             
@@ -123,12 +124,12 @@ class ComprehensiveBackendReviewTester:
 
         # Test actual request with Origin header
         try:
-            headers = {'Origin': 'http://localhost:3000'}
+            headers = {'Origin': 'get_config("FRONTEND_URL_LOCAL")'}
             response = requests.get(f"{API_BASE}/categories", headers=headers)
             
             if response.status_code == 200:
                 cors_origin = response.headers.get('Access-Control-Allow-Origin')
-                if cors_origin in ['http://localhost:3000', '*']:
+                if cors_origin in ['get_config("FRONTEND_URL_LOCAL")', '*']:
                     self.log_result("CORS Actual Request", True, 
                                   f"CORS working for actual requests: {cors_origin}")
                 else:

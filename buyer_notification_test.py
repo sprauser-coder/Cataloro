@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 BUYER NOTIFICATION TEST
 
@@ -13,11 +14,11 @@ import os
 from datetime import datetime
 
 # Configuration - Use frontend environment for backend URL
-BACKEND_URL = 'https://cataloro-hub.preview.emergentagent.com/api'
+BACKEND_URL = 'get_backend_url()/api'
 
 # Test credentials
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class BuyerNotificationTester:
     def __init__(self):
@@ -172,7 +173,7 @@ class BuyerNotificationTester:
         """Approve the order as seller (admin)"""
         try:
             headers = {"Authorization": f"Bearer {self.admin_token}"}
-            response = requests.put(f"{BACKEND_URL}/orders/{self.test_order_id}/approve", headers=headers)
+            response = requests.put(f"{BACKEND_URL}/orders/{self.test_order_id}get_paths()["app_root"]rove", headers=headers)
             
             if response.status_code == 200:
                 self.log_result("Approve Order as Seller", True, f"Order {self.test_order_id} approved successfully")

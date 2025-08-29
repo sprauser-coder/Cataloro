@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Fix admin account - unblock the admin user
 """
@@ -23,7 +24,7 @@ async def fix_admin_account():
         
         # Unblock admin account
         result = await db.users.update_one(
-            {"email": "admin@marketplace.com"},
+            {"email": "get_admin_credentials()[0]"},
             {"$set": {"is_blocked": False}}
         )
         
@@ -33,7 +34,7 @@ async def fix_admin_account():
             print("⚠️ Admin account was already unblocked or not found")
             
         # Verify the change
-        admin_user = await db.users.find_one({"email": "admin@marketplace.com"})
+        admin_user = await db.users.find_one({"email": "get_admin_credentials()[0]"})
         if admin_user:
             print(f"✅ Admin account status: is_blocked = {admin_user.get('is_blocked', False)}")
         else:

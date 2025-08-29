@@ -1,9 +1,10 @@
 import requests
 import json
 from datetime import datetime
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 
 class MarketplaceEdgeCaseTester:
-    def __init__(self, base_url="https://cataloro-hub.preview.emergentagent.com"):
+    def __init__(self, base_url="get_backend_url()"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.buyer_token = None

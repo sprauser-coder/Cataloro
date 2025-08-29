@@ -11,7 +11,7 @@ import sys
 import asyncio
 
 # Import centralized config
-sys.path.append('/app')
+sys.path.append('get_paths()["app_root"]')
 from config_loader import get_config, get_backend_url, get_admin_credentials
 
 def test_catalyst_system():
@@ -171,7 +171,7 @@ def print_system_status():
     print(f"✨ Catalyst Database: {'Enabled' if get_config('ENABLE_CATALYST_DATABASE') else 'Disabled'}")
     
     # Check file paths
-    paths = ['/app/directions', '/app/config_loader.py', '/app/backend/server.py', '/app/frontend/.env']
+    paths = ['get_paths()["app_root"]/directions', 'get_paths()["app_root"]/config_loader.py', 'get_paths()["backend_dir"]/server.py', 'get_paths()["frontend_dir"]/.env']
     print()
     print("📁 File Status:")
     for path in paths:

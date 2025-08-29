@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 COMPREHENSIVE CATALORO MARKETPLACE BACKEND API TESTING
 Testing all backend functionality as requested in the review:
 
-1. Authentication System (login/register with admin@marketplace.com/admin123)
+1. Authentication System (login/register with get_admin_credentials()[0]/get_admin_credentials()[1])
 2. Product Listings API (listing creation, retrieval, search functionality)
 3. Image Upload Functionality (logo upload and listing image upload endpoints)
 4. Admin Panel Backend Support (CMS settings, user management, etc.)
@@ -22,9 +23,9 @@ from datetime import datetime
 from pathlib import Path
 
 # Configuration
-BACKEND_URL = 'http://217.154.0.82/api'
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = 'get_backend_url()/api'
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class CataloroBackendTester:
     def __init__(self):
@@ -237,7 +238,7 @@ class CataloroBackendTester:
                     logo_url = logo_data.get("logo_url", "")
                     if logo_url:
                         # Try to access the uploaded file
-                        file_response = self.session.get(f"http://217.154.0.82{logo_url}", timeout=5)
+                        file_response = self.session.get(f"get_backend_url(){logo_url}", timeout=5)
                         static_file_accessible = file_response.status_code == 200 and 'image' in file_response.headers.get('content-type', '')
                 except:
                     pass
@@ -412,7 +413,7 @@ class CataloroBackendTester:
             categories_consistent = categories_response.status_code == 200 and len(categories_response.json()) > 0
             
             # Test 4: CORS headers for production
-            cors_response = self.session.options(f"{BACKEND_URL}/listings", headers={'Origin': 'http://217.154.0.82'}, timeout=10)
+            cors_response = self.session.options(f"{BACKEND_URL}/listings", headers={'Origin': 'get_backend_url()'}, timeout=10)
             cors_configured = 'Access-Control-Allow-Origin' in cors_response.headers
             
             production_checks = []

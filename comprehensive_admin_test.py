@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Comprehensive Live Admin Panel Backend Testing
 Testing all admin panel backend functionality as requested in the review.
@@ -9,7 +10,7 @@ Focus Areas:
 3. Live Product Management
 4. Live Order Management
 
-Admin Credentials: admin@marketplace.com / admin123
+Admin Credentials: get_admin_credentials()[0] / get_admin_credentials()[1]
 """
 
 import requests
@@ -19,9 +20,9 @@ from datetime import datetime
 import time
 
 # Configuration
-BASE_URL = "https://cataloro-hub.preview.emergentagent.com/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BASE_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class ComprehensiveAdminTester:
     def __init__(self):
@@ -511,32 +512,32 @@ class ComprehensiveAdminTester:
             except Exception as e:
                 self.log_test("Product View Tracking", False, f"Exception: {str(e)}", f"GET /admin/listings/{self.test_listing_id}/views")
 
-            # Test 4: PUT /api/admin/listings/{product_id}/approve (approve products)
+            # Test 4: PUT /api/admin/listings/{product_id}get_paths()["app_root"]rove (approve products)
             try:
-                response = requests.put(f"{self.base_url}/admin/listings/{self.test_listing_id}/approve", headers=self.get_headers())
+                response = requests.put(f"{self.base_url}/admin/listings/{self.test_listing_id}get_paths()["app_root"]rove", headers=self.get_headers())
                 if response.status_code == 200:
                     self.log_test(
                         "Approve Product", 
                         True, 
                         "Product approved successfully",
-                        f"PUT /admin/listings/{self.test_listing_id}/approve"
+                        f"PUT /admin/listings/{self.test_listing_id}get_paths()["app_root"]rove"
                     )
                 elif response.status_code == 404:
                     self.log_test(
                         "Approve Product", 
                         False, 
                         "Endpoint not implemented - missing from backend",
-                        f"PUT /admin/listings/{self.test_listing_id}/approve"
+                        f"PUT /admin/listings/{self.test_listing_id}get_paths()["app_root"]rove"
                     )
                 else:
                     self.log_test(
                         "Approve Product", 
                         False, 
                         f"HTTP {response.status_code}: {response.text}",
-                        f"PUT /admin/listings/{self.test_listing_id}/approve"
+                        f"PUT /admin/listings/{self.test_listing_id}get_paths()["app_root"]rove"
                     )
             except Exception as e:
-                self.log_test("Approve Product", False, f"Exception: {str(e)}", f"PUT /admin/listings/{self.test_listing_id}/approve")
+                self.log_test("Approve Product", False, f"Exception: {str(e)}", f"PUT /admin/listings/{self.test_listing_id}get_paths()["app_root"]rove")
 
             # Test 5: PUT /api/admin/listings/{product_id}/feature (feature products)
             try:

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Categories Management Testing for Cataloro v1.0.4 Fix 8
 Testing categories retrieval, filtering, and data structure integrity
@@ -10,9 +11,9 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://cataloro-hub.preview.emergentagent.com/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class CategoriesTestSuite:
     def __init__(self):

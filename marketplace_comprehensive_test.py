@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Comprehensive Marketplace Functionality Testing
 Testing all marketplace APIs for new frontend components:
@@ -21,9 +22,9 @@ import os
 import io
 
 # Configuration - Using correct backend URL from frontend/.env
-BASE_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BASE_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class MarketplaceTestSuite:
     def __init__(self):
@@ -670,7 +671,7 @@ class MarketplaceTestSuite:
         
         try:
             # Test direct image access through base URL (without /api prefix)
-            base_url = "http://217.154.0.82"
+            base_url = "get_backend_url()"
             
             # Handle case where test_image_url might be a full URL or relative path
             if self.test_image_url.startswith('http://'):

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Authentication System Testing for Cataloro Marketplace
 Testing authentication functionality after frontend enhancements as requested
@@ -10,9 +11,9 @@ import sys
 from datetime import datetime
 
 # Configuration from review request
-BASE_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BASE_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class AuthenticationTestSuite:
     def __init__(self):
@@ -34,7 +35,7 @@ class AuthenticationTestSuite:
         print()
     
     def test_basic_api_connectivity(self):
-        """Test basic API connectivity to http://217.154.0.82/api/"""
+        """Test basic API connectivity to get_backend_url()/api/"""
         try:
             response = self.session.get(f"{BASE_URL}/")
             
@@ -56,7 +57,7 @@ class AuthenticationTestSuite:
             return False
     
     def test_admin_login_functionality(self):
-        """Test admin login functionality with admin@marketplace.com/admin123 credentials"""
+        """Test admin login functionality with get_admin_credentials()[0]/get_admin_credentials()[1] credentials"""
         try:
             login_data = {
                 "email": ADMIN_EMAIL,
@@ -211,7 +212,7 @@ class AuthenticationTestSuite:
         try:
             # Test with Origin header (simulating frontend request)
             headers = {
-                "Origin": "http://217.154.0.82",
+                "Origin": "get_backend_url()",
                 "Access-Control-Request-Method": "POST",
                 "Access-Control-Request-Headers": "Content-Type,Authorization"
             }
@@ -231,7 +232,7 @@ class AuthenticationTestSuite:
             
             if not cors_headers["access-control-allow-origin"]:
                 cors_issues.append("Missing Access-Control-Allow-Origin header")
-            elif cors_headers["access-control-allow-origin"] not in ["*", "http://217.154.0.82"]:
+            elif cors_headers["access-control-allow-origin"] not in ["*", "get_backend_url()"]:
                 cors_issues.append(f"Unexpected Access-Control-Allow-Origin: {cors_headers['access-control-allow-origin']}")
             
             if not cors_headers["access-control-allow-methods"]:
@@ -253,7 +254,7 @@ class AuthenticationTestSuite:
                             f"Credentials: {cors_headers['access-control-allow-credentials']}")
                 
                 # Test actual request with CORS
-                login_headers = {"Origin": "http://217.154.0.82"}
+                login_headers = {"Origin": "get_backend_url()"}
                 login_response = self.session.post(f"{BASE_URL}/auth/login", 
                                                  json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
                                                  headers=login_headers)

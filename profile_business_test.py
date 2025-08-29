@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Profile Endpoints with Business Fields Testing
 ==============================================
@@ -16,7 +17,7 @@ Testing the updated profile endpoints with the new business fields:
 
 3. Data persistence - After update, call GET /api/profile again to confirm all changes were saved
 
-Use admin credentials: admin@marketplace.com/admin123
+Use admin credentials: get_admin_credentials()[0]/get_admin_credentials()[1]
 
 This relates to fixing the "My profile changes not saved and missing user number display" bug.
 """
@@ -27,9 +28,9 @@ import sys
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://cataloro-hub.preview.emergentagent.com/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BASE_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class ProfileEndpointsTest:
     def __init__(self):

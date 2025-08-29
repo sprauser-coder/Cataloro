@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Debug authentication issue
 """
@@ -8,12 +9,12 @@ import json
 
 # Test with fresh login
 login_data = {
-    "email": "admin@marketplace.com",
-    "password": "admin123"
+    "email": "get_admin_credentials()[0]",
+    "password": "get_admin_credentials()[1]"
 }
 
 print("🔐 Testing fresh login...")
-response = requests.post("http://217.154.0.82/api/auth/login", json=login_data)
+response = requests.post("get_backend_url()/api/auth/login", json=login_data)
 
 if response.status_code == 200:
     data = response.json()
@@ -33,7 +34,7 @@ if response.status_code == 200:
     }
     
     print("\n🧪 Testing admin endpoint...")
-    admin_response = requests.get("http://217.154.0.82/api/admin/stats", headers=headers)
+    admin_response = requests.get("get_backend_url()/api/admin/stats", headers=headers)
     
     print(f"Admin stats response: {admin_response.status_code}")
     if admin_response.status_code != 200:
@@ -43,7 +44,7 @@ if response.status_code == 200:
         
     # Test catalyst endpoint
     print("\n🧪 Testing catalyst endpoint...")
-    catalyst_response = requests.get("http://217.154.0.82/api/admin/catalyst-basis", headers=headers)
+    catalyst_response = requests.get("get_backend_url()/api/admin/catalyst-basis", headers=headers)
     
     print(f"Catalyst basis response: {catalyst_response.status_code}")
     if catalyst_response.status_code != 200:

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 SIMPLE LOGO UPLOAD TEST
 Quick test of logo upload and image serving functionality
@@ -12,9 +13,9 @@ import io
 from PIL import Image
 
 # Configuration
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://cataloro-hub.preview.emergentagent.com') + '/api'
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'get_backend_url()') + '/api'
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 def create_test_image(format='PNG', size=(100, 100)):
     """Create a simple test image"""

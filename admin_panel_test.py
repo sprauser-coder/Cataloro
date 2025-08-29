@@ -3,12 +3,13 @@ import sys
 import json
 from datetime import datetime, timedelta
 import time
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 
 # Configuration
-BACKEND_URL = "http://217.154.0.82/api"  # From frontend/.env
-STATIC_URL = "http://217.154.0.82"  # For static file serving
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"  # From frontend/.env
+STATIC_URL = "get_backend_url()"  # For static file serving
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class AdminPanelTester:
     def __init__(self):

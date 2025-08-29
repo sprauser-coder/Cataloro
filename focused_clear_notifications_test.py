@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Focused Clear Notifications Endpoint Testing
 ============================================
@@ -8,7 +9,7 @@ This script specifically tests the clear notifications endpoint functionality:
 2. DELETE /api/notifications/clear-all - Test the new clear all notifications endpoint
 3. GET /api/notifications - Verify notifications are permanently cleared
 
-Admin credentials: admin@marketplace.com / admin123
+Admin credentials: get_admin_credentials()[0] / get_admin_credentials()[1]
 """
 
 import requests
@@ -17,9 +18,9 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://cataloro-hub.preview.emergentagent.com/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 def test_clear_notifications():
     """Test the clear notifications functionality"""

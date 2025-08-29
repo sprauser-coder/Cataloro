@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Profile Endpoint Analysis - Check which endpoints exist and work
 """
@@ -6,13 +7,13 @@ Profile Endpoint Analysis - Check which endpoints exist and work
 import requests
 import json
 
-BACKEND_URL = "http://217.154.0.82/api"
+BACKEND_URL = "get_backend_url()/api"
 session = requests.Session()
 
 # Login first
 response = session.post(f"{BACKEND_URL}/auth/login", json={
-    "email": "admin@marketplace.com",
-    "password": "admin123"
+    "email": "get_admin_credentials()[0]",
+    "password": "get_admin_credentials()[1]"
 })
 
 if response.status_code == 200:

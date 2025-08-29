@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 URGENT LOGO UPLOAD AND IMAGE PREVIEW INVESTIGATION
 Testing specific upload functionality as reported by user:
@@ -25,9 +26,9 @@ from pathlib import Path
 from PIL import Image
 
 # Configuration - Use environment variable for backend URL
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://cataloro-hub.preview.emergentagent.com') + '/api'
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'get_backend_url()') + '/api'
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class LogoUploadInvestigator:
     def __init__(self):

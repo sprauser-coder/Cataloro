@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Phase 3B Integration Test - Verify database persistence and real-world scenarios
 """
@@ -8,12 +9,12 @@ import json
 import time
 
 # Configuration
-BACKEND_URL = "http://localhost:8001"
+BACKEND_URL = "get_backend_url("local")"
 API_BASE = f"{BACKEND_URL}/api"
 
 # Admin credentials
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 def get_admin_token():
     """Get admin authentication token"""

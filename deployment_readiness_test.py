@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Deployment Readiness Test for Cataloro Marketplace Backend API
 Focus on the key components mentioned in the review request:
@@ -17,7 +18,7 @@ from datetime import datetime
 
 class DeploymentReadinessTest:
     def __init__(self):
-        self.base_url = "http://localhost:8001"
+        self.base_url = "get_backend_url("local")"
         self.api_url = f"{self.base_url}/api"
         self.token = None
         self.admin_token = None
@@ -151,8 +152,8 @@ class DeploymentReadinessTest:
             pass
         
         admin_data = {
-            "email": "admin@marketplace.com",
-            "password": "admin123"
+            "email": "get_admin_credentials()[0]",
+            "password": "get_admin_credentials()[1]"
         }
         
         response = self.make_request('POST', 'auth/login', admin_data)

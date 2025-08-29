@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Debug upload functionality
 """
@@ -10,11 +11,11 @@ import time
 # Test admin login
 print("Testing admin login...")
 admin_credentials = {
-    "email": "admin@marketplace.com",
-    "password": "admin123"
+    "email": "get_admin_credentials()[0]",
+    "password": "get_admin_credentials()[1]"
 }
 
-response = requests.post("http://217.154.0.82/api/auth/login", json=admin_credentials)
+response = requests.post("get_backend_url()/api/auth/login", json=admin_credentials)
 print(f"Login status: {response.status_code}")
 
 if response.status_code == 200:
@@ -36,7 +37,7 @@ if response.status_code == 200:
     # Record time before upload
     before_upload = time.time()
     
-    upload_response = requests.post("http://217.154.0.82/api/admin/cms/upload-logo", 
+    upload_response = requests.post("get_backend_url()/api/admin/cms/upload-logo", 
                                    files=files, data=data, headers=headers)
     
     after_upload = time.time()
@@ -59,14 +60,14 @@ if response.status_code == 200:
             
             # Check if file exists
             import subprocess
-            result = subprocess.run(['find', '/app/backend/uploads/', '-name', filename], 
+            result = subprocess.run(['find', 'get_paths()["backend_dir"]/uploads/', '-name', filename], 
                                   capture_output=True, text=True)
             
             if result.stdout.strip():
                 print(f"✅ File found: {result.stdout.strip()}")
                 
                 # Test internal access
-                internal_url = f"http://localhost:8001{logo_url}"
+                internal_url = f"get_backend_url("local"){logo_url}"
                 print(f"Testing internal access: {internal_url}")
                 internal_response = requests.get(internal_url)
                 print(f"Internal access status: {internal_response.status_code}")
@@ -74,7 +75,7 @@ if response.status_code == 200:
             else:
                 print(f"❌ File NOT found in uploads directory")
                 print("Files in uploads directory:")
-                result = subprocess.run(['ls', '-la', '/app/backend/uploads/'], 
+                result = subprocess.run(['ls', '-la', 'get_paths()["backend_dir"]/uploads/'], 
                                       capture_output=True, text=True)
                 print(result.stdout)
     else:

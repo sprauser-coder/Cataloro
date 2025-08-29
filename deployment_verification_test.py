@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Cataloro Deployment Verification Test
 Testing backend API functionality after URL configuration fix for 217.154.0.82 deployment.
 
 Focus areas:
-1. Core API endpoints accessibility on http://217.154.0.82/api/
-2. Authentication endpoint (POST /api/auth/login) with admin@marketplace.com/admin123
+1. Core API endpoints accessibility on get_backend_url()/api/
+2. Authentication endpoint (POST /api/auth/login) with get_admin_credentials()[0]/get_admin_credentials()[1]
 3. CMS settings endpoint (GET /api/cms/settings) 
 4. Categories endpoint (GET /api/categories)
 5. Basic listings endpoint (GET /api/listings)
@@ -17,9 +18,9 @@ import sys
 from datetime import datetime
 
 # Configuration - Using the new deployment URL
-BACKEND_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class DeploymentVerificationTester:
     def __init__(self):

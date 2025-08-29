@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Cataloro Backend API Testing Suite
 Tests core functionality after version update to 1.6.5
@@ -12,7 +13,7 @@ from datetime import datetime
 import uuid
 
 # Configuration
-BASE_URL = "https://cataloro-hub.preview.emergentagent.com/api"
+BASE_URL = "get_backend_url()/api"
 TIMEOUT = 30
 
 class CataloroAPITester:
@@ -302,7 +303,7 @@ def main():
     passed, total, results = tester.run_all_tests()
     
     # Write results to file
-    with open('/app/backend_test_results.json', 'w') as f:
+    with open('get_paths()["backend_dir"]_test_results.json', 'w') as f:
         json.dump({
             "summary": {
                 "passed": passed,
@@ -313,7 +314,7 @@ def main():
             "results": results
         }, f, indent=2)
     
-    print(f"\n💾 Results saved to: /app/backend_test_results.json")
+    print(f"\n💾 Results saved to: get_paths()["backend_dir"]_test_results.json")
     
     # Exit with appropriate code
     if passed == total:

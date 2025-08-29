@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Purple Modern Design Backend Testing
 Testing backend API functionality after implementing purple modern design styling
@@ -12,9 +13,9 @@ from datetime import datetime
 import time
 
 # Configuration - Use the correct backend URL from frontend/.env
-BASE_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BASE_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class PurpleDesignBackendTest:
     def __init__(self):
@@ -60,7 +61,7 @@ class PurpleDesignBackendTest:
             return False
     
     def test_admin_authentication(self):
-        """Test admin authentication with admin@marketplace.com / admin123"""
+        """Test admin authentication with get_admin_credentials()[0] / get_admin_credentials()[1]"""
         try:
             response = self.session.post(f"{BASE_URL}/auth/login", json={
                 "email": ADMIN_EMAIL,
@@ -433,7 +434,7 @@ class PurpleDesignBackendTest:
         api_working = any("Basic API Connectivity" in r['test'] and r['success'] for r in self.test_results)
         listings_working = any("Listings API" in r['test'] and r['success'] for r in self.test_results)
         
-        print(f"   • Admin Authentication (admin@marketplace.com/admin123): {'✅ WORKING' if auth_working else '❌ FAILED'}")
+        print(f"   • Admin Authentication (get_admin_credentials()[0]/get_admin_credentials()[1]): {'✅ WORKING' if auth_working else '❌ FAILED'}")
         print(f"   • Basic API Endpoints: {'✅ WORKING' if api_working else '❌ FAILED'}")
         print(f"   • Listings API: {'✅ WORKING' if listings_working else '❌ FAILED'}")
         

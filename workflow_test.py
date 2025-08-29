@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Complete listing creation workflow test
 """
@@ -6,9 +7,9 @@ Complete listing creation workflow test
 import requests
 import json
 
-BACKEND_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 def test_complete_workflow():
     """Test the complete listing creation workflow"""
@@ -116,7 +117,7 @@ def test_complete_workflow():
     # Step 6: Test image accessibility (if image was uploaded)
     if image_url:
         print("\n6️⃣ Test Image Accessibility")
-        image_full_url = f"http://217.154.0.82{image_url}"
+        image_full_url = f"get_backend_url(){image_url}"
         response = requests.get(image_full_url)
         
         if response.status_code == 200:

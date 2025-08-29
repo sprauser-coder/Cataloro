@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 URGENT DEPLOYMENT RULE COMPLIANCE VERIFICATION
 Test Catalyst Database System after removing ALL forbidden URLs and using only allowed deployment URLs.
 
 CRITICAL CONFIGURATION CHANGES TESTED:
-- Frontend .env: Updated REACT_APP_BACKEND_URL from forbidden emergent.host to allowed http://217.154.0.82
-- Backend .env: Updated CORS_ORIGINS to ONLY allowed URLs: http://217.154.0.82,https://217.154.0.82
+- Frontend .env: Updated REACT_APP_BACKEND_URL from forbidden emergent.host to allowed get_backend_url()
+- Backend .env: Updated CORS_ORIGINS to ONLY allowed URLs: get_backend_url(),https://217.154.0.82
 - Removed ALL forbidden URLs: localhost:3000, *.emergent.host
-- Backend Base URL: Updated to http://217.154.0.82
+- Backend Base URL: Updated to get_backend_url()
 
 DEPLOYMENT RULE COMPLIANCE:
-✅ Frontend URL: http://217.154.0.82 (no port)
-✅ Backend CORS: http://217.154.0.82,https://217.154.0.82 (no ports)
+✅ Frontend URL: get_backend_url() (no port)
+✅ Backend CORS: get_backend_url(),https://217.154.0.82 (no ports)
 ❌ REMOVED: All localhost and emergent.host references
 """
 
@@ -21,12 +22,12 @@ import sys
 from datetime import datetime
 
 # DEPLOYMENT RULE COMPLIANT CONFIGURATION
-BASE_URL = "http://217.154.0.82/api"
-FRONTEND_URL = "http://217.154.0.82"
+BASE_URL = "get_backend_url()/api"
+FRONTEND_URL = "get_backend_url()"
 
 # Test credentials
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class CatalystDatabaseTester:
     def __init__(self):
@@ -397,9 +398,9 @@ class CatalystDatabaseTester:
         try:
             # Test that old forbidden URLs are not accessible
             forbidden_urls = [
-                "http://localhost:3000",
-                "http://localhost:8001", 
-                "https://cataloro-hub.preview.emergentagent.com",
+                "get_config("FRONTEND_URL_LOCAL")",
+                "get_backend_url("local")", 
+                "get_backend_url()",
                 "https://revived-cataloro.preview.emergentagent.com"
             ]
             

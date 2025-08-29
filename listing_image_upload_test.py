@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Backend Testing Script for Listing Image Upload Functionality
 Focus: Testing POST /api/listings/upload-image endpoint
@@ -12,9 +13,9 @@ from PIL import Image
 import tempfile
 
 # Configuration
-BACKEND_URL = "https://cataloro-hub.preview.emergentagent.com/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class ListingImageUploadTester:
     def __init__(self):
@@ -284,7 +285,7 @@ class ListingImageUploadTester:
         try:
             # Construct full URL
             if image_url.startswith('/uploads/'):
-                full_url = f"https://cataloro-hub.preview.emergentagent.com{image_url}"
+                full_url = f"get_backend_url(){image_url}"
             else:
                 full_url = image_url
             

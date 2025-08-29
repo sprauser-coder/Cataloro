@@ -15,6 +15,7 @@ from datetime import datetime, timezone, timedelta
 import jwt
 import bcrypt
 from enum import Enum
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -901,7 +902,7 @@ async def create_order(order_data: OrderCreate, current_user: User = Depends(get
     return order
 
 # Phase 3C: Order Approval Endpoints
-@api_router.put("/orders/{order_id}/approve")
+@api_router.put("/orders/{order_id}get_paths()["app_root"]rove")
 async def approve_order(order_id: str, current_user: User = Depends(get_current_user)):
     """Seller approves an order"""
     try:
@@ -1428,13 +1429,13 @@ async def fix_admin_name(current_user: User = Depends(get_admin_user)):
         
         # Update the admin user in database
         result = await db.users.update_one(
-            {"email": "admin@marketplace.com"},
+            {"email": "get_admin_credentials()[0]"},
             {"$set": prepare_for_mongo(admin_updates)}
         )
         
         if result.modified_count > 0:
             # Return updated user data
-            updated_admin = await db.users.find_one({"email": "admin@marketplace.com"})
+            updated_admin = await db.users.find_one({"email": "get_admin_credentials()[0]"})
             return {
                 "message": "Admin name fixed successfully",
                 "admin_name": updated_admin.get("full_name", "System Administrator"),
@@ -1846,9 +1847,9 @@ async def create_default_admin():
         raise HTTPException(status_code=400, detail="Admin user already exists")
     
     admin_data = {
-        "email": "admin@marketplace.com",
+        "email": "get_admin_credentials()[0]",
         "username": "admin",
-        "password": "admin123",
+        "password": "get_admin_credentials()[1]",
         "full_name": "System Administrator",
         "role": "admin"
     }
@@ -1870,7 +1871,7 @@ async def create_default_admin():
     
     await db.users.insert_one(user_doc)
     
-    return {"message": "Default admin created", "email": "admin@marketplace.com", "password": "admin123", "user_id": user_id}
+    return {"message": "Default admin created", "email": "get_admin_credentials()[0]", "password": "get_admin_credentials()[1]", "user_id": user_id}
 
 @api_router.post("/admin/generate-user-ids")
 async def generate_missing_user_ids(admin: User = Depends(get_admin_user)):

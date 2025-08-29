@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Multi-User Profile Test
 Create multiple test users and check if they get different profile data.
@@ -12,9 +13,9 @@ import os
 import uuid
 
 # Configuration
-BACKEND_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class MultiUserProfileTester:
     def __init__(self):
@@ -260,7 +261,7 @@ class MultiUserProfileTester:
             print(f"  Total Listings: {admin_data.get('total_listings', 'N/A')}")
         
         # Try to test with Ana Lukic if we can guess the password
-        test_passwords = ['password', 'ana123', 'test123', 'admin123']
+        test_passwords = ['password', 'ana123', 'test123', 'get_admin_credentials()[1]']
         for pwd in test_passwords:
             try:
                 ana_response = requests.post(f"{BACKEND_URL}/auth/login", json={

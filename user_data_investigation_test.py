@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 User Data Investigation Test
 Testing the user profile data issue where all users see the same profile data.
@@ -11,9 +12,9 @@ from datetime import datetime
 import os
 
 # Configuration
-BACKEND_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class UserDataInvestigator:
     def __init__(self):
@@ -347,7 +348,7 @@ class UserDataInvestigator:
         for user in users:
             if user['email'] != ADMIN_EMAIL:
                 # Try common test passwords
-                test_passwords = ['password', 'test123', user['username'], 'admin123']
+                test_passwords = ['password', 'test123', user['username'], 'get_admin_credentials()[1]']
                 for pwd in test_passwords:
                     try:
                         test_response = requests.post(f"{BACKEND_URL}/auth/login", json={

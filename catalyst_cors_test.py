@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Catalyst Database System CORS Fix Verification Test
 Testing backend endpoints after CORS configuration fix for frontend URL.
@@ -10,11 +11,11 @@ import sys
 from datetime import datetime
 
 # Use the frontend URL from .env file
-BASE_URL = "https://cataloro-hub.preview.emergentagent.com/api"
+BASE_URL = "get_backend_url()/api"
 
 # Test credentials
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class CatalystDatabaseTester:
     def __init__(self):
@@ -70,7 +71,7 @@ class CatalystDatabaseTester:
         try:
             # Test OPTIONS preflight request
             headers = {
-                'Origin': 'https://cataloro-hub.preview.emergentagent.com',
+                'Origin': 'get_backend_url()',
                 'Access-Control-Request-Method': 'GET',
                 'Access-Control-Request-Headers': 'Content-Type,Authorization'
             }
@@ -84,7 +85,7 @@ class CatalystDatabaseTester:
                 'Access-Control-Allow-Credentials': response.headers.get('Access-Control-Allow-Credentials')
             }
             
-            origin_allowed = cors_headers['Access-Control-Allow-Origin'] == 'https://cataloro-hub.preview.emergentagent.com'
+            origin_allowed = cors_headers['Access-Control-Allow-Origin'] == 'get_backend_url()'
             
             self.log_result(
                 "CORS Headers Configuration",
@@ -405,7 +406,7 @@ class CatalystDatabaseTester:
         print("🧪 CATALYST DATABASE SYSTEM CORS FIX VERIFICATION")
         print("=" * 60)
         print(f"Testing against: {BASE_URL}")
-        print(f"Frontend URL: https://cataloro-hub.preview.emergentagent.com")
+        print(f"Frontend URL: get_backend_url()")
         print("=" * 60)
         
         # Test sequence

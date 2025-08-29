@@ -2,7 +2,7 @@
 """
 CATALORO - CENTRALIZED ADMIN USER FIX
 ====================================
-Uses centralized configuration from /app/directions
+Uses centralized configuration from get_paths()["app_root"]/directions
 """
 
 import asyncio
@@ -10,7 +10,7 @@ import sys
 import os
 
 # Add current directory to path to import config_loader
-sys.path.append('/app')
+sys.path.append('get_paths()["app_root"]')
 from config_loader import get_config, get_database_url, get_admin_credentials
 
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -19,12 +19,12 @@ async def fix_admin_user():
     """Fix admin user authentication using centralized config"""
     
     print("=== CATALORO ADMIN USER FIX ===")
-    print("Using centralized configuration from /app/directions")
+    print("Using centralized configuration from get_paths()["app_root"]/directions")
     print()
     
     # Get configuration
     mongo_url = get_database_url()
-    db_name = get_config('DB_NAME', 'cataloro_production')
+    db_name = get_config('DB_NAME', 'get_config("DB_NAME")')
     admin_email, admin_password = get_admin_credentials()
     
     print(f"📍 Database URL: {mongo_url}")

@@ -1,8 +1,9 @@
 import requests
 import json
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 
 # Configuration
-BACKEND_URL = "http://217.154.0.82/api"
+BACKEND_URL = "get_backend_url()/api"
 
 def check_public_api():
     print("=== CHECKING PUBLIC CMS API ===")

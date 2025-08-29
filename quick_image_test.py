@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Quick Image Upload Verification Test
 Focus: POST /api/listings/upload-image with PNG file upload and accessibility verification
@@ -13,7 +14,7 @@ from PIL import Image
 
 class QuickImageTester:
     def __init__(self):
-        self.base_url = "http://217.154.0.82"
+        self.base_url = "get_backend_url()"
         self.api_url = f"{self.base_url}/api"
         self.admin_token = None
         self.tests_run = 0
@@ -35,8 +36,8 @@ class QuickImageTester:
         """Authenticate as admin user"""
         try:
             login_data = {
-                "email": "admin@marketplace.com",
-                "password": "admin123"
+                "email": "get_admin_credentials()[0]",
+                "password": "get_admin_credentials()[1]"
             }
             
             response = requests.post(f"{self.api_url}/auth/login", json=login_data, timeout=10)
@@ -44,7 +45,7 @@ class QuickImageTester:
             if response.status_code == 200:
                 data = response.json()
                 self.admin_token = data.get("access_token")
-                self.log_test("Admin Authentication", True, "Successfully authenticated as admin@marketplace.com")
+                self.log_test("Admin Authentication", True, "Successfully authenticated as get_admin_credentials()[0]")
                 return True
             else:
                 self.log_test("Admin Authentication", False, f"Login failed with status {response.status_code}", response.text)
@@ -149,7 +150,7 @@ class QuickImageTester:
         print("QUICK IMAGE UPLOAD VERIFICATION TEST")
         print("=" * 80)
         print(f"Backend URL: {self.api_url}")
-        print(f"Admin Credentials: admin@marketplace.com")
+        print(f"Admin Credentials: get_admin_credentials()[0]")
         print("-" * 80)
         
         # Test 1: Admin Authentication

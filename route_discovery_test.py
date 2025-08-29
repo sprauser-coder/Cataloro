@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Route Discovery and Debugging Test Suite
 Testing route registration and availability as requested in review
@@ -10,9 +11,9 @@ import sys
 from datetime import datetime, timezone
 
 # Configuration
-BASE_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BASE_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class RouteDiscoveryTestSuite:
     def __init__(self):
@@ -197,7 +198,7 @@ class RouteDiscoveryTestSuite:
         
         # Test /docs endpoint
         try:
-            response = self.session.get(f"http://217.154.0.82/docs")
+            response = self.session.get(f"get_backend_url()/docs")
             
             if response.status_code == 200:
                 self.log_test("FastAPI Docs (/docs)", True, 
@@ -211,7 +212,7 @@ class RouteDiscoveryTestSuite:
         
         # Test /openapi.json endpoint
         try:
-            response = self.session.get(f"http://217.154.0.82/openapi.json")
+            response = self.session.get(f"get_backend_url()/openapi.json")
             
             if response.status_code == 200:
                 data = response.json()

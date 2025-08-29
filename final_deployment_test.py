@@ -3,9 +3,10 @@ import sys
 import json
 from datetime import datetime, timedelta
 import time
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 
 class FinalDeploymentTester:
-    def __init__(self, base_url="https://cataloro-hub.preview.emergentagent.com"):
+    def __init__(self, base_url="get_backend_url()"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.admin_token = None
@@ -64,7 +65,7 @@ class FinalDeploymentTester:
         print("=" * 40)
         
         # Admin login
-        admin_data = {"email": "admin@marketplace.com", "password": "admin123"}
+        admin_data = {"email": "get_admin_credentials()[0]", "password": "get_admin_credentials()[1]"}
         success, response = self.run_test("Admin Login", "POST", "auth/login", 200, admin_data)
         if success and 'access_token' in response:
             self.admin_token = response['access_token']
@@ -107,7 +108,7 @@ class FinalDeploymentTester:
         results = []
         
         # Test admin authentication
-        admin_data = {"email": "admin@marketplace.com", "password": "admin123"}
+        admin_data = {"email": "get_admin_credentials()[0]", "password": "get_admin_credentials()[1]"}
         success, response = self.run_test("Admin Authentication", "POST", "auth/login", 200, admin_data)
         results.append(success)
         
@@ -117,7 +118,7 @@ class FinalDeploymentTester:
         results.append(success)
         
         # Test registration validation
-        duplicate_data = {"email": "admin@marketplace.com", "username": "admin", "password": "test", "full_name": "Test", "role": "buyer"}
+        duplicate_data = {"email": "get_admin_credentials()[0]", "username": "admin", "password": "test", "full_name": "Test", "role": "buyer"}
         success, response = self.run_test("Duplicate Email (Expected Fail)", "POST", "auth/register", 400, duplicate_data)
         results.append(success)
         

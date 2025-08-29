@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Phase 3C Order Processing & Notification System Backend Testing
 Testing comprehensive notification system and order approval workflow
@@ -11,12 +12,12 @@ from datetime import datetime
 import sys
 
 # Configuration
-BACKEND_URL = "http://localhost:8001/api"  # Using direct backend URL for testing
+BACKEND_URL = "get_backend_url("local")/api"  # Using direct backend URL for testing
 WEBSOCKET_URL = "ws://localhost:8001/api"
 
 # Admin credentials for testing
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class Phase3CBackendTester:
     def __init__(self):
@@ -264,7 +265,7 @@ class Phase3CBackendTester:
         try:
             # Test order approval by seller
             headers = {"Authorization": f"Bearer {self.seller_token}"}
-            response = requests.put(f"{BACKEND_URL}/orders/{self.test_order_id}/approve", headers=headers)
+            response = requests.put(f"{BACKEND_URL}/orders/{self.test_order_id}get_paths()["app_root"]rove", headers=headers)
             
             if response.status_code == 200:
                 data = response.json()
@@ -518,7 +519,7 @@ class Phase3CBackendTester:
                     time.sleep(2)
                     
                     # Approve order
-                    approve_response = requests.put(f"{BACKEND_URL}/orders/{integration_order_id}/approve", headers=headers)
+                    approve_response = requests.put(f"{BACKEND_URL}/orders/{integration_order_id}get_paths()["app_root"]rove", headers=headers)
                     
                     if approve_response.status_code == 200:
                         # Wait for processing

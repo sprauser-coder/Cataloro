@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Final Backend Testing for Image Upload and Listings Issues
 Testing the specific issues reported by the user.
@@ -11,9 +12,9 @@ from datetime import datetime
 import os
 
 # Configuration - Using the requested backend URL
-BACKEND_URL = "https://cataloro-hub.preview.emergentagent.com/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class FinalBackendTester:
     def __init__(self):

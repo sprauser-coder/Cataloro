@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Cataloro v1.0.4 Bug Fixes Backend Testing
 =========================================
@@ -13,7 +14,7 @@ Priority Testing Areas:
 5. **Admin Panel**: Verify all endpoints work with the new sidebar layout structure
 
 Test Scenarios:
-- Admin authentication (admin@marketplace.com/admin123) 
+- Admin authentication (get_admin_credentials()[0]/get_admin_credentials()[1]) 
 - Test favorites functionality for different listing types (auction/regular)
 - Verify category management operations
 - Check order data includes proper timestamps and sorting
@@ -27,9 +28,9 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://cataloro-hub.preview.emergentagent.com/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class CataloroV104Tester:
     def __init__(self):

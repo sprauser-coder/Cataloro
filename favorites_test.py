@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Focused Favorites Endpoints Testing
 Testing the favorites toggle functionality as requested:
@@ -7,7 +8,7 @@ Testing the favorites toggle functionality as requested:
 3. GET /api/favorites - Verify the favorite was added and note the favorite_id
 4. DELETE /api/favorites/{favorite_id} - Test removing using the correct favorite_id
 
-Using admin credentials: admin@marketplace.com / admin123
+Using admin credentials: get_admin_credentials()[0] / get_admin_credentials()[1]
 """
 
 import requests
@@ -16,9 +17,9 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class FavoritesTestRunner:
     def __init__(self):

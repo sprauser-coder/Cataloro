@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
 """
 Focused Deployment Test for Cataloro
 Testing the specific endpoints mentioned in the review request after URL configuration fix.
@@ -10,9 +11,9 @@ import sys
 from datetime import datetime
 
 # Configuration - Using the new deployment URL
-BACKEND_URL = "http://217.154.0.82/api"
-ADMIN_EMAIL = "admin@marketplace.com"
-ADMIN_PASSWORD = "admin123"
+BACKEND_URL = "get_backend_url()/api"
+ADMIN_EMAIL = "get_admin_credentials()[0]"
+ADMIN_PASSWORD = "get_admin_credentials()[1]"
 
 class FocusedDeploymentTester:
     def __init__(self):
@@ -34,7 +35,7 @@ class FocusedDeploymentTester:
         print()
     
     def test_core_api_accessibility(self):
-        """Test Core API endpoints accessibility on http://217.154.0.82/api/"""
+        """Test Core API endpoints accessibility on get_backend_url()/api/"""
         print("🌐 Testing Core API Accessibility...")
         
         try:
@@ -61,7 +62,7 @@ class FocusedDeploymentTester:
             return False
     
     def test_authentication_login(self):
-        """Test Authentication endpoint (POST /api/auth/login) with admin@marketplace.com/admin123"""
+        """Test Authentication endpoint (POST /api/auth/login) with get_admin_credentials()[0]/get_admin_credentials()[1]"""
         print("🔐 Testing Authentication Login...")
         
         try:
