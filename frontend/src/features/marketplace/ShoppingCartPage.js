@@ -1,10 +1,12 @@
 /**
  * CATALORO - Ultra-Modern Shopping Cart
  * Advanced cart with wishlist, recommendations, and checkout
+ * Now fully integrated with MarketplaceContext
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useMarketplace } from '../../context/MarketplaceContext';
 import { 
   ShoppingCart, 
   Minus, 
@@ -25,150 +27,62 @@ import {
 } from 'lucide-react';
 
 function ShoppingCartPage() {
-  const [cartItems, setCartItems] = useState([]);
-  const [savedItems, setSavedItems] = useState([]);
+  const {
+    cartItems,
+    cartCount,
+    cartTotal,
+    favorites,
+    updateQuantity,
+    removeFromCart,
+    addToFavorites,
+    removeFromFavorites,
+    appliedPromo,
+    applyPromo,
+    removePromo,
+    showNotification,
+    allProducts
+  } = useMarketplace();
+
   const [promoCode, setPromoCode] = useState('');
-  const [appliedPromo, setAppliedPromo] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  // Demo data
-  const demoCartItems = [
-    {
-      id: '1',
-      title: 'MacBook Pro 16-inch M3',
-      seller: 'TechGuru123',
-      price: 2499,
-      originalPrice: 2799,
-      quantity: 1,
-      image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200',
-      condition: 'Like New',
-      shipping: 'Free shipping',
-      estimatedDelivery: '2-3 business days',
-      inStock: true,
-      rating: 4.8,
-      reviews: 156
-    },
-    {
-      id: '2',
-      title: 'Vintage Gibson Guitar',
-      seller: 'MusicStore_Pro',
-      price: 3200,
-      originalPrice: 3800,
-      quantity: 1,
-      image: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=200',
-      condition: 'Excellent',
-      shipping: 'Express shipping - $25',
-      estimatedDelivery: '1-2 business days',
-      inStock: true,
-      rating: 4.9,
-      reviews: 89
+  const handleApplyPromo = () => {
+    const success = applyPromo(promoCode);
+    if (success) {
+      setPromoCode('');
     }
-  ];
-
-  const demoSavedItems = [
-    {
-      id: '3',
-      title: 'Designer Handbag',
-      seller: 'LuxuryItems_NYC',
-      price: 1850,
-      originalPrice: 2200,
-      image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200',
-      condition: 'Excellent',
-      rating: 4.7,
-      reviews: 245
-    }
-  ];
-
-  const recommendedItems = [
-    {
-      id: '4',
-      title: 'iPhone 15 Pro Case',
-      price: 49,
-      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=200',
-      rating: 4.6,
-      reviews: 234
-    },
-    {
-      id: '5',
-      title: 'Guitar Accessories Kit',
-      price: 89,
-      image: 'https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=200',
-      rating: 4.5,
-      reviews: 167
-    }
-  ];
-
-  useEffect(() => {
-    // Simulate loading
-    setTimeout(() => {
-      setCartItems(demoCartItems);
-      setSavedItems(demoSavedItems);
-      setLoading(false);
-    }, 1000);
-  }, []);
-
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity === 0) {
-      removeFromCart(id);
-      return;
-    }
-    
-    setCartItems(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-
-  const removeFromCart = (id) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
   };
 
   const moveToSaved = (item) => {
-    setSavedItems(prev => [...prev, { ...item, quantity: undefined }]);
+    addToFavorites(item);
     removeFromCart(item.id);
+    showNotification(`Moved ${item.title} to favorites`, 'info');
   };
 
   const moveToCart = (item) => {
-    setCartItems(prev => [...prev, { ...item, quantity: 1 }]);
-    setSavedItems(prev => prev.filter(saved => saved.id !== item.id));
+    const cartItem = { ...item, quantity: 1 };
+    addToCart(cartItem);
+    removeFromFavorites(item.id);
   };
 
-  const applyPromoCode = () => {
-    if (promoCode === 'SAVE10') {
-      setAppliedPromo({
-        code: 'SAVE10',
-        discount: 0.1,
-        description: '10% off your order'
-      });
-    } else if (promoCode === 'FREESHIP') {
-      setAppliedPromo({
-        code: 'FREESHIP',
-        discount: 0,
-        shippingDiscount: true,
-        description: 'Free shipping on this order'
-      });
-    } else {
-      alert('Invalid promo code');
-    }
-  };
+  // Get saved items (favorites that aren't in cart)
+  const savedItems = favorites.filter(fav => 
+    !cartItems.some(cartItem => cartItem.id === fav.id)
+  );
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  // Get recommended items (products not in cart or favorites)
+  const recommendedItems = allProducts
+    .filter(product => 
+      !cartItems.some(cartItem => cartItem.id === product.id) &&
+      !favorites.some(fav => fav.id === product.id)
+    )
+    .slice(0, 4);
+
+  // Calculate totals
+  const subtotal = cartTotal;
   const discount = appliedPromo ? subtotal * (appliedPromo.discount || 0) : 0;
-  const shipping = appliedPromo?.shippingDiscount ? 0 : 25;
+  const shipping = appliedPromo?.shippingDiscount ? 0 : (subtotal > 0 ? 25 : 0);
   const tax = (subtotal - discount) * 0.08; // 8% tax
   const total = subtotal - discount + shipping + tax;
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading your cart...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
@@ -181,7 +95,7 @@ function ShoppingCartPage() {
             Shopping Cart
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            {cartItems.length} item{cartItems.length !== 1 ? 's' : ''} in your cart
+            {cartCount} item{cartCount !== 1 ? 's' : ''} in your cart
           </p>
         </div>
         
@@ -237,7 +151,7 @@ function ShoppingCartPage() {
                       {/* Product Image */}
                       <div className="w-24 h-24 flex-shrink-0">
                         <img
-                          src={item.image}
+                          src={item.images?.[0] || item.image || 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200'}
                           alt={item.title}
                           className="w-full h-full object-cover rounded-lg"
                         />
@@ -251,7 +165,7 @@ function ShoppingCartPage() {
                               {item.title}
                             </h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                              Sold by {item.seller}
+                              Sold by {item.seller?.name || item.seller || 'Unknown Seller'}
                             </p>
                           </div>
                           
@@ -274,7 +188,7 @@ function ShoppingCartPage() {
                           <div className="flex items-center">
                             <Star className="w-4 h-4 text-yellow-400 fill-current" />
                             <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">
-                              {item.rating} ({item.reviews} reviews)
+                              {item.rating || 4.5} ({item.reviewCount || item.reviews || 0} reviews)
                             </span>
                           </div>
                         </div>
@@ -283,15 +197,15 @@ function ShoppingCartPage() {
                         <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
                           <span className="flex items-center">
                             <CheckCircle className="w-4 h-4 mr-1 text-green-500" />
-                            {item.condition}
+                            {item.condition || 'New'}
                           </span>
                           <span className="flex items-center">
                             <Truck className="w-4 h-4 mr-1" />
-                            {item.shipping}
+                            {item.shipping || 'Standard shipping'}
                           </span>
                           <span className="flex items-center">
                             <Clock className="w-4 h-4 mr-1" />
-                            {item.estimatedDelivery}
+                            {item.estimatedDelivery || '3-5 business days'}
                           </span>
                         </div>
 
@@ -359,7 +273,7 @@ function ShoppingCartPage() {
                     {savedItems.map((item) => (
                       <div key={item.id} className="flex space-x-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                         <img
-                          src={item.image}
+                          src={item.images?.[0] || item.image || 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200'}
                           alt={item.title}
                           className="w-16 h-16 object-cover rounded-lg"
                         />
@@ -383,34 +297,39 @@ function ShoppingCartPage() {
             )}
 
             {/* Recommended Items */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  You might also like
-                </h2>
-              </div>
-              
-              <div className="p-6">
-                <div className="grid grid-cols-2 gap-4">
-                  {recommendedItems.map((item) => (
-                    <div key={item.id} className="text-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-24 object-cover rounded-lg mb-3"
-                      />
-                      <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-1">
-                        {item.title}
-                      </h4>
-                      <p className="text-lg font-bold text-blue-600 mb-2">${item.price}</p>
-                      <button className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
-                        Add to Cart
-                      </button>
-                    </div>
-                  ))}
+            {recommendedItems.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    You might also like
+                  </h2>
+                </div>
+                
+                <div className="p-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    {recommendedItems.map((item) => (
+                      <div key={item.id} className="text-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow">
+                        <img
+                          src={item.images?.[0] || 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200'}
+                          alt={item.title}
+                          className="w-full h-24 object-cover rounded-lg mb-3"
+                        />
+                        <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-1">
+                          {item.title}
+                        </h4>
+                        <p className="text-lg font-bold text-blue-600 mb-2">${item.price}</p>
+                        <button 
+                          onClick={() => addToCart(item)}
+                          className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Order Summary */}
@@ -436,7 +355,7 @@ function ShoppingCartPage() {
                       className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                     <button
-                      onClick={applyPromoCode}
+                      onClick={handleApplyPromo}
                       className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors font-medium"
                     >
                       Apply
@@ -445,11 +364,19 @@ function ShoppingCartPage() {
                   
                   {appliedPromo && (
                     <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                      <div className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
-                        <span className="text-sm text-green-800 dark:text-green-200 font-medium">
-                          {appliedPromo.description}
-                        </span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
+                          <span className="text-sm text-green-800 dark:text-green-200 font-medium">
+                            {appliedPromo.description}
+                          </span>
+                        </div>
+                        <button
+                          onClick={removePromo}
+                          className="text-green-600 hover:text-green-700"
+                        >
+                          ×
+                        </button>
                       </div>
                     </div>
                   )}

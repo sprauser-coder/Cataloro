@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { MarketplaceProvider } from './context/MarketplaceContext';
 import ModernLayout from './components/layout/ModernLayout';
 
 // Modern Feature Components
@@ -42,40 +43,42 @@ function App() {
     <div className="App">
       <AuthProvider>
         <NotificationProvider>
-          <Router>
-            <Routes>
-              {/* Public Routes */}
-              <Route path={APP_ROUTES.LOGIN} element={<SimpleLoginPage />} />
-              <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
-              
-              {/* Protected Routes with Modern Layout */}
-              <Route path="/" element={<ModernLayout />}>
-                <Route index element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
-                <Route path={APP_ROUTES.BROWSE} element={<ModernBrowsePage />} />
-                <Route path="categories" element={<CategoriesPage />} />
-                <Route path="cart" element={<ShoppingCartPage />} />
-                <Route path="search" element={<ModernBrowsePage />} />
-                <Route path="trending" element={<ModernBrowsePage />} />
-                <Route path="create-listing" element={<MyListingsPage />} />
-                <Route path={APP_ROUTES.MY_LISTINGS} element={<MyListingsPage />} />
-                <Route path="my-orders" element={<DealsPage />} />
-                <Route path={APP_ROUTES.MY_DEALS} element={<DealsPage />} />
-                <Route path="messages" element={<NotificationsPage />} />
-                <Route path="analytics" element={<AdminPanel />} />
-                <Route path="performance" element={<AdminPanel />} />
-                <Route path={APP_ROUTES.ADMIN_PANEL} element={<AdminPanel />} />
-                <Route path="admin/analytics" element={<AdminPanel />} />
-                <Route path="admin/users" element={<AdminPanel />} />
-                <Route path={APP_ROUTES.FAVORITES} element={<FavoritesPage />} />
-                <Route path={APP_ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
-                <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
-                <Route path="settings" element={<ProfilePage />} />
-              </Route>
+          <MarketplaceProvider>
+            <Router>
+              <Routes>
+                {/* Public Routes */}
+                <Route path={APP_ROUTES.LOGIN} element={<SimpleLoginPage />} />
+                <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
+                
+                {/* Protected Routes with Modern Layout */}
+                <Route path="/" element={<ModernLayout />}>
+                  <Route index element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
+                  <Route path={APP_ROUTES.BROWSE} element={<ModernBrowsePage />} />
+                  <Route path="categories" element={<CategoriesPage />} />
+                  <Route path="cart" element={<ShoppingCartPage />} />
+                  <Route path="search" element={<ModernBrowsePage />} />
+                  <Route path="trending" element={<ModernBrowsePage />} />
+                  <Route path="create-listing" element={<MyListingsPage />} />
+                  <Route path={APP_ROUTES.MY_LISTINGS} element={<MyListingsPage />} />
+                  <Route path="my-orders" element={<DealsPage />} />
+                  <Route path={APP_ROUTES.MY_DEALS} element={<DealsPage />} />
+                  <Route path="messages" element={<NotificationsPage />} />
+                  <Route path="analytics" element={<AdminPanel />} />
+                  <Route path="performance" element={<AdminPanel />} />
+                  <Route path={APP_ROUTES.ADMIN_PANEL} element={<AdminPanel />} />
+                  <Route path="admin/analytics" element={<AdminPanel />} />
+                  <Route path="admin/users" element={<AdminPanel />} />
+                  <Route path={APP_ROUTES.FAVORITES} element={<FavoritesPage />} />
+                  <Route path={APP_ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
+                  <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
+                  <Route path="settings" element={<ProfilePage />} />
+                </Route>
 
-              {/* Fallback */}
-              <Route path="*" element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
-            </Routes>
-          </Router>
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
+              </Routes>
+            </Router>
+          </MarketplaceProvider>
         </NotificationProvider>
       </AuthProvider>
     </div>
