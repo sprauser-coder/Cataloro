@@ -133,7 +133,7 @@ function Footer() {
                 </div>
                 <div className="flex items-center space-x-3 text-sm">
                   <Phone className="w-4 h-4 text-blue-400" />
-                  <a href={`tel:${config.contact.phone}`} style={linkStyle} className="hover:text-blue-300 transition-colors">
+                  <a href={`tel:${config.contact.phone}`} style={linkStyle} className="hover:text-blue-300">
                     {config.contact.phone}
                   </a>
                 </div>
