@@ -224,10 +224,10 @@ function AdminPanel() {
       <div className="mb-8">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">*Admin Panel</h1>
-            <p className="text-gray-600">Full control over your marketplace platform</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Admin Panel</h1>
+            <p className="text-gray-600 dark:text-gray-300">Full control over your marketplace platform</p>
           </div>
-          <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+          <span className="bg-purple-100/80 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md">
             ADMIN ACCESS
           </span>
         </div>
