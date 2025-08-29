@@ -1817,7 +1817,7 @@ function SiteAdministrationTab({ showToast }) {
                   applySiteConfiguration(testConfig);
                   showToast('🚀 COMPREHENSIVE TEST APPLIED! Check all changes: Colors, Fonts, Layout, Features', 'info');
                 }}
-                className="bg-orange-500/90 hover:bg-orange-600 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 text-sm hover:shadow-lg"
+                className="bg-orange-500/90 hover:bg-orange-600 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium flex items-center space-x-2 text-sm"
               >
                 <Zap className="w-4 h-4" />
                 <span>Full Test</span>
