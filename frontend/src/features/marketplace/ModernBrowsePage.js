@@ -249,7 +249,7 @@ function ModernBrowsePage() {
               </label>
               <select
                 value={filters.category}
-                onChange={(e) => setFilters({...filters, category: e.target.value})}
+                onChange={(e) => updateFilters({...filters, category: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="all">All Categories</option>
