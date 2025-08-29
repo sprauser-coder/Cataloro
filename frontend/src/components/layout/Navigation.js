@@ -8,7 +8,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   Search, 
   Package, 
-  HandHeart, 
+  DollarSign, 
   Shield, 
   Heart, 
   Bell, 
