@@ -289,6 +289,12 @@ function AdminPanel() {
         />
       )}
       
+      {activeTab === 'cat-database' && (
+        <CatDatabaseTab 
+          showToast={showToast}
+        />
+      )}
+      
       {activeTab === 'settings' && (
         <SettingsTab 
           settings={settings}
