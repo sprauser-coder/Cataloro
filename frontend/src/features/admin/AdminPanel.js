@@ -1,7 +1,6 @@
 /**
- * CATALORO - Admin Panel
- * Full-scale KPIs with real functionality, complete user management, 
- * and look & feel control with logo upload options
+ * CATALORO - Ultra-Modern Admin Panel
+ * Real KPI functionality, complete user management, and site customization
  */
 
 import React, { useState, useEffect } from 'react';
@@ -18,11 +17,23 @@ import {
   CheckCircle,
   BarChart3,
   PieChart,
-  Activity
+  Activity,
+  Eye,
+  Heart,
+  ShoppingCart,
+  Star,
+  Camera,
+  Save,
+  X,
+  RefreshCw,
+  Download,
+  AlertTriangle,
+  Shield
 } from 'lucide-react';
 import { adminService } from '../../services/adminService';
 import { useAuth } from '../../context/AuthContext';
-import { useNotifications } from '../../context/NotificationContext';
+import { useMarketplace } from '../../context/MarketplaceContext';
+import { useNotification } from '../../context/NotificationContext';
 
 function AdminPanel() {
   const [activeTab, setActiveTab] = useState('dashboard');
