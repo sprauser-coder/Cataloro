@@ -103,7 +103,7 @@ body {
 }
 
 .kpi-card {
-  @apply bg-white/80 backdrop-blur-md p-6 text-center rounded-2xl shadow-lg border border-white/20 hover:shadow-xl hover:bg-white/90 transition-all duration-300;
+  @apply bg-white/80 backdrop-blur-md p-6 text-center rounded-2xl shadow-lg border border-white/20 hover:shadow-2xl hover:bg-white/90 transition-all duration-300;
 }
 
 /* Responsive Utilities */
