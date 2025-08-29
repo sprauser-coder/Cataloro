@@ -141,29 +141,7 @@ body:not(.dark) {
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   position: relative;
-  overflow: hidden;
-}
-
-.cataloro-card-glass::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: left 0.8s;
-}
-
-.cataloro-card-glass:hover::after {
-  left: 100%;
-}
-
-.cataloro-card-glass:hover {
-  transform: translateY(-12px);
-  box-shadow: 0 30px 60px rgba(103, 126, 234, 0.25);
 }
 
 /* Modern Buttons */
