@@ -28,32 +28,15 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <AuthProvider>
-        <NotificationProvider>
-          <Router>
-            <Routes>
-              {/* Public Routes */}
-              <Route path={APP_ROUTES.LOGIN} element={<LoginPage />} />
-              <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
-              
-              {/* Protected Routes with Layout */}
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
-                <Route path={APP_ROUTES.BROWSE} element={<BrowsePage />} />
-                <Route path={APP_ROUTES.MY_LISTINGS} element={<MyListingsPage />} />
-                <Route path={APP_ROUTES.MY_DEALS} element={<DealsPage />} />
-                <Route path={APP_ROUTES.ADMIN_PANEL} element={<AdminPanel />} />
-                <Route path={APP_ROUTES.FAVORITES} element={<FavoritesPage />} />
-                <Route path={APP_ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
-                <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
-              </Route>
-
-              {/* Fallback */}
-              <Route path="*" element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
-            </Routes>
-          </Router>
-        </NotificationProvider>
-      </AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public Routes - No context providers for now */}
+          <Route path={APP_ROUTES.LOGIN} element={<LoginPage />} />
+          <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="*" element={<LoginPage />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
