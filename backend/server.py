@@ -199,7 +199,8 @@ async def browse_listings():
         for listing in dummy_listings:
             await db.listings.insert_one(listing)
         
-        return dummy_listings
+        # Return serialized dummy data
+        return [serialize_doc(listing) for listing in dummy_listings]
     
     return listings
 
