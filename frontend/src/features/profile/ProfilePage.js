@@ -372,209 +372,215 @@ function ProfilePage() {
         </nav>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Profile Card */}
-        <div className="lg:col-span-1">
-          <div className="cataloro-card p-6 text-center">
-            {/* Avatar */}
-            <div className="relative inline-block mb-4">
-              <div className="w-32 h-32 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-white font-bold text-4xl">
-                  {profileData.full_name?.charAt(0) || user?.username?.charAt(0) || 'U'}
-                </span>
+      {/* Tab Content */}
+      <div className="space-y-6">
+        
+        {/* Profile Info Tab */}
+        {activeTab === 'profile' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Profile Picture Section */}
+            <div className="lg:col-span-1">
+              <div className="cataloro-card-glass p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Picture</h3>
+                
+                <div className="text-center">
+                  <div className="relative inline-block mb-4">
+                    <div className="w-32 h-32 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto relative overflow-hidden">
+                      {isUploading && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                          <RefreshCw className="w-6 h-6 text-white animate-spin" />
+                        </div>
+                      )}
+                      {profileData.avatar_url ? (
+                        <img 
+                          src={profileData.avatar_url} 
+                          alt="Profile" 
+                          className="w-32 h-32 rounded-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-white font-bold text-4xl">
+                          {profileData.full_name?.charAt(0) || user?.username?.charAt(0) || 'U'}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {isEditing && (
+                      <label className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg cursor-pointer hover:bg-gray-50 border border-gray-200">
+                        <Camera className="w-4 h-4 text-gray-600" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarUpload}
+                          className="hidden"
+                          disabled={isUploading}
+                        />
+                      </label>
+                    )}
+                  </div>
+                  
+                  <p className="text-sm text-gray-600 mb-4">
+                    Upload a profile picture to help others recognize you
+                  </p>
+                  
+                  <div className="text-xs text-gray-500">
+                    • JPG, PNG, or GIF
+                    • Maximum size: 5MB
+                    • Recommended: 400x400px
+                  </div>
+                </div>
               </div>
-              
-              {isEditing && (
-                <label className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg cursor-pointer hover:bg-gray-50">
-                  <Camera className="w-4 h-4 text-gray-600" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                  />
-                </label>
-              )}
+
+              {/* Account Status */}
+              <div className="cataloro-card-glass p-6 mt-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Status</h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Email Verified</span>
+                    <span className="flex items-center text-green-600">
+                      <Check className="w-4 h-4 mr-1" />
+                      Verified
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Phone Verified</span>
+                    <span className="flex items-center text-yellow-600">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+                      Pending
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Identity Verified</span>
+                    <span className="flex items-center text-green-600">
+                      <Check className="w-4 h-4 mr-1" />
+                      Verified
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Seller Status</span>
+                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                      Active
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <h3 className="text-xl font-bold text-gray-900 mb-1">
-              {profileData.full_name || 'User Name'}
-            </h3>
-            <p className="text-gray-600 mb-2">@{profileData.username}</p>
-            
-            {user?.role && (
-              <span className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium">
-                {user.role.toUpperCase()}
-              </span>
-            )}
+            {/* Profile Details */}
+            <div className="lg:col-span-2">
+              <div className="cataloro-card-glass p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Personal Information</h3>
+                
+                <form className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <User className="w-4 h-4 inline mr-2" />
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        name="full_name"
+                        value={profileData.full_name}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                        placeholder="Enter your full name"
+                      />
+                    </div>
 
-            {/* Stats */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-lg font-bold text-gray-900">12</div>
-                  <div className="text-sm text-gray-600">Listings</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold text-gray-900">8</div>
-                  <div className="text-sm text-gray-600">Deals</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold text-gray-900">4.9</div>
-                  <div className="text-sm text-gray-600">Rating</div>
-                </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <User className="w-4 h-4 inline mr-2" />
+                        Username
+                      </label>
+                      <input
+                        type="text"
+                        name="username"
+                        value={profileData.username}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                        placeholder="Choose a username"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Mail className="w-4 h-4 inline mr-2" />
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={profileData.email}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                      placeholder="Enter your email"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <Phone className="w-4 h-4 inline mr-2" />
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={profileData.phone}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                        placeholder="Enter your phone number"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <MapPin className="w-4 h-4 inline mr-2" />
+                        Location
+                      </label>
+                      <input
+                        type="text"
+                        name="address"
+                        value={profileData.address}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                        placeholder="Your city, country"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bio
+                    </label>
+                    <textarea
+                      name="bio"
+                      rows={4}
+                      value={profileData.bio}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                      placeholder="Tell us about yourself..."
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {profileData.bio.length}/500 characters
+                    </p>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Profile Details */}
-        <div className="lg:col-span-2">
-          <div className="cataloro-card p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Account Information</h2>
-            
-            <form className="space-y-6">
-              {/* Full Name */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <User className="w-4 h-4 inline mr-2" />
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    name="full_name"
-                    value={profileData.full_name}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    className={`cataloro-input ${!isEditing ? 'bg-gray-50 cursor-not-allowed' : ''}`}
-                    placeholder="Enter your full name"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <User className="w-4 h-4 inline mr-2" />
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    name="username"
-                    value={profileData.username}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    className={`cataloro-input ${!isEditing ? 'bg-gray-50 cursor-not-allowed' : ''}`}
-                    placeholder="Choose a username"
-                  />
-                </div>
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Mail className="w-4 h-4 inline mr-2" />
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={profileData.email}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className={`cataloro-input ${!isEditing ? 'bg-gray-50 cursor-not-allowed' : ''}`}
-                  placeholder="Enter your email"
-                />
-              </div>
-
-              {/* Phone */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Phone className="w-4 h-4 inline mr-2" />
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={profileData.phone}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className={`cataloro-input ${!isEditing ? 'bg-gray-50 cursor-not-allowed' : ''}`}
-                  placeholder="Enter your phone number"
-                />
-              </div>
-
-              {/* Address */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <MapPin className="w-4 h-4 inline mr-2" />
-                  Address
-                </label>
-                <input
-                  type="text"
-                  name="address"
-                  value={profileData.address}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className={`cataloro-input ${!isEditing ? 'bg-gray-50 cursor-not-allowed' : ''}`}
-                  placeholder="Enter your address"
-                />
-              </div>
-
-              {/* Bio */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bio
-                </label>
-                <textarea
-                  name="bio"
-                  rows={4}
-                  value={profileData.bio}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className={`cataloro-input ${!isEditing ? 'bg-gray-50 cursor-not-allowed' : ''}`}
-                  placeholder="Tell us about yourself..."
-                />
-              </div>
-            </form>
-          </div>
-
-          {/* Security Section */}
-          <div className="cataloro-card p-6 mt-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Security</h2>
-            
-            <div className="space-y-4">
-              <button className="cataloro-button-secondary w-full sm:w-auto">
-                Change Password
-              </button>
-              <button className="cataloro-button-secondary w-full sm:w-auto">
-                Two-Factor Authentication
-              </button>
-            </div>
-          </div>
-
-          {/* Preferences Section */}
-          <div className="cataloro-card p-6 mt-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Preferences</h2>
-            
-            <div className="space-y-4">
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-3" defaultChecked />
-                <span className="text-gray-700">Email notifications for new messages</span>
-              </label>
-              
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-3" defaultChecked />
-                <span className="text-gray-700">SMS notifications for deals</span>
-              </label>
-              
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-3" />
-                <span className="text-gray-700">Marketing emails</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
+        )}
     </div>
   );
 }
