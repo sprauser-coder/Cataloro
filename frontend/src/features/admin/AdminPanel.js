@@ -244,7 +244,7 @@ function AdminPanel() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center px-6 py-4 text-sm font-medium transition-all duration-300 border-b-2 ${
+                  className={`flex items-center px-6 py-4 text-sm font-medium border-b-2 ${
                     activeTab === tab.id
                       ? 'text-gray-900 dark:text-white border-blue-600 bg-white/10 dark:bg-white/10 backdrop-blur-md rounded-t-lg'
                       : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 rounded-t-lg'
