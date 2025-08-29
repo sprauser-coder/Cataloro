@@ -43,25 +43,55 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   const notificationRef = useRef(null);
 
   useEffect(() => {
-    // Get user from localStorage
-    const userData = localStorage.getItem('cataloro_user');
-    if (userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (error) {
-        console.error('Error parsing user data:', error);
+    // Function to load user and branding data
+    const loadData = () => {
+      // Get user from localStorage
+      const userData = localStorage.getItem('cataloro_user');
+      if (userData) {
+        try {
+          setUser(JSON.parse(userData));
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+        }
       }
-    }
 
-    // Load site branding from localStorage
-    const brandingData = localStorage.getItem('cataloro_site_branding');
-    if (brandingData) {
-      try {
-        setSiteBranding(JSON.parse(brandingData));
-      } catch (error) {
-        console.error('Error parsing branding data:', error);
+      // Load site branding from localStorage
+      const brandingData = localStorage.getItem('cataloro_site_branding');
+      if (brandingData) {
+        try {
+          const parsedBranding = JSON.parse(brandingData);
+          console.log('Header loading branding data:', parsedBranding);
+          setSiteBranding(parsedBranding);
+        } catch (error) {
+          console.error('Error parsing branding data:', error);
+        }
+      } else {
+        console.log('No branding data found in localStorage');
       }
-    }
+    };
+
+    // Load data initially
+    loadData();
+
+    // Listen for localStorage changes (when admin updates branding)
+    const handleStorageChange = (e) => {
+      if (e.key === 'cataloro_site_branding' || e.key === 'cataloro_user') {
+        loadData();
+      }
+    };
+
+    // Listen for custom events when branding is updated
+    const handleBrandingUpdate = () => {
+      loadData();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('brandingUpdated', handleBrandingUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('brandingUpdated', handleBrandingUpdate);
+    };
   }, []);
 
   // Close dropdowns when clicking outside
