@@ -312,10 +312,10 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}>
                   <div className="px-6 py-4 border-b border-white/10">
-                    <p className="text-base font-bold text-white">
+                    <p className="text-base font-bold text-gray-900 dark:text-white">
                       {user?.full_name || user?.username}
                     </p>
-                    <p className="text-sm text-white/70">{user?.email}</p>
+                    <p className="text-sm text-gray-600 dark:text-white/70">{user?.email}</p>
                   </div>
                   
                   <div className="py-2">
