@@ -166,12 +166,12 @@ function Footer() {
             <div>
               <h4 className="text-lg font-semibold mb-4">Marketplace</h4>
               <ul className="space-y-3">
-                {config.links.marketplace.map((link, index) => (
+                {(config.links?.marketplace || []).map((link, index) => (
                   <li key={index}>
                     <Link 
                       to={link.url} 
                       style={linkStyle}
-                      className="text-sm hover:text-blue-300 transition-colors"
+                      className="text-sm hover:text-blue-300"
                     >
                       {link.label}
                     </Link>
