@@ -504,16 +504,24 @@ async def register(user_data: UserCreate):
     
     return Token(access_token=access_token, token_type="bearer", user=user)
 
-@api_router.post("/auth/login", response_model=Token)
+@api_router.post("/auth/login")
 async def login(credentials: UserLogin):
     user_doc = await db.users.find_one({"email": credentials.email})
     if not user_doc or not verify_password(credentials.password, user_doc['password']):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    user = User(**parse_from_mongo(user_doc))
-    access_token = create_access_token(data={"sub": user.id})
+    # Remove password and _id from response
+    user_dict = parse_from_mongo(user_doc)
+    if 'password' in user_dict:
+        del user_dict['password']
     
-    return Token(access_token=access_token, token_type="bearer", user=user)
+    access_token = create_access_token(data={"sub": user_dict['id']})
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user_dict
+    }
 
 # Listing Routes - Count endpoint MUST come first before parameterized routes
 @api_router.get("/listings/count")
