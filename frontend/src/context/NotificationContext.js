@@ -133,8 +133,8 @@ export function NotificationProvider({ children }) {
     }
   };
 
-  const markAllAsRead = async () => {
-    if (!user?.id) return;
+  const markAllAsRead = async (userId = null) => {
+    if (!userId) return;
 
     try {
       await notificationService.markAllAsRead(user.id);
