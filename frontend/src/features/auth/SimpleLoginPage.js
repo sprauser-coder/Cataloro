@@ -67,11 +67,11 @@ function SimpleLoginPage() {
       localStorage.setItem('cataloro_token', data.token);
       localStorage.setItem('cataloro_user', JSON.stringify(data.user));
       
-      // Show success and redirect
+      // Show success and redirect to marketplace
       alert(`✅ Login Successful!\nWelcome ${data.user.full_name}!\nRole: ${data.user.role}`);
       
-      // For now, just show success - later we'll add proper routing
-      window.location.reload();
+      // Redirect to marketplace
+      window.location.href = '/browse';
       
     } catch (error) {
       setError(error.message || 'Login failed. Please check your credentials.');
