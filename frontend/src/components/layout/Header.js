@@ -3,21 +3,36 @@
  * Modern top navigation with branding and user actions
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, Search, LogOut, Settings } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { useNotifications } from '../../context/NotificationContext';
 import { UI_CONFIG, APP_ROUTES } from '../../config/directions';
 
 function Header() {
-  const { user, logout } = useAuth();
-  const { unreadCount } = useNotifications();
+  const [user, setUser] = useState(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
+  useEffect(() => {
+    // Get user from localStorage
+    const userData = localStorage.getItem('cataloro_user');
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+
+    // For now, set dummy notification count
+    setUnreadCount(2);
+  }, []);
+
   const handleLogout = () => {
-    logout();
+    localStorage.removeItem('cataloro_token');
+    localStorage.removeItem('cataloro_user');
     setShowUserMenu(false);
+    window.location.href = '/login';
   };
 
   return (
