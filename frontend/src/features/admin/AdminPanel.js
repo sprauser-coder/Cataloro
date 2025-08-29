@@ -489,7 +489,7 @@ function DashboardTab({ dashboardData, loading }) {
           </div>
           <div className="space-y-3">
             {recent_activity?.map((activity, index) => (
-              <div key={index} className="flex items-start space-x-3 p-4 bg-white/10 dark:bg-white/5 rounded-xl backdrop-blur-md hover:bg-white/20 dark:hover:bg-white/10 transition-colors">
+              <div key={index} className="flex items-start space-x-3 p-4 bg-white/10 dark:bg-white/5 rounded-xl backdrop-blur-md">
                 <div className="w-3 h-3 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-900 dark:text-white font-medium mb-1">
