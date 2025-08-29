@@ -322,7 +322,7 @@ function ModernBrowsePage() {
       )}
 
       {/* Results Count and Quick Stats */}
-      <div className="flex items-center justify-between">
+      <div id="search-results" className="flex items-center justify-between">
         <div className="flex items-center space-x-6">
           <p className="text-gray-600 dark:text-gray-400">
             <span className="font-semibold text-gray-900 dark:text-white">{filteredListings.length}</span> products found
