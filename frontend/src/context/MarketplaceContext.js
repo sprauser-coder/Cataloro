@@ -184,6 +184,21 @@ function marketplaceReducer(state, action) {
       };
     }
     
+    case ACTIONS.SET_FAVORITES:
+      return {
+        ...state,
+        favorites: action.payload,
+        favoriteCount: action.payload.length
+      };
+    
+    case ACTIONS.SET_CART:
+      return {
+        ...state,
+        cartItems: action.payload,
+        cartCount: action.payload.length,
+        cartTotal: action.payload.reduce((total, item) => total + (item.price * item.quantity), 0)
+      };
+    
     case ACTIONS.SET_PRODUCTS:
       return {
         ...state,
