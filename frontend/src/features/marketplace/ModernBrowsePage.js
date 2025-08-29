@@ -27,6 +27,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
 import { useMarketplace } from '../../context/MarketplaceContext';
+import { useAuth } from '../../context/AuthContext';
 
 function ModernBrowsePage() {
   // Use marketplace context
