@@ -1865,7 +1865,7 @@ function SiteAdministrationTab({ showToast }) {
             <div className="flex items-center space-x-2 ml-2">
               <button
                 onClick={() => applySiteConfiguration(siteConfig)}
-                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 text-sm hover:shadow-lg"
+                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium flex items-center space-x-2 text-sm"
               >
                 <Eye className="w-4 h-4" />
                 <span>Preview</span>
