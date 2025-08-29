@@ -5,7 +5,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { authService } from '../services/authService';
-import { USER_ROLES } from '../../config/directions';
+import { USER_ROLES } from '../config/directions';
 
 // Initial state
 const initialState = {
