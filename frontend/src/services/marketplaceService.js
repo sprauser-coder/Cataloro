@@ -10,7 +10,7 @@ class MarketplaceService {
   async browseListings(filters = {}) {
     try {
       const params = new URLSearchParams(filters);
-      const response = await axios.get(`${API_ENDPOINTS.MARKETPLACE.BROWSE}?${params}`);
+      const response = await axios.get(`${ENV_CONFIG.API_BASE_URL}/listings?${params}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.detail || 'Failed to fetch listings');
