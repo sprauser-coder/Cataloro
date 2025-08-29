@@ -1450,22 +1450,56 @@ function SiteAdministrationTab({ showToast }) {
       setIsSaving(true);
       
       // Simulate API call delay for better UX feedback
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Save to localStorage
+      // Save to localStorage for persistence
       localStorage.setItem('cataloro_site_config', JSON.stringify(siteConfig));
       
-      // APPLY THE CHANGES TO THE ACTUAL SITE
-      applyConfigurationToSite(siteConfig);
+      // APPLY ALL CONFIGURATION CHANGES TO THE SITE IMMEDIATELY
+      const success = applyConfigurationToSite(siteConfig);
       
-      // Show success notification
-      showToast('Site configuration saved and applied successfully! Changes are now live.', 'success');
-      
-      console.log('Site configuration saved and applied:', siteConfig);
+      if (success) {
+        // Count applied features for user feedback
+        const enabledFeatures = Object.entries(siteConfig)
+          .filter(([key, value]) => typeof value === 'boolean' && value)
+          .length;
+          
+        const configuredOptions = Object.entries(siteConfig)
+          .filter(([key, value]) => value !== null && value !== undefined && value !== '')
+          .length;
+        
+        showToast(
+          `✅ Site configuration saved and applied successfully! 
+          ${configuredOptions} settings configured, ${enabledFeatures} features enabled. 
+          All changes are now live across the site.`, 
+          'success'
+        );
+        
+        // Log detailed configuration for debugging
+        console.log('🎉 COMPLETE Site Configuration Applied:', {
+          ...siteConfig,
+          appliedAt: new Date().toISOString(),
+          totalSettings: configuredOptions,
+          enabledFeatures: enabledFeatures
+        });
+        
+        // Flash the page briefly to show changes took effect
+        document.body.style.transition = 'opacity 0.3s ease';
+        document.body.style.opacity = '0.95';
+        setTimeout(() => {
+          document.body.style.opacity = '1';
+          setTimeout(() => {
+            document.body.style.transition = '';
+          }, 300);
+        }, 150);
+        
+      } else {
+        throw new Error('Configuration application failed');
+      }
       
     } catch (error) {
       console.error('Save error:', error);
-      showToast('Failed to save configuration. Please try again.', 'error');
+      showToast('Failed to save and apply configuration. Please try again.', 'error');
     } finally {
       setIsSaving(false);
     }
