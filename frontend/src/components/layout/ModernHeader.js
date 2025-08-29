@@ -119,22 +119,29 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
               </div>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-1">
+            {/* Navigation Links */}
+            <nav className="hidden lg:flex space-x-2">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                
                 return (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      isActive(item.path)
-                        ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
+                      isActive
+                        ? 'bg-white/20 text-white shadow-lg backdrop-blur-md'
+                        : 'text-white/80 hover:text-white hover:bg-white/10'
                     }`}
+                    style={isActive ? {
+                      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
+                      backdropFilter: 'blur(20px)',
+                      boxShadow: '0 4px 15px rgba(255, 255, 255, 0.1)'
+                    } : {}}
                   >
                     <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
+                    <span className="font-medium">{item.label}</span>
                   </Link>
                 );
               })}
