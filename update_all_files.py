@@ -179,7 +179,8 @@ def sync_env_files():
     """Sync .env files with centralized configuration"""
     
     # Sync frontend .env
-    frontend_env = f'''{get_paths()["frontend_dir"]}/.env'''
+    paths = get_paths()
+    frontend_env = f'{paths["frontend_dir"]}/.env'
     frontend_content = f"""# CATALORO FRONTEND ENVIRONMENT - READS FROM /app/directions  
 # DO NOT MODIFY - Configuration managed centrally in /app/directions
 REACT_APP_BACKEND_URL={get_backend_url()}
@@ -190,7 +191,7 @@ REACT_APP_VERSION={get_config('APP_VERSION')}"""
         f.write(frontend_content)
     
     # Sync backend .env  
-    backend_env = f'''{get_paths()["backend_dir"]}/.env'''
+    backend_env = f'{paths["backend_dir"]}/.env'
     backend_content = f"""# CATALORO BACKEND ENVIRONMENT - READS FROM /app/directions
 # DO NOT MODIFY - Configuration managed centrally in /app/directions
 MONGO_URL={get_config('MONGO_URL')}
