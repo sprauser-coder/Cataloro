@@ -68,6 +68,16 @@ body:not(.dark) {
   --bg-secondary: var(--light-bg-secondary);
 }
 
+/* ===== RESPONSIVE SPACING SYSTEM ===== */
+.mb-default { margin-bottom: 0.5rem !important; } /* mb-2 */
+.space-y-default > * + * { margin-top: 0.5rem !important; } /* space-y-2 */
+.gap-default { gap: 0.5rem !important; } /* gap-2 */
+
+/* Update common spacing classes to use mb-2 */
+.cataloro-card-glass { margin-bottom: 0.5rem !important; }
+.form-section { margin-bottom: 0.5rem !important; }
+.input-group { margin-bottom: 0.5rem !important; }
+
 /* ===== GLOBAL MODERN STYLES ===== */
 * {
   margin: 0;
