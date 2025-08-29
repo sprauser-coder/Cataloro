@@ -1114,6 +1114,8 @@ async def get_catalyst_calculations():
             
             calculations.append({
                 "_id": catalyst_id,
+                "database_id": catalyst_id,
+                "cat_id": catalyst.get('cat_id', ''),
                 "name": catalyst.get('name', ''),
                 "total_price": round(total_price, 2),
                 "is_override": is_override
