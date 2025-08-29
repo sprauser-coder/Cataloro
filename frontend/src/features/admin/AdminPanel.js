@@ -2106,7 +2106,7 @@ function ListingsTab({ showToast }) {
         price: product.price,
         category: product.category || 'Electronics',
         status: product.inStock !== false ? 'active' : 'inactive',
-        seller: product.seller || 'Unknown Seller',
+        seller: product.seller?.name || (typeof product.seller === 'string' ? product.seller : 'Unknown Seller'),
         created_date: product.created_date || new Date().toISOString().split('T')[0],
         views: product.views || Math.floor(Math.random() * 1000),
         image: product.image,
