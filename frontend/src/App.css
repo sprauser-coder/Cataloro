@@ -241,22 +241,49 @@ body:not(.dark) {
   border-radius: 16px;
   padding: 16px 20px;
   font-size: 15px;
-  color: var(--light-text);
+  color: var(--text-primary);
   backdrop-filter: blur(20px);
   transition: all 0.3s ease;
   width: 100%;
   font-family: var(--font-body);
 }
 
+.dark .cataloro-input {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+}
+
+body:not(.dark) .cataloro-input {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 100%);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+}
+
 .cataloro-input::placeholder {
+  color: var(--text-muted);
+}
+
+.dark .cataloro-input::placeholder {
   color: rgba(255, 255, 255, 0.6);
+}
+
+body:not(.dark) .cataloro-input::placeholder {
+  color: rgba(0, 0, 0, 0.4);
 }
 
 .cataloro-input:focus {
   outline: none;
   border-color: rgba(103, 126, 234, 0.6);
   box-shadow: 0 0 20px rgba(103, 126, 234, 0.3);
+}
+
+.dark .cataloro-input:focus {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.1) 100%);
+}
+
+body:not(.dark) .cataloro-input:focus {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
 }
 
 /* Enhanced Navigation */
