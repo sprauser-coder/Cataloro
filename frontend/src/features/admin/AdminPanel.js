@@ -1930,6 +1930,241 @@ function SiteAdministrationTab({ showToast }) {
           </div>
         )}
 
+        {/* Footer Configuration Section */}
+        {activeSection === 'footer' && (
+          <div className="space-y-6">
+            
+            {/* Footer Basic Settings */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Layout className="w-5 h-5 mr-2" />
+                Footer Display Settings
+              </h4>
+              <div className="space-y-4">
+                <label className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <button
+                    onClick={() => handleConfigChange('footerEnabled', !siteConfig.footerEnabled)}
+                    className="mt-1"
+                  >
+                    {siteConfig.footerEnabled ? (
+                      <ToggleRight className="w-6 h-6 text-green-600" />
+                    ) : (
+                      <ToggleLeft className="w-6 h-6 text-gray-400" />
+                    )}
+                  </button>
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-white">Enable Footer</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Show/hide the site footer</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Company Information */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Monitor className="w-5 h-5 mr-2" />
+                Company Information
+              </h4>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company Name</label>
+                    <input
+                      type="text"
+                      value={siteConfig.footerCompanyName}
+                      onChange={(e) => handleConfigChange('footerCompanyName', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      placeholder="Your Company Name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tagline</label>
+                    <input
+                      type="text"
+                      value={siteConfig.footerTagline}
+                      onChange={(e) => handleConfigChange('footerTagline', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      placeholder="Your company tagline"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                  <textarea
+                    value={siteConfig.footerDescription}
+                    onChange={(e) => handleConfigChange('footerDescription', e.target.value)}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="Brief description of your company..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Information */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Phone className="w-5 h-5 mr-2" />
+                Contact Information
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={siteConfig.footerEmail}
+                    onChange={(e) => handleConfigChange('footerEmail', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="contact@company.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+                  <input
+                    type="tel"
+                    value={siteConfig.footerPhone}
+                    onChange={(e) => handleConfigChange('footerPhone', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address</label>
+                  <input
+                    type="text"
+                    value={siteConfig.footerAddress}
+                    onChange={(e) => handleConfigChange('footerAddress', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="123 Street, City, State"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Social Media Links */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Globe className="w-5 h-5 mr-2" />
+                Social Media Links
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Facebook URL</label>
+                  <input
+                    type="url"
+                    value={siteConfig.footerFacebook}
+                    onChange={(e) => handleConfigChange('footerFacebook', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="https://facebook.com/yourpage"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Twitter URL</label>
+                  <input
+                    type="url"
+                    value={siteConfig.footerTwitter}
+                    onChange={(e) => handleConfigChange('footerTwitter', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="https://twitter.com/youraccount"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Instagram URL</label>
+                  <input
+                    type="url"
+                    value={siteConfig.footerInstagram}
+                    onChange={(e) => handleConfigChange('footerInstagram', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="https://instagram.com/youraccount"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">LinkedIn URL</label>
+                  <input
+                    type="url"
+                    value={siteConfig.footerLinkedin}
+                    onChange={(e) => handleConfigChange('footerLinkedin', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="https://linkedin.com/company/yourcompany"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">YouTube URL</label>
+                  <input
+                    type="url"
+                    value={siteConfig.footerYoutube}
+                    onChange={(e) => handleConfigChange('footerYoutube', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="https://youtube.com/yourchannel"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Styling */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Palette className="w-5 h-5 mr-2" />
+                Footer Styling
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Background Color</label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="color"
+                      value={siteConfig.footerBackgroundColor}
+                      onChange={(e) => handleConfigChange('footerBackgroundColor', e.target.value)}
+                      className="w-16 h-12 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={siteConfig.footerBackgroundColor}
+                      onChange={(e) => handleConfigChange('footerBackgroundColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Text Color</label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="color"
+                      value={siteConfig.footerTextColor}
+                      onChange={(e) => handleConfigChange('footerTextColor', e.target.value)}
+                      className="w-16 h-12 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={siteConfig.footerTextColor}
+                      onChange={(e) => handleConfigChange('footerTextColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Link Color</label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="color"
+                      value={siteConfig.footerLinkColor}
+                      onChange={(e) => handleConfigChange('footerLinkColor', e.target.value)}
+                      className="w-16 h-12 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={siteConfig.footerLinkColor}
+                      onChange={(e) => handleConfigChange('footerLinkColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Feature Management Section */}
         {activeSection === 'features' && (
           <div className="space-y-6">
