@@ -71,35 +71,70 @@ function DealsPage() {
         <p className="text-gray-600 dark:text-gray-300">Track your buying and selling transactions</p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="cataloro-card-glass">
+      {/* Stats Cards - CLICKABLE & REDUCED MARGIN */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-4">
+        <button
+          onClick={() => handleTileClick('all')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'all' ? 'ring-2 ring-blue-500 bg-blue-50/20 dark:bg-blue-900/20' : ''
+          }`}
+        >
           <div className="p-6 text-center">
             <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{deals.length}</div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Deals</div>
           </div>
-        </div>
-        <div className="cataloro-card-glass">
+        </button>
+        <button
+          onClick={() => handleTileClick('pending')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'pending' ? 'ring-2 ring-orange-500 bg-orange-50/20 dark:bg-orange-900/20' : ''
+          }`}
+        >
           <div className="p-6 text-center">
             <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">{deals.filter(d => d.status === 'pending').length}</div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Pending</div>
           </div>
-        </div>
-        <div className="cataloro-card-glass">
+        </button>
+        <button
+          onClick={() => handleTileClick('completed')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'completed' ? 'ring-2 ring-green-500 bg-green-50/20 dark:bg-green-900/20' : ''
+          }`}
+        >
           <div className="p-6 text-center">
             <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{deals.filter(d => d.status === 'completed').length}</div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Completed</div>
           </div>
-        </div>
-        <div className="cataloro-card-glass">
+        </button>
+        <button
+          onClick={() => handleTileClick('totalValue')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'totalValue' ? 'ring-2 ring-emerald-500 bg-emerald-50/20 dark:bg-emerald-900/20' : ''
+          }`}
+        >
           <div className="p-6 text-center">
             <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               ${deals.filter(d => d.status === 'completed').reduce((sum, d) => sum + d.amount, 0).toFixed(2)}
             </div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Value</div>
           </div>
-        </div>
+        </button>
       </div>
+
+      {/* Filter Indicator */}
+      {activeFilter !== 'all' && (
+        <div className="mb-4 flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+          <span className="text-blue-800 dark:text-blue-300 font-medium">
+            Showing {activeFilter === 'totalValue' ? 'completed' : activeFilter} deals ({filteredDeals.length} items)
+          </span>
+          <button 
+            onClick={() => {setActiveFilter('all'); setActiveTab('all');}}
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+          >
+            Show All
+          </button>
+        </div>
+      )}
 
       {/* Tab Navigation */}
       <div className="cataloro-card-glass mb-8">
