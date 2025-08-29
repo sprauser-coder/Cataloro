@@ -1020,96 +1020,111 @@ function SiteAdministrationTab({ showToast }) {
 
   const applyConfigurationToSite = (config) => {
     try {
+      console.log('🎨 Applying configuration to site:', config);
+      
       // Remove existing configuration styles
       const existingStyle = document.getElementById('cataloro-site-config');
       if (existingStyle) {
         existingStyle.remove();
+        console.log('Removed existing styles');
       }
 
       // Create new style element
       const style = document.createElement('style');
       style.id = 'cataloro-site-config';
       
-      // Generate CSS from configuration
+      // Generate more aggressive CSS with !important flags
       let css = `
-        :root {
-          --primary-color: ${config.primaryColor};
-          --secondary-color: ${config.secondaryColor};
-          --accent-color: ${config.accentColor};
-          --border-radius: ${config.borderRadius}px;
-          --font-size-base: ${config.fontSize}px;
-        }
+        /* CATALORO SITE CONFIGURATION - APPLIED */
         
-        /* Apply primary color to buttons and links */
-        .bg-blue-600, .bg-blue-500 {
+        /* Primary Color Overrides */
+        .bg-blue-600, 
+        .bg-blue-500,
+        button.bg-blue-600,
+        button.bg-blue-500,
+        .btn-primary {
           background-color: ${config.primaryColor} !important;
         }
         
-        .hover\\:bg-blue-700:hover, .hover\\:bg-blue-600:hover {
+        .hover\\:bg-blue-700:hover, 
+        .hover\\:bg-blue-600:hover {
           background-color: ${config.primaryColor} !important;
-          filter: brightness(0.9);
+          filter: brightness(0.85) !important;
         }
         
-        .text-blue-600, .text-blue-500 {
+        .text-blue-600, 
+        .text-blue-500,
+        a.text-blue-600,
+        a.text-blue-500 {
           color: ${config.primaryColor} !important;
         }
         
-        .border-blue-600, .border-blue-500 {
+        .border-blue-600, 
+        .border-blue-500 {
           border-color: ${config.primaryColor} !important;
         }
         
-        /* Apply secondary color */
-        .bg-purple-600, .bg-purple-500 {
+        /* Secondary Color (Purple) Overrides */
+        .bg-purple-600, 
+        .bg-purple-500,
+        .from-purple-600,
+        .to-purple-600 {
           background-color: ${config.secondaryColor} !important;
         }
         
-        .text-purple-600, .text-purple-500 {
+        .text-purple-600, 
+        .text-purple-500 {
           color: ${config.secondaryColor} !important;
         }
         
-        /* Apply accent color to success states */
-        .bg-green-600, .bg-green-500 {
+        /* Accent Color (Green) Overrides */
+        .bg-green-600, 
+        .bg-green-500 {
           background-color: ${config.accentColor} !important;
         }
         
-        .text-green-600, .text-green-500 {
+        .text-green-600, 
+        .text-green-500 {
           color: ${config.accentColor} !important;
         }
         
-        /* Apply border radius */
-        .rounded-lg {
+        /* Border Radius */
+        .rounded-lg,
+        button.rounded-lg,
+        .rounded-xl,
+        input.rounded-lg {
           border-radius: ${config.borderRadius}px !important;
         }
         
-        .rounded-xl {
-          border-radius: ${Math.round(config.borderRadius * 1.5)}px !important;
+        /* Gradient Overrides */
+        .bg-gradient-to-r.from-blue-600.to-purple-600 {
+          background: linear-gradient(to right, ${config.primaryColor}, ${config.secondaryColor}) !important;
         }
         
-        /* Apply font family */
-        body {
+        /* Font Family */
+        body, 
+        * {
           font-family: ${config.fontFamily === 'inter' ? 'Inter, sans-serif' : 
                       config.fontFamily === 'roboto' ? 'Roboto, sans-serif' :
                       config.fontFamily === 'opensans' ? 'Open Sans, sans-serif' :
                       config.fontFamily === 'lato' ? 'Lato, sans-serif' :
                       config.fontFamily === 'poppins' ? 'Poppins, sans-serif' : 'Inter, sans-serif'} !important;
-          font-size: ${config.fontSize}px !important;
         }
         
-        /* Apply layout settings */
-        ${!config.animationsEnabled ? `
-        *, *::before, *::after {
-          animation-duration: 0s !important;
-          animation-delay: 0s !important;
-          transition-duration: 0s !important;
-          transition-delay: 0s !important;
-        }` : ''}
-        
-        ${config.compactMode ? `
-        .space-y-6 > * + * { margin-top: 1rem !important; }
-        .space-y-8 > * + * { margin-top: 1.5rem !important; }
-        .p-6 { padding: 1rem !important; }
-        .p-8 { padding: 1.5rem !important; }
-        ` : ''}
+        /* Test indicator */
+        body::before {
+          content: "CATALORO CONFIG APPLIED ✓";
+          position: fixed;
+          top: 10px;
+          right: 10px;
+          background: ${config.primaryColor};
+          color: white;
+          padding: 5px 10px;
+          border-radius: 5px;
+          z-index: 10000;
+          font-size: 12px;
+          font-weight: bold;
+        }
       `;
       
       // Add custom CSS if provided
@@ -1120,10 +1135,14 @@ function SiteAdministrationTab({ showToast }) {
       style.textContent = css;
       document.head.appendChild(style);
       
-      console.log('✅ Configuration applied to site!', config);
+      console.log('✅ CSS Configuration applied successfully!');
+      console.log('CSS Content:', css);
+      
+      // Force a repaint
+      document.body.offsetHeight;
       
     } catch (error) {
-      console.error('Error applying configuration:', error);
+      console.error('❌ Error applying configuration:', error);
     }
   };
 
