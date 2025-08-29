@@ -1249,7 +1249,7 @@ function SiteAdministrationTab({ showToast }) {
             </button>
             
             <button
-              onClick={() => applyConfigurationToSite(siteConfig)}
+              onClick={() => applySiteConfiguration(siteConfig)}
               className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
             >
               <Eye className="w-5 h-5" />
