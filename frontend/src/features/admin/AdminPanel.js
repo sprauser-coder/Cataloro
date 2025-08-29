@@ -2496,7 +2496,7 @@ function ListingsTab({ showToast }) {
             <tbody className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
               {filteredListings.map((listing) => (
                 <tr key={listing.id} className="hover:bg-white/5 dark:hover:bg-white/5 transition-colors group">
-                  <td className="p-4">
+                  <td className="px-3 py-4">
                     <input
                       type="checkbox"
                       checked={selectedListings.includes(listing.id)}
@@ -2504,9 +2504,9 @@ function ListingsTab({ showToast }) {
                       className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                     />
                   </td>
-                  <td className="p-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+                  <td className="px-4 py-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center flex-shrink-0">
                         {listing.image ? (
                           <img
                             src={listing.image}
@@ -2514,65 +2514,64 @@ function ListingsTab({ showToast }) {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <Package className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                          <Package className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{listing.title}</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{listing.created_date}</p>
+                        <h4 className="text-base font-semibold text-gray-900 dark:text-white truncate" title={listing.title}>{listing.title}</h4>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{listing.created_date}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="p-4">
-                    <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                  <td className="px-3 py-4">
+                    <span className="text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent whitespace-nowrap">
                       ${listing.price}
                     </span>
                   </td>
-                  <td className="p-4">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100/80 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 backdrop-blur-md">
+                  <td className="px-3 py-4">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100/80 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 backdrop-blur-md">
                       {listing.category}
                     </span>
                   </td>
-                  <td className="p-4">
+                  <td className="px-3 py-4">
                     <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                      <div className="w-6 h-6 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-white font-medium text-xs">
                           {listing.seller?.charAt(0) || 'U'}
                         </span>
                       </div>
-                      <span className="text-gray-900 dark:text-white font-medium">{listing.seller}</span>
+                      <span className="text-sm text-gray-900 dark:text-white font-medium truncate" title={listing.seller}>{listing.seller}</span>
                     </div>
                   </td>
-                  <td className="p-4">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md ${
+                  <td className="px-3 py-4">
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium backdrop-blur-md ${
                       listing.status === 'active' 
                         ? 'bg-green-100/80 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
                         : 'bg-red-100/80 dark:bg-red-900/30 text-red-800 dark:text-red-300'
                     }`}>
-                      {listing.status.toUpperCase()}
+                      {listing.status === 'active' ? 'ACTIVE' : 'INACTIVE'}
                     </span>
                   </td>
-                  <td className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <Eye className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                      <span className="text-gray-900 dark:text-white font-medium">{listing.views}</span>
+                  <td className="px-3 py-4">
+                    <div className="flex items-center justify-center">
+                      <span className="text-sm text-gray-900 dark:text-white font-medium">{listing.views}</span>
                     </div>
                   </td>
-                  <td className="p-4">
-                    <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <td className="px-3 py-4">
+                    <div className="flex items-center justify-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => setEditingListing(listing)}
-                        className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
+                        className="p-1.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
                         title="Edit listing"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDeleteListing(listing.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-red-50/50 dark:hover:bg-red-900/20"
+                        className="p-1.5 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded hover:bg-red-50/50 dark:hover:bg-red-900/20"
                         title="Delete listing"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </td>
