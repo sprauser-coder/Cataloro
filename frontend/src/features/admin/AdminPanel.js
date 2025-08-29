@@ -1153,14 +1153,18 @@ function SiteAdministrationTab({ showToast }) {
     }
   };
 
-  // Load saved configuration on component mount
+  // Load saved configuration on component mount and apply it
   React.useEffect(() => {
     const savedConfig = localStorage.getItem('cataloro_site_config');
     if (savedConfig) {
       try {
         const parsedConfig = JSON.parse(savedConfig);
-        setSiteConfig({ ...siteConfig, ...parsedConfig });
-        console.log('Loaded saved site configuration');
+        setSiteConfig(prevConfig => ({ ...prevConfig, ...parsedConfig }));
+        
+        // Apply the saved configuration to the site immediately
+        applyConfigurationToSite(parsedConfig);
+        
+        console.log('Loaded and applied saved site configuration');
       } catch (error) {
         console.warn('Could not load saved configuration');
       }
