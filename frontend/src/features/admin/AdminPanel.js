@@ -560,39 +560,39 @@ function UsersTab({ users, onUpdateUser, showToast }) {
     <div className="space-y-6">
       {/* Enhanced Users Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center justify-between mb-2">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
+          <div className="flex items-center justify-between mb-4">
             <Users className="w-8 h-8 text-blue-500" />
           </div>
-          <div className="text-2xl font-bold text-blue-600">{users.length}</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Total Users</div>
+          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{users.length}</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Users</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center justify-between mb-2">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
+          <div className="flex items-center justify-between mb-4">
             <CheckCircle className="w-8 h-8 text-green-500" />
           </div>
-          <div className="text-2xl font-bold text-green-600">{users.filter(u => u.is_active).length}</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Active Users</div>
+          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{users.filter(u => u.is_active).length}</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Active Users</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center justify-between mb-2">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
+          <div className="flex items-center justify-between mb-4">
             <Shield className="w-8 h-8 text-purple-500" />
           </div>
-          <div className="text-2xl font-bold text-purple-600">{users.filter(u => u.role === 'admin').length}</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Admins</div>
+          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">{users.filter(u => u.role === 'admin').length}</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Admins</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center justify-between mb-2">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
+          <div className="flex items-center justify-between mb-4">
             <Ban className="w-8 h-8 text-red-500" />
           </div>
-          <div className="text-2xl font-bold text-red-600">{users.filter(u => !u.is_active).length}</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Suspended</div>
+          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">{users.filter(u => !u.is_active).length}</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Suspended</div>
         </div>
       </div>
 
       {/* Enhanced Users Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="cataloro-card-glass overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/10 dark:border-white/10">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">User Management</h3>
         </div>
         
