@@ -310,7 +310,7 @@ function ProfilePage() {
           {/* Profile Info */}
           <div className="flex-1">
             <div className="flex items-center space-x-3 mb-2">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {profileData.full_name || 'User Name'}
               </h2>
               {profileData.verified && (
