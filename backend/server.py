@@ -307,10 +307,23 @@ async def get_all_users():
 
 @app.put("/api/admin/users/{user_id}")
 async def update_user(user_id: str, user_data: dict):
+    # Try to update by UUID id field first
     result = await db.users.update_one(
         {"id": user_id},
         {"$set": user_data}
     )
+    
+    # If not found, try by ObjectId (for API compatibility)
+    if result.matched_count == 0:
+        try:
+            from bson import ObjectId
+            result = await db.users.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": user_data}
+            )
+        except:
+            pass
+    
     if result.modified_count:
         return {"message": "User updated successfully"}
     raise HTTPException(status_code=404, detail="User not found")
