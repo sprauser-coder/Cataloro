@@ -364,12 +364,12 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 <ChevronDown className={`w-4 h-4 text-gray-700 dark:text-white/80 transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`} />
               </button>
 
-              {/* Modern User Dropdown Menu - 100% SOLID BACKGROUND */}
+              {/* Modern User Dropdown Menu - 80% BACKGROUND OPACITY */}
               {showUserMenu && (
                 <div className="absolute right-0 mt-3 w-72 rounded-2xl shadow-2xl py-2 z-50 profile-dropdown-enhanced" style={{
                   background: darkMode 
-                    ? 'rgba(0, 0, 0, 1)'
-                    : 'rgba(255, 255, 255, 1)',
+                    ? 'rgba(0, 0, 0, 0.8)'
+                    : 'rgba(255, 255, 255, 0.8)',
                   backdropFilter: 'blur(25px)',
                   border: darkMode 
                     ? '1px solid rgba(255, 255, 255, 0.2)' 
