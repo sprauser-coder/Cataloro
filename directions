@@ -21,18 +21,22 @@ BACKEND_HOST=0.0.0.0
 BACKEND_PORT=8001
 FRONTEND_PORT=3000
 
-# URLs AND ENDPOINTS
+# URLs AND ENDPOINTS - PREVIEW ENVIRONMENT
+PREVIEW_FRONTEND_URL=https://cataloro-hub.preview.emergentagent.com
+PREVIEW_BACKEND_URL=https://cataloro-hub.preview.emergentagent.com
 PRODUCTION_IP=217.154.0.82
 BACKEND_URL_PRODUCTION=http://217.154.0.82
 BACKEND_URL_LOCAL=http://localhost:8001
 FRONTEND_URL_LOCAL=http://localhost:3000
 
+# CURRENT ACTIVE URLs (Change these to switch environments)
+ACTIVE_FRONTEND_URL=https://cataloro-hub.preview.emergentagent.com
+ACTIVE_BACKEND_URL=https://cataloro-hub.preview.emergentagent.com
+ACTIVE_CORS_ORIGINS=https://cataloro-hub.preview.emergentagent.com,http://localhost:3000,http://localhost:8001
+
 # API CONFIGURATION
 API_PREFIX=/api
 JWT_SECRET=cataloro-dev-secret-key
-
-# CORS CONFIGURATION
-CORS_ORIGINS=http://217.154.0.82,https://217.154.0.82
 
 # SUPERVISOR CONFIGURATION
 SUPERVISOR_BACKEND_LOG=/var/log/supervisor/backend.out.log
@@ -41,7 +45,7 @@ SUPERVISOR_FRONTEND_LOG=/var/log/supervisor/frontend.out.log
 SUPERVISOR_FRONTEND_ERR_LOG=/var/log/supervisor/frontend.err.log
 
 # ENVIRONMENT SETTINGS
-ENVIRONMENT=production
+ENVIRONMENT=preview
 APP_VERSION=1.6.5
 APP_NAME=Cataloro
 
@@ -71,8 +75,8 @@ TEST_USER_EMAIL=test@marketplace.com
 TEST_USER_PASSWORD=test123
 
 # DEVELOPMENT vs PRODUCTION FLAG
-# Set to 'development' for local development, 'production' for live deployment
-DEPLOYMENT_MODE=production
+# Set to 'development' for local development, 'preview' for preview env, 'production' for live deployment
+DEPLOYMENT_MODE=preview
 
 # BACKUP SETTINGS
 BACKUP_DIR=/app/backups
@@ -85,8 +89,8 @@ RELOAD_ON_CHANGE=true
 LOG_LEVEL=INFO
 
 # SECURITY SETTINGS
-HTTPS_ONLY=false
-SECURE_COOKIES=false
+HTTPS_ONLY=true
+SECURE_COOKIES=true
 SESSION_TIMEOUT=28800
 
 # INTEGRATION SETTINGS
