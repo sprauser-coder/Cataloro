@@ -311,79 +311,79 @@ function DashboardTab({ dashboardData, loading }) {
 
   return (
     <div className="space-y-8">
-      {/* Main KPI Dashboard - REDESIGNED */}
+      {/* Main KPI Dashboard - FIXED FORMATTING */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         {/* Total Users */}
-        <div className="cataloro-card-glass p-6 text-center hover:shadow-2xl transition-all duration-300 group">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="p-3 bg-blue-100/80 dark:bg-blue-900/30 rounded-2xl backdrop-blur-md">
+        <div className="cataloro-card-glass p-6 hover:shadow-2xl transition-all duration-300 group">
+          <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
+            <div className="p-4 bg-blue-100/80 dark:bg-blue-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
               <Users className="w-8 h-8 text-blue-500" />
             </div>
-            <div>
-              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center justify-center">
                 {kpis.total_users?.toLocaleString() || 0}
               </div>
-              <div className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Users</div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Total Users</div>
             </div>
           </div>
         </div>
 
         {/* Total Products */}
-        <div className="cataloro-card-glass p-6 text-center hover:shadow-2xl transition-all duration-300 group">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="p-3 bg-green-100/80 dark:bg-green-900/30 rounded-2xl backdrop-blur-md">
+        <div className="cataloro-card-glass p-6 hover:shadow-2xl transition-all duration-300 group">
+          <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
+            <div className="p-4 bg-green-100/80 dark:bg-green-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
               <Package className="w-8 h-8 text-green-500" />
             </div>
-            <div>
-              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent flex items-center justify-center">
                 {kpis.total_products?.toLocaleString() || 0}
               </div>
-              <div className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Products</div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Total Products</div>
             </div>
           </div>
         </div>
 
         {/* Active Products */}
-        <div className="cataloro-card-glass p-6 text-center hover:shadow-2xl transition-all duration-300 group">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="p-3 bg-orange-100/80 dark:bg-orange-900/30 rounded-2xl backdrop-blur-md">
+        <div className="cataloro-card-glass p-6 hover:shadow-2xl transition-all duration-300 group">
+          <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
+            <div className="p-4 bg-orange-100/80 dark:bg-orange-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
               <Activity className="w-8 h-8 text-orange-500" />
             </div>
-            <div>
-              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent flex items-center justify-center">
                 {kpis.active_products?.toLocaleString() || 0}
               </div>
-              <div className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Active Products</div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Active Products</div>
             </div>
           </div>
         </div>
 
         {/* Cart Items */}
-        <div className="cataloro-card-glass p-6 text-center hover:shadow-2xl transition-all duration-300 group">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="p-3 bg-purple-100/80 dark:bg-purple-900/30 rounded-2xl backdrop-blur-md">
+        <div className="cataloro-card-glass p-6 hover:shadow-2xl transition-all duration-300 group">
+          <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
+            <div className="p-4 bg-purple-100/80 dark:bg-purple-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
               <ShoppingCart className="w-8 h-8 text-purple-500" />
             </div>
-            <div>
-              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center justify-center">
                 {kpis.cart_items?.toLocaleString() || 0}
               </div>
-              <div className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Cart Items</div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Cart Items</div>
             </div>
           </div>
         </div>
 
         {/* Favorites */}
-        <div className="cataloro-card-glass p-6 text-center hover:shadow-2xl transition-all duration-300 group">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="p-3 bg-red-100/80 dark:bg-red-900/30 rounded-2xl backdrop-blur-md">
+        <div className="cataloro-card-glass p-6 hover:shadow-2xl transition-all duration-300 group">
+          <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
+            <div className="p-4 bg-red-100/80 dark:bg-red-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
               <Heart className="w-8 h-8 text-red-500" />
             </div>
-            <div>
-              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent flex items-center justify-center">
                 {kpis.favorites_count?.toLocaleString() || 0}
               </div>
-              <div className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Favorites</div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Total Favorites</div>
             </div>
           </div>
         </div>
