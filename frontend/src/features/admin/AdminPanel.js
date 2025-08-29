@@ -1222,6 +1222,24 @@ function SiteAdministrationTab({ showToast }) {
           </div>
           <div className="flex items-center space-x-3">
             <button
+              onClick={() => {
+                // Test configuration with very visible changes
+                const testConfig = {
+                  ...siteConfig,
+                  primaryColor: '#FF0000',    // Bright red
+                  secondaryColor: '#00FF00',  // Bright green  
+                  accentColor: '#FF00FF',     // Bright magenta
+                  borderRadius: '20'          // Very rounded
+                };
+                applyConfigurationToSite(testConfig);
+                showToast('Test styling applied! Check the site colors.', 'info');
+              }}
+              className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+            >
+              <Zap className="w-5 h-5" />
+              <span>Test Colors</span>
+            </button>
+            <button
               onClick={() => applyConfigurationToSite(siteConfig)}
               className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
             >
