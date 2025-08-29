@@ -268,7 +268,7 @@ function Footer() {
                     href={config.social.youtube} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-red-400 transition-colors"
+                    className="text-gray-400 hover:text-red-400"
                   >
                     <Youtube className="w-5 h-5" />
                   </a>
