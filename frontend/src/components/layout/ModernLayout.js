@@ -40,13 +40,16 @@ function ModernLayout() {
     setIsLoading(false);
   }, []);
 
-  // Check for dark mode preference
+  // Check for dark mode preference and load site configuration
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('cataloro_dark_mode');
     if (savedDarkMode === 'true') {
       setDarkMode(true);
       document.documentElement.classList.add('dark');
     }
+    
+    // Load and apply saved site configuration on app startup
+    loadAndApplySiteConfiguration();
   }, []);
 
   // Close mobile menu on route change
