@@ -48,6 +48,10 @@ function ModernBrowsePage() {
   } = useMarketplace();
 
   const [showFilters, setShowFilters] = useState(false);
+  const [heroContent, setHeroContent] = useState({
+    title: 'Discover Amazing Products',
+    description: 'From electronics to fashion, find everything you need in one place'
+  });
   
   // Use global search and filter states from context
   const searchQuery = globalSearchQuery;
