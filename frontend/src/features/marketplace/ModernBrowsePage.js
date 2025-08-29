@@ -115,44 +115,60 @@ function ModernBrowsePage() {
 
   return (
     <div className="space-y-8">
-      {/* Hero Section with Featured Products */}
+      {/* Hero Section with Dynamic Content and Search */}
       <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative z-10">
+        <div className="relative z-10 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Discover Amazing Products
+            {heroContent.title}
           </h1>
-          <p className="text-xl mb-8 opacity-90">
-            From electronics to fashion, find everything you need in one place
+          <p className="text-xl mb-8 opacity-90 max-w-3xl mx-auto">
+            {heroContent.description}
           </p>
           
-          {/* Featured Products Carousel */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            {featuredProducts.map((product) => (
-              <div key={product.id} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="flex items-center space-x-4">
-                  <img 
-                    src={product.image} 
-                    alt={product.title}
-                    className="w-20 h-20 object-cover rounded-lg"
-                  />
-                  <div className="flex-1">
-                    <span className="inline-block bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-medium mb-2">
-                      {product.tag}
-                    </span>
-                    <h3 className="font-bold text-lg">{product.title}</h3>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-2xl font-bold">${product.price}</span>
-                      <span className="text-sm line-through opacity-70">${product.originalPrice}</span>
-                    </div>
-                    <div className="flex items-center mt-2">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm ml-1">{product.rating} ({product.reviews})</span>
-                    </div>
-                  </div>
-                </div>
+          {/* Hero Search Bar */}
+          <div className="max-w-3xl mx-auto">
+            <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-2 border border-white/20">
+              <div className="flex items-center">
+                <Search className="absolute left-6 text-white/70 w-6 h-6" />
+                <input
+                  type="text"
+                  placeholder="Search for anything you need..."
+                  value={searchQuery}
+                  onChange={(e) => updateSearchQuery(e.target.value)}
+                  className="w-full pl-16 pr-4 py-4 bg-transparent text-white placeholder-white/70 text-lg focus:outline-none"
+                />
+                <button 
+                  onClick={() => {
+                    if (searchQuery.trim()) {
+                      document.getElementById('search-results')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="flex-shrink-0 px-8 py-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-xl font-semibold transition-all duration-200 hover:scale-105"
+                >
+                  Search
+                </button>
               </div>
-            ))}
+            </div>
+            
+            {/* Popular Categories */}
+            <div className="mt-6">
+              <p className="text-white/80 mb-4 text-sm">Popular Categories:</p>
+              <div className="flex flex-wrap justify-center gap-3">
+                {['Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books'].map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => {
+                      updateFilters({...filters, category});
+                      document.getElementById('search-results')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white/90 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105"
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
