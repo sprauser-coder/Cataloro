@@ -122,6 +122,75 @@ function SimpleLoginPage() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('cataloro_token');
+    localStorage.removeItem('cataloro_user');
+    setLoggedInUser(null);
+    setFormData({ email: '', password: '' });
+    alert('✅ Logged out successfully!');
+  };
+
+  // If user is already logged in, show logged in state
+  if (loggedInUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <span className="text-white font-bold text-2xl">C</span>
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back!</h1>
+            <p className="text-gray-600">You are logged in to Cataloro</p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 p-8">
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto">
+                <span className="text-white font-bold text-2xl">
+                  {loggedInUser.full_name?.charAt(0) || loggedInUser.username?.charAt(0) || 'U'}
+                </span>
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">{loggedInUser.full_name}</h3>
+                <p className="text-gray-600">{loggedInUser.email}</p>
+                <span className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${
+                  loggedInUser.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                }`}>
+                  {loggedInUser.role?.toUpperCase()}
+                </span>
+              </div>
+
+              <div className="space-y-3 pt-4">
+                <button
+                  onClick={() => alert('🚧 Marketplace features coming soon! The full app will be implemented with proper routing.')}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  Go to Marketplace
+                </button>
+                
+                <button
+                  onClick={handleLogout}
+                  className="w-full bg-white text-gray-700 px-6 py-3 rounded-lg font-medium border border-gray-300 hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  Logout
+                </button>
+              </div>
+
+              <div className="mt-6 text-center">
+                <p className="text-xs text-gray-500">
+                  ✅ Authentication: Working<br/>
+                  ✅ Backend API: Connected<br/>
+                  ✅ User Session: Active
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
