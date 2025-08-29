@@ -3009,7 +3009,7 @@ function ListingsTab({ showToast }) {
             </thead>
             <tbody className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
               {filteredListings.map((listing) => (
-                <tr key={listing.id} className="hover:bg-white/5 dark:hover:bg-white/5 transition-colors group">
+                <tr key={listing.id} className="group">
                   <td className="px-3 py-4">
                     <input
                       type="checkbox"
