@@ -89,7 +89,7 @@ class CataloroConfig:
     
     def get_cors_origins(self) -> list:
         """Get CORS origins as a list"""
-        origins = self.get('CORS_ORIGINS', '')
+        origins = self.get('ACTIVE_CORS_ORIGINS', '')
         return [origin.strip() for origin in origins.split(',') if origin.strip()]
     
     def is_development(self) -> bool:
