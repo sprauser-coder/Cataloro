@@ -28,6 +28,24 @@ import './App.css';
 function App() {
   return (
     <div className="App">
+      {/* Loading indicator */}
+      <div id="app-loader" style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+        fontSize: '1.2rem'
+      }}>
+        🚀 Loading Cataloro...
+      </div>
+      
       <Router>
         <Routes>
           {/* Public Routes - No context providers for now */}
