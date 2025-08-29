@@ -10,16 +10,19 @@ import time
 import sys
 from datetime import datetime
 
-# Configuration - Use production URL from frontend .env
-BASE_URL = "https://cataloro-hub.preview.emergentagent.com/api"
+# DEPLOYMENT RULE COMPLIANT CONFIGURATION
+BASE_URL = "http://217.154.0.82/api"
+FRONTEND_URL = "http://217.154.0.82"
 ADMIN_EMAIL = "admin@marketplace.com"
 ADMIN_PASSWORD = "admin123"
 
-print("🔍 CRITICAL VERIFICATION: Testing Catalyst Database System after CORS configuration changes")
-print("📋 Configuration Change Made:")
-print("   - REMOVED: https://admin-rebuild.emergent.host from CORS_ORIGINS (deployment rule violation)")
-print("   - UPDATED: BACKEND_BASE_URL from https://admin-rebuild.emergent.host to https://cataloro-hub.preview.emergentagent.com")
-print("   - KEPT: Valid URLs (217.154.0.82, localhost:3000, cataloro-hub.preview.emergentagent.com)")
+print("🚀 URGENT DEPLOYMENT RULE COMPLIANCE VERIFICATION")
+print("Testing Catalyst Database System after removing ALL forbidden URLs and using only allowed deployment URLs.")
+print("📋 CRITICAL CONFIGURATION CHANGES MADE:")
+print("   - Frontend .env: Updated REACT_APP_BACKEND_URL from forbidden emergent.host to allowed http://217.154.0.82")
+print("   - Backend .env: Updated CORS_ORIGINS to ONLY allowed URLs: http://217.154.0.82,https://217.154.0.82")
+print("   - Removed ALL forbidden URLs: localhost:3000, *.emergent.host")
+print("   - Backend Base URL: Updated to http://217.154.0.82")
 print("=" * 80)
 
 class BackendTester:
