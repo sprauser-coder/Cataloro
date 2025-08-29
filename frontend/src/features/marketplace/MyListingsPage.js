@@ -51,6 +51,32 @@ function MyListingsPage() {
     }
   };
 
+  // Handle tile clicks for filtering
+  const handleTileClick = (filter) => {
+    setActiveFilter(filter);
+  };
+
+  // Handle create new listing
+  const handleCreateListing = () => {
+    navigate('/create-listing');
+  };
+
+  // Filter listings based on active filter
+  const getFilteredListings = () => {
+    switch (activeFilter) {
+      case 'active':
+        return listings.filter(l => l.status === 'active');
+      case 'drafts':
+        return listings.filter(l => l.status === 'draft');
+      case 'sold':
+        return listings.filter(l => l.status === 'sold');
+      default:
+        return listings;
+    }
+  };
+
+  const filteredListings = getFilteredListings();
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
