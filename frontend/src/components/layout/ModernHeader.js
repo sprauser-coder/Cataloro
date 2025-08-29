@@ -230,8 +230,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 }}>
                   <div className="px-6 py-4 border-b border-white/10">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-lg">Notifications</h3>
-                      <button className="text-sm text-white/80 hover:text-white font-medium">Mark all read</button>
+                      <h3 className="font-bold text-gray-900 dark:text-white text-lg">Notifications</h3>
+                      <button className="text-sm text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white font-medium">Mark all read</button>
                     </div>
                   </div>
                   <div className="max-h-80 overflow-y-auto">
