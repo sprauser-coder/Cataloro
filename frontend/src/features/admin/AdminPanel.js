@@ -3880,7 +3880,8 @@ function CatDatabaseTab({ showToast }) {
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                     {calculations.map((calc) => (
                       <tr key={calc._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-mono">{calc._id}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-mono text-xs">{calc.database_id || calc._id}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-semibold">{calc.cat_id}</td>
                         <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{calc.name}</td>
                         <td className="px-4 py-3 text-sm">
                           <span className={`font-semibold ${calc.is_override ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}>
