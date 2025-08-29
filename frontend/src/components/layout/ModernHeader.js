@@ -277,12 +277,12 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 )}
               </button>
 
-              {/* Modern Notifications Dropdown */}
+              {/* Modern Notifications Dropdown - ENHANCED BACKGROUND OPACITY */}
               {showNotifications && (
                 <div className="absolute right-0 mt-3 w-80 rounded-2xl shadow-2xl py-3 z-50" style={{
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.4) 100%)',
                   backdropFilter: 'blur(25px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                  border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}>
                   <div className="px-6 py-4 border-b border-white/10">
                     <div className="flex items-center justify-between">
