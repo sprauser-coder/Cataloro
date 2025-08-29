@@ -2247,4 +2247,481 @@ function SiteAdministrationTab({ showToast }) {
   );
 }
 
+// Listings Management Tab Component
+function ListingsTab({ showToast }) {
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedListings, setSelectedListings] = useState([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingListing, setEditingListing] = useState(null);
+  const [bulkAction, setBulkAction] = useState('');
+
+  const { allProducts } = useMarketplace();
+
+  useEffect(() => {
+    fetchListings();
+  }, []);
+
+  const fetchListings = async () => {
+    try {
+      setLoading(true);
+      // Use marketplace data as listings
+      const listingsData = allProducts.map((product, index) => ({
+        id: product.id || `listing-${index}`,
+        title: product.title || product.name,
+        price: product.price,
+        category: product.category || 'Electronics',
+        status: product.inStock !== false ? 'active' : 'inactive',
+        seller: product.seller || 'Unknown Seller',
+        created_date: product.created_date || new Date().toISOString().split('T')[0],
+        views: product.views || Math.floor(Math.random() * 1000),
+        image: product.image,
+        description: product.description,
+        condition: product.condition || 'New',
+        location: product.location || 'New York, NY'
+      }));
+      setListings(listingsData);
+    } catch (error) {
+      console.error('Error fetching listings:', error);
+      showToast?.('Error loading listings', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredListings = listings.filter(listing => {
+    const matchesSearch = listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         listing.seller.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterStatus === 'all' || listing.status === filterStatus;
+    return matchesSearch && matchesFilter;
+  });
+
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedListings(filteredListings.map(l => l.id));
+    } else {
+      setSelectedListings([]);
+    }
+  };
+
+  const handleSelectListing = (listingId, checked) => {
+    if (checked) {
+      setSelectedListings([...selectedListings, listingId]);
+    } else {
+      setSelectedListings(selectedListings.filter(id => id !== listingId));
+    }
+  };
+
+  const handleBulkAction = async () => {
+    if (!bulkAction || selectedListings.length === 0) return;
+
+    try {
+      switch (bulkAction) {
+        case 'activate':
+          // Update status to active for selected listings
+          setListings(listings.map(l => 
+            selectedListings.includes(l.id) ? {...l, status: 'active'} : l
+          ));
+          showToast?.(`${selectedListings.length} listings activated`, 'success');
+          break;
+        case 'deactivate':
+          setListings(listings.map(l => 
+            selectedListings.includes(l.id) ? {...l, status: 'inactive'} : l
+          ));
+          showToast?.(`${selectedListings.length} listings deactivated`, 'success');
+          break;
+        case 'delete':
+          setListings(listings.filter(l => !selectedListings.includes(l.id)));
+          showToast?.(`${selectedListings.length} listings deleted`, 'success');
+          break;
+        case 'feature':
+          setListings(listings.map(l => 
+            selectedListings.includes(l.id) ? {...l, featured: true} : l
+          ));
+          showToast?.(`${selectedListings.length} listings featured`, 'success');
+          break;
+      }
+      setSelectedListings([]);
+      setBulkAction('');
+    } catch (error) {
+      showToast?.('Error performing bulk action', 'error');
+    }
+  };
+
+  const handleDeleteListing = (listingId) => {
+    setListings(listings.filter(l => l.id !== listingId));
+    showToast?.('Listing deleted successfully', 'success');
+  };
+
+  const handleCreateListing = (listingData) => {
+    const newListing = {
+      id: `new-${Date.now()}`,
+      ...listingData,
+      created_date: new Date().toISOString().split('T')[0],
+      views: 0,
+      status: 'active'
+    };
+    setListings([newListing, ...listings]);
+    setShowCreateModal(false);
+    showToast?.('Listing created successfully', 'success');
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header with Actions */}
+      <div className="cataloro-card-glass p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Listings Management</h2>
+            <p className="text-gray-600">Manage all marketplace listings and deals</p>
+          </div>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="cataloro-button-primary flex items-center"
+            >
+              <Package className="w-4 h-4 mr-2" />
+              Create Listing
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="cataloro-card-glass p-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search listings or sellers..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 cataloro-input"
+              />
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="cataloro-input w-auto"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Bulk Actions */}
+      {selectedListings.length > 0 && (
+        <div className="cataloro-card-glass p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              {selectedListings.length} listing(s) selected
+            </span>
+            <div className="flex items-center space-x-3">
+              <select
+                value={bulkAction}
+                onChange={(e) => setBulkAction(e.target.value)}
+                className="text-sm border border-gray-300 rounded-lg px-3 py-1"
+              >
+                <option value="">Bulk Actions</option>
+                <option value="activate">Activate</option>
+                <option value="deactivate">Deactivate</option>
+                <option value="feature">Feature</option>
+                <option value="delete">Delete</option>
+              </select>
+              <button
+                onClick={handleBulkAction}
+                disabled={!bulkAction}
+                className="cataloro-button-secondary text-sm px-4 py-1 disabled:opacity-50"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Listings Table */}
+      <div className="cataloro-card-glass overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50/80 backdrop-blur-sm">
+              <tr>
+                <th className="p-4">
+                  <input
+                    type="checkbox"
+                    checked={selectedListings.length === filteredListings.length}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                </th>
+                <th className="p-4 text-left text-sm font-medium text-gray-900">Listing</th>
+                <th className="p-4 text-left text-sm font-medium text-gray-900">Price</th>
+                <th className="p-4 text-left text-sm font-medium text-gray-900">Category</th>
+                <th className="p-4 text-left text-sm font-medium text-gray-900">Seller</th>
+                <th className="p-4 text-left text-sm font-medium text-gray-900">Status</th>
+                <th className="p-4 text-left text-sm font-medium text-gray-900">Views</th>
+                <th className="p-4 text-left text-sm font-medium text-gray-900">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200/50">
+              {filteredListings.map((listing) => (
+                <tr key={listing.id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="p-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedListings.includes(listing.id)}
+                      onChange={(e) => handleSelectListing(listing.id, e.target.checked)}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center space-x-3">
+                      <img
+                        src={listing.image}
+                        alt={listing.title}
+                        className="w-12 h-12 rounded-lg object-cover"
+                      />
+                      <div>
+                        <div className="font-medium text-gray-900">{listing.title}</div>
+                        <div className="text-sm text-gray-500">{listing.created_date}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-4 text-gray-900 font-medium">${listing.price}</td>
+                  <td className="p-4 text-gray-600">{listing.category}</td>
+                  <td className="p-4 text-gray-600">{listing.seller}</td>
+                  <td className="p-4">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      listing.status === 'active' 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {listing.status}
+                    </span>
+                  </td>
+                  <td className="p-4 text-gray-600">{listing.views}</td>
+                  <td className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setEditingListing(listing)}
+                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                        title="Edit listing"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteListing(listing.id)}
+                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                        title="Delete listing"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {filteredListings.length === 0 && (
+          <div className="text-center py-12">
+            <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No listings found</h3>
+            <p className="text-gray-600">
+              {searchTerm ? 'Try adjusting your search terms' : 'Create your first listing to get started'}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Create/Edit Modal */}
+      {(showCreateModal || editingListing) && (
+        <ListingModal
+          listing={editingListing}
+          onSave={editingListing ? 
+            (data) => {
+              setListings(listings.map(l => l.id === editingListing.id ? {...l, ...data} : l));
+              setEditingListing(null);
+              showToast?.('Listing updated successfully', 'success');
+            } : 
+            handleCreateListing
+          }
+          onClose={() => {
+            setShowCreateModal(false);
+            setEditingListing(null);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// Listing Creation/Edit Modal Component
+function ListingModal({ listing, onSave, onClose }) {
+  const [formData, setFormData] = useState({
+    title: listing?.title || '',
+    price: listing?.price || '',
+    category: listing?.category || 'Electronics',
+    description: listing?.description || '',
+    condition: listing?.condition || 'New',
+    location: listing?.location || '',
+    seller: listing?.seller || '',
+    image: listing?.image || ''
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content max-w-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-bold text-gray-900">
+            {listing ? 'Edit Listing' : 'Create New Listing'}
+          </h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+              <input
+                type="text"
+                required
+                value={formData.title}
+                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                className="cataloro-input"
+                placeholder="Enter listing title"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
+              <input
+                type="number"
+                required
+                value={formData.price}
+                onChange={(e) => setFormData({...formData, price: e.target.value})}
+                className="cataloro-input"
+                placeholder="0.00"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                className="cataloro-input"
+              >
+                <option value="Electronics">Electronics</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Home">Home & Garden</option>
+                <option value="Sports">Sports & Outdoors</option>
+                <option value="Books">Books & Media</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Condition</label>
+              <select
+                value={formData.condition}
+                onChange={(e) => setFormData({...formData, condition: e.target.value})}
+                className="cataloro-input"
+              >
+                <option value="New">New</option>
+                <option value="Like New">Like New</option>
+                <option value="Good">Good</option>
+                <option value="Fair">Fair</option>
+                <option value="Poor">Poor</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Seller</label>
+              <input
+                type="text"
+                required
+                value={formData.seller}
+                onChange={(e) => setFormData({...formData, seller: e.target.value})}
+                className="cataloro-input"
+                placeholder="Seller name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+              <input
+                type="text"
+                value={formData.location}
+                onChange={(e) => setFormData({...formData, location: e.target.value})}
+                className="cataloro-input"
+                placeholder="City, State"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+            <input
+              type="url"
+              value={formData.image}
+              onChange={(e) => setFormData({...formData, image: e.target.value})}
+              className="cataloro-input"
+              placeholder="https://example.com/image.jpg"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <textarea
+              rows={4}
+              value={formData.description}
+              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              className="cataloro-input"
+              placeholder="Describe your item..."
+            />
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="cataloro-button-secondary"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="cataloro-button-primary"
+            >
+              {listing ? 'Update Listing' : 'Create Listing'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default AdminPanel;
