@@ -1,12 +1,42 @@
 /**
- * CATALORO - Profile Page
- * User profile settings and management (dummy implementation for now)
+ * CATALORO - Enhanced Profile Page
+ * Comprehensive user profile management with real functionality
  */
 
-import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, Camera, Save, Edit } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Camera, 
+  Save, 
+  Edit, 
+  Shield, 
+  Bell, 
+  Eye, 
+  EyeOff,
+  Lock,
+  Key,
+  Settings,
+  Package,
+  DollarSign,
+  Star,
+  Heart,
+  ShoppingCart,
+  Calendar,
+  Award,
+  TrendingUp,
+  Download,
+  Upload,
+  Check,
+  X,
+  AlertCircle,
+  RefreshCw
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
+import { useMarketplace } from '../../context/MarketplaceContext';
 
 function ProfilePage() {
   const { user } = useAuth();
