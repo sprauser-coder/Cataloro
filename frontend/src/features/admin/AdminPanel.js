@@ -566,14 +566,12 @@ function DashboardTab({ dashboardData, loading }) {
             Quick Actions
           </h3>
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-between p-4 bg-blue-50/80 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-xl hover:bg-blue-100/80 dark:hover:bg-blue-900/40 transition-colors backdrop-blur-md group">
+            <button className="w-full flex items-center justify-between p-4 bg-blue-50/80 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-xl hover:bg-blue-100/80 dark:hover:bg-blue-900/40 backdrop-blur-md">
               <span className="font-medium flex items-center">
                 <Download className="w-4 h-4 mr-3" />
                 Export Data
               </span>
-              <div className="group-hover:translate-x-1 transition-transform">
-                <Download className="w-4 h-4" />
-              </div>
+              <Download className="w-4 h-4" />
             </button>
             <button className="w-full flex items-center justify-between p-4 bg-green-50/80 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-xl hover:bg-green-100/80 dark:hover:bg-green-900/40 transition-colors backdrop-blur-md group">
               <span className="font-medium flex items-center">
