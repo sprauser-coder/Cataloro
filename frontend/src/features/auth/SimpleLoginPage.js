@@ -15,6 +15,21 @@ function SimpleLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+
+  // Check if user is already logged in
+  React.useEffect(() => {
+    const token = localStorage.getItem('cataloro_token');
+    const user = localStorage.getItem('cataloro_user');
+    if (token && user) {
+      try {
+        setLoggedInUser(JSON.parse(user));
+      } catch (e) {
+        localStorage.removeItem('cataloro_token');
+        localStorage.removeItem('cataloro_user');
+      }
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     setFormData({
