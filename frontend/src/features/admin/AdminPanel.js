@@ -66,6 +66,7 @@ import { adminService } from '../../services/adminService';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import { useNotifications } from '../../context/NotificationContext';
+import { applySiteConfiguration } from '../../utils/siteConfiguration';
 
 function AdminPanel() {
   const [activeTab, setActiveTab] = useState('dashboard');
