@@ -2330,109 +2330,151 @@ function ListingsTab({ showToast }) {
         </div>
       </div>
 
-      {/* Bulk Actions */}
+      {/* REDESIGNED Bulk Actions */}
       {selectedListings.length > 0 && (
-        <div className="cataloro-card-glass p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">
-              {selectedListings.length} listing(s) selected
-            </span>
-            <div className="flex items-center space-x-3">
+        <div className="cataloro-card-glass p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-lg font-medium text-gray-900 dark:text-white">
+                  {selectedListings.length} listing{selectedListings.length !== 1 ? 's' : ''} selected
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
               <select
                 value={bulkAction}
                 onChange={(e) => setBulkAction(e.target.value)}
-                className="text-sm border border-gray-300 rounded-lg px-3 py-1"
+                className="cataloro-input min-w-[180px]"
               >
-                <option value="">Bulk Actions</option>
-                <option value="activate">Activate</option>
-                <option value="deactivate">Deactivate</option>
-                <option value="feature">Feature</option>
-                <option value="delete">Delete</option>
+                <option value="">Choose Bulk Action</option>
+                <option value="activate">✅ Activate Listings</option>
+                <option value="deactivate">⏸️ Deactivate Listings</option>
+                <option value="feature">⭐ Feature Listings</option>
+                <option value="delete">🗑️ Delete Listings</option>
               </select>
               <button
                 onClick={handleBulkAction}
                 disabled={!bulkAction}
-                className="cataloro-button-secondary text-sm px-4 py-1 disabled:opacity-50"
+                className="cataloro-button-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Apply
+                Apply Action
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Listings Table */}
+      {/* REDESIGNED Listings Table */}
       <div className="cataloro-card-glass overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/10 dark:border-white/10">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">All Listings</h3>
+            <span className="bg-blue-100/80 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md">
+              {filteredListings.length} results
+            </span>
+          </div>
+        </div>
+        
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50/80 backdrop-blur-sm">
+            <thead className="bg-gray-50/80 dark:bg-gray-800/50 backdrop-blur-sm">
               <tr>
-                <th className="p-4">
+                <th className="p-4 text-left">
                   <input
                     type="checkbox"
-                    checked={selectedListings.length === filteredListings.length}
+                    checked={selectedListings.length === filteredListings.length && filteredListings.length > 0}
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
-                <th className="p-4 text-left text-sm font-medium text-gray-900">Listing</th>
-                <th className="p-4 text-left text-sm font-medium text-gray-900">Price</th>
-                <th className="p-4 text-left text-sm font-medium text-gray-900">Category</th>
-                <th className="p-4 text-left text-sm font-medium text-gray-900">Seller</th>
-                <th className="p-4 text-left text-sm font-medium text-gray-900">Status</th>
-                <th className="p-4 text-left text-sm font-medium text-gray-900">Views</th>
-                <th className="p-4 text-left text-sm font-medium text-gray-900">Actions</th>
+                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Listing Details</th>
+                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Price</th>
+                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Category</th>
+                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Seller</th>
+                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Status</th>
+                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Views</th>
+                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200/50">
+            <tbody className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
               {filteredListings.map((listing) => (
-                <tr key={listing.id} className="hover:bg-gray-50/50 transition-colors">
+                <tr key={listing.id} className="hover:bg-white/5 dark:hover:bg-white/5 transition-colors group">
                   <td className="p-4">
                     <input
                       type="checkbox"
                       checked={selectedListings.includes(listing.id)}
                       onChange={(e) => handleSelectListing(listing.id, e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                     />
                   </td>
                   <td className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <img
-                        src={listing.image}
-                        alt={listing.title}
-                        className="w-12 h-12 rounded-lg object-cover"
-                      />
-                      <div>
-                        <div className="font-medium text-gray-900">{listing.title}</div>
-                        <div className="text-sm text-gray-500">{listing.created_date}</div>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+                        {listing.image ? (
+                          <img
+                            src={listing.image}
+                            alt={listing.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Package className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{listing.title}</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{listing.created_date}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="p-4 text-gray-900 font-medium">${listing.price}</td>
-                  <td className="p-4 text-gray-600">{listing.category}</td>
-                  <td className="p-4 text-gray-600">{listing.seller}</td>
                   <td className="p-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      listing.status === 'active' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {listing.status}
+                    <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                      ${listing.price}
                     </span>
                   </td>
-                  <td className="p-4 text-gray-600">{listing.views}</td>
+                  <td className="p-4">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100/80 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 backdrop-blur-md">
+                      {listing.category}
+                    </span>
+                  </td>
                   <td className="p-4">
                     <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                        <span className="text-white font-medium text-xs">
+                          {listing.seller?.charAt(0) || 'U'}
+                        </span>
+                      </div>
+                      <span className="text-gray-900 dark:text-white font-medium">{listing.seller}</span>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md ${
+                      listing.status === 'active' 
+                        ? 'bg-green-100/80 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
+                        : 'bg-red-100/80 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                    }`}>
+                      {listing.status.toUpperCase()}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <Eye className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                      <span className="text-gray-900 dark:text-white font-medium">{listing.views}</span>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => setEditingListing(listing)}
-                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                        className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
                         title="Edit listing"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteListing(listing.id)}
-                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                        className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-red-50/50 dark:hover:bg-red-900/20"
                         title="Delete listing"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -2446,12 +2488,20 @@ function ListingsTab({ showToast }) {
         </div>
 
         {filteredListings.length === 0 && (
-          <div className="text-center py-12">
-            <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No listings found</h3>
-            <p className="text-gray-600">
+          <div className="text-center py-16">
+            <div className="w-20 h-20 bg-gradient-to-r from-gray-400/20 to-gray-500/20 dark:from-gray-600/20 dark:to-gray-700/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Package className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">No listings found</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-8">
               {searchTerm ? 'Try adjusting your search terms' : 'Create your first listing to get started'}
             </p>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="cataloro-button-primary"
+            >
+              Create New Listing
+            </button>
           </div>
         )}
       </div>
