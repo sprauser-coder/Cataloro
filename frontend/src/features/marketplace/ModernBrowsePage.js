@@ -479,10 +479,18 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites }) {
           isHovered ? 'opacity-100' : 'opacity-0'
         }`}>
           <button
-            onClick={(e) => handleQuickAction(e, () => onAddToFavorites(item))}
-            className="p-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300 hover:text-red-500 rounded-full shadow-sm transition-colors"
+            onClick={(e) => handleFavoriteToggle(item, e)}
+            className={`p-2 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-sm transition-all duration-200 ${
+              isInFavorites(item.id) 
+                ? 'text-red-500 hover:text-red-600' 
+                : 'text-gray-700 dark:text-gray-300 hover:text-red-500'
+            }`}
           >
-            <Heart className="w-5 h-5" />
+            {isInFavorites(item.id) ? (
+              <Heart className="w-5 h-5 fill-current" />
+            ) : (
+              <Heart className="w-5 h-5" />
+            )}
           </button>
           <button 
             onClick={(e) => handleQuickAction(e, () => {})}
