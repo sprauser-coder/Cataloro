@@ -328,6 +328,103 @@ async def update_user(user_id: str, user_data: dict):
         return {"message": "User updated successfully"}
     raise HTTPException(status_code=404, detail="User not found")
 
+# Site Branding and Settings Endpoints
+@app.get("/api/admin/settings")
+async def get_site_settings():
+    """Get site branding and configuration settings"""
+    try:
+        # Get settings from database or return defaults
+        settings = await db.site_settings.find_one({"type": "site_branding"})
+        
+        if not settings:
+            # Return default settings
+            default_settings = {
+                "site_name": "Cataloro",
+                "site_description": "Modern Marketplace Platform",
+                "logo_url": "/favicon.ico",
+                "logo_light_url": "",
+                "logo_dark_url": "",
+                "theme_color": "#3B82F6",
+                "allow_registration": True,
+                "require_approval": False,
+                "email_notifications": True,
+                "commission_rate": 5.0,
+                "max_file_size": 10
+            }
+            return default_settings
+        
+        # Remove MongoDB _id field
+        settings.pop('_id', None)
+        settings.pop('type', None)
+        return settings
+        
+    except Exception as e:
+        return {
+            "site_name": "Cataloro",
+            "site_description": "Modern Marketplace Platform",
+            "logo_url": "/favicon.ico",
+            "logo_light_url": "",
+            "logo_dark_url": "",
+            "theme_color": "#3B82F6"
+        }
+
+@app.put("/api/admin/settings")
+async def update_site_settings(settings_data: dict):
+    """Update site branding and configuration settings"""
+    try:
+        # Add metadata
+        settings_data["type"] = "site_branding"
+        settings_data["updated_at"] = datetime.utcnow().isoformat()
+        
+        # Update or insert settings
+        result = await db.site_settings.update_one(
+            {"type": "site_branding"},
+            {"$set": settings_data},
+            upsert=True
+        )
+        
+        return {"message": "Site settings updated successfully", "modified": result.modified_count}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update settings: {str(e)}")
+
+@app.post("/api/admin/logo")
+async def upload_logo(file: UploadFile = File(...), mode: str = "light"):
+    """Upload logo file and return URL"""
+    try:
+        # Validate file type
+        if not file.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Validate file size (2MB limit)
+        contents = await file.read()
+        if len(contents) > 2 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File size must be less than 2MB")
+        
+        # Reset file pointer
+        await file.seek(0)
+        
+        # For demo purposes, return a data URL
+        import base64
+        file_data = base64.b64encode(contents).decode()
+        file_url = f"data:{file.content_type};base64,{file_data}"
+        
+        # In production, you would save to a file system or cloud storage
+        # and return the public URL
+        
+        return {
+            "message": "Logo uploaded successfully",
+            "url": file_url,
+            "mode": mode,
+            "filename": file.filename,
+            "size": len(contents)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload logo: {str(e)}")
+
 # Run server
 if __name__ == "__main__":
     import uvicorn
