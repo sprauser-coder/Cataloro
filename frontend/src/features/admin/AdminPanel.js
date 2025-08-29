@@ -288,12 +288,6 @@ function AdminPanel() {
         />
       )}
       
-      {activeTab === 'hero' && (
-        <HeroSelectionTab 
-          showToast={showToast}
-        />
-      )}
-      
       {activeTab === 'settings' && (
         <SettingsTab 
           settings={settings}
