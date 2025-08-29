@@ -3688,6 +3688,66 @@ function CatDatabaseTab({ showToast }) {
     }
   };
 
+  const handleDeleteDatabase = async () => {
+    const confirmed = window.confirm(
+      '⚠️ WARNING: This will permanently delete ALL catalyst data from the database.\n\n' +
+      'This includes:\n' +
+      '• All catalyst records\n' +
+      '• All price overrides\n' +
+      '• All calculations\n\n' +
+      'This action CANNOT be undone!\n\n' +
+      'Are you absolutely sure you want to proceed?'
+    );
+    
+    if (!confirmed) return;
+    
+    const doubleConfirmed = window.confirm(
+      'FINAL CONFIRMATION:\n\n' +
+      'Type DELETE in the next prompt to confirm database deletion.'
+    );
+    
+    if (!doubleConfirmed) return;
+    
+    const userInput = prompt('Please type "DELETE" to confirm (case sensitive):');
+    if (userInput !== 'DELETE') {
+      showToast('Database deletion cancelled - confirmation text did not match', 'info');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/database`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        showToast(
+          `✅ Database deleted successfully! Removed ${result.deleted_records} catalyst records and ${result.deleted_overrides} overrides.`, 
+          'success'
+        );
+        
+        // Clear local state
+        setCatalystData([]);
+        setCalculations([]);
+        
+        // Refresh data
+        await fetchCatalystData();
+        await fetchCalculations();
+      } else {
+        throw new Error('Failed to delete database');
+      }
+    } catch (error) {
+      showToast('❌ Failed to delete catalyst database', 'error');
+      console.error('Delete database error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
