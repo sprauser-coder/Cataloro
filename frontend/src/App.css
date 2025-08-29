@@ -25,11 +25,19 @@
   --glass-border: rgba(255, 255, 255, 0.18);
   --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
   
-  /* Modern Neutrals */
+  /* Light Mode Colors */
+  --light-text-primary: #1f2937;
+  --light-text-secondary: #6b7280;
+  --light-text-muted: #9ca3af;
+  --light-bg-primary: #ffffff;
+  --light-bg-secondary: #f9fafb;
+  
+  /* Dark Mode Colors */
   --dark-bg: #0f0f23;
   --dark-surface: #1a1a2e;
-  --light-text: #f8fafc;
-  --muted-text: #94a3b8;
+  --dark-text-primary: #f8fafc;
+  --dark-text-secondary: #e2e8f0;
+  --dark-text-muted: #94a3b8;
   
   /* Advanced Shadows */
   --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -40,6 +48,24 @@
   /* Modern Typography */
   --font-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Dark Mode Variables */
+.dark {
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --text-muted: var(--dark-text-muted);
+  --bg-primary: var(--dark-bg);
+  --bg-secondary: var(--dark-surface);
+}
+
+/* Light Mode Variables */
+body:not(.dark) {
+  --text-primary: var(--light-text-primary);
+  --text-secondary: var(--light-text-secondary);
+  --text-muted: var(--light-text-muted);
+  --bg-primary: var(--light-bg-primary);
+  --bg-secondary: var(--light-bg-secondary);
 }
 
 /* ===== GLOBAL MODERN STYLES ===== */
