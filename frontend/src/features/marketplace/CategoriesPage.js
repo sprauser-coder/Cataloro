@@ -70,103 +70,54 @@ function CategoriesPage() {
       name: 'Electronics',
       icon: Smartphone,
       color: 'from-blue-500 to-cyan-500',
-      count: 2456,
+      count: productsByCategory['Electronics']?.length || 0,
       trending: true,
       subcategories: ['Smartphones', 'Laptops', 'Tablets', 'Gaming', 'Audio', 'Cameras'],
-      featuredProducts: [
-        { name: 'iPhone 15 Pro', price: 1199, image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=200' },
-        { name: 'MacBook Air', price: 999, image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200' }
-      ]
+      featuredProducts: productsByCategory['Electronics']?.slice(0, 2).map(product => ({
+        name: product.title,
+        price: product.price,
+        image: product.images?.[0] || 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=200'
+      })) || []
     },
     {
       id: 'fashion',
-      name: 'Fashion & Apparel',
+      name: 'Fashion',
       icon: Shirt,
       color: 'from-pink-500 to-rose-500',
-      count: 3421,
+      count: productsByCategory['Fashion']?.length || 0,
       trending: false,
-      subcategories: ['Men\'s Clothing', 'Women\'s Clothing', 'Shoes', 'Accessories', 'Jewelry', 'Bags'],
-      featuredProducts: [
-        { name: 'Designer Handbag', price: 850, image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200' },
-        { name: 'Sneakers', price: 129, image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200' }
-      ]
+      subcategories: ['Clothing', 'Shoes', 'Accessories', 'Bags', 'Jewelry', 'Watches'],
+      featuredProducts: productsByCategory['Fashion']?.slice(0, 2).map(product => ({
+        name: product.title,
+        price: product.price,
+        image: product.images?.[0] || 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200'
+      })) || []
+    },
+    {
+      id: 'music',
+      name: 'Music',
+      icon: Music,
+      color: 'from-purple-500 to-indigo-500',
+      count: productsByCategory['Music']?.length || 0,
+      trending: true,
+      subcategories: ['Instruments', 'Audio Equipment', 'Records', 'Sheet Music'],
+      featuredProducts: productsByCategory['Music']?.slice(0, 2).map(product => ({
+        name: product.title,
+        price: product.price,
+        image: product.images?.[0] || 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=200'
+      })) || []
     },
     {
       id: 'home',
       name: 'Home & Garden',
       icon: Home,
       color: 'from-green-500 to-emerald-500',
-      count: 1876,
-      trending: true,
-      subcategories: ['Furniture', 'Decor', 'Kitchen', 'Garden', 'Tools', 'Appliances'],
-      featuredProducts: [
-        { name: 'Modern Sofa', price: 1299, image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200' },
-        { name: 'Coffee Table', price: 299, image: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=200' }
-      ]
-    },
-    {
-      id: 'sports',
-      name: 'Sports & Fitness',
-      icon: Dumbbell,
-      color: 'from-orange-500 to-red-500',
-      count: 987,
+      count: 890,
       trending: false,
-      subcategories: ['Exercise Equipment', 'Outdoor Gear', 'Sports Apparel', 'Team Sports', 'Water Sports'],
+      subcategories: ['Furniture', 'Decor', 'Garden', 'Kitchen', 'Tools', 'Appliances'],
       featuredProducts: [
-        { name: 'Yoga Mat Set', price: 79, image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=200' },
-        { name: 'Dumbbells', price: 199, image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200' }
-      ]
-    },
-    {
-      id: 'books',
-      name: 'Books & Media',
-      icon: Book,
-      color: 'from-indigo-500 to-purple-500',
-      count: 1234,
-      trending: false,
-      subcategories: ['Fiction', 'Non-Fiction', 'Textbooks', 'Comics', 'Magazines', 'E-books'],
-      featuredProducts: [
-        { name: 'Programming Books', price: 45, image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=200' },
-        { name: 'Novel Collection', price: 29, image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200' }
-      ]
-    },
-    {
-      id: 'music',
-      name: 'Music & Instruments',
-      icon: Music,
-      color: 'from-purple-500 to-pink-500',
-      count: 654,
-      trending: true,
-      subcategories: ['Guitars', 'Keyboards', 'Drums', 'Audio Equipment', 'Vinyl Records', 'Sheet Music'],
-      featuredProducts: [
-        { name: 'Electric Guitar', price: 799, image: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=200' },
-        { name: 'Keyboard Piano', price: 549, image: 'https://images.unsplash.com/photo-1571327073757-71d13c24de30?w=200' }
-      ]
-    },
-    {
-      id: 'automotive',
-      name: 'Automotive',
-      icon: Car,
-      color: 'from-gray-500 to-gray-700',
-      count: 876,
-      trending: false,
-      subcategories: ['Cars', 'Motorcycles', 'Parts & Accessories', 'Tires', 'Tools', 'Car Care'],
-      featuredProducts: [
-        { name: 'Car Parts Kit', price: 199, image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=200' },
-        { name: 'Motorcycle Gear', price: 299, image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200' }
-      ]
-    },
-    {
-      id: 'realestate',
-      name: 'Real Estate',
-      icon: Building,
-      color: 'from-teal-500 to-cyan-500',
-      count: 234,
-      trending: true,
-      subcategories: ['Houses', 'Apartments', 'Commercial', 'Land', 'Vacation Rentals'],
-      featuredProducts: [
-        { name: 'Modern Apartment', price: 425000, image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=200' },
-        { name: 'Office Space', price: 850000, image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200' }
+        { name: 'Modern Sofa', price: 899, image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200' },
+        { name: 'Coffee Table', price: 299, image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200' }
       ]
     }
   ];
