@@ -598,26 +598,26 @@ body:not(.dark) .nav-item:hover {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
-/* Enhanced Dropdown Background Opacity - 90% */
+/* Enhanced Dropdown Background Opacity - 95% */
 .notifications-dropdown-enhanced {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(25px) !important;
   border: 1px solid rgba(0, 0, 0, 0.2) !important;
 }
 
 .dark .notifications-dropdown-enhanced {
-  background: rgba(0, 0, 0, 0.9) !important;
+  background: rgba(0, 0, 0, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .profile-dropdown-enhanced {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(25px) !important;
   border: 1px solid rgba(0, 0, 0, 0.2) !important;
 }
 
 .dark .profile-dropdown-enhanced {
-  background: rgba(0, 0, 0, 0.9) !important;
+  background: rgba(0, 0, 0, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
   animation: modalSlide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
