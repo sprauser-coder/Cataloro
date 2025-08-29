@@ -339,13 +339,17 @@ function CategoriesPage() {
 
               {/* Browse Button */}
               <div className="p-4 pt-0">
-                <Link
-                  to={`/browse?category=${encodeURIComponent(category.name)}`}
+                <button
+                  onClick={() => {
+                    handleCategoryClick(category.name);
+                    // Navigate to browse page with category filter
+                    window.location.href = `/browse?category=${encodeURIComponent(category.name)}`;
+                  }}
                   className="w-full flex items-center justify-center space-x-2 bg-gray-100 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300 py-3 rounded-lg transition-all duration-200 font-medium"
                 >
                   <span>Browse {category.name}</span>
                   <ArrowRight className="w-4 h-4" />
-                </Link>
+                </button>
               </div>
             </div>
           );
