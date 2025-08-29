@@ -7,10 +7,12 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
-import Layout from './components/layout/Layout';
+import ModernLayout from './components/layout/ModernLayout';
 
-// Feature Components
-import BrowsePage from './features/marketplace/BrowsePage';
+// Modern Feature Components
+import ModernBrowsePage from './features/marketplace/ModernBrowsePage';
+import CategoriesPage from './features/marketplace/CategoriesPage';
+import ShoppingCartPage from './features/marketplace/ShoppingCartPage';
 import MyListingsPage from './features/marketplace/MyListingsPage';
 import DealsPage from './features/orders/DealsPage';
 import AdminPanel from './features/admin/AdminPanel';
