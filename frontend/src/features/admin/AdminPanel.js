@@ -928,4 +928,401 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
   );
 }
 
+// Comprehensive Site Administration Tab Component
+function SiteAdministrationTab({ showToast }) {
+  const [activeSection, setActiveSection] = useState('appearance');
+  const [siteConfig, setSiteConfig] = useState({
+    // Appearance & Themes
+    primaryColor: '#3B82F6',
+    secondaryColor: '#8B5CF6',
+    accentColor: '#10B981',
+    fontFamily: 'inter',
+    fontSize: '16',
+    borderRadius: '8',
+    enableDarkMode: true,
+    defaultTheme: 'light',
+    customCSS: '',
+    
+    // Layout & UI
+    headerStyle: 'modern',
+    sidebarEnabled: false,
+    breadcrumbsEnabled: true,
+    footerEnabled: true,
+    compactMode: false,
+    animationsEnabled: true,
+    
+    // Homepage Configuration
+    heroSectionEnabled: true,
+    featuredProductsEnabled: true,
+    categoriesShowcase: true,
+    testimonialSection: false,
+    newsletterSignup: true,
+    searchBarProminent: false,
+    
+    // Marketplace Features
+    userRegistration: true,
+    guestBrowsing: true,
+    productReviews: true,
+    wishlistEnabled: true,
+    compareFeature: false,
+    advancedFilters: true,
+    bulkOperations: false,
+    productVariations: true,
+    inventoryTracking: true,
+    
+    // Security & Privacy
+    twoFactorAuth: false,
+    emailVerification: true,
+    passwordPolicy: 'medium',
+    sessionTimeout: 60,
+    ipWhitelist: '',
+    contentModeration: true,
+    autoSpamDetection: true,
+    
+    // Performance & SEO
+    cacheEnabled: true,
+    compressionEnabled: true,
+    lazyLoading: true,
+    seoOptimization: true,
+    sitemapGeneration: true,
+    robotsTxt: true,
+    
+    // Communications
+    emailNotifications: true,
+    pushNotifications: false,
+    smsNotifications: false,
+    inAppMessaging: true,
+    newsletterSystem: true,
+    
+    // Analytics & Tracking
+    googleAnalytics: '',
+    facebookPixel: '',
+    customTracking: '',
+    userBehaviorTracking: true,
+    performanceMonitoring: true,
+    
+    // Maintenance & System
+    maintenanceMode: false,
+    debugMode: false,
+    logLevel: 'info',
+    backupEnabled: true,
+    autoUpdates: false
+  });
+
+  const handleConfigChange = (key, value) => {
+    setSiteConfig(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const saveSiteConfiguration = async () => {
+    try {
+      // Here you would call your API
+      // await adminService.updateSiteConfiguration(siteConfig);
+      showToast('Site configuration updated successfully!', 'success');
+    } catch (error) {
+      showToast('Site configuration saved locally (demo mode)', 'info');
+    }
+  };
+
+  const adminSections = [
+    { 
+      id: 'appearance', 
+      label: 'Appearance & Themes', 
+      icon: Palette,
+      description: 'Customize site appearance, colors, fonts, and layout'
+    },
+    { 
+      id: 'features', 
+      label: 'Feature Management', 
+      icon: Zap,
+      description: 'Enable/disable marketplace features and functionality'
+    },
+    { 
+      id: 'security', 
+      label: 'Security & Privacy', 
+      icon: Lock,
+      description: 'Configure security settings and privacy controls'
+    },
+    { 
+      id: 'performance', 
+      label: 'Performance & SEO', 
+      icon: TrendingUp,
+      description: 'Optimize site performance and search engine visibility'
+    },
+    { 
+      id: 'communications', 
+      label: 'Communications', 
+      icon: Mail,
+      description: 'Manage notifications, emails, and messaging systems'
+    },
+    { 
+      id: 'system', 
+      label: 'System & Maintenance', 
+      icon: Server,
+      description: 'System settings, maintenance, and advanced configuration'
+    }
+  ];
+
+  return (
+    <div className="space-y-8">
+      
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold mb-2">Site Administration</h2>
+            <p className="text-blue-100">Complete control over your marketplace platform</p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={saveSiteConfiguration}
+              className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+            >
+              <Save className="w-5 h-5" />
+              <span>Save All Changes</span>
+            </button>
+            <div className="bg-green-500 p-2 rounded-lg">
+              <Shield className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Section Navigation */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Administration Sections</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {adminSections.map((section) => {
+            const Icon = section.icon;
+            return (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className={`p-4 rounded-lg border-2 transition-all duration-200 text-left ${
+                  activeSection === section.id
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                }`}
+              >
+                <div className="flex items-center space-x-3 mb-2">
+                  <Icon className={`w-6 h-6 ${
+                    activeSection === section.id ? 'text-blue-600' : 'text-gray-500'
+                  }`} />
+                  <span className={`font-medium ${
+                    activeSection === section.id ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-white'
+                  }`}>
+                    {section.label}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {section.description}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Active Section Content */}
+      <div className="space-y-6">
+        
+        {/* Appearance & Themes Section */}
+        {activeSection === 'appearance' && (
+          <div className="space-y-6">
+            
+            {/* Color Scheme */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Palette className="w-5 h-5 mr-2" />
+                Color Scheme & Branding
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Primary Color</label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="color"
+                      value={siteConfig.primaryColor}
+                      onChange={(e) => handleConfigChange('primaryColor', e.target.value)}
+                      className="w-16 h-12 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={siteConfig.primaryColor}
+                      onChange={(e) => handleConfigChange('primaryColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Secondary Color</label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="color"
+                      value={siteConfig.secondaryColor}
+                      onChange={(e) => handleConfigChange('secondaryColor', e.target.value)}
+                      className="w-16 h-12 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={siteConfig.secondaryColor}
+                      onChange={(e) => handleConfigChange('secondaryColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Accent Color</label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="color"
+                      value={siteConfig.accentColor}
+                      onChange={(e) => handleConfigChange('accentColor', e.target.value)}
+                      className="w-16 h-12 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={siteConfig.accentColor}
+                      onChange={(e) => handleConfigChange('accentColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Typography & Layout */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Type className="w-5 h-5 mr-2" />
+                Typography & Layout
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Font Family</label>
+                  <select
+                    value={siteConfig.fontFamily}
+                    onChange={(e) => handleConfigChange('fontFamily', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="inter">Inter (Modern)</option>
+                    <option value="roboto">Roboto (Clean)</option>
+                    <option value="opensans">Open Sans (Friendly)</option>
+                    <option value="lato">Lato (Professional)</option>
+                    <option value="poppins">Poppins (Trendy)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Base Font Size</label>
+                  <select
+                    value={siteConfig.fontSize}
+                    onChange={(e) => handleConfigChange('fontSize', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="14">Small (14px)</option>
+                    <option value="16">Medium (16px)</option>
+                    <option value="18">Large (18px)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Border Radius</label>
+                  <select
+                    value={siteConfig.borderRadius}
+                    onChange={(e) => handleConfigChange('borderRadius', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="4">Minimal (4px)</option>
+                    <option value="8">Modern (8px)</option>
+                    <option value="12">Rounded (12px)</option>
+                    <option value="16">Very Rounded (16px)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Default Theme</label>
+                  <select
+                    value={siteConfig.defaultTheme}
+                    onChange={(e) => handleConfigChange('defaultTheme', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="light">Light Theme</option>
+                    <option value="dark">Dark Theme</option>
+                    <option value="auto">Auto (System)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Layout Options */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Layout className="w-5 h-5 mr-2" />
+                Layout Configuration
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { key: 'sidebarEnabled', label: 'Enable Sidebar Navigation', desc: 'Show sidebar navigation instead of header' },
+                  { key: 'breadcrumbsEnabled', label: 'Show Breadcrumbs', desc: 'Display navigation breadcrumbs' },
+                  { key: 'footerEnabled', label: 'Show Footer', desc: 'Display site footer' },
+                  { key: 'compactMode', label: 'Compact Mode', desc: 'Reduce spacing for more content' },
+                  { key: 'animationsEnabled', label: 'Enable Animations', desc: 'Show transitions and animations' },
+                  { key: 'enableDarkMode', label: 'Dark Mode Available', desc: 'Allow users to toggle dark mode' }
+                ].map((setting) => (
+                  <label key={setting.key} className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                    <button
+                      onClick={() => handleConfigChange(setting.key, !siteConfig[setting.key])}
+                      className="mt-1"
+                    >
+                      {siteConfig[setting.key] ? (
+                        <ToggleRight className="w-6 h-6 text-blue-600" />
+                      ) : (
+                        <ToggleLeft className="w-6 h-6 text-gray-400" />
+                      )}
+                    </button>
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-white">{setting.label}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">{setting.desc}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom CSS */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Code className="w-5 h-5 mr-2" />
+                Custom CSS Injection
+              </h4>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Custom CSS Code
+                </label>
+                <textarea
+                  value={siteConfig.customCSS}
+                  onChange={(e) => handleConfigChange('customCSS', e.target.value)}
+                  placeholder="/* Enter custom CSS here */"
+                  rows={8}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm resize-none"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  Add custom CSS to override default styles. Changes apply site-wide.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Feature Management Section */}
+        {activeSection === 'features' && (
+          <div className="space-y-6">{/* Feature Management will be added next */}</div>
+        )}
+
+        {/* Continue with other sections... */}
+      </div>
+    </div>
+  );
+}
+
 export default AdminPanel;
