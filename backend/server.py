@@ -57,15 +57,37 @@ class User(BaseModel):
     is_active: bool = True
 
 class Listing(BaseModel):
-    id: str = None
     title: str
     description: str
     price: float
     category: str
+    condition: str
     seller_id: str
-    status: str = "active"
-    created_at: datetime = None
     images: List[str] = []
+    tags: List[str] = []
+    features: List[str] = []
+
+class CatalystData(BaseModel):
+    cat_id: str
+    name: str
+    ceramic_weight: float
+    pt_ppm: float
+    pd_ppm: float
+    rh_ppm: float
+    add_info: Optional[str] = ""
+    
+class CatalystPriceSettings(BaseModel):
+    pt_price: float
+    pd_price: float  
+    rh_price: float
+    renumeration_pt: float
+    renumeration_pd: float
+    renumeration_rh: float
+
+class CatalystPriceOverride(BaseModel):
+    catalyst_id: str
+    override_price: float
+    is_override: bool = True
 
 class Deal(BaseModel):
     id: str = None
