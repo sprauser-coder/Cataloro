@@ -581,6 +581,347 @@ function ProfilePage() {
             </div>
           </div>
         )}
+
+        {/* Security Tab */}
+        {activeTab === 'security' && (
+          <div className="space-y-6">
+            
+            {/* Change Password */}
+            <div className="cataloro-card-glass p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                <Key className="w-5 h-5 mr-2" />
+                Change Password
+              </h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Current Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="currentPassword"
+                      value={passwordData.currentPassword}
+                      onChange={handlePasswordChange}
+                      className="cataloro-input pr-10"
+                      placeholder="Enter current password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      value={passwordData.newPassword}
+                      onChange={handlePasswordChange}
+                      className="cataloro-input"
+                      placeholder="Enter new password"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Confirm New Password
+                    </label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={passwordData.confirmPassword}
+                      onChange={handlePasswordChange}
+                      className="cataloro-input"
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+                </div>
+                
+                <button
+                  onClick={handleChangePassword}
+                  className="cataloro-button-primary"
+                >
+                  Update Password
+                </button>
+              </div>
+            </div>
+
+            {/* Two-Factor Authentication */}
+            <div className="cataloro-card-glass p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Shield className="w-5 h-5 mr-2" />
+                Two-Factor Authentication
+              </h3>
+              
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-gray-700">Add an extra layer of security to your account</p>
+                  <p className="text-sm text-gray-500">Use an authenticator app to generate verification codes</p>
+                </div>
+                <div className="text-right">
+                  <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">
+                    Disabled
+                  </span>
+                </div>
+              </div>
+              
+              <button className="cataloro-button-secondary">
+                Enable 2FA
+              </button>
+            </div>
+
+            {/* Login History */}
+            <div className="cataloro-card-glass p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Login Activity</h3>
+              
+              <div className="space-y-3">
+                {[
+                  { device: 'Chrome on Windows', location: 'New York, US', time: '2 hours ago', current: true },
+                  { device: 'Safari on iPhone', location: 'New York, US', time: '1 day ago', current: false },
+                  { device: 'Chrome on Windows', location: 'New York, US', time: '3 days ago', current: false }
+                ].map((login, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50/80 backdrop-blur-sm rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{login.device}</p>
+                      <p className="text-xs text-gray-600">{login.location} • {login.time}</p>
+                    </div>
+                    {login.current && (
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                        Current
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Preferences Tab */}
+        {activeTab === 'preferences' && (
+          <div className="space-y-6">
+            
+            {/* Notification Preferences */}
+            <div className="cataloro-card-glass p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                <Bell className="w-5 h-5 mr-2" />
+                Notification Preferences
+              </h3>
+              
+              <div className="space-y-4">
+                {[
+                  { key: 'emailNotifications', label: 'Email Notifications', desc: 'Receive email notifications for important updates' },
+                  { key: 'smsNotifications', label: 'SMS Notifications', desc: 'Get text messages for urgent notifications' },
+                  { key: 'browserNotifications', label: 'Browser Notifications', desc: 'Show desktop notifications while browsing' },
+                  { key: 'marketingEmails', label: 'Marketing Emails', desc: 'Receive promotional offers and newsletters' }
+                ].map((pref) => (
+                  <label key={pref.key} className="flex items-start space-x-3 p-3 hover:bg-gray-50/50 rounded-lg cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={preferences[pref.key]}
+                      onChange={(e) => handlePreferenceChange(pref.key, e.target.checked)}
+                      className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <div>
+                      <div className="font-medium text-gray-900">{pref.label}</div>
+                      <div className="text-sm text-gray-600">{pref.desc}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Display Preferences */}
+            <div className="cataloro-card-glass p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">Display & Language</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                  <select
+                    value={preferences.language}
+                    onChange={(e) => handlePreferenceChange('language', e.target.value)}
+                    className="cataloro-input"
+                  >
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="de">Deutsch</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                  <select
+                    value={preferences.currency}
+                    onChange={(e) => handlePreferenceChange('currency', e.target.value)}
+                    className="cataloro-input"
+                  >
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="JPY">JPY (¥)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Privacy Preferences */}
+            <div className="cataloro-card-glass p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">Privacy Settings</h3>
+              
+              <div className="space-y-4">
+                {[
+                  { key: 'publicProfile', label: 'Public Profile', desc: 'Make your profile visible to other users' },
+                  { key: 'showEmail', label: 'Show Email', desc: 'Display your email address on your profile' },
+                  { key: 'showPhone', label: 'Show Phone', desc: 'Allow others to see your phone number' }
+                ].map((pref) => (
+                  <label key={pref.key} className="flex items-start space-x-3 p-3 hover:bg-gray-50/50 rounded-lg cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={preferences[pref.key]}
+                      onChange={(e) => handlePreferenceChange(pref.key, e.target.checked)}
+                      className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <div>
+                      <div className="font-medium text-gray-900">{pref.label}</div>
+                      <div className="text-sm text-gray-600">{pref.desc}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Activity Tab */}
+        {activeTab === 'activity' && (
+          <div className="space-y-6">
+            
+            {/* Account Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="kpi-card">
+                <Package className="w-8 h-8 text-blue-600 mx-auto mb-3" />
+                <div className="kpi-value">{accountStats.totalListings}</div>
+                <div className="kpi-label">Total Listings</div>
+              </div>
+              
+              <div className="kpi-card">
+                <DollarSign className="w-8 h-8 text-green-600 mx-auto mb-3" />
+                <div className="kpi-value">${accountStats.totalRevenue}</div>
+                <div className="kpi-label">Total Revenue</div>
+              </div>
+              
+              <div className="kpi-card">
+                <Heart className="w-8 h-8 text-red-600 mx-auto mb-3" />
+                <div className="kpi-value">{accountStats.totalFavorites}</div>
+                <div className="kpi-label">Favorites</div>
+              </div>
+              
+              <div className="kpi-card">
+                <Eye className="w-8 h-8 text-purple-600 mx-auto mb-3" />
+                <div className="kpi-value">{accountStats.profileViews}</div>
+                <div className="kpi-label">Profile Views</div>
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="cataloro-card-glass p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">Recent Activity</h3>
+              
+              <div className="space-y-4">
+                {[
+                  { action: 'Listed new item', item: 'iPhone 15 Pro Max', time: '2 hours ago', icon: Package },
+                  { action: 'Received favorite', item: 'MacBook Air M2', time: '5 hours ago', icon: Heart },
+                  { action: 'Completed deal', item: 'Vintage Guitar', time: '1 day ago', icon: DollarSign },
+                  { action: 'Updated profile', item: 'Profile information', time: '2 days ago', icon: User }
+                ].map((activity, index) => {
+                  const Icon = activity.icon;
+                  return (
+                    <div key={index} className="flex items-center space-x-4 p-3 hover:bg-gray-50/50 rounded-lg transition-colors">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Icon className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">
+                          {activity.action}: <span className="text-blue-600">{activity.item}</span>
+                        </p>
+                        <p className="text-xs text-gray-500">{activity.time}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Data & Privacy Tab */}
+        {activeTab === 'data' && (
+          <div className="space-y-6">
+            
+            {/* Data Export */}
+            <div className="cataloro-card-glass p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Download className="w-5 h-5 mr-2" />
+                Export Your Data
+              </h3>
+              
+              <p className="text-gray-600 mb-6">
+                Download a copy of all your data including profile information, listings, and activity history.
+              </p>
+              
+              <button
+                onClick={handleExportData}
+                className="cataloro-button-primary flex items-center"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export Data
+              </button>
+            </div>
+
+            {/* Account Deletion */}
+            <div className="cataloro-card-glass p-6 border-red-200">
+              <h3 className="text-lg font-semibold text-red-900 mb-4 flex items-center">
+                <AlertCircle className="w-5 h-5 mr-2" />
+                Danger Zone
+              </h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">Deactivate Account</h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Temporarily disable your account. You can reactivate it anytime.
+                  </p>
+                  <button className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors">
+                    Deactivate Account
+                  </button>
+                </div>
+                
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-900 mb-2">Delete Account</h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Permanently delete your account and all associated data. This action cannot be undone.
+                  </p>
+                  <button className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                    Delete Account
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
