@@ -58,7 +58,17 @@ export const API_ENDPOINTS = {
   CHECKOUT: '/orders/checkout',
   
   // Notifications endpoints
-  NOTIFICATIONS: '/notifications'
+  NOTIFICATIONS: '/notifications',
+  
+  // Admin endpoints
+  ADMIN: {
+    DASHBOARD: '/admin/dashboard',
+    KPIS: '/admin/kpis',
+    USERS: '/admin/users',
+    SETTINGS: '/admin/settings',
+    LOGO: '/admin/logo',
+    STATS: '/admin/stats'
+  }
 };
 
 // User roles
