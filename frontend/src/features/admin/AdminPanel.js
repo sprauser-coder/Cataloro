@@ -902,6 +902,49 @@ function HeroSelectionTab({ showToast }) {
               This description appears below the title (recommended: 10-25 words)
             </p>
           </div>
+
+          {/* Height Adjustment */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Hero Section Height
+            </label>
+            <div className="space-y-4">
+              <input
+                type="range"
+                min="300"
+                max="800"
+                step="50"
+                value={heroContent.height || 400}
+                onChange={(e) => handleInputChange('height', parseInt(e.target.value))}
+                className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider"
+              />
+              <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                <span>Compact (300px)</span>
+                <span className="font-semibold text-purple-600 dark:text-purple-400 text-lg">
+                  Current: {heroContent.height || 400}px
+                </span>
+                <span>Extra Tall (800px)</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[300, 400, 500, 600, 700, 800].map(height => (
+                  <button
+                    key={height}
+                    onClick={() => handleInputChange('height', height)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      (heroContent.height || 400) === height
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {height}px
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Adjust the height of the hero section (300px = compact, 400px = standard, 600px+ = prominent)
+            </p>
+          </div>
         </div>
       </div>
 
