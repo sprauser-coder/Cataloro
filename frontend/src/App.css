@@ -413,7 +413,7 @@ body:not(.dark) .nav-item:hover {
   padding: 24px 0;
 }
 
-/* KPI Cards */
+/* KPI Cards - Light/Dark Mode Support */
 .kpi-card {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.08) 100%);
   backdrop-filter: blur(25px);
@@ -424,6 +424,20 @@ body:not(.dark) .nav-item:hover {
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
+  margin-bottom: 0.5rem; /* mb-2 spacing */
+}
+
+/* Dark mode KPI cards */
+.dark .kpi-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Light mode KPI cards */
+body:not(.dark) .kpi-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 100%);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .kpi-card::before {
@@ -453,11 +467,20 @@ body:not(.dark) .nav-item:hover {
 }
 
 .kpi-label {
-  color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-size: 12px;
+}
+
+/* Dark mode KPI label */
+.dark .kpi-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Light mode KPI label */
+body:not(.dark) .kpi-label {
+  color: rgba(0, 0, 0, 0.7);
 }
 
 /* Admin Panel Modern Styles */
