@@ -163,7 +163,7 @@ function SimpleLoginPage() {
 
               <div className="space-y-3 pt-4">
                 <button
-                  onClick={() => alert('🚧 Marketplace features coming soon! The full app will be implemented with proper routing.')}
+                  onClick={() => window.location.href = '/browse'}
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   Go to Marketplace
