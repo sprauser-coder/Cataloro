@@ -1122,7 +1122,7 @@ function HeroSelectionTab({ showToast }) {
           <div className="flex space-x-4">
             <button
               onClick={handlePreview}
-              className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-medium transition-all duration-200"
+              className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-medium"
             >
               <Eye className="w-5 h-5" />
               <span>Preview on Browse Page</span>
