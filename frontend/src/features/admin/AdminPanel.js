@@ -1220,7 +1220,7 @@ function SiteAdministrationTab({ showToast }) {
                   fontSize: '20',
                   borderRadius: '24'
                 };
-                applyConfigurationToSite(typographyTest);
+                applySiteConfiguration(typographyTest);
                 showToast('📝 Typography Test: Roboto font, 20px size, 24px radius', 'info');
               }}
               className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
