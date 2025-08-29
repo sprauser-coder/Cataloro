@@ -955,9 +955,9 @@ function HeroSelectionTab({ showToast }) {
           Live Preview
         </h3>
 
-        {/* Hero Preview - DYNAMIC HEIGHT */}
+        {/* Hero Preview - DYNAMIC HEIGHT WITH ROUNDED CORNERS */}
         <div 
-          className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white overflow-hidden w-full"
+          className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white overflow-hidden w-full rounded-2xl"
           style={{ 
             height: `${heroContent.height || 400}px`,
             minHeight: '300px'
