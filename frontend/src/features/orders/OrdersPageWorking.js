@@ -157,7 +157,6 @@ const OrdersPageWorking = () => {
     // Filter by date range
     if (dateRange !== 'all') {
       const now = new Date();
-      const orderDate = new Date(order.order_date);
       
       switch (dateRange) {
         case 'week':
