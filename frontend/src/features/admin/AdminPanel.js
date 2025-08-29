@@ -1538,6 +1538,12 @@ function SiteAdministrationTab({ showToast }) {
       description: 'Customize site appearance, colors, fonts, and layout'
     },
     { 
+      id: 'footer', 
+      label: 'Footer Configuration', 
+      icon: Layout,
+      description: 'Customize footer content, links, and social media'
+    },
+    { 
       id: 'features', 
       label: 'Feature Management', 
       icon: Zap,
