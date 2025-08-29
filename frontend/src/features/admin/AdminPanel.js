@@ -1018,6 +1018,115 @@ function SiteAdministrationTab({ showToast }) {
     }));
   };
 
+  const applyConfigurationToSite = (config) => {
+    try {
+      // Remove existing configuration styles
+      const existingStyle = document.getElementById('cataloro-site-config');
+      if (existingStyle) {
+        existingStyle.remove();
+      }
+
+      // Create new style element
+      const style = document.createElement('style');
+      style.id = 'cataloro-site-config';
+      
+      // Generate CSS from configuration
+      let css = `
+        :root {
+          --primary-color: ${config.primaryColor};
+          --secondary-color: ${config.secondaryColor};
+          --accent-color: ${config.accentColor};
+          --border-radius: ${config.borderRadius}px;
+          --font-size-base: ${config.fontSize}px;
+        }
+        
+        /* Apply primary color to buttons and links */
+        .bg-blue-600, .bg-blue-500 {
+          background-color: ${config.primaryColor} !important;
+        }
+        
+        .hover\\:bg-blue-700:hover, .hover\\:bg-blue-600:hover {
+          background-color: ${config.primaryColor} !important;
+          filter: brightness(0.9);
+        }
+        
+        .text-blue-600, .text-blue-500 {
+          color: ${config.primaryColor} !important;
+        }
+        
+        .border-blue-600, .border-blue-500 {
+          border-color: ${config.primaryColor} !important;
+        }
+        
+        /* Apply secondary color */
+        .bg-purple-600, .bg-purple-500 {
+          background-color: ${config.secondaryColor} !important;
+        }
+        
+        .text-purple-600, .text-purple-500 {
+          color: ${config.secondaryColor} !important;
+        }
+        
+        /* Apply accent color to success states */
+        .bg-green-600, .bg-green-500 {
+          background-color: ${config.accentColor} !important;
+        }
+        
+        .text-green-600, .text-green-500 {
+          color: ${config.accentColor} !important;
+        }
+        
+        /* Apply border radius */
+        .rounded-lg {
+          border-radius: ${config.borderRadius}px !important;
+        }
+        
+        .rounded-xl {
+          border-radius: ${Math.round(config.borderRadius * 1.5)}px !important;
+        }
+        
+        /* Apply font family */
+        body {
+          font-family: ${config.fontFamily === 'inter' ? 'Inter, sans-serif' : 
+                      config.fontFamily === 'roboto' ? 'Roboto, sans-serif' :
+                      config.fontFamily === 'opensans' ? 'Open Sans, sans-serif' :
+                      config.fontFamily === 'lato' ? 'Lato, sans-serif' :
+                      config.fontFamily === 'poppins' ? 'Poppins, sans-serif' : 'Inter, sans-serif'} !important;
+          font-size: ${config.fontSize}px !important;
+        }
+        
+        /* Apply layout settings */
+        ${!config.animationsEnabled ? `
+        *, *::before, *::after {
+          animation-duration: 0s !important;
+          animation-delay: 0s !important;
+          transition-duration: 0s !important;
+          transition-delay: 0s !important;
+        }` : ''}
+        
+        ${config.compactMode ? `
+        .space-y-6 > * + * { margin-top: 1rem !important; }
+        .space-y-8 > * + * { margin-top: 1.5rem !important; }
+        .p-6 { padding: 1rem !important; }
+        .p-8 { padding: 1.5rem !important; }
+        ` : ''}
+      `;
+      
+      // Add custom CSS if provided
+      if (config.customCSS) {
+        css += `\n\n/* Custom CSS */\n${config.customCSS}`;
+      }
+      
+      style.textContent = css;
+      document.head.appendChild(style);
+      
+      console.log('✅ Configuration applied to site!', config);
+      
+    } catch (error) {
+      console.error('Error applying configuration:', error);
+    }
+  };
+
   const saveSiteConfiguration = async () => {
     try {
       setIsSaving(true);
@@ -1025,14 +1134,16 @@ function SiteAdministrationTab({ showToast }) {
       // Simulate API call delay for better UX feedback
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Save to localStorage to demonstrate persistence
+      // Save to localStorage
       localStorage.setItem('cataloro_site_config', JSON.stringify(siteConfig));
       
-      // Show success notification
-      showToast('Site configuration saved successfully! All changes have been applied.', 'success');
+      // APPLY THE CHANGES TO THE ACTUAL SITE
+      applyConfigurationToSite(siteConfig);
       
-      // Log for debugging
-      console.log('Site configuration saved:', siteConfig);
+      // Show success notification
+      showToast('Site configuration saved and applied successfully! Changes are now live.', 'success');
+      
+      console.log('Site configuration saved and applied:', siteConfig);
       
     } catch (error) {
       console.error('Save error:', error);
