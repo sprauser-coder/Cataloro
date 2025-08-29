@@ -127,7 +127,7 @@ function Footer() {
               <div className="space-y-3">
                 <div className="flex items-center space-x-3 text-sm">
                   <Mail className="w-4 h-4 text-blue-400" />
-                  <a href={`mailto:${config.contact.email}`} style={linkStyle} className="hover:text-blue-300 transition-colors">
+                  <a href={`mailto:${config.contact.email}`} style={linkStyle} className="hover:text-blue-300">
                     {config.contact.email}
                   </a>
                 </div>
