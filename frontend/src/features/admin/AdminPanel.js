@@ -1240,6 +1240,9 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
       // Store settings in localStorage for immediate use
       localStorage.setItem('cataloro_site_branding', JSON.stringify(formData));
       
+      // Trigger custom event to update header
+      window.dispatchEvent(new CustomEvent('brandingUpdated'));
+      
       // Apply logo changes to the site immediately
       applyLogoChanges(formData);
       
