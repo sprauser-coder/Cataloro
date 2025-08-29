@@ -66,28 +66,17 @@ function ModernBrowsePage() {
     'Cars', 'Real Estate', 'Jobs', 'Services'
   ]);
 
-  const featuredProducts = [
-    {
-      id: 'featured-1',
-      title: 'iPhone 15 Pro Max',
-      price: 1199,
-      originalPrice: 1299,
-      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=100',
-      rating: 4.8,
-      reviews: 124,
-      tag: 'Best Seller'
-    },
-    {
-      id: 'featured-2', 
-      title: 'MacBook Air M2',
-      price: 999,
-      originalPrice: 1199,
-      image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100',
-      rating: 4.9,
-      reviews: 89,
-      tag: 'Limited Offer'
+  // Load hero content from localStorage on mount
+  useEffect(() => {
+    const savedHeroContent = localStorage.getItem('cataloro_hero_content');
+    if (savedHeroContent) {
+      try {
+        setHeroContent(JSON.parse(savedHeroContent));
+      } catch (error) {
+        console.error('Error loading hero content:', error);
+      }
     }
-  ];
+  }, []);
 
   const handleAddToCart = (item) => {
     addToCart(item);
