@@ -504,6 +504,25 @@ async def register(user_data: UserCreate):
     
     return Token(access_token=access_token, token_type="bearer", user=user)
 
+@api_router.get("/debug/admin-user")
+async def debug_admin_user():
+    """Debug endpoint to check admin user raw data"""
+    user_doc = await db.users.find_one({"email": "admin@marketplace.com"})
+    if not user_doc:
+        return {"error": "Admin user not found"}
+    
+    # Return raw document (without password)
+    user_dict = parse_from_mongo(user_doc)
+    if 'password' in user_dict:
+        del user_dict['password']
+    
+    return {
+        "raw_is_blocked": user_doc.get('is_blocked'),
+        "parsed_is_blocked": user_dict.get('is_blocked'),
+        "user_id": user_dict.get('id'),
+        "email": user_dict.get('email')
+    }
+
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
     user_doc = await db.users.find_one({"email": credentials.email})
