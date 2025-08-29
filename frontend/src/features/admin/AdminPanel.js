@@ -265,6 +265,12 @@ function AdminPanel() {
         />
       )}
       
+      {activeTab === 'listings' && (
+        <ListingsTab 
+          showToast={showToast}
+        />
+      )}
+      
       {activeTab === 'settings' && (
         <SettingsTab 
           settings={settings}
