@@ -26,6 +26,16 @@ import { APP_ROUTES } from './config/directions';
 import './App.css';
 
 function App() {
+  useEffect(() => {
+    // Hide loading screen once React is mounted
+    const loader = document.getElementById('app-loader');
+    if (loader) {
+      setTimeout(() => {
+        loader.style.display = 'none';
+      }, 500);
+    }
+  }, []);
+
   return (
     <div className="App">
       {/* Loading indicator */}
