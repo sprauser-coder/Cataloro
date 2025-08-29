@@ -133,9 +133,9 @@ function ModernBrowsePage() {
 
   return (
     <div className="space-y-8">
-      {/* Hero Section with Dynamic Content and Search - FULL WIDTH */}
+      {/* Hero Section with Dynamic Content and Search - ROUNDED CORNERS */}
       <div 
-        className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white overflow-hidden w-full -mx-8"
+        className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white overflow-hidden w-full rounded-2xl"
         style={{ 
           height: heroContent.height ? `${heroContent.height}px` : '400px',
           minHeight: '300px'
