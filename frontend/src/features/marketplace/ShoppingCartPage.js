@@ -34,6 +34,7 @@ function ShoppingCartPage() {
     favorites,
     updateQuantity,
     removeFromCart,
+    addToCart,
     addToFavorites,
     removeFromFavorites,
     appliedPromo,
