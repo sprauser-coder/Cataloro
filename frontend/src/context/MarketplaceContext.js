@@ -5,6 +5,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { marketplaceService } from '../services/marketplaceService';
+import { liveService } from '../services/liveService';
 
 // Initial state
 const initialState = {
