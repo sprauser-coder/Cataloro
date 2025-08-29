@@ -193,7 +193,7 @@ function ModernBrowsePage() {
 
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
+            onChange={(e) => updateSortBy(e.target.value)}
             className="px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500"
           >
             <option value="newest">Newest First</option>
