@@ -504,21 +504,16 @@ async def register(user_data: UserCreate):
     
     return Token(access_token=access_token, token_type="bearer", user=user)
 
-@api_router.post("/auth/login")
+@api_router.post("/auth/login", response_model=Token)
 async def login(credentials: UserLogin):
-    # IMMEDIATE TEST - Return hardcoded response to see if this endpoint is being hit
-    return {
-        "access_token": "test_token_12345",
-        "token_type": "bearer",
-        "user": {
-            "id": "test",
-            "email": "admin@marketplace.com", 
-            "role": "admin",
-            "is_blocked": False,
-            "debug_endpoint_hit": True,
-            "timestamp": "2025-08-29-04:22:00"
-        }
-    }
+    user_doc = await db.users.find_one({"email": credentials.email})
+    if not user_doc or not verify_password(credentials.password, user_doc['password']):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    user = User(**parse_from_mongo(user_doc))
+    access_token = create_access_token(data={"sub": user.id})
+    
+    return Token(access_token=access_token, token_type="bearer", user=user)
 
 # Listing Routes - Count endpoint MUST come first before parameterized routes
 @api_router.get("/listings/count")
