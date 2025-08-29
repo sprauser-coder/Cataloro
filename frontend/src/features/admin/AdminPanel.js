@@ -1038,7 +1038,7 @@ function SiteAdministrationTab({ showToast }) {
   };
 
   // Load saved configuration on component mount
-  useEffect(() => {
+  React.useEffect(() => {
     const savedConfig = localStorage.getItem('cataloro_site_config');
     if (savedConfig) {
       try {
