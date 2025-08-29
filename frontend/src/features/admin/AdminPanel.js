@@ -46,7 +46,7 @@ function AdminPanel() {
   
   const { isAdmin } = useAuth();
   const { allProducts, cartItems, favorites, notifications } = useMarketplace();
-  const { showNotification } = useNotification();
+  const { showToast } = useNotifications();
 
   // Calculate real KPIs from marketplace data
   const calculateRealKPIs = () => {
