@@ -425,6 +425,178 @@ async def upload_logo(file: UploadFile = File(...), mode: str = "light"):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload logo: {str(e)}")
 
+# Marketplace Listings Endpoints
+@app.get("/api/listings")
+async def get_all_listings(
+    category: str = None,
+    min_price: float = None,
+    max_price: float = None,
+    condition: str = None,
+    search: str = None,
+    limit: int = 20,
+    offset: int = 0
+):
+    """Get all listings with optional filtering"""
+    try:
+        query = {}
+        
+        if category and category != 'all':
+            query['category'] = category
+        if condition and condition != 'all':
+            query['condition'] = condition
+        if min_price is not None:
+            query['price'] = {'$gte': min_price}
+        if max_price is not None:
+            if 'price' in query:
+                query['price']['$lte'] = max_price
+            else:
+                query['price'] = {'$lte': max_price}
+        
+        # Get listings from database
+        listings_cursor = db.listings.find(query).sort("created_at", -1).skip(offset).limit(limit)
+        listings = []
+        
+        async for listing in listings_cursor:
+            listing['_id'] = str(listing['_id'])
+            listings.append(listing)
+        
+        return {
+            "listings": listings,
+            "total": await db.listings.count_documents(query)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch listings: {str(e)}")
+
+@app.post("/api/listings")
+async def create_listing(listing_data: dict):
+    """Create a new listing"""
+    try:
+        # Add metadata
+        listing_data["id"] = str(uuid.uuid4())
+        listing_data["created_at"] = datetime.utcnow().isoformat()
+        listing_data["updated_at"] = datetime.utcnow().isoformat()
+        listing_data["status"] = "active"
+        listing_data["views"] = 0
+        listing_data["favorites_count"] = 0
+        
+        # Validate required fields
+        required_fields = ['title', 'description', 'price', 'category', 'condition', 'seller_id']
+        for field in required_fields:
+            if field not in listing_data:
+                raise HTTPException(status_code=400, detail=f"Missing required field: {field}")
+        
+        # Insert into database
+        result = await db.listings.insert_one(listing_data)
+        
+        return {
+            "message": "Listing created successfully",
+            "listing_id": listing_data["id"],
+            "status": "active"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create listing: {str(e)}")
+
+@app.put("/api/listings/{listing_id}")
+async def update_listing(listing_id: str, update_data: dict):
+    """Update an existing listing"""
+    try:
+        update_data["updated_at"] = datetime.utcnow().isoformat()
+        
+        result = await db.listings.update_one(
+            {"id": listing_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        
+        return {"message": "Listing updated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update listing: {str(e)}")
+
+@app.delete("/api/listings/{listing_id}")
+async def delete_listing(listing_id: str):
+    """Delete a listing"""
+    try:
+        result = await db.listings.delete_one({"id": listing_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        
+        return {"message": "Listing deleted successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete listing: {str(e)}")
+
+@app.get("/api/listings/{listing_id}")
+async def get_listing(listing_id: str):
+    """Get a specific listing by ID"""
+    try:
+        listing = await db.listings.find_one({"id": listing_id})
+        
+        if not listing:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        
+        listing['_id'] = str(listing['_id'])
+        
+        # Increment view count
+        await db.listings.update_one(
+            {"id": listing_id},
+            {"$inc": {"views": 1}}
+        )
+        
+        return listing
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch listing: {str(e)}")
+
+@app.post("/api/listings/{listing_id}/images")
+async def upload_listing_image(listing_id: str, file: UploadFile = File(...)):
+    """Upload image for a listing"""
+    try:
+        # Validate file type
+        if not file.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Validate file size (5MB limit)
+        contents = await file.read()
+        if len(contents) > 5 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File size must be less than 5MB")
+        
+        # For demo purposes, return a data URL
+        import base64
+        file_data = base64.b64encode(contents).decode()
+        image_url = f"data:{file.content_type};base64,{file_data}"
+        
+        # Update listing with new image
+        result = await db.listings.update_one(
+            {"id": listing_id},
+            {"$push": {"images": image_url}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        
+        return {
+            "message": "Image uploaded successfully",
+            "image_url": image_url,
+            "filename": file.filename
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
 # Run server
 if __name__ == "__main__":
     import uvicorn
