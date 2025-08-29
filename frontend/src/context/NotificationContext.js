@@ -102,8 +102,8 @@ export function NotificationProvider({ children }) {
   // }, [isAuthenticated, user?.id]);
 
   // Actions
-  const fetchNotifications = async () => {
-    if (!user?.id) return;
+  const fetchNotifications = async (userId = null) => {
+    if (!userId) return;
 
     dispatch({ type: NOTIFICATION_ACTIONS.FETCH_START });
     
