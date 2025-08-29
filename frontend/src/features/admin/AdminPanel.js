@@ -1301,106 +1301,112 @@ function SiteAdministrationTab({ showToast }) {
             <h2 className="text-2xl font-bold mb-2">Site Administration</h2>
             <p className="text-blue-100">Complete control over your marketplace platform</p>
           </div>
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => {
-                // COMPREHENSIVE TEST - All features at once
-                const testConfig = {
-                  ...siteConfig,
-                  // Colors
-                  primaryColor: '#FF4500',    // Orange Red
-                  secondaryColor: '#9400D3',  // Violet  
-                  accentColor: '#32CD32',     // Lime Green
-                  
-                  // Typography
-                  fontFamily: 'poppins',
-                  fontSize: '18',
-                  
-                  // Layout
-                  borderRadius: '16',
-                  compactMode: true,
-                  animationsEnabled: false,
-                  
-                  // Features
-                  heroSectionEnabled: true,
-                  featuredProductsEnabled: true,
-                  wishlistEnabled: true,
-                  productReviews: true
-                };
-                applySiteConfiguration(testConfig);
-                showToast('🚀 COMPREHENSIVE TEST APPLIED! Check all changes: Colors, Fonts, Layout, Features', 'info');
-              }}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
-            >
-              <Zap className="w-5 h-5" />
-              <span>Full Test</span>
-            </button>
-            
-            <button
-              onClick={() => {
-                // Typography Test
-                const typographyTest = {
-                  ...siteConfig,
-                  fontFamily: 'roboto',
-                  fontSize: '20',
-                  borderRadius: '24'
-                };
-                applySiteConfiguration(typographyTest);
-                showToast('📝 Typography Test: Roboto font, 20px size, 24px radius', 'info');
-              }}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
-            >
-              <Type className="w-5 h-5" />
-              <span>Typography</span>
-            </button>
-            
-            <button
-              onClick={() => {
-                // Feature Toggle Test
-                const featureTest = {
-                  ...siteConfig,
-                  compactMode: !siteConfig.compactMode,
-                  animationsEnabled: !siteConfig.animationsEnabled,
-                  wishlistEnabled: !siteConfig.wishlistEnabled
-                };
-                applySiteConfiguration(featureTest);
-                setSiteConfig(featureTest);
-                showToast('⚡ Feature Toggle Test: Compact mode, animations, wishlist toggled', 'info');
-              }}
-              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
-            >
-              <ToggleRight className="w-5 h-5" />
-              <span>Features</span>
-            </button>
-            
-            <button
-              onClick={() => applySiteConfiguration(siteConfig)}
-              className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
-            >
-              <Eye className="w-5 h-5" />
-              <span>Preview</span>
-            </button>
-            
-            <button
-              onClick={saveSiteConfiguration}
-              disabled={isSaving}
-              className="bg-white/20 hover:bg-white/30 disabled:bg-white/10 px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2"
-            >
-              {isSaving ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <>
-                  <Save className="w-5 h-5" />
-                  <span>Save All Changes</span>
-                </>
-              )}
-            </button>
-            
-            <div className="bg-green-500 p-2 rounded-lg">
-              <Shield className="w-6 h-6" />
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Test Buttons Group */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => {
+                  // COMPREHENSIVE TEST - All features at once
+                  const testConfig = {
+                    ...siteConfig,
+                    // Colors
+                    primaryColor: '#FF4500',    // Orange Red
+                    secondaryColor: '#9400D3',  // Violet  
+                    accentColor: '#32CD32',     // Lime Green
+                    
+                    // Typography
+                    fontFamily: 'poppins',
+                    fontSize: '18',
+                    
+                    // Layout
+                    borderRadius: '16',
+                    compactMode: true,
+                    animationsEnabled: false,
+                    
+                    // Features
+                    heroSectionEnabled: true,
+                    featuredProductsEnabled: true,
+                    wishlistEnabled: true,
+                    productReviews: true
+                  };
+                  applySiteConfiguration(testConfig);
+                  showToast('🚀 COMPREHENSIVE TEST APPLIED! Check all changes: Colors, Fonts, Layout, Features', 'info');
+                }}
+                className="bg-orange-500/90 hover:bg-orange-600 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 text-sm hover:shadow-lg"
+              >
+                <Zap className="w-4 h-4" />
+                <span>Full Test</span>
+              </button>
+              
+              <button
+                onClick={() => {
+                  // Typography Test
+                  const typographyTest = {
+                    ...siteConfig,
+                    fontFamily: 'roboto',
+                    fontSize: '20',
+                    borderRadius: '24'
+                  };
+                  applySiteConfiguration(typographyTest);
+                  showToast('📝 Typography Test: Roboto font, 20px size, 24px radius', 'info');
+                }}
+                className="bg-blue-500/90 hover:bg-blue-600 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 text-sm hover:shadow-lg"
+              >
+                <Type className="w-4 h-4" />
+                <span>Typography</span>
+              </button>
+              
+              <button
+                onClick={() => {
+                  // Feature Toggle Test
+                  const featureTest = {
+                    ...siteConfig,
+                    compactMode: !siteConfig.compactMode,
+                    animationsEnabled: !siteConfig.animationsEnabled,
+                    wishlistEnabled: !siteConfig.wishlistEnabled
+                  };
+                  applySiteConfiguration(featureTest);
+                  setSiteConfig(featureTest);
+                  showToast('⚡ Feature Toggle Test: Compact mode, animations, wishlist toggled', 'info');
+                }}
+                className="bg-purple-500/90 hover:bg-purple-600 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 text-sm hover:shadow-lg"
+              >
+                <ToggleRight className="w-4 h-4" />
+                <span>Features</span>
+              </button>
+            </div>
+
+            {/* Action Buttons Group */}
+            <div className="flex items-center space-x-2 ml-2">
+              <button
+                onClick={() => applySiteConfiguration(siteConfig)}
+                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 text-sm hover:shadow-lg"
+              >
+                <Eye className="w-4 h-4" />
+                <span>Preview</span>
+              </button>
+              
+              <button
+                onClick={saveSiteConfiguration}
+                disabled={isSaving}
+                className="bg-white/20 hover:bg-white/30 disabled:bg-white/10 backdrop-blur-sm text-white px-4 py-2.5 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2 text-sm hover:shadow-lg disabled:cursor-not-allowed"
+              >
+                {isSaving ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    <span>Save All Changes</span>
+                  </>
+                )}
+              </button>
+              
+              <div className="bg-green-500/90 backdrop-blur-sm p-2 rounded-lg hover:bg-green-600 transition-colors">
+                <Shield className="w-5 h-5" />
+              </div>
             </div>
           </div>
         </div>
