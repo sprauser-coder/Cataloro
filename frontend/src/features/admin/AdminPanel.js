@@ -468,21 +468,24 @@ function DashboardTab({ dashboardData, loading }) {
       {/* Enhanced Activity & Management Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
         
-        {/* Real-Time Activity */}
-        <div className="cataloro-card-glass">
+        {/* Real-Time Activity - FIXED FORMATTING */}
+        <div className="cataloro-card-glass p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Live Activity</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+              <Activity className="w-5 h-5 mr-2" />
+              Live Activity
+            </h3>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span className="text-sm text-green-600 dark:text-green-400 font-medium">Live</span>
             </div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {recent_activity?.map((activity, index) => (
-              <div key={index} className="flex items-start space-x-3 p-3 bg-white/10 dark:bg-white/5 rounded-lg backdrop-blur-md">
-                <div className="w-3 h-3 bg-blue-500 rounded-full mt-1 flex-shrink-0"></div>
+              <div key={index} className="flex items-start space-x-3 p-4 bg-white/10 dark:bg-white/5 rounded-xl backdrop-blur-md hover:bg-white/20 dark:hover:bg-white/10 transition-colors">
+                <div className="w-3 h-3 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900 dark:text-white font-medium">
+                  <p className="text-sm text-gray-900 dark:text-white font-medium mb-1">
                     {activity.action}
                   </p>
                   <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -494,63 +497,103 @@ function DashboardTab({ dashboardData, loading }) {
           </div>
         </div>
 
-        {/* System Performance */}
-        <div className="cataloro-card-glass">
+        {/* System Health - FIXED FORMATTING */}
+        <div className="cataloro-card-glass p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">System Health</h3>
-            <Shield className="w-6 h-6 text-green-500" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+              <Shield className="w-5 h-5 mr-2 text-green-500" />
+              System Health
+            </h3>
+            <div className="p-2 bg-green-100/80 dark:bg-green-900/30 rounded-lg backdrop-blur-md">
+              <Shield className="w-5 h-5 text-green-500" />
+            </div>
           </div>
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Database</span>
+            <div className="flex items-center justify-between p-3 bg-white/5 dark:bg-white/5 rounded-lg backdrop-blur-md">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                <Database className="w-4 h-4 mr-2" />
+                Database
+              </span>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm font-medium text-green-600">Optimal</span>
+                <span className="text-sm font-medium text-green-600 dark:text-green-400">Optimal</span>
               </div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600 dark:text-gray-400">API Response</span>
+            <div className="flex items-center justify-between p-3 bg-white/5 dark:bg-white/5 rounded-lg backdrop-blur-md">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                <Wifi className="w-4 h-4 mr-2" />
+                API Response
+              </span>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm font-medium text-green-600">Fast</span>
+                <span className="text-sm font-medium text-green-600 dark:text-green-400">Fast</span>
               </div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Server Load</span>
+            <div className="flex items-center justify-between p-3 bg-white/5 dark:bg-white/5 rounded-lg backdrop-blur-md">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                <Server className="w-4 h-4 mr-2" />
+                Server Load
+              </span>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                <span className="text-sm font-medium text-yellow-600">Normal</span>
+                <span className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Normal</span>
               </div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Security</span>
+            <div className="flex items-center justify-between p-3 bg-white/5 dark:bg-white/5 rounded-lg backdrop-blur-md">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                <Lock className="w-4 h-4 mr-2" />
+                Security
+              </span>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm font-medium text-green-600">Secure</span>
+                <span className="text-sm font-medium text-green-600 dark:text-green-400">Secure</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="cataloro-card-glass">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Quick Actions</h3>
+        {/* Quick Actions - FIXED FORMATTING */}
+        <div className="cataloro-card-glass p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+            <Zap className="w-5 h-5 mr-2" />
+            Quick Actions
+          </h3>
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-between p-3 bg-blue-50/80 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100/80 dark:hover:bg-blue-900/40 transition-colors backdrop-blur-md">
-              <span className="font-medium">Export Data</span>
-              <Download className="w-4 h-4" />
+            <button className="w-full flex items-center justify-between p-4 bg-blue-50/80 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-xl hover:bg-blue-100/80 dark:hover:bg-blue-900/40 transition-colors backdrop-blur-md group">
+              <span className="font-medium flex items-center">
+                <Download className="w-4 h-4 mr-3" />
+                Export Data
+              </span>
+              <div className="group-hover:translate-x-1 transition-transform">
+                <Download className="w-4 h-4" />
+              </div>
             </button>
-            <button className="w-full flex items-center justify-between p-3 bg-green-50/80 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-100/80 dark:hover:bg-green-900/40 transition-colors backdrop-blur-md">
-              <span className="font-medium">Refresh Stats</span>
-              <RefreshCw className="w-4 h-4" />
+            <button className="w-full flex items-center justify-between p-4 bg-green-50/80 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-xl hover:bg-green-100/80 dark:hover:bg-green-900/40 transition-colors backdrop-blur-md group">
+              <span className="font-medium flex items-center">
+                <RefreshCw className="w-4 h-4 mr-3" />
+                Refresh Stats
+              </span>
+              <div className="group-hover:rotate-90 transition-transform">
+                <RefreshCw className="w-4 h-4" />
+              </div>
             </button>
-            <button className="w-full flex items-center justify-between p-3 bg-purple-50/80 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-100/80 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md">
-              <span className="font-medium">System Backup</span>
-              <Shield className="w-4 h-4" />
+            <button className="w-full flex items-center justify-between p-4 bg-purple-50/80 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-xl hover:bg-purple-100/80 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md group">
+              <span className="font-medium flex items-center">
+                <Shield className="w-4 h-4 mr-3" />
+                System Backup
+              </span>
+              <div className="group-hover:scale-110 transition-transform">
+                <Shield className="w-4 h-4" />
+              </div>
             </button>
-            <button className="w-full flex items-center justify-between p-3 bg-orange-50/80 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-100/80 dark:hover:bg-orange-900/40 transition-colors backdrop-blur-md">
-              <span className="font-medium">View Logs</span>
-              <Eye className="w-4 h-4" />
+            <button className="w-full flex items-center justify-between p-4 bg-orange-50/80 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 rounded-xl hover:bg-orange-100/80 dark:hover:bg-orange-900/40 transition-colors backdrop-blur-md group">
+              <span className="font-medium flex items-center">
+                <Eye className="w-4 h-4 mr-3" />
+                View Logs
+              </span>
+              <div className="group-hover:scale-110 transition-transform">
+                <Eye className="w-4 h-4" />
+              </div>
             </button>
           </div>
         </div>
