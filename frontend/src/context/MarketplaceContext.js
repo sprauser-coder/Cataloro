@@ -336,8 +336,8 @@ export function MarketplaceProvider({ children }) {
         id: listing.id,
         title: listing.title,
         description: listing.description,
-        price: listing.price,
-        originalPrice: listing.price * 1.1, // Add 10% as original price for demo
+        price: parseFloat(listing.price) || 0, // Ensure price is a number
+        originalPrice: (parseFloat(listing.price) || 0) * 1.1, // Add 10% as original price for demo
         category: listing.category,
         condition: listing.condition,
         location: listing.location || 'Unknown',
