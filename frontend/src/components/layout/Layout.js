@@ -3,25 +3,46 @@
  * Header, Navigation, and Content wrapper with modern design
  */
 
-import React from 'react';
-import { Outlet } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Outlet, Navigate } from 'react-router-dom';
 import Header from './Header';
 import Navigation from './Navigation';
-import { useAuth } from '../../context/AuthContext';
 
 function Layout() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Check authentication status from localStorage
+    const token = localStorage.getItem('cataloro_token');
+    const user = localStorage.getItem('cataloro_user');
+    
+    if (token && user) {
+      try {
+        JSON.parse(user); // Validate user data
+        setIsAuthenticated(true);
+      } catch (error) {
+        localStorage.removeItem('cataloro_token');
+        localStorage.removeItem('cataloro_user');
+        setIsAuthenticated(false);
+      }
+    } else {
+      setIsAuthenticated(false);
+    }
+    
+    setIsLoading(false);
+  }, []);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="spinner"></div>
+        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!isAuthenticated) {
-    return null; // Will redirect to login via routing
+    return <Navigate to="/login" replace />;
   }
 
   return (
