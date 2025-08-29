@@ -21,7 +21,7 @@ import LoginPage from './features/auth/LoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 
 // Import centralized configuration
-import { APP_ROUTES } from '../config/directions';
+import { APP_ROUTES } from './config/directions';
 
 import './App.css';
 
