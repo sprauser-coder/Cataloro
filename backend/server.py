@@ -255,7 +255,8 @@ async def get_notifications(user_id: str):
         for notification in dummy_notifications:
             await db.notifications.insert_one(notification)
         
-        return dummy_notifications
+        # Return serialized dummy data
+        return [serialize_doc(notification) for notification in dummy_notifications]
     
     return notifications
 
