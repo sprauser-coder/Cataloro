@@ -1139,7 +1139,7 @@ function SiteAdministrationTab({ showToast }) {
       console.log('CSS Content:', css);
       
       // Force a repaint
-      document.body.offsetHeight;
+      void document.body.offsetHeight;
       
     } catch (error) {
       console.error('❌ Error applying configuration:', error);
