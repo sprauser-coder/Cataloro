@@ -364,7 +364,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   <div className="border-t border-white/10 pt-2">
                     <button
                       onClick={handleLogout}
-                      className="flex items-center w-full px-6 py-3 text-sm text-white/90 hover:text-red-300 hover:bg-red-500/10 transition-all duration-300 group"
+                      className="flex items-center w-full px-6 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-500/10 dark:hover:bg-red-500/10 transition-all duration-300 group"
                     >
                       <div className="p-2 rounded-lg mr-3 group-hover:bg-red-500/20 transition-all duration-300" style={{
                         background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1))'
