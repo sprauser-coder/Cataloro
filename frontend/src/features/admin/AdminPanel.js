@@ -2875,7 +2875,7 @@ function ListingsTab({ showToast }) {
           </div>
         </div>
 
-        <div className="cataloro-card-glass p-6 text-center hover:shadow-2xl transition-all duration-300">
+        <div className="cataloro-card-glass p-6 text-center">
           <div className="flex flex-col items-center space-y-4">
             <div className="p-4 bg-orange-100/80 dark:bg-orange-900/30 rounded-2xl backdrop-blur-md">
               <Eye className="w-8 h-8 text-orange-500" />
