@@ -25,6 +25,11 @@ export const API_CONFIG = {
 // Current Environment URLs
 export const CURRENT_ENV = isDevelopment ? API_CONFIG.development : API_CONFIG.production;
 
+// Environment Configuration (for backward compatibility)
+export const ENV_CONFIG = {
+  API_BASE_URL: CURRENT_ENV.BACKEND_URL
+};
+
 // API Endpoints
 export const API_ENDPOINTS = {
   // Authentication
