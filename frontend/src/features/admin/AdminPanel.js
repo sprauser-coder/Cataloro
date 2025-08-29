@@ -3330,4 +3330,654 @@ function ListingModal({ listing, onSave, onClose }) {
   );
 }
 
+// Cat Database Tab Component
+function CatDatabaseTab({ showToast }) {
+  const [activeSubTab, setActiveSubTab] = useState('data');
+  const [catalystData, setCatalystData] = useState([]);
+  const [priceSettings, setPriceSettings] = useState({
+    pt_price: 25.0,
+    pd_price: 18.0,
+    rh_price: 45.0,
+    renumeration_pt: 0.95,
+    renumeration_pd: 0.92,
+    renumeration_rh: 0.88
+  });
+  const [calculations, setCalculations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [showOverrideModal, setShowOverrideModal] = useState(false);
+  const [selectedCatalyst, setSelectedCatalyst] = useState(null);
+  const [editingRow, setEditingRow] = useState(null);
+
+  const subTabs = [
+    { id: 'data', label: 'Data', icon: Database },
+    { id: 'calculations', label: 'Price Calculations', icon: DollarSign },
+    { id: 'basis', label: 'Basis', icon: Settings }
+  ];
+
+  useEffect(() => {
+    fetchCatalystData();
+    fetchPriceSettings();
+    fetchCalculations();
+  }, []);
+
+  const fetchCatalystData = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/data`);
+      if (response.ok) {
+        const data = await response.json();
+        setCatalystData(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch catalyst data:', error);
+    }
+  };
+
+  const fetchPriceSettings = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/price-settings`);
+      if (response.ok) {
+        const data = await response.json();
+        setPriceSettings(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch price settings:', error);
+    }
+  };
+
+  const fetchCalculations = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/calculations`);
+      if (response.ok) {
+        const data = await response.json();
+        setCalculations(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch calculations:', error);
+    }
+  };
+
+  const handleExcelUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/upload`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        showToast(`Successfully uploaded ${result.count} catalyst records`, 'success');
+        await fetchCatalystData();
+        await fetchCalculations();
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      showToast('Failed to upload Excel file', 'error');
+      console.error('Upload error:', error);
+    } finally {
+      setUploading(false);
+      event.target.value = '';
+    }
+  };
+
+  const handleUpdateCatalystData = async (catalystId, updatedData) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/data/${catalystId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedData)
+      });
+
+      if (response.ok) {
+        showToast('Catalyst data updated successfully', 'success');
+        await fetchCatalystData();
+        await fetchCalculations();
+        setEditingRow(null);
+      }
+    } catch (error) {
+      showToast('Failed to update catalyst data', 'error');
+      console.error('Update error:', error);
+    }
+  };
+
+  const handleUpdatePriceSettings = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/price-settings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(priceSettings)
+      });
+
+      if (response.ok) {
+        showToast('Price settings updated successfully', 'success');
+        await fetchCalculations();
+      }
+    } catch (error) {
+      showToast('Failed to update price settings', 'error');
+      console.error('Update error:', error);
+    }
+  };
+
+  const handlePriceOverride = async (catalystId, overridePrice) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/override/${catalystId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          catalyst_id: catalystId,
+          override_price: parseFloat(overridePrice),
+          is_override: true
+        })
+      });
+
+      if (response.ok) {
+        showToast('Price override set successfully', 'success');
+        await fetchCalculations();
+        setShowOverrideModal(false);
+      }
+    } catch (error) {
+      showToast('Failed to set price override', 'error');
+      console.error('Override error:', error);
+    }
+  };
+
+  const handleResetPrice = async (catalystId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/reset/${catalystId}`, {
+        method: 'POST'
+      });
+
+      if (response.ok) {
+        showToast('Price reset to standard calculation', 'success');
+        await fetchCalculations();
+      }
+    } catch (error) {
+      showToast('Failed to reset price', 'error');
+      console.error('Reset error:', error);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="cataloro-card-glass p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Cat Database</h2>
+            <p className="text-gray-600 dark:text-gray-300">Catalyst database management and price calculations</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <label className="cataloro-button-primary cursor-pointer">
+              <Upload className="w-5 h-5 mr-2" />
+              {uploading ? 'Uploading...' : 'Upload Excel'}
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={handleExcelUpload}
+                className="hidden"
+                disabled={uploading}
+              />
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Sub-tabs */}
+      <div className="cataloro-card-glass">
+        <div className="border-b border-gray-200/50 dark:border-gray-700/50">
+          <div className="flex space-x-8 px-6">
+            {subTabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveSubTab(tab.id)}
+                  className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
+                    activeSubTab === tab.id
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Data Tab */}
+        {activeSubTab === 'data' && (
+          <div className="p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Catalyst Data</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Click on any cell to edit. The add_info field is hidden from this table.
+              </p>
+            </div>
+            
+            {catalystData.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <thead className="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Cat ID</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Name</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Ceramic Weight</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Pt PPM</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Pd PPM</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Rh PPM</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {catalystData.map((catalyst) => (
+                      <CatalystDataRow
+                        key={catalyst.id}
+                        catalyst={catalyst}
+                        isEditing={editingRow === catalyst.id}
+                        onEdit={() => setEditingRow(catalyst.id)}
+                        onSave={(data) => handleUpdateCatalystData(catalyst.id, data)}
+                        onCancel={() => setEditingRow(null)}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Database className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Data Available</h3>
+                <p className="text-gray-600 dark:text-gray-400">Upload an Excel file to populate the catalyst database.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Price Calculations Tab */}
+        {activeSubTab === 'calculations' && (
+          <div className="p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Price Calculations</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Calculated prices based on metal content and current market prices.
+              </p>
+            </div>
+            
+            {calculations.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <thead className="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">ID</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Name</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Total Price (€)</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Status</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {calculations.map((calc) => (
+                      <tr key={calc._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-mono">{calc._id}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{calc.name}</td>
+                        <td className="px-4 py-3 text-sm">
+                          <span className={`font-semibold ${calc.is_override ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}>
+                            €{calc.total_price.toFixed(2)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            calc.is_override 
+                              ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
+                              : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                          }`}>
+                            {calc.is_override ? 'Override' : 'Standard'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleResetPrice(calc._id)}
+                              className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded dark:bg-blue-900/30 dark:text-blue-300"
+                            >
+                              Reset
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedCatalyst(calc);
+                                setShowOverrideModal(true);
+                              }}
+                              className="px-3 py-1 text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 rounded dark:bg-orange-900/30 dark:text-orange-300"
+                            >
+                              Override
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <DollarSign className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Calculations Available</h3>
+                <p className="text-gray-600 dark:text-gray-400">Upload catalyst data and configure price settings first.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Basis Tab */}
+        {activeSubTab === 'basis' && (
+          <div className="p-6">
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Price Calculation Basis</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Configure the base prices and renumeration factors for price calculations.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <h4 className="text-md font-semibold text-gray-900 dark:text-white">Metal Prices (€/g)</h4>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pt Price (€/g)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={priceSettings.pt_price}
+                    onChange={(e) => setPriceSettings({...priceSettings, pt_price: parseFloat(e.target.value) || 0})}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pd Price (€/g)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={priceSettings.pd_price}
+                    onChange={(e) => setPriceSettings({...priceSettings, pd_price: parseFloat(e.target.value) || 0})}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rh Price (€/g)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={priceSettings.rh_price}
+                    onChange={(e) => setPriceSettings({...priceSettings, rh_price: parseFloat(e.target.value) || 0})}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <h4 className="text-md font-semibold text-gray-900 dark:text-white">Renumeration Factors</h4>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Renumeration Pt</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="1"
+                    value={priceSettings.renumeration_pt}
+                    onChange={(e) => setPriceSettings({...priceSettings, renumeration_pt: parseFloat(e.target.value) || 0})}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Renumeration Pd</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="1"
+                    value={priceSettings.renumeration_pd}
+                    onChange={(e) => setPriceSettings({...priceSettings, renumeration_pd: parseFloat(e.target.value) || 0})}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Renumeration Rh</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="1"
+                    value={priceSettings.renumeration_rh}
+                    onChange={(e) => setPriceSettings({...priceSettings, renumeration_rh: parseFloat(e.target.value) || 0})}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={handleUpdatePriceSettings}
+                className="cataloro-button-primary"
+              >
+                <Save className="w-5 h-5 mr-2" />
+                Update Price Settings
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Price Override Modal */}
+      {showOverrideModal && selectedCatalyst && (
+        <PriceOverrideModal
+          catalyst={selectedCatalyst}
+          onSave={handlePriceOverride}
+          onClose={() => {
+            setShowOverrideModal(false);
+            setSelectedCatalyst(null);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// Helper component for editable catalyst data rows
+function CatalystDataRow({ catalyst, isEditing, onEdit, onSave, onCancel }) {
+  const [editData, setEditData] = useState({
+    cat_id: catalyst.cat_id,
+    name: catalyst.name,
+    ceramic_weight: catalyst.ceramic_weight,
+    pt_ppm: catalyst.pt_ppm,
+    pd_ppm: catalyst.pd_ppm,
+    rh_ppm: catalyst.rh_ppm
+  });
+
+  const handleSave = () => {
+    onSave(editData);
+  };
+
+  if (isEditing) {
+    return (
+      <tr className="bg-blue-50 dark:bg-blue-900/20">
+        <td className="px-4 py-3">
+          <input
+            type="text"
+            value={editData.cat_id}
+            onChange={(e) => setEditData({...editData, cat_id: e.target.value})}
+            className="w-full px-2 py-1 text-sm border rounded"
+          />
+        </td>
+        <td className="px-4 py-3">
+          <input
+            type="text"
+            value={editData.name}
+            onChange={(e) => setEditData({...editData, name: e.target.value})}
+            className="w-full px-2 py-1 text-sm border rounded"
+          />
+        </td>
+        <td className="px-4 py-3">
+          <input
+            type="number"
+            step="0.01"
+            value={editData.ceramic_weight}
+            onChange={(e) => setEditData({...editData, ceramic_weight: parseFloat(e.target.value) || 0})}
+            className="w-full px-2 py-1 text-sm border rounded"
+          />
+        </td>
+        <td className="px-4 py-3">
+          <input
+            type="number"
+            step="0.1"
+            value={editData.pt_ppm}
+            onChange={(e) => setEditData({...editData, pt_ppm: parseFloat(e.target.value) || 0})}
+            className="w-full px-2 py-1 text-sm border rounded"
+          />
+        </td>
+        <td className="px-4 py-3">
+          <input
+            type="number"
+            step="0.1"
+            value={editData.pd_ppm}
+            onChange={(e) => setEditData({...editData, pd_ppm: parseFloat(e.target.value) || 0})}
+            className="w-full px-2 py-1 text-sm border rounded"
+          />
+        </td>
+        <td className="px-4 py-3">
+          <input
+            type="number"
+            step="0.1"
+            value={editData.rh_ppm}
+            onChange={(e) => setEditData({...editData, rh_ppm: parseFloat(e.target.value) || 0})}
+            className="w-full px-2 py-1 text-sm border rounded"
+          />
+        </td>
+        <td className="px-4 py-3">
+          <div className="flex space-x-2">
+            <button
+              onClick={handleSave}
+              className="px-2 py-1 text-xs bg-green-100 hover:bg-green-200 text-green-800 rounded"
+            >
+              <Save className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onCancel}
+              className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 rounded"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  }
+
+  return (
+    <tr className="hover:bg-gray-50 dark:hover:bg-gray-800">
+      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-mono">{catalyst.cat_id}</td>
+      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{catalyst.name}</td>
+      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{catalyst.ceramic_weight}</td>
+      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{catalyst.pt_ppm}</td>
+      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{catalyst.pd_ppm}</td>
+      <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{catalyst.rh_ppm}</td>
+      <td className="px-4 py-3 text-sm">
+        <button
+          onClick={onEdit}
+          className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded dark:bg-blue-900/30 dark:text-blue-300"
+        >
+          <Edit className="w-4 h-4" />
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+// Price Override Modal Component
+function PriceOverrideModal({ catalyst, onSave, onClose }) {
+  const [overridePrice, setOverridePrice] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (overridePrice && parseFloat(overridePrice) > 0) {
+      onSave(catalyst._id, overridePrice);
+    }
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content max-w-md">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            Override Price for Catalyst
+          </h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            <strong>ID:</strong> {catalyst._id}
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            <strong>Name:</strong> {catalyst.name}
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            <strong>Current Price:</strong> €{catalyst.total_price.toFixed(2)}
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Override Price (€)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={overridePrice}
+              onChange={(e) => setOverridePrice(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder="Enter new price"
+              required
+            />
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="cataloro-button-secondary"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="cataloro-button-primary"
+            >
+              Set Override
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default AdminPanel;
