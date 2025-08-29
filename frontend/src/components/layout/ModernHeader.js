@@ -101,33 +101,63 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Logo and Brand */}
+          {/* Logo and Brand - ENHANCED WITH DYNAMIC BRANDING */}
           <div className="flex items-center space-x-8">
-            <Link to="/browse" className="flex items-center space-x-3 group">
+            <Link to="/browse" className="flex items-center space-x-3 group header-logo">
+              {/* Logo Container */}
               <div className="relative">
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center relative overflow-hidden" style={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  boxShadow: '0 8px 25px rgba(103, 126, 234, 0.4)'
-                }}>
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <Store className="w-7 h-7 text-white relative z-10" />
-                </div>
-                <div className="absolute inset-0 rounded-2xl" style={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  filter: 'blur(8px)',
-                  opacity: '0.3',
-                  transform: 'scale(1.1)'
-                }}></div>
+                {(siteBranding.logo_light_url || siteBranding.logo_dark_url || siteBranding.logo_url) ? (
+                  // Custom Logo Mode
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center relative overflow-hidden bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600">
+                    <img 
+                      src={darkMode ? (siteBranding.logo_dark_url || siteBranding.logo_url) : (siteBranding.logo_light_url || siteBranding.logo_url)}
+                      alt={siteBranding.site_name || 'Cataloro'}
+                      className="w-10 h-10 object-contain"
+                      onError={(e) => {
+                        // Fallback to default icon if image fails
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      display: 'none'
+                    }}>
+                      <Store className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                ) : (
+                  // Default Icon Mode
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center relative overflow-hidden" style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    boxShadow: '0 8px 25px rgba(103, 126, 234, 0.4)'
+                  }}>
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <Store className="w-7 h-7 text-white relative z-10" />
+                  </div>
+                )}
+                {!(siteBranding.logo_light_url || siteBranding.logo_dark_url || siteBranding.logo_url) && (
+                  <div className="absolute inset-0 rounded-2xl" style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    filter: 'blur(8px)',
+                    opacity: '0.3',
+                    transform: 'scale(1.1)'
+                  }}></div>
+                )}
               </div>
+              
+              {/* Brand Text */}
               <div className="hidden sm:block">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-white/90 transition-colors" style={{
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-white/90 transition-colors header-title" style={{
                   background: 'linear-gradient(135deg, #1f2937 0%, #374151 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent'
                 }}>
-                  Cataloro
+                  {siteBranding.site_name || 'Cataloro'}
                 </h1>
-                <p className="text-xs text-gray-600 dark:text-white/70 font-medium tracking-wide">ULTRA-MODERN MARKETPLACE</p>
+                <p className="text-xs text-gray-600 dark:text-white/70 font-medium tracking-wide">
+                  {siteBranding.site_description || 'ULTRA-MODERN MARKETPLACE'}
+                </p>
               </div>
             </Link>
 
