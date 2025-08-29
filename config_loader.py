@@ -118,7 +118,7 @@ def get_config(key: str, default: Any = None) -> Any:
     """Get configuration value"""
     return config.get(key, default)
 
-def get_backend_url(mode='production') -> str:
+def get_backend_url(mode='active') -> str:
     """Get backend URL"""
     return config.get_backend_url(mode)
 
