@@ -573,14 +573,12 @@ function DashboardTab({ dashboardData, loading }) {
               </span>
               <Download className="w-4 h-4" />
             </button>
-            <button className="w-full flex items-center justify-between p-4 bg-green-50/80 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-xl hover:bg-green-100/80 dark:hover:bg-green-900/40 transition-colors backdrop-blur-md group">
+            <button className="w-full flex items-center justify-between p-4 bg-green-50/80 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-xl hover:bg-green-100/80 dark:hover:bg-green-900/40 backdrop-blur-md">
               <span className="font-medium flex items-center">
                 <RefreshCw className="w-4 h-4 mr-3" />
                 Refresh Stats
               </span>
-              <div className="group-hover:rotate-90 transition-transform">
-                <RefreshCw className="w-4 h-4" />
-              </div>
+              <RefreshCw className="w-4 h-4" />
             </button>
             <button className="w-full flex items-center justify-between p-4 bg-purple-50/80 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-xl hover:bg-purple-100/80 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md group">
               <span className="font-medium flex items-center">
