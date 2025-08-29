@@ -113,7 +113,7 @@ function SimpleLoginPage() {
       localStorage.setItem('cataloro_user', JSON.stringify(data.user));
       
       alert(`✅ Demo ${role.toUpperCase()} Login Successful!\nWelcome ${data.user.full_name}!\nRole: ${data.user.role}`);
-      window.location.reload();
+      window.location.href = '/browse';
       
     } catch (error) {
       setError(`Demo login failed: ${error.message}`);
