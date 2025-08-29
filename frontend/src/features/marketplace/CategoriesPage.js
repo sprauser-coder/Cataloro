@@ -30,6 +30,39 @@ import {
 
 function CategoriesPage() {
   const [selectedCategory, setSelectedCategory] = useState(null);
+  
+  // Use marketplace context for real data and functionality
+  const {
+    allProducts,
+    setFilters,
+    addToCart,
+    showNotification
+  } = useMarketplace();
+
+  // Get real categories from products
+  const getProductsByCategory = () => {
+    const categoryMap = {};
+    allProducts.forEach(product => {
+      const category = product.category || 'Other';
+      if (!categoryMap[category]) {
+        categoryMap[category] = [];
+      }
+      categoryMap[category].push(product);
+    });
+    return categoryMap;
+  };
+
+  const productsByCategory = getProductsByCategory();
+
+  // Filter categories to show available products
+  const handleCategoryClick = (categoryName) => {
+    setFilters({ category: categoryName });
+    showNotification(`Browsing ${categoryName} category`, 'info');
+  };
+
+  const handleAddToCart = (product) => {
+    addToCart(product);
+  };
 
   const categories = [
     {
