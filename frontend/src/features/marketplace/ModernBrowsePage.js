@@ -50,6 +50,28 @@ function ModernBrowsePage() {
     isLoading
   } = useMarketplace();
 
+  // Check if item is in favorites
+  const isInFavorites = (itemId) => {
+    return favorites.some(fav => fav.id === itemId);
+  };
+
+  // Handle favorite toggle
+  const handleFavoriteToggle = async (item, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      showToast('Please login to add favorites', 'info');
+      return;
+    }
+    
+    if (isInFavorites(item.id)) {
+      await removeFromFavorites(item.id, user.id);
+    } else {
+      await addToFavorites(item, user.id);
+    }
+  };
+
   const [showFilters, setShowFilters] = useState(false);
   const [heroContent, setHeroContent] = useState({
     title: 'Discover Amazing Products',
