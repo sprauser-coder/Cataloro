@@ -144,12 +144,12 @@ export function NotificationProvider({ children }) {
     }
   };
 
-  const addNotification = (notification) => {
+  const addNotification = (notification, userId = null) => {
     dispatch({
       type: NOTIFICATION_ACTIONS.ADD_NOTIFICATION,
       payload: {
         id: Date.now().toString(),
-        user_id: user?.id,
+        user_id: userId,
         created_at: new Date().toISOString(),
         is_read: false,
         ...notification
