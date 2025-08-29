@@ -30,7 +30,6 @@ import { APP_ROUTES } from '../../config/directions';
 
 function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileMenuOpen }) {
   const [user, setUser] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [cartItems, setCartItems] = useState(3); // Demo count
