@@ -2152,6 +2152,13 @@ function SiteAdministrationTab({ showToast }) {
           </div>
         )}
 
+        {/* Hero Selection Section */}
+        {activeSection === 'hero' && (
+          <div className="space-y-6">
+            <HeroSelectionTab showToast={showToast} />
+          </div>
+        )}
+
         {/* Footer Configuration Section */}
         {activeSection === 'footer' && (
           <div className="space-y-6">
