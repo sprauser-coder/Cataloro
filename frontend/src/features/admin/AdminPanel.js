@@ -1575,29 +1575,83 @@ function SiteAdministrationTab({ showToast }) {
           <div className="flex items-center space-x-3">
             <button
               onClick={() => {
-                // Test configuration with very visible changes
+                // COMPREHENSIVE TEST - All features at once
                 const testConfig = {
                   ...siteConfig,
-                  primaryColor: '#FF0000',    // Bright red
-                  secondaryColor: '#00FF00',  // Bright green  
-                  accentColor: '#FF00FF',     // Bright magenta
-                  borderRadius: '20'          // Very rounded
+                  // Colors
+                  primaryColor: '#FF4500',    // Orange Red
+                  secondaryColor: '#9400D3',  // Violet  
+                  accentColor: '#32CD32',     // Lime Green
+                  
+                  // Typography
+                  fontFamily: 'poppins',
+                  fontSize: '18',
+                  
+                  // Layout
+                  borderRadius: '16',
+                  compactMode: true,
+                  animationsEnabled: false,
+                  
+                  // Features
+                  heroSectionEnabled: true,
+                  featuredProductsEnabled: true,
+                  wishlistEnabled: true,
+                  productReviews: true
                 };
                 applyConfigurationToSite(testConfig);
-                showToast('Test styling applied! Check the site colors.', 'info');
+                showToast('🚀 COMPREHENSIVE TEST APPLIED! Check all changes: Colors, Fonts, Layout, Features', 'info');
               }}
-              className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
             >
               <Zap className="w-5 h-5" />
-              <span>Test Colors</span>
+              <span>Full Test</span>
             </button>
+            
+            <button
+              onClick={() => {
+                // Typography Test
+                const typographyTest = {
+                  ...siteConfig,
+                  fontFamily: 'roboto',
+                  fontSize: '20',
+                  borderRadius: '24'
+                };
+                applyConfigurationToSite(typographyTest);
+                showToast('📝 Typography Test: Roboto font, 20px size, 24px radius', 'info');
+              }}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+            >
+              <Type className="w-5 h-5" />
+              <span>Typography</span>
+            </button>
+            
+            <button
+              onClick={() => {
+                // Feature Toggle Test
+                const featureTest = {
+                  ...siteConfig,
+                  compactMode: !siteConfig.compactMode,
+                  animationsEnabled: !siteConfig.animationsEnabled,
+                  wishlistEnabled: !siteConfig.wishlistEnabled
+                };
+                applyConfigurationToSite(featureTest);
+                setSiteConfig(featureTest);
+                showToast('⚡ Feature Toggle Test: Compact mode, animations, wishlist toggled', 'info');
+              }}
+              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+            >
+              <ToggleRight className="w-5 h-5" />
+              <span>Features</span>
+            </button>
+            
             <button
               onClick={() => applyConfigurationToSite(siteConfig)}
               className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
             >
               <Eye className="w-5 h-5" />
-              <span>Preview Changes</span>
+              <span>Preview</span>
             </button>
+            
             <button
               onClick={saveSiteConfiguration}
               disabled={isSaving}
@@ -1615,6 +1669,7 @@ function SiteAdministrationTab({ showToast }) {
                 </>
               )}
             </button>
+            
             <div className="bg-green-500 p-2 rounded-lg">
               <Shield className="w-6 h-6" />
             </div>
