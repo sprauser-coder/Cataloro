@@ -801,8 +801,11 @@ function HeroSelectionTab({ showToast }) {
   const [heroContent, setHeroContent] = useState({
     title: 'Discover Amazing Products',
     description: 'From electronics to fashion, find everything you need in one place',
-    height: 400
+    height: 400,
+    image_url: ''
   });
+  const [heroImageFile, setHeroImageFile] = useState(null);
+  const [heroImagePreview, setHeroImagePreview] = useState('');
   const [previewMode, setPreviewMode] = useState(false);
 
   // Load hero content on mount
