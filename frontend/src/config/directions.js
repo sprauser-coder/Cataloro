@@ -27,7 +27,7 @@ export const CURRENT_ENV = isDevelopment ? API_CONFIG.development : API_CONFIG.p
 
 // Environment Configuration (for backward compatibility)
 export const ENV_CONFIG = {
-  API_BASE_URL: CURRENT_ENV.BACKEND_URL
+  API_BASE_URL: `${CURRENT_ENV.BACKEND_URL}/api`
 };
 
 // API Endpoints
