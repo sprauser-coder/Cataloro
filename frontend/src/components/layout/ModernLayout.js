@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import ModernHeader from './ModernHeader';
 import MobileNav from './MobileNav';
+import Footer from './Footer';
 import NotificationToast from '../ui/NotificationToast';
 import { useNotifications } from '../../context/NotificationContext';
 
