@@ -240,6 +240,12 @@ function AdminPanel() {
           showToast={showToast}
         />
       )}
+      
+      {activeTab === 'site-admin' && (
+        <SiteAdministrationTab 
+          showToast={showToast}
+        />
+      )}
     </div>
   );
 }
