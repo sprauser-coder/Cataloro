@@ -437,17 +437,17 @@ function DashboardTab({ dashboardData, loading }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
         
         {/* Real-Time Activity */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="cataloro-card-glass">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Live Activity</h3>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-green-600 font-medium">Live</span>
+              <span className="text-sm text-green-600 dark:text-green-400 font-medium">Live</span>
             </div>
           </div>
           <div className="space-y-4">
             {recent_activity?.map((activity, index) => (
-              <div key={index} className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div key={index} className="flex items-start space-x-3 p-3 bg-white/10 dark:bg-white/5 rounded-lg backdrop-blur-md">
                 <div className="w-3 h-3 bg-blue-500 rounded-full mt-1 flex-shrink-0"></div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-gray-900 dark:text-white font-medium">
@@ -463,7 +463,7 @@ function DashboardTab({ dashboardData, loading }) {
         </div>
 
         {/* System Performance */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="cataloro-card-glass">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">System Health</h3>
             <Shield className="w-6 h-6 text-green-500" />
