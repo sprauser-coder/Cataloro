@@ -955,20 +955,26 @@ function HeroSelectionTab({ showToast }) {
           Live Preview
         </h3>
 
-        {/* Hero Preview */}
-        <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white overflow-hidden">
+        {/* Hero Preview - DYNAMIC HEIGHT */}
+        <div 
+          className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white overflow-hidden w-full"
+          style={{ 
+            height: `${heroContent.height || 400}px`,
+            minHeight: '300px'
+          }}
+        >
           <div className="absolute inset-0 bg-black/20"></div>
-          <div className="relative z-10 text-center">
+          <div className="relative z-10 text-center flex flex-col justify-center h-full px-8">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               {heroContent.title || 'Enter your title above'}
             </h1>
-            <p className="text-xl mb-8 opacity-90 max-w-3xl mx-auto">
+            <p className="text-xl mb-8 opacity-90">
               {heroContent.description || 'Enter your description above'}
             </p>
             
-            {/* Preview Search Bar */}
-            <div className="max-w-3xl mx-auto">
-              <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-2 border border-white/20">
+            {/* Preview Search Bar - FULL WIDTH */}
+            <div className="w-full">
+              <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-2 border border-white/20 max-w-4xl mx-auto">
                 <div className="flex items-center">
                   <Search className="absolute left-6 text-white/70 w-6 h-6" />
                   <input
