@@ -1,10 +1,12 @@
 /**
  * CATALORO - Ultra-Modern Categories Page
  * Beautiful category browsing with subcategories and trending items
+ * Integrated with MarketplaceContext for real functionality
  */
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useMarketplace } from '../../context/MarketplaceContext';
 import { 
   Smartphone, 
   Laptop, 
@@ -22,7 +24,8 @@ import {
   ArrowRight,
   Star,
   Eye,
-  ChevronRight
+  ChevronRight,
+  ShoppingCart
 } from 'lucide-react';
 
 function CategoriesPage() {
