@@ -432,7 +432,7 @@ function ProfilePage() {
 
               {/* Account Status */}
               <div className="cataloro-card-glass p-6 mt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Status</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Account Status</h3>
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
