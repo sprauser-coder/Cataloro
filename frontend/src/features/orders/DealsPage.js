@@ -110,7 +110,6 @@ function DealsPage() {
                 </span>
               </button>
             ))}
-            ))}
           </nav>
         </div>
       </div>
