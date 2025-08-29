@@ -247,8 +247,8 @@ function ProfilePage() {
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile Settings</h1>
-            <p className="text-gray-600">Manage your account information, preferences, and security settings</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Profile Settings</h1>
+            <p className="text-gray-600 dark:text-gray-300">Manage your account information, preferences, and security settings</p>
           </div>
           
           <div className="flex space-x-3">
