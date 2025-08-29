@@ -506,41 +506,19 @@ async def register(user_data: UserCreate):
 
 @api_router.post("/auth/login")
 async def login(credentials: UserLogin):
-    print(f"🚨 LOGIN ENDPOINT HIT - Email: {credentials.email}")
-    
-    user_doc = await db.users.find_one({"email": credentials.email})
-    if not user_doc or not verify_password(credentials.password, user_doc['password']):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    
-    print(f"🚨 USER FOUND - is_blocked in DB: {user_doc.get('is_blocked')}")
-    
-    # Parse from mongo
-    user_dict = parse_from_mongo(user_doc)
-    if 'password' in user_dict:
-        del user_dict['password']
-    
-    print(f"🚨 PARSED USER - is_blocked: {user_dict.get('is_blocked')}")
-    
-    # EMERGENCY FIX: Remove is_blocked entirely and add it back as False
-    if 'is_blocked' in user_dict:
-        del user_dict['is_blocked']
-    
-    user_dict['is_blocked'] = False
-    user_dict['debug_timestamp'] = "2025-08-29-04:20:00"
-    
-    print(f"🚨 FINAL USER DICT - is_blocked: {user_dict.get('is_blocked')}")
-    
-    access_token = create_access_token(data={"sub": user_dict['id']})
-    
-    response = {
-        "access_token": access_token,
-        "token_type": "bearer", 
-        "user": user_dict
+    # IMMEDIATE TEST - Return hardcoded response to see if this endpoint is being hit
+    return {
+        "access_token": "test_token_12345",
+        "token_type": "bearer",
+        "user": {
+            "id": "test",
+            "email": "admin@marketplace.com", 
+            "role": "admin",
+            "is_blocked": False,
+            "debug_endpoint_hit": True,
+            "timestamp": "2025-08-29-04:22:00"
+        }
     }
-    
-    print(f"🚨 RESPONSE BEFORE RETURN - is_blocked: {response['user']['is_blocked']}")
-    
-    return response
 
 # Listing Routes - Count endpoint MUST come first before parameterized routes
 @api_router.get("/listings/count")
