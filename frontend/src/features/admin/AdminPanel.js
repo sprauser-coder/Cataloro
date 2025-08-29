@@ -1548,7 +1548,7 @@ function SiteAdministrationTab({ showToast }) {
       localStorage.setItem('cataloro_site_config', JSON.stringify(siteConfig));
       
       // APPLY ALL CONFIGURATION CHANGES TO THE SITE IMMEDIATELY
-      const success = applyConfigurationToSite(siteConfig);
+      const success = applySiteConfiguration(siteConfig);
       
       if (success) {
         // Count applied features for user feedback
