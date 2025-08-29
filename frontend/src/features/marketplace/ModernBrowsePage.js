@@ -132,10 +132,16 @@ function ModernBrowsePage() {
 
   return (
     <div className="space-y-8">
-      {/* Hero Section with Dynamic Content and Search */}
-      <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white overflow-hidden">
+      {/* Hero Section with Dynamic Content and Search - FULL WIDTH */}
+      <div 
+        className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white overflow-hidden w-full"
+        style={{ 
+          height: heroContent.height ? `${heroContent.height}px` : '400px',
+          minHeight: '300px'
+        }}
+      >
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative z-10 text-center">
+        <div className="relative z-10 text-center flex flex-col justify-center h-full px-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             {heroContent.title}
           </h1>
