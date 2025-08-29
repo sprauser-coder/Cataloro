@@ -170,6 +170,15 @@ async def login_user(credentials: dict):
             "is_active": True
         }
         await db.users.insert_one(user)
+    else:
+        # Update existing admin user to have the correct name
+        if credentials["email"] == "admin@cataloro.com" and user.get("full_name") != "Sash":
+            await db.users.update_one(
+                {"email": "admin@cataloro.com"},
+                {"$set": {"full_name": "Sash", "username": "sash_admin"}}
+            )
+            # Refresh user data
+            user = await db.users.find_one({"email": credentials["email"]})
     
     # Get user ID for token
     user_id = user.get('id') if user else generate_id()
