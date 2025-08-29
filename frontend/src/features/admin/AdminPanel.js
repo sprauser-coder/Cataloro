@@ -505,22 +505,22 @@ function DashboardTab({ dashboardData, loading }) {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="cataloro-card-glass">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Quick Actions</h3>
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
+            <button className="w-full flex items-center justify-between p-3 bg-blue-50/80 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100/80 dark:hover:bg-blue-900/40 transition-colors backdrop-blur-md">
               <span className="font-medium">Export Data</span>
               <Download className="w-4 h-4" />
             </button>
-            <button className="w-full flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors">
+            <button className="w-full flex items-center justify-between p-3 bg-green-50/80 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-100/80 dark:hover:bg-green-900/40 transition-colors backdrop-blur-md">
               <span className="font-medium">Refresh Stats</span>
               <RefreshCw className="w-4 h-4" />
             </button>
-            <button className="w-full flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
+            <button className="w-full flex items-center justify-between p-3 bg-purple-50/80 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-100/80 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md">
               <span className="font-medium">System Backup</span>
               <Shield className="w-4 h-4" />
             </button>
-            <button className="w-full flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors">
+            <button className="w-full flex items-center justify-between p-3 bg-orange-50/80 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-100/80 dark:hover:bg-orange-900/40 transition-colors backdrop-blur-md">
               <span className="font-medium">View Logs</span>
               <Eye className="w-4 h-4" />
             </button>
