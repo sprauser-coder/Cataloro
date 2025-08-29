@@ -184,12 +184,12 @@ function Footer() {
             <div>
               <h4 className="text-lg font-semibold mb-4">Support</h4>
               <ul className="space-y-3 mb-6">
-                {config.links.support.map((link, index) => (
+                {(config.links?.support || []).map((link, index) => (
                   <li key={index}>
                     <Link 
                       to={link.url} 
                       style={linkStyle}
-                      className="text-sm hover:text-blue-300 transition-colors"
+                      className="text-sm hover:text-blue-300"
                     >
                       {link.label}
                     </Link>
@@ -199,12 +199,12 @@ function Footer() {
               
               <h5 className="text-md font-semibold mb-3">Legal</h5>
               <ul className="space-y-2">
-                {config.links.legal.map((link, index) => (
+                {(config.links?.legal || []).map((link, index) => (
                   <li key={index}>
                     <Link 
                       to={link.url} 
                       style={linkStyle}
-                      className="text-xs hover:text-blue-300 transition-colors"
+                      className="text-xs hover:text-blue-300"
                     >
                       {link.label}
                     </Link>
