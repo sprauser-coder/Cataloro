@@ -270,7 +270,7 @@ function ModernBrowsePage() {
                   min="0"
                   max="10000"
                   value={filters.priceRange[1]}
-                  onChange={(e) => setFilters({...filters, priceRange: [0, parseInt(e.target.value)]})}
+                  onChange={(e) => updateFilters({...filters, priceRange: [0, parseInt(e.target.value)]})}
                   className="w-full"
                 />
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
