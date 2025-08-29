@@ -2217,52 +2217,115 @@ function ListingsTab({ showToast }) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header with Actions */}
-      <div className="cataloro-card-glass p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">Listings Management</h2>
-            <p className="text-gray-600">Manage all marketplace listings and deals</p>
+    <div className="space-y-8">
+      {/* REDESIGNED Header Section */}
+      <div className="cataloro-card-glass p-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+          <div className="text-center lg:text-left">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">Listings Management</h2>
+            <p className="text-gray-600 dark:text-gray-300 text-lg">Comprehensive marketplace listings control center</p>
           </div>
-          <div className="flex space-x-3">
+          <div className="flex justify-center lg:justify-end space-x-4">
             <button
               onClick={() => setShowCreateModal(true)}
-              className="cataloro-button-primary flex items-center"
+              className="cataloro-button-primary flex items-center px-6 py-3"
             >
-              <Package className="w-4 h-4 mr-2" />
-              Create Listing
+              <Package className="w-5 h-5 mr-2" />
+              Create New Listing
             </button>
           </div>
         </div>
       </div>
 
-      {/* Search and Filters */}
+      {/* REDESIGNED Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="cataloro-card-glass p-6 text-center hover:shadow-2xl transition-all duration-300">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="p-4 bg-blue-100/80 dark:bg-blue-900/30 rounded-2xl backdrop-blur-md">
+              <Package className="w-8 h-8 text-blue-500" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {listings.length}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Listings</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="cataloro-card-glass p-6 text-center hover:shadow-2xl transition-all duration-300">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="p-4 bg-green-100/80 dark:bg-green-900/30 rounded-2xl backdrop-blur-md">
+              <CheckCircle className="w-8 h-8 text-green-500" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                {listings.filter(l => l.status === 'active').length}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Active</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="cataloro-card-glass p-6 text-center hover:shadow-2xl transition-all duration-300">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="p-4 bg-orange-100/80 dark:bg-orange-900/30 rounded-2xl backdrop-blur-md">
+              <Eye className="w-8 h-8 text-orange-500" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
+                {listings.reduce((sum, l) => sum + (l.views || 0), 0)}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Views</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="cataloro-card-glass p-6 text-center hover:shadow-2xl transition-all duration-300">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="p-4 bg-red-100/80 dark:bg-red-900/30 rounded-2xl backdrop-blur-md">
+              <DollarSign className="w-8 h-8 text-red-500" />
+            </div>
+            <div>
+              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
+                ${listings.reduce((sum, l) => sum + (l.price || 0), 0).toLocaleString()}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Value</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* REDESIGNED Search and Filters */}
       <div className="cataloro-card-glass p-6">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between space-y-6 xl:space-y-0">
           <div className="flex-1 max-w-md">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search Listings</label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search listings or sellers..."
+                placeholder="Search by title, seller, or category..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 cataloro-input"
+                className="pl-10 cataloro-input w-full"
               />
             </div>
           </div>
           
-          <div className="flex items-center space-x-4">
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="cataloro-input w-auto"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
+          <div className="flex items-end space-x-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by Status</label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="cataloro-input w-auto min-w-[150px]"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
