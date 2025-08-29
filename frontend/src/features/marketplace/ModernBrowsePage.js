@@ -32,6 +32,7 @@ import { useNotifications } from '../../context/NotificationContext';
 
 function ModernBrowsePage() {
   const { user } = useAuth();
+  const { showToast } = useNotifications();
   // Use marketplace context
   const {
     allProducts,
