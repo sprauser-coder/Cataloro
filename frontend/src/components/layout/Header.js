@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, Search, User, LogOut, Settings } from 'lucide-react';
+import { Bell, Search, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { UI_CONFIG, APP_ROUTES } from '../../config/directions';
