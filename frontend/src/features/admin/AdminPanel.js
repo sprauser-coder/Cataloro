@@ -211,6 +211,7 @@ function AdminPanel() {
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'users', label: 'User Management', icon: Users },
+    { id: 'listings', label: 'Listings Management', icon: Package },
     { id: 'settings', label: 'Site Settings', icon: Settings },
     { id: 'site-admin', label: 'Site Administration', icon: Shield }
   ];
