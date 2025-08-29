@@ -1,0 +1,234 @@
+/**
+ * CATALORO - Browse Page
+ * Tile pattern display of all active listings with modern design
+ */
+
+import React, { useState, useEffect } from 'react';
+import { Search, Filter, Grid, List, Heart, DollarSign } from 'lucide-react';
+import { marketplaceService } from '../../services/marketplaceService';
+import { useNotifications } from '../../context/NotificationContext';
+
+function BrowsePage() {
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState('grid');
+  const [sortBy, setSortBy] = useState('newest');
+  const { showToast } = useNotifications();
+
+  useEffect(() => {
+    fetchListings();
+  }, []);
+
+  const fetchListings = async () => {
+    try {
+      setLoading(true);
+      const data = await marketplaceService.browseListings();
+      setListings(data);
+    } catch (error) {
+      showToast('Failed to load listings', 'error');
+      console.error('Failed to fetch listings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    // In a real app, you'd debounce this and call the API
+  };
+
+  const handleAddToFavorites = async (listingId) => {
+    try {
+      // Implementation for adding to favorites
+      showToast('Added to favorites', 'success');
+    } catch (error) {
+      showToast('Failed to add to favorites', 'error');
+    }
+  };
+
+  const filteredListings = listings.filter(listing =>
+    listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    listing.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const sortedListings = [...filteredListings].sort((a, b) => {
+    switch (sortBy) {
+      case 'price_low':
+        return a.price - b.price;
+      case 'price_high':
+        return b.price - a.price;
+      case 'newest':
+      default:
+        return new Date(b.created_at) - new Date(a.created_at);
+    }
+  });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fade-in">
+      {/* Page Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Browse Marketplace</h1>
+        <p className="text-gray-600">Discover amazing items from our community</p>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="cataloro-card p-6 mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          {/* Search Bar */}
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search listings..."
+                value={searchQuery}
+                onChange={handleSearch}
+                className="cataloro-input pl-10"
+              />
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="flex items-center space-x-4">
+            {/* Sort Dropdown */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="cataloro-input w-auto"
+            >
+              <option value="newest">Newest First</option>
+              <option value="price_low">Price: Low to High</option>
+              <option value="price_high">Price: High to Low</option>
+            </select>
+
+            {/* View Mode Toggle */}
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-md transition-all duration-200 ${
+                  viewMode === 'grid' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600'
+                }`}
+              >
+                <Grid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-md transition-all duration-200 ${
+                  viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600'
+                }`}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Results Count */}
+      <div className="mb-6">
+        <p className="text-gray-600">
+          Showing {sortedListings.length} listings
+          {searchQuery && ` for "${searchQuery}"`}
+        </p>
+      </div>
+
+      {/* Listings Grid/List */}
+      {sortedListings.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Search className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No listings found</h3>
+          <p className="text-gray-600">
+            {searchQuery ? 'Try adjusting your search terms' : 'Be the first to create a listing!'}
+          </p>
+        </div>
+      ) : (
+        <div className={viewMode === 'grid' ? 'listings-grid' : 'space-y-4'}>
+          {sortedListings.map((listing) => (
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              viewMode={viewMode}
+              onAddToFavorites={handleAddToFavorites}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Listing Card Component
+function ListingCard({ listing, viewMode, onAddToFavorites }) {
+  const isGridView = viewMode === 'grid';
+
+  return (
+    <div className={isGridView ? 'listing-tile' : 'cataloro-card p-4 flex space-x-4'}>
+      {/* Image */}
+      <div className={isGridView ? '' : 'w-32 h-32 flex-shrink-0'}>
+        <img
+          src={listing.images?.[0] || '/api/placeholder/400/300'}
+          alt={listing.title}
+          className={isGridView ? 'listing-image' : 'w-full h-full object-cover rounded-lg'}
+        />
+      </div>
+
+      {/* Content */}
+      <div className={isGridView ? 'listing-content' : 'flex-1 min-w-0'}>
+        <div className="flex justify-between items-start mb-2">
+          <h3 className={isGridView ? 'listing-title' : 'font-semibold text-lg text-gray-900'}>
+            {listing.title}
+          </h3>
+          <button
+            onClick={() => onAddToFavorites(listing.id)}
+            className="text-gray-400 hover:text-red-500 transition-colors duration-200"
+          >
+            <Heart className="w-5 h-5" />
+          </button>
+        </div>
+
+        <p className={isGridView ? 'listing-price' : 'text-2xl font-bold text-blue-600 mb-2'}>
+          ${listing.price.toFixed(2)}
+        </p>
+
+        <p className={isGridView ? 'listing-description' : 'text-gray-600 mb-4'}>
+          {listing.description}
+        </p>
+
+        {!isGridView && (
+          <div className="flex items-center justify-between">
+            <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+              {listing.category}
+            </span>
+            <span className="text-sm text-gray-500">
+              {new Date(listing.created_at).toLocaleDateString()}
+            </span>
+          </div>
+        )}
+
+        {isGridView && (
+          <div className="flex items-center justify-between mt-4">
+            <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+              {listing.category}
+            </span>
+            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+              View Details
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default BrowsePage;
