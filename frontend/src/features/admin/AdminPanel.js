@@ -3869,7 +3869,8 @@ function CatDatabaseTab({ showToast }) {
                 <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
                   <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">ID</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Database ID</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Cat ID</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Name</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Total Price (€)</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Status</th>
