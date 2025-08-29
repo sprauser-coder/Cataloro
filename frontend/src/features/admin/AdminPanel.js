@@ -587,14 +587,12 @@ function DashboardTab({ dashboardData, loading }) {
               </span>
               <Shield className="w-4 h-4" />
             </button>
-            <button className="w-full flex items-center justify-between p-4 bg-orange-50/80 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 rounded-xl hover:bg-orange-100/80 dark:hover:bg-orange-900/40 transition-colors backdrop-blur-md group">
+            <button className="w-full flex items-center justify-between p-4 bg-orange-50/80 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 rounded-xl hover:bg-orange-100/80 dark:hover:bg-orange-900/40 backdrop-blur-md">
               <span className="font-medium flex items-center">
                 <Eye className="w-4 h-4 mr-3" />
                 View Logs
               </span>
-              <div className="group-hover:scale-110 transition-transform">
-                <Eye className="w-4 h-4" />
-              </div>
+              <Eye className="w-4 h-4" />
             </button>
           </div>
         </div>
