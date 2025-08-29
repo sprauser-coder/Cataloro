@@ -1107,7 +1107,7 @@ function HeroSelectionTab({ showToast }) {
                   <Search className="absolute left-6 text-white/70 w-6 h-6" />
                   <input
                     type="text"
-                    placeholder="Search for anything you need..."
+                    placeholder={heroContent.search_placeholder || 'Search for anything you need...'}
                     className="w-full pl-16 pr-4 py-4 bg-transparent text-white placeholder-white/70 text-lg focus:outline-none"
                     disabled
                   />
