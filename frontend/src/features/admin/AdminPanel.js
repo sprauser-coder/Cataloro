@@ -385,51 +385,51 @@ function DashboardTab({ dashboardData, loading }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* Total Views */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
             <Eye className="w-8 h-8 text-indigo-500" />
-            <div className="text-sm text-green-600 font-medium">+15%</div>
+            <div className="text-sm text-green-600 dark:text-green-400 font-medium bg-green-100/80 dark:bg-green-900/30 px-2 py-1 rounded-full backdrop-blur-md">+15%</div>
           </div>
-          <div className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+          <div className="text-2xl font-bold mb-2 bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
             {kpis.total_views?.toLocaleString() || 0}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Total Views</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Views</div>
         </div>
 
         {/* Revenue */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
             <DollarSign className="w-8 h-8 text-emerald-500" />
-            <div className="text-sm text-green-600 font-medium">+{kpis.growth_rate}%</div>
+            <div className="text-sm text-green-600 dark:text-green-400 font-medium bg-green-100/80 dark:bg-green-900/30 px-2 py-1 rounded-full backdrop-blur-md">+{kpis.growth_rate}%</div>
           </div>
-          <div className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+          <div className="text-2xl font-bold mb-2 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
             ${kpis.total_revenue?.toLocaleString() || 0}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Total Revenue</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Revenue</div>
         </div>
 
         {/* Average Rating */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
             <Star className="w-8 h-8 text-yellow-500" />
-            <div className="text-sm text-green-600 font-medium">Excellent</div>
+            <div className="text-sm text-yellow-600 dark:text-yellow-400 font-medium bg-yellow-100/80 dark:bg-yellow-900/30 px-2 py-1 rounded-full backdrop-blur-md">Excellent</div>
           </div>
-          <div className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+          <div className="text-2xl font-bold mb-2 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
             {kpis.average_rating?.toFixed(1) || '0.0'}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Avg Rating</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Avg Rating</div>
         </div>
 
         {/* Notifications */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
             <AlertTriangle className="w-8 h-8 text-amber-500" />
-            <div className="text-sm text-blue-600 font-medium">Active</div>
+            <div className="text-sm text-blue-600 dark:text-blue-400 font-medium bg-blue-100/80 dark:bg-blue-900/30 px-2 py-1 rounded-full backdrop-blur-md">Active</div>
           </div>
-          <div className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+          <div className="text-2xl font-bold mb-2 bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
             {kpis.notifications_count?.toLocaleString() || 0}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Notifications</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Notifications</div>
         </div>
       </div>
 
