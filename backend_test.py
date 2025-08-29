@@ -337,6 +337,13 @@ class CataloroAPITester:
         if admin_login_success:
             self.test_admin_dashboard()
             self.test_admin_users()
+            
+            # Site branding and logo upload tests (as requested in review)
+            print("\n🎨 Testing Site Branding & Logo Upload System...")
+            self.test_admin_settings()
+            self.test_logo_upload()
+            self.test_admin_session_handling()
+            self.test_site_branding_data_persistence()
 
         # Print results
         print("\n" + "=" * 60)
