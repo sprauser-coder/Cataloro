@@ -103,6 +103,9 @@ function ModernLayout() {
         </div>
       </main>
 
+      {/* Footer */}
+      <Footer />
+
       {/* Notification Toast Container */}
       <NotificationToast />
 
