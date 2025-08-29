@@ -202,12 +202,12 @@ function DealCard({ deal, currentUserId }) {
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-500">Amount</label>
-                <p className="text-xl font-bold text-blue-600">${deal.amount?.toFixed(2)}</p>
+                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Amount</label>
+                <p className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">${deal.amount?.toFixed(2)}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-500">Date</label>
-                <p className="text-gray-900">
+                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Date</label>
+                <p className="text-gray-900 dark:text-white">
                   {deal.created_at ? new Date(deal.created_at).toLocaleDateString() : 'N/A'}
                 </p>
               </div>
@@ -215,12 +215,12 @@ function DealCard({ deal, currentUserId }) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-500">Buyer</label>
-                <p className="text-gray-900">User {deal.buyer_id?.slice(-8)}</p>
+                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Buyer</label>
+                <p className="text-gray-900 dark:text-white">User {deal.buyer_id?.slice(-8)}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-500">Seller</label>
-                <p className="text-gray-900">User {deal.seller_id?.slice(-8)}</p>
+                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Seller</label>
+                <p className="text-gray-900 dark:text-white">User {deal.seller_id?.slice(-8)}</p>
               </div>
             </div>
           </div>
