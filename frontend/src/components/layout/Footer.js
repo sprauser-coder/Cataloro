@@ -3,7 +3,7 @@
  * Editable footer that can be customized through site administration
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Facebook, 
@@ -14,10 +14,44 @@ import {
   Mail,
   Phone,
   MapPin,
-  Heart
+  Heart,
+  Store
 } from 'lucide-react';
 
 function Footer() {
+  const [siteBranding, setSiteBranding] = useState({});
+
+  useEffect(() => {
+    // Load site branding data to get the dark mode logo
+    const loadBrandingData = () => {
+      try {
+        const brandingData = localStorage.getItem('cataloro_site_branding');
+        if (brandingData) {
+          const parsedBranding = JSON.parse(brandingData);
+          setSiteBranding(parsedBranding);
+        }
+      } catch (error) {
+        console.error('Error loading branding data in footer:', error);
+      }
+    };
+
+    // Load initially
+    loadBrandingData();
+
+    // Listen for branding updates
+    const handleBrandingUpdate = () => {
+      loadBrandingData();
+    };
+
+    window.addEventListener('brandingUpdated', handleBrandingUpdate);
+    window.addEventListener('storage', handleBrandingUpdate);
+
+    return () => {
+      window.removeEventListener('brandingUpdated', handleBrandingUpdate);
+      window.removeEventListener('storage', handleBrandingUpdate);
+    };
+  }, []);
+
   // Get footer configuration from localStorage (set by site admin)
   const getFooterConfig = () => {
     try {
