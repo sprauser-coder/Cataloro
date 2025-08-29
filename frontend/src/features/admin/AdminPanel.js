@@ -1391,10 +1391,77 @@ function SiteAdministrationTab({ showToast }) {
         
         /* ===== CUSTOM CSS ===== */
         ${config.customCSS || ''}
+        
+        /* ===== FOOTER CONFIGURATION ===== */
+        ${!config.footerEnabled ? `
+        footer {
+          display: none !important;
+        }
+        ` : ''}
       `;
       
       style.textContent = css;
       document.head.appendChild(style);
+      
+      // Apply footer configuration to localStorage
+      if (config.footerEnabled) {
+        const footerConfig = {
+          enabled: config.footerEnabled,
+          companyInfo: {
+            name: config.footerCompanyName || 'Cataloro',
+            tagline: config.footerTagline || 'Modern Marketplace for Everyone',
+            description: config.footerDescription || 'Discover, buy, and sell amazing products in our trusted marketplace.',
+          },
+          contact: {
+            email: config.footerEmail || 'hello@cataloro.com',
+            phone: config.footerPhone || '+1 (555) 123-4567',
+            address: config.footerAddress || '123 Marketplace St, Commerce City, CC 12345'
+          },
+          social: {
+            facebook: config.footerFacebook || '',
+            twitter: config.footerTwitter || '',
+            instagram: config.footerInstagram || '',
+            linkedin: config.footerLinkedin || '',
+            youtube: config.footerYoutube || ''
+          },
+          links: {
+            about: [
+              { label: 'About Us', url: '/about' },
+              { label: 'Our Story', url: '/story' },
+              { label: 'Careers', url: '/careers' },
+              { label: 'Press', url: '/press' }
+            ],
+            marketplace: [
+              { label: 'Browse Products', url: '/browse' },
+              { label: 'Categories', url: '/categories' },
+              { label: 'Sell on Cataloro', url: '/sell' },
+              { label: 'Seller Center', url: '/seller' }
+            ],
+            support: [
+              { label: 'Help Center', url: '/help' },
+              { label: 'Contact Support', url: '/support' },
+              { label: 'Community', url: '/community' },
+              { label: 'Safety', url: '/safety' }
+            ],
+            legal: [
+              { label: 'Privacy Policy', url: '/privacy' },
+              { label: 'Terms of Service', url: '/terms' },
+              { label: 'Cookie Policy', url: '/cookies' },
+              { label: 'Seller Agreement', url: '/seller-terms' }
+            ]
+          },
+          style: {
+            backgroundColor: config.footerBackgroundColor || '#1f2937',
+            textColor: config.footerTextColor || '#ffffff',
+            linkColor: config.footerLinkColor || '#60a5fa',
+            borderColor: '#374151'
+          }
+        };
+        
+        localStorage.setItem('cataloro_footer_config', JSON.stringify(footerConfig));
+      } else {
+        localStorage.removeItem('cataloro_footer_config');
+      }
       
       // Apply additional JavaScript-based configurations
       applyJavaScriptConfigurations(config);
