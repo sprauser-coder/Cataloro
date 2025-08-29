@@ -1854,7 +1854,7 @@ function SiteAdministrationTab({ showToast }) {
                   setSiteConfig(featureTest);
                   showToast('⚡ Feature Toggle Test: Compact mode, animations, wishlist toggled', 'info');
                 }}
-                className="bg-purple-500/90 hover:bg-purple-600 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 text-sm hover:shadow-lg"
+                className="bg-purple-500/90 hover:bg-purple-600 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium flex items-center space-x-2 text-sm"
               >
                 <ToggleRight className="w-4 h-4" />
                 <span>Features</span>
