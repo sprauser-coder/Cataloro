@@ -94,43 +94,81 @@ function MyListingsPage() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Listings</h1>
             <p className="text-gray-600 dark:text-gray-300">Manage your marketplace listings</p>
           </div>
-          <button className="cataloro-button-primary flex items-center">
+          <button 
+            onClick={handleCreateListing}
+            className="cataloro-button-primary flex items-center"
+          >
             <Plus className="w-5 h-5 mr-2" />
             Create New Listing
           </button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="cataloro-card-glass">
+      {/* Stats Cards - CLICKABLE & REDUCED MARGIN */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-4">
+        <button
+          onClick={() => handleTileClick('all')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'all' ? 'ring-2 ring-blue-500 bg-blue-50/20 dark:bg-blue-900/20' : ''
+          }`}
+        >
           <div className="p-6 text-center">
             <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{listings.length}</div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Listings</div>
           </div>
-        </div>
-        <div className="cataloro-card-glass">
+        </button>
+        <button
+          onClick={() => handleTileClick('active')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'active' ? 'ring-2 ring-green-500 bg-green-50/20 dark:bg-green-900/20' : ''
+          }`}
+        >
           <div className="p-6 text-center">
             <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'active').length}</div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Active</div>
           </div>
-        </div>
-        <div className="cataloro-card-glass">
+        </button>
+        <button
+          onClick={() => handleTileClick('drafts')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'drafts' ? 'ring-2 ring-orange-500 bg-orange-50/20 dark:bg-orange-900/20' : ''
+          }`}
+        >
           <div className="p-6 text-center">
             <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'draft').length}</div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Drafts</div>
           </div>
-        </div>
-        <div className="cataloro-card-glass">
+        </button>
+        <button
+          onClick={() => handleTileClick('sold')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'sold' ? 'ring-2 ring-gray-500 bg-gray-50/20 dark:bg-gray-900/20' : ''
+          }`}
+        >
           <div className="p-6 text-center">
             <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-gray-600 to-slate-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'sold').length}</div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Sold</div>
           </div>
-        </div>
+        </button>
       </div>
 
+      {/* Filter Indicator */}
+      {activeFilter !== 'all' && (
+        <div className="mb-4 flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+          <span className="text-blue-800 dark:text-blue-300 font-medium">
+            Showing {activeFilter} listings ({filteredListings.length} items)
+          </span>
+          <button 
+            onClick={() => setActiveFilter('all')}
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+          >
+            Show All
+          </button>
+        </div>
+      )}
+
       {/* Listings Grid */}
-      {listings.length === 0 ? (
+      {filteredListings.length === 0 ? (
         <div className="text-center py-12">
           <div className="cataloro-card-glass p-12">
             <div className="w-24 h-24 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
