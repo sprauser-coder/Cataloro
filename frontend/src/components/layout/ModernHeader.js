@@ -109,14 +109,14 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 }}></div>
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-2xl font-bold text-white group-hover:text-white/90 transition-colors" style={{
-                  background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-white/90 transition-colors" style={{
+                  background: 'linear-gradient(135deg, #1f2937 0%, #374151 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent'
                 }}>
                   Cataloro
                 </h1>
-                <p className="text-xs text-white/70 font-medium tracking-wide">ULTRA-MODERN MARKETPLACE</p>
+                <p className="text-xs text-gray-600 dark:text-white/70 font-medium tracking-wide">ULTRA-MODERN MARKETPLACE</p>
               </div>
             </Link>
 
