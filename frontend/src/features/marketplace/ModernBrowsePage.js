@@ -144,6 +144,17 @@ function ModernBrowsePage() {
       >
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative z-10 text-center flex flex-col justify-center h-full px-8">
+          {/* Hero Image */}
+          {heroContent.image_url && (
+            <div className="mb-6 flex justify-center">
+              <img 
+                src={heroContent.image_url} 
+                alt="Hero" 
+                className="max-h-24 max-w-48 object-contain" 
+              />
+            </div>
+          )}
+          
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             {heroContent.title}
           </h1>
