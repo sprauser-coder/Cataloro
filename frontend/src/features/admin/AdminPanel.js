@@ -1764,6 +1764,12 @@ function SiteAdministrationTab({ showToast }) {
       description: 'Customize site appearance, colors, fonts, and layout'
     },
     { 
+      id: 'hero', 
+      label: 'Hero Selection', 
+      icon: Star,
+      description: 'Customize the main hero section on the Browse page'
+    },
+    { 
       id: 'footer', 
       label: 'Footer Configuration', 
       icon: Layout,
