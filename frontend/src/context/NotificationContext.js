@@ -137,7 +137,7 @@ export function NotificationProvider({ children }) {
     if (!userId) return;
 
     try {
-      await notificationService.markAllAsRead(user.id);
+      await notificationService.markAllAsRead(userId);
       dispatch({ type: NOTIFICATION_ACTIONS.MARK_ALL_AS_READ });
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
