@@ -3,14 +3,18 @@ CATALORO - Marketplace Backend Server
 Scalable FastAPI backend with MongoDB integration
 """
 
-from fastapi import FastAPI, HTTPException, Depends, File, UploadFile
+from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import os
 import uuid
+import json
+import pandas as pd
+import io
+import base64
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import motor.motor_asyncio
 from bson import ObjectId
 
