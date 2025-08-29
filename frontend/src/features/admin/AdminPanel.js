@@ -33,7 +33,7 @@ import {
 import { adminService } from '../../services/adminService';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
-import { useNotification } from '../../context/NotificationContext';
+import { useNotifications } from '../../context/NotificationContext';
 
 function AdminPanel() {
   const [activeTab, setActiveTab] = useState('dashboard');
