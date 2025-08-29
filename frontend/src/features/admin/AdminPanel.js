@@ -311,45 +311,45 @@ function DashboardTab({ dashboardData, loading }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         
         {/* Total Users */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-4">
             <Users className="w-10 h-10 text-blue-500" />
-            <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+            <div className="bg-blue-100/80 dark:bg-blue-900/30 p-2 rounded-lg backdrop-blur-md">
               <TrendingUp className="w-5 h-5 text-blue-600" />
             </div>
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             {kpis.total_users?.toLocaleString() || 0}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Total Users</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Users</div>
         </div>
 
         {/* Total Products */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-4">
             <Package className="w-10 h-10 text-green-500" />
-            <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg">
+            <div className="bg-green-100/80 dark:bg-green-900/30 p-2 rounded-lg backdrop-blur-md">
               <TrendingUp className="w-5 h-5 text-green-600" />
             </div>
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
             {kpis.total_products?.toLocaleString() || 0}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Total Products</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Products</div>
         </div>
 
         {/* Active Products */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow">
+        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300 group">
           <div className="flex items-center justify-between mb-4">
             <Activity className="w-10 h-10 text-orange-500" />
-            <div className="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-lg">
+            <div className="bg-orange-100/80 dark:bg-orange-900/30 p-2 rounded-lg backdrop-blur-md">
               <CheckCircle className="w-5 h-5 text-orange-600" />
             </div>
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
             {kpis.active_products?.toLocaleString() || 0}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Active Products</div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Active Products</div>
         </div>
 
         {/* Cart Items */}
