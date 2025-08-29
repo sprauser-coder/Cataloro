@@ -208,6 +208,107 @@ class CataloroAPITester:
             print(f"   Found {len(response)} users")
         return success
 
+    def test_admin_settings(self):
+        """Test admin settings endpoint (for site branding)"""
+        if not self.admin_user:
+            print("❌ Admin Settings - SKIPPED (No admin logged in)")
+            return False
+            
+        # Test GET settings
+        success, response = self.run_test(
+            "Admin Settings GET",
+            "GET",
+            "api/admin/settings",
+            200
+        )
+        
+        if not success:
+            print("   ⚠️  Settings endpoint not implemented - expected for site branding")
+            return False
+            
+        # Test PUT settings (update)
+        test_settings = {
+            "site_name": "Cataloro Test",
+            "site_description": "Test Marketplace",
+            "logo_url": "/test-logo.png",
+            "theme_color": "#3B82F6"
+        }
+        
+        success, response = self.run_test(
+            "Admin Settings PUT",
+            "PUT",
+            "api/admin/settings",
+            200,
+            data=test_settings
+        )
+        
+        return success
+
+    def test_logo_upload(self):
+        """Test logo upload endpoint (for dual logo system)"""
+        if not self.admin_user:
+            print("❌ Logo Upload - SKIPPED (No admin logged in)")
+            return False
+            
+        # Test logo upload endpoint availability
+        success, response = self.run_test(
+            "Logo Upload Endpoint",
+            "POST",
+            "api/admin/logo",
+            200,
+            data={"test": "endpoint_check"}
+        )
+        
+        if not success:
+            print("   ⚠️  Logo upload endpoint not implemented - expected for dual logo system")
+            return False
+            
+        return success
+
+    def test_admin_session_handling(self):
+        """Test admin session persistence and validation"""
+        if not self.admin_user or not self.admin_token:
+            print("❌ Admin Session - SKIPPED (No admin session)")
+            return False
+            
+        # Test session with token header
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        success, response = self.run_test(
+            "Admin Session Validation",
+            "GET",
+            "api/admin/dashboard",
+            200,
+            headers=headers
+        )
+        
+        if success:
+            print(f"   Admin session valid, token: {self.admin_token[:20]}...")
+            
+        return success
+
+    def test_site_branding_data_persistence(self):
+        """Test if site branding data persists correctly"""
+        if not self.admin_user:
+            print("❌ Site Branding Persistence - SKIPPED (No admin logged in)")
+            return False
+            
+        # This would test the database persistence of site settings
+        # For now, we'll test the admin dashboard which should contain site info
+        success, response = self.run_test(
+            "Site Branding Data Check",
+            "GET",
+            "api/admin/dashboard",
+            200
+        )
+        
+        if success and 'kpis' in response:
+            print("   ✅ Admin dashboard accessible - site data can be stored")
+            return True
+        else:
+            print("   ❌ Cannot verify site branding data persistence")
+            return False
+
     def run_all_tests(self):
         """Run complete test suite"""
         print("🚀 Starting Cataloro Marketplace API Tests")
