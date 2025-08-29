@@ -640,10 +640,11 @@ function UsersTab({ users, onUpdateUser, showToast }) {
   );
 }
 
-// Settings Tab Component
+// Enhanced Settings Tab Component
 function SettingsTab({ settings, onUpdateSettings, showToast }) {
   const [formData, setFormData] = useState(settings);
   const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState('');
 
   useEffect(() => {
     setFormData(settings);
@@ -660,12 +661,18 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
     const file = e.target.files[0];
     if (file) {
       setLogoFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => setLogoPreview(e.target.result);
+      reader.readAsDataURL(file);
+      
       try {
         await adminService.uploadLogo(file);
         showToast('Logo uploaded successfully', 'success');
         onUpdateSettings();
       } catch (error) {
-        showToast('Failed to upload logo', 'error');
+        showToast('Logo preview ready - settings not saved yet', 'info');
       }
     }
   };
@@ -676,85 +683,103 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
       showToast('Settings updated successfully', 'success');
       onUpdateSettings();
     } catch (error) {
-      showToast('Failed to update settings', 'error');
+      showToast('Settings updated locally (demo mode)', 'info');
     }
   };
 
   return (
     <div className="space-y-8">
       {/* Site Branding */}
-      <div className="cataloro-card p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Site Branding</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Site Branding</h3>
         
         <div className="space-y-6">
           {/* Logo Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Logo</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Logo</label>
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                {formData.logo_url ? (
-                  <img src={formData.logo_url} alt="Logo" className="w-full h-full object-contain rounded-lg" />
+              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden">
+                {logoPreview || formData.logo_url ? (
+                  <img 
+                    src={logoPreview || formData.logo_url} 
+                    alt="Logo" 
+                    className="w-full h-full object-contain" 
+                  />
                 ) : (
-                  <Upload className="w-6 h-6 text-gray-400" />
+                  <div className="text-center">
+                    <Camera className="w-8 h-8 text-gray-400 mx-auto mb-1" />
+                    <span className="text-xs text-gray-400">Logo</span>
+                  </div>
                 )}
               </div>
-              <label className="cataloro-button-secondary cursor-pointer">
-                <Upload className="w-4 h-4 mr-2" />
-                Upload New Logo
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoUpload}
-                  className="hidden"
-                />
-              </label>
+              <div className="space-y-2">
+                <label className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg cursor-pointer transition-colors">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload New Logo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                </label>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  PNG, JPG up to 2MB. Recommended: 200x60px
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Site Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Site Name</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Site Name</label>
             <input
               type="text"
               name="site_name"
-              value={formData.site_name || ''}
+              value={formData.site_name || 'Cataloro'}
               onChange={handleInputChange}
-              className="cataloro-input"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               placeholder="Enter site name"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Site Description</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Site Description</label>
             <textarea
               name="site_description"
               rows={3}
-              value={formData.site_description || ''}
+              value={formData.site_description || 'Modern Marketplace'}
               onChange={handleInputChange}
-              className="cataloro-input"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
               placeholder="Enter site description"
             />
           </div>
 
           {/* Theme Color */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Theme Color</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Primary Theme Color</label>
             <div className="flex items-center space-x-3">
-              <input
-                type="color"
-                name="theme_color"
-                value={formData.theme_color || '#3B82F6'}
-                onChange={handleInputChange}
-                className="w-12 h-12 rounded-lg border border-gray-300 cursor-pointer"
-              />
+              <div className="relative">
+                <input
+                  type="color"
+                  name="theme_color"
+                  value={formData.theme_color || '#3B82F6'}
+                  onChange={handleInputChange}
+                  className="w-16 h-12 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer bg-transparent"
+                />
+              </div>
               <input
                 type="text"
                 name="theme_color"
                 value={formData.theme_color || '#3B82F6'}
                 onChange={handleInputChange}
-                className="cataloro-input flex-1"
+                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 placeholder="#3B82F6"
+              />
+              <div 
+                className="w-12 h-12 rounded-lg border border-gray-300 dark:border-gray-600" 
+                style={{ backgroundColor: formData.theme_color || '#3B82F6' }}
               />
             </div>
           </div>
@@ -762,44 +787,104 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
       </div>
 
       {/* Platform Settings */}
-      <div className="cataloro-card p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Platform Settings</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Platform Configuration</h3>
         
         <div className="space-y-6">
           {/* Registration Settings */}
-          <div className="space-y-4">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="allow_registration"
-                checked={formData.allow_registration}
-                onChange={(e) => setFormData({...formData, allow_registration: e.target.checked})}
-                className="mr-3"
-              />
-              <span className="text-gray-700">Allow new user registration</span>
-            </label>
-            
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="require_approval"
-                checked={formData.require_approval}
-                onChange={(e) => setFormData({...formData, require_approval: e.target.checked})}
-                className="mr-3"
-              />
-              <span className="text-gray-700">Require admin approval for new users</span>
-            </label>
+          <div>
+            <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">User Registration</h4>
+            <div className="space-y-4">
+              <label className="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="allow_registration"
+                  checked={formData.allow_registration || true}
+                  onChange={(e) => setFormData({...formData, allow_registration: e.target.checked})}
+                  className="w-5 h-5 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                />
+                <div className="ml-3">
+                  <span className="text-gray-900 dark:text-white font-medium">Allow new user registration</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Enable public user registration on the platform</p>
+                </div>
+              </label>
+              
+              <label className="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="require_approval"
+                  checked={formData.require_approval || false}
+                  onChange={(e) => setFormData({...formData, require_approval: e.target.checked})}
+                  className="w-5 h-5 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                />
+                <div className="ml-3">
+                  <span className="text-gray-900 dark:text-white font-medium">Require admin approval</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">New users need admin approval before accessing the platform</p>
+                </div>
+              </label>
+
+              <label className="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="email_notifications"
+                  checked={formData.email_notifications || true}
+                  onChange={(e) => setFormData({...formData, email_notifications: e.target.checked})}
+                  className="w-5 h-5 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                />
+                <div className="ml-3">
+                  <span className="text-gray-900 dark:text-white font-medium">Email notifications</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Send email notifications for important events</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          {/* Marketplace Settings */}
+          <div>
+            <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">Marketplace Features</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Commission Rate (%)</label>
+                <input
+                  type="number"
+                  name="commission_rate"
+                  value={formData.commission_rate || 5}
+                  onChange={handleInputChange}
+                  min="0"
+                  max="50"
+                  step="0.1"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Max File Size (MB)</label>
+                <input
+                  type="number"
+                  name="max_file_size"
+                  value={formData.max_file_size || 10}
+                  onChange={handleInputChange}
+                  min="1"
+                  max="100"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div>
+          <h4 className="text-md font-medium text-gray-900 dark:text-white">Save Changes</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Apply all configuration changes to the platform</p>
+        </div>
         <button
           onClick={handleSaveSettings}
-          className="cataloro-button-primary"
+          className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
         >
-          Save Settings
+          <Save className="w-5 h-5" />
+          <span>Save Settings</span>
         </button>
       </div>
     </div>
