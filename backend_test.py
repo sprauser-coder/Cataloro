@@ -250,20 +250,66 @@ class CataloroAPITester:
             print("❌ Logo Upload - SKIPPED (No admin logged in)")
             return False
             
-        # Test logo upload endpoint availability
-        success, response = self.run_test(
-            "Logo Upload Endpoint",
-            "POST",
-            "api/admin/logo",
-            200,
-            data={"test": "endpoint_check"}
-        )
+        # Create a simple test image (1x1 PNG)
+        import base64
+        # This is a 1x1 transparent PNG image in base64
+        png_data = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg==')
         
-        if not success:
-            print("   ⚠️  Logo upload endpoint not implemented - expected for dual logo system")
-            return False
+        # Test logo upload with proper file data
+        url = f"{self.base_url}/api/admin/logo"
+        print(f"\n🔍 Testing Logo Upload...")
+        print(f"   URL: {url}")
+        
+        try:
+            # Prepare multipart form data
+            files = {
+                'file': ('test-logo.png', png_data, 'image/png')
+            }
+            data = {
+                'mode': 'light'
+            }
             
-        return success
+            response = self.session.post(url, files=files, data=data)
+            
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                try:
+                    response_data = response.json()
+                    details += f", Response: {json.dumps(response_data, indent=2)[:200]}..."
+                    print(f"   Logo uploaded successfully: {response_data.get('filename', 'N/A')}")
+                    print(f"   File size: {response_data.get('size', 'N/A')} bytes")
+                except:
+                    details += f", Response: {response.text[:100]}..."
+            else:
+                details += f", Expected: 200, Response: {response.text[:200]}"
+
+            self.log_test("Logo Upload", success, details)
+            
+            # Test dark mode logo upload as well
+            if success:
+                files_dark = {
+                    'file': ('test-logo-dark.png', png_data, 'image/png')
+                }
+                data_dark = {
+                    'mode': 'dark'
+                }
+                
+                response_dark = self.session.post(url, files=files_dark, data=data_dark)
+                success_dark = response_dark.status_code == 200
+                
+                if success_dark:
+                    print(f"   Dark mode logo upload also successful")
+                    self.log_test("Logo Upload (Dark Mode)", success_dark, f"Status: {response_dark.status_code}")
+                else:
+                    self.log_test("Logo Upload (Dark Mode)", success_dark, f"Status: {response_dark.status_code}, Response: {response_dark.text[:100]}")
+            
+            return success
+
+        except Exception as e:
+            self.log_test("Logo Upload", False, f"Error: {str(e)}")
+            return False
 
     def test_admin_session_handling(self):
         """Test admin session persistence and validation"""
