@@ -12,12 +12,12 @@ import AuthPage from './features/auth/AuthPage';
 import ProtectedRoute from './features/auth/ProtectedRoute';
 import AdminProtectedRoute from './features/auth/AdminProtectedRoute';
 import HomePage from './features/marketplace/HomePage';
-import BrowsePage from './features/marketplace/BrowsePage';
+import BrowsePage from './features/marketplace/BrowsePageWorking';
 import SellPage from './features/listings/SellPage';
 import FavoritesPage from './features/favorites/FavoritesPage';
 import OrdersPage from './features/orders/OrdersPage';
 import ProductDetailPage from './features/marketplace/ProductDetailPage';
-import ProfilePage from './features/profile/ProfilePage';
+import ProfilePage from './features/profile/ProfilePageWorking';
 import AdminPanel from './features/admin/AdminPanel';
 
 // Styles
