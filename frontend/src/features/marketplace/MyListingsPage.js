@@ -13,8 +13,10 @@ import { useNotifications } from '../../context/NotificationContext';
 function MyListingsPage() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState('all'); // For filtering by tile clicks
   const { user } = useAuth();
   const { showToast } = useNotifications();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user?.id) {
