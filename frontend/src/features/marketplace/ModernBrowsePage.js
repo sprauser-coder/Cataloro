@@ -51,7 +51,8 @@ function ModernBrowsePage() {
   const [heroContent, setHeroContent] = useState({
     title: 'Discover Amazing Products',
     description: 'From electronics to fashion, find everything you need in one place',
-    height: 400
+    height: 400,
+    image_url: ''
   });
   
   // Use global search and filter states from context
