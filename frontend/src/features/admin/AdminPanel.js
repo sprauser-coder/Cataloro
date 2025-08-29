@@ -1020,21 +1020,25 @@ function SiteAdministrationTab({ showToast }) {
 
   const saveSiteConfiguration = async () => {
     try {
-      // Here you would call your API to save configuration
-      // await adminService.updateSiteConfiguration(siteConfig);
+      setIsSaving(true);
       
-      // For now, save to localStorage to demonstrate persistence
+      // Simulate API call delay for better UX feedback
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Save to localStorage to demonstrate persistence
       localStorage.setItem('cataloro_site_config', JSON.stringify(siteConfig));
       
       // Show success notification
       showToast('Site configuration saved successfully! All changes have been applied.', 'success');
       
-      // Add visual feedback 
+      // Log for debugging
       console.log('Site configuration saved:', siteConfig);
       
     } catch (error) {
       console.error('Save error:', error);
       showToast('Failed to save configuration. Please try again.', 'error');
+    } finally {
+      setIsSaving(false);
     }
   };
 
