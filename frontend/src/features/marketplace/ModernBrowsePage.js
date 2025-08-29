@@ -178,7 +178,139 @@ function ModernBrowsePage() {
         </div>
       </div>
 
+      {/* Filter and Sort Controls - NO ADDITIONAL SEARCH */}
+      <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+        
+        {/* Filter and Sort Controls */}
+        <div className="flex items-center space-x-4 ml-auto">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center space-x-2 px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+          >
+            <SlidersHorizontal className="w-5 h-5" />
+            <span>Filters</span>
+          </button>
 
+          <select
+            value={sortBy}
+            onChange={(e) => updateSortBy(e.target.value)}
+            className="px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="newest">Newest First</option>
+            <option value="price_low">Price: Low to High</option>
+            <option value="price_high">Price: High to Low</option>
+            <option value="rating">Highest Rated</option>
+            <option value="popular">Most Popular</option>
+          </select>
+
+          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
+            <button
+              onClick={() => updateViewMode('grid')}
+              className={`p-2 rounded-lg transition-all duration-200 ${
+                viewMode === 'grid' 
+                ? 'bg-white dark:bg-gray-700 shadow-sm text-blue-600' 
+                : 'text-gray-600 dark:text-gray-400'
+              }`}
+            >
+              <Grid3X3 className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => updateViewMode('list')}
+              className={`p-2 rounded-lg transition-all duration-200 ${
+                viewMode === 'list' 
+                ? 'bg-white dark:bg-gray-700 shadow-sm text-blue-600' 
+                : 'text-gray-600 dark:text-gray-400'
+              }`}
+            >
+              <List className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Advanced Filters Panel */}
+      {showFilters && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Advanced Filters</h3>
+            <button
+              onClick={() => setShowFilters(false)}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Category Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Category
+              </label>
+              <select
+                value={filters.category}
+                onChange={(e) => updateFilters({...filters, category: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                <option value="all">All Categories</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Price Range */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Price Range
+              </label>
+              <div className="space-y-2">
+                <input
+                  type="range"
+                  min="0"
+                  max="10000"
+                  value={filters.priceRange[1]}
+                  onChange={(e) => updateFilters({...filters, priceRange: [0, parseInt(e.target.value)]})}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                  <span>$0</span>
+                  <span>${filters.priceRange[1]}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Condition Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Condition
+              </label>
+              <select
+                value={filters.condition}
+                onChange={(e) => updateFilters({...filters, condition: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                <option value="all">Any Condition</option>
+                <option value="New">New</option>
+                <option value="Like New">Like New</option>
+                <option value="Excellent">Excellent</option>
+                <option value="Good">Good</option>
+                <option value="Fair">Fair</option>
+              </select>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex items-end">
+              <button
+                onClick={() => updateFilters({category: 'all', priceRange: [0, 10000], condition: 'all', location: 'all', rating: 0})}
+                className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Results Count and Quick Stats */}
       <div id="search-results" className="flex items-center justify-between">
