@@ -214,9 +214,9 @@ class CataloroAPITester:
             print("❌ Admin Settings - SKIPPED (No admin logged in)")
             return False
             
-        # Test GET settings
-        success, response = self.run_test(
-            "Admin Settings GET",
+        # Test GET settings (initial state)
+        success, initial_response = self.run_test(
+            "Admin Settings GET (Initial)",
             "GET",
             "api/admin/settings",
             200
@@ -226,23 +226,56 @@ class CataloroAPITester:
             print("   ⚠️  Settings endpoint not implemented - expected for site branding")
             return False
             
-        # Test PUT settings (update)
+        print(f"   Initial settings: {initial_response}")
+            
+        # Test PUT settings (update with comprehensive data)
         test_settings = {
-            "site_name": "Cataloro Test",
-            "site_description": "Test Marketplace",
+            "site_name": "Cataloro Test Platform",
+            "site_description": "Enhanced Test Marketplace with Branding",
             "logo_url": "/test-logo.png",
-            "theme_color": "#3B82F6"
+            "logo_light_url": "data:image/png;base64,test-light-logo",
+            "logo_dark_url": "data:image/png;base64,test-dark-logo",
+            "theme_color": "#FF6B35",
+            "allow_registration": True,
+            "require_approval": False,
+            "email_notifications": True,
+            "commission_rate": 7.5,
+            "max_file_size": 15
         }
         
-        success, response = self.run_test(
-            "Admin Settings PUT",
+        success_put, put_response = self.run_test(
+            "Admin Settings PUT (Update)",
             "PUT",
             "api/admin/settings",
             200,
             data=test_settings
         )
         
-        return success
+        if not success_put:
+            return False
+            
+        # Test GET settings again to verify persistence
+        success_verify, verify_response = self.run_test(
+            "Admin Settings GET (Verify Persistence)",
+            "GET",
+            "api/admin/settings",
+            200
+        )
+        
+        if success_verify:
+            # Check if our test data persisted
+            if (verify_response.get('site_name') == test_settings['site_name'] and
+                verify_response.get('theme_color') == test_settings['theme_color'] and
+                verify_response.get('commission_rate') == test_settings['commission_rate']):
+                print("   ✅ Settings persistence verified - data stored and retrieved correctly")
+                self.log_test("Settings Data Persistence", True, "All test settings persisted correctly")
+            else:
+                print("   ⚠️  Settings may not have persisted correctly")
+                print(f"   Expected site_name: {test_settings['site_name']}, Got: {verify_response.get('site_name')}")
+                print(f"   Expected theme_color: {test_settings['theme_color']}, Got: {verify_response.get('theme_color')}")
+                self.log_test("Settings Data Persistence", False, "Test settings did not persist correctly")
+        
+        return success_put and success_verify
 
     def test_logo_upload(self):
         """Test logo upload endpoint (for dual logo system)"""
