@@ -3,7 +3,7 @@
  * Ultra-modern sidebar navigation with role-based menu items
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Search, 
@@ -15,12 +15,31 @@ import {
   User, 
   LogOut 
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import { APP_ROUTES, USER_ROLES } from '../../config/directions';
 
 function Navigation() {
   const location = useLocation();
-  const { user, logout, isAdmin } = useAuth();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Get user from localStorage
+    const userData = localStorage.getItem('cataloro_user');
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
+
+  const isAdmin = () => user?.role === USER_ROLES.ADMIN;
+  
+  const logout = () => {
+    localStorage.removeItem('cataloro_token');
+    localStorage.removeItem('cataloro_user');
+    window.location.href = '/login';
+  };
 
   const isActive = (path) => location.pathname === path;
 
