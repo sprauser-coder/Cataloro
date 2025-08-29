@@ -600,6 +600,11 @@ export function MarketplaceProvider({ children }) {
       showNotification('Promo code removed', 'info');
     },
     
+    // Refresh listings from API
+    refreshListings: async () => {
+      await loadInitialProducts();
+    },
+    
     // Other actions
     addToRecentlyViewed: (product) => {
       dispatch({ type: ACTIONS.ADD_TO_RECENTLY_VIEWED, payload: product });
