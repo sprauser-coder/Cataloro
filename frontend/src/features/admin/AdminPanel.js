@@ -929,38 +929,98 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Site Branding</h3>
         
         <div className="space-y-6">
-          {/* Logo Upload */}
+          {/* Dual Logo Upload - Light & Dark Mode */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Logo</label>
-            <div className="flex items-center space-x-4">
-              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden">
-                {logoPreview || formData.logo_url ? (
-                  <img 
-                    src={logoPreview || formData.logo_url} 
-                    alt="Logo" 
-                    className="w-full h-full object-contain" 
-                  />
-                ) : (
-                  <div className="text-center">
-                    <Camera className="w-8 h-8 text-gray-400 mx-auto mb-1" />
-                    <span className="text-xs text-gray-400">Logo</span>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Site Logos (Light & Dark Mode)</label>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Light Mode Logo */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                  <div className="w-4 h-4 bg-white border border-gray-300 rounded mr-2"></div>
+                  Light Mode Logo
+                </h4>
+                <div className="flex items-center space-x-4">
+                  <div className="w-20 h-20 bg-white border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center overflow-hidden">
+                    {logoLightPreview || formData.logo_light_url || formData.logo_url ? (
+                      <img 
+                        src={logoLightPreview || formData.logo_light_url || formData.logo_url} 
+                        alt="Light Logo" 
+                        className="w-full h-full object-contain" 
+                      />
+                    ) : (
+                      <div className="text-center">
+                        <Camera className="w-6 h-6 text-gray-400 mx-auto mb-1" />
+                        <span className="text-xs text-gray-400">Light</span>
+                      </div>
+                    )}
                   </div>
-                )}
+                  <div className="flex-1">
+                    <label className="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg cursor-pointer transition-colors text-sm">
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload Light Logo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleLogoUpload(e, 'light')}
+                        className="hidden"
+                      />
+                    </label>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      For light backgrounds
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <label className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg cursor-pointer transition-colors">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload New Logo
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    className="hidden"
-                  />
-                </label>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  PNG, JPG up to 2MB. Recommended: 200x60px
-                </p>
+
+              {/* Dark Mode Logo */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                  <div className="w-4 h-4 bg-gray-800 border border-gray-600 rounded mr-2"></div>
+                  Dark Mode Logo
+                </h4>
+                <div className="flex items-center space-x-4">
+                  <div className="w-20 h-20 bg-gray-800 border-2 border-dashed border-gray-600 rounded-xl flex items-center justify-center overflow-hidden">
+                    {logoDarkPreview || formData.logo_dark_url ? (
+                      <img 
+                        src={logoDarkPreview || formData.logo_dark_url} 
+                        alt="Dark Logo" 
+                        className="w-full h-full object-contain" 
+                      />
+                    ) : (
+                      <div className="text-center">
+                        <Camera className="w-6 h-6 text-gray-400 mx-auto mb-1" />
+                        <span className="text-xs text-gray-400">Dark</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <label className="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg cursor-pointer transition-colors text-sm">
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload Dark Logo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleLogoUpload(e, 'dark')}
+                        className="hidden"
+                      />
+                    </label>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      For dark backgrounds
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="flex items-start space-x-2">
+                <div className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5">
+                  💡
+                </div>
+                <div className="text-sm text-blue-800 dark:text-blue-200">
+                  <strong>Logo Usage:</strong> Upload both logos for automatic theme switching. Light logo shows on light backgrounds, dark logo shows on dark backgrounds. Recommended size: 200x60px or similar aspect ratio.
+                </div>
               </div>
             </div>
           </div>
