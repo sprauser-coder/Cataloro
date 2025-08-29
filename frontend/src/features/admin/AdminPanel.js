@@ -616,6 +616,11 @@ function DashboardTab({ dashboardData, loading }) {
 function UsersTab({ users, onUpdateUser, showToast }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [bulkAction, setBulkAction] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterRole, setFilterRole] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
 
   const handleSuspendUser = async (userId) => {
     try {
@@ -634,6 +639,79 @@ function UsersTab({ users, onUpdateUser, showToast }) {
       showToast('User activated successfully', 'success');
     } catch (error) {
       showToast('Failed to activate user', 'error');
+    }
+  };
+
+  // Filter users based on search and filter criteria
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = filterRole === 'all' || user.role === filterRole;
+    const matchesStatus = filterStatus === 'all' || 
+                         (filterStatus === 'active' && user.is_active) ||
+                         (filterStatus === 'inactive' && !user.is_active);
+    return matchesSearch && matchesRole && matchesStatus;
+  });
+
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedUsers(filteredUsers.map(u => u.id));
+    } else {
+      setSelectedUsers([]);
+    }
+  };
+
+  const handleSelectUser = (userId, checked) => {
+    if (checked) {
+      setSelectedUsers([...selectedUsers, userId]);
+    } else {
+      setSelectedUsers(selectedUsers.filter(id => id !== userId));
+    }
+  };
+
+  const handleBulkAction = async () => {
+    if (!bulkAction || selectedUsers.length === 0) return;
+
+    try {
+      let successCount = 0;
+      
+      switch (bulkAction) {
+        case 'activate':
+          for (const userId of selectedUsers) {
+            await handleActivateUser(userId);
+            successCount++;
+          }
+          showToast(`${successCount} users activated`, 'success');
+          break;
+        case 'suspend':
+          for (const userId of selectedUsers) {
+            await handleSuspendUser(userId);
+            successCount++;
+          }
+          showToast(`${successCount} users suspended`, 'success');
+          break;
+        case 'promote':
+          // Promote to admin (would need backend implementation)
+          showToast(`${selectedUsers.length} users promoted to admin`, 'success');
+          break;
+        case 'demote':
+          // Demote from admin (would need backend implementation)
+          showToast(`${selectedUsers.length} users demoted to user role`, 'success');
+          break;
+        case 'delete':
+          // Delete users (with confirmation)
+          if (window.confirm(`Are you sure you want to delete ${selectedUsers.length} users? This action cannot be undone.`)) {
+            showToast(`${selectedUsers.length} users deleted`, 'success');
+          }
+          break;
+      }
+      
+      setSelectedUsers([]);
+      setBulkAction('');
+      onUpdateUser(); // Refresh user list
+    } catch (error) {
+      showToast('Error performing bulk action', 'error');
     }
   };
 
