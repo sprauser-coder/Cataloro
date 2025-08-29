@@ -2460,7 +2460,7 @@ function ListingsTab({ showToast }) {
         </div>
       )}
 
-      {/* REDESIGNED Listings Table */}
+      {/* FIXED Listings Table - NO HORIZONTAL SCROLLING */}
       <div className="cataloro-card-glass overflow-hidden">
         <div className="px-6 py-4 border-b border-white/10 dark:border-white/10">
           <div className="flex items-center justify-between">
@@ -2471,11 +2471,12 @@ function ListingsTab({ showToast }) {
           </div>
         </div>
         
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        {/* Responsive Table - No Horizontal Scroll */}
+        <div className="max-w-full">
+          <table className="w-full min-w-full">
             <thead className="bg-gray-50/80 dark:bg-gray-800/50 backdrop-blur-sm">
               <tr>
-                <th className="p-4 text-left">
+                <th className="px-3 py-4 text-left w-12">
                   <input
                     type="checkbox"
                     checked={selectedListings.length === filteredListings.length && filteredListings.length > 0}
@@ -2483,13 +2484,13 @@ function ListingsTab({ showToast }) {
                     className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
-                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Listing Details</th>
-                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Price</th>
-                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Category</th>
-                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Seller</th>
-                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Status</th>
-                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Views</th>
-                <th className="p-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Actions</th>
+                <th className="px-4 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider min-w-[280px]">Listing Details</th>
+                <th className="px-3 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider w-24">Price</th>
+                <th className="px-3 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider w-28">Category</th>
+                <th className="px-3 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider w-32">Seller</th>
+                <th className="px-3 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider w-24">Status</th>
+                <th className="px-3 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider w-20">Views</th>
+                <th className="px-3 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider w-24">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
