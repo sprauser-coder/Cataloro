@@ -132,8 +132,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     to={item.path}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
                       isActive
-                        ? 'bg-white/20 text-white shadow-lg backdrop-blur-md'
-                        : 'text-white/80 hover:text-white hover:bg-white/10'
+                        ? 'bg-white/20 dark:bg-white/20 text-gray-900 dark:text-white shadow-lg backdrop-blur-md'
+                        : 'text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10'
                     }`}
                     style={isActive ? {
                       background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
