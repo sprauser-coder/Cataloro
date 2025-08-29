@@ -568,13 +568,16 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites }) {
         {/* Action Buttons */}
         <div className={`flex space-x-2 ${isGridView ? '' : 'mt-4'}`}>
           <button
-            onClick={() => onAddToCart(item)}
+            onClick={(e) => handleQuickAction(e, () => onAddToCart(item))}
             className="flex-1 flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors"
           >
             <ShoppingCart className="w-4 h-4" />
             <span>Add to Cart</span>
           </button>
-          <button className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
+          <button 
+            onClick={(e) => handleQuickAction(e, () => {})}
+            className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+          >
             <MessageCircle className="w-4 h-4" />
           </button>
         </div>
