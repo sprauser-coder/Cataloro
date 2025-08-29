@@ -49,9 +49,19 @@ export const API_ENDPOINTS = {
   USER_PROFILE: '/users/profile',
   
   // Marketplace endpoints
-  PRODUCTS: '/products',
-  CATEGORIES: '/categories',
-  SEARCH: '/search',
+  MARKETPLACE: {
+    BROWSE: '/listings',
+    LISTINGS: '/listings',
+    SEARCH: '/listings/search',
+    FAVORITES: '/marketplace/favorites'
+  },
+  
+  // User-specific endpoints
+  USER: {
+    MY_LISTINGS: '/user/my-listings/{user_id}',
+    MY_DEALS: '/user/my-deals/{user_id}',
+    NOTIFICATIONS: '/user/notifications/{user_id}'
+  },
   
   // Orders endpoints
   ORDERS: '/orders',
