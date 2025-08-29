@@ -31,10 +31,10 @@ function App() {
       <Router>
         <Routes>
           {/* Public Routes - No context providers for now */}
-          <Route path={APP_ROUTES.LOGIN} element={<LoginPage />} />
+          <Route path={APP_ROUTES.LOGIN} element={<SimpleLoginPage />} />
           <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
-          <Route path="/" element={<LoginPage />} />
-          <Route path="*" element={<LoginPage />} />
+          <Route path="/" element={<SimpleLoginPage />} />
+          <Route path="*" element={<SimpleLoginPage />} />
         </Routes>
       </Router>
     </div>
