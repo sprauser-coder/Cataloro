@@ -3072,17 +3072,17 @@ function ListingsTab({ showToast }) {
                     </div>
                   </td>
                   <td className="px-3 py-4">
-                    <div className="flex items-center justify-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center justify-center space-x-1">
                       <button
                         onClick={() => setEditingListing(listing)}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
+                        className="p-1.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
                         title="Edit listing"
                       >
                         <Edit className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDeleteListing(listing.id)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded hover:bg-red-50/50 dark:hover:bg-red-900/20"
+                        className="p-1.5 text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded hover:bg-red-50/50 dark:hover:bg-red-900/20"
                         title="Delete listing"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
