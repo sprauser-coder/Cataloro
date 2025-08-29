@@ -4,7 +4,7 @@
  */
 
 import axios from 'axios';
-import { API_ENDPOINTS } from '../../config/directions';
+import { API_ENDPOINTS } from '../config/directions';
 
 class NotificationService {
   async getUserNotifications(userId) {
