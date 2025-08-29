@@ -902,7 +902,7 @@ async def create_order(order_data: OrderCreate, current_user: User = Depends(get
     return order
 
 # Phase 3C: Order Approval Endpoints
-@api_router.put("/orders/{order_id}get_paths()["app_root"]rove")
+@api_router.put("/orders/{order_id}/approve")
 async def approve_order(order_id: str, current_user: User = Depends(get_current_user)):
     """Seller approves an order"""
     try:
