@@ -422,8 +422,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
     
-    # Check if user is blocked
-    if user.get('is_blocked', False):
+    # Check if user is blocked - but skip check for admin users
+    if user.get('is_blocked', False) and user.get('role') != 'admin':
         raise HTTPException(status_code=403, detail="Account has been blocked")
     
     return User(**user)
