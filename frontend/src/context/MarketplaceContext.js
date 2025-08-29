@@ -315,43 +315,40 @@ export function MarketplaceProvider({ children }) {
     dispatch({ type: ACTIONS.SET_LOADING, payload: true });
     
     try {
-      // Try to fetch real listings from API
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-customizer.preview.emergentagent.com'}/api/listings`);
+      // Try to fetch real listings from API using marketplaceService
+      const apiListings = await marketplaceService.browseListings();
+      console.log('✅ Loaded real listings from API:', apiListings.length);
       
-      if (response.ok) {
-        const apiListings = await response.json();
-        console.log('✅ Loaded real listings from API:', apiListings.length);
-        
-        // Transform API listings to match expected format
-        const transformedListings = apiListings.map(listing => ({
-          id: listing.id,
-          title: listing.title,
-          description: listing.description,
-          price: listing.price,
-          originalPrice: listing.price * 1.1, // Add 10% as original price for demo
-          category: listing.category,
-          condition: listing.condition,
-          location: listing.location || 'Unknown',
-          images: listing.images || [],
-          seller: listing.seller || { name: 'Unknown Seller' },
-          rating: 4.5, // Default rating for demo
-          reviewCount: Math.floor(Math.random() * 100) + 10,
-          isHotDeal: Math.random() > 0.7,
-          hasFastShipping: Math.random() > 0.6,
-          verified: listing.seller?.verified || false,
-          inStock: true,
-          quantity: 1,
-          tags: listing.tags || [],
-          features: listing.features || []
-        }));
-        
-        // If we have real listings, use them
-        if (transformedListings.length > 0) {
-          dispatch({ type: ACTIONS.SET_PRODUCTS, payload: transformedListings });
-          dispatch({ type: ACTIONS.SET_LOADING, payload: false });
-          return;
-        }
+      // Transform API listings to match expected format
+      const transformedListings = apiListings.map(listing => ({
+        id: listing.id,
+        title: listing.title,
+        description: listing.description,
+        price: listing.price,
+        originalPrice: listing.price * 1.1, // Add 10% as original price for demo
+        category: listing.category,
+        condition: listing.condition,
+        location: listing.location || 'Unknown',
+        images: listing.images || [],
+        seller: listing.seller || { name: 'Unknown Seller', verified: false },
+        rating: 4.5, // Default rating for demo
+        reviewCount: Math.floor(Math.random() * 100) + 10,
+        isHotDeal: Math.random() > 0.7,
+        hasFastShipping: Math.random() > 0.6,
+        verified: listing.seller?.verified || false,
+        inStock: true,
+        quantity: 1,
+        tags: listing.tags || [],
+        features: listing.features || []
+      }));
+      
+      // Use real listings if available
+      if (transformedListings.length > 0) {
+        dispatch({ type: ACTIONS.SET_PRODUCTS, payload: transformedListings });
+        dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+        return;
       }
+        
     } catch (error) {
       console.error('Failed to load listings from API:', error);
     }
