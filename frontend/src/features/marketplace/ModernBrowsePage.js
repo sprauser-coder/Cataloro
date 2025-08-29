@@ -24,7 +24,7 @@ import {
   ChevronDown,
   ArrowUpDown
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
 import { useMarketplace } from '../../context/MarketplaceContext';
 
