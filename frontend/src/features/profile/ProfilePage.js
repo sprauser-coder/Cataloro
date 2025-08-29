@@ -331,15 +331,15 @@ function ProfilePage() {
           {/* Quick Stats */}
           <div className="flex space-x-6 text-center">
             <div>
-              <div className="text-lg font-bold text-gray-900">{accountStats.totalListings}</div>
-              <div className="text-sm text-gray-600">Listings</div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">{accountStats.totalListings}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Listings</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-gray-900">{accountStats.completedDeals}</div>
-              <div className="text-sm text-gray-600">Deals</div>
+              <div className="text-lg font-bold text-gray-900 dark:text-white">{accountStats.completedDeals}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Deals</div>
             </div>
             <div>
-              <div className="flex items-center text-lg font-bold text-gray-900">
+              <div className="flex items-center text-lg font-bold text-gray-900 dark:text-white">
                 <Star className="w-4 h-4 text-yellow-400 mr-1" />
                 {accountStats.avgRating}
               </div>
