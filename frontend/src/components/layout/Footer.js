@@ -238,7 +238,7 @@ function Footer() {
                     href={config.social.twitter} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-blue-400 transition-colors"
+                    className="text-gray-400 hover:text-blue-400"
                   >
                     <Twitter className="w-5 h-5" />
                   </a>
