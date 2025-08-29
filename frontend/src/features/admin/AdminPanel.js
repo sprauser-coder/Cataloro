@@ -960,6 +960,22 @@ function SiteAdministrationTab({ showToast }) {
     compactMode: false,
     animationsEnabled: true,
     
+    // Footer Configuration
+    footerCompanyName: 'Cataloro',
+    footerTagline: 'Modern Marketplace for Everyone',
+    footerDescription: 'Discover, buy, and sell amazing products in our trusted marketplace. Connect with sellers worldwide and find exactly what you\'re looking for.',
+    footerEmail: 'hello@cataloro.com',
+    footerPhone: '+1 (555) 123-4567',
+    footerAddress: '123 Marketplace St, Commerce City, CC 12345',
+    footerFacebook: 'https://facebook.com/cataloro',
+    footerTwitter: 'https://twitter.com/cataloro',
+    footerInstagram: 'https://instagram.com/cataloro',
+    footerLinkedin: 'https://linkedin.com/company/cataloro',
+    footerYoutube: 'https://youtube.com/cataloro',
+    footerBackgroundColor: '#1f2937',
+    footerTextColor: '#ffffff',
+    footerLinkColor: '#60a5fa',
+    
     // Homepage Configuration
     heroSectionEnabled: true,
     featuredProductsEnabled: true,
