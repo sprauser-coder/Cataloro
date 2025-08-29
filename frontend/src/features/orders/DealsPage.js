@@ -161,15 +161,15 @@ function DealCard({ deal, currentUserId }) {
   const getStatusColor = (status) => {
     switch (status) {
       case 'pending':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300';
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
       case 'cancelled':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
       case 'disputed':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 dark:bg-gray-700/50 text-gray-800 dark:text-gray-300';
     }
   };
 
@@ -177,16 +177,16 @@ function DealCard({ deal, currentUserId }) {
   const userRole = isBuyer ? 'Buyer' : 'Seller';
 
   return (
-    <div className="cataloro-card p-6">
+    <div className="cataloro-card-glass p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           {getStatusIcon(deal.status)}
           <div>
-            <h3 className="font-semibold text-gray-900">Deal #{deal.id?.slice(-8)}</h3>
-            <p className="text-sm text-gray-600">You are the {userRole}</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white">Deal #{deal.id?.slice(-8)}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300">You are the {userRole}</p>
           </div>
         </div>
-        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(deal.status)}`}>
+        <span className={`px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md ${getStatusColor(deal.status)}`}>
           {deal.status.toUpperCase()}
         </span>
       </div>
@@ -196,8 +196,8 @@ function DealCard({ deal, currentUserId }) {
         <div className="md:col-span-2">
           <div className="space-y-3">
             <div>
-              <label className="text-sm font-medium text-gray-500">Listing</label>
-              <p className="text-gray-900">Listing ID: {deal.listing_id}</p>
+              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Listing</label>
+              <p className="text-gray-900 dark:text-white">Listing ID: {deal.listing_id}</p>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
