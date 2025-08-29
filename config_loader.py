@@ -36,10 +36,11 @@ class CataloroConfig:
                     # Convert boolean strings
                     if value.lower() in ('true', 'false'):
                         value = value.lower() == 'true'
-                    # Convert numeric strings
+                    # Convert integer strings (but not IP addresses)
                     elif value.isdigit():
                         value = int(value)
-                    elif value.replace('.', '').isdigit():
+                    # Convert float strings (but not IP addresses or URLs)
+                    elif '.' in value and value.replace('.', '').isdigit() and value.count('.') == 1:
                         value = float(value)
                     
                     self.config[key] = value
