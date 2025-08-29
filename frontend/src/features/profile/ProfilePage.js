@@ -324,8 +324,8 @@ function ProfilePage() {
                 </span>
               )}
             </div>
-            <p className="text-gray-600 mb-2">@{profileData.username}</p>
-            <p className="text-sm text-gray-500">{profileData.bio}</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-2">@{profileData.username}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{profileData.bio}</p>
           </div>
 
           {/* Quick Stats */}
