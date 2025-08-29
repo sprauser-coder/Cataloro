@@ -776,6 +776,89 @@ function UsersTab({ users, onUpdateUser, showToast }) {
         </div>
       </div>
 
+      {/* Search and Filters */}
+      <div className="cataloro-card-glass p-6">
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between space-y-6 xl:space-y-0">
+          <div className="flex-1 max-w-md">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search Users</label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search by name, email, or username..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 cataloro-input w-full"
+              />
+            </div>
+          </div>
+          
+          <div className="flex items-end space-x-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by Role</label>
+              <select
+                value={filterRole}
+                onChange={(e) => setFilterRole(e.target.value)}
+                className="cataloro-input w-auto min-w-[120px]"
+              >
+                <option value="all">All Roles</option>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by Status</label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="cataloro-input w-auto min-w-[120px]"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Suspended</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bulk Actions for Users */}
+      {selectedUsers.length > 0 && (
+        <div className="cataloro-card-glass p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+                <span className="text-lg font-medium text-gray-900 dark:text-white">
+                  {selectedUsers.length} user{selectedUsers.length !== 1 ? 's' : ''} selected
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <select
+                value={bulkAction}
+                onChange={(e) => setBulkAction(e.target.value)}
+                className="cataloro-input min-w-[180px]"
+              >
+                <option value="">Choose Bulk Action</option>
+                <option value="activate">✅ Activate Users</option>
+                <option value="suspend">⏸️ Suspend Users</option>
+                <option value="promote">⭐ Promote to Admin</option>
+                <option value="demote">📉 Demote to User</option>
+                <option value="delete">🗑️ Delete Users</option>
+              </select>
+              <button
+                onClick={handleBulkAction}
+                disabled={!bulkAction}
+                className="cataloro-button-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Apply Action
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Enhanced Users Table */}
       <div className="cataloro-card-glass overflow-hidden">
         <div className="px-6 py-4 border-b border-white/10 dark:border-white/10">
@@ -786,6 +869,14 @@ function UsersTab({ users, onUpdateUser, showToast }) {
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <input
+                    type="checkbox"
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
+                    className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
+                  />
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   User
                 </th>
