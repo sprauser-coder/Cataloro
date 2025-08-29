@@ -796,6 +796,191 @@ function UsersTab({ users, onUpdateUser, showToast }) {
   );
 }
 
+// Hero Selection Tab Component
+function HeroSelectionTab({ showToast }) {
+  const [heroContent, setHeroContent] = useState({
+    title: 'Discover Amazing Products',
+    description: 'From electronics to fashion, find everything you need in one place'
+  });
+  const [previewMode, setPreviewMode] = useState(false);
+
+  // Load hero content on mount
+  useEffect(() => {
+    const savedContent = localStorage.getItem('cataloro_hero_content');
+    if (savedContent) {
+      try {
+        setHeroContent(JSON.parse(savedContent));
+      } catch (error) {
+        console.error('Error loading hero content:', error);
+      }
+    }
+  }, []);
+
+  const handleInputChange = (field, value) => {
+    setHeroContent(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = () => {
+    try {
+      localStorage.setItem('cataloro_hero_content', JSON.stringify(heroContent));
+      
+      // Trigger a custom event to notify the browse page to update
+      window.dispatchEvent(new CustomEvent('heroContentUpdated', { 
+        detail: heroContent 
+      }));
+      
+      showToast('✅ Hero content saved successfully! Changes are live on the Browse page.', 'success');
+    } catch (error) {
+      showToast('❌ Failed to save hero content', 'error');
+    }
+  };
+
+  const handlePreview = () => {
+    setPreviewMode(!previewMode);
+    if (!previewMode) {
+      showToast('👁️ Preview mode enabled - see how it will look on the Browse page', 'info');
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-white">
+        <div className="flex items-center space-x-4 mb-6">
+          <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+            <Star className="w-8 h-8" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold">Hero Selection</h2>
+            <p className="text-purple-100">Customize the main hero section on the Browse page</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Hero Content Editor */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
+          <Edit className="w-6 h-6 mr-3" />
+          Edit Hero Content
+        </h3>
+
+        <div className="space-y-6">
+          {/* Title Input */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Hero Title
+            </label>
+            <input
+              type="text"
+              value={heroContent.title}
+              onChange={(e) => handleInputChange('title', e.target.value)}
+              placeholder="Enter the main headline for the hero section"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg font-semibold"
+            />
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              This appears as the main headline on the Browse page (recommended: 3-8 words)
+            </p>
+          </div>
+
+          {/* Description Input */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Hero Description
+            </label>
+            <textarea
+              value={heroContent.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              placeholder="Enter a compelling description that appears below the title"
+              rows={3}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              This description appears below the title (recommended: 10-25 words)
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Live Preview */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
+          <Eye className="w-6 h-6 mr-3" />
+          Live Preview
+        </h3>
+
+        {/* Hero Preview */}
+        <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-8 text-white overflow-hidden">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="relative z-10 text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              {heroContent.title || 'Enter your title above'}
+            </h1>
+            <p className="text-xl mb-8 opacity-90 max-w-3xl mx-auto">
+              {heroContent.description || 'Enter your description above'}
+            </p>
+            
+            {/* Preview Search Bar */}
+            <div className="max-w-3xl mx-auto">
+              <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-2 border border-white/20">
+                <div className="flex items-center">
+                  <Search className="absolute left-6 text-white/70 w-6 h-6" />
+                  <input
+                    type="text"
+                    placeholder="Search for anything you need..."
+                    className="w-full pl-16 pr-4 py-4 bg-transparent text-white placeholder-white/70 text-lg focus:outline-none"
+                    disabled
+                  />
+                  <div className="flex-shrink-0 px-8 py-4 bg-white/20 backdrop-blur-sm text-white rounded-xl font-semibold">
+                    Search
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-4 text-center">
+          ↑ This is exactly how your hero section will appear on the Browse page
+        </p>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="bg-gradient-to-r from-green-600 to-blue-600 rounded-xl p-6 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="text-lg font-bold text-white mb-2 flex items-center">
+              <Save className="w-6 h-6 mr-2" />
+              Save Hero Content
+            </h4>
+            <p className="text-green-100">
+              Apply changes to the Browse page hero section. Changes take effect immediately.
+            </p>
+          </div>
+          <div className="flex space-x-4">
+            <button
+              onClick={handlePreview}
+              className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-medium transition-all duration-200"
+            >
+              <Eye className="w-5 h-5" />
+              <span>Preview on Browse Page</span>
+            </button>
+            <button
+              onClick={handleSave}
+              className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-8 py-3 rounded-xl font-bold transition-all duration-200 hover:scale-105 border border-white/20"
+            >
+              <Save className="w-5 h-5" />
+              <span>Save & Apply</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Enhanced Settings Tab Component with Dual Logo Support
 function SettingsTab({ settings, onUpdateSettings, showToast }) {
   const [formData, setFormData] = useState(settings);
