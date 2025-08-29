@@ -1108,10 +1108,20 @@ function SiteAdministrationTab({ showToast }) {
           <div className="flex items-center space-x-3">
             <button
               onClick={saveSiteConfiguration}
-              className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+              disabled={isSaving}
+              className="bg-white/20 hover:bg-white/30 disabled:bg-white/10 px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2"
             >
-              <Save className="w-5 h-5" />
-              <span>Save All Changes</span>
+              {isSaving ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  <span>Save All Changes</span>
+                </>
+              )}
             </button>
             <div className="bg-green-500 p-2 rounded-lg">
               <Shield className="w-6 h-6" />
