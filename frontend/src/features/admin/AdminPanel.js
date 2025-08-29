@@ -58,7 +58,7 @@ import {
   Cpu,
   MemoryStick,
   Network,
-  Phone
+  Phone,
   CloudUpload,
   Store
 } from 'lucide-react';
