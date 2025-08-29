@@ -1202,7 +1202,7 @@ function SiteAdministrationTab({ showToast }) {
                   wishlistEnabled: true,
                   productReviews: true
                 };
-                applyConfigurationToSite(testConfig);
+                applySiteConfiguration(testConfig);
                 showToast('🚀 COMPREHENSIVE TEST APPLIED! Check all changes: Colors, Fonts, Layout, Features', 'info');
               }}
               className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
