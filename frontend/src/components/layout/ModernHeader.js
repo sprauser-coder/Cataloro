@@ -236,20 +236,20 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   </div>
                   <div className="max-h-80 overflow-y-auto">
                     {/* Demo notifications with modern styling */}
-                    <div className="px-6 py-4 hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#667eea'}}>
-                      <p className="text-sm font-semibold text-white">New message from John</p>
-                      <p className="text-xs text-white/70 mt-1">About MacBook Pro listing</p>
-                      <p className="text-xs text-white/80 mt-2 font-medium">2 min ago</p>
+                    <div className="px-6 py-4 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#667eea'}}>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">New message from John</p>
+                      <p className="text-xs text-gray-600 dark:text-white/70 mt-1">About MacBook Pro listing</p>
+                      <p className="text-xs text-gray-700 dark:text-white/80 mt-2 font-medium">2 min ago</p>
                     </div>
-                    <div className="px-6 py-4 hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#f093fb'}}>
-                      <p className="text-sm font-semibold text-white">Your listing was favorited</p>
-                      <p className="text-xs text-white/70 mt-1">iPhone 14 Pro Max - Space Black</p>
-                      <p className="text-xs text-white/80 mt-2 font-medium">1 hour ago</p>
+                    <div className="px-6 py-4 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#f093fb'}}>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Your listing was favorited</p>
+                      <p className="text-xs text-gray-600 dark:text-white/70 mt-1">iPhone 14 Pro Max - Space Black</p>
+                      <p className="text-xs text-gray-700 dark:text-white/80 mt-2 font-medium">1 hour ago</p>
                     </div>
-                    <div className="px-6 py-4 hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#43e97b'}}>
-                      <p className="text-sm font-semibold text-white">Payment received</p>
-                      <p className="text-xs text-white/70 mt-1">$899 for Gaming Laptop sale</p>
-                      <p className="text-xs text-white/80 mt-2 font-medium">3 hours ago</p>
+                    <div className="px-6 py-4 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#43e97b'}}>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Payment received</p>
+                      <p className="text-xs text-gray-600 dark:text-white/70 mt-1">$899 for Gaming Laptop sale</p>
+                      <p className="text-xs text-gray-700 dark:text-white/80 mt-2 font-medium">3 hours ago</p>
                     </div>
                   </div>
                   <div className="px-6 py-3 border-t border-white/10">
