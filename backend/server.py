@@ -151,11 +151,20 @@ async def login_user(credentials: dict):
     if not user:
         # Create demo user if not exists
         user_id = generate_id()
+        
+        # Set full name based on user type
+        if credentials["email"] == "admin@cataloro.com":
+            full_name = "Sash"
+            username = "sash_admin"
+        else:
+            full_name = "Demo User"
+            username = credentials.get("username", "demo_user")
+        
         user = {
             "id": user_id,
-            "username": credentials.get("username", "demo_user"),
+            "username": username,
             "email": credentials["email"],
-            "full_name": "Demo User",
+            "full_name": full_name,
             "role": "admin" if credentials["email"] == "admin@cataloro.com" else "user",
             "created_at": datetime.utcnow(),
             "is_active": True
