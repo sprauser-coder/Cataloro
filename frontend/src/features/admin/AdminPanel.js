@@ -809,19 +809,42 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
   const handleLogoUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showToast('Please select an image file', 'error');
+        return;
+      }
+
+      // Validate file size (2MB limit)
+      if (file.size > 2 * 1024 * 1024) {
+        showToast('File size must be less than 2MB', 'error');
+        return;
+      }
+
       setLogoFile(file);
       
       // Create preview
       const reader = new FileReader();
-      reader.onload = (e) => setLogoPreview(e.target.result);
+      reader.onload = (e) => {
+        const result = e.target.result;
+        setLogoPreview(result);
+        
+        // Update formData with the preview URL
+        setFormData(prev => ({
+          ...prev,
+          logo_url: result
+        }));
+      };
       reader.readAsDataURL(file);
       
       try {
+        // Try to upload to backend
         await adminService.uploadLogo(file);
         showToast('Logo uploaded successfully', 'success');
         onUpdateSettings();
       } catch (error) {
-        showToast('Logo preview ready - settings not saved yet', 'info');
+        // If backend fails, still allow local preview
+        showToast('Logo preview ready - click Save Settings to persist', 'info');
       }
     }
   };
