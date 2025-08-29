@@ -66,16 +66,33 @@ function ModernBrowsePage() {
     'Cars', 'Real Estate', 'Jobs', 'Services'
   ]);
 
-  // Load hero content from localStorage on mount
+  // Load hero content from localStorage on mount and listen for updates
   useEffect(() => {
-    const savedHeroContent = localStorage.getItem('cataloro_hero_content');
-    if (savedHeroContent) {
-      try {
-        setHeroContent(JSON.parse(savedHeroContent));
-      } catch (error) {
-        console.error('Error loading hero content:', error);
+    const loadHeroContent = () => {
+      const savedHeroContent = localStorage.getItem('cataloro_hero_content');
+      if (savedHeroContent) {
+        try {
+          setHeroContent(JSON.parse(savedHeroContent));
+        } catch (error) {
+          console.error('Error loading hero content:', error);
+        }
       }
-    }
+    };
+
+    // Load initially
+    loadHeroContent();
+
+    // Listen for updates from admin panel
+    const handleHeroUpdate = (event) => {
+      setHeroContent(event.detail);
+    };
+
+    window.addEventListener('heroContentUpdated', handleHeroUpdate);
+
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('heroContentUpdated', handleHeroUpdate);
+    };
   }, []);
 
   const handleAddToCart = (item) => {
