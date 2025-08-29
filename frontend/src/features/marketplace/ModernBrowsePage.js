@@ -52,7 +52,8 @@ function ModernBrowsePage() {
     title: 'Discover Amazing Products',
     description: 'From electronics to fashion, find everything you need in one place',
     height: 400,
-    image_url: ''
+    image_url: '',
+    search_placeholder: 'Search for anything you need...'
   });
   
   // Use global search and filter states from context
