@@ -265,7 +265,7 @@ class CatalystDatabaseTester:
                     }
                 ]
                 
-                bulk_data = {"catalyst_data": test_catalyst_data}
+                bulk_data = {"data": test_catalyst_data}
                 post_response = self.session.post(f"{BASE_URL}/admin/catalyst-data", json=bulk_data)
                 
                 if post_response.status_code in [200, 201]:
