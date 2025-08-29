@@ -29,22 +29,33 @@ import { marketplaceService } from '../../services/marketplaceService';
 import { useMarketplace } from '../../context/MarketplaceContext';
 
 function ModernBrowsePage() {
-  const [listings, setListings] = useState([]);
-  const [filteredListings, setFilteredListings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('grid');
+  // Use marketplace context
+  const {
+    allProducts,
+    filteredProducts,
+    addToCart,
+    addToFavorites,
+    favorites,
+    setSearchQuery: setGlobalSearchQuery,
+    setFilters: setGlobalFilters,
+    setSortBy: setGlobalSortBy,
+    setViewMode: setGlobalViewMode,
+    searchQuery: globalSearchQuery,
+    activeFilters: globalFilters,
+    sortBy: globalSortBy,
+    viewMode: globalViewMode,
+    isLoading
+  } = useMarketplace();
+
   const [showFilters, setShowFilters] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('newest');
   
-  // Filter states
-  const [filters, setFilters] = useState({
-    category: 'all',
-    priceRange: [0, 10000],
-    condition: 'all',
-    location: 'all',
-    rating: 0
-  });
+  // Use global search and filter states from context
+  const searchQuery = globalSearchQuery;
+  const filters = globalFilters;
+  const sortBy = globalSortBy;
+  const viewMode = globalViewMode;
+  const listings = allProducts;
+  const filteredListings = filteredProducts;
 
   const [categories] = useState([
     'Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books', 'Music',
