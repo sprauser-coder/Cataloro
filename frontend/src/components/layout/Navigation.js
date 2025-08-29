@@ -16,7 +16,7 @@ import {
   LogOut 
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { APP_ROUTES, USER_ROLES } from '../../../config/directions';
+import { APP_ROUTES, USER_ROLES } from '../../config/directions';
 
 function Navigation() {
   const location = useLocation();
