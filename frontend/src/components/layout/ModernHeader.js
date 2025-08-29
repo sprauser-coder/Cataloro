@@ -255,7 +255,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   <div className="px-6 py-3 border-t border-white/10">
                     <Link
                       to="/notifications"
-                      className="text-sm text-white/80 hover:text-white font-medium"
+                      className="text-sm text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white font-medium"
                       onClick={() => setShowNotifications(false)}
                     >
                       View all notifications →
