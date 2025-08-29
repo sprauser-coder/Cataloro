@@ -510,22 +510,10 @@ async def login(credentials: UserLogin):
     if not user_doc or not verify_password(credentials.password, user_doc['password']):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    # DEBUG: Print the is_blocked value at each step
-    print(f"DEBUG LOGIN - Raw user_doc is_blocked: {user_doc.get('is_blocked')}")
-    
-    parsed_doc = parse_from_mongo(user_doc)
-    print(f"DEBUG LOGIN - Parsed doc is_blocked: {parsed_doc.get('is_blocked')}")
-    
-    user = User(**parsed_doc)
-    print(f"DEBUG LOGIN - User object is_blocked: {user.is_blocked}")
-    print(f"DEBUG LOGIN - User dict is_blocked: {user.dict()['is_blocked']}")
-    
+    user = User(**parse_from_mongo(user_doc))
     access_token = create_access_token(data={"sub": user.id})
     
-    token_response = Token(access_token=access_token, token_type="bearer", user=user)
-    print(f"DEBUG LOGIN - Token user is_blocked: {token_response.user.is_blocked}")
-    
-    return token_response
+    return Token(access_token=access_token, token_type="bearer", user=user)
 
 # Listing Routes - Count endpoint MUST come first before parameterized routes
 @api_router.get("/listings/count")
