@@ -6,7 +6,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Search, 
   ShoppingCart, 
   Bell, 
   User, 
@@ -23,9 +22,7 @@ import {
   Package,
   DollarSign,
   Shield,
-  Plus,
   Filter,
-  Grid3X3,
   List,
   Zap
 } from 'lucide-react';
