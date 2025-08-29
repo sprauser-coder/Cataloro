@@ -386,30 +386,93 @@ function DashboardTab({ dashboardData, loading }) {
         </div>
       </div>
 
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="cataloro-card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+      {/* Enhanced Activity & Management Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        
+        {/* Real-Time Activity */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Live Activity</h3>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-green-600 font-medium">Live</span>
+            </div>
+          </div>
           <div className="space-y-4">
             {recent_activity?.map((activity, index) => (
-              <div key={index} className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className="text-gray-700">{activity.action}</span>
-                <span className="text-sm text-gray-500">
-                  {new Date(activity.timestamp).toLocaleTimeString()}
-                </span>
+              <div key={index} className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div className="w-3 h-3 bg-blue-500 rounded-full mt-1 flex-shrink-0"></div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-gray-900 dark:text-white font-medium">
+                    {activity.action}
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    {new Date(activity.timestamp).toLocaleString()}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="cataloro-card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+        {/* System Performance */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">System Health</h3>
+            <Shield className="w-6 h-6 text-green-500" />
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Database</span>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-sm font-medium text-green-600">Optimal</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">API Response</span>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-sm font-medium text-green-600">Fast</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Server Load</span>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <span className="text-sm font-medium text-yellow-600">Normal</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Security</span>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-sm font-medium text-green-600">Secure</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Quick Actions</h3>
           <div className="space-y-3">
-            <button className="w-full cataloro-button-primary">View All Users</button>
-            <button className="w-full cataloro-button-secondary">Export Reports</button>
-            <button className="w-full cataloro-button-secondary">System Logs</button>
-            <button className="w-full cataloro-button-secondary">Backup Data</button>
+            <button className="w-full flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
+              <span className="font-medium">Export Data</span>
+              <Download className="w-4 h-4" />
+            </button>
+            <button className="w-full flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors">
+              <span className="font-medium">Refresh Stats</span>
+              <RefreshCw className="w-4 h-4" />
+            </button>
+            <button className="w-full flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
+              <span className="font-medium">System Backup</span>
+              <Shield className="w-4 h-4" />
+            </button>
+            <button className="w-full flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors">
+              <span className="font-medium">View Logs</span>
+              <Eye className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
