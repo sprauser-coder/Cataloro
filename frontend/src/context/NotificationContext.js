@@ -108,7 +108,7 @@ export function NotificationProvider({ children }) {
     dispatch({ type: NOTIFICATION_ACTIONS.FETCH_START });
     
     try {
-      const notifications = await notificationService.getUserNotifications(user.id);
+      const notifications = await notificationService.getUserNotifications(userId);
       dispatch({
         type: NOTIFICATION_ACTIONS.FETCH_SUCCESS,
         payload: notifications
