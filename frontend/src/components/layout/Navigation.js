@@ -40,7 +40,7 @@ function Navigation() {
     {
       label: 'My Deals',
       path: APP_ROUTES.MY_DEALS,
-      icon: HandHeart,
+      icon: DollarSign,
       roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR]
     },
     {
