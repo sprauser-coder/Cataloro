@@ -623,6 +623,234 @@ async def upload_listing_image(listing_id: str, file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
+# ============================================================================
+# CAT DATABASE ENDPOINTS
+# ============================================================================
+
+@app.post("/api/admin/catalyst/upload")
+async def upload_catalyst_excel(file: UploadFile = File(...)):
+    """Upload Excel file with catalyst data"""
+    try:
+        if not file.filename.endswith(('.xlsx', '.xls')):
+            raise HTTPException(status_code=400, detail="File must be Excel format (.xlsx or .xls)")
+        
+        contents = await file.read()
+        df = pd.read_excel(io.BytesIO(contents))
+        
+        # Validate required columns
+        required_columns = ['cat_id', 'name', 'ceramic_weight', 'pt_ppm', 'pd_ppm', 'rh_ppm']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            raise HTTPException(status_code=400, detail=f"Missing required columns: {missing_columns}")
+        
+        # Process data
+        catalysts = []
+        for _, row in df.iterrows():
+            catalyst_data = {
+                "cat_id": str(row.get('cat_id', '')),
+                "name": str(row.get('name', '')),
+                "ceramic_weight": float(row.get('ceramic_weight', 0)),
+                "pt_ppm": float(row.get('pt_ppm', 0)),
+                "pd_ppm": float(row.get('pd_ppm', 0)),
+                "rh_ppm": float(row.get('rh_ppm', 0)),
+                "add_info": str(row.get('add_info', '')),
+                "created_at": datetime.utcnow().isoformat(),
+                "updated_at": datetime.utcnow().isoformat(),
+                "id": str(uuid.uuid4())
+            }
+            catalysts.append(catalyst_data)
+        
+        # Clear existing data and insert new
+        await db.catalyst_data.delete_many({})
+        if catalysts:
+            await db.catalyst_data.insert_many(catalysts)
+        
+        return {
+            "message": f"Successfully uploaded {len(catalysts)} catalyst records",
+            "count": len(catalysts),
+            "columns": list(df.columns)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload catalyst data: {str(e)}")
+
+@app.get("/api/admin/catalyst/data")
+async def get_catalyst_data():
+    """Get all catalyst data for the Data tab"""
+    try:
+        catalysts = await db.catalyst_data.find({}).to_list(length=None)
+        
+        # Convert MongoDB ObjectId to string
+        for catalyst in catalysts:
+            catalyst['_id'] = str(catalyst['_id'])
+        
+        return catalysts
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch catalyst data: {str(e)}")
+
+@app.put("/api/admin/catalyst/data/{catalyst_id}")
+async def update_catalyst_data(catalyst_id: str, update_data: dict):
+    """Update specific catalyst data"""
+    try:
+        update_data["updated_at"] = datetime.utcnow().isoformat()
+        
+        result = await db.catalyst_data.update_one(
+            {"id": catalyst_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Catalyst not found")
+        
+        return {"message": "Catalyst data updated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update catalyst data: {str(e)}")
+
+@app.get("/api/admin/catalyst/price-settings")
+async def get_price_settings():
+    """Get catalyst price calculation settings"""
+    try:
+        settings = await db.catalyst_price_settings.find_one({"type": "price_settings"})
+        
+        if not settings:
+            # Return default settings
+            default_settings = {
+                "pt_price": 25.0,
+                "pd_price": 18.0,
+                "rh_price": 45.0,
+                "renumeration_pt": 0.95,
+                "renumeration_pd": 0.92,
+                "renumeration_rh": 0.88
+            }
+            return default_settings
+        
+        settings['_id'] = str(settings['_id'])
+        return settings
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch price settings: {str(e)}")
+
+@app.put("/api/admin/catalyst/price-settings")
+async def update_price_settings(settings: CatalystPriceSettings):
+    """Update catalyst price calculation settings"""
+    try:
+        settings_data = settings.dict()
+        settings_data.update({
+            "type": "price_settings",
+            "updated_at": datetime.utcnow().isoformat()
+        })
+        
+        result = await db.catalyst_price_settings.update_one(
+            {"type": "price_settings"},
+            {"$set": settings_data},
+            upsert=True
+        )
+        
+        return {"message": "Price settings updated successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update price settings: {str(e)}")
+
+@app.get("/api/admin/catalyst/calculations")
+async def get_catalyst_calculations():
+    """Get calculated prices for all catalysts"""
+    try:
+        # Get price settings
+        settings = await db.catalyst_price_settings.find_one({"type": "price_settings"})
+        if not settings:
+            # Default values
+            settings = {
+                "pt_price": 25.0,
+                "pd_price": 18.0,
+                "rh_price": 45.0,
+                "renumeration_pt": 0.95,
+                "renumeration_pd": 0.92,
+                "renumeration_rh": 0.88
+            }
+        
+        # Get all catalyst data
+        catalysts = await db.catalyst_data.find({}).to_list(length=None)
+        
+        # Get price overrides
+        overrides = await db.catalyst_price_overrides.find({}).to_list(length=None)
+        override_dict = {override['catalyst_id']: override for override in overrides}
+        
+        # Calculate prices
+        calculations = []
+        for catalyst in catalysts:
+            catalyst_id = catalyst['id']
+            
+            # Check for override
+            if catalyst_id in override_dict and override_dict[catalyst_id]['is_override']:
+                total_price = override_dict[catalyst_id]['override_price']
+                is_override = True
+            else:
+                # Calculate standard price
+                ceramic_weight = catalyst.get('ceramic_weight', 0)
+                pt_ppm = catalyst.get('pt_ppm', 0)
+                pd_ppm = catalyst.get('pd_ppm', 0)
+                rh_ppm = catalyst.get('rh_ppm', 0)
+                
+                pt_value = (ceramic_weight * (pt_ppm / 1000) * settings['renumeration_pt']) * settings['pt_price']
+                pd_value = (ceramic_weight * (pd_ppm / 1000) * settings['renumeration_pd']) * settings['pd_price']
+                rh_value = (ceramic_weight * (rh_ppm / 1000) * settings['renumeration_rh']) * settings['rh_price']
+                
+                total_price = pt_value + pd_value + rh_value
+                is_override = False
+            
+            calculations.append({
+                "_id": catalyst_id,
+                "name": catalyst.get('name', ''),
+                "total_price": round(total_price, 2),
+                "is_override": is_override
+            })
+        
+        return calculations
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to calculate prices: {str(e)}")
+
+@app.post("/api/admin/catalyst/override/{catalyst_id}")
+async def set_price_override(catalyst_id: str, override_data: CatalystPriceOverride):
+    """Set price override for specific catalyst"""
+    try:
+        override_doc = override_data.dict()
+        override_doc.update({
+            "catalyst_id": catalyst_id,
+            "updated_at": datetime.utcnow().isoformat()
+        })
+        
+        result = await db.catalyst_price_overrides.update_one(
+            {"catalyst_id": catalyst_id},
+            {"$set": override_doc},
+            upsert=True
+        )
+        
+        return {"message": "Price override set successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to set price override: {str(e)}")
+
+@app.post("/api/admin/catalyst/reset/{catalyst_id}")
+async def reset_price_calculation(catalyst_id: str):
+    """Reset catalyst to standard price calculation"""
+    try:
+        result = await db.catalyst_price_overrides.update_one(
+            {"catalyst_id": catalyst_id},
+            {"$set": {"is_override": False, "updated_at": datetime.utcnow().isoformat()}}
+        )
+        
+        return {"message": "Price calculation reset to standard"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reset price calculation: {str(e)}")
+
 # Run server
 if __name__ == "__main__":
     import uvicorn
