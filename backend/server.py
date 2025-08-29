@@ -888,6 +888,11 @@ async def upload_catalyst_excel(file: UploadFile = File(...)):
             raise HTTPException(status_code=400, detail="File must be Excel format (.xlsx or .xls)")
         
         contents = await file.read()
+        
+        # Check file size (limit to 10MB)
+        if len(contents) > 10 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File size too large. Maximum 10MB allowed.")
+        
         df = pd.read_excel(io.BytesIO(contents))
         
         # Validate required columns
@@ -896,38 +901,88 @@ async def upload_catalyst_excel(file: UploadFile = File(...)):
         if missing_columns:
             raise HTTPException(status_code=400, detail=f"Missing required columns: {missing_columns}")
         
-        # Process data
+        # Validate data and process
         catalysts = []
-        for _, row in df.iterrows():
-            catalyst_data = {
-                "cat_id": str(row.get('cat_id', '')),
-                "name": str(row.get('name', '')),
-                "ceramic_weight": float(row.get('ceramic_weight', 0)),
-                "pt_ppm": float(row.get('pt_ppm', 0)),
-                "pd_ppm": float(row.get('pd_ppm', 0)),
-                "rh_ppm": float(row.get('rh_ppm', 0)),
-                "add_info": str(row.get('add_info', '')),
-                "created_at": datetime.utcnow().isoformat(),
-                "updated_at": datetime.utcnow().isoformat(),
-                "id": str(uuid.uuid4())
-            }
-            catalysts.append(catalyst_data)
+        errors = []
+        
+        for index, row in df.iterrows():
+            try:
+                # Helper function to safely convert to float
+                def safe_float(value, field_name, row_num):
+                    if pd.isna(value) or value == '' or value is None:
+                        return 0.0
+                    try:
+                        result = float(value)
+                        # Check for valid range (avoid infinity and very large numbers)
+                        if not (-1e10 <= result <= 1e10):
+                            errors.append(f"Row {row_num}: {field_name} value {result} is out of valid range")
+                            return 0.0
+                        return result
+                    except (ValueError, TypeError):
+                        errors.append(f"Row {row_num}: Invalid {field_name} value '{value}'")
+                        return 0.0
+                
+                row_num = index + 2  # +2 because Excel rows start at 1 and we have header
+                
+                catalyst_data = {
+                    "cat_id": str(row.get('cat_id', '')).strip(),
+                    "name": str(row.get('name', '')).strip(),
+                    "ceramic_weight": safe_float(row.get('ceramic_weight'), 'ceramic_weight', row_num),
+                    "pt_ppm": safe_float(row.get('pt_ppm'), 'pt_ppm', row_num),
+                    "pd_ppm": safe_float(row.get('pd_ppm'), 'pd_ppm', row_num),
+                    "rh_ppm": safe_float(row.get('rh_ppm'), 'rh_ppm', row_num),
+                    "add_info": str(row.get('add_info', '')).strip(),
+                    "created_at": datetime.utcnow().isoformat(),
+                    "updated_at": datetime.utcnow().isoformat(),
+                    "id": str(uuid.uuid4())
+                }
+                
+                # Validate required fields
+                if not catalyst_data["cat_id"]:
+                    errors.append(f"Row {row_num}: cat_id is required")
+                    continue
+                    
+                if not catalyst_data["name"]:
+                    errors.append(f"Row {row_num}: name is required")
+                    continue
+                
+                catalysts.append(catalyst_data)
+                
+            except Exception as row_error:
+                errors.append(f"Row {index + 2}: {str(row_error)}")
+                continue
+        
+        # Check if we have any valid data
+        if not catalysts and errors:
+            raise HTTPException(status_code=400, detail=f"No valid data found. Errors: {'; '.join(errors[:5])}")
         
         # Clear existing data and insert new
         await db.catalyst_data.delete_many({})
         if catalysts:
             await db.catalyst_data.insert_many(catalysts)
         
-        return {
+        response = {
             "message": f"Successfully uploaded {len(catalysts)} catalyst records",
             "count": len(catalysts),
-            "columns": list(df.columns)
+            "columns": list(df.columns),
+            "total_rows": len(df),
+            "valid_rows": len(catalysts),
+            "errors_count": len(errors)
         }
+        
+        if errors:
+            response["errors"] = errors[:10]  # First 10 errors
+            response["message"] += f" with {len(errors)} warnings/errors"
+        
+        return response
         
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to upload catalyst data: {str(e)}")
+        error_msg = str(e)
+        if "Out of range float values" in error_msg:
+            error_msg = "Excel file contains numbers that are too large. Please check your numeric values."
+        raise HTTPException(status_code=500, detail=f"Failed to upload catalyst data: {error_msg}")
 
 @app.get("/api/admin/catalyst/data")
 async def get_catalyst_data():
