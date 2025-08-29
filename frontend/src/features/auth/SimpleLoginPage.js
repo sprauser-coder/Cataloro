@@ -30,11 +30,37 @@ function SimpleLoginPage() {
     setError(null);
     
     try {
-      // Simulate login process
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert(`Login attempted with: ${formData.email}`);
+      // Call the actual backend API
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Login failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Store user data and redirect to main app
+      localStorage.setItem('cataloro_token', data.token);
+      localStorage.setItem('cataloro_user', JSON.stringify(data.user));
+      
+      // Show success and redirect
+      alert(`✅ Login Successful!\nWelcome ${data.user.full_name}!\nRole: ${data.user.role}`);
+      
+      // For now, just show success - later we'll add proper routing
+      window.location.reload();
+      
     } catch (error) {
-      setError('Login failed. Please try again.');
+      setError(error.message || 'Login failed. Please check your credentials.');
+      console.error('Login error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -46,8 +72,39 @@ function SimpleLoginPage() {
       password: 'demo123'
     };
     
+    // Fill form and submit
     setFormData(demoCredentials);
-    alert(`Demo ${role} login: ${demoCredentials.email}`);
+    
+    // Trigger actual login
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(demoCredentials)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Demo login failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      localStorage.setItem('cataloro_token', data.token);
+      localStorage.setItem('cataloro_user', JSON.stringify(data.user));
+      
+      alert(`✅ Demo ${role.toUpperCase()} Login Successful!\nWelcome ${data.user.full_name}!\nRole: ${data.user.role}`);
+      window.location.reload();
+      
+    } catch (error) {
+      setError(`Demo login failed: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
