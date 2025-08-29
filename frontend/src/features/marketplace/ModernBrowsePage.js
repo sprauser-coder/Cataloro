@@ -62,18 +62,15 @@ function ModernBrowsePage() {
     'Cars', 'Real Estate', 'Jobs', 'Services'
   ]);
 
-  const [featuredProducts] = useState([
+  const featuredProducts = [
     {
       id: 'featured-1',
       title: 'iPhone 15 Pro Max',
       price: 1199,
       originalPrice: 1299,
-      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=100',
       rating: 4.8,
       reviews: 124,
-      seller: 'TechStore Pro',
-      location: 'New York, NY',
-      featured: true,
       tag: 'Best Seller'
     },
     {
@@ -81,195 +78,12 @@ function ModernBrowsePage() {
       title: 'MacBook Air M2',
       price: 999,
       originalPrice: 1199,
-      image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+      image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100',
       rating: 4.9,
       reviews: 89,
-      seller: 'Apple Certified',
-      location: 'San Francisco, CA',
-      featured: true,
       tag: 'Limited Offer'
     }
-  ]);
-
-  useEffect(() => {
-    fetchListings();
-  }, []);
-
-  useEffect(() => {
-    applyFiltersAndSearch();
-  }, [listings, searchQuery, filters, sortBy]);
-
-  const fetchListings = async () => {
-    try {
-      setLoading(true);
-      const data = await marketplaceService.browseListings();
-      
-      // Enhanced dummy data with more details
-      const enhancedListings = [
-        {
-          id: '1',
-          title: 'MacBook Pro 16-inch M3',
-          description: 'Like new condition, barely used for 2 months. Includes original box, charger, and all accessories.',
-          price: 2499,
-          originalPrice: 2799,
-          category: 'Electronics',
-          seller: {
-            name: 'TechGuru123',
-            rating: 4.9,
-            reviews: 156,
-            verified: true,
-            location: 'San Francisco, CA'
-          },
-          images: [
-            'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
-            'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400'
-          ],
-          condition: 'Like New',
-          views: 234,
-          favorites: 45,
-          createdAt: new Date().toISOString(),
-          features: ['M3 Pro Chip', '32GB RAM', '1TB SSD', 'Space Gray'],
-          shipping: 'Free shipping',
-          rating: 4.8,
-          tags: ['Hot Deal', 'Fast Shipping']
-        },
-        {
-          id: '2',
-          title: 'Vintage Gibson Les Paul Guitar',
-          description: 'Authentic 1979 Gibson Les Paul in excellent condition. Perfect for collectors and professional musicians.',
-          price: 3200,
-          originalPrice: 3800,
-          category: 'Music',
-          seller: {
-            name: 'MusicStore_Pro',
-            rating: 4.8,
-            reviews: 89,
-            verified: true,
-            location: 'Nashville, TN'
-          },
-          images: [
-            'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400',
-            'https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=400'
-          ],
-          condition: 'Excellent',
-          views: 189,
-          favorites: 67,
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          features: ['1979 Model', 'Original Case', 'Certificate of Authenticity'],
-          shipping: 'Insured shipping',
-          rating: 4.9,
-          tags: ['Vintage', 'Authenticated']
-        },
-        {
-          id: '3',
-          title: 'Designer Leather Handbag',
-          description: 'Authentic Louis Vuitton handbag in pristine condition. Comes with authenticity card and dust bag.',
-          price: 1850,
-          originalPrice: 2200,
-          category: 'Fashion',
-          seller: {
-            name: 'LuxuryItems_NYC',
-            rating: 4.7,
-            reviews: 245,
-            verified: true,
-            location: 'New York, NY'
-          },
-          images: [
-            'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400',
-            'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400'
-          ],
-          condition: 'Excellent',
-          views: 156,
-          favorites: 89,
-          createdAt: new Date(Date.now() - 172800000).toISOString(),
-          features: ['Authentic', 'Dust Bag Included', 'Care Card'],
-          shipping: 'Express delivery',
-          rating: 4.6,
-          tags: ['Luxury', 'Authentic']
-        },
-        {
-          id: '4',
-          title: 'Gaming Setup - RTX 4080 PC',
-          description: 'High-end gaming PC build with RTX 4080, perfect for 4K gaming and content creation.',
-          price: 2800,
-          category: 'Electronics',
-          seller: {
-            name: 'PCBuilder_Expert',
-            rating: 4.9,
-            reviews: 78,
-            verified: true,
-            location: 'Austin, TX'
-          },
-          images: [
-            'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=400'
-          ],
-          condition: 'New',
-          views: 298,
-          favorites: 112,
-          createdAt: new Date(Date.now() - 43200000).toISOString(),
-          features: ['RTX 4080', 'Intel i7-13700K', '32GB RAM', 'RGB Lighting'],
-          shipping: 'Local pickup available',
-          rating: 5.0,
-          tags: ['Gaming', 'Custom Built']
-        }
-      ];
-      
-      setListings(enhancedListings);
-    } catch (error) {
-      console.error('Failed to fetch listings:', error);
-      // Use enhanced dummy data on error
-      setListings([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const applyFiltersAndSearch = () => {
-    let filtered = [...listings];
-
-    // Search filter
-    if (searchQuery) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Category filter
-    if (filters.category !== 'all') {
-      filtered = filtered.filter(item => item.category === filters.category);
-    }
-
-    // Price range filter
-    filtered = filtered.filter(item => 
-      item.price >= filters.priceRange[0] && item.price <= filters.priceRange[1]
-    );
-
-    // Condition filter
-    if (filters.condition !== 'all') {
-      filtered = filtered.filter(item => item.condition === filters.condition);
-    }
-
-    // Sort
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'price_low':
-          return a.price - b.price;
-        case 'price_high':
-          return b.price - a.price;
-        case 'rating':
-          return (b.rating || 0) - (a.rating || 0);
-        case 'popular':
-          return (b.views || 0) - (a.views || 0);
-        case 'newest':
-        default:
-          return new Date(b.createdAt) - new Date(a.createdAt);
-      }
-    });
-
-    setFilteredListings(filtered);
-  };
+  ];
 
   const handleAddToCart = (item) => {
     addToCart(item);
