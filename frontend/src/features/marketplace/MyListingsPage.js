@@ -176,7 +176,10 @@ function MyListingsPage() {
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">No listings yet</h3>
             <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto">Create your first listing to start selling on our modern marketplace</p>
-            <button className="cataloro-button-primary">
+            <button 
+              onClick={handleCreateListing}
+              className="cataloro-button-primary"
+            >
               Create Your First Listing
             </button>
           </div>
