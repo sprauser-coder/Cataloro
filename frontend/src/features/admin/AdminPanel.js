@@ -184,17 +184,28 @@ function AdminPanel() {
     try {
       const data = await adminService.getSettings();
       setSettings(data);
+      
+      // Update localStorage with branding data for header
+      if (data) {
+        localStorage.setItem('cataloro_site_branding', JSON.stringify(data));
+      }
     } catch (error) {
       showToast('Failed to load settings', 'error');
       // Set dummy data for demo
-      setSettings({
+      const dummySettings = {
         site_name: 'Cataloro',
         site_description: 'Modern Marketplace Platform',
         logo_url: '/assets/logo.png',
+        logo_light_url: '',
+        logo_dark_url: '',
         theme_color: '#3B82F6',
         allow_registration: true,
         require_approval: false
-      });
+      };
+      setSettings(dummySettings);
+      
+      // Update localStorage even for dummy data
+      localStorage.setItem('cataloro_site_branding', JSON.stringify(dummySettings));
     }
   };
 
