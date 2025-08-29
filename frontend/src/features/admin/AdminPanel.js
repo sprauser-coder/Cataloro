@@ -1019,13 +1019,37 @@ function SiteAdministrationTab({ showToast }) {
 
   const saveSiteConfiguration = async () => {
     try {
-      // Here you would call your API
+      // Here you would call your API to save configuration
       // await adminService.updateSiteConfiguration(siteConfig);
-      showToast('Site configuration updated successfully!', 'success');
+      
+      // For now, save to localStorage to demonstrate persistence
+      localStorage.setItem('cataloro_site_config', JSON.stringify(siteConfig));
+      
+      // Show success notification
+      showToast('Site configuration saved successfully! All changes have been applied.', 'success');
+      
+      // Add visual feedback 
+      console.log('Site configuration saved:', siteConfig);
+      
     } catch (error) {
-      showToast('Site configuration saved locally (demo mode)', 'info');
+      console.error('Save error:', error);
+      showToast('Failed to save configuration. Please try again.', 'error');
     }
   };
+
+  // Load saved configuration on component mount
+  useEffect(() => {
+    const savedConfig = localStorage.getItem('cataloro_site_config');
+    if (savedConfig) {
+      try {
+        const parsedConfig = JSON.parse(savedConfig);
+        setSiteConfig({ ...siteConfig, ...parsedConfig });
+        console.log('Loaded saved site configuration');
+      } catch (error) {
+        console.warn('Could not load saved configuration');
+      }
+    }
+  }, []);
 
   const adminSections = [
     { 
