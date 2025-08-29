@@ -10,6 +10,7 @@ import MobileNav from './MobileNav';
 import Footer from './Footer';
 import NotificationToast from '../ui/NotificationToast';
 import { useNotifications } from '../../context/NotificationContext';
+import { loadAndApplySiteConfiguration } from '../../utils/siteConfiguration';
 
 function ModernLayout() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
