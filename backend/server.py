@@ -136,10 +136,13 @@ async def login_user(credentials: dict):
         }
         await db.users.insert_one(user)
     
+    # Get user ID for token
+    user_id = user.get('id') if user else generate_id()
+    
     return {
         "message": "Login successful",
         "user": serialize_doc(user),
-        "token": f"mock_token_{user.get('id', user_id)}"
+        "token": f"mock_token_{user_id}"
     }
 
 @app.get("/api/auth/profile/{user_id}")
