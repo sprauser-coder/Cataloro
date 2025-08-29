@@ -87,19 +87,35 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-white/20 shadow-lg shadow-black/5">
       <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5"></div>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           
           {/* Logo and Brand */}
           <div className="flex items-center space-x-8">
-            <Link to="/browse" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">C</span>
+            <Link to="/browse" className="flex items-center space-x-3 group">
+              <div className="relative">
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center relative overflow-hidden" style={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  boxShadow: '0 8px 25px rgba(103, 126, 234, 0.4)'
+                }}>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <Store className="w-7 h-7 text-white relative z-10" />
+                </div>
+                <div className="absolute inset-0 rounded-2xl" style={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  filter: 'blur(8px)',
+                  opacity: '0.3',
+                  transform: 'scale(1.1)'
+                }}></div>
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold text-white group-hover:text-white/90 transition-colors" style={{
+                  background: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent'
+                }}>
                   Cataloro
                 </h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 -mt-1">Modern Marketplace</p>
+                <p className="text-xs text-white/70 font-medium tracking-wide">ULTRA-MODERN MARKETPLACE</p>
               </div>
             </Link>
 
