@@ -56,29 +56,37 @@ function DealsPage() {
     <div className="fade-in">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">My Deals</h1>
-        <p className="text-gray-600">Track your buying and selling transactions</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Deals</h1>
+        <p className="text-gray-600 dark:text-gray-300">Track your buying and selling transactions</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="kpi-card">
-          <div className="kpi-value text-blue-600">{deals.length}</div>
-          <div className="kpi-label">Total Deals</div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-value text-orange-600">{deals.filter(d => d.status === 'pending').length}</div>
-          <div className="kpi-label">Pending</div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-value text-green-600">{deals.filter(d => d.status === 'completed').length}</div>
-          <div className="kpi-label">Completed</div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-value text-gray-600">
-            ${deals.filter(d => d.status === 'completed').reduce((sum, d) => sum + d.amount, 0).toFixed(2)}
+        <div className="cataloro-card-glass">
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{deals.length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Deals</div>
           </div>
-          <div className="kpi-label">Total Value</div>
+        </div>
+        <div className="cataloro-card-glass">
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">{deals.filter(d => d.status === 'pending').length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Pending</div>
+          </div>
+        </div>
+        <div className="cataloro-card-glass">
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{deals.filter(d => d.status === 'completed').length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Completed</div>
+          </div>
+        </div>
+        <div className="cataloro-card-glass">
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              ${deals.filter(d => d.status === 'completed').reduce((sum, d) => sum + d.amount, 0).toFixed(2)}
+            </div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Value</div>
+          </div>
         </div>
       </div>
 
