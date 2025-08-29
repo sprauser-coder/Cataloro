@@ -30,12 +30,14 @@ import { useMarketplace } from '../../context/MarketplaceContext';
 import { useAuth } from '../../context/AuthContext';
 
 function ModernBrowsePage() {
+  const { user } = useAuth();
   // Use marketplace context
   const {
     allProducts,
     filteredProducts,
     addToCart,
     addToFavorites,
+    removeFromFavorites,
     favorites,
     setSearchQuery: setGlobalSearchQuery,
     setFilters: setGlobalFilters,
