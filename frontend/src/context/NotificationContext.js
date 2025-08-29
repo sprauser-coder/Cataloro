@@ -90,14 +90,16 @@ const NotificationContext = createContext();
 // Provider component
 export function NotificationProvider({ children }) {
   const [state, dispatch] = useReducer(notificationReducer, initialState);
-  const { user, isAuthenticated } = useAuth();
+  
+  // Don't access auth during initialization - will be handled by components that need it
+  // const { user, isAuthenticated } = useAuth();
 
-  // Fetch notifications when user is authenticated
-  useEffect(() => {
-    if (isAuthenticated && user?.id) {
-      fetchNotifications();
-    }
-  }, [isAuthenticated, user?.id]);
+  // Fetch notifications when user is authenticated - will be called by components
+  // useEffect(() => {
+  //   if (isAuthenticated && user?.id) {
+  //     fetchNotifications();
+  //   }
+  // }, [isAuthenticated, user?.id]);
 
   // Actions
   const fetchNotifications = async () => {
