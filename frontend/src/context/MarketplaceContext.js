@@ -1,0 +1,659 @@
+/**
+ * CATALORO - Comprehensive Marketplace State Management
+ * Full state management for cart, favorites, search, and all interactions
+ */
+
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
+
+// Initial state
+const initialState = {
+  // Shopping Cart
+  cartItems: [],
+  cartCount: 0,
+  cartTotal: 0,
+  
+  // Favorites/Wishlist
+  favorites: [],
+  favoriteCount: 0,
+  
+  // Search & Filters
+  searchQuery: '',
+  activeFilters: {
+    category: 'all',
+    priceRange: [0, 10000],
+    condition: 'all',
+    rating: 0,
+    location: 'all'
+  },
+  
+  // Products & Listings
+  allProducts: [],
+  filteredProducts: [],
+  categories: [],
+  
+  // User Interactions
+  recentlyViewed: [],
+  notifications: [],
+  messages: [],
+  
+  // UI State
+  viewMode: 'grid',
+  sortBy: 'newest',
+  isLoading: false,
+  
+  // Promo Codes
+  appliedPromo: null,
+  availablePromos: [
+    { code: 'SAVE10', discount: 0.1, description: '10% off your order' },
+    { code: 'FREESHIP', shippingDiscount: true, description: 'Free shipping' },
+    { code: 'WELCOME20', discount: 0.2, description: '20% off first order', minAmount: 100 }
+  ]
+};
+
+// Action types
+const ACTIONS = {
+  // Cart Actions
+  ADD_TO_CART: 'ADD_TO_CART',
+  REMOVE_FROM_CART: 'REMOVE_FROM_CART',
+  UPDATE_QUANTITY: 'UPDATE_QUANTITY',
+  CLEAR_CART: 'CLEAR_CART',
+  APPLY_PROMO: 'APPLY_PROMO',
+  REMOVE_PROMO: 'REMOVE_PROMO',
+  
+  // Favorites Actions
+  ADD_TO_FAVORITES: 'ADD_TO_FAVORITES',
+  REMOVE_FROM_FAVORITES: 'REMOVE_FROM_FAVORITES',
+  
+  // Product Actions
+  SET_PRODUCTS: 'SET_PRODUCTS',
+  SET_FILTERED_PRODUCTS: 'SET_FILTERED_PRODUCTS',
+  ADD_PRODUCT: 'ADD_PRODUCT',
+  UPDATE_PRODUCT: 'UPDATE_PRODUCT',
+  DELETE_PRODUCT: 'DELETE_PRODUCT',
+  
+  // Search & Filter Actions
+  SET_SEARCH_QUERY: 'SET_SEARCH_QUERY',
+  SET_FILTERS: 'SET_FILTERS',
+  SET_SORT_BY: 'SET_SORT_BY',
+  SET_VIEW_MODE: 'SET_VIEW_MODE',
+  
+  // UI Actions
+  SET_LOADING: 'SET_LOADING',
+  ADD_NOTIFICATION: 'ADD_NOTIFICATION',
+  REMOVE_NOTIFICATION: 'REMOVE_NOTIFICATION',
+  ADD_TO_RECENTLY_VIEWED: 'ADD_TO_RECENTLY_VIEWED',
+  
+  // Messages
+  ADD_MESSAGE: 'ADD_MESSAGE',
+  MARK_MESSAGE_READ: 'MARK_MESSAGE_READ'
+};
+
+// Reducer
+function marketplaceReducer(state, action) {
+  switch (action.type) {
+    case ACTIONS.ADD_TO_CART: {
+      const existingItem = state.cartItems.find(item => item.id === action.payload.id);
+      let newCartItems;
+      
+      if (existingItem) {
+        newCartItems = state.cartItems.map(item =>
+          item.id === action.payload.id 
+            ? { ...item, quantity: item.quantity + (action.payload.quantity || 1) }
+            : item
+        );
+      } else {
+        newCartItems = [...state.cartItems, { ...action.payload, quantity: action.payload.quantity || 1 }];
+      }
+      
+      const cartCount = newCartItems.reduce((sum, item) => sum + item.quantity, 0);
+      const cartTotal = newCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      
+      return {
+        ...state,
+        cartItems: newCartItems,
+        cartCount,
+        cartTotal
+      };
+    }
+    
+    case ACTIONS.REMOVE_FROM_CART: {
+      const newCartItems = state.cartItems.filter(item => item.id !== action.payload);
+      const cartCount = newCartItems.reduce((sum, item) => sum + item.quantity, 0);
+      const cartTotal = newCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      
+      return {
+        ...state,
+        cartItems: newCartItems,
+        cartCount,
+        cartTotal
+      };
+    }
+    
+    case ACTIONS.UPDATE_QUANTITY: {
+      const { id, quantity } = action.payload;
+      
+      if (quantity <= 0) {
+        return marketplaceReducer(state, { type: ACTIONS.REMOVE_FROM_CART, payload: id });
+      }
+      
+      const newCartItems = state.cartItems.map(item =>
+        item.id === id ? { ...item, quantity } : item
+      );
+      
+      const cartCount = newCartItems.reduce((sum, item) => sum + item.quantity, 0);
+      const cartTotal = newCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      
+      return {
+        ...state,
+        cartItems: newCartItems,
+        cartCount,
+        cartTotal
+      };
+    }
+    
+    case ACTIONS.CLEAR_CART:
+      return {
+        ...state,
+        cartItems: [],
+        cartCount: 0,
+        cartTotal: 0,
+        appliedPromo: null
+      };
+    
+    case ACTIONS.ADD_TO_FAVORITES: {
+      if (state.favorites.some(item => item.id === action.payload.id)) {
+        return state; // Already in favorites
+      }
+      
+      return {
+        ...state,
+        favorites: [...state.favorites, action.payload],
+        favoriteCount: state.favoriteCount + 1
+      };
+    }
+    
+    case ACTIONS.REMOVE_FROM_FAVORITES: {
+      return {
+        ...state,
+        favorites: state.favorites.filter(item => item.id !== action.payload),
+        favoriteCount: Math.max(0, state.favoriteCount - 1)
+      };
+    }
+    
+    case ACTIONS.SET_PRODUCTS:
+      return {
+        ...state,
+        allProducts: action.payload,
+        filteredProducts: action.payload
+      };
+    
+    case ACTIONS.SET_FILTERED_PRODUCTS:
+      return {
+        ...state,
+        filteredProducts: action.payload
+      };
+    
+    case ACTIONS.SET_SEARCH_QUERY:
+      return {
+        ...state,
+        searchQuery: action.payload
+      };
+    
+    case ACTIONS.SET_FILTERS:
+      return {
+        ...state,
+        activeFilters: { ...state.activeFilters, ...action.payload }
+      };
+    
+    case ACTIONS.SET_SORT_BY:
+      return {
+        ...state,
+        sortBy: action.payload
+      };
+    
+    case ACTIONS.SET_VIEW_MODE:
+      return {
+        ...state,
+        viewMode: action.payload
+      };
+    
+    case ACTIONS.APPLY_PROMO: {
+      const promo = state.availablePromos.find(p => p.code === action.payload);
+      return {
+        ...state,
+        appliedPromo: promo || null
+      };
+    }
+    
+    case ACTIONS.REMOVE_PROMO:
+      return {
+        ...state,
+        appliedPromo: null
+      };
+    
+    case ACTIONS.ADD_NOTIFICATION:
+      return {
+        ...state,
+        notifications: [action.payload, ...state.notifications]
+      };
+    
+    case ACTIONS.REMOVE_NOTIFICATION:
+      return {
+        ...state,
+        notifications: state.notifications.filter(n => n.id !== action.payload)
+      };
+    
+    case ACTIONS.ADD_TO_RECENTLY_VIEWED: {
+      const filtered = state.recentlyViewed.filter(item => item.id !== action.payload.id);
+      return {
+        ...state,
+        recentlyViewed: [action.payload, ...filtered].slice(0, 10) // Keep last 10
+      };
+    }
+    
+    case ACTIONS.SET_LOADING:
+      return {
+        ...state,
+        isLoading: action.payload
+      };
+    
+    default:
+      return state;
+  }
+}
+
+// Create context
+const MarketplaceContext = createContext();
+
+// Provider component
+export function MarketplaceProvider({ children }) {
+  const [state, dispatch] = useReducer(marketplaceReducer, initialState);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cataloro_cart');
+    const savedFavorites = localStorage.getItem('cataloro_favorites');
+    
+    if (savedCart) {
+      try {
+        const cart = JSON.parse(savedCart);
+        cart.forEach(item => {
+          dispatch({ type: ACTIONS.ADD_TO_CART, payload: item });
+        });
+      } catch (error) {
+        console.error('Error loading cart from storage:', error);
+      }
+    }
+    
+    if (savedFavorites) {
+      try {
+        const favorites = JSON.parse(savedFavorites);
+        favorites.forEach(item => {
+          dispatch({ type: ACTIONS.ADD_TO_FAVORITES, payload: item });
+        });
+      } catch (error) {
+        console.error('Error loading favorites from storage:', error);
+      }
+    }
+
+    // Load initial products
+    loadInitialProducts();
+  }, []);
+
+  // Save to localStorage when cart or favorites change
+  useEffect(() => {
+    localStorage.setItem('cataloro_cart', JSON.stringify(state.cartItems));
+  }, [state.cartItems]);
+
+  useEffect(() => {
+    localStorage.setItem('cataloro_favorites', JSON.stringify(state.favorites));
+  }, [state.favorites]);
+
+  const loadInitialProducts = () => {
+    // Enhanced product data with more details
+    const products = [
+      {
+        id: '1',
+        title: 'MacBook Pro 16-inch M3 Max',
+        description: 'Professional laptop with M3 Max chip, perfect for developers and creators. Includes original box and all accessories.',
+        price: 2499,
+        originalPrice: 2799,
+        category: 'Electronics',
+        subcategory: 'Laptops',
+        seller: {
+          name: 'TechGuru123',
+          rating: 4.9,
+          reviews: 156,
+          verified: true,
+          location: 'San Francisco, CA'
+        },
+        images: [
+          'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500',
+          'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=500',
+          'https://images.unsplash.com/photo-1585337701044-7305994ea6fb?w=500'
+        ],
+        condition: 'Like New',
+        views: 234,
+        favorites: 45,
+        createdAt: new Date().toISOString(),
+        features: ['M3 Max Chip', '64GB RAM', '2TB SSD', 'Space Gray', '16-inch Display'],
+        shipping: 'Free shipping',
+        estimatedDelivery: '2-3 business days',
+        rating: 4.8,
+        reviewCount: 156,
+        tags: ['Hot Deal', 'Fast Shipping', 'Professional'],
+        inStock: true,
+        quantity: 1
+      },
+      {
+        id: '2',
+        title: 'Vintage Gibson Les Paul Standard 1959',
+        description: 'Authentic 1959 Gibson Les Paul in museum-quality condition. This is a collector\'s dream with incredible tone and playability.',
+        price: 45000,
+        originalPrice: 55000,
+        category: 'Music',
+        subcategory: 'Guitars',
+        seller: {
+          name: 'VintageGuitars_Pro',
+          rating: 4.9,
+          reviews: 89,
+          verified: true,
+          location: 'Nashville, TN'
+        },
+        images: [
+          'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=500',
+          'https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=500',
+          'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500'
+        ],
+        condition: 'Excellent',
+        views: 1289,
+        favorites: 267,
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+        features: ['1959 Model', 'Original Case', 'Certificate of Authenticity', 'Museum Quality'],
+        shipping: 'Insured shipping - $150',
+        estimatedDelivery: '3-5 business days',
+        rating: 4.9,
+        reviewCount: 89,
+        tags: ['Vintage', 'Authenticated', 'Collector Item'],
+        inStock: true,
+        quantity: 1
+      },
+      {
+        id: '3',
+        title: 'Louis Vuitton Neverfull MM',
+        description: 'Authentic Louis Vuitton handbag in pristine condition. Perfect for daily use with elegant design.',
+        price: 1850,
+        originalPrice: 2200,
+        category: 'Fashion',
+        subcategory: 'Handbags',
+        seller: {
+          name: 'LuxuryItems_NYC',
+          rating: 4.7,
+          reviews: 245,
+          verified: true,
+          location: 'New York, NY'
+        },
+        images: [
+          'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500',
+          'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500'
+        ],
+        condition: 'Excellent',
+        views: 456,
+        favorites: 189,
+        createdAt: new Date(Date.now() - 172800000).toISOString(),
+        features: ['Authentic', 'Dust Bag Included', 'Care Instructions', 'Serial Number'],
+        shipping: 'Express delivery - $25',
+        estimatedDelivery: '1-2 business days',
+        rating: 4.6,
+        reviewCount: 245,
+        tags: ['Luxury', 'Authentic', 'Designer'],
+        inStock: true,
+        quantity: 1
+      },
+      {
+        id: '4',
+        title: 'Gaming PC - RTX 4090 Build',
+        description: 'Ultimate gaming PC with RTX 4090, perfect for 4K gaming, streaming, and content creation.',
+        price: 4200,
+        originalPrice: 4800,
+        category: 'Electronics',
+        subcategory: 'Computers',
+        seller: {
+          name: 'PCBuilder_Expert',
+          rating: 4.9,
+          reviews: 78,
+          verified: true,
+          location: 'Austin, TX'
+        },
+        images: [
+          'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=500'
+        ],
+        condition: 'New',
+        views: 698,
+        favorites: 212,
+        createdAt: new Date(Date.now() - 43200000).toISOString(),
+        features: ['RTX 4090', 'Intel i9-13900K', '64GB RAM', 'Custom Cooling'],
+        shipping: 'Free shipping',
+        estimatedDelivery: '3-5 business days',
+        rating: 5.0,
+        reviewCount: 78,
+        tags: ['Gaming', 'Custom Built', 'High Performance'],
+        inStock: true,
+        quantity: 1
+      },
+      {
+        id: '5',
+        title: 'iPhone 15 Pro Max 1TB',
+        description: 'Latest iPhone 15 Pro Max in Natural Titanium with maximum storage capacity.',
+        price: 1599,
+        category: 'Electronics',
+        subcategory: 'Smartphones',
+        seller: {
+          name: 'AppleStore_Certified',
+          rating: 4.8,
+          reviews: 324,
+          verified: true,
+          location: 'Cupertino, CA'
+        },
+        images: [
+          'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500'
+        ],
+        condition: 'New',
+        views: 1205,
+        favorites: 398,
+        createdAt: new Date(Date.now() - 21600000).toISOString(),
+        features: ['1TB Storage', 'Natural Titanium', 'Pro Camera System', 'A17 Pro Chip'],
+        shipping: 'Free shipping',
+        estimatedDelivery: '1-2 business days',
+        rating: 4.8,
+        reviewCount: 324,
+        tags: ['Latest Model', 'Premium', 'Fast Shipping'],
+        inStock: true,
+        quantity: 1
+      }
+    ];
+
+    dispatch({ type: ACTIONS.SET_PRODUCTS, payload: products });
+  };
+
+  // Action creators
+  const actions = {
+    // Cart actions
+    addToCart: (product) => {
+      dispatch({ type: ACTIONS.ADD_TO_CART, payload: product });
+      showNotification(`Added ${product.title} to cart!`, 'success');
+    },
+    
+    removeFromCart: (productId) => {
+      dispatch({ type: ACTIONS.REMOVE_FROM_CART, payload: productId });
+      showNotification('Item removed from cart', 'info');
+    },
+    
+    updateQuantity: (productId, quantity) => {
+      dispatch({ type: ACTIONS.UPDATE_QUANTITY, payload: { id: productId, quantity } });
+    },
+    
+    clearCart: () => {
+      dispatch({ type: ACTIONS.CLEAR_CART });
+      showNotification('Cart cleared', 'info');
+    },
+    
+    // Favorites actions
+    addToFavorites: (product) => {
+      if (state.favorites.some(item => item.id === product.id)) {
+        showNotification('Already in favorites!', 'info');
+        return;
+      }
+      dispatch({ type: ACTIONS.ADD_TO_FAVORITES, payload: product });
+      showNotification(`Added ${product.title} to favorites!`, 'success');
+    },
+    
+    removeFromFavorites: (productId) => {
+      dispatch({ type: ACTIONS.REMOVE_FROM_FAVORITES, payload: productId });
+      showNotification('Removed from favorites', 'info');
+    },
+    
+    // Search and filter actions
+    setSearchQuery: (query) => {
+      dispatch({ type: ACTIONS.SET_SEARCH_QUERY, payload: query });
+      applyFiltersAndSearch(query, state.activeFilters, state.sortBy);
+    },
+    
+    setFilters: (filters) => {
+      const newFilters = { ...state.activeFilters, ...filters };
+      dispatch({ type: ACTIONS.SET_FILTERS, payload: filters });
+      applyFiltersAndSearch(state.searchQuery, newFilters, state.sortBy);
+    },
+    
+    setSortBy: (sortBy) => {
+      dispatch({ type: ACTIONS.SET_SORT_BY, payload: sortBy });
+      applyFiltersAndSearch(state.searchQuery, state.activeFilters, sortBy);
+    },
+    
+    setViewMode: (mode) => {
+      dispatch({ type: ACTIONS.SET_VIEW_MODE, payload: mode });
+    },
+    
+    // Promo actions
+    applyPromo: (code) => {
+      const promo = state.availablePromos.find(p => p.code === code.toUpperCase());
+      if (promo) {
+        if (promo.minAmount && state.cartTotal < promo.minAmount) {
+          showNotification(`Minimum order of $${promo.minAmount} required for this promo`, 'error');
+          return false;
+        }
+        dispatch({ type: ACTIONS.APPLY_PROMO, payload: code.toUpperCase() });
+        showNotification(`Promo code applied: ${promo.description}`, 'success');
+        return true;
+      } else {
+        showNotification('Invalid promo code', 'error');
+        return false;
+      }
+    },
+    
+    removePromo: () => {
+      dispatch({ type: ACTIONS.REMOVE_PROMO });
+      showNotification('Promo code removed', 'info');
+    },
+    
+    // Other actions
+    addToRecentlyViewed: (product) => {
+      dispatch({ type: ACTIONS.ADD_TO_RECENTLY_VIEWED, payload: product });
+    },
+    
+    setLoading: (loading) => {
+      dispatch({ type: ACTIONS.SET_LOADING, payload: loading });
+    }
+  };
+
+  const applyFiltersAndSearch = (query, filters, sortBy) => {
+    let filtered = [...state.allProducts];
+
+    // Apply search
+    if (query) {
+      filtered = filtered.filter(product =>
+        product.title.toLowerCase().includes(query.toLowerCase()) ||
+        product.description.toLowerCase().includes(query.toLowerCase()) ||
+        product.category.toLowerCase().includes(query.toLowerCase()) ||
+        product.features?.some(feature => feature.toLowerCase().includes(query.toLowerCase()))
+      );
+    }
+
+    // Apply filters
+    if (filters.category !== 'all') {
+      filtered = filtered.filter(product => product.category === filters.category);
+    }
+
+    if (filters.priceRange) {
+      filtered = filtered.filter(product => 
+        product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
+      );
+    }
+
+    if (filters.condition !== 'all') {
+      filtered = filtered.filter(product => product.condition === filters.condition);
+    }
+
+    if (filters.rating > 0) {
+      filtered = filtered.filter(product => (product.rating || 0) >= filters.rating);
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'price_low':
+          return a.price - b.price;
+        case 'price_high':
+          return b.price - a.price;
+        case 'rating':
+          return (b.rating || 0) - (a.rating || 0);
+        case 'popular':
+          return (b.views || 0) - (a.views || 0);
+        case 'newest':
+        default:
+          return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+    });
+
+    dispatch({ type: ACTIONS.SET_FILTERED_PRODUCTS, payload: filtered });
+  };
+
+  const showNotification = (message, type = 'info') => {
+    const notification = {
+      id: Date.now(),
+      message,
+      type,
+      timestamp: new Date().toISOString()
+    };
+    
+    dispatch({ type: ACTIONS.ADD_NOTIFICATION, payload: notification });
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      dispatch({ type: ACTIONS.REMOVE_NOTIFICATION, payload: notification.id });
+    }, 5000);
+  };
+
+  const value = {
+    ...state,
+    ...actions,
+    showNotification
+  };
+
+  return (
+    <MarketplaceContext.Provider value={value}>
+      {children}
+    </MarketplaceContext.Provider>
+  );
+}
+
+// Custom hook to use marketplace context
+export function useMarketplace() {
+  const context = useContext(MarketplaceContext);
+  if (!context) {
+    throw new Error('useMarketplace must be used within a MarketplaceProvider');
+  }
+  return context;
+}
+
+export default MarketplaceContext;
