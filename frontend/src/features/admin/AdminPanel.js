@@ -507,56 +507,68 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
   return (
     <div className="space-y-6">
-      {/* Users Stats */}
+      {/* Enhanced Users Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="kpi-card">
-          <div className="kpi-value text-blue-600">{users.length}</div>
-          <div className="kpi-label">Total Users</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center justify-between mb-2">
+            <Users className="w-8 h-8 text-blue-500" />
+          </div>
+          <div className="text-2xl font-bold text-blue-600">{users.length}</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Total Users</div>
         </div>
-        <div className="kpi-card">
-          <div className="kpi-value text-green-600">{users.filter(u => u.is_active).length}</div>
-          <div className="kpi-label">Active Users</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center justify-between mb-2">
+            <CheckCircle className="w-8 h-8 text-green-500" />
+          </div>
+          <div className="text-2xl font-bold text-green-600">{users.filter(u => u.is_active).length}</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Active Users</div>
         </div>
-        <div className="kpi-card">
-          <div className="kpi-value text-purple-600">{users.filter(u => u.role === 'admin').length}</div>
-          <div className="kpi-label">Admins</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center justify-between mb-2">
+            <Shield className="w-8 h-8 text-purple-500" />
+          </div>
+          <div className="text-2xl font-bold text-purple-600">{users.filter(u => u.role === 'admin').length}</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Admins</div>
         </div>
-        <div className="kpi-card">
-          <div className="kpi-value text-orange-600">{users.filter(u => !u.is_active).length}</div>
-          <div className="kpi-label">Suspended</div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center justify-between mb-2">
+            <Ban className="w-8 h-8 text-red-500" />
+          </div>
+          <div className="text-2xl font-bold text-red-600">{users.filter(u => !u.is_active).length}</div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">Suspended</div>
         </div>
       </div>
 
-      {/* Users Table */}
-      <div className="cataloro-card overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">User Management</h3>
+      {/* Enhanced Users Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">User Management</h3>
         </div>
         
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Role
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Joined
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {users.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
+                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
@@ -565,53 +577,58 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                         </span>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{user.full_name}</div>
-                        <div className="text-sm text-gray-500">{user.email}</div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">{user.full_name}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                      user.role === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                     }`}>
                       {user.role?.toUpperCase()}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      user.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
                     }`}>
                       {user.is_active ? 'ACTIVE' : 'SUSPENDED'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {new Date(user.created_at).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    <button
-                      onClick={() => {
-                        setSelectedUser(user);
-                        setShowEditModal(true);
-                      }}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    {user.is_active ? (
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex items-center justify-end space-x-2">
                       <button
-                        onClick={() => handleSuspendUser(user.id)}
-                        className="text-red-600 hover:text-red-900"
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setShowEditModal(true);
+                        }}
+                        className="p-2 text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                        title="Edit User"
                       >
-                        <Ban className="w-4 h-4" />
+                        <Edit className="w-4 h-4" />
                       </button>
-                    ) : (
-                      <button
-                        onClick={() => handleActivateUser(user.id)}
-                        className="text-green-600 hover:text-green-900"
-                      >
-                        <CheckCircle className="w-4 h-4" />
-                      </button>
-                    )}
+                      {user.is_active ? (
+                        <button
+                          onClick={() => handleSuspendUser(user.id)}
+                          className="p-2 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                          title="Suspend User"
+                        >
+                          <Ban className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleActivateUser(user.id)}
+                          className="p-2 text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors"
+                          title="Activate User"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
