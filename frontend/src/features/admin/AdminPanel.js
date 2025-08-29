@@ -1029,120 +1029,137 @@ function SiteAdministrationTab({ showToast }) {
         console.log('Removed existing styles');
       }
 
-      // Create new style element
+      // Create new style element with higher specificity
       const style = document.createElement('style');
       style.id = 'cataloro-site-config';
+      style.setAttribute('data-cataloro-config', 'true');
       
-      // Generate more aggressive CSS with !important flags
-      let css = `
-        /* CATALORO SITE CONFIGURATION - APPLIED */
+      // Generate comprehensive CSS with maximum specificity
+      const css = `
+        /* CATALORO DYNAMIC CONFIGURATION - ACTIVE */
         
-        /* Primary Color Overrides */
-        .bg-blue-600, 
+        /* Visual Indicator */
+        body::before {
+          content: "✓ CATALORO CONFIG ACTIVE";
+          position: fixed !important;
+          top: 10px !important;
+          right: 10px !important;
+          background: ${config.primaryColor || '#FF0000'} !important;
+          color: white !important;
+          padding: 8px 12px !important;
+          border-radius: 6px !important;
+          z-index: 999999 !important;
+          font-size: 11px !important;
+          font-weight: bold !important;
+          font-family: monospace !important;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+        }
+        
+        /* Primary Color - Blue Elements */
+        .bg-blue-600,
         .bg-blue-500,
         button.bg-blue-600,
         button.bg-blue-500,
-        .btn-primary {
-          background-color: ${config.primaryColor} !important;
+        .from-blue-600,
+        .to-blue-600,
+        [class*="bg-blue"] {
+          background-color: ${config.primaryColor || '#FF0000'} !important;
         }
         
-        .hover\\:bg-blue-700:hover, 
-        .hover\\:bg-blue-600:hover {
-          background-color: ${config.primaryColor} !important;
-          filter: brightness(0.85) !important;
+        .hover\\:bg-blue-700:hover,
+        .hover\\:bg-blue-600:hover,
+        button.bg-blue-600:hover,
+        button.bg-blue-500:hover {
+          background-color: ${config.primaryColor || '#FF0000'} !important;
+          filter: brightness(0.9) !important;
         }
         
-        .text-blue-600, 
+        .text-blue-600,
         .text-blue-500,
         a.text-blue-600,
         a.text-blue-500 {
-          color: ${config.primaryColor} !important;
+          color: ${config.primaryColor || '#FF0000'} !important;
         }
         
-        .border-blue-600, 
+        .border-blue-600,
         .border-blue-500 {
-          border-color: ${config.primaryColor} !important;
+          border-color: ${config.primaryColor || '#FF0000'} !important;
         }
         
-        /* Secondary Color (Purple) Overrides */
-        .bg-purple-600, 
+        /* Secondary Color - Purple Elements */
+        .bg-purple-600,
         .bg-purple-500,
         .from-purple-600,
-        .to-purple-600 {
-          background-color: ${config.secondaryColor} !important;
+        .to-purple-600,
+        [class*="bg-purple"] {
+          background-color: ${config.secondaryColor || '#00FF00'} !important;
         }
         
-        .text-purple-600, 
+        .text-purple-600,
         .text-purple-500 {
-          color: ${config.secondaryColor} !important;
-        }
-        
-        /* Accent Color (Green) Overrides */
-        .bg-green-600, 
-        .bg-green-500 {
-          background-color: ${config.accentColor} !important;
-        }
-        
-        .text-green-600, 
-        .text-green-500 {
-          color: ${config.accentColor} !important;
-        }
-        
-        /* Border Radius */
-        .rounded-lg,
-        button.rounded-lg,
-        .rounded-xl,
-        input.rounded-lg {
-          border-radius: ${config.borderRadius}px !important;
+          color: ${config.secondaryColor || '#00FF00'} !important;
         }
         
         /* Gradient Overrides */
-        .bg-gradient-to-r.from-blue-600.to-purple-600 {
-          background: linear-gradient(to right, ${config.primaryColor}, ${config.secondaryColor}) !important;
+        .bg-gradient-to-r.from-blue-600.to-purple-600,
+        .bg-gradient-to-r.from-blue-500.to-purple-500 {
+          background: linear-gradient(to right, ${config.primaryColor || '#FF0000'}, ${config.secondaryColor || '#00FF00'}) !important;
         }
         
-        /* Font Family */
-        body, 
+        /* Accent Color - Success/Green Elements */
+        .bg-green-600,
+        .bg-green-500,
+        .text-green-600,
+        .text-green-500 {
+          background-color: ${config.accentColor || '#FF00FF'} !important;
+          color: ${config.accentColor || '#FF00FF'} !important;
+        }
+        
+        /* Border Radius Overrides */
+        .rounded-lg,
+        button.rounded-lg,
+        input.rounded-lg,
+        .rounded-xl,
+        .rounded-md {
+          border-radius: ${config.borderRadius || 20}px !important;
+        }
+        
+        /* Font Family Override */
+        body,
+        html,
         * {
-          font-family: ${config.fontFamily === 'inter' ? 'Inter, sans-serif' : 
-                      config.fontFamily === 'roboto' ? 'Roboto, sans-serif' :
-                      config.fontFamily === 'opensans' ? 'Open Sans, sans-serif' :
-                      config.fontFamily === 'lato' ? 'Lato, sans-serif' :
-                      config.fontFamily === 'poppins' ? 'Poppins, sans-serif' : 'Inter, sans-serif'} !important;
+          font-family: ${
+            config.fontFamily === 'roboto' ? 'Roboto, sans-serif' :
+            config.fontFamily === 'opensans' ? '"Open Sans", sans-serif' :
+            config.fontFamily === 'lato' ? 'Lato, sans-serif' :
+            config.fontFamily === 'poppins' ? 'Poppins, sans-serif' :
+            'Inter, sans-serif'
+          } !important;
         }
         
-        /* Test indicator */
-        body::before {
-          content: "CATALORO CONFIG APPLIED ✓";
-          position: fixed;
-          top: 10px;
-          right: 10px;
-          background: ${config.primaryColor};
-          color: white;
-          padding: 5px 10px;
-          border-radius: 5px;
-          z-index: 10000;
-          font-size: 12px;
-          font-weight: bold;
-        }
+        /* Custom CSS Injection */
+        ${config.customCSS || ''}
       `;
-      
-      // Add custom CSS if provided
-      if (config.customCSS) {
-        css += `\n\n/* Custom CSS */\n${config.customCSS}`;
-      }
       
       style.textContent = css;
       document.head.appendChild(style);
       
-      console.log('✅ CSS Configuration applied successfully!');
-      console.log('CSS Content:', css);
+      // Force browser to acknowledge the changes
+      document.body.style.display = 'none';
+      void document.body.offsetHeight; // Trigger reflow
+      document.body.style.display = '';
       
-      // Force a repaint
-      void document.body.offsetHeight;
+      console.log('✅ Configuration applied successfully!');
+      console.log('Generated CSS:', css.substring(0, 200) + '...');
+      
+      // Make the function globally available for testing
+      window.cataloro_applyConfig = () => applyConfigurationToSite(config);
+      
+      return true;
       
     } catch (error) {
       console.error('❌ Error applying configuration:', error);
+      return false;
     }
   };
 
