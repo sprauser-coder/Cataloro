@@ -103,14 +103,16 @@ function MyListingsPage() {
       {/* Listings Grid */}
       {listings.length === 0 ? (
         <div className="text-center py-12">
-          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Plus className="w-8 h-8 text-gray-400" />
+          <div className="cataloro-card-glass p-12">
+            <div className="w-24 h-24 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Plus className="w-12 h-12 text-gray-600 dark:text-gray-300" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">No listings yet</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto">Create your first listing to start selling on our modern marketplace</p>
+            <button className="cataloro-button-primary">
+              Create Your First Listing
+            </button>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No listings yet</h3>
-          <p className="text-gray-600 mb-6">Create your first listing to start selling</p>
-          <button className="cataloro-button-primary">
-            Create Your First Listing
-          </button>
         </div>
       ) : (
         <div className="listings-grid">
