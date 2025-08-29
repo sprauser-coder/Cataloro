@@ -165,3 +165,48 @@ body {
 .modal-content {
   @apply bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl;
 }
+/* Navigation Styles with Glassmorphism */
+.nav-item {
+  @apply flex items-center px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50/80 backdrop-blur-sm rounded-xl transition-all duration-200 font-medium;
+}
+
+.nav-item.active {
+  @apply text-blue-600 bg-blue-50/80 backdrop-blur-sm;
+}
+
+.nav-item-admin {
+  @apply nav-item text-purple-600 hover:text-purple-700 hover:bg-purple-50/80;
+}
+
+/* Tile Pattern for Listings */
+.listings-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+}
+
+.listing-image {
+  @apply w-full h-48 object-cover rounded-t-xl;
+}
+
+.listing-content {
+  @apply p-4;
+}
+
+.listing-title {
+  @apply font-semibold text-lg text-gray-900 mb-2 line-clamp-1;
+}
+
+.listing-price {
+  @apply text-2xl font-bold text-blue-600 mb-2;
+}
+
+.listing-description {
+  @apply text-gray-600 text-sm line-clamp-2;
+}
+
+.kpi-value {
+  @apply text-3xl font-bold text-gray-900 mb-1;
+}
+
+.kpi-label {
+  @apply text-sm text-gray-600 font-medium;
+}
