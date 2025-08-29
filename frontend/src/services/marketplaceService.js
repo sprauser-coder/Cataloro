@@ -4,7 +4,7 @@
  */
 
 import axios from 'axios';
-import { API_ENDPOINTS } from '../config/directions';
+import { API_ENDPOINTS, ENV_CONFIG } from '../config/directions';
 
 class MarketplaceService {
   async browseListings(filters = {}) {
