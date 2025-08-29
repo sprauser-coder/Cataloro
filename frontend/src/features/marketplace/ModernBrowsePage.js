@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
+import { useMarketplace } from '../../context/MarketplaceContext';
 
 function ModernBrowsePage() {
   const [listings, setListings] = useState([]);
