@@ -629,35 +629,62 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
   return (
     <div className="space-y-6">
-      {/* Enhanced Users Stats */}
+      {/* Enhanced Users Stats - FIXED FORMATTING */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <Users className="w-8 h-8 text-blue-500" />
+        <div className="cataloro-card-glass p-6 hover:shadow-2xl transition-all duration-300">
+          <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
+            <div className="p-4 bg-blue-100/80 dark:bg-blue-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
+              <Users className="w-8 h-8 text-blue-500" />
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center justify-center">
+                {users.length}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Total Users</div>
+            </div>
           </div>
-          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{users.length}</div>
-          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Users</div>
         </div>
-        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <CheckCircle className="w-8 h-8 text-green-500" />
+        
+        <div className="cataloro-card-glass p-6 hover:shadow-2xl transition-all duration-300">
+          <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
+            <div className="p-4 bg-green-100/80 dark:bg-green-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-green-500" />
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent flex items-center justify-center">
+                {users.filter(u => u.is_active).length}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Active Users</div>
+            </div>
           </div>
-          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{users.filter(u => u.is_active).length}</div>
-          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Active Users</div>
         </div>
-        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <Shield className="w-8 h-8 text-purple-500" />
+        
+        <div className="cataloro-card-glass p-6 hover:shadow-2xl transition-all duration-300">
+          <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
+            <div className="p-4 bg-purple-100/80 dark:bg-purple-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
+              <Shield className="w-8 h-8 text-purple-500" />
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center justify-center">
+                {users.filter(u => u.role === 'admin').length}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Admins</div>
+            </div>
           </div>
-          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">{users.filter(u => u.role === 'admin').length}</div>
-          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Admins</div>
         </div>
-        <div className="cataloro-card-glass hover:shadow-2xl transition-all duration-300">
-          <div className="flex items-center justify-between mb-4">
-            <Ban className="w-8 h-8 text-red-500" />
+        
+        <div className="cataloro-card-glass p-6 hover:shadow-2xl transition-all duration-300">
+          <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
+            <div className="p-4 bg-red-100/80 dark:bg-red-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
+              <Ban className="w-8 h-8 text-red-500" />
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent flex items-center justify-center">
+                {users.filter(u => !u.is_active).length}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Suspended</div>
+            </div>
           </div>
-          <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">{users.filter(u => !u.is_active).length}</div>
-          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Suspended</div>
         </div>
       </div>
 
