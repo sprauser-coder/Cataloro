@@ -198,17 +198,6 @@ function ModernBrowsePage() {
             <span className="font-semibold text-gray-900 dark:text-white">{filteredListings.length}</span> products found
             {searchQuery && ` for "${searchQuery}"`}
           </p>
-          
-          <div className="hidden md:flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-            <span className="flex items-center">
-              <TrendingUp className="w-4 h-4 mr-1" />
-              Trending
-            </span>
-            <span className="flex items-center">
-              <Zap className="w-4 h-4 mr-1" />
-              Fast Shipping
-            </span>
-          </div>
         </div>
 
         {/* Filter and Sort Controls - INLINE WITH RESULTS COUNT */}
