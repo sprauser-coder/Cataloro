@@ -13,6 +13,7 @@ function DealsPage() {
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
+  const [activeFilter, setActiveFilter] = useState('all'); // For tile filtering
   const { user } = useAuth();
   const { showToast } = useNotifications();
 
