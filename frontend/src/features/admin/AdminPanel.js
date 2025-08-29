@@ -800,7 +800,8 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 function HeroSelectionTab({ showToast }) {
   const [heroContent, setHeroContent] = useState({
     title: 'Discover Amazing Products',
-    description: 'From electronics to fashion, find everything you need in one place'
+    description: 'From electronics to fashion, find everything you need in one place',
+    height: 400
   });
   const [previewMode, setPreviewMode] = useState(false);
 
