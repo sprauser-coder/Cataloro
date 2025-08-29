@@ -15,7 +15,7 @@ from datetime import datetime, timezone, timedelta
 import jwt
 import bcrypt
 from enum import Enum
-from config_loader import get_config, get_backend_url, get_admin_credentials, get_paths, get_database_url
+
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
