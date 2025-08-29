@@ -3715,6 +3715,15 @@ async def bulk_delete_orders(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete orders: {str(e)}")
 
+@api_router.get("/test-admin-fix")
+async def test_admin_fix():
+    """Test endpoint to verify authentication fix is deployed"""
+    return {
+        "message": "Admin authentication fix deployed",
+        "timestamp": "2025-08-29-05:00:00",
+        "version": "fixed_admin_auth_v2"
+    }
+
 # Catalyst Database Models
 class CatalystItem(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
