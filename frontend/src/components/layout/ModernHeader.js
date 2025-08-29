@@ -360,12 +360,12 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 <ChevronDown className={`w-4 h-4 text-gray-700 dark:text-white/80 transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`} />
               </button>
 
-              {/* Modern User Dropdown Menu */}
+              {/* Modern User Dropdown Menu - ENHANCED 50% BACKGROUND OPACITY */}
               {showUserMenu && (
                 <div className="absolute right-0 mt-3 w-72 rounded-2xl shadow-2xl py-2 z-50" style={{
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.4) 100%)',
                   backdropFilter: 'blur(25px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                  border: '1px solid rgba(255, 255, 255, 0.4)'
                 }}>
                   <div className="px-6 py-4 border-b border-white/10">
                     <p className="text-base font-bold text-gray-900 dark:text-white">
