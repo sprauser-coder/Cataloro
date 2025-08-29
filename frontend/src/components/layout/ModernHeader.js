@@ -277,12 +277,12 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 )}
               </button>
 
-              {/* Modern Notifications Dropdown - 100% SOLID BACKGROUND */}
+              {/* Modern Notifications Dropdown - 80% BACKGROUND OPACITY */}
               {showNotifications && (
                 <div className="absolute right-0 mt-3 w-80 rounded-2xl shadow-2xl py-3 z-50 notifications-dropdown-enhanced" style={{
                   background: darkMode 
-                    ? 'rgba(0, 0, 0, 1)'
-                    : 'rgba(255, 255, 255, 1)',
+                    ? 'rgba(0, 0, 0, 0.8)'
+                    : 'rgba(255, 255, 255, 0.8)',
                   backdropFilter: 'blur(25px)',
                   border: darkMode 
                     ? '1px solid rgba(255, 255, 255, 0.2)' 
