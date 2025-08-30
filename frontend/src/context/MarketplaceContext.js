@@ -337,14 +337,12 @@ export function MarketplaceProvider({ children }) {
       const apiResponse = await marketplaceService.browseListings();
       console.log('✅ Loaded real listings from API:', apiResponse);
       
-      // Handle both array and object response formats
+      // The browse endpoint returns array format directly
       let apiListings;
       if (Array.isArray(apiResponse)) {
         apiListings = apiResponse;
-      } else if (apiResponse && apiResponse.listings) {
-        apiListings = apiResponse.listings;
       } else {
-        throw new Error('Invalid API response format');
+        throw new Error('Invalid API response format: expected array');
       }
       
       console.log('📋 Processing listings:', apiListings.length);
