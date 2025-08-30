@@ -134,20 +134,10 @@ function CreateListingPage() {
     setFormData(prev => ({
       ...prev, 
       title: catalyst.name || catalyst.cat_id,
-      category: 'Catalysts'
+      category: 'Catalysts',
+      description: `Catalyst: ${catalyst.name || 'Professional Grade Catalyst'}\n\nSpecifications:\n• Ceramic Weight: ${catalyst.ceramic_weight || 'N/A'}g\n\nProfessional grade catalyst suitable for automotive and industrial applications.`
     }));
     setShowSuggestions(false);
-    
-    // Find calculated price for this catalyst
-    const calculation = calculations.find(calc => calc.cat_id === catalyst.cat_id);
-    if (calculation) {
-      const calculatedPrice = calculation.total_price;
-      setFormData(prev => ({
-        ...prev,
-        price: calculatedPrice ? parseFloat(calculatedPrice).toFixed(2) : '',
-        description: `Catalyst: ${catalyst.name || 'Professional Grade Catalyst'}\n\nSpecifications:\n• Ceramic Weight: ${catalyst.ceramic_weight || 'N/A'}g\n\nThis catalyst is priced based on current precious metal market rates and specifications. Professional grade catalyst suitable for automotive and industrial applications.`
-      }));
-    }
   };
 
   const getCalculatedPrice = (catalystId) => {
