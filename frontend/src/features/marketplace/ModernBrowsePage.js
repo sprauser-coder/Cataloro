@@ -725,18 +725,8 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
         <div className="mb-3">
           <div className="flex items-center space-x-2 mb-2">
             <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              ${item.price.toFixed(2)}
+              €{item.price.toFixed(2)}
             </span>
-            {item.originalPrice && item.originalPrice > item.price && (
-              <>
-                <span className="text-lg text-gray-500 line-through">
-                  ${item.originalPrice.toFixed(2)}
-                </span>
-                <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-                  {Math.round((1 - item.price / item.originalPrice) * 100)}% off
-                </span>
-              </>
-            )}
           </div>
           
           {/* Market Price Suggestion - Show for catalyst items */}
