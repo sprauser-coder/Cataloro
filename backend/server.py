@@ -911,11 +911,12 @@ async def upload_catalyst_excel(file: UploadFile = File(...)):
         
         df = pd.read_excel(io.BytesIO(contents))
         
-        # Validate required columns
+        # Validate required columns (add_info is optional)
         required_columns = ['cat_id', 'name', 'ceramic_weight', 'pt_ppm', 'pd_ppm', 'rh_ppm']
+        optional_columns = ['add_info']
         missing_columns = [col for col in required_columns if col not in df.columns]
         if missing_columns:
-            raise HTTPException(status_code=400, detail=f"Missing required columns: {missing_columns}")
+            raise HTTPException(status_code=400, detail=f"Missing required columns: {missing_columns}. Optional columns: {optional_columns}")
         
         # Validate data and process
         catalysts = []
