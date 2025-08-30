@@ -138,9 +138,9 @@ function CreateListingPage() {
     setShowSuggestions(false);
     
     // Find calculated price for this catalyst
-    const calculation = calculations.find(calc => calc.catalyst_id === catalyst.cat_id);
+    const calculation = calculations.find(calc => calc.cat_id === catalyst.cat_id);
     if (calculation) {
-      const calculatedPrice = calculation['Total Price (€)'] || calculation.total_price || calculation.calculated_price;
+      const calculatedPrice = calculation.total_price;
       setFormData(prev => ({
         ...prev,
         price: calculatedPrice ? parseFloat(calculatedPrice).toFixed(2) : '',
