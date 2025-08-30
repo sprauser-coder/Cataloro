@@ -3460,7 +3460,7 @@ function ListingsTab({ showToast }) {
                   </td>
                   <td className="px-3 py-4">
                     <span className="text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent whitespace-nowrap">
-                      ${listing.price}
+                      €{listing.price}
                     </span>
                   </td>
                   <td className="px-3 py-4">
