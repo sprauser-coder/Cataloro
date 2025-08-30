@@ -3062,11 +3062,12 @@ function ListingsTab({ showToast }) {
     }
   };
 
-  const handleBulkAction = async () => {
-    if (!bulkAction || selectedListings.length === 0) return;
+  const handleBulkAction = async (action = null) => {
+    const actionToPerform = action || bulkAction;
+    if (!actionToPerform || selectedListings.length === 0) return;
 
     try {
-      switch (bulkAction) {
+      switch (actionToPerform) {
         case 'activate':
           // Update status to active for selected listings
           setListings(listings.map(l => 
@@ -3089,6 +3090,46 @@ function ListingsTab({ showToast }) {
             selectedListings.includes(l.id) ? {...l, featured: true} : l
           ));
           showToast?.(`${selectedListings.length} listings featured`, 'success');
+          break;
+        case 'unfeature':
+          setListings(listings.map(l => 
+            selectedListings.includes(l.id) ? {...l, featured: false} : l
+          ));
+          showToast?.(`${selectedListings.length} listings unfeatured`, 'success');
+          break;
+        case 'approve':
+          setListings(listings.map(l => 
+            selectedListings.includes(l.id) ? {...l, status: 'approved', approved: true} : l
+          ));
+          showToast?.(`${selectedListings.length} listings approved`, 'success');
+          break;
+        case 'reject':
+          setListings(listings.map(l => 
+            selectedListings.includes(l.id) ? {...l, status: 'rejected', rejected: true} : l
+          ));
+          showToast?.(`${selectedListings.length} listings rejected`, 'success');
+          break;
+        case 'duplicate':
+          // Duplicate selected listings
+          const duplicatedListings = selectedListings.map(id => {
+            const original = listings.find(l => l.id === id);
+            return {
+              ...original,
+              id: `${original.id}-copy-${Date.now()}`,
+              title: `${original.title} (Copy)`,
+              created_date: new Date().toISOString().split('T')[0]
+            };
+          });
+          setListings([...duplicatedListings, ...listings]);
+          showToast?.(`${selectedListings.length} listings duplicated`, 'success');
+          break;
+        case 'export':
+          // Export selected listings (would need backend implementation)
+          showToast?.(`${selectedListings.length} listings exported`, 'success');
+          break;
+        case 'bulk-edit':
+          // Open bulk edit modal (would need implementation)
+          showToast?.(`Bulk edit mode activated for ${selectedListings.length} listings`, 'info');
           break;
       }
       setSelectedListings([]);
