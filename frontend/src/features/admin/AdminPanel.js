@@ -731,8 +731,8 @@ function UsersTab({ users, onUpdateUser, showToast }) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Enhanced Users Stats - FIXED FORMATTING */}
+    <div className="space-y-8">
+      {/* Enhanced Users Stats - STANDARDIZED SPACING */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="cataloro-card-glass p-6">
           <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
@@ -791,7 +791,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
         </div>
       </div>
 
-      {/* Search and Filters */}
+      {/* Search and Filters - STANDARDIZED SPACING */}
       <div className="cataloro-card-glass p-6">
         <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between space-y-6 xl:space-y-0">
           <div className="flex-1 max-w-md">
