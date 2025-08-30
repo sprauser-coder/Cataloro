@@ -3721,24 +3721,18 @@ function ListingModal({ listing, onSave, onClose }) {
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center space-x-2">
-                                <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-1 rounded-md text-xs font-medium">
-                                  {catalyst.cat_id}
-                                </span>
                                 <span className="font-medium text-gray-900 dark:text-white">
                                   {catalyst.name}
                                 </span>
                               </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 grid grid-cols-4 gap-4">
+                              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                                 <span>Weight: {catalyst.ceramic_weight}g</span>
-                                <span>PT: {catalyst.pt_ppm} ppm</span>
-                                <span>PD: {catalyst.pd_ppm} ppm</span>
-                                <span>RH: {catalyst.rh_ppm} ppm</span>
                               </div>
                             </div>
                             {calculatedPrice && (
                               <div className="ml-4 text-right">
                                 <div className="text-lg font-bold text-green-600 dark:text-green-400">
-                                  ${parseFloat(calculatedPrice).toFixed(2)}
+                                  €{parseFloat(calculatedPrice).toFixed(2)}
                                 </div>
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
                                   Calculated Price
