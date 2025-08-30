@@ -473,11 +473,17 @@ function CreateListingPage() {
                 />
               </div>
 
-              {/* Price and Category Row */}
+              {/* Price and Category Row - Enhanced */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Price * ($)
+                    {selectedCatalyst && (
+                      <span className="text-green-600 dark:text-green-400 text-xs ml-2 flex items-center">
+                        <Zap className="w-3 h-3 mr-1" />
+                        Auto-calculated from catalyst data
+                      </span>
+                    )}
                   </label>
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -489,9 +495,20 @@ function CreateListingPage() {
                       placeholder="0.00"
                       min="0"
                       step="0.01"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                        selectedCatalyst 
+                          ? 'border-green-300 dark:border-green-600 focus:border-green-500' 
+                          : 'border-gray-300 dark:border-gray-600 focus:border-blue-500'
+                      }`}
                       required
                     />
+                    {selectedCatalyst && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded text-xs font-medium">
+                          Auto-filled
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
