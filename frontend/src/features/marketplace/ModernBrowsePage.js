@@ -588,10 +588,13 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
         <img
           src={item.images?.[currentImageIndex] || item.images?.[0] || '/api/placeholder/400/300'}
           alt={item.title}
-          className={`object-cover transition-transform duration-300 group-hover:scale-105 ${
+          className={`object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer ${
             isGridView ? 'w-full h-64' : 'w-full h-full rounded-lg'
           }`}
-          onClick={handleNextImage}
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/product/${item.id}`);
+          }}
         />
         
         {/* Image Indicators */}
