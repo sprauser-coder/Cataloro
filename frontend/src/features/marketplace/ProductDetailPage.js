@@ -319,23 +319,78 @@ function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Price and Discount */}
+          {/* Price Section */}
           <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
             <div className="flex items-center space-x-4 mb-4">
               <div className="text-4xl font-bold text-gray-900 dark:text-white">
                 €{product.price.toLocaleString()}
               </div>
-              {originalPrice && (
-                <div className="flex items-center space-x-2">
-                  <span className="text-xl text-gray-500 line-through">
-                    €{originalPrice.toLocaleString()}
-                  </span>
-                  <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full text-sm font-medium">
-                    {discount}% off
-                  </span>
-                </div>
-              )}
             </div>
+
+            {/* Market Price Suggestion for Catalyst Items */}
+            {product.category === 'Catalysts' && (
+              <div className="mb-4">
+                {loadingSuggestion ? (
+                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                    <div className="w-4 h-4 border border-gray-400 border-t-transparent rounded-full animate-spin mr-3"></div>
+                    Loading market price analysis...
+                  </div>
+                ) : priceSuggestion && Math.abs(priceSuggestion - product.price) > 0.01 ? (
+                  <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100 dark:border-blue-800/50">
+                    <div className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-800/50">
+                            <Database className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wide">
+                              Database Market Price
+                            </div>
+                            <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                              €{priceSuggestion.toFixed(2)}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          {product.price < priceSuggestion ? (
+                            <div className="inline-flex items-center px-3 py-2 rounded-full bg-green-100 dark:bg-green-900/40 border border-green-200 dark:border-green-800">
+                              <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400 mr-2" />
+                              <span className="text-sm font-semibold text-green-700 dark:text-green-300">
+                                Excellent Deal
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="inline-flex items-center px-3 py-2 rounded-full bg-orange-100 dark:bg-orange-900/40 border border-orange-200 dark:border-orange-800">
+                              <Info className="w-4 h-4 text-orange-600 dark:text-orange-400 mr-2" />
+                              <span className="text-sm font-semibold text-orange-700 dark:text-orange-300">
+                                Above Market
+                              </span>
+                            </div>
+                          )}
+                          <div className="text-sm text-blue-600 dark:text-blue-400 mt-2">
+                            {product.price < priceSuggestion 
+                              ? `You save €${(priceSuggestion - product.price).toFixed(2)}`
+                              : `€${(product.price - priceSuggestion).toFixed(2)} above market`
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="absolute top-0 right-0 w-24 h-full bg-gradient-to-l from-blue-200/20 to-transparent dark:from-blue-700/20"></div>
+                  </div>
+                ) : priceSuggestion && Math.abs(priceSuggestion - product.price) <= 0.01 ? (
+                  <div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 rounded-lg border border-green-200 dark:border-green-800/50">
+                    <div className="p-1.5 rounded bg-green-100 dark:bg-green-800/50">
+                      <Database className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    </div>
+                    <span className="text-sm font-semibold text-green-700 dark:text-green-300">
+                      Perfect Market Price Match
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            )}
 
             {/* Condition and Availability */}
             <div className="flex items-center space-x-6 text-sm">
