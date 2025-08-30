@@ -154,7 +154,21 @@ function CreateListingPage() {
     const calculation = calculations.find(calc => calc.cat_id === catalystId);
     console.log('Looking for price for catalyst:', catalystId, 'Found calculation:', calculation); // Debug
     return calculation?.total_price || null;
-  };;
+  };
+
+  const getCalculatedPriceRange = (catalystId) => {
+    const basePrice = getCalculatedPrice(catalystId);
+    if (!basePrice) return null;
+    
+    const minPrice = basePrice * 0.9;
+    const maxPrice = basePrice * 1.1;
+    
+    return {
+      basePrice: parseFloat(basePrice),
+      minPrice: parseFloat(minPrice.toFixed(2)),
+      maxPrice: parseFloat(maxPrice.toFixed(2))
+    };
+  };
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
