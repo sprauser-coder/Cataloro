@@ -443,6 +443,7 @@ function MessagesPage() {
 
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900/50 dark:to-gray-800">
+                  {/* New messages at top */}
                   {conversationMessages.map((message, index) => {
                     const isOwn = message.sender_id === user?.id;
                     const showAvatar = index === 0 || conversationMessages[index - 1].sender_id !== message.sender_id;
@@ -488,6 +489,18 @@ function MessagesPage() {
                       </div>
                     );
                   })}
+                  
+                  {/* Optional scroll to oldest messages */}
+                  {conversationMessages.length > 5 && (
+                    <div className="flex justify-center py-4">
+                      <button
+                        onClick={scrollToBottom}
+                        className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        View older messages
+                      </button>
+                    </div>
+                  )}
                   <div ref={messagesEndRef} />
                 </div>
 
