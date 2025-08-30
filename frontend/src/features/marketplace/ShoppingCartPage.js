@@ -259,7 +259,7 @@ function ShoppingCartPage() {
                           <h4 className="font-medium text-gray-900 dark:text-white text-sm">
                             {item.title}
                           </h4>
-                          <p className="text-lg font-bold text-blue-600">${item.price}</p>
+                          <p className="text-lg font-bold text-blue-600">€{item.price}</p>
                           <button
                             onClick={() => moveToCart(item)}
                             className="text-sm text-blue-600 hover:text-blue-700 font-medium mt-1"
