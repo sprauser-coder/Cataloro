@@ -457,20 +457,36 @@ function CreateListingPage() {
                 )}
               </div>
 
-              {/* Description */}
+              {/* Enhanced Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Description *
+                  {selectedCatalyst && (
+                    <span className="text-purple-600 dark:text-purple-400 text-xs ml-2 flex items-center">
+                      <Zap className="w-3 h-3 mr-1" />
+                      Auto-generated from catalyst specifications
+                    </span>
+                  )}
                 </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Provide a detailed description of your item..."
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows={selectedCatalyst ? 8 : 4}
+                  className={`w-full px-4 py-3 border-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 transition-all duration-200 ${
+                    selectedCatalyst 
+                      ? 'border-purple-300 dark:border-purple-600 focus:border-purple-500' 
+                      : 'border-gray-300 dark:border-gray-600 focus:border-blue-500'
+                  }`}
                   required
                 />
+                {selectedCatalyst && (
+                  <p className="text-xs text-purple-600 dark:text-purple-400 mt-2 flex items-center">
+                    <Database className="w-3 h-3 mr-1" />
+                    Description includes catalyst specifications and current market information
+                  </p>
+                )}
               </div>
 
               {/* Price and Category Row - Enhanced */}
