@@ -552,12 +552,19 @@ export function MarketplaceProvider({ children }) {
     // Cart actions
     // Cart actions with live API
     addToCart: async (product, userId = null) => {
+      // Check if item already in cart for marketplace listings
+      const existingItem = state.cartItems.find(item => item.id === product.id);
+      if (existingItem) {
+        showNotification(`${product.title} is already in your cart`, 'info');
+        return;
+      }
+      
       try {
         if (userId) {
           // Use live API
           await liveService.addToCart(userId, {
             item_id: product.id,
-            quantity: 1,
+            quantity: 1, // Always 1 for marketplace listings
             price: product.price
           });
         }
