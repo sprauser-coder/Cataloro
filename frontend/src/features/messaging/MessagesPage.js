@@ -131,7 +131,8 @@ function MessagesPage() {
 
   const selectConversation = (conversation) => {
     setSelectedConversation(conversation);
-    const sortedMessages = conversation.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    // Sort messages with newest first (reverse chronological order)
+    const sortedMessages = conversation.messages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     setConversationMessages(sortedMessages);
     
     // Mark messages as read
