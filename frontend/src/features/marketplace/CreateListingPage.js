@@ -594,10 +594,17 @@ function CreateListingPage() {
                       <p className="font-bold text-gray-900 dark:text-white text-lg">{selectedCatalyst.ceramic_weight}g</p>
                     </div>
                     <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-                      <span className="text-gray-600 dark:text-gray-400 text-sm block mb-1">Calculated Price</span>
-                      <p className="font-bold text-green-600 dark:text-green-400 text-2xl">
-                        €{getCalculatedPrice(selectedCatalyst.cat_id) ? parseFloat(getCalculatedPrice(selectedCatalyst.cat_id)).toFixed(2) : 'N/A'}
+                      <span className="text-gray-600 dark:text-gray-400 text-sm block mb-1">Market Range (±10%)</span>
+                      <p className="font-bold text-green-600 dark:text-green-400 text-lg">
+                        {getCalculatedPriceRange(selectedCatalyst.cat_id) ? (
+                          <>
+                            €{getCalculatedPriceRange(selectedCatalyst.cat_id).minPrice.toFixed(2)} - €{getCalculatedPriceRange(selectedCatalyst.cat_id).maxPrice.toFixed(2)}
+                          </>
+                        ) : 'N/A'}
                       </p>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        Base: €{getCalculatedPrice(selectedCatalyst.cat_id) ? parseFloat(getCalculatedPrice(selectedCatalyst.cat_id)).toFixed(2) : 'N/A'}
+                      </span>
                     </div>
                   </div>
                   <div className="mt-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
