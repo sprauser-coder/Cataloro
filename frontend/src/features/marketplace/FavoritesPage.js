@@ -200,7 +200,7 @@ function FavoriteCard({ item, onRemove, onAddToCart, onNavigate }) {
           {item.original_price && parseFloat(item.original_price) > parseFloat(item.price) && (
             <>
               <span className="text-lg text-gray-500 line-through">
-                ${parseFloat(item.original_price).toFixed(2)}
+                €{parseFloat(item.original_price).toFixed(2)}
               </span>
               <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
                 {Math.round((1 - parseFloat(item.price) / parseFloat(item.original_price)) * 100)}% off
