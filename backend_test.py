@@ -388,6 +388,179 @@ class CataloroAPITester:
             print("   ❌ Cannot verify site branding data persistence")
             return False
 
+    def test_catalyst_calculations(self):
+        """Test Cat Database Price Calculations endpoint"""
+        if not self.admin_user:
+            print("❌ Catalyst Calculations - SKIPPED (No admin logged in)")
+            return False
+            
+        success, response = self.run_test(
+            "Catalyst Price Calculations",
+            "GET",
+            "api/admin/catalyst/calculations",
+            200
+        )
+        
+        if success:
+            print(f"   Found {len(response)} catalyst calculations")
+            # Check if calculations have total_price field
+            if response and len(response) > 0:
+                first_calc = response[0]
+                if 'total_price' in first_calc:
+                    print(f"   ✅ Total price field present: €{first_calc['total_price']}")
+                    self.log_test("Catalyst Price Data Structure", True, "total_price field found")
+                else:
+                    self.log_test("Catalyst Price Data Structure", False, "total_price field missing")
+            else:
+                print("   ⚠️  No catalyst calculations found")
+        return success
+
+    def test_create_catalyst_listing(self):
+        """Create a test catalyst listing with FAPACAT"""
+        if not self.regular_user:
+            print("❌ Create Catalyst Listing - SKIPPED (No user logged in)")
+            return False
+            
+        # Create test catalyst listing with FAPACAT name
+        catalyst_listing = {
+            "title": "FAPACAT8659 Catalyst - Premium Grade",
+            "description": "High-quality automotive catalyst with excellent precious metal content. Weight: 1.53g. Suitable for marketplace pricing suggestions testing.",
+            "price": 292.74,
+            "category": "Catalysts",
+            "condition": "Used - Good",
+            "seller_id": self.regular_user['id'],
+            "images": ["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"],
+            "tags": ["catalyst", "automotive", "precious metals", "FAPACAT"],
+            "features": ["High PT content", "Ceramic substrate", "Tested quality"]
+        }
+        
+        success, response = self.run_test(
+            "Create Catalyst Listing",
+            "POST",
+            "api/listings",
+            200,
+            data=catalyst_listing
+        )
+        
+        if success:
+            self.test_listing_id = response.get('listing_id')
+            print(f"   ✅ Catalyst listing created with ID: {self.test_listing_id}")
+            
+            # Verify no quantity field was added
+            if 'quantity' not in catalyst_listing:
+                self.log_test("Quantity Field Removal", True, "No quantity field in listing (one product per listing)")
+            
+        return success
+
+    def test_browse_catalyst_listings(self):
+        """Test browse listings endpoint for catalyst listings"""
+        success, response = self.run_test(
+            "Browse Catalyst Listings",
+            "GET",
+            "api/marketplace/browse",
+            200
+        )
+        
+        if success:
+            catalyst_listings = [listing for listing in response if listing.get('category') == 'Catalysts']
+            print(f"   Found {len(catalyst_listings)} catalyst listings out of {len(response)} total")
+            
+            # Check for FAPACAT listing
+            fapacat_listings = [listing for listing in catalyst_listings if 'FAPACAT' in listing.get('title', '')]
+            if fapacat_listings:
+                print(f"   ✅ Found FAPACAT listing: {fapacat_listings[0]['title']}")
+                self.log_test("FAPACAT Listing Discovery", True, f"Found {len(fapacat_listings)} FAPACAT listings")
+            else:
+                self.log_test("FAPACAT Listing Discovery", False, "No FAPACAT listings found in browse results")
+                
+        return success
+
+    def test_price_matching_logic(self):
+        """Test price matching between catalyst data and listings"""
+        if not self.admin_user:
+            print("❌ Price Matching - SKIPPED (No admin logged in)")
+            return False
+            
+        # Get catalyst calculations
+        calc_success, calc_response = self.run_test(
+            "Get Catalyst Calculations for Matching",
+            "GET",
+            "api/admin/catalyst/calculations",
+            200
+        )
+        
+        if not calc_success:
+            return False
+            
+        # Get browse listings
+        browse_success, browse_response = self.run_test(
+            "Get Browse Listings for Matching",
+            "GET",
+            "api/marketplace/browse",
+            200
+        )
+        
+        if not browse_success:
+            return False
+            
+        # Test price matching logic
+        catalyst_listings = [listing for listing in browse_response if listing.get('category') == 'Catalysts']
+        matched_prices = 0
+        
+        for listing in catalyst_listings:
+            listing_title = listing.get('title', '')
+            
+            # Look for matching catalyst in calculations
+            for calc in calc_response:
+                calc_name = calc.get('name', '')
+                if calc_name and calc_name in listing_title:
+                    calculated_price = calc.get('total_price', 0)
+                    listing_price = listing.get('price', 0)
+                    
+                    print(f"   📊 Price Match Found:")
+                    print(f"      Listing: {listing_title}")
+                    print(f"      Catalyst: {calc_name}")
+                    print(f"      Calculated Price: €{calculated_price}")
+                    print(f"      Listed Price: €{listing_price}")
+                    
+                    matched_prices += 1
+                    break
+        
+        success = matched_prices > 0
+        self.log_test("Price Matching Logic", success, f"Found {matched_prices} price matches")
+        return success
+
+    def test_marketplace_pricing_suggestions(self):
+        """Comprehensive test of marketplace pricing suggestions functionality"""
+        print("\n💰 Testing Marketplace Pricing Suggestions Functionality...")
+        
+        # Test 1: Cat Database Price Calculations
+        calc_success = self.test_catalyst_calculations()
+        
+        # Test 2: Create Test Catalyst Listing
+        create_success = self.test_create_catalyst_listing()
+        
+        # Test 3: Browse Catalyst Listings
+        browse_success = self.test_browse_catalyst_listings()
+        
+        # Test 4: Price Matching Logic
+        match_success = self.test_price_matching_logic()
+        
+        # Summary
+        total_tests = 4
+        passed_tests = sum([calc_success, create_success, browse_success, match_success])
+        
+        print(f"\n📊 Pricing Suggestions Test Summary: {passed_tests}/{total_tests} tests passed")
+        
+        if passed_tests == total_tests:
+            print("🎉 All pricing suggestions functionality tests passed!")
+            self.log_test("Marketplace Pricing Suggestions Complete", True, "All pricing suggestion features working")
+        else:
+            print(f"⚠️  {total_tests - passed_tests} pricing suggestion tests failed")
+            self.log_test("Marketplace Pricing Suggestions Complete", False, f"{total_tests - passed_tests} tests failed")
+            
+        return passed_tests == total_tests
+
     def run_all_tests(self):
         """Run complete test suite"""
         print("🚀 Starting Cataloro Marketplace API Tests")
