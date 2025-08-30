@@ -332,9 +332,14 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
               {/* Favorites */}
               <Link
                 to="/favorites"
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
+                className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
               >
                 <Heart className="w-6 h-6" />
+                {favoriteCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                    {favoriteCount}
+                  </span>
+                )}
               </Link>
 
               {/* Cart */}
@@ -349,12 +354,12 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 }}
               >
                 <ShoppingCart className="w-5 h-5" />
-                {cartItems > 0 && (
+                {(cartItems?.length > 0 || cartItems > 0) && (
                   <span className="absolute -top-2 -right-2 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold text-[10px]" style={{
                     background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
                     boxShadow: '0 4px 15px rgba(240, 147, 251, 0.4)'
                   }}>
-                    {cartItems}
+                    {Array.isArray(cartItems) ? cartItems.length : cartItems}
                   </span>
                 )}
               </Link>
