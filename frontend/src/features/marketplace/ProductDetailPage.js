@@ -77,7 +77,7 @@ function ProductDetailPage() {
   const discount = originalPrice ? Math.round(((originalPrice - product.price) / originalPrice) * 100) : 0;
 
   const handleAddToCart = () => {
-    const cartItem = { ...product, quantity };
+    const cartItem = { ...product, quantity: 1 };
     addToCart(cartItem);
   };
 
