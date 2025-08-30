@@ -551,7 +551,7 @@ function ModernBrowsePage() {
 }
 
 // Enhanced Product Card Component
-function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavoriteToggle, isInFavorites }) {
+function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavoriteToggle, onMessageSeller, isInFavorites }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
