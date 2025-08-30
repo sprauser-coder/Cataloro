@@ -1053,6 +1053,29 @@ class CataloroAPITester:
         if admin_login_success and user_login_success:
             self.test_marketplace_pricing_suggestions()
 
+        # NEW: Bulk Actions and add_info Search Functionality Tests (as requested in review)
+        print("\n🔥 Testing Bulk Actions and add_info Search Functionality...")
+        if admin_login_success and user_login_success:
+            print("\n1️⃣ Testing Bulk Listing Operations...")
+            bulk_success = self.test_bulk_listing_operations()
+            
+            print("\n2️⃣ Testing Listing CRUD Operations...")
+            crud_success = self.test_listing_crud_operations()
+            
+            print("\n3️⃣ Testing add_info Integration...")
+            add_info_success = self.test_add_info_integration()
+            
+            # Summary of bulk actions and add_info tests
+            bulk_tests_passed = sum([bulk_success, crud_success, add_info_success])
+            print(f"\n📊 Bulk Actions & add_info Tests Summary: {bulk_tests_passed}/3 test suites passed")
+            
+            if bulk_tests_passed == 3:
+                print("🎉 All bulk actions and add_info functionality tests passed!")
+                self.log_test("Bulk Actions & add_info Complete", True, "All bulk operations and add_info features working")
+            else:
+                print(f"⚠️  {3 - bulk_tests_passed} bulk action test suites failed")
+                self.log_test("Bulk Actions & add_info Complete", False, f"{3 - bulk_tests_passed} test suites failed")
+
         # Print results
         print("\n" + "=" * 60)
         print(f"📊 Test Results: {self.tests_passed}/{self.tests_run} tests passed")
