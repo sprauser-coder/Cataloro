@@ -149,7 +149,7 @@ function FunctionalCartPage() {
                     <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
                       {item.title}
                     </h4>
-                    <p className="text-lg font-bold text-blue-600">${item.price}</p>
+                    <p className="text-lg font-bold text-blue-600">€{item.price}</p>
                   </div>
                 ))}
               </div>
