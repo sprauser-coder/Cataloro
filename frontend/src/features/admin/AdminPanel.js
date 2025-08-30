@@ -3628,11 +3628,19 @@ function ListingModal({ listing, onSave, onClose }) {
 
   const selectCatalyst = (catalyst) => {
     setSelectedCatalyst(catalyst);
+    
+    // Build description with add_info if available
+    let description = `Catalyst: ${catalyst.name}\n\nSpecifications:\n- Ceramic Weight: ${catalyst.ceramic_weight}g\n\nProfessional grade catalyst suitable for automotive and industrial applications.`;
+    
+    if (catalyst.add_info && catalyst.add_info.trim()) {
+      description += `\n\nAdditional Information:\n${catalyst.add_info}`;
+    }
+    
     setFormData({
       ...formData, 
       title: catalyst.name || catalyst.cat_id,
       category: 'Catalysts',
-      description: `Catalyst: ${catalyst.name}\n\nSpecifications:\n- Ceramic Weight: ${catalyst.ceramic_weight}g\n\nProfessional grade catalyst suitable for automotive and industrial applications.`
+      description: description
     });
     setShowSuggestions(false);
   };
