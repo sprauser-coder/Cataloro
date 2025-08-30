@@ -670,7 +670,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
     }
   };
 
-  const handleBulkAction = async (action = null) => {
+  const handleUserBulkAction = async (action = null) => {
     const actionToPerform = action || bulkAction;
     if (!actionToPerform || selectedUsers.length === 0) return;
 
