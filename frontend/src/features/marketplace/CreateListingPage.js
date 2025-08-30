@@ -275,7 +275,20 @@ function CreateListingPage() {
           location: formData.location || 'Not specified'
         },
         images: imagePreviews, // Use the base64 previews for demo
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        // Include catalyst metadata if selected
+        ...(selectedCatalyst && {
+          catalyst_id: selectedCatalyst.cat_id,
+          catalyst_name: selectedCatalyst.name,
+          is_catalyst_listing: true,
+          calculated_price: getCalculatedPrice(selectedCatalyst.cat_id),
+          catalyst_specs: {
+            ceramic_weight: selectedCatalyst.ceramic_weight,
+            pt_ppm: selectedCatalyst.pt_ppm,
+            pd_ppm: selectedCatalyst.pd_ppm,
+            rh_ppm: selectedCatalyst.rh_ppm
+          }
+        })
       };
 
       // Create listing
