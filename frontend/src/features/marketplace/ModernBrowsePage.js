@@ -83,6 +83,53 @@ function ModernBrowsePage() {
     }
   };
 
+  // Handle message seller
+  const handleMessageSeller = (item, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      showToast('Please login to message sellers', 'info');
+      return;
+    }
+    
+    if (item.seller_id === user.id) {
+      showToast("You can't message yourself about your own listing", 'info');
+      return;
+    }
+    
+    setSelectedProduct(item);
+    setMessageContent(`Hi! I'm interested in your listing "${item.title}". Is it still available?`);
+    setShowMessageModal(true);
+  };
+
+  // Send message to seller
+  const handleSendMessage = async () => {
+    if (!messageContent.trim() || !selectedProduct) {
+      showToast('Please enter a message', 'error');
+      return;
+    }
+
+    try {
+      setSending(true);
+      await liveService.sendMessage(user.id, {
+        recipient_id: selectedProduct.seller_id,
+        subject: `Inquiry about: ${selectedProduct.title}`,
+        content: messageContent
+      });
+      
+      showToast('Message sent successfully!', 'success');
+      setShowMessageModal(false);
+      setMessageContent('');
+      setSelectedProduct(null);
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      showToast('Failed to send message. Please try again.', 'error');
+    } finally {
+      setSending(false);
+    }
+  };
+
   const [showFilters, setShowFilters] = useState(false);
   const [heroContent, setHeroContent] = useState({
     title: 'Discover Amazing Products',
