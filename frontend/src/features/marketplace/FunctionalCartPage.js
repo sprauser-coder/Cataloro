@@ -364,7 +364,7 @@ function FunctionalCartPage() {
                 
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Shipping</span>
-                  <span>{shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}</span>
+                  <span>{shipping === 0 ? 'FREE' : `€${shipping.toFixed(2)}`}</span>
                 </div>
                 
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
