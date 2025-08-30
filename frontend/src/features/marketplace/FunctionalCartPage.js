@@ -410,7 +410,7 @@ function FunctionalCartPage() {
                 ) : (
                   <>
                     <CreditCard className="w-6 h-6 mr-2" />
-                    Checkout - ${total.toFixed(2)}
+                    Checkout - €{total.toFixed(2)}
                   </>
                 )}
               </button>
