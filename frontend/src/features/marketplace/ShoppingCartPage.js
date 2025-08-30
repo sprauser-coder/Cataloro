@@ -381,7 +381,7 @@ function ShoppingCartPage() {
                   
                   <div className="flex justify-between text-gray-600 dark:text-gray-400">
                     <span>Tax</span>
-                    <span>${tax.toFixed(2)}</span>
+                    <span>€{tax.toFixed(2)}</span>
                   </div>
                   
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
