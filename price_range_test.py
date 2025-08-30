@@ -338,12 +338,10 @@ class PriceRangeAPITester:
                 formatted = f"€{min_price:.2f} - €{max_price:.2f}"
                 
                 # Check format validity (should have € symbol and proper decimal places)
-                format_valid = (
-                    formatted.startswith('€') and
-                    ' - €' in formatted and
-                    len(formatted.split('€')[1].split('.')[1]) == 2 and
-                    len(formatted.split('€')[2].split('.')[1]) == 2
-                )
+                import re
+                # Use regex to validate format: €XX.XX - €XX.XX
+                format_pattern = r'€\d+\.\d{2} - €\d+\.\d{2}'
+                format_valid = bool(re.match(format_pattern, formatted))
                 
                 real_data_tests += 1
                 if format_valid:
