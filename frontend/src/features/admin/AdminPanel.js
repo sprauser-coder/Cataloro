@@ -3882,7 +3882,7 @@ function ListingModal({ listing, onSave, onClose }) {
                   <p className="font-medium text-gray-900 dark:text-white">{selectedCatalyst.ceramic_weight}g</p>
                 </div>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">Market Range (±10%):</span>
+                  <span className="text-gray-600 dark:text-gray-400">Market Range:</span>
                   <p className="font-bold text-green-600 dark:text-green-400 text-lg">
                     {getCalculatedPriceRange(selectedCatalyst.cat_id) ? (
                       <>
@@ -3890,9 +3890,6 @@ function ListingModal({ listing, onSave, onClose }) {
                       </>
                     ) : 'N/A'}
                   </p>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Base: €{getCalculatedPrice(selectedCatalyst.cat_id) ? parseFloat(getCalculatedPrice(selectedCatalyst.cat_id)).toFixed(2) : 'N/A'}
-                  </span>
                 </div>
               </div>
             </div>
