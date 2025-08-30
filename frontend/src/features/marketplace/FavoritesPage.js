@@ -206,7 +206,7 @@ function FavoriteCard({ item, onRemove, onAddToCart, onNavigate }) {
           )}
         </div>
 
-        {/* Rating and Reviews */}
+        {/* Rating and Reviews - Only show if rating exists */}
         {item.rating && (
           <div className="flex items-center space-x-2 mb-3">
             <div className="flex items-center">
@@ -214,7 +214,7 @@ function FavoriteCard({ item, onRemove, onAddToCart, onNavigate }) {
                 <Star
                   key={i}
                   className={`w-4 h-4 ${
-                    i < Math.floor(item.rating || 0)
+                    i < Math.floor(parseFloat(item.rating) || 0)
                       ? 'text-yellow-400 fill-current'
                       : 'text-gray-300'
                   }`}
@@ -222,7 +222,7 @@ function FavoriteCard({ item, onRemove, onAddToCart, onNavigate }) {
               ))}
             </div>
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              {item.rating} ({item.seller?.reviews || 0} reviews)
+              {parseFloat(item.rating).toFixed(1)} ({item.reviews || item.review_count || '0'} reviews)
             </span>
           </div>
         )}
