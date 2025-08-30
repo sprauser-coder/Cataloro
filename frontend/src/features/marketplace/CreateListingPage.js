@@ -94,6 +94,7 @@ function CreateListingPage() {
         const data = await response.json();
         setCalculations(data);
         console.log('Loaded calculations:', data.length, 'entries');
+        console.log('Sample calculation:', data[0]); // Debug: Check structure
       }
     } catch (error) {
       console.error('Failed to fetch calculations:', error);
