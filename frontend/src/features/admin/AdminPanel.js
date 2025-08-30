@@ -980,7 +980,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                       type="checkbox"
                       checked={selectedUsers.includes(user.id)}
                       onChange={(e) => handleSelectUser(user.id, e.target.checked)}
-                      className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
+                      className="w-5 h-5 rounded border-2 border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700 text-purple-600 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 checked:bg-purple-600 checked:border-purple-600 dark:checked:bg-purple-500 dark:checked:border-purple-500"
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
