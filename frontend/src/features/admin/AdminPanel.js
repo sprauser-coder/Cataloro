@@ -822,37 +822,100 @@ function UsersTab({ users, onUpdateUser, showToast }) {
         </div>
       </div>
 
-      {/* Bulk Actions for Users */}
+      {/* Enhanced Bulk Actions for Users - REDESIGNED */}
       {selectedUsers.length > 0 && (
-        <div className="cataloro-card-glass p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+        <div className="cataloro-card-glass p-6 border-2 border-blue-200 dark:border-blue-800 shadow-xl">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
-                <span className="text-lg font-medium text-gray-900 dark:text-white">
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">
                   {selectedUsers.length} user{selectedUsers.length !== 1 ? 's' : ''} selected
                 </span>
+                <div className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-sm font-medium rounded-full">
+                  Ready for action
+                </div>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <select
-                value={bulkAction}
-                onChange={(e) => setBulkAction(e.target.value)}
-                className="cataloro-input min-w-[180px]"
-              >
-                <option value="">Choose Bulk Action</option>
-                <option value="activate">✅ Activate Users</option>
-                <option value="suspend">⏸️ Suspend Users</option>
-                <option value="promote">⭐ Promote to Admin</option>
-                <option value="demote">📉 Demote to User</option>
-                <option value="delete">🗑️ Delete Users</option>
-              </select>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+              {/* Activate Users */}
               <button
-                onClick={handleBulkAction}
-                disabled={!bulkAction}
-                className="cataloro-button-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => { setBulkAction('activate'); handleBulkAction(); }}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Activate selected users"
               >
-                Apply Action
+                <CheckCircle className="w-4 h-4" />
+                <span className="hidden sm:inline">Activate</span>
+              </button>
+
+              {/* Suspend Users */}
+              <button
+                onClick={() => { setBulkAction('suspend'); handleBulkAction(); }}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Suspend selected users"
+              >
+                <Ban className="w-4 h-4" />
+                <span className="hidden sm:inline">Suspend</span>
+              </button>
+
+              {/* Delete Users */}
+              <button
+                onClick={() => { setBulkAction('delete'); handleBulkAction(); }}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Delete selected users"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Delete</span>
+              </button>
+
+              {/* Promote to Admin */}
+              <button
+                onClick={() => { setBulkAction('promote'); handleBulkAction(); }}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Promote to admin"
+              >
+                <Shield className="w-4 h-4" />
+                <span className="hidden sm:inline">Promote</span>
+              </button>
+
+              {/* Send Message */}
+              <button
+                onClick={() => { setBulkAction('message'); handleBulkAction(); }}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Send message to selected users"
+              >
+                <Mail className="w-4 h-4" />
+                <span className="hidden sm:inline">Message</span>
+              </button>
+            </div>
+          </div>
+          
+          {/* Additional Bulk Actions Row */}
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+              <button
+                onClick={() => { setBulkAction('export'); handleBulkAction(); }}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export Selected</span>
+              </button>
+              
+              <button
+                onClick={() => { setBulkAction('reset-password'); handleBulkAction(); }}
+                className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+              >
+                <Lock className="w-4 h-4" />
+                <span>Reset Passwords</span>
+              </button>
+              
+              <button
+                onClick={() => setSelectedUsers([])}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg font-medium transition-colors"
+              >
+                <X className="w-4 h-4" />
+                <span>Clear Selection</span>
               </button>
             </div>
           </div>
