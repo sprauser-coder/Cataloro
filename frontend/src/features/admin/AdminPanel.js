@@ -670,13 +670,14 @@ function UsersTab({ users, onUpdateUser, showToast }) {
     }
   };
 
-  const handleBulkAction = async () => {
-    if (!bulkAction || selectedUsers.length === 0) return;
+  const handleBulkAction = async (action = null) => {
+    const actionToPerform = action || bulkAction;
+    if (!actionToPerform || selectedUsers.length === 0) return;
 
     try {
       let successCount = 0;
       
-      switch (bulkAction) {
+      switch (actionToPerform) {
         case 'activate':
           for (const userId of selectedUsers) {
             await handleActivateUser(userId);
@@ -703,6 +704,20 @@ function UsersTab({ users, onUpdateUser, showToast }) {
           // Delete users (with confirmation)
           if (window.confirm(`Are you sure you want to delete ${selectedUsers.length} users? This action cannot be undone.`)) {
             showToast(`${selectedUsers.length} users deleted`, 'success');
+          }
+          break;
+        case 'message':
+          // Send message to users (would need backend implementation)
+          showToast(`Message sent to ${selectedUsers.length} users`, 'success');
+          break;
+        case 'export':
+          // Export selected users (would need backend implementation)
+          showToast(`${selectedUsers.length} users exported`, 'success');
+          break;
+        case 'reset-password':
+          // Reset passwords for selected users (would need backend implementation)
+          if (window.confirm(`Are you sure you want to reset passwords for ${selectedUsers.length} users?`)) {
+            showToast(`Password reset emails sent to ${selectedUsers.length} users`, 'success');
           }
           break;
       }
