@@ -3739,7 +3739,7 @@ function ListingModal({ listing, onSave, onClose }) {
                                   €{priceRange.minPrice.toFixed(2)} - €{priceRange.maxPrice.toFixed(2)}
                                 </div>
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                                  Market Range (±10%)
+                                  Market Range
                                 </div>
                               </div>
                             )}
