@@ -63,6 +63,40 @@ function ProductDetailPage() {
     }
   }, [productId, allProducts, navigate, addToRecentlyViewed]);
 
+  // Fetch price suggestion for catalyst items
+  useEffect(() => {
+    const fetchPriceSuggestion = async () => {
+      if (product && product.category === 'Catalysts' && (product.catalyst_id || product.title)) {
+        setLoadingSuggestion(true);
+        try {
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/calculations`);
+          if (response.ok) {
+            const calculations = await response.json();
+            
+            let suggestion = null;
+            if (product.catalyst_id) {
+              suggestion = calculations.find(calc => calc.cat_id === product.catalyst_id);
+            } else {
+              suggestion = calculations.find(calc => 
+                calc.name && calc.name.toLowerCase() === product.title.toLowerCase()
+              );
+            }
+            
+            if (suggestion && suggestion.total_price) {
+              setPriceSuggestion(parseFloat(suggestion.total_price));
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch price suggestion:', error);
+        } finally {
+          setLoadingSuggestion(false);
+        }
+      }
+    };
+
+    fetchPriceSuggestion();
+  }, [product]);
+
   if (loading || !product) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -76,8 +110,6 @@ function ProductDetailPage() {
 
   const isFavorite = favorites.some(fav => fav.id === product.id);
   const images = product.images || [product.image || 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500'];
-  const originalPrice = product.originalPrice;
-  const discount = originalPrice ? Math.round(((originalPrice - product.price) / originalPrice) * 100) : 0;
 
   const handleAddToCart = () => {
     const cartItem = { ...product, quantity: 1 };
