@@ -3688,11 +3688,15 @@ function ListingModal({ listing, onSave, onClose }) {
     setFormData({...formData, title: value});
 
     if (value.length > 0) {
-      // Filter catalyst data based on title input
-      const filtered = catalystData.filter(catalyst => 
-        catalyst.name?.toLowerCase().includes(value.toLowerCase()) ||
-        catalyst.cat_id?.toLowerCase().includes(value.toLowerCase())
-      ).slice(0, 10); // Limit to 10 suggestions
+      // Filter catalyst data based on title input, name, cat_id, AND add_info
+      const filtered = catalystData.filter(catalyst => {
+        const searchTerm = value.toLowerCase();
+        return (
+          catalyst.name?.toLowerCase().includes(searchTerm) ||
+          catalyst.cat_id?.toLowerCase().includes(searchTerm) ||
+          catalyst.add_info?.toLowerCase().includes(searchTerm)
+        );
+      }).slice(0, 10); // Limit to 10 suggestions
 
       setFilteredSuggestions(filtered);
       setShowSuggestions(filtered.length > 0);
