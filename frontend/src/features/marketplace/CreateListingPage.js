@@ -79,6 +79,8 @@ function CreateListingPage() {
         const data = await response.json();
         setCatalystData(data);
         console.log('Loaded catalyst data:', data.length, 'entries');
+        console.log('First catalyst structure:', data[0]); // Debug - check structure
+        console.log('First catalyst add_info:', data[0]?.add_info); // Debug - check add_info
       }
     } catch (error) {
       console.error('Failed to fetch catalyst data:', error);
