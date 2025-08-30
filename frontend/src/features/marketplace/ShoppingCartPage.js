@@ -370,7 +370,7 @@ function ShoppingCartPage() {
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Discount ({appliedPromo.code})</span>
-                      <span>-${discount.toFixed(2)}</span>
+                      <span>-€{discount.toFixed(2)}</span>
                     </div>
                   )}
                   
