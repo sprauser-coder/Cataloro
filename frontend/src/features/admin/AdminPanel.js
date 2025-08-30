@@ -3444,11 +3444,7 @@ function ListingsTab({ showToast }) {
                       type="checkbox"
                       checked={selectedListings.includes(listing.id)}
                       onChange={(e) => handleSelectListing(listing.id, e.target.checked)}
-                      className="w-6 h-6 rounded-md border-3 border-gray-800 dark:border-gray-300 bg-gray-50 dark:bg-gray-700 text-blue-600 focus:ring-4 focus:ring-blue-300 focus:border-blue-600 checked:bg-blue-600 checked:border-blue-600 dark:checked:bg-blue-500 dark:checked:border-blue-500 shadow-lg transition-all duration-200 hover:border-blue-500"
-                      style={{
-                        accentColor: '#2563eb',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(0,0,0,0.1)'
-                      }}
+                      className="admin-checkbox"
                     />
                   </td>
                   <td className="px-4 py-4">
