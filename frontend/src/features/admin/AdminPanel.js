@@ -3948,8 +3948,8 @@ function CatDatabaseTab({ showToast }) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-8">
+      {/* Header - STANDARDIZED SPACING */}
       <div className="cataloro-card-glass p-6">
         <div className="flex items-center justify-between">
           <div>
@@ -3981,7 +3981,7 @@ function CatDatabaseTab({ showToast }) {
         </div>
       </div>
 
-      {/* Sub-tabs */}
+      {/* Sub-tabs - STANDARDIZED SPACING */}
       <div className="cataloro-card-glass">
         <div className="border-b border-gray-200/50 dark:border-gray-700/50">
           <div className="flex space-x-8 px-6">
