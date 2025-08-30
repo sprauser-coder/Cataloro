@@ -477,7 +477,7 @@ function ProductDetailPage() {
                   </h3>
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-bold text-blue-600">
-                      ${relatedProduct.price.toLocaleString()}
+                      €{relatedProduct.price.toLocaleString()}
                     </span>
                     <div className="flex items-center space-x-1">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
