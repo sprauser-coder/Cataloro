@@ -4464,7 +4464,8 @@ function CatalystDataRow({ catalyst, isEditing, onEdit, onSave, onCancel }) {
     ceramic_weight: catalyst.ceramic_weight,
     pt_ppm: catalyst.pt_ppm,
     pd_ppm: catalyst.pd_ppm,
-    rh_ppm: catalyst.rh_ppm
+    rh_ppm: catalyst.rh_ppm,
+    add_info: catalyst.add_info || ''
   });
 
   const handleSave = () => {
@@ -4527,6 +4528,15 @@ function CatalystDataRow({ catalyst, isEditing, onEdit, onSave, onCancel }) {
           />
         </td>
         <td className="px-4 py-3">
+          <textarea
+            value={editData.add_info}
+            onChange={(e) => setEditData({...editData, add_info: e.target.value})}
+            className="w-full px-2 py-1 text-sm border rounded resize-none"
+            rows="2"
+            placeholder="Additional info for listings..."
+          />
+        </td>
+        <td className="px-4 py-3">
           <div className="flex space-x-2">
             <button
               onClick={handleSave}
@@ -4554,6 +4564,11 @@ function CatalystDataRow({ catalyst, isEditing, onEdit, onSave, onCancel }) {
       <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{catalyst.pt_ppm}</td>
       <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{catalyst.pd_ppm}</td>
       <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{catalyst.rh_ppm}</td>
+      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 max-w-xs">
+        <div className="truncate" title={catalyst.add_info || 'No additional info'}>
+          {catalyst.add_info || '-'}
+        </div>
+      </td>
       <td className="px-4 py-3 text-sm">
         <button
           onClick={onEdit}
