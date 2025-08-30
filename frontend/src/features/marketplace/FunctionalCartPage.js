@@ -497,32 +497,6 @@ function CartItem({ item, onUpdateQuantity, onRemove, onMoveToSaved, onToggleFav
 
           {/* Quantity and Actions */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Qty:
-                </span>
-                <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
-                  <button
-                    onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-lg transition-colors disabled:opacity-50"
-                    disabled={item.quantity <= 1}
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="px-4 py-2 text-center min-w-[3rem] font-medium">
-                    {item.quantity}
-                  </span>
-                  <button
-                    onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-lg transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => onToggleFavorite(item)}
