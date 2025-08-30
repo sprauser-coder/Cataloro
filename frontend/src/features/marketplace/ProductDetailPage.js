@@ -321,35 +321,14 @@ function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Quantity and Add to Cart */}
+          {/* Add to Cart */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <span className="font-medium text-gray-900 dark:text-white">Quantity:</span>
-              <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="px-4 py-3 font-medium min-w-[4rem] text-center">
-                  {quantity}
-                </span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
             <button
               onClick={handleAddToCart}
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
             >
               <ShoppingCart className="w-6 h-6" />
-              <span>Add to Cart - ${(product.price * quantity).toLocaleString()}</span>
+              <span>Add to Cart - €{product.price.toLocaleString()}</span>
             </button>
           </div>
 
