@@ -116,11 +116,15 @@ function CreateListingPage() {
     setFormData(prev => ({...prev, title: value}));
 
     if (value.length > 0) {
-      // Filter catalyst data based on title input
-      const filtered = catalystData.filter(catalyst => 
-        catalyst.name?.toLowerCase().includes(value.toLowerCase()) ||
-        catalyst.cat_id?.toLowerCase().includes(value.toLowerCase())
-      ).slice(0, 8); // Limit to 8 suggestions for better UX
+      // Filter catalyst data based on title input, name, cat_id, AND add_info
+      const filtered = catalystData.filter(catalyst => {
+        const searchTerm = value.toLowerCase();
+        return (
+          catalyst.name?.toLowerCase().includes(searchTerm) ||
+          catalyst.cat_id?.toLowerCase().includes(searchTerm) ||
+          catalyst.add_info?.toLowerCase().includes(searchTerm)
+        );
+      }).slice(0, 8); // Limit to 8 suggestions for better UX
 
       setFilteredSuggestions(filtered);
       setShowSuggestions(filtered.length > 0);
