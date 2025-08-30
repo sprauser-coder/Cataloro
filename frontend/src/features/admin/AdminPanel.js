@@ -3638,10 +3638,11 @@ function ListingModal({ listing, onSave, onClose }) {
     // Find calculated price for this catalyst
     const calculation = calculations.find(calc => calc.catalyst_id === catalyst.cat_id);
     if (calculation) {
+      const calculatedPrice = calculation['Total Price (€)'] || calculation.total_price || calculation.calculated_price;
       setFormData(prev => ({
         ...prev,
-        price: calculation.total_price || calculation.calculated_price || '',
-        description: `Catalyst ${catalyst.cat_id}: ${catalyst.name}\n\nSpecifications:\n- Ceramic Weight: ${catalyst.ceramic_weight}g\n- PT PPM: ${catalyst.pt_ppm}\n- PD PPM: ${catalyst.pd_ppm}\n- RH PPM: ${catalyst.rh_ppm}\n\nCalculated based on current market rates.`
+        price: calculatedPrice || '',
+        description: `Catalyst: ${catalyst.name}\n\nSpecifications:\n- Ceramic Weight: ${catalyst.ceramic_weight}g\n\nCalculated based on current market rates.`
       }));
     }
   };
