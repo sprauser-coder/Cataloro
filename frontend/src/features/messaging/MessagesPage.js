@@ -170,12 +170,14 @@ function MessagesPage() {
   const handleSendReply = async () => {
     if (!replyMessage.trim() || !selectedConversation) return;
 
+    const messageToSend = replyMessage; // Store the message content before clearing
+
     try {
       setSending(true);
       await liveService.sendMessage(user.id, {
         recipient_id: selectedConversation.id,
         subject: `Re: ${conversationMessages[0]?.subject || 'Conversation'}`,
-        content: replyMessage
+        content: messageToSend
       });
       
       setReplyMessage('');
@@ -187,7 +189,7 @@ function MessagesPage() {
         sender_name: user?.full_name || user?.username || 'You',
         recipient_id: selectedConversation.id,
         subject: `Re: ${conversationMessages[0]?.subject || 'Conversation'}`,
-        content: replyMessage,
+        content: messageToSend,
         is_read: true,
         created_at: new Date().toISOString()
       };
