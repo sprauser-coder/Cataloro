@@ -232,10 +232,13 @@ function FavoriteCard({ item, onRemove, onAddToCart, onNavigate }) {
           <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
             <span className="text-white text-xs font-bold">
               {(() => {
+                // Handle different seller data structures
                 if (typeof item.seller === 'string' && item.seller.length > 0) {
                   return item.seller.charAt(0).toUpperCase();
                 } else if (typeof item.seller === 'object' && item.seller?.name) {
                   return item.seller.name.charAt(0).toUpperCase();
+                } else if (item.seller_id) {
+                  return item.seller_id.charAt(0).toUpperCase();
                 } else {
                   return 'S';
                 }
@@ -244,10 +247,13 @@ function FavoriteCard({ item, onRemove, onAddToCart, onNavigate }) {
           </div>
           <span className="text-sm text-gray-600 dark:text-gray-400">
             {(() => {
+              // Handle different seller data structures
               if (typeof item.seller === 'string') {
                 return item.seller;
               } else if (typeof item.seller === 'object' && item.seller?.name) {
                 return item.seller.name;
+              } else if (item.seller_id) {
+                return item.seller_id;
               } else {
                 return 'Unknown Seller';
               }
