@@ -952,7 +952,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                     type="checkbox"
                     onChange={(e) => handleSelectAll(e.target.checked)}
                     checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
-                    className="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500"
+                    className="w-5 h-5 rounded border-2 border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700 text-purple-600 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 checked:bg-purple-600 checked:border-purple-600 dark:checked:bg-purple-500 dark:checked:border-purple-500"
                   />
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
