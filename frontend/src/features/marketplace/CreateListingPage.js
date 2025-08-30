@@ -370,20 +370,91 @@ function CreateListingPage() {
             </h2>
             
             <div className="space-y-4">
-              {/* Title */}
-              <div>
+              {/* Enhanced Title with Cat Database Integration */}
+              <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Title *
+                  <span className="text-blue-600 dark:text-blue-400 text-xs ml-2 flex items-center">
+                    <Database className="w-3 h-3 mr-1" />
+                    (Type to search Cat Database - {catalystData.length} catalysts available)
+                  </span>
                 </label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="Enter a descriptive title for your item"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={handleTitleChange}
+                  onFocus={() => formData.title && setShowSuggestions(filteredSuggestions.length > 0)}
+                  placeholder="Enter item title or start typing catalyst name/ID..."
+                  className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                   required
                 />
+                
+                {/* Catalyst Suggestions Dropdown */}
+                {showSuggestions && (
+                  <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
+                    <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-b border-gray-200 dark:border-gray-600">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                        <Database className="w-4 h-4 mr-2 text-blue-500" />
+                        Cat Database Matches ({filteredSuggestions.length})
+                        <span className="ml-2 text-xs text-gray-500">Click to auto-fill</span>
+                      </p>
+                    </div>
+                    {filteredSuggestions.map((catalyst) => {
+                      const calculatedPrice = getCalculatedPrice(catalyst.cat_id);
+                      return (
+                        <div
+                          key={catalyst.cat_id}
+                          onClick={() => selectCatalyst(catalyst)}
+                          className="p-4 hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-200 group"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3 mb-2">
+                                <span className="bg-blue-500 text-white px-3 py-1 rounded-md text-xs font-bold">
+                                  {catalyst.cat_id}
+                                </span>
+                                <span className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                  {catalyst.name}
+                                </span>
+                                <Zap className="w-4 h-4 text-yellow-500" title="Auto-fill enabled" />
+                              </div>
+                              <div className="text-xs text-gray-600 dark:text-gray-400 grid grid-cols-4 gap-4">
+                                <div className="flex flex-col">
+                                  <span className="text-gray-500">Weight</span>
+                                  <span className="font-medium">{catalyst.ceramic_weight}g</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-gray-500">PT</span>
+                                  <span className="font-medium">{catalyst.pt_ppm} ppm</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-gray-500">PD</span>
+                                  <span className="font-medium">{catalyst.pd_ppm} ppm</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-gray-500">RH</span>
+                                  <span className="font-medium">{catalyst.rh_ppm} ppm</span>
+                                </div>
+                              </div>
+                            </div>
+                            {calculatedPrice && (
+                              <div className="ml-4 text-right">
+                                <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                                  ${parseFloat(calculatedPrice).toFixed(2)}
+                                </div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                  <DollarSign className="w-3 h-3 mr-1" />
+                                  Calculated Price
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Description */}
