@@ -195,7 +195,7 @@ function FunctionalCartPage() {
               <div>
                 <p className="font-medium text-gray-900 dark:text-white">Free shipping available!</p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {subtotal >= 100 ? 'You qualify for free shipping' : `Add $${(100 - subtotal).toFixed(2)} more for free shipping`}
+                  {subtotal >= 100 ? 'You qualify for free shipping' : `Add €${(100 - subtotal).toFixed(2)} more for free shipping`}
                 </p>
               </div>
             </div>
