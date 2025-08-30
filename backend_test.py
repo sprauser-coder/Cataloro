@@ -46,6 +46,10 @@ class CataloroAPITester:
                 response = self.session.post(url, json=data, headers=test_headers)
             elif method == 'PUT':
                 response = self.session.put(url, json=data, headers=test_headers)
+            elif method == 'DELETE':
+                response = self.session.delete(url, headers=test_headers)
+            else:
+                raise ValueError(f"Unsupported HTTP method: {method}")
 
             success = response.status_code == expected_status
             details = f"Status: {response.status_code}"
