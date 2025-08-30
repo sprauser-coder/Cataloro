@@ -192,15 +192,18 @@ function FavoriteCard({ item, onRemove, onAddToCart, onNavigate }) {
         {/* Price Section */}
         <div className="flex items-center space-x-2 mb-3">
           <span className="text-2xl font-bold text-gray-900 dark:text-white">
-            ${parseFloat(item.price).toFixed(2)}
+            ${(() => {
+              const price = parseFloat(item.price) || 0;
+              return price.toFixed(2);
+            })()}
           </span>
-          {item.original_price && item.original_price > item.price && (
+          {item.original_price && parseFloat(item.original_price) > parseFloat(item.price) && (
             <>
               <span className="text-lg text-gray-500 line-through">
                 ${parseFloat(item.original_price).toFixed(2)}
               </span>
               <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-                {Math.round((1 - item.price / item.original_price) * 100)}% off
+                {Math.round((1 - parseFloat(item.price) / parseFloat(item.original_price)) * 100)}% off
               </span>
             </>
           )}
