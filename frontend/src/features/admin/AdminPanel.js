@@ -3631,20 +3631,10 @@ function ListingModal({ listing, onSave, onClose }) {
     setFormData({
       ...formData, 
       title: catalyst.name || catalyst.cat_id,
-      category: 'Catalysts'
+      category: 'Catalysts',
+      description: `Catalyst: ${catalyst.name}\n\nSpecifications:\n- Ceramic Weight: ${catalyst.ceramic_weight}g\n\nProfessional grade catalyst suitable for automotive and industrial applications.`
     });
     setShowSuggestions(false);
-    
-    // Find calculated price for this catalyst
-    const calculation = calculations.find(calc => calc.cat_id === catalyst.cat_id);
-    if (calculation) {
-      const calculatedPrice = calculation.total_price;
-      setFormData(prev => ({
-        ...prev,
-        price: calculatedPrice || '',
-        description: `Catalyst: ${catalyst.name}\n\nSpecifications:\n- Ceramic Weight: ${catalyst.ceramic_weight}g\n\nCalculated based on current market rates.`
-      }));
-    }
   };
 
   const getCalculatedPrice = (catalystId) => {
