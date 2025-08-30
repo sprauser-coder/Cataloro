@@ -605,20 +605,24 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
         
         {/* Image Indicators */}
         {item.images && item.images.length > 1 && (
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1 z-20">
             {item.images.map((_, index) => (
               <div
                 key={index}
-                className={`w-2 h-2 rounded-full ${
+                className={`w-2 h-2 rounded-full cursor-pointer ${
                   index === currentImageIndex ? 'bg-white' : 'bg-white/50'
                 }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentImageIndex(index);
+                }}
               />
             ))}
           </div>
         )}
 
         {/* Tags and Badges */}
-        <div className="absolute top-2 left-2 space-y-1">
+        <div className="absolute top-2 left-2 space-y-1 z-20">
           {item.tags?.map((tag) => (
             <span
               key={tag}
@@ -630,7 +634,7 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
         </div>
 
         {/* Enhanced Favorite Button - Always Visible */}
-        <div className="absolute top-2 right-2 space-y-2">
+        <div className="absolute top-2 right-2 space-y-2 z-20">
           <button
             onClick={(e) => onFavoriteToggle(item, e)}
             className={`p-3 backdrop-blur-lg rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 ${
