@@ -100,13 +100,11 @@ function marketplaceReducer(state, action) {
       let newCartItems;
       
       if (existingItem) {
-        newCartItems = state.cartItems.map(item =>
-          item.id === action.payload.id 
-            ? { ...item, quantity: item.quantity + (action.payload.quantity || 1) }
-            : item
-        );
+        // For marketplace listings, don't increase quantity - just show notification
+        return state;
       } else {
-        newCartItems = [...state.cartItems, { ...action.payload, quantity: action.payload.quantity || 1 }];
+        // Always add with quantity 1 - one product per listing
+        newCartItems = [...state.cartItems, { ...action.payload, quantity: 1 }];
       }
       
       const cartCount = newCartItems.reduce((sum, item) => sum + item.quantity, 0);
