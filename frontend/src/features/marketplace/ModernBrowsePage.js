@@ -481,7 +481,7 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
           isHovered ? 'opacity-100' : 'opacity-0'
         }`}>
           <button
-            onClick={(e) => handleFavoriteToggle(item, e)}
+            onClick={(e) => onFavoriteToggle(item, e)}
             className={`p-2 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-sm transition-all duration-200 ${
               isInFavorites(item.id) 
                 ? 'text-red-500 hover:text-red-600' 
