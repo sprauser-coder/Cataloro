@@ -40,11 +40,17 @@ function MessagesPage() {
   const { showToast } = useNotifications();
   
   const [messages, setMessages] = useState([]);
-  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [conversationMessages, setConversationMessages] = useState([]);
   const [newMessage, setNewMessage] = useState({ recipient: '', subject: '', content: '' });
+  const [replyMessage, setReplyMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [showCompose, setShowCompose] = useState(false);
+  const [messageFilter, setMessageFilter] = useState('all'); // all, unread, sent
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const messagesEndRef = useRef(null);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     if (user) {
