@@ -1,9 +1,9 @@
 /**
  * CATALORO - Comprehensive Messaging System
- * Full messaging functionality with real-time updates
+ * Full messaging functionality with real-time updates and enhanced UX
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   MessageCircle, 
   Send, 
@@ -19,7 +19,17 @@ import {
   Trash2,
   Reply,
   Forward,
-  X
+  X,
+  Filter,
+  Users,
+  Mail,
+  MailOpen,
+  Paperclip,
+  Image as ImageIcon,
+  Smile,
+  Phone,
+  Video,
+  Info
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
