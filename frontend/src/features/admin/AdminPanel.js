@@ -298,7 +298,7 @@ function AdminPanel() {
       {activeTab === 'settings' && (
         <SettingsTab 
           settings={settings}
-          onUpdateSettings={updateSettings}
+          onUpdateSettings={fetchSettings}
           showToast={showToast}
         />
       )}
