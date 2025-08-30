@@ -329,8 +329,8 @@ function DashboardTab({ dashboardData, loading }) {
 
   return (
     <div className="space-y-8">
-      {/* Main KPI Dashboard - FIXED FORMATTING */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+      {/* Main KPI Dashboard - STANDARDIZED SPACING */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {/* Total Users */}
         <div className="cataloro-card-glass p-6">
           <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
@@ -407,7 +407,7 @@ function DashboardTab({ dashboardData, loading }) {
         </div>
       </div>
 
-      {/* Secondary KPI Row - FIXED FORMATTING */}
+      {/* Secondary KPI Row - STANDARDIZED SPACING */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* Total Views */}
