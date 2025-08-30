@@ -378,8 +378,8 @@ function ModernBrowsePage() {
                   className="w-full"
                 />
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                  <span>$0</span>
-                  <span>${filters.priceRange[1]}</span>
+                  <span>€0</span>
+                  <span>€{filters.priceRange[1]}</span>
                 </div>
               </div>
             </div>
