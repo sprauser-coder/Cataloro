@@ -1,9 +1,9 @@
 /**
- * CATALORO - Create Listing Page
- * Comprehensive form for creating new marketplace listings
+ * CATALORO - Enhanced Create Listing Page with Cat Database Integration
+ * Comprehensive form for creating new marketplace listings with catalyst autocomplete
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Camera, 
   Upload, 
@@ -17,7 +17,10 @@ import {
   ArrowLeft,
   Plus,
   Trash2,
-  CheckCircle
+  CheckCircle,
+  Database,
+  Search,
+  Zap
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
