@@ -476,27 +476,30 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
           ))}
         </div>
 
-        {/* Quick Actions */}
-        <div className={`absolute top-2 right-2 space-y-2 transition-opacity duration-200 ${
-          isHovered ? 'opacity-100' : 'opacity-0'
-        }`}>
+        {/* Enhanced Favorite Button - Always Visible */}
+        <div className="absolute top-2 right-2 space-y-2">
           <button
             onClick={(e) => onFavoriteToggle(item, e)}
-            className={`p-2 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-sm transition-all duration-200 ${
+            className={`p-3 backdrop-blur-lg rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 ${
               isInFavorites(item.id) 
-                ? 'text-red-500 hover:text-red-600' 
-                : 'text-gray-700 dark:text-gray-300 hover:text-red-500'
+                ? 'bg-red-500/90 text-white shadow-red-500/25' 
+                : 'bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'
             }`}
+            title={isInFavorites(item.id) ? 'Remove from favorites' : 'Add to favorites'}
           >
             {isInFavorites(item.id) ? (
-              <Heart className="w-5 h-5 fill-current" />
+              <Heart className="w-5 h-5 fill-current animate-pulse" />
             ) : (
               <Heart className="w-5 h-5" />
             )}
           </button>
+          {/* Share Button */}
           <button 
             onClick={(e) => handleQuickAction(e, () => {})}
-            className="p-2 bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300 hover:text-blue-500 rounded-full shadow-sm transition-colors"
+            className={`p-3 backdrop-blur-lg bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300 hover:text-blue-500 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 ${
+              isHovered ? 'opacity-100' : 'opacity-80'
+            }`}
+            title="Share this item"
           >
             <Share2 className="w-5 h-5" />
           </button>
