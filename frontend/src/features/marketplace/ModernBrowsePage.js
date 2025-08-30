@@ -55,6 +55,12 @@ function ModernBrowsePage() {
     isLoading
   } = useMarketplace();
 
+  // Message modal state
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [messageContent, setMessageContent] = useState('');
+  const [sending, setSending] = useState(false);
+
   // Check if item is in favorites
   const isInFavorites = (itemId) => {
     return favorites.some(fav => fav.id === itemId);
