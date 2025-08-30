@@ -173,7 +173,7 @@ function ShoppingCartPage() {
                           <div className="text-right">
                             <div className="flex items-center space-x-2">
                               <span className="text-xl font-bold text-gray-900 dark:text-white">
-                                ${item.price}
+                                €{item.price}
                               </span>
                               {item.originalPrice && (
                                 <span className="text-sm text-gray-500 line-through">
