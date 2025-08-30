@@ -3237,7 +3237,7 @@ function ListingsTab({ showToast }) {
             </div>
             <div>
               <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                ${listings.reduce((sum, l) => sum + (l.price || 0), 0).toLocaleString()}
+                €{listings.reduce((sum, l) => sum + (l.price || 0), 0).toLocaleString()}
               </div>
               <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Value</div>
             </div>
