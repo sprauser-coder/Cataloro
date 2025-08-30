@@ -424,37 +424,22 @@ function CreateListingPage() {
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center space-x-3 mb-2">
-                                <span className="bg-blue-500 text-white px-3 py-1 rounded-md text-xs font-bold">
-                                  {catalyst.cat_id}
-                                </span>
                                 <span className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                   {catalyst.name}
                                 </span>
                                 <Zap className="w-4 h-4 text-yellow-500" title="Auto-fill enabled" />
                               </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400 grid grid-cols-4 gap-4">
+                              <div className="text-xs text-gray-600 dark:text-gray-400">
                                 <div className="flex flex-col">
                                   <span className="text-gray-500">Weight</span>
                                   <span className="font-medium">{catalyst.ceramic_weight}g</span>
-                                </div>
-                                <div className="flex flex-col">
-                                  <span className="text-gray-500">PT</span>
-                                  <span className="font-medium">{catalyst.pt_ppm} ppm</span>
-                                </div>
-                                <div className="flex flex-col">
-                                  <span className="text-gray-500">PD</span>
-                                  <span className="font-medium">{catalyst.pd_ppm} ppm</span>
-                                </div>
-                                <div className="flex flex-col">
-                                  <span className="text-gray-500">RH</span>
-                                  <span className="font-medium">{catalyst.rh_ppm} ppm</span>
                                 </div>
                               </div>
                             </div>
                             {calculatedPrice && (
                               <div className="ml-4 text-right">
                                 <div className="text-lg font-bold text-green-600 dark:text-green-400">
-                                  ${parseFloat(calculatedPrice).toFixed(2)}
+                                  €{parseFloat(calculatedPrice).toFixed(2)}
                                 </div>
                                 <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
                                   <DollarSign className="w-3 h-3 mr-1" />
