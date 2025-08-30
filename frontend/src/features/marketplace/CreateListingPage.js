@@ -44,11 +44,19 @@ function CreateListingPage() {
     features: []
   });
 
+  // Cat Database integration
+  const [catalystData, setCatalystData] = useState([]);
+  const [calculations, setCalculations] = useState([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedCatalyst, setSelectedCatalyst] = useState(null);
+  const [loadingCatalysts, setLoadingCatalysts] = useState(false);
+
   const [currentTag, setCurrentTag] = useState('');
   const [currentFeature, setCurrentFeature] = useState('');
 
   const categories = [
-    'Electronics', 'Fashion & Clothing', 'Home & Garden', 'Sports & Outdoors', 
+    'Catalysts', 'Electronics', 'Fashion & Clothing', 'Home & Garden', 'Sports & Outdoors', 
     'Books & Media', 'Music & Instruments', 'Automotive', 'Real Estate',
     'Jobs & Services', 'Collectibles & Antiques', 'Health & Beauty', 'Toys & Games'
   ];
@@ -57,12 +65,93 @@ function CreateListingPage() {
     'New', 'Like New', 'Excellent', 'Good', 'Fair', 'For Parts'
   ];
 
+  // Fetch Cat Database on component mount
+  useEffect(() => {
+    fetchCatalystData();
+    fetchCalculations();
+  }, []);
+
+  const fetchCatalystData = async () => {
+    try {
+      setLoadingCatalysts(true);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/data`);
+      if (response.ok) {
+        const data = await response.json();
+        setCatalystData(data);
+        console.log('Loaded catalyst data:', data.length, 'entries');
+      }
+    } catch (error) {
+      console.error('Failed to fetch catalyst data:', error);
+    } finally {
+      setLoadingCatalysts(false);
+    }
+  };
+
+  const fetchCalculations = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/calculations`);
+      if (response.ok) {
+        const data = await response.json();
+        setCalculations(data);
+        console.log('Loaded calculations:', data.length, 'entries');
+      }
+    } catch (error) {
+      console.error('Failed to fetch calculations:', error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleTitleChange = (e) => {
+    const value = e.target.value;
+    setFormData(prev => ({...prev, title: value}));
+
+    if (value.length > 0) {
+      // Filter catalyst data based on title input
+      const filtered = catalystData.filter(catalyst => 
+        catalyst.name?.toLowerCase().includes(value.toLowerCase()) ||
+        catalyst.cat_id?.toLowerCase().includes(value.toLowerCase())
+      ).slice(0, 8); // Limit to 8 suggestions for better UX
+
+      setFilteredSuggestions(filtered);
+      setShowSuggestions(filtered.length > 0);
+    } else {
+      setFilteredSuggestions([]);
+      setShowSuggestions(false);
+      setSelectedCatalyst(null);
+    }
+  };
+
+  const selectCatalyst = (catalyst) => {
+    setSelectedCatalyst(catalyst);
+    setFormData(prev => ({
+      ...prev, 
+      title: catalyst.name || catalyst.cat_id,
+      category: 'Catalysts'
+    }));
+    setShowSuggestions(false);
+    
+    // Find calculated price for this catalyst
+    const calculation = calculations.find(calc => calc.catalyst_id === catalyst.cat_id);
+    if (calculation) {
+      const calculatedPrice = calculation.total_price || calculation.calculated_price;
+      setFormData(prev => ({
+        ...prev,
+        price: calculatedPrice ? parseFloat(calculatedPrice).toFixed(2) : '',
+        description: `Catalyst ${catalyst.cat_id}: ${catalyst.name || 'Professional Grade Catalyst'}\n\nSpecifications:\n• Ceramic Weight: ${catalyst.ceramic_weight || 'N/A'}g\n• Platinum (PT): ${catalyst.pt_ppm || '0'} ppm\n• Palladium (PD): ${catalyst.pd_ppm || '0'} ppm\n• Rhodium (RH): ${catalyst.rh_ppm || '0'} ppm\n\nThis catalyst is priced based on current precious metal market rates and specifications. Professional grade catalyst suitable for automotive and industrial applications.`
+      }));
+    }
+  };
+
+  const getCalculatedPrice = (catalystId) => {
+    const calculation = calculations.find(calc => calc.catalyst_id === catalystId);
+    return calculation?.total_price || calculation?.calculated_price || null;
   };
 
   const handleImageUpload = (e) => {
