@@ -271,7 +271,6 @@ function AdminPanel() {
       </div>
 
       {/* Tab Content */}
-      <div className="space-y-8">
       {activeTab === 'dashboard' && (
         <DashboardTab dashboardData={dashboardData} loading={loading} />
       )}
@@ -299,13 +298,13 @@ function AdminPanel() {
       {activeTab === 'settings' && (
         <SettingsTab 
           settings={settings}
-          onUpdateSettings={fetchSettings}
+          onUpdateSettings={updateSettings}
           showToast={showToast}
         />
       )}
       
       {activeTab === 'site-admin' && (
-        <SiteAdministrationTab 
+        <SiteAdminTab 
           showToast={showToast}
         />
       )}
