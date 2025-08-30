@@ -26,7 +26,9 @@ import {
   ChevronRight,
   Verified,
   Award,
-  TrendingUp
+  TrendingUp,
+  Database,
+  Info
 } from 'lucide-react';
 
 function ProductDetailPage() {
