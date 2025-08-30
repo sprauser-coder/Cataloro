@@ -554,9 +554,49 @@ function ModernBrowsePage() {
 function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavoriteToggle, onMessageSeller, isInFavorites }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [priceSuggestion, setPriceSuggestion] = useState(null);
+  const [loadingSuggestion, setLoadingSuggestion] = useState(false);
   const navigate = useNavigate();
 
   const isGridView = viewMode === 'grid';
+
+  // Fetch price suggestion for catalyst items
+  useEffect(() => {
+    const fetchPriceSuggestion = async () => {
+      // Only fetch price suggestions for catalyst items
+      if (item.category === 'Catalysts' && (item.catalyst_id || item.title)) {
+        setLoadingSuggestion(true);
+        try {
+          // Try to get price suggestion from Cat Database
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/calculations`);
+          if (response.ok) {
+            const calculations = await response.json();
+            
+            // Find matching calculation by catalyst_id or title
+            let suggestion = null;
+            if (item.catalyst_id) {
+              suggestion = calculations.find(calc => calc.cat_id === item.catalyst_id);
+            } else {
+              // Try to match by title
+              suggestion = calculations.find(calc => 
+                calc.name && calc.name.toLowerCase() === item.title.toLowerCase()
+              );
+            }
+            
+            if (suggestion && suggestion.total_price) {
+              setPriceSuggestion(parseFloat(suggestion.total_price));
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch price suggestion:', error);
+        } finally {
+          setLoadingSuggestion(false);
+        }
+      }
+    };
+
+    fetchPriceSuggestion();
+  }, [item.catalyst_id, item.title, item.category]);
 
   const handleNextImage = (e) => {
     e.stopPropagation(); // Prevent navigation when clicking image navigation
