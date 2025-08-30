@@ -292,7 +292,7 @@ function ProductDetailPage() {
               {originalPrice && (
                 <div className="flex items-center space-x-2">
                   <span className="text-xl text-gray-500 line-through">
-                    ${originalPrice.toLocaleString()}
+                    €{originalPrice.toLocaleString()}
                   </span>
                   <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full text-sm font-medium">
                     {discount}% off
