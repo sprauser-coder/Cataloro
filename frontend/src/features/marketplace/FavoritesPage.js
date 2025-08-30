@@ -231,13 +231,29 @@ function FavoriteCard({ item, onRemove, onAddToCart, onNavigate }) {
         <div className="flex items-center space-x-2 mb-3">
           <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
             <span className="text-white text-xs font-bold">
-              {item.seller?.charAt(0) || 'S'}
+              {(() => {
+                if (typeof item.seller === 'string' && item.seller.length > 0) {
+                  return item.seller.charAt(0).toUpperCase();
+                } else if (typeof item.seller === 'object' && item.seller?.name) {
+                  return item.seller.name.charAt(0).toUpperCase();
+                } else {
+                  return 'S';
+                }
+              })()}
             </span>
           </div>
           <span className="text-sm text-gray-600 dark:text-gray-400">
-            {item.seller || 'Unknown Seller'}
+            {(() => {
+              if (typeof item.seller === 'string') {
+                return item.seller;
+              } else if (typeof item.seller === 'object' && item.seller?.name) {
+                return item.seller.name;
+              } else {
+                return 'Unknown Seller';
+              }
+            })()}
           </span>
-          {item.verified && (
+          {((typeof item.seller === 'object' && item.seller?.verified) || item.verified) && (
             <span className="text-blue-500 text-xs">✓ Verified</span>
           )}
         </div>
