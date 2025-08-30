@@ -352,7 +352,7 @@ function FunctionalCartPage() {
               <div className="space-y-3">
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Subtotal ({cartCount} items)</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>€{subtotal.toFixed(2)}</span>
                 </div>
                 
                 {promoDiscount > 0 && (
