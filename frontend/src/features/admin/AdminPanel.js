@@ -3866,9 +3866,9 @@ function ListingModal({ listing, onSave, onClose }) {
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
               <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center">
                 <Database className="w-4 h-4 mr-2" />
-                Selected Catalyst: {selectedCatalyst.cat_id}
+                Selected Catalyst: {selectedCatalyst.name}
               </h4>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                 <div>
                   <span className="text-gray-600 dark:text-gray-400">Name:</span>
                   <p className="font-medium text-gray-900 dark:text-white">{selectedCatalyst.name}</p>
@@ -3878,15 +3878,9 @@ function ListingModal({ listing, onSave, onClose }) {
                   <p className="font-medium text-gray-900 dark:text-white">{selectedCatalyst.ceramic_weight}g</p>
                 </div>
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">Precious Metals:</span>
-                  <p className="font-medium text-gray-900 dark:text-white">
-                    PT:{selectedCatalyst.pt_ppm} | PD:{selectedCatalyst.pd_ppm} | RH:{selectedCatalyst.rh_ppm}
-                  </p>
-                </div>
-                <div>
                   <span className="text-gray-600 dark:text-gray-400">Calculated Price:</span>
                   <p className="font-bold text-green-600 dark:text-green-400 text-lg">
-                    ${getCalculatedPrice(selectedCatalyst.cat_id) ? parseFloat(getCalculatedPrice(selectedCatalyst.cat_id)).toFixed(2) : 'N/A'}
+                    €{getCalculatedPrice(selectedCatalyst.cat_id) ? parseFloat(getCalculatedPrice(selectedCatalyst.cat_id)).toFixed(2) : 'N/A'}
                   </p>
                 </div>
               </div>
