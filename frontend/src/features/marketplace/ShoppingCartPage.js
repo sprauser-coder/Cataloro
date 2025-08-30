@@ -364,7 +364,7 @@ function ShoppingCartPage() {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-gray-600 dark:text-gray-400">
                     <span>Subtotal ({cartItems.length} items)</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>€{subtotal.toFixed(2)}</span>
                   </div>
                   
                   {discount > 0 && (
