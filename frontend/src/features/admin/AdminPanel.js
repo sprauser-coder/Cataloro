@@ -231,9 +231,9 @@ function AdminPanel() {
   ];
 
   return (
-    <div className="fade-in">
+    <div className="space-y-8">
       {/* Page Header */}
-      <div className="mb-8">
+      <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Admin Panel</h1>
@@ -246,7 +246,7 @@ function AdminPanel() {
       </div>
 
       {/* Tab Navigation - Ultra Modern */}
-      <div className="cataloro-card-glass mb-8">
+      <div className="cataloro-card-glass">
         <div className="border-b border-white/10 dark:border-white/10">
           <nav className="-mb-px flex space-x-8 px-6">
             {tabs.map((tab) => {
@@ -271,6 +271,7 @@ function AdminPanel() {
       </div>
 
       {/* Tab Content */}
+      <div className="space-y-8">
       {activeTab === 'dashboard' && (
         <DashboardTab dashboardData={dashboardData} loading={loading} />
       )}
