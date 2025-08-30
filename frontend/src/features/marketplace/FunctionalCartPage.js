@@ -468,7 +468,7 @@ function CartItem({ item, onUpdateQuantity, onRemove, onMoveToSaved, onToggleFav
                 )}
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                ${item.price} each
+                €{item.price} each
               </p>
             </div>
           </div>
