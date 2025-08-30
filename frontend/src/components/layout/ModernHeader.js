@@ -39,12 +39,13 @@ import { useMarketplace } from '../../context/MarketplaceContext';
 import { liveService } from '../../services/liveService';
 
 function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileMenuOpen }) {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
+  const { cartItems, favoriteCount } = useMarketplace();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [cartItems, setCartItems] = useState(3); // Demo count
-  const [unreadNotifications, setUnreadNotifications] = useState(5); // Demo count
-  const [unreadMessages, setUnreadMessages] = useState(2); // Demo count
+  const [notifications, setNotifications] = useState([]);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const [siteBranding, setSiteBranding] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
