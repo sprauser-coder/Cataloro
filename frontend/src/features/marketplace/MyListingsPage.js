@@ -270,7 +270,7 @@ function MyListingCard({ listing, onDelete }) {
       {/* Content */}
       <div className="listing-content">
         <h3 className="listing-title text-gray-900 dark:text-white">{listing.title}</h3>
-        <p className="listing-price">${listing.price.toFixed(2)}</p>
+        <p className="listing-price">€{listing.price.toFixed(2)}</p>
         <p className="listing-description text-gray-600 dark:text-gray-300">{listing.description}</p>
         
         <div className="flex items-center justify-between mt-4">
