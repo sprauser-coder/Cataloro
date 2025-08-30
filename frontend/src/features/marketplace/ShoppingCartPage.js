@@ -295,7 +295,7 @@ function ShoppingCartPage() {
                         <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-1">
                           {item.title}
                         </h4>
-                        <p className="text-lg font-bold text-blue-600 mb-2">${item.price}</p>
+                        <p className="text-lg font-bold text-blue-600 mb-2">€{item.price}</p>
                         <button 
                           onClick={() => addToCart(item)}
                           className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
