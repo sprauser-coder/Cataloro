@@ -648,14 +648,30 @@ async def upload_listing_image(listing_id: str, file: UploadFile = File(...)):
 # Favorites endpoints
 @app.get("/api/user/{user_id}/favorites")
 async def get_user_favorites(user_id: str):
-    """Get user's favorite items"""
+    """Get user's favorite items with full listing details"""
     try:
+        # Get user's favorite item IDs
         favorites = await db.user_favorites.find({"user_id": user_id}).to_list(length=None)
         
-        for favorite in favorites:
-            favorite['_id'] = str(favorite['_id'])
+        if not favorites:
+            return []
         
-        return favorites
+        # Extract item IDs from favorites
+        item_ids = [favorite["item_id"] for favorite in favorites]
+        
+        # Get full listing details for favorite items
+        favorite_listings = []
+        for item_id in item_ids:
+            listing = await db.listings.find_one({"id": item_id})
+            if listing:
+                listing['_id'] = str(listing['_id'])
+                # Add favorite metadata
+                favorite_record = next((fav for fav in favorites if fav["item_id"] == item_id), None)
+                if favorite_record:
+                    listing['favorited_at'] = favorite_record.get('created_at')
+                favorite_listings.append(listing)
+        
+        return favorite_listings
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch favorites: {str(e)}")
 
