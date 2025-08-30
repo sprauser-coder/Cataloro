@@ -494,7 +494,7 @@ function ModernBrowsePage() {
                     {selectedProduct.title}
                   </h4>
                   <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                    ${parseFloat(selectedProduct.price || 0).toFixed(2)}
+                    €{parseFloat(selectedProduct.price || 0).toFixed(2)}
                   </p>
                   <div className="flex items-center mt-1 text-sm text-gray-600 dark:text-gray-400">
                     <User className="w-4 h-4 mr-1" />
