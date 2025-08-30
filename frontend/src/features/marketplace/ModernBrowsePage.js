@@ -444,6 +444,7 @@ function ModernBrowsePage() {
               onAddToCart={handleAddToCart}
               onAddToFavorites={handleAddToFavorites}
               onFavoriteToggle={handleFavoriteToggle}
+              onMessageSeller={handleMessageSeller}
               isInFavorites={isInFavorites}
             />
           ))}
