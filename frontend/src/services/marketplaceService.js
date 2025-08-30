@@ -73,6 +73,3 @@ class MarketplaceService {
 
 export const marketplaceService = new MarketplaceService();
 export default marketplaceService;
-
-export const marketplaceService = new MarketplaceService();
-export default marketplaceService;
