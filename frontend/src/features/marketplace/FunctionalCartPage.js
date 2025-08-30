@@ -459,7 +459,7 @@ function CartItem({ item, onUpdateQuantity, onRemove, onMoveToSaved, onToggleFav
             <div className="text-right">
               <div className="flex items-center space-x-2">
                 <span className="text-xl font-bold text-gray-900 dark:text-white">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  €{(item.price * item.quantity).toFixed(2)}
                 </span>
                 {item.originalPrice && (
                   <span className="text-sm text-gray-500 line-through">
