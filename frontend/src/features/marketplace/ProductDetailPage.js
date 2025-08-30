@@ -44,7 +44,6 @@ function ProductDetailPage() {
 
   const [product, setProduct] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
   const [selectedTab, setSelectedTab] = useState('description');
   const [loading, setLoading] = useState(true);
 
