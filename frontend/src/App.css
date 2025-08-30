@@ -48,6 +48,70 @@
   /* Modern Typography */
   --font-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+/* ===== ENHANCED CHECKBOX STYLES ===== */
+/* Custom checkbox styling for maximum visibility in light mode */
+.admin-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 3px solid #374151 !important; /* Dark border for light mode */
+  border-radius: 6px;
+  background-color: #f9fafb !important; /* Light background */
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.admin-checkbox:hover {
+  border-color: #1f2937 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.admin-checkbox:checked {
+  background-color: #2563eb !important; /* Blue when checked */
+  border-color: #2563eb !important;
+}
+
+.admin-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.admin-checkbox.purple-theme:checked {
+  background-color: #7c3aed !important;
+  border-color: #7c3aed !important;
+}
+
+/* Dark mode adjustments */
+.dark .admin-checkbox {
+  border-color: #9ca3af !important;
+  background-color: #374151 !important;
+}
+
+.dark .admin-checkbox:hover {
+  border-color: #d1d5db !important;
+}
+
+.dark .admin-checkbox:checked {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+.dark .admin-checkbox.purple-theme:checked {
+  background-color: #8b5cf6 !important;
+  border-color: #8b5cf6 !important;
+}
 }
 
 /* Dark Mode Variables */
