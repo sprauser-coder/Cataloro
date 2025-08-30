@@ -722,19 +722,63 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
         </div>
 
         {/* Price Section */}
-        <div className="flex items-center space-x-2 mb-3">
-          <span className="text-2xl font-bold text-gray-900 dark:text-white">
-            ${item.price.toFixed(2)}
-          </span>
-          {item.originalPrice && item.originalPrice > item.price && (
-            <>
-              <span className="text-lg text-gray-500 line-through">
-                ${item.originalPrice.toFixed(2)}
-              </span>
-              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-                {Math.round((1 - item.price / item.originalPrice) * 100)}% off
-              </span>
-            </>
+        <div className="mb-3">
+          <div className="flex items-center space-x-2 mb-2">
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">
+              ${item.price.toFixed(2)}
+            </span>
+            {item.originalPrice && item.originalPrice > item.price && (
+              <>
+                <span className="text-lg text-gray-500 line-through">
+                  ${item.originalPrice.toFixed(2)}
+                </span>
+                <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                  {Math.round((1 - item.price / item.originalPrice) * 100)}% off
+                </span>
+              </>
+            )}
+          </div>
+          
+          {/* Market Price Suggestion - Show for catalyst items */}
+          {item.category === 'Catalysts' && (
+            <div className="space-y-1">
+              {loadingSuggestion ? (
+                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                  <div className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Loading market price...
+                </div>
+              ) : priceSuggestion && Math.abs(priceSuggestion - item.price) > 0.01 ? (
+                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="flex items-center space-x-2">
+                    <Database className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                    <span className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                      Market Price:
+                    </span>
+                    <span className="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                      €{priceSuggestion.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex items-center">
+                    {item.price < priceSuggestion ? (
+                      <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded font-medium">
+                        Great Deal
+                      </span>
+                    ) : (
+                      <span className="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2 py-1 rounded font-medium">
+                        Above Market
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ) : priceSuggestion && Math.abs(priceSuggestion - item.price) <= 0.01 ? (
+                <div className="flex items-center space-x-2 p-2 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <Database className="w-3 h-3 text-green-600 dark:text-green-400" />
+                  <span className="text-xs text-green-700 dark:text-green-300 font-medium">
+                    At market price
+                  </span>
+                </div>
+              ) : null}
+            </div>
           )}
         </div>
 
