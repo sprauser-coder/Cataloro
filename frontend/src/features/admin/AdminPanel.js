@@ -3066,10 +3066,77 @@ function ListingsTab({ showToast }) {
     const actionToPerform = action || bulkAction;
     if (!actionToPerform || selectedListings.length === 0) return;
 
+  const handleBulkAction = async (action = null) => {
+    const actionToPerform = action || bulkAction;
+    if (!actionToPerform || selectedListings.length === 0) return;
+
+    // Confirm destructive actions
+    if (['delete', 'reject'].includes(actionToPerform)) {
+      if (!window.confirm(`Are you sure you want to ${actionToPerform} ${selectedListings.length} listings? This action cannot be undone.`)) {
+        return;
+      }
+    }
+
     try {
+      // Perform backend operations for persistence
+      if (['activate', 'deactivate', 'delete', 'feature', 'unfeature', 'approve', 'reject'].includes(actionToPerform)) {
+        const updatePromises = selectedListings.map(async (listingId) => {
+          const listing = listings.find(l => l.id === listingId);
+          if (!listing) return null;
+
+          switch (actionToPerform) {
+            case 'delete':
+              return fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings/${listingId}`, {
+                method: 'DELETE'
+              });
+            default:
+              // For updates (activate, deactivate, feature, etc.)
+              let updatedListing = { ...listing };
+              
+              switch (actionToPerform) {
+                case 'activate':
+                  updatedListing.status = 'active';
+                  break;
+                case 'deactivate':
+                  updatedListing.status = 'inactive';
+                  break;
+                case 'feature':
+                  updatedListing.featured = true;
+                  break;
+                case 'unfeature':
+                  updatedListing.featured = false;
+                  break;
+                case 'approve':
+                  updatedListing.status = 'approved';
+                  updatedListing.approved = true;
+                  break;
+                case 'reject':
+                  updatedListing.status = 'rejected';
+                  updatedListing.rejected = true;
+                  break;
+              }
+              
+              return fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings/${listingId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedListing)
+              });
+          }
+        });
+
+        // Wait for all operations to complete
+        const results = await Promise.all(updatePromises);
+        
+        // Check for any failed operations
+        const failedOperations = results.filter(result => result && !result.ok);
+        if (failedOperations.length > 0) {
+          throw new Error(`${failedOperations.length} operations failed`);
+        }
+      }
+
+      // Update local state after successful backend operations
       switch (actionToPerform) {
         case 'activate':
-          // Update status to active for selected listings
           setListings(listings.map(l => 
             selectedListings.includes(l.id) ? {...l, status: 'active'} : l
           ));
@@ -3110,17 +3177,26 @@ function ListingsTab({ showToast }) {
           showToast?.(`${selectedListings.length} listings rejected`, 'success');
           break;
         case 'duplicate':
-          // Duplicate selected listings
-          const duplicatedListings = selectedListings.map(id => {
+          // For duplicate, create new listings via backend
+          const duplicatePromises = selectedListings.map(async (id) => {
             const original = listings.find(l => l.id === id);
-            return {
+            const duplicatedListing = {
               ...original,
-              id: `${original.id}-copy-${Date.now()}`,
               title: `${original.title} (Copy)`,
               created_date: new Date().toISOString().split('T')[0]
             };
+            delete duplicatedListing.id; // Let backend assign new ID
+            
+            return fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(duplicatedListing)
+            });
           });
-          setListings([...duplicatedListings, ...listings]);
+          
+          await Promise.all(duplicatePromises);
+          // Reload listings to get the new ones with proper backend IDs
+          await loadListings();
           showToast?.(`${selectedListings.length} listings duplicated`, 'success');
           break;
         case 'export':
