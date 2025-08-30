@@ -515,12 +515,21 @@ function CreateListingPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Category *
+                    {selectedCatalyst && (
+                      <span className="text-blue-600 dark:text-blue-400 text-xs ml-2">
+                        (Auto-set to Catalysts)
+                      </span>
+                    )}
                   </label>
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 transition-all duration-200 ${
+                      selectedCatalyst 
+                        ? 'border-blue-300 dark:border-blue-600 focus:border-blue-500' 
+                        : 'border-gray-300 dark:border-gray-600 focus:border-blue-500'
+                    }`}
                     required
                   >
                     <option value="">Select a category</option>
@@ -532,6 +541,48 @@ function CreateListingPage() {
                   </select>
                 </div>
               </div>
+
+              {/* Selected Catalyst Summary */}
+              {selectedCatalyst && (
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-6 mt-6">
+                  <h4 className="font-bold text-blue-900 dark:text-blue-100 mb-4 flex items-center text-lg">
+                    <Database className="w-5 h-5 mr-2" />
+                    Selected Catalyst: {selectedCatalyst.cat_id}
+                    <span className="ml-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                      Auto-filled
+                    </span>
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+                      <span className="text-gray-600 dark:text-gray-400 text-sm block mb-1">Catalyst Name</span>
+                      <p className="font-bold text-gray-900 dark:text-white text-lg">{selectedCatalyst.name}</p>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+                      <span className="text-gray-600 dark:text-gray-400 text-sm block mb-1">Ceramic Weight</span>
+                      <p className="font-bold text-gray-900 dark:text-white text-lg">{selectedCatalyst.ceramic_weight}g</p>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+                      <span className="text-gray-600 dark:text-gray-400 text-sm block mb-1">Precious Metals</span>
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        <div>PT: {selectedCatalyst.pt_ppm} ppm</div>
+                        <div>PD: {selectedCatalyst.pd_ppm} ppm</div>
+                        <div>RH: {selectedCatalyst.rh_ppm} ppm</div>
+                      </div>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+                      <span className="text-gray-600 dark:text-gray-400 text-sm block mb-1">Calculated Price</span>
+                      <p className="font-bold text-green-600 dark:text-green-400 text-2xl">
+                        ${getCalculatedPrice(selectedCatalyst.cat_id) ? parseFloat(getCalculatedPrice(selectedCatalyst.cat_id)).toFixed(2) : 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                    <p className="text-blue-800 dark:text-blue-200 text-sm">
+                      <strong>Auto-filled fields:</strong> Title, Category, Price, and Description have been automatically populated based on this catalyst's data and current market calculations.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Condition and Location Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
