@@ -358,7 +358,7 @@ function FunctionalCartPage() {
                 {promoDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount ({appliedPromo.code})</span>
-                    <span>-${promoDiscount.toFixed(2)}</span>
+                    <span>-€{promoDiscount.toFixed(2)}</span>
                   </div>
                 )}
                 
