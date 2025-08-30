@@ -3652,6 +3652,20 @@ function ListingModal({ listing, onSave, onClose }) {
     return calculation?.total_price || null;
   };
 
+  const getCalculatedPriceRange = (catalystId) => {
+    const basePrice = getCalculatedPrice(catalystId);
+    if (!basePrice) return null;
+    
+    const minPrice = basePrice * 0.9;
+    const maxPrice = basePrice * 1.1;
+    
+    return {
+      basePrice: parseFloat(basePrice),
+      minPrice: parseFloat(minPrice.toFixed(2)),
+      maxPrice: parseFloat(maxPrice.toFixed(2))
+    };
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({
