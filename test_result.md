@@ -81,7 +81,7 @@
    - All services healthy and responsive
 
 3. **Environment Configuration** ✅ PASSED
-   - Backend URL: https://cat-db-preview.preview.emergentagent.com ✅ WORKING
+   - Backend URL: https://cataloro-admin-3.preview.emergentagent.com ✅ WORKING
    - MongoDB URL: mongodb://localhost:27017 ✅ WORKING
    - All API routes properly prefixed with '/api'
 

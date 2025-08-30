@@ -8,7 +8,7 @@ import json
 
 def test_fixed_listing_creation():
     """Test listing creation after configuration fix"""
-    base_url = "https://cat-db-preview.preview.emergentagent.com"
+    base_url = "https://cataloro-admin-3.preview.emergentagent.com"
     
     print("🔍 FINAL LISTING CREATION TEST")
     print("=" * 40)
