@@ -52,11 +52,26 @@ function MessagesPage() {
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
 
+  // Scroll to bottom of messages
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [conversationMessages]);
+
   useEffect(() => {
     if (user) {
       loadMessages();
     }
   }, [user]);
+
+  // Auto-resize textarea
+  const autoResizeTextarea = (element) => {
+    element.style.height = 'auto';
+    element.style.height = Math.min(element.scrollHeight, 120) + 'px';
+  };
 
   const loadMessages = async () => {
     if (!user) return;
@@ -64,15 +79,63 @@ function MessagesPage() {
     try {
       setLoading(true);
       const userMessages = await liveService.getUserMessages(user.id);
-      setMessages(userMessages);
+      
+      // Group messages into conversations
+      const conversationsMap = new Map();
+      userMessages.forEach(msg => {
+        const otherUserId = msg.sender_id === user.id ? msg.recipient_id : msg.sender_id;
+        const otherUserName = msg.sender_id === user.id ? msg.recipient_name : msg.sender_name;
+        
+        if (!conversationsMap.has(otherUserId)) {
+          conversationsMap.set(otherUserId, {
+            id: otherUserId,
+            name: otherUserName || 'Unknown User',
+            messages: [],
+            lastMessage: null,
+            unreadCount: 0
+          });
+        }
+        
+        const conversation = conversationsMap.get(otherUserId);
+        conversation.messages.push(msg);
+        
+        // Update last message and unread count
+        if (!conversation.lastMessage || new Date(msg.created_at) > new Date(conversation.lastMessage.created_at)) {
+          conversation.lastMessage = msg;
+        }
+        
+        if (!msg.is_read && msg.sender_id !== user.id) {
+          conversation.unreadCount++;
+        }
+      });
+      
+      // Convert to array and sort by last message time
+      const conversations = Array.from(conversationsMap.values()).sort((a, b) => {
+        if (!a.lastMessage && !b.lastMessage) return 0;
+        if (!a.lastMessage) return 1;
+        if (!b.lastMessage) return -1;
+        return new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at);
+      });
+      
+      setMessages(conversations);
     } catch (error) {
       console.error('Failed to load messages:', error);
       showToast('Failed to load messages', 'error');
       // Demo data fallback
-      setMessages(demoMessages);
+      setMessages(demoConversations);
     } finally {
       setLoading(false);
     }
+  };
+
+  const selectConversation = (conversation) => {
+    setSelectedConversation(conversation);
+    setConversationMessages(conversation.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)));
+    
+    // Mark messages as read
+    conversation.messages
+      .filter(msg => !msg.is_read && msg.sender_id !== user.id)
+      .forEach(msg => handleMarkAsRead(msg.id));
   };
 
   const handleSendMessage = async () => {
@@ -82,6 +145,7 @@ function MessagesPage() {
     }
 
     try {
+      setSending(true);
       await liveService.sendMessage(user.id, {
         recipient_id: newMessage.recipient,
         subject: newMessage.subject,
@@ -95,6 +159,35 @@ function MessagesPage() {
     } catch (error) {
       console.error('Failed to send message:', error);
       showToast('Failed to send message', 'error');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleSendReply = async () => {
+    if (!replyMessage.trim() || !selectedConversation) return;
+
+    try {
+      setSending(true);
+      await liveService.sendMessage(user.id, {
+        recipient_id: selectedConversation.id,
+        subject: `Re: ${conversationMessages[0]?.subject || 'Conversation'}`,
+        content: replyMessage
+      });
+      
+      setReplyMessage('');
+      await loadMessages();
+      
+      // Refresh the conversation
+      const updatedConversation = messages.find(c => c.id === selectedConversation.id);
+      if (updatedConversation) {
+        selectConversation(updatedConversation);
+      }
+    } catch (error) {
+      console.error('Failed to send reply:', error);
+      showToast('Failed to send reply', 'error');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -103,52 +196,82 @@ function MessagesPage() {
     
     try {
       await liveService.markMessageRead(user.id, messageId);
-      await loadMessages();
+      
+      // Update local state
+      setConversationMessages(prev => 
+        prev.map(msg => msg.id === messageId ? { ...msg, is_read: true } : msg)
+      );
+      
+      setMessages(prev => 
+        prev.map(conv => ({
+          ...conv,
+          messages: conv.messages.map(msg => 
+            msg.id === messageId ? { ...msg, is_read: true } : msg
+          ),
+          unreadCount: Math.max(0, conv.unreadCount - 1)
+        }))
+      );
     } catch (error) {
       console.error('Failed to mark message as read:', error);
     }
   };
 
-  const filteredMessages = messages.filter(msg => 
-    msg.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    msg.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    msg.sender_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredMessages = messages.filter(conversation => {
+    const matchesSearch = conversation.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         conversation.lastMessage?.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         conversation.lastMessage?.content?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesFilter = messageFilter === 'all' || 
+                         (messageFilter === 'unread' && conversation.unreadCount > 0) ||
+                         (messageFilter === 'sent' && conversation.lastMessage?.sender_id === user?.id);
+                         
+    return matchesSearch && matchesFilter;
+  });
 
   // Demo data for when backend is not available
-  const demoMessages = [
+  const demoConversations = [
     {
-      id: '1',
-      sender_id: 'user1',
-      sender_name: 'John Seller',
-      recipient_id: user?.id,
-      subject: 'Question about your MacBook Pro listing',
-      content: 'Hi! Is the MacBook Pro still available? I\'m very interested and can pick it up today.',
-      is_read: false,
-      created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() // 2 hours ago
+      id: 'user1',
+      name: 'John Seller',
+      messages: [
+        {
+          id: '1',
+          sender_id: 'user1',
+          sender_name: 'John Seller',
+          recipient_id: user?.id,
+          subject: 'Question about your MacBook Pro listing',
+          content: 'Hi! Is the MacBook Pro still available? I\'m very interested and can pick it up today.',
+          is_read: false,
+          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+        }
+      ],
+      lastMessage: null,
+      unreadCount: 1
     },
     {
-      id: '2',
-      sender_id: 'user2', 
-      sender_name: 'Sarah Buyer',
-      recipient_id: user?.id,
-      subject: 'Purchase inquiry',
-      content: 'Hello, I saw your vintage guitar listing. Would you consider $800? I\'m a serious buyer.',
-      is_read: true,
-      created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() // 1 day ago
-    },
-    {
-      id: '3',
-      sender_id: user?.id,
-      sender_name: user?.full_name || 'You',
-      recipient_id: 'user3',
-      recipient_name: 'Mike Trader',
-      subject: 'Re: Gaming setup available?',
-      content: 'Yes, the gaming setup is still available! When would you like to see it?',
-      is_read: true,
-      created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString() // 3 hours ago
+      id: 'user2', 
+      name: 'Sarah Buyer',
+      messages: [
+        {
+          id: '2',
+          sender_id: 'user2',
+          sender_name: 'Sarah Buyer',
+          recipient_id: user?.id,
+          subject: 'Purchase inquiry',
+          content: 'Hello, I saw your vintage guitar listing. Would you consider $800? I\'m a serious buyer.',
+          is_read: true,
+          created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ],
+      lastMessage: null,
+      unreadCount: 0
     }
   ];
+
+  // Calculate demo lastMessage and initialize
+  demoConversations.forEach(conv => {
+    conv.lastMessage = conv.messages[conv.messages.length - 1];
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4">
