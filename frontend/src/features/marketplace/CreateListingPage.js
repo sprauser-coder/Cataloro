@@ -140,11 +140,11 @@ function CreateListingPage() {
     // Find calculated price for this catalyst
     const calculation = calculations.find(calc => calc.catalyst_id === catalyst.cat_id);
     if (calculation) {
-      const calculatedPrice = calculation.total_price || calculation.calculated_price;
+      const calculatedPrice = calculation['Total Price (€)'] || calculation.total_price || calculation.calculated_price;
       setFormData(prev => ({
         ...prev,
         price: calculatedPrice ? parseFloat(calculatedPrice).toFixed(2) : '',
-        description: `Catalyst ${catalyst.cat_id}: ${catalyst.name || 'Professional Grade Catalyst'}\n\nSpecifications:\n• Ceramic Weight: ${catalyst.ceramic_weight || 'N/A'}g\n• Platinum (PT): ${catalyst.pt_ppm || '0'} ppm\n• Palladium (PD): ${catalyst.pd_ppm || '0'} ppm\n• Rhodium (RH): ${catalyst.rh_ppm || '0'} ppm\n\nThis catalyst is priced based on current precious metal market rates and specifications. Professional grade catalyst suitable for automotive and industrial applications.`
+        description: `Catalyst: ${catalyst.name || 'Professional Grade Catalyst'}\n\nSpecifications:\n• Ceramic Weight: ${catalyst.ceramic_weight || 'N/A'}g\n\nThis catalyst is priced based on current precious metal market rates and specifications. Professional grade catalyst suitable for automotive and industrial applications.`
       }));
     }
   };
