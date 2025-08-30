@@ -3436,7 +3436,7 @@ function ListingsTab({ showToast }) {
                       type="checkbox"
                       checked={selectedListings.includes(listing.id)}
                       onChange={(e) => handleSelectListing(listing.id, e.target.checked)}
-                      className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+                      className="w-5 h-5 rounded border-2 border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 checked:bg-blue-600 checked:border-blue-600 dark:checked:bg-blue-500 dark:checked:border-blue-500"
                     />
                   </td>
                   <td className="px-4 py-4">
