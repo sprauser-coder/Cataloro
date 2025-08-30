@@ -856,7 +856,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
               {/* Activate Users */}
               <button
-                onClick={() => { setBulkAction('activate'); handleBulkAction(); }}
+                onClick={() => handleBulkAction('activate')}
                 className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Activate selected users"
               >
@@ -866,7 +866,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
               {/* Suspend Users */}
               <button
-                onClick={() => { setBulkAction('suspend'); handleBulkAction(); }}
+                onClick={() => handleBulkAction('suspend')}
                 className="flex items-center justify-center space-x-2 px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Suspend selected users"
               >
@@ -876,7 +876,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
               {/* Delete Users */}
               <button
-                onClick={() => { setBulkAction('delete'); handleBulkAction(); }}
+                onClick={() => handleBulkAction('delete')}
                 className="flex items-center justify-center space-x-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Delete selected users"
               >
@@ -886,7 +886,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
               {/* Promote to Admin */}
               <button
-                onClick={() => { setBulkAction('promote'); handleBulkAction(); }}
+                onClick={() => handleBulkAction('promote')}
                 className="flex items-center justify-center space-x-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Promote to admin"
               >
@@ -896,7 +896,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
               {/* Send Message */}
               <button
-                onClick={() => { setBulkAction('message'); handleBulkAction(); }}
+                onClick={() => handleBulkAction('message')}
                 className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Send message to selected users"
               >
