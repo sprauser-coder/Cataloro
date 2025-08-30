@@ -3279,36 +3279,116 @@ function ListingsTab({ showToast }) {
         </div>
       </div>
 
-      {/* REDESIGNED Bulk Actions */}
+      {/* Enhanced Bulk Actions for Listings - REDESIGNED */}
       {selectedListings.length > 0 && (
-        <div className="cataloro-card-glass p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+        <div className="cataloro-card-glass p-6 border-2 border-green-200 dark:border-green-800 shadow-xl">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="text-lg font-medium text-gray-900 dark:text-white">
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">
                   {selectedListings.length} listing{selectedListings.length !== 1 ? 's' : ''} selected
                 </span>
+                <div className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-sm font-medium rounded-full">
+                  Ready for management
+                </div>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <select
-                value={bulkAction}
-                onChange={(e) => setBulkAction(e.target.value)}
-                className="cataloro-input min-w-[180px]"
-              >
-                <option value="">Choose Bulk Action</option>
-                <option value="activate">✅ Activate Listings</option>
-                <option value="deactivate">⏸️ Deactivate Listings</option>
-                <option value="feature">⭐ Feature Listings</option>
-                <option value="delete">🗑️ Delete Listings</option>
-              </select>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+              {/* Activate Listings */}
               <button
-                onClick={handleBulkAction}
-                disabled={!bulkAction}
-                className="cataloro-button-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => handleBulkAction('activate')}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Activate selected listings"
               >
-                Apply Action
+                <CheckCircle className="w-4 h-4" />
+                <span className="hidden sm:inline">Activate</span>
+              </button>
+
+              {/* Deactivate Listings */}
+              <button
+                onClick={() => handleBulkAction('deactivate')}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Deactivate selected listings"
+              >
+                <Ban className="w-4 h-4" />
+                <span className="hidden sm:inline">Deactivate</span>
+              </button>
+
+              {/* Delete Listings */}
+              <button
+                onClick={() => handleBulkAction('delete')}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Delete selected listings"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Delete</span>
+              </button>
+
+              {/* Feature Listings */}
+              <button
+                onClick={() => handleBulkAction('feature')}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Feature selected listings"
+              >
+                <Star className="w-4 h-4" />
+                <span className="hidden sm:inline">Feature</span>
+              </button>
+
+              {/* Approve Listings */}
+              <button
+                onClick={() => handleBulkAction('approve')}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Approve selected listings"
+              >
+                <Shield className="w-4 h-4" />
+                <span className="hidden sm:inline">Approve</span>
+              </button>
+            </div>
+          </div>
+          
+          {/* Additional Bulk Actions Row */}
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+              <button
+                onClick={() => handleBulkAction('reject')}
+                className="flex items-center space-x-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+              >
+                <X className="w-4 h-4" />
+                <span>Reject</span>
+              </button>
+              
+              <button
+                onClick={() => handleBulkAction('duplicate')}
+                className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
+              >
+                <Package className="w-4 h-4" />
+                <span>Duplicate</span>
+              </button>
+              
+              <button
+                onClick={() => handleBulkAction('export')}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export Selected</span>
+              </button>
+              
+              <button
+                onClick={() => handleBulkAction('bulk-edit')}
+                className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+              >
+                <Edit className="w-4 h-4" />
+                <span>Bulk Edit</span>
+              </button>
+              
+              <button
+                onClick={() => setSelectedListings([])}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg font-medium transition-colors"
+              >
+                <X className="w-4 h-4" />
+                <span>Clear Selection</span>
               </button>
             </div>
           </div>
