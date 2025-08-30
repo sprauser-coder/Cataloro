@@ -22,13 +22,16 @@ import {
   SlidersHorizontal,
   X,
   ChevronDown,
-  ArrowUpDown
+  ArrowUpDown,
+  Send,
+  User
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
+import { liveService } from '../../services/liveService';
 
 function ModernBrowsePage() {
   const { user } = useAuth();
