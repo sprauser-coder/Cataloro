@@ -663,7 +663,7 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
         </div>
 
         {/* Views Counter */}
-        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full flex items-center">
+        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full flex items-center z-20">
           <Eye className="w-3 h-3 mr-1" />
           {item.views}
         </div>
