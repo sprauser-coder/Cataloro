@@ -387,6 +387,8 @@ function ModernBrowsePage() {
               viewMode={viewMode}
               onAddToCart={handleAddToCart}
               onAddToFavorites={handleAddToFavorites}
+              onFavoriteToggle={handleFavoriteToggle}
+              isInFavorites={isInFavorites}
             />
           ))}
         </div>
