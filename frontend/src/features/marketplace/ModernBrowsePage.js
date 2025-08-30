@@ -584,26 +584,24 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
       onClick={handleCardClick}
     >
       {/* Image Section */}
-      <div 
-        className={`relative cursor-pointer ${isGridView ? '' : 'w-48 h-48 flex-shrink-0'}`}
-        onClick={(e) => {
-          // Only navigate if we're not clicking on overlay elements
-          const target = e.target;
-          if (target.tagName === 'IMG' || target.closest('.image-container')) {
+      <div className={`relative ${isGridView ? '' : 'w-48 h-48 flex-shrink-0'}`}>
+        {/* Clickable overlay for image navigation - positioned behind other elements */}
+        <div 
+          className="absolute inset-0 cursor-pointer z-10"
+          onClick={(e) => {
             e.stopPropagation();
             navigate(`/product/${item.id}`);
-          }
-        }}
-      >
-        <div className="image-container">
-          <img
-            src={item.images?.[currentImageIndex] || item.images?.[0] || '/api/placeholder/400/300'}
-            alt={item.title}
-            className={`object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer ${
-              isGridView ? 'w-full h-64' : 'w-full h-full rounded-lg'
-            }`}
-          />
-        </div>
+          }}
+          title="View product details"
+        />
+        
+        <img
+          src={item.images?.[currentImageIndex] || item.images?.[0] || '/api/placeholder/400/300'}
+          alt={item.title}
+          className={`object-cover transition-transform duration-300 group-hover:scale-105 ${
+            isGridView ? 'w-full h-64' : 'w-full h-full rounded-lg'
+          }`}
+        />
         
         {/* Image Indicators */}
         {item.images && item.images.length > 1 && (
