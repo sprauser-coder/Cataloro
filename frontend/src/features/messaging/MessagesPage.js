@@ -179,13 +179,24 @@ function MessagesPage() {
       });
       
       setReplyMessage('');
-      await loadMessages();
       
-      // Refresh the conversation
-      const updatedConversation = conversations.find(c => c.id === selectedConversation.id);
-      if (updatedConversation) {
-        selectConversation(updatedConversation);
-      }
+      // Add the new message to the top of the current conversation immediately
+      const newMessage = {
+        id: `temp_${Date.now()}`,
+        sender_id: user.id,
+        sender_name: user?.full_name || user?.username || 'You',
+        recipient_id: selectedConversation.id,
+        subject: `Re: ${conversationMessages[0]?.subject || 'Conversation'}`,
+        content: replyMessage,
+        is_read: true,
+        created_at: new Date().toISOString()
+      };
+      
+      // Add new message to the beginning (top) of the conversation
+      setConversationMessages(prev => [newMessage, ...prev]);
+      
+      // Reload messages in background to sync with server
+      setTimeout(() => loadMessages(), 1000);
     } catch (error) {
       console.error('Failed to send reply:', error);
       showToast('Failed to send reply', 'error');
