@@ -177,7 +177,7 @@ function ShoppingCartPage() {
                               </span>
                               {item.originalPrice && (
                                 <span className="text-sm text-gray-500 line-through">
-                                  ${item.originalPrice}
+                                  €{item.originalPrice}
                                 </span>
                               )}
                             </div>
