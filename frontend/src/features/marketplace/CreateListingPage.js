@@ -430,7 +430,7 @@ function CreateListingPage() {
                       </p>
                     </div>
                     {filteredSuggestions.map((catalyst) => {
-                      const calculatedPrice = getCalculatedPrice(catalyst.cat_id);
+                      const priceRange = getCalculatedPriceRange(catalyst.cat_id);
                       return (
                         <div
                           key={catalyst.cat_id}
@@ -452,14 +452,14 @@ function CreateListingPage() {
                                 </div>
                               </div>
                             </div>
-                            {calculatedPrice && (
+                            {priceRange && (
                               <div className="ml-4 text-right">
-                                <div className="text-lg font-bold text-green-600 dark:text-green-400">
-                                  €{parseFloat(calculatedPrice).toFixed(2)}
+                                <div className="text-sm font-bold text-green-600 dark:text-green-400">
+                                  €{priceRange.minPrice.toFixed(2)} - €{priceRange.maxPrice.toFixed(2)}
                                 </div>
                                 <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                                  <DollarSign className="w-3 h-3 mr-1" />
-                                  Calculated Price
+                                  <Database className="w-3 h-3 mr-1" />
+                                  Market Range (±10%)
                                 </div>
                               </div>
                             )}
