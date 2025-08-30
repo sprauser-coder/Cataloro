@@ -463,7 +463,7 @@ function CartItem({ item, onUpdateQuantity, onRemove, onMoveToSaved, onToggleFav
                 </span>
                 {item.originalPrice && (
                   <span className="text-sm text-gray-500 line-through">
-                    ${(item.originalPrice * item.quantity).toFixed(2)}
+                    €{(item.originalPrice * item.quantity).toFixed(2)}
                   </span>
                 )}
               </div>
