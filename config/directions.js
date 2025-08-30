@@ -52,8 +52,7 @@ export const API_ENDPOINTS = {
   MARKETPLACE: {
     BROWSE: '/listings',
     LISTINGS: '/listings',
-    SEARCH: '/listings/search',
-    FAVORITES: '/marketplace/favorites'
+    SEARCH: '/listings/search'
   },
   
   // User-specific endpoints
