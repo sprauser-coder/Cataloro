@@ -449,7 +449,7 @@ function CreateListingPage() {
                                 </div>
                                 <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
                                   <Database className="w-3 h-3 mr-1" />
-                                  Market Range (±10%)
+                                  Market Range
                                 </div>
                               </div>
                             )}
