@@ -1,6 +1,6 @@
 /**
  * CATALORO - Ultra-Modern Header Navigation
- * Sleek header with comprehensive navigation and features
+ * Sleek header with comprehensive navigation and enhanced notifications
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -25,9 +25,18 @@ import {
   Filter,
   List,
   Zap,
-  ChevronDown
+  ChevronDown,
+  Check,
+  CheckCheck,
+  Star,
+  Clock,
+  Eye,
+  TrendingUp
 } from 'lucide-react';
 import { APP_ROUTES } from '../../config/directions';
+import { useAuth } from '../../context/AuthContext';
+import { useMarketplace } from '../../context/MarketplaceContext';
+import { liveService } from '../../services/liveService';
 
 function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileMenuOpen }) {
   const [user, setUser] = useState(null);
