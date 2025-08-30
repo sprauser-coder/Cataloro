@@ -910,7 +910,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
           <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
               <button
-                onClick={() => handleBulkAction('export')}
+                onClick={() => handleUserBulkAction('export')}
                 className="flex items-center space-x-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
               >
                 <Download className="w-4 h-4" />
@@ -918,7 +918,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
               </button>
               
               <button
-                onClick={() => handleBulkAction('reset-password')}
+                onClick={() => handleUserBulkAction('reset-password')}
                 className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
               >
                 <Lock className="w-4 h-4" />
