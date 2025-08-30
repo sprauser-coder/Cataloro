@@ -459,6 +459,93 @@ function ModernBrowsePage() {
           </button>
         </div>
       )}
+
+      {/* Message Seller Modal */}
+      {showMessageModal && selectedProduct && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-white flex items-center">
+                  <MessageCircle className="w-6 h-6 mr-2" />
+                  Message Seller
+                </h3>
+                <button
+                  onClick={() => setShowMessageModal(false)}
+                  className="text-white hover:text-gray-200 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {/* Product Info */}
+              <div className="flex items-start space-x-4 mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                <img
+                  src={selectedProduct.images?.[0] || '/api/placeholder/400/300'}
+                  alt={selectedProduct.title}
+                  className="w-16 h-16 object-cover rounded-lg"
+                />
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-gray-900 dark:text-white truncate">
+                    {selectedProduct.title}
+                  </h4>
+                  <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                    ${parseFloat(selectedProduct.price || 0).toFixed(2)}
+                  </p>
+                  <div className="flex items-center mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    <User className="w-4 h-4 mr-1" />
+                    Seller: {typeof selectedProduct.seller === 'string' ? selectedProduct.seller : 
+                            (selectedProduct.seller?.name || selectedProduct.seller_id || 'Unknown')}
+                  </div>
+                </div>
+              </div>
+
+              {/* Message Input */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Your Message
+                </label>
+                <textarea
+                  value={messageContent}
+                  onChange={(e) => setMessageContent(e.target.value)}
+                  rows={4}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 resize-none"
+                  placeholder="Type your message to the seller..."
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => setShowMessageModal(false)}
+                  className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!messageContent.trim() || sending}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-xl font-medium transition-colors flex items-center"
+                >
+                  {sending ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Send Message
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
