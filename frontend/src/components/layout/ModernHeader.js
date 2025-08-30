@@ -53,18 +53,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   const notificationRef = useRef(null);
 
   useEffect(() => {
-    // Function to load user and branding data
+    // Function to load branding and notification data
     const loadData = () => {
-      // Get user from localStorage
-      const userData = localStorage.getItem('cataloro_user');
-      if (userData) {
-        try {
-          setUser(JSON.parse(userData));
-        } catch (error) {
-          console.error('Error parsing user data:', error);
-        }
-      }
-
       // Load site branding from localStorage
       const brandingData = localStorage.getItem('cataloro_site_branding');
       if (brandingData) {
@@ -80,12 +70,17 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       }
     };
 
-    // Load data initially
+    // Load initial data
     loadData();
+    
+    // Load notifications if user is available
+    if (user?.id) {
+      loadNotifications();
+    }
 
     // Listen for localStorage changes (when admin updates branding)
     const handleStorageChange = (e) => {
-      if (e.key === 'cataloro_site_branding' || e.key === 'cataloro_user') {
+      if (e.key === 'cataloro_site_branding') {
         loadData();
       }
     };
@@ -102,7 +97,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('brandingUpdated', handleBrandingUpdate);
     };
-  }, []);
+  }, [user?.id]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
