@@ -52,14 +52,15 @@ function MessagesPage() {
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // Scroll to bottom of messages
+  // Scroll to bottom of messages (optional - can be triggered manually)
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [conversationMessages]);
+  // Remove auto-scroll on message changes
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [conversationMessages]);
 
   useEffect(() => {
     if (user) {
