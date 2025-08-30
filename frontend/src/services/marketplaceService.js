@@ -69,36 +69,10 @@ class MarketplaceService {
       throw new Error(error.response?.data?.detail || 'Search failed');
     }
   }
-
-  async getFavorites(userId) {
-    try {
-      const response = await axios.get(API_ENDPOINTS.MARKETPLACE.FAVORITES.replace('{user_id}', userId));
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.detail || 'Failed to fetch favorites');
-    }
-  }
-
-  async addToFavorites(userId, listingId) {
-    try {
-      const response = await axios.post(API_ENDPOINTS.MARKETPLACE.FAVORITES, {
-        user_id: userId,
-        listing_id: listingId
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.detail || 'Failed to add to favorites');
-    }
-  }
-
-  async removeFromFavorites(userId, listingId) {
-    try {
-      await axios.delete(`${API_ENDPOINTS.MARKETPLACE.FAVORITES}/${userId}/${listingId}`);
-    } catch (error) {
-      throw new Error(error.response?.data?.detail || 'Failed to remove from favorites');
-    }
-  }
 }
+
+export const marketplaceService = new MarketplaceService();
+export default marketplaceService;
 
 export const marketplaceService = new MarketplaceService();
 export default marketplaceService;
