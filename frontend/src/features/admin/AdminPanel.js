@@ -3557,12 +3557,12 @@ function ListingsTab({ showToast }) {
   );
 }
 
-// Listing Creation/Edit Modal Component
+// Enhanced Listing Creation/Edit Modal Component with Cat Database Integration
 function ListingModal({ listing, onSave, onClose }) {
   const [formData, setFormData] = useState({
     title: listing?.title || '',
     price: listing?.price || '',
-    category: listing?.category || 'Electronics',
+    category: listing?.category || 'Catalysts',
     description: listing?.description || '',
     condition: listing?.condition || 'New',
     location: listing?.location || '',
@@ -3570,133 +3570,347 @@ function ListingModal({ listing, onSave, onClose }) {
     image: listing?.image || ''
   });
 
+  // Cat Database integration
+  const [catalystData, setCatalystData] = useState([]);
+  const [calculations, setCalculations] = useState([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedCatalyst, setSelectedCatalyst] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchCatalystData();
+    fetchCalculations();
+  }, []);
+
+  const fetchCatalystData = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/data`);
+      if (response.ok) {
+        const data = await response.json();
+        setCatalystData(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch catalyst data:', error);
+    }
+  };
+
+  const fetchCalculations = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/calculations`);
+      if (response.ok) {
+        const data = await response.json();
+        setCalculations(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch calculations:', error);
+    }
+  };
+
+  const handleTitleChange = (e) => {
+    const value = e.target.value;
+    setFormData({...formData, title: value});
+
+    if (value.length > 0) {
+      // Filter catalyst data based on title input
+      const filtered = catalystData.filter(catalyst => 
+        catalyst.name?.toLowerCase().includes(value.toLowerCase()) ||
+        catalyst.cat_id?.toLowerCase().includes(value.toLowerCase())
+      ).slice(0, 10); // Limit to 10 suggestions
+
+      setFilteredSuggestions(filtered);
+      setShowSuggestions(filtered.length > 0);
+    } else {
+      setFilteredSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const selectCatalyst = (catalyst) => {
+    setSelectedCatalyst(catalyst);
+    setFormData({
+      ...formData, 
+      title: catalyst.name || catalyst.cat_id,
+      category: 'Catalysts'
+    });
+    setShowSuggestions(false);
+    
+    // Find calculated price for this catalyst
+    const calculation = calculations.find(calc => calc.catalyst_id === catalyst.cat_id);
+    if (calculation) {
+      setFormData(prev => ({
+        ...prev,
+        price: calculation.total_price || calculation.calculated_price || '',
+        description: `Catalyst ${catalyst.cat_id}: ${catalyst.name}\n\nSpecifications:\n- Ceramic Weight: ${catalyst.ceramic_weight}g\n- PT PPM: ${catalyst.pt_ppm}\n- PD PPM: ${catalyst.pd_ppm}\n- RH PPM: ${catalyst.rh_ppm}\n\nCalculated based on current market rates.`
+      }));
+    }
+  };
+
+  const getCalculatedPrice = (catalystId) => {
+    const calculation = calculations.find(calc => calc.catalyst_id === catalystId);
+    return calculation?.total_price || calculation?.calculated_price || null;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    onSave({
+      ...formData,
+      catalyst_id: selectedCatalyst?.cat_id || null
+    });
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content max-w-2xl">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold text-gray-900">
-            {listing ? 'Edit Listing' : 'Create New Listing'}
-          </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-            <X className="w-6 h-6" />
-          </button>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+              <Package className="w-6 h-6 mr-2 text-blue-600" />
+              {listing ? 'Edit Listing' : 'Create New Listing'}
+              {selectedCatalyst && (
+                <span className="ml-3 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-medium">
+                  Catalyst: {selectedCatalyst.cat_id}
+                </span>
+              )}
+            </h3>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              <X className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
-              <input
-                type="text"
-                required
-                value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
-                className="cataloro-input"
-                placeholder="Enter listing title"
-              />
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              {/* Enhanced Title Field with Cat Database Integration */}
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Title
+                  <span className="text-blue-600 dark:text-blue-400 text-xs ml-2">
+                    (Type to search Cat Database)
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.title}
+                  onChange={handleTitleChange}
+                  onFocus={() => formData.title && setShowSuggestions(filteredSuggestions.length > 0)}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  placeholder="Start typing catalyst name or ID..."
+                />
+                
+                {/* Catalyst Suggestions Dropdown */}
+                {showSuggestions && (
+                  <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
+                    <div className="p-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                        <Database className="w-4 h-4 mr-2 text-blue-500" />
+                        Cat Database Matches ({filteredSuggestions.length})
+                      </p>
+                    </div>
+                    {filteredSuggestions.map((catalyst) => {
+                      const calculatedPrice = getCalculatedPrice(catalyst.cat_id);
+                      return (
+                        <div
+                          key={catalyst.cat_id}
+                          onClick={() => selectCatalyst(catalyst)}
+                          className="p-4 hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors duration-200"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-1 rounded-md text-xs font-medium">
+                                  {catalyst.cat_id}
+                                </span>
+                                <span className="font-medium text-gray-900 dark:text-white">
+                                  {catalyst.name}
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 grid grid-cols-4 gap-4">
+                                <span>Weight: {catalyst.ceramic_weight}g</span>
+                                <span>PT: {catalyst.pt_ppm} ppm</span>
+                                <span>PD: {catalyst.pd_ppm} ppm</span>
+                                <span>RH: {catalyst.rh_ppm} ppm</span>
+                              </div>
+                            </div>
+                            {calculatedPrice && (
+                              <div className="ml-4 text-right">
+                                <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                                  ${parseFloat(calculatedPrice).toFixed(2)}
+                                </div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                  Calculated Price
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Enhanced Price Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Price
+                  {selectedCatalyst && (
+                    <span className="text-green-600 dark:text-green-400 text-xs ml-2">
+                      (Auto-filled from calculation)
+                    </span>
+                  )}
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-lg">
+                    $
+                  </span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={formData.price}
+                    onChange={(e) => setFormData({...formData, price: e.target.value})}
+                    className="w-full pl-8 pr-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData({...formData, category: e.target.value})}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="Catalysts">Catalysts</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Home">Home & Garden</option>
+                  <option value="Sports">Sports & Outdoors</option>
+                  <option value="Books">Books & Media</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
-              <input
-                type="number"
-                required
-                value={formData.price}
-                onChange={(e) => setFormData({...formData, price: e.target.value})}
-                className="cataloro-input"
-                placeholder="0.00"
-              />
+
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Condition</label>
+                <select
+                  value={formData.condition}
+                  onChange={(e) => setFormData({...formData, condition: e.target.value})}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="New">New</option>
+                  <option value="Like New">Like New</option>
+                  <option value="Good">Good</option>
+                  <option value="Fair">Fair</option>
+                  <option value="Poor">Poor</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Seller</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.seller}
+                  onChange={(e) => setFormData({...formData, seller: e.target.value})}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Seller name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location</label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({...formData, location: e.target.value})}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="City, State"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Image URL</label>
+                <input
+                  type="url"
+                  value={formData.image}
+                  onChange={(e) => setFormData({...formData, image: e.target.value})}
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({...formData, category: e.target.value})}
-                className="cataloro-input"
-              >
-                <option value="Electronics">Electronics</option>
-                <option value="Clothing">Clothing</option>
-                <option value="Home">Home & Garden</option>
-                <option value="Sports">Sports & Outdoors</option>
-                <option value="Books">Books & Media</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Condition</label>
-              <select
-                value={formData.condition}
-                onChange={(e) => setFormData({...formData, condition: e.target.value})}
-                className="cataloro-input"
-              >
-                <option value="New">New</option>
-                <option value="Like New">Like New</option>
-                <option value="Good">Good</option>
-                <option value="Fair">Fair</option>
-                <option value="Poor">Poor</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Seller</label>
-              <input
-                type="text"
-                required
-                value={formData.seller}
-                onChange={(e) => setFormData({...formData, seller: e.target.value})}
-                className="cataloro-input"
-                placeholder="Seller name"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-              <input
-                type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({...formData, location: e.target.value})}
-                className="cataloro-input"
-                placeholder="City, State"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-            <input
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({...formData, image: e.target.value})}
-              className="cataloro-input"
-              placeholder="https://example.com/image.jpg"
-            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Description
+              {selectedCatalyst && (
+                <span className="text-blue-600 dark:text-blue-400 text-xs ml-2">
+                  (Auto-generated from catalyst data)
+                </span>
+              )}
+            </label>
             <textarea
-              rows={4}
+              rows={6}
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
-              className="cataloro-input"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
               placeholder="Describe your item..."
             />
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4">
+          {/* Selected Catalyst Summary */}
+          {selectedCatalyst && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center">
+                <Database className="w-4 h-4 mr-2" />
+                Selected Catalyst: {selectedCatalyst.cat_id}
+              </h4>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-600 dark:text-gray-400">Name:</span>
+                  <p className="font-medium text-gray-900 dark:text-white">{selectedCatalyst.name}</p>
+                </div>
+                <div>
+                  <span className="text-gray-600 dark:text-gray-400">Weight:</span>
+                  <p className="font-medium text-gray-900 dark:text-white">{selectedCatalyst.ceramic_weight}g</p>
+                </div>
+                <div>
+                  <span className="text-gray-600 dark:text-gray-400">Precious Metals:</span>
+                  <p className="font-medium text-gray-900 dark:text-white">
+                    PT:{selectedCatalyst.pt_ppm} | PD:{selectedCatalyst.pd_ppm} | RH:{selectedCatalyst.rh_ppm}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-gray-600 dark:text-gray-400">Calculated Price:</span>
+                  <p className="font-bold text-green-600 dark:text-green-400 text-lg">
+                    ${getCalculatedPrice(selectedCatalyst.cat_id) ? parseFloat(getCalculatedPrice(selectedCatalyst.cat_id)).toFixed(2) : 'N/A'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
             <button
               type="button"
               onClick={onClose}
-              className="cataloro-button-secondary"
+              className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="cataloro-button-primary"
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors flex items-center"
             >
+              <Package className="w-4 h-4 mr-2" />
               {listing ? 'Update Listing' : 'Create Listing'}
             </button>
           </div>
