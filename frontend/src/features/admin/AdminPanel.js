@@ -3648,8 +3648,8 @@ function ListingModal({ listing, onSave, onClose }) {
   };
 
   const getCalculatedPrice = (catalystId) => {
-    const calculation = calculations.find(calc => calc.catalyst_id === catalystId);
-    return calculation?.['Total Price (€)'] || calculation?.total_price || calculation?.calculated_price || null;
+    const calculation = calculations.find(calc => calc.cat_id === catalystId);
+    return calculation?.total_price || null;
   };
 
   const handleSubmit = (e) => {
