@@ -4222,7 +4222,7 @@ function CatDatabaseTab({ showToast }) {
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Catalyst Data</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Click on any cell to edit. The add_info field is hidden from this table.
+                Click on any cell to edit. The add_info field will be used in listing descriptions.
               </p>
             </div>
             
@@ -4237,6 +4237,7 @@ function CatDatabaseTab({ showToast }) {
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Pt PPM</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Pd PPM</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Rh PPM</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Add Info</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Actions</th>
                     </tr>
                   </thead>
