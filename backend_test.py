@@ -597,6 +597,10 @@ class CataloroAPITester:
             self.test_admin_session_handling()
             self.test_site_branding_data_persistence()
 
+        # NEW: Marketplace Pricing Suggestions Tests (as requested in review)
+        if admin_login_success and user_login_success:
+            self.test_marketplace_pricing_suggestions()
+
         # Print results
         print("\n" + "=" * 60)
         print(f"📊 Test Results: {self.tests_passed}/{self.tests_run} tests passed")
