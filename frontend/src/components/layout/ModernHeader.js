@@ -388,9 +388,9 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 )}
               </button>
 
-              {/* Modern Notifications Dropdown - 95% BACKGROUND OPACITY */}
+              {/* Enhanced Notifications Dropdown - Real Data */}
               {showNotifications && (
-                <div className="absolute right-0 mt-3 w-80 rounded-2xl shadow-2xl py-3 z-50 notifications-dropdown-enhanced" style={{
+                <div className="absolute right-0 mt-3 w-96 rounded-2xl shadow-2xl py-3 z-50 notifications-dropdown-enhanced" style={{
                   background: darkMode 
                     ? 'rgba(0, 0, 0, 0.95)'
                     : 'rgba(255, 255, 255, 0.95)',
@@ -401,35 +401,89 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 }}>
                   <div className="px-6 py-4 border-b border-white/10">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-gray-900 dark:text-white text-lg">Notifications</h3>
-                      <button className="text-sm text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white font-medium">Mark all read</button>
+                      <h3 className="font-bold text-gray-900 dark:text-white text-lg flex items-center">
+                        <Bell className="w-5 h-5 mr-2" />
+                        Notifications
+                        {unreadNotifications > 0 && (
+                          <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                            {unreadNotifications}
+                          </span>
+                        )}
+                      </h3>
+                      {unreadNotifications > 0 && (
+                        <button 
+                          onClick={markAllNotificationsAsRead}
+                          className="text-sm text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white font-medium transition-colors"
+                        >
+                          Mark all read
+                        </button>
+                      )}
                     </div>
                   </div>
+                  
                   <div className="max-h-80 overflow-y-auto">
-                    {/* Demo notifications with modern styling */}
-                    <div className="px-6 py-4 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#667eea'}}>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">New message from John</p>
-                      <p className="text-xs text-gray-600 dark:text-white/70 mt-1">About MacBook Pro listing</p>
-                      <p className="text-xs text-gray-700 dark:text-white/80 mt-2 font-medium">2 min ago</p>
-                    </div>
-                    <div className="px-6 py-4 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#f093fb'}}>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Your listing was favorited</p>
-                      <p className="text-xs text-gray-600 dark:text-white/70 mt-1">iPhone 14 Pro Max - Space Black</p>
-                      <p className="text-xs text-gray-700 dark:text-white/80 mt-2 font-medium">1 hour ago</p>
-                    </div>
-                    <div className="px-6 py-4 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300" style={{borderColor: '#43e97b'}}>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Payment received</p>
-                      <p className="text-xs text-gray-600 dark:text-white/70 mt-1">$899 for Gaming Laptop sale</p>
-                      <p className="text-xs text-gray-700 dark:text-white/80 mt-2 font-medium">3 hours ago</p>
-                    </div>
+                    {notifications.length === 0 ? (
+                      <div className="px-6 py-8 text-center">
+                        <Bell className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600 dark:text-gray-400">No notifications yet</p>
+                      </div>
+                    ) : (
+                      notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          onClick={() => markNotificationAsRead(notification.id)}
+                          className={`px-6 py-4 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300 ${
+                            !notification.is_read ? 'bg-blue-50/30 dark:bg-blue-900/30' : ''
+                          }`}
+                          style={{
+                            borderColor: notification.type === 'message' ? '#667eea' :
+                                      notification.type === 'favorite' ? '#f093fb' :
+                                      notification.type === 'payment' ? '#43e97b' : '#9ca3af'
+                          }}
+                        >
+                          <div className="flex items-start space-x-3">
+                            <div className={`p-2 rounded-full ${
+                              notification.type === 'message' ? 'bg-blue-100 text-blue-600' :
+                              notification.type === 'favorite' ? 'bg-pink-100 text-pink-600' :
+                              notification.type === 'payment' ? 'bg-green-100 text-green-600' :
+                              'bg-gray-100 text-gray-600'
+                            }`}>
+                              {notification.type === 'message' ? <MessageCircle className="w-4 h-4" /> :
+                               notification.type === 'favorite' ? <Heart className="w-4 h-4" /> :
+                               notification.type === 'payment' ? <DollarSign className="w-4 h-4" /> :
+                               <Bell className="w-4 h-4" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <p className={`text-sm font-semibold ${!notification.is_read ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                                  {notification.title}
+                                </p>
+                                {!notification.is_read && (
+                                  <div className="w-2 h-2 bg-blue-600 rounded-full ml-2"></div>
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-600 dark:text-white/70 mt-1">
+                                {notification.message}
+                              </p>
+                              <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                <Clock className="w-3 h-3 mr-1" />
+                                {new Date(notification.created_at).toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
+                  
                   <div className="px-6 py-3 border-t border-white/10">
                     <Link
                       to="/notifications"
-                      className="text-sm text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white font-medium"
+                      className="text-sm text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white font-medium flex items-center"
                       onClick={() => setShowNotifications(false)}
                     >
-                      View all notifications →
+                      View all notifications
+                      <TrendingUp className="w-4 h-4 ml-1" />
                     </Link>
                   </div>
                 </div>
