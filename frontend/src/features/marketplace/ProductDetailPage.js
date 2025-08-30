@@ -333,58 +333,21 @@ function ProductDetailPage() {
                 {loadingSuggestion ? (
                   <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                     <div className="w-4 h-4 border border-gray-400 border-t-transparent rounded-full animate-spin mr-3"></div>
-                    Loading market price analysis...
+                    Loading market range...
                   </div>
                 ) : priceSuggestion ? (
                   <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100 dark:border-blue-800/50">
                     <div className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-800/50">
-                            <Database className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wide">
-                              Database Market Range
-                            </div>
-                            <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                              €{(priceSuggestion * 0.9).toFixed(2)} - €{(priceSuggestion * 1.1).toFixed(2)}
-                            </div>
-                            <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                              Based on calculated price ±10%
-                            </div>
-                          </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-800/50">
+                          <Database className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                         </div>
-                        <div className="text-right">
-                          {product.price < (priceSuggestion * 0.9) ? (
-                            <div className="inline-flex items-center px-3 py-2 rounded-full bg-green-100 dark:bg-green-900/40 border border-green-200 dark:border-green-800">
-                              <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400 mr-2" />
-                              <span className="text-sm font-semibold text-green-700 dark:text-green-300">
-                                Excellent Deal
-                              </span>
-                            </div>
-                          ) : product.price > (priceSuggestion * 1.1) ? (
-                            <div className="inline-flex items-center px-3 py-2 rounded-full bg-orange-100 dark:bg-orange-900/40 border border-orange-200 dark:border-orange-800">
-                              <Info className="w-4 h-4 text-orange-600 dark:text-orange-400 mr-2" />
-                              <span className="text-sm font-semibold text-orange-700 dark:text-orange-300">
-                                Above Range
-                              </span>
-                            </div>
-                          ) : (
-                            <div className="inline-flex items-center px-3 py-2 rounded-full bg-blue-100 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800">
-                              <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
-                              <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                                In Range
-                              </span>
-                            </div>
-                          )}
-                          <div className="text-sm text-blue-600 dark:text-blue-400 mt-2">
-                            {product.price < (priceSuggestion * 0.9) 
-                              ? `You save €${((priceSuggestion * 0.9) - product.price).toFixed(2)}`
-                              : product.price > (priceSuggestion * 1.1)
-                              ? `€${(product.price - (priceSuggestion * 1.1)).toFixed(2)} above range`
-                              : 'Fair market pricing'
-                            }
+                        <div>
+                          <div className="text-sm font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wide">
+                            Market Range
+                          </div>
+                          <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                            €{(priceSuggestion * 0.9).toFixed(2)} - €{(priceSuggestion * 1.1).toFixed(2)}
                           </div>
                         </div>
                       </div>
