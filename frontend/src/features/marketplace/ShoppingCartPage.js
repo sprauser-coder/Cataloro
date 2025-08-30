@@ -210,31 +210,8 @@ function ShoppingCartPage() {
                           </span>
                         </div>
 
-                        {/* Quantity and Actions */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Quantity:
-                            </span>
-                            <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
-                              <button
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-lg transition-colors"
-                              >
-                                <Minus className="w-4 h-4" />
-                              </button>
-                              <span className="px-4 py-2 text-center min-w-[3rem]">
-                                {item.quantity}
-                              </span>
-                              <button
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-lg transition-colors"
-                              >
-                                <Plus className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
-
+                        {/* Actions */}
+                        <div className="flex items-center justify-end">
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={() => moveToSaved(item)}
