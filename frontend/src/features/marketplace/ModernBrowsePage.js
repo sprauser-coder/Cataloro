@@ -733,69 +733,74 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
           {item.category === 'Catalysts' && (
             <div className="space-y-1">
               {loadingSuggestion ? (
-                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
                   <div className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Loading market price...
+                  Loading market range...
                 </div>
               ) : priceSuggestion && Math.abs(priceSuggestion - item.price) > 0.01 ? (
-                <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100 dark:border-blue-800/50">
-                  <div className="p-3">
-                    <div className="flex items-center justify-between">
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 dark:from-indigo-900/40 dark:via-blue-900/40 dark:to-cyan-900/40 border-2 border-indigo-100 dark:border-indigo-800/60 shadow-lg">
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-indigo-200/30 to-transparent dark:from-indigo-600/20 rounded-bl-full"></div>
+                  <div className="relative p-4">
+                    <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-2">
-                        <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-800/50">
-                          <Database className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                        <div className="p-2 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-500 shadow-lg">
+                          <Database className="w-4 h-4 text-white" />
                         </div>
                         <div>
-                          <div className="text-xs font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wide">
+                          <div className="text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">
                             Market Range
                           </div>
-                          <div className="text-sm font-bold text-blue-900 dark:text-blue-100">
-                            €{(priceSuggestion * 0.9).toFixed(2)} - €{(priceSuggestion * 1.1).toFixed(2)}
+                          <div className="text-lg font-black text-indigo-900 dark:text-indigo-100 leading-tight">
+                            €{(priceSuggestion * 0.9).toFixed(0)} - €{(priceSuggestion * 1.1).toFixed(0)}
                           </div>
                         </div>
                       </div>
                       <div className="text-right">
                         {item.price < (priceSuggestion * 0.9) ? (
-                          <div className="inline-flex items-center px-2.5 py-1.5 rounded-full bg-green-100 dark:bg-green-900/40 border border-green-200 dark:border-green-800">
-                            <TrendingUp className="w-3 h-3 text-green-600 dark:text-green-400 mr-1" />
-                            <span className="text-xs font-semibold text-green-700 dark:text-green-300">
+                          <div className="inline-flex items-center px-3 py-1.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg">
+                            <TrendingUp className="w-3 h-3 mr-1" />
+                            <span className="text-xs font-bold">
                               Great Deal
                             </span>
                           </div>
                         ) : item.price > (priceSuggestion * 1.1) ? (
-                          <div className="inline-flex items-center px-2.5 py-1.5 rounded-full bg-orange-100 dark:bg-orange-900/40 border border-orange-200 dark:border-orange-800">
-                            <Info className="w-3 h-3 text-orange-600 dark:text-orange-400 mr-1" />
-                            <span className="text-xs font-semibold text-orange-700 dark:text-orange-300">
+                          <div className="inline-flex items-center px-3 py-1.5 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg">
+                            <Info className="w-3 h-3 mr-1" />
+                            <span className="text-xs font-bold">
                               Above Range
                             </span>
                           </div>
                         ) : (
-                          <div className="inline-flex items-center px-2.5 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800">
-                            <Info className="w-3 h-3 text-blue-600 dark:text-blue-400 mr-1" />
-                            <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">
+                          <div className="inline-flex items-center px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg">
+                            <Info className="w-3 h-3 mr-1" />
+                            <span className="text-xs font-bold">
                               In Range
                             </span>
                           </div>
                         )}
-                        <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                          {item.price < (priceSuggestion * 0.9) 
-                            ? `Save €${((priceSuggestion * 0.9) - item.price).toFixed(2)}`
-                            : item.price > (priceSuggestion * 1.1)
-                            ? `+€${(item.price - (priceSuggestion * 1.1)).toFixed(2)}`
-                            : 'Fair Price'
-                          }
-                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+                        ±10% of calculated price
+                      </div>
+                      <div className="text-xs font-bold text-indigo-700 dark:text-indigo-300">
+                        {item.price < (priceSuggestion * 0.9) 
+                          ? `Save €${((priceSuggestion * 0.9) - item.price).toFixed(0)}`
+                          : item.price > (priceSuggestion * 1.1)
+                          ? `+€${(item.price - (priceSuggestion * 1.1)).toFixed(0)}`
+                          : 'Fair Price'
+                        }
                       </div>
                     </div>
                   </div>
-                  <div className="absolute top-0 right-0 w-20 h-full bg-gradient-to-l from-blue-200/20 to-transparent dark:from-blue-700/20"></div>
                 </div>
               ) : priceSuggestion && item.price >= (priceSuggestion * 0.9) && item.price <= (priceSuggestion * 1.1) ? (
-                <div className="flex items-center space-x-2 p-2.5 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 rounded-lg border border-green-200 dark:border-green-800/50">
-                  <div className="p-1 rounded bg-green-100 dark:bg-green-800/50">
-                    <Database className="w-3 h-3 text-green-600 dark:text-green-400" />
+                <div className="flex items-center space-x-2 p-3 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/40 dark:to-green-900/40 rounded-xl border border-emerald-200 dark:border-emerald-800/50 shadow-sm">
+                  <div className="p-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-green-500 shadow-md">
+                    <Database className="w-3 h-3 text-white" />
                   </div>
-                  <span className="text-xs font-semibold text-green-700 dark:text-green-300">
+                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
                     Perfect Market Range Match
                   </span>
                 </div>
