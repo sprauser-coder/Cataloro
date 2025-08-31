@@ -560,7 +560,7 @@ function ModernBrowsePage() {
 // Enhanced Product Card Component
 function ProductCard({ item, viewMode, onAddToCart, onFavoriteToggle, onMessageSeller, isInFavorites }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
+  // Removed unused state
   const [priceSuggestion, setPriceSuggestion] = useState(null);
   const [loadingSuggestion, setLoadingSuggestion] = useState(false);
   const navigate = useNavigate();
