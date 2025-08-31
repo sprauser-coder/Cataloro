@@ -366,7 +366,7 @@ function ModernBrowsePage() {
               <select
                 value={filters.type}
                 onChange={(e) => updateFilters({...filters, type: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white h-10"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white h-10 leading-none"
               >
                 <option value="all">All Types</option>
                 <option value="Private">Private</option>
