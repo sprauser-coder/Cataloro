@@ -3344,7 +3344,16 @@ function ListingsTab({ showToast }) {
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">Listings Management</h2>
             <p className="text-gray-600 dark:text-gray-300 text-lg">Comprehensive marketplace listings control center</p>
           </div>
-          <div className="flex justify-center lg:justify-end space-x-4">
+          <div className="flex justify-center lg:justify-end items-center space-x-4">
+            <button
+              onClick={refreshListings}
+              className="cataloro-button-secondary flex items-center px-4 py-3"
+              title="Refresh listings from server"
+            >
+              <RefreshCw className="w-5 h-5 mr-2" />
+              Refresh
+            </button>
+            
             <button
               onClick={() => setShowCreateModal(true)}
               className="cataloro-button-primary flex items-center px-6 py-3"
