@@ -202,6 +202,9 @@ function ModernBrowsePage() {
       return;
     }
 
+    // Set loading state for this specific item
+    setLoadingBuyNow(prev => ({ ...prev, [item.id]: true }));
+
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/create`, {
         method: 'POST',
@@ -218,7 +221,10 @@ function ModernBrowsePage() {
 
       if (response.ok) {
         showToast(`Buy request sent for "${item.title}"! Seller has 48 hours to respond.`, 'success');
-        // TODO: Refresh cart to show pending item
+        // Show additional info about next steps
+        setTimeout(() => {
+          showToast('Check your cart to see pending requests or cancel if needed.', 'info');
+        }, 2000);
       } else if (response.status === 409) {
         showToast('This item already has a pending buy request', 'warning');
       } else {
@@ -227,6 +233,9 @@ function ModernBrowsePage() {
     } catch (error) {
       console.error('Error creating buy request:', error);
       showToast('Failed to create buy request. Please try again.', 'error');
+    } finally {
+      // Clear loading state for this item
+      setLoadingBuyNow(prev => ({ ...prev, [item.id]: false }));
     }
   };
 
