@@ -853,6 +853,34 @@ async def mark_message_read(user_id: str, message_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to mark message as read: {str(e)}")
 
+@app.get("/api/users/search")
+async def search_users(q: str = ""):
+    """Search users by username or full name for messaging"""
+    try:
+        if len(q.strip()) < 2:
+            return []
+        
+        users = await db.users.find({
+            "$or": [
+                {"username": {"$regex": q, "$options": "i"}},
+                {"full_name": {"$regex": q, "$options": "i"}}
+            ]
+        }).limit(10).to_list(length=None)
+        
+        # Return only necessary fields for privacy
+        user_results = []
+        for user in users:
+            user_results.append({
+                "id": user['id'],
+                "username": user['username'],
+                "full_name": user.get('full_name', ''),
+                "display_name": user.get('full_name', user['username'])
+            })
+        
+        return user_results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to search users: {str(e)}")
+
 # Notifications endpoints
 @app.get("/api/user/{user_id}/notifications")
 async def get_user_notifications(user_id: str):
