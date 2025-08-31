@@ -40,7 +40,7 @@ import { useNotifications } from '../../context/NotificationContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
 
 function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { showToast } = useNotifications();
   const { allProducts, cartItems, favorites, orderHistory } = useMarketplace();
   
