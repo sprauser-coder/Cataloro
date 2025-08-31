@@ -311,6 +311,13 @@ async def browse_listings(
             
             enriched_listings.append(listing)
         
+        # Apply seller type filter after enrichment (since we need seller info)
+        if type != "all":
+            if type == "Private":
+                enriched_listings = [l for l in enriched_listings if not l.get('seller', {}).get('is_business', False)]
+            elif type == "Business":
+                enriched_listings = [l for l in enriched_listings if l.get('seller', {}).get('is_business', False)]
+        
         return enriched_listings
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to browse listings: {str(e)}")
