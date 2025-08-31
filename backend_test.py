@@ -1017,6 +1017,193 @@ class CataloroAPITester:
         
         return passed_operations == len(operations)
 
+    def test_delete_operation_fix(self):
+        """Test the delete operation fix as requested in review"""
+        print("\n🗑️ Testing Delete Operation Fix...")
+        
+        if not self.regular_user:
+            print("❌ Delete Operation Test - SKIPPED (No user logged in)")
+            return False
+        
+        # Step 1: Create Test Listing
+        print("\n1️⃣ Creating test listing...")
+        test_listing = {
+            "title": "Delete Test Listing - Wireless Headphones",
+            "description": "Premium wireless headphones for delete operation testing. Noise cancellation feature.",
+            "price": 299.99,
+            "category": "Electronics",
+            "condition": "New",
+            "seller_id": self.regular_user['id'],
+            "images": ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"],
+            "tags": ["wireless", "headphones", "audio"],
+            "features": ["Noise cancellation", "Bluetooth 5.0", "30-hour battery"]
+        }
+        
+        success_create, create_response = self.run_test(
+            "Create Test Listing for Delete",
+            "POST",
+            "api/listings",
+            200,
+            data=test_listing
+        )
+        
+        if not success_create or 'listing_id' not in create_response:
+            print("❌ Failed to create test listing - stopping delete tests")
+            return False
+        
+        listing_id = create_response['listing_id']
+        print(f"   ✅ Created test listing with ID: {listing_id}")
+        
+        # Step 2: Verify Listing Appears in Browse
+        print("\n2️⃣ Verifying listing appears in /api/marketplace/browse...")
+        success_browse, browse_response = self.run_test(
+            "Verify Listing in Browse",
+            "GET",
+            "api/marketplace/browse",
+            200
+        )
+        
+        found_in_browse = False
+        if success_browse:
+            found_in_browse = any(listing.get('id') == listing_id for listing in browse_response)
+            self.log_test("Listing Appears in Browse", found_in_browse,
+                         f"Test listing found in browse: {found_in_browse}")
+        
+        # Step 3: Verify Listing Appears in My Listings
+        print("\n3️⃣ Verifying listing appears in /api/user/my-listings...")
+        success_my_listings, my_listings_response = self.run_test(
+            "Verify Listing in My Listings",
+            "GET",
+            f"api/user/my-listings/{self.regular_user['id']}",
+            200
+        )
+        
+        found_in_my_listings = False
+        if success_my_listings:
+            found_in_my_listings = any(listing.get('id') == listing_id for listing in my_listings_response)
+            self.log_test("Listing Appears in My Listings", found_in_my_listings,
+                         f"Test listing found in my listings: {found_in_my_listings}")
+        
+        # Step 4: Test DELETE /api/listings/{listing_id} endpoint
+        print(f"\n4️⃣ Testing DELETE /api/listings/{listing_id} endpoint...")
+        success_delete, delete_response = self.run_test(
+            "DELETE Listing Endpoint",
+            "DELETE",
+            f"api/listings/{listing_id}",
+            200
+        )
+        
+        if success_delete:
+            print(f"   ✅ Delete endpoint returned success: {delete_response.get('message', 'No message')}")
+            deleted_count = delete_response.get('deleted_count', 0)
+            self.log_test("Delete Operation Success", deleted_count == 1,
+                         f"Deleted count: {deleted_count} (expected: 1)")
+        
+        # Step 5: Verify Deletion - Check Browse Endpoint
+        print("\n5️⃣ Verifying deletion - checking browse endpoint...")
+        success_browse_after, browse_after_response = self.run_test(
+            "Browse After Delete",
+            "GET",
+            "api/marketplace/browse",
+            200
+        )
+        
+        still_in_browse = False
+        if success_browse_after:
+            still_in_browse = any(listing.get('id') == listing_id for listing in browse_after_response)
+            self.log_test("Listing Removed from Browse", not still_in_browse,
+                         f"Listing absent from browse after delete: {not still_in_browse}")
+        
+        # Step 6: Verify Deletion - Check My Listings Endpoint
+        print("\n6️⃣ Verifying deletion - checking my-listings endpoint...")
+        success_my_listings_after, my_listings_after_response = self.run_test(
+            "My Listings After Delete",
+            "GET",
+            f"api/user/my-listings/{self.regular_user['id']}",
+            200
+        )
+        
+        still_in_my_listings = False
+        if success_my_listings_after:
+            still_in_my_listings = any(listing.get('id') == listing_id for listing in my_listings_after_response)
+            self.log_test("Listing Removed from My Listings", not still_in_my_listings,
+                         f"Listing absent from my listings after delete: {not still_in_my_listings}")
+        
+        # Step 7: Test Frontend Endpoint Specifically
+        print("\n7️⃣ Testing frontend endpoint DELETE /api/listings/{listing_id} (same as backend)...")
+        # Create another test listing to test the frontend endpoint specifically
+        success_create2, create_response2 = self.run_test(
+            "Create Second Test Listing for Frontend Delete",
+            "POST",
+            "api/listings",
+            200,
+            data={
+                "title": "Frontend Delete Test - Gaming Mouse",
+                "description": "Gaming mouse for frontend delete endpoint testing.",
+                "price": 89.99,
+                "category": "Electronics",
+                "condition": "New",
+                "seller_id": self.regular_user['id'],
+                "images": ["https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400"]
+            }
+        )
+        
+        frontend_test_success = False
+        if success_create2:
+            listing_id2 = create_response2['listing_id']
+            print(f"   ✅ Created second test listing for frontend test: {listing_id2}")
+            
+            # Test the same DELETE endpoint that frontend now calls
+            success_frontend_delete, frontend_delete_response = self.run_test(
+                "Frontend DELETE Endpoint Test",
+                "DELETE",
+                f"api/listings/{listing_id2}",
+                200
+            )
+            
+            if success_frontend_delete:
+                print(f"   ✅ Frontend delete endpoint works: {frontend_delete_response.get('message', 'Success')}")
+                
+                # Verify this deletion also works
+                success_verify_frontend, verify_response = self.run_test(
+                    "Verify Frontend Delete",
+                    "GET",
+                    "api/marketplace/browse",
+                    200
+                )
+                
+                if success_verify_frontend:
+                    frontend_listing_gone = not any(listing.get('id') == listing_id2 for listing in verify_response)
+                    self.log_test("Frontend Delete Verification", frontend_listing_gone,
+                                 f"Frontend deleted listing absent from browse: {frontend_listing_gone}")
+                    frontend_test_success = frontend_listing_gone
+        
+        # Summary of Delete Operation Tests
+        delete_tests = [
+            ("Create Test Listing", success_create),
+            ("Listing in Browse", found_in_browse),
+            ("Listing in My Listings", found_in_my_listings),
+            ("Delete Operation", success_delete),
+            ("Removed from Browse", not still_in_browse if success_browse_after else False),
+            ("Removed from My Listings", not still_in_my_listings if success_my_listings_after else False),
+            ("Frontend Delete Endpoint", frontend_test_success)
+        ]
+        
+        passed_tests = sum(1 for _, success in delete_tests if success)
+        total_tests = len(delete_tests)
+        
+        print(f"\n📊 Delete Operation Test Summary: {passed_tests}/{total_tests} tests passed")
+        
+        for test_name, success in delete_tests:
+            status = "✅ PASSED" if success else "❌ FAILED"
+            print(f"   {test_name}: {status}")
+        
+        overall_success = passed_tests == total_tests
+        self.log_test("Delete Operation Fix Complete", overall_success,
+                     f"All delete operation tests passed: {overall_success}")
+        
+        return overall_success
+
     def run_all_tests(self):
         """Run complete test suite"""
         print("🚀 Starting Cataloro Marketplace API Tests")
@@ -1030,6 +1217,16 @@ class CataloroAPITester:
         # Authentication tests
         admin_login_success = self.test_admin_login()
         user_login_success = self.test_user_login()
+
+        # PRIORITY: Delete Operation Fix Test (as requested in review)
+        if user_login_success:
+            print("\n🔥 PRIORITY: Testing Delete Operation Fix...")
+            delete_fix_success = self.test_delete_operation_fix()
+            
+            if delete_fix_success:
+                print("🎉 Delete operation fix verified successfully!")
+            else:
+                print("⚠️ Delete operation fix has issues - see details above")
 
         # Marketplace tests
         self.test_marketplace_browse()
