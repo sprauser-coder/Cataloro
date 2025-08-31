@@ -393,12 +393,18 @@ body:not(.dark) .cataloro-input::placeholder {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.1) 100%);
 }
 
-.dark .cataloro-input:disabled {
+.dark .cataloro-input:disabled,
+.dark input.cataloro-input:disabled,
+.dark textarea.cataloro-input:disabled {
   color: white !important;
+  background: rgba(255, 255, 255, 0.2) !important;
 }
 
-.dark .cataloro-input[disabled] {
+.dark .cataloro-input[disabled],
+.dark input.cataloro-input[disabled],
+.dark textarea.cataloro-input[disabled] {
   color: white !important;
+  background: rgba(255, 255, 255, 0.2) !important;
 }
 
 body:not(.dark) .cataloro-input:focus {
