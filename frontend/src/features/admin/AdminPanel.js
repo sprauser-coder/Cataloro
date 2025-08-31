@@ -3218,7 +3218,14 @@ function ListingsTab({ showToast }) {
           const filteredListings = listings.filter(l => !selectedListings.includes(l.id));
           console.log(`🔍 Before: ${beforeCount} listings, After: ${filteredListings.length} listings`);
           setListings(filteredListings);
-          showToast?.(`${selectedListings.length} listings deleted`, 'success');
+          showToast?.(`${selectedListings.length} listings deleted successfully`, 'success');
+          
+          // Refresh from backend to ensure data consistency
+          console.log('🔄 Refreshing listings from backend after bulk delete...');
+          setTimeout(async () => {
+            await fetchListings();
+            console.log('✅ Listings refreshed after bulk delete');
+          }, 1000);
           break;
         case 'feature':
           setListings(listings.map(l => 
