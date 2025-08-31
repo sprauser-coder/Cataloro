@@ -464,9 +464,13 @@ export function MarketplaceProvider({ children }) {
         subcategory: 'Handbags',
         seller: {
           name: 'LuxuryItems_NYC',
+          username: 'LuxuryItems_NYC',
+          email: 'luxury.items.nyc@example.com',
           rating: 4.7,
           reviews: 245,
           verified: true,
+          is_business: true, // Business seller
+          company_name: 'Luxury Items NYC Inc.',
           location: 'New York, NY'
         },
         images: [
