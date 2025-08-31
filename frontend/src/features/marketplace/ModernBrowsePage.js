@@ -290,11 +290,20 @@ function ModernBrowsePage() {
 
       {/* Results Count and Filter Controls - INLINE */}
       <div id="search-results" className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-        <div className="flex items-center space-x-6">
-          <p className="text-gray-600 dark:text-gray-400">
-            <span className="font-semibold text-gray-900 dark:text-white">{filteredListings.length}</span> products found
+        <div className="flex items-center gap-4 text-gray-600 dark:text-gray-300">
+          <span className="text-lg font-semibold">
+            {filteredListings.length} Result{filteredListings.length !== 1 ? 's' : ''}
             {searchQuery && ` for "${searchQuery}"`}
-          </p>
+          </span>
+          
+          <button
+            onClick={refreshListings}
+            className="flex items-center space-x-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg font-medium transition-all duration-200 hover:scale-105"
+            title="Refresh listings from server"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span className="hidden sm:inline">Refresh</span>
+          </button>
         </div>
 
         {/* Filter and Sort Controls - INLINE WITH RESULTS COUNT */}
