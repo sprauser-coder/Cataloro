@@ -410,7 +410,7 @@ function ProfilePage() {
           <div className="flex space-x-3">
             <button
               onClick={handleExportData}
-              className="cataloro-button-secondary flex items-center"
+              className="cataloro-button-secondary flex items-center text-gray-800 dark:text-white"
             >
               <Download className="w-4 h-4 mr-2" />
               Export Data
