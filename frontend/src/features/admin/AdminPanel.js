@@ -3203,11 +3203,17 @@ function ListingsTab({ showToast }) {
           // Open bulk edit modal (would need implementation)
           showToast?.(`Bulk edit mode activated for ${selectedListings.length} listings`, 'info');
           break;
+        default:
+          showToast?.(`Unknown action: ${actionToPerform}`, 'error');
+          break;
       }
+      
+      // Clear selection and reset bulk action
       setSelectedListings([]);
       setBulkAction('');
     } catch (error) {
-      showToast?.('Error performing bulk action', 'error');
+      console.error('Bulk action error:', error);
+      showToast?.(`Error performing bulk action: ${error.message}`, 'error');
     }
   };
 
