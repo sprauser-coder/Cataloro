@@ -164,10 +164,7 @@ function ModernBrowsePage() {
   const listings = allProducts;
   const filteredListings = filteredProducts;
 
-  const [categories] = useState([
-    'Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Books', 'Music',
-    'Cars', 'Real Estate', 'Jobs', 'Services'
-  ]);
+  // Removed categories array since we're using type filter instead
 
   // Load hero content from localStorage on mount and listen for updates
   useEffect(() => {
