@@ -908,7 +908,7 @@ function ProfilePage() {
                       className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 dark:bg-gray-700/80 cursor-not-allowed' : ''}`}
                       placeholder="Tell us about yourself..."
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       {profileData.bio.length}/500 characters
                     </p>
                   </div>
