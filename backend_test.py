@@ -1652,6 +1652,18 @@ class CataloroAPITester:
         if admin_login_success and user_login_success:
             self.test_marketplace_pricing_suggestions()
 
+        # NEW: Order Management System Tests (as requested in review)
+        print("\n🔥 PRIORITY: Testing Order Management System...")
+        if admin_login_success and user_login_success:
+            order_success = self.test_order_management_system()
+            
+            if order_success:
+                print("🎉 Order management system tests completed successfully!")
+                self.log_test("Order Management System Complete", True, "All order management features working")
+            else:
+                print("⚠️ Order management system tests had issues")
+                self.log_test("Order Management System Complete", False, "Order management tests failed")
+
         # NEW: Bulk Actions and add_info Search Functionality Tests (as requested in review)
         print("\n🔥 Testing Bulk Actions and add_info Search Functionality...")
         if admin_login_success and user_login_success:
