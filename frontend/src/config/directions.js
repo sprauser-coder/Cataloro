@@ -43,7 +43,7 @@ export const API_ENDPOINTS = {
   
   // Marketplace
   MARKETPLACE: {
-    LISTINGS: `${CURRENT_ENV.BACKEND_URL}/api/marketplace/listings`,
+    LISTINGS: `${CURRENT_ENV.BACKEND_URL}/api/listings`,
     BROWSE: `${CURRENT_ENV.BACKEND_URL}/api/marketplace/browse`,
     FAVORITES: `${CURRENT_ENV.BACKEND_URL}/api/marketplace/favorites`,
     SEARCH: `${CURRENT_ENV.BACKEND_URL}/api/marketplace/search`
