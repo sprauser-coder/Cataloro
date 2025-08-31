@@ -3,7 +3,7 @@
  * Full state management for cart, favorites, search, and all interactions
  */
 
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { createContext, useContext, useReducer, useEffect } from 'react';
 import { marketplaceService } from '../services/marketplaceService';
 import { liveService } from '../services/liveService';
 
