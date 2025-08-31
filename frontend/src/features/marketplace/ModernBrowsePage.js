@@ -634,8 +634,7 @@ function ProductCard({ item, viewMode, onAddToCart, onFavoriteToggle, onMessageS
       className={`group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer ${
         isGridView ? 'hover:-translate-y-2' : 'flex space-x-4 p-4'
       }`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      // Removed unused hover handlers
       onClick={handleCardClick}
     >
       {/* Image Section */}
