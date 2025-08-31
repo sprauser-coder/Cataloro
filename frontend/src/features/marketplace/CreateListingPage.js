@@ -425,7 +425,16 @@ function CreateListingPage() {
           name: user.name || user.email,
           email: user.email,
           verified: user.verified || false,
-          location: formData.location || 'Not specified'
+          // Format address for seller display
+          location: [formData.street, formData.city, formData.country].filter(Boolean).join(', ') || 'Not specified'
+        },
+        // Store detailed address information
+        address: {
+          street: formData.street,
+          post_code: formData.post_code,
+          city: formData.city,
+          country: formData.country,
+          use_profile_address: useProfileAddress
         },
         images: imagePreviews, // Use the base64 previews for demo
         created_at: new Date().toISOString(),
