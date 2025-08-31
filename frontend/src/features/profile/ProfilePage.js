@@ -1411,7 +1411,7 @@ function ProfilePage() {
                 </div>
                 
                 <div className="border-t pt-4">
-                  <h4 className="font-medium text-gray-900 mb-2">Delete Account</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Delete Account</h4>
                   <p className="text-sm text-gray-600 mb-3">
                     Permanently delete your account and all associated data. This action cannot be undone.
                   </p>
