@@ -574,7 +574,7 @@ function ProfilePage() {
                     )}
                   </div>
                   
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                     Upload a profile picture to help others recognize you
                   </p>
                   
