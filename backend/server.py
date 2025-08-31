@@ -1069,6 +1069,349 @@ async def mark_notification_read(user_id: str, notification_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to mark notification as read: {str(e)}")
 
 # ============================================================================
+# ORDER MANAGEMENT ENDPOINTS
+# ============================================================================
+
+@app.post("/api/orders/create")
+async def create_buy_request(order_data: dict):
+    """Create a buy request (pending order)"""
+    try:
+        listing_id = order_data.get("listing_id")
+        buyer_id = order_data.get("buyer_id")
+        
+        if not listing_id or not buyer_id:
+            raise HTTPException(status_code=400, detail="listing_id and buyer_id are required")
+        
+        # Check if listing exists and is active
+        listing = await db.listings.find_one({"id": listing_id, "status": "active"})
+        if not listing:
+            raise HTTPException(status_code=404, detail="Listing not found or not active")
+        
+        seller_id = listing.get("user_id")
+        if seller_id == buyer_id:
+            raise HTTPException(status_code=400, detail="Cannot buy your own listing")
+        
+        # Check if there's already a pending order for this listing (first-come-first-served)
+        existing_order = await db.orders.find_one({
+            "listing_id": listing_id, 
+            "status": "pending"
+        })
+        if existing_order:
+            raise HTTPException(status_code=409, detail="This item already has a pending buy request")
+        
+        # Create the order
+        order_id = generate_id()
+        current_time = datetime.utcnow()
+        expires_at = datetime.utcnow().replace(hour=current_time.hour + 48)  # 48 hours from now
+        
+        order = {
+            "id": order_id,
+            "buyer_id": buyer_id,
+            "seller_id": seller_id,
+            "listing_id": listing_id,
+            "status": "pending",
+            "created_at": current_time,
+            "expires_at": expires_at
+        }
+        
+        await db.orders.insert_one(order)
+        
+        # Create notification for seller
+        notification = {
+            "user_id": seller_id,
+            "title": "New Buy Request",
+            "message": f"Someone wants to buy your item: {listing.get('title', 'Unknown item')}",
+            "type": "buy_request",
+            "is_read": False,
+            "created_at": current_time.isoformat(),
+            "id": str(uuid.uuid4()),
+            "order_id": order_id,
+            "listing_id": listing_id
+        }
+        
+        await db.user_notifications.insert_one(notification)
+        
+        return {
+            "message": "Buy request created successfully",
+            "order_id": order_id,
+            "expires_at": expires_at.isoformat()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create buy request: {str(e)}")
+
+@app.get("/api/orders/seller/{seller_id}")
+async def get_seller_pending_orders(seller_id: str):
+    """Get all pending buy requests for a seller"""
+    try:
+        # Find pending orders for this seller
+        orders = await db.orders.find({
+            "seller_id": seller_id,
+            "status": "pending"
+        }).sort("created_at", -1).to_list(length=None)
+        
+        # Enrich with listing and buyer information
+        enriched_orders = []
+        for order in orders:
+            # Get listing details
+            listing = await db.listings.find_one({"id": order["listing_id"]})
+            if not listing:
+                continue
+                
+            # Get buyer details
+            buyer = await db.users.find_one({"id": order["buyer_id"]})
+            buyer_info = {
+                "id": buyer.get("id", ""),
+                "username": buyer.get("username", "Unknown"),
+                "full_name": buyer.get("full_name", ""),
+                "email": buyer.get("email", "")
+            } if buyer else {}
+            
+            enriched_order = {
+                "id": order["id"],
+                "status": order["status"],
+                "created_at": order["created_at"].isoformat() if order.get("created_at") else "",
+                "expires_at": order["expires_at"].isoformat() if order.get("expires_at") else "",
+                "listing": {
+                    "id": listing.get("id", ""),
+                    "title": listing.get("title", ""),
+                    "price": listing.get("price", 0),
+                    "image": listing.get("image", "")
+                },
+                "buyer": buyer_info
+            }
+            enriched_orders.append(enriched_order)
+        
+        return enriched_orders
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get seller orders: {str(e)}")
+
+@app.get("/api/orders/buyer/{buyer_id}")
+async def get_buyer_orders(buyer_id: str):
+    """Get all orders for a buyer (pending and completed)"""
+    try:
+        orders = await db.orders.find({
+            "buyer_id": buyer_id
+        }).sort("created_at", -1).to_list(length=None)
+        
+        # Enrich with listing and seller information
+        enriched_orders = []
+        for order in orders:
+            # Get listing details
+            listing = await db.listings.find_one({"id": order["listing_id"]})
+            if not listing:
+                continue
+                
+            # Get seller details
+            seller = await db.users.find_one({"id": order["seller_id"]})
+            seller_info = {
+                "id": seller.get("id", ""),
+                "username": seller.get("username", "Unknown"),
+                "full_name": seller.get("full_name", ""),
+                "email": seller.get("email", "") if order["status"] == "approved" else ""  # Only show contact after approval
+            } if seller else {}
+            
+            enriched_order = {
+                "id": order["id"],
+                "status": order["status"],
+                "created_at": order["created_at"].isoformat() if order.get("created_at") else "",
+                "expires_at": order["expires_at"].isoformat() if order.get("expires_at") else "",
+                "approved_at": order["approved_at"].isoformat() if order.get("approved_at") else "",
+                "listing": {
+                    "id": listing.get("id", ""),
+                    "title": listing.get("title", ""),
+                    "price": listing.get("price", 0),
+                    "image": listing.get("image", "")
+                },
+                "seller": seller_info
+            }
+            enriched_orders.append(enriched_order)
+        
+        return enriched_orders
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get buyer orders: {str(e)}")
+
+@app.put("/api/orders/{order_id}/approve")
+async def approve_buy_request(order_id: str, approval_data: dict):
+    """Approve a buy request"""
+    try:
+        seller_id = approval_data.get("seller_id")
+        if not seller_id:
+            raise HTTPException(status_code=400, detail="seller_id is required")
+        
+        # Find the order
+        order = await db.orders.find_one({"id": order_id, "seller_id": seller_id, "status": "pending"})
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found or not pending")
+        
+        # Check if order has expired
+        if order.get("expires_at") and datetime.utcnow() > order["expires_at"]:
+            # Mark as expired
+            await db.orders.update_one(
+                {"id": order_id},
+                {"$set": {"status": "expired"}}
+            )
+            raise HTTPException(status_code=410, detail="Order has expired")
+        
+        current_time = datetime.utcnow()
+        
+        # Update order status
+        await db.orders.update_one(
+            {"id": order_id},
+            {
+                "$set": {
+                    "status": "approved",
+                    "approved_at": current_time
+                }
+            }
+        )
+        
+        # Update listing status to sold
+        await db.listings.update_one(
+            {"id": order["listing_id"]},
+            {"$set": {"status": "sold", "sold_at": current_time}}
+        )
+        
+        # Create notification for buyer
+        listing = await db.listings.find_one({"id": order["listing_id"]})
+        notification = {
+            "user_id": order["buyer_id"],
+            "title": "Buy Request Approved!",
+            "message": f"Your buy request for '{listing.get('title', 'Unknown item')}' has been approved!",
+            "type": "buy_approved",
+            "is_read": False,
+            "created_at": current_time.isoformat(),
+            "id": str(uuid.uuid4()),
+            "order_id": order_id,
+            "listing_id": order["listing_id"]
+        }
+        
+        await db.user_notifications.insert_one(notification)
+        
+        # TODO: Trigger chat creation between buyer and seller
+        
+        return {"message": "Buy request approved successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to approve buy request: {str(e)}")
+
+@app.put("/api/orders/{order_id}/reject")
+async def reject_buy_request(order_id: str, rejection_data: dict):
+    """Reject a buy request"""
+    try:
+        seller_id = rejection_data.get("seller_id")
+        if not seller_id:
+            raise HTTPException(status_code=400, detail="seller_id is required")
+        
+        # Find the order
+        order = await db.orders.find_one({"id": order_id, "seller_id": seller_id, "status": "pending"})
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found or not pending")
+        
+        # Update order status
+        await db.orders.update_one(
+            {"id": order_id},
+            {"$set": {"status": "rejected"}}
+        )
+        
+        # Create notification for buyer
+        listing = await db.listings.find_one({"id": order["listing_id"]})
+        notification = {
+            "user_id": order["buyer_id"],
+            "title": "Buy Request Declined",
+            "message": f"Your buy request for '{listing.get('title', 'Unknown item')}' has been declined.",
+            "type": "buy_rejected",
+            "is_read": False,
+            "created_at": datetime.utcnow().isoformat(),
+            "id": str(uuid.uuid4()),
+            "order_id": order_id,
+            "listing_id": order["listing_id"]
+        }
+        
+        await db.user_notifications.insert_one(notification)
+        
+        return {"message": "Buy request rejected successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reject buy request: {str(e)}")
+
+@app.put("/api/orders/{order_id}/cancel")
+async def cancel_buy_request(order_id: str, cancellation_data: dict):
+    """Cancel a buy request (buyer action)"""
+    try:
+        buyer_id = cancellation_data.get("buyer_id")
+        if not buyer_id:
+            raise HTTPException(status_code=400, detail="buyer_id is required")
+        
+        # Find the order
+        order = await db.orders.find_one({"id": order_id, "buyer_id": buyer_id, "status": "pending"})
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found or not pending")
+        
+        # Update order status
+        await db.orders.update_one(
+            {"id": order_id},
+            {"$set": {"status": "cancelled"}}
+        )
+        
+        return {"message": "Buy request cancelled successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to cancel buy request: {str(e)}")
+
+@app.post("/api/orders/cleanup-expired")
+async def cleanup_expired_orders():
+    """Cleanup expired orders (can be called by a cron job)"""
+    try:
+        current_time = datetime.utcnow()
+        
+        # Find expired pending orders
+        expired_orders = await db.orders.find({
+            "status": "pending",
+            "expires_at": {"$lt": current_time}
+        }).to_list(length=None)
+        
+        updated_count = 0
+        for order in expired_orders:
+            # Update order status to expired
+            await db.orders.update_one(
+                {"id": order["id"]},
+                {"$set": {"status": "expired"}}
+            )
+            
+            # Notify buyer about expiration
+            listing = await db.listings.find_one({"id": order["listing_id"]})
+            notification = {
+                "user_id": order["buyer_id"],
+                "title": "Buy Request Expired",
+                "message": f"Your buy request for '{listing.get('title', 'Unknown item')}' has expired after 48 hours.",
+                "type": "buy_expired",
+                "is_read": False,
+                "created_at": current_time.isoformat(),
+                "id": str(uuid.uuid4()),
+                "order_id": order["id"],
+                "listing_id": order["listing_id"]
+            }
+            
+            await db.user_notifications.insert_one(notification)
+            updated_count += 1
+        
+        return {"message": f"Cleaned up {updated_count} expired orders"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to cleanup expired orders: {str(e)}")
+
+# ============================================================================
 # CAT DATABASE ENDPOINTS
 # ============================================================================
 
