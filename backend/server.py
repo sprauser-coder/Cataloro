@@ -225,51 +225,6 @@ async def browse_listings():
             # Remove MongoDB ObjectId to avoid confusion
             listing.pop('_id', None)
         
-        # Add dummy data if empty
-        if not listings:
-            dummy_listings = [
-                {
-                    "id": generate_id(),
-                    "title": "MacBook Pro 16-inch",
-                    "description": "Excellent condition, barely used",
-                    "price": 2500.00,
-                    "category": "Electronics",
-                    "seller_id": "demo_seller_1",
-                    "status": "active",
-                    "created_at": datetime.utcnow(),
-                    "images": ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400"]
-                },
-                {
-                    "id": generate_id(),
-                    "title": "Vintage Guitar",
-                    "description": "Classic acoustic guitar with rich sound",
-                    "price": 800.00,
-                    "category": "Music",
-                    "seller_id": "demo_seller_2",
-                    "status": "active",
-                    "created_at": datetime.utcnow(),
-                    "images": ["https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400"]
-                },
-                {
-                    "id": generate_id(),
-                    "title": "Designer Handbag",
-                    "description": "Authentic luxury handbag in perfect condition",
-                    "price": 1200.00,
-                    "category": "Fashion",
-                    "seller_id": "demo_seller_3",
-                    "status": "active",
-                    "created_at": datetime.utcnow(),
-                    "images": ["https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400"]
-                }
-            ]
-            
-            # Insert dummy data
-            for listing in dummy_listings:
-                await db.listings.insert_one(listing)
-            
-            # Return dummy data with consistent ID format
-            return dummy_listings
-        
         return listings
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to browse listings: {str(e)}")
