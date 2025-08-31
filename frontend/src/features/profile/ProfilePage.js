@@ -1235,7 +1235,7 @@ function ProfilePage() {
                       className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <div>
-                      <div className="font-medium text-gray-900">{pref.label}</div>
+                      <div className="font-medium text-gray-900 dark:text-white">{pref.label}</div>
                       <div className="text-sm text-gray-600">{pref.desc}</div>
                     </div>
                   </label>
