@@ -653,10 +653,13 @@ function CreateListingPage() {
                 </div>
               )}
 
-              {/* Location Row */}
-              <div>
+              {/* Location Row with Suggestions */}
+              <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Location
+                  <span className="text-blue-600 dark:text-blue-400 text-xs ml-2">
+                    (Type to search popular cities)
+                  </span>
                 </label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -664,11 +667,49 @@ function CreateListingPage() {
                     type="text"
                     name="location"
                     value={formData.location}
-                    onChange={handleInputChange}
-                    placeholder="City, State"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={handleLocationChange}
+                    onFocus={() => formData.location && setShowLocationSuggestions(locationSuggestions.length > 0)}
+                    placeholder="Start typing city name (e.g., Amsterdam, Berlin, Paris...)"
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                   />
                 </div>
+                
+                {/* Location Suggestions Dropdown */}
+                {showLocationSuggestions && (
+                  <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
+                    <div className="p-3 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-b border-gray-200 dark:border-gray-600">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                        <MapPin className="w-4 h-4 mr-2 text-green-500" />
+                        Popular Locations ({locationSuggestions.length})
+                        <span className="ml-2 text-xs text-gray-500">Click to select</span>
+                      </p>
+                    </div>
+                    {locationSuggestions.map((location, index) => {
+                      const [city, country] = location.split(', ');
+                      return (
+                        <div
+                          key={index}
+                          onClick={() => selectLocation(location)}
+                          className="p-4 hover:bg-green-50 dark:hover:bg-green-900/20 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-200 group"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                              {city.charAt(0)}
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                                {city}
+                              </div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                {country}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           </div>
