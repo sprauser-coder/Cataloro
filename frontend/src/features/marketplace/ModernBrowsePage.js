@@ -611,7 +611,7 @@ function ModernBrowsePage() {
 }
 
 // Enhanced Product Card Component (used in JSX below)
-function ProductCard({ item, viewMode, onAddToCart, onBuyNow, onFavoriteToggle, onMessageSeller, isInFavorites }) {
+function ProductCard({ item, viewMode, onAddToCart, onBuyNow, onFavoriteToggle, onMessageSeller, isInFavorites, isLoadingBuyNow }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   // Removed unused state
   const [priceSuggestion, setPriceSuggestion] = useState(null);
