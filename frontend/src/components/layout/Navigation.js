@@ -58,6 +58,12 @@ function Navigation() {
       roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR]
     },
     {
+      label: 'Pending Sales',
+      path: '/pending-sales',
+      icon: Clock,
+      roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR]
+    },
+    {
       label: 'My Deals',
       path: APP_ROUTES.MY_DEALS,
       icon: DollarSign,
