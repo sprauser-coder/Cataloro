@@ -6,27 +6,19 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Search, 
-  Filter, 
   Grid3X3, 
   List, 
   Heart, 
-  Share2, 
   Eye, 
-  Star,
   MapPin,
   Clock,
-  TrendingUp,
-  Zap,
   ShoppingCart,
   MessageCircle,
   SlidersHorizontal,
   X,
-  ChevronDown,
-  ArrowUpDown,
   Send,
   User,
   Database,
-  Info,
   RefreshCw
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
