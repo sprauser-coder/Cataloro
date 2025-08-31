@@ -20,7 +20,8 @@ import {
   CheckCircle,
   Database,
   Search,
-  Zap
+  Zap,
+  User
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
