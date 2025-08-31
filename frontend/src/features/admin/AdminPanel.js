@@ -3081,17 +3081,32 @@ function ListingsTab({ showToast }) {
     }
 
     try {
+      console.log('🔍 Starting bulk action:', actionToPerform);
+      
       // Perform backend operations for persistence
       if (['activate', 'deactivate', 'delete', 'feature', 'unfeature', 'approve', 'reject'].includes(actionToPerform)) {
+        console.log('🔍 Performing backend operations for:', selectedListings);
+        
         const updatePromises = selectedListings.map(async (listingId) => {
           const listing = listings.find(l => l.id === listingId);
-          if (!listing) return null;
+          if (!listing) {
+            console.log('❌ Listing not found:', listingId);
+            return null;
+          }
+
+          console.log('🔍 Processing listing:', listingId, 'action:', actionToPerform);
 
           switch (actionToPerform) {
             case 'delete':
-              return fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings/${listingId}`, {
+              console.log('🗑️ Deleting listing:', listingId);
+              const deleteUrl = `${process.env.REACT_APP_BACKEND_URL}/api/listings/${listingId}`;
+              console.log('🔍 Delete URL:', deleteUrl);
+              
+              const deleteResponse = fetch(deleteUrl, {
                 method: 'DELETE'
               });
+              console.log('🔍 Delete request sent for:', listingId);
+              return deleteResponse;
             default:
               // For updates (activate, deactivate, feature, etc.)
               let updatedListing = { ...listing };
