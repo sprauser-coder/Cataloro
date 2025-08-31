@@ -732,7 +732,7 @@ function ProfilePage() {
                       value={profileData.email}
                       onChange={handleInputChange}
                       disabled={!isEditing}
-                      className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 dark:bg-gray-700/80 cursor-not-allowed' : ''}`}
+                      className={`cataloro-input dark:text-white ${!isEditing ? 'bg-gray-50/80 dark:bg-gray-700/80 cursor-not-allowed' : ''}`}
                       placeholder="Enter your email"
                     />
                   </div>
