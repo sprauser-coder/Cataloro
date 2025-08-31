@@ -230,9 +230,19 @@ async def browse_listings():
             if seller_id:
                 try:
                     print(f"DEBUG: Looking up seller_id: {seller_id}")
+                    # Try to find user by id field first, then by _id (same as profile endpoint)
                     seller_profile = await db.users.find_one({"id": seller_id})
+                    if not seller_profile:
+                        # Try with _id in case it's stored differently
+                        try:
+                            from bson import ObjectId
+                            seller_profile = await db.users.find_one({"_id": ObjectId(seller_id)})
+                        except:
+                            pass
+                    
                     print(f"DEBUG: Found seller_profile: {seller_profile is not None}")
                     if seller_profile:
+                        print(f"DEBUG: Seller profile data: {seller_profile}")
                         print(f"DEBUG: Seller profile data: {seller_profile}")
                         # Enrich listing with seller information
                         listing['seller'] = {
