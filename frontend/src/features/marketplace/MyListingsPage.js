@@ -259,28 +259,28 @@ function MyListingCard({ listing, onDelete }) {
 
           {showMenu && (
             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 z-50 backdrop-blur-xl">
-              <button 
+              <Link
+                to={`/product/${listing.id}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowMenu(false);
-                  // Add view details logic here
                 }}
                 className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center transition-colors duration-200"
               >
                 <Eye className="w-4 h-4 mr-3" />
                 View Details
-              </button>
-              <button 
+              </Link>
+              <Link
+                to={`/edit-listing/${listing.id}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowMenu(false);
-                  // Add edit logic here
                 }}
                 className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center transition-colors duration-200"
               >
                 <Edit className="w-4 h-4 mr-3" />
                 Edit Listing
-              </button>
+              </Link>
               <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
               <button
                 onClick={(e) => {
