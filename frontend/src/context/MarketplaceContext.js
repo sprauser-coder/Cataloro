@@ -777,8 +777,8 @@ export function MarketplaceProvider({ children }) {
     },
     
     // Refresh listings function (can be called from other components)
-    refreshListings: async () => {
-      await loadInitialProducts();
+    refreshListings: async (filters = null) => {
+      await loadInitialProducts(filters);
     },
     
     // Other actions
