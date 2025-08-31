@@ -158,6 +158,17 @@ export function AuthProvider({ children }) {
     dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
   };
 
+  const updateUser = (updatedUserData) => {
+    // Update localStorage
+    localStorage.setItem('cataloro_user', JSON.stringify(updatedUserData));
+    
+    // Update context state
+    dispatch({
+      type: AUTH_ACTIONS.SET_USER,
+      payload: updatedUserData
+    });
+  };
+
   // Helper functions
   const isAdmin = () => {
     return state.user?.role === USER_ROLES.ADMIN;
