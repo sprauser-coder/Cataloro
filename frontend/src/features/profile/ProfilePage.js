@@ -1339,7 +1339,7 @@ function ProfilePage() {
 
             {/* Recent Activity */}
             <div className="cataloro-card-glass p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Recent Activity</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Recent Activity</h3>
               
               <div className="space-y-4">
                 {[
