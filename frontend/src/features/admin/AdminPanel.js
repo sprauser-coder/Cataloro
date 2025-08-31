@@ -3488,12 +3488,7 @@ function ListingsTab({ showToast }) {
 
               {/* Delete Listings */}
               <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  console.log('🔍 Delete button clicked!');
-                  console.log('🔍 Selected listings:', selectedListings);
-                  handleBulkAction('delete');
-                }}
+                onClick={() => requestBulkAction('delete')}
                 className="flex items-center justify-center space-x-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Delete selected listings"
               >
