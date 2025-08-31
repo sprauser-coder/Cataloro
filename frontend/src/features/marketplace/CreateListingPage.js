@@ -70,6 +70,34 @@ function CreateListingPage() {
     'New', 'Like New', 'Excellent', 'Good', 'Fair', 'For Parts'
   ];
 
+  // Popular European cities and locations for suggestions
+  const popularLocations = [
+    // Germany
+    'Berlin, Germany', 'Munich, Germany', 'Hamburg, Germany', 'Frankfurt, Germany', 'Cologne, Germany', 'Stuttgart, Germany', 'Düsseldorf, Germany', 'Dortmund, Germany', 'Essen, Germany', 'Bremen, Germany',
+    
+    // France  
+    'Paris, France', 'Lyon, France', 'Marseille, France', 'Toulouse, France', 'Nice, France', 'Nantes, France', 'Strasbourg, France', 'Montpellier, France', 'Bordeaux, France', 'Lille, France',
+    
+    // Netherlands
+    'Amsterdam, Netherlands', 'Rotterdam, Netherlands', 'The Hague, Netherlands', 'Utrecht, Netherlands', 'Eindhoven, Netherlands', 'Tilburg, Netherlands', 'Groningen, Netherlands', 'Almere, Netherlands',
+    
+    // Belgium
+    'Brussels, Belgium', 'Antwerp, Belgium', 'Ghent, Belgium', 'Bruges, Belgium', 'Leuven, Belgium', 'Liège, Belgium',
+    
+    // Spain
+    'Madrid, Spain', 'Barcelona, Spain', 'Valencia, Spain', 'Seville, Spain', 'Bilbao, Spain', 'Málaga, Spain', 'Zaragoza, Spain',
+    
+    // Italy
+    'Rome, Italy', 'Milan, Italy', 'Naples, Italy', 'Turin, Italy', 'Palermo, Italy', 'Genoa, Italy', 'Bologna, Italy', 'Florence, Italy', 'Venice, Italy',
+    
+    // United Kingdom
+    'London, UK', 'Birmingham, UK', 'Manchester, UK', 'Glasgow, UK', 'Liverpool, UK', 'Leeds, UK', 'Sheffield, UK', 'Edinburgh, UK', 'Bristol, UK', 'Cardiff, UK',
+    
+    // Other European cities
+    'Vienna, Austria', 'Zurich, Switzerland', 'Geneva, Switzerland', 'Copenhagen, Denmark', 'Stockholm, Sweden', 'Oslo, Norway', 'Helsinki, Finland',
+    'Prague, Czech Republic', 'Warsaw, Poland', 'Budapest, Hungary', 'Dublin, Ireland', 'Lisbon, Portugal', 'Athens, Greece'
+  ];
+
   // Fetch Cat Database on component mount
   useEffect(() => {
     fetchCatalystData();
