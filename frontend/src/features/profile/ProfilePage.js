@@ -616,7 +616,7 @@ function ProfilePage() {
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Seller Status</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Seller Status</span>
                     <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
                       Active
                     </span>
