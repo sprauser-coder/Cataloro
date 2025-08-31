@@ -139,8 +139,7 @@ function ModernBrowsePage() {
     try {
       showToast('Refreshing listings...', 'info');
       // Use the marketplace context refresh function
-      const { refreshListings: contextRefresh } = useMarketplace();
-      await contextRefresh();
+      await contextRefreshListings();
       showToast('Listings refreshed!', 'success');
     } catch (error) {
       console.error('Failed to refresh listings:', error);
