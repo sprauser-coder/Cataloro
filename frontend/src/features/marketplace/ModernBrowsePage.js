@@ -896,7 +896,7 @@ function ProductCard({ item, viewMode, onAddToCart, onBuyNow, onFavoriteToggle, 
         {/* Action Buttons */}
         <div className={`flex space-x-2 ${isGridView ? '' : 'mt-4'}`}>
           <button
-            onClick={(e) => handleQuickAction(e, () => onAddToCart(item))}
+            onClick={(e) => handleQuickAction(e, () => onBuyNow(item))}
             className="flex-1 flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors"
           >
             <ShoppingCart className="w-4 h-4" />
