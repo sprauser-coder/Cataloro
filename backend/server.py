@@ -793,14 +793,26 @@ async def remove_from_cart(user_id: str, item_id: str):
 # Messages endpoints
 @app.get("/api/user/{user_id}/messages")
 async def get_user_messages(user_id: str):
-    """Get user's messages"""
+    """Get user's messages with sender/recipient information"""
     try:
         messages = await db.user_messages.find({"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]}).sort("created_at", -1).to_list(length=None)
         
+        # Enrich messages with user information
+        enriched_messages = []
         for message in messages:
             message['_id'] = str(message['_id'])
+            
+            # Add sender information
+            sender = await db.users.find_one({"id": message['sender_id']})
+            message['sender_name'] = sender.get('full_name', sender.get('username', 'Unknown')) if sender else 'Unknown'
+            
+            # Add recipient information
+            recipient = await db.users.find_one({"id": message['recipient_id']})
+            message['recipient_name'] = recipient.get('full_name', recipient.get('username', 'Unknown')) if recipient else 'Unknown'
+            
+            enriched_messages.append(message)
         
-        return messages
+        return enriched_messages
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch messages: {str(e)}")
 
