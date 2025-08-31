@@ -788,50 +788,40 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
           )}
         </div>
 
-        {/* Rating and Reviews */}
-        {item.rating && (
-          <div className="flex items-center space-x-2 mb-3">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-4 h-4 ${
-                    i < Math.floor(item.rating)
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              {item.rating} ({item.seller?.reviews} reviews)
-            </span>
-          </div>
-        )}
-
-        {/* Seller Info */}
+        {/* Seller Info - Use username, remove rating */}
         <div className="flex items-center space-x-2 mb-3">
-          <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-            <span className="text-white text-xs font-bold">
-              {item.seller?.name?.charAt(0)}
+          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold ${
+            item.seller?.is_business 
+              ? 'bg-gradient-to-r from-blue-500 to-indigo-600' 
+              : 'bg-gradient-to-r from-green-500 to-emerald-600'
+          }`}>
+            <span>
+              {(item.seller?.username || item.seller?.name || 'U').charAt(0).toUpperCase()}
             </span>
           </div>
-          <span className="text-sm text-gray-600 dark:text-gray-400">
-            {item.seller?.name}
-          </span>
-          {item.seller?.verified && (
-            <span className="text-blue-500 text-xs">✓ Verified</span>
-          )}
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {item.seller?.username || item.seller?.name || 'Unknown User'}
+            </span>
+            {item.seller?.verified && (
+              <span className="text-blue-500 text-xs">✓ Verified</span>
+            )}
+          </div>
         </div>
 
-        {/* Location and Shipping */}
-        <div className="text-sm text-gray-500 dark:text-gray-400 mb-4 space-y-1">
+        {/* Location - Show only city */}
+        <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-1" />
-            {item.seller?.location}
+            {/* Extract city from address or use city directly */}
+            {item.address?.city || 
+             (item.seller?.location && item.seller.location.includes(',') 
+               ? item.seller.location.split(',')[0].trim() 
+               : item.seller?.location) || 
+             'Location not specified'}
           </div>
           {item.shipping && (
-            <div className="flex items-center text-green-600">
+            <div className="flex items-center text-green-600 mt-1">
               <Clock className="w-4 h-4 mr-1" />
               {item.shipping}
             </div>
