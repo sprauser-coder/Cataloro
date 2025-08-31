@@ -356,7 +356,19 @@ export function MarketplaceProvider({ children }) {
         condition: listing.condition,
         location: listing.location || 'Unknown',
         images: listing.images || [],
-        seller: listing.seller || { name: 'Unknown Seller', verified: false },
+        // Preserve complete seller object with business information
+        seller: {
+          ...listing.seller,
+          name: listing.seller?.name || 'Unknown Seller',
+          username: listing.seller?.username || 'Unknown',
+          email: listing.seller?.email || '',
+          is_business: listing.seller?.is_business || false,
+          business_name: listing.seller?.business_name || '',
+          verified: listing.seller?.verified || false,
+          location: listing.seller?.location || 'Unknown'
+        },
+        // Also add the address information for location display
+        address: listing.address || {},
         rating: 4.5, // Default rating for demo
         reviewCount: Math.floor(Math.random() * 100) + 10,
         isHotDeal: Math.random() > 0.7,
