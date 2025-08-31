@@ -190,6 +190,45 @@ function ModernBrowsePage() {
     addToCart(item);
   };
 
+  const handleBuyNow = async (item) => {
+    if (!user) {
+      showToast('Please login to make a purchase', 'error');
+      return;
+    }
+
+    if (item.seller?.username === user.username) {
+      showToast('You cannot buy your own listing', 'error');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          listing_id: item.id,
+          buyer_id: user.id
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showToast(`Buy request sent for "${item.title}"! Seller has 48 hours to respond.`, 'success');
+        // TODO: Refresh cart to show pending item
+      } else if (response.status === 409) {
+        showToast('This item already has a pending buy request', 'warning');
+      } else {
+        showToast(data.detail || 'Failed to create buy request', 'error');
+      }
+    } catch (error) {
+      console.error('Error creating buy request:', error);
+      showToast('Failed to create buy request. Please try again.', 'error');
+    }
+  };
+
   const handleAddToFavorites = (item) => {
     addToFavorites(item);
   };
