@@ -790,19 +790,26 @@ export function MarketplaceProvider({ children }) {
     }
 
     // Apply filters
-    if (filters.category !== 'all') {
-      filtered = filtered.filter(product => product.category === filters.category);
+    if (filters.type !== 'all') {
+      filtered = filtered.filter(product => {
+        const isBusinessSeller = product.seller?.is_business === true;
+        if (filters.type === 'Business') {
+          return isBusinessSeller;
+        } else if (filters.type === 'Private') {
+          return !isBusinessSeller;
+        }
+        return true;
+      });
     }
 
-    if (filters.priceRange) {
+    // Apply price range filter (from/to instead of array)
+    if (filters.priceFrom !== undefined && filters.priceTo !== undefined) {
       filtered = filtered.filter(product => 
-        product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
+        product.price >= filters.priceFrom && product.price <= filters.priceTo
       );
     }
 
-    if (filters.condition !== 'all') {
-      filtered = filtered.filter(product => product.condition === filters.condition);
-    }
+    // Removed condition filter
 
     if (filters.rating > 0) {
       filtered = filtered.filter(product => (product.rating || 0) >= filters.rating);
