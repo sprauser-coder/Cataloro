@@ -422,9 +422,12 @@ function CreateListingPage() {
         shipping_cost: formData.shipping_cost ? parseFloat(formData.shipping_cost) : 0,
         seller_id: user.id,
         seller: {
-          name: user.name || user.email,
+          name: user.name || user.full_name || user.email,
+          username: user.username || user.name || user.email,
           email: user.email,
           verified: user.verified || false,
+          is_business: user.is_business || false, // Include business account status
+          company_name: user.company_name || null,
           // Format address for seller display
           location: [formData.street, formData.city, formData.country].filter(Boolean).join(', ') || 'Not specified'
         },
