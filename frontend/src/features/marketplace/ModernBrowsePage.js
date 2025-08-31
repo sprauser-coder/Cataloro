@@ -505,6 +505,7 @@ function ModernBrowsePage() {
               onFavoriteToggle={handleFavoriteToggle}
               onMessageSeller={handleMessageSeller}
               isInFavorites={isInFavorites}
+              isLoadingBuyNow={loadingBuyNow[item.id] || false}
             />
           ))}
         </div>
