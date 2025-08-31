@@ -187,7 +187,77 @@ function ShoppingCartPage() {
         )}
       </div>
 
-      {cartItems.length === 0 ? (
+      {/* Pending Orders Section */}
+      {pendingOrders.length > 0 && (
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200 flex items-center">
+              <Clock className="w-5 h-5 mr-2" />
+              Pending Buy Requests ({pendingOrders.length})
+            </h2>
+            <button
+              onClick={fetchPendingOrders}
+              className="text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300"
+            >
+              <Clock className="w-4 h-4" />
+            </button>
+          </div>
+          <p className="text-yellow-700 dark:text-yellow-300 text-sm mb-4">
+            These items are waiting for seller approval. You'll be notified when they respond.
+          </p>
+          
+          <div className="space-y-3">
+            {pendingOrders.map((order) => (
+              <div
+                key={order.id}
+                className="bg-white dark:bg-gray-800 rounded-lg p-4 flex items-center justify-between"
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
+                    {order.listing?.image ? (
+                      <img
+                        src={order.listing.image}
+                        alt={order.listing.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <ShoppingCart className="w-6 h-6 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium text-gray-900 dark:text-white">
+                      {order.listing?.title || 'Unknown Item'}
+                    </h3>
+                    <p className="text-green-600 dark:text-green-400 font-semibold">
+                      €{order.listing?.price?.toFixed(2) || '0.00'}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Seller: {order.seller?.username || 'Unknown'}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="text-right">
+                  <div className="text-sm font-medium text-yellow-600 dark:text-yellow-400 mb-2">
+                    {formatTimeRemaining(order.expires_at)} remaining
+                  </div>
+                  <button
+                    onClick={() => handleCancelOrder(order.id)}
+                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium"
+                  >
+                    Cancel Request
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {cartItems.length === 0 && pendingOrders.length === 0 ? (
         // Empty Cart State
         <div className="text-center py-16">
           <div className="w-32 h-32 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
