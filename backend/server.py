@@ -804,10 +804,12 @@ async def get_user_messages(user_id: str):
             
             # Add sender information
             sender = await db.users.find_one({"id": message['sender_id']})
+            print(f"DEBUG: Looking for sender with ID: {message['sender_id']}, found: {sender}")
             message['sender_name'] = sender.get('full_name', sender.get('username', 'Unknown')) if sender else 'Unknown'
             
             # Add recipient information
             recipient = await db.users.find_one({"id": message['recipient_id']})
+            print(f"DEBUG: Looking for recipient with ID: {message['recipient_id']}, found: {recipient}")
             message['recipient_name'] = recipient.get('full_name', recipient.get('username', 'Unknown')) if recipient else 'Unknown'
             
             enriched_messages.append(message)
