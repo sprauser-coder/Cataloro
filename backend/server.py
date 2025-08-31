@@ -211,11 +211,26 @@ async def get_profile(user_id: str):
 
 # Marketplace Endpoints
 @app.get("/api/marketplace/browse")
-async def browse_listings():
-    """Browse available listings with seller information"""
+async def browse_listings(
+    type: str = "all",  # Filter by seller type: "all", "Private", "Business"
+    price_from: int = 0,  # Minimum price filter
+    price_to: int = 999999  # Maximum price filter
+):
+    """Browse available listings with seller information and filters"""
     try:
-        # Only return active listings with consistent UUID format
-        listings = await db.listings.find({"status": "active"}).to_list(length=None)
+        # Build query for active listings
+        query = {"status": "active"}
+        
+        # Apply price range filter
+        if price_from > 0 or price_to < 999999:
+            query["price"] = {}
+            if price_from > 0:
+                query["price"]["$gte"] = price_from
+            if price_to < 999999:
+                query["price"]["$lte"] = price_to
+        
+        # Get filtered listings
+        listings = await db.listings.find(query).to_list(length=None)
         
         # Enrich listings with seller information
         enriched_listings = []
