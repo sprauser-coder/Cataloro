@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 class MarketplaceFeaturesTest:
-    def __init__(self, base_url="https://cat-market-fix.preview.emergentagent.com"):
+    def __init__(self, base_url="https://bizcat-market.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
         self.tests_run = 0

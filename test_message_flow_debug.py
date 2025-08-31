@@ -7,7 +7,7 @@ import requests
 import json
 
 def test_complete_flow():
-    base_url = "https://cat-market-fix.preview.emergentagent.com"
+    base_url = "https://bizcat-market.preview.emergentagent.com"
     
     # Create two test users
     user1_data = {
