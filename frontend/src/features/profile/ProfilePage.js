@@ -545,20 +545,74 @@ function ProfilePage() {
                         placeholder="Enter your phone number"
                       />
                     </div>
+                  </div>
 
+                  {/* Detailed Address Section */}
+                  <div className="space-y-4">
+                    <h4 className="text-md font-semibold text-gray-900 dark:text-white flex items-center">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      Address Information
+                    </h4>
+                    
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <MapPin className="w-4 h-4 inline mr-2" />
-                        Location
+                        Street Address
                       </label>
                       <input
                         type="text"
-                        name="address"
-                        value={profileData.address}
+                        name="street"
+                        value={profileData.street}
                         onChange={handleInputChange}
                         disabled={!isEditing}
                         className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
-                        placeholder="Your city, country"
+                        placeholder="Enter your street address"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Post Code
+                        </label>
+                        <input
+                          type="text"
+                          name="post_code"
+                          value={profileData.post_code}
+                          onChange={handleInputChange}
+                          disabled={!isEditing}
+                          className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                          placeholder="Postal/ZIP code"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          City
+                        </label>
+                        <input
+                          type="text"
+                          name="city"
+                          value={profileData.city}
+                          onChange={handleInputChange}
+                          disabled={!isEditing}
+                          className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                          placeholder="Enter your city"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Country
+                      </label>
+                      <input
+                        type="text"
+                        name="country"
+                        value={profileData.country}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                        placeholder="Enter your country"
                       />
                     </div>
                   </div>
