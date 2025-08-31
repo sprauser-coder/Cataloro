@@ -10,7 +10,7 @@ import time
 from datetime import datetime
 
 class BulkActionsAPITester:
-    def __init__(self, base_url="https://cat-db-market.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cat-market-fix.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_user = None
         self.regular_user = None

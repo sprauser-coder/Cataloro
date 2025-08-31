@@ -10,7 +10,7 @@ import sys
 
 def test_favorites_bug_fix():
     """Test the favorites bug fix comprehensively"""
-    base_url = 'https://cat-db-market.preview.emergentagent.com'
+    base_url = 'https://cat-market-fix.preview.emergentagent.com'
     
     print("🚀 Testing Favorites Bug Fix - Full Listing Details")
     print("=" * 60)
