@@ -1379,7 +1379,7 @@ function ProfilePage() {
                 Export Your Data
               </h3>
               
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
                 Download a copy of all your data including profile information, listings, and activity history.
               </p>
               
