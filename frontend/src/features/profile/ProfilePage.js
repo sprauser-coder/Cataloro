@@ -1194,7 +1194,7 @@ function ProfilePage() {
                 ].map((login, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-gray-50/80 backdrop-blur-sm rounded-lg">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{login.device}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{login.device}</p>
                       <p className="text-xs text-gray-600">{login.location} • {login.time}</p>
                     </div>
                     {login.current && (
