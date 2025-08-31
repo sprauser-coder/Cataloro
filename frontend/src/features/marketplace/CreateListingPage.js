@@ -613,7 +613,6 @@ function CreateListingPage() {
                   />
                 </div>
               </div>
-              </div>
             </div>
           </div>
 
