@@ -3200,12 +3200,10 @@ function ListingsTab({ showToast }) {
           setListings(filteredListings);
           showToast?.(`${selectedListings.length} listings deleted successfully`, 'success');
           
-          // Refresh from backend to ensure data consistency
+          // Immediate refresh from backend to ensure data consistency
           console.log('🔄 Refreshing listings from backend after bulk delete...');
-          setTimeout(async () => {
-            await fetchListings();
-            console.log('✅ Listings refreshed after bulk delete');
-          }, 1000);
+          await fetchListings();
+          console.log('✅ Listings refreshed after bulk delete');
           break;
         case 'feature':
           setListings(listings.map(l => 
