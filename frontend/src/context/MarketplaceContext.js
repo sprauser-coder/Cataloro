@@ -814,7 +814,9 @@ export function MarketplaceProvider({ children }) {
         product.title.toLowerCase().includes(query.toLowerCase()) ||
         product.description.toLowerCase().includes(query.toLowerCase()) ||
         product.category.toLowerCase().includes(query.toLowerCase()) ||
-        product.features?.some(feature => feature.toLowerCase().includes(query.toLowerCase()))
+        product.features?.some(feature => feature.toLowerCase().includes(query.toLowerCase())) ||
+        // Include add_info in search (but don't display it)
+        (product.add_info && product.add_info.toLowerCase().includes(query.toLowerCase()))
       );
     }
 
