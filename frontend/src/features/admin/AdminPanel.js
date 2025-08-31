@@ -3246,10 +3246,17 @@ function ListingsTab({ showToast }) {
       // Clear selection and reset bulk action
       setSelectedListings([]);
       setBulkAction('');
+      console.log('✅ Bulk action completed successfully');
     } catch (error) {
-      console.error('Bulk action error:', error);
+      console.error('❌ Bulk action error:', error);
       showToast?.(`Error performing bulk action: ${error.message}`, 'error');
     }
+  };
+
+  // Test function to verify if handleBulkAction is accessible
+  window.testBulkDelete = () => {
+    console.log('🧪 Test bulk delete called');
+    handleBulkAction('delete');
   };
 
   const handleDeleteListing = (listingId) => {
