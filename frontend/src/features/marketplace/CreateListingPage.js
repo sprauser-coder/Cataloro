@@ -144,6 +144,30 @@ function CreateListingPage() {
     }));
   };
 
+  const handleLocationChange = (e) => {
+    const value = e.target.value;
+    setFormData(prev => ({...prev, location: value}));
+
+    if (value.length > 1) {
+      // Filter popular locations based on input
+      const filtered = popularLocations.filter(location => 
+        location.toLowerCase().includes(value.toLowerCase())
+      ).slice(0, 8); // Limit to 8 suggestions
+
+      setLocationSuggestions(filtered);
+      setShowLocationSuggestions(filtered.length > 0);
+    } else {
+      setLocationSuggestions([]);
+      setShowLocationSuggestions(false);
+    }
+  };
+
+  const selectLocation = (location) => {
+    setFormData(prev => ({...prev, location: location}));
+    setShowLocationSuggestions(false);
+    setLocationSuggestions([]);
+  };
+
   const handleTitleChange = (e) => {
     const value = e.target.value;
     setFormData(prev => ({...prev, title: value}));
