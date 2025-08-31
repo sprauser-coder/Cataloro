@@ -610,7 +610,63 @@ function ProfilePage() {
             {/* Profile Details */}
             <div className="lg:col-span-2">
               <div className="cataloro-card-glass p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Personal Information</h3>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Personal Information
+                    </h3>
+                    
+                    {/* Business/Private Account Badge */}
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                          profileData.is_business
+                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white'
+                            : 'bg-gradient-to-r from-green-600 to-emerald-600 text-white'
+                        }`}
+                      >
+                        {profileData.is_business ? (
+                          <>
+                            <Settings className="w-4 h-4 mr-1" />
+                            Business Account
+                          </>
+                        ) : (
+                          <>
+                            <User className="w-4 h-4 mr-1" />
+                            Private Account
+                          </>
+                        )}
+                      </span>
+                      
+                      {profileData.is_business && profileData.company_name && (
+                        <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                          {profileData.company_name}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                      isEditing 
+                        ? 'bg-gray-500 hover:bg-gray-600 text-white' 
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    {isEditing ? (
+                      <>
+                        <X className="w-4 h-4" />
+                        <span>Cancel</span>
+                      </>
+                    ) : (
+                      <>
+                        <Edit3 className="w-4 h-4" />
+                        <span>Edit Profile</span>
+                      </>
+                    )}
+                  </button>
+                </div>
                 
                 <form className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
