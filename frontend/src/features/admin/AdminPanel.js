@@ -3143,16 +3143,25 @@ function ListingsTab({ showToast }) {
         });
 
         // Wait for all operations to complete
+        console.log('⏳ Waiting for all operations to complete...');
         const results = await Promise.all(updatePromises);
+        console.log('✅ All operations completed. Results:', results.map(r => r ? r.status : 'null'));
         
         // Check for any failed operations
         const failedOperations = results.filter(result => result && !result.ok);
+        console.log('🔍 Failed operations count:', failedOperations.length);
+        
         if (failedOperations.length > 0) {
+          console.error('❌ Failed operations:', failedOperations);
           throw new Error(`${failedOperations.length} operations failed`);
         }
+
+        console.log('✅ All operations successful, updating local state...');
       }
 
       // Update local state after successful backend operations
+      console.log('🔄 Updating local state for action:', actionToPerform);
+      
       switch (actionToPerform) {
         case 'activate':
           setListings(listings.map(l => 
