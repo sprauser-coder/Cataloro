@@ -369,62 +369,54 @@ function ModernBrowsePage() {
             </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Category Filter */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Type Filter (replaces Category) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Category
+                Type
               </label>
               <select
-                value={filters.category}
-                onChange={(e) => updateFilters({...filters, category: e.target.value})}
+                value={filters.type}
+                onChange={(e) => updateFilters({...filters, type: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
-                <option value="all">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
+                <option value="all">All Types</option>
+                <option value="Private">Private</option>
+                <option value="Business">Business</option>
               </select>
             </div>
 
-            {/* Price Range */}
+            {/* Price Range (from-to inputs) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Price Range
+                Price Range (€)
               </label>
-              <div className="space-y-2">
-                <input
-                  type="range"
-                  min="0"
-                  max="10000"
-                  value={filters.priceRange[1]}
-                  onChange={(e) => updateFilters({...filters, priceRange: [0, parseInt(e.target.value)]})}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                  <span>€0</span>
-                  <span>€{filters.priceRange[1]}</span>
+              <div className="flex items-center space-x-2">
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    placeholder="From"
+                    min="0"
+                    value={filters.priceFrom}
+                    onChange={(e) => updateFilters({...filters, priceFrom: parseInt(e.target.value) || 0})}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                  />
+                </div>
+                <span className="text-gray-500 dark:text-gray-400">-</span>
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    placeholder="To"
+                    min="0"
+                    value={filters.priceTo}
+                    onChange={(e) => updateFilters({...filters, priceTo: parseInt(e.target.value) || 10000})}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                  />
                 </div>
               </div>
-            </div>
-
-            {/* Condition Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Condition
-              </label>
-              <select
-                value={filters.condition}
-                onChange={(e) => updateFilters({...filters, condition: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                <option value="all">Any Condition</option>
-                <option value="New">New</option>
-                <option value="Like New">Like New</option>
-                <option value="Excellent">Excellent</option>
-                <option value="Good">Good</option>
-                <option value="Fair">Fair</option>
-              </select>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                From €{filters.priceFrom} to €{filters.priceTo}
+              </div>
             </div>
 
             {/* Quick Actions */}
