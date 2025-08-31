@@ -29,9 +29,11 @@ import {
 } from 'lucide-react';
 
 function ShoppingCartPage() {
+  const { user } = useAuth();
+  const { showToast } = useNotifications();
   const {
     cartItems,
-    cartCount,
+    cartCount, 
     cartTotal,
     favorites,
     updateQuantity,
@@ -47,6 +49,79 @@ function ShoppingCartPage() {
   } = useMarketplace();
 
   const [promoCode, setPromoCode] = useState('');
+  const [pendingOrders, setPendingOrders] = useState([]);
+  const [loadingPending, setLoadingPending] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      fetchPendingOrders();
+    }
+  }, [user]);
+
+  const fetchPendingOrders = async () => {
+    if (!user) return;
+    
+    setLoadingPending(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/buyer/${user.id}`);
+      if (response.ok) {
+        const orders = await response.json();
+        // Only show pending orders in cart
+        setPendingOrders(orders.filter(order => order.status === 'pending'));
+      }
+    } catch (error) {
+      console.error('Error fetching pending orders:', error);
+    } finally {
+      setLoadingPending(false);
+    }
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/${orderId}/cancel`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          buyer_id: user.id
+        })
+      });
+
+      if (response.ok) {
+        showToast('Order cancelled successfully', 'success');
+        fetchPendingOrders(); // Refresh pending orders
+      } else {
+        showToast('Failed to cancel order', 'error');
+      }
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      showToast('Failed to cancel order', 'error');
+    }
+  };
+
+  const formatTimeRemaining = (expiresAt) => {
+    const now = new Date();
+    const expires = new Date(expiresAt);
+    const diff = expires.getTime() - now.getTime();
+    
+    if (diff <= 0) {
+      return 'Expired';
+    }
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours > 24) {
+      const days = Math.floor(hours / 24);
+      const remainingHours = hours % 24;
+      return `${days}d ${remainingHours}h`;
+    } else if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else {
+      return `${minutes}m`;
+    }
+  };
 
   const handleApplyPromo = () => {
     const success = applyPromo(promoCode);
