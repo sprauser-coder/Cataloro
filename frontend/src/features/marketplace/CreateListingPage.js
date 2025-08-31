@@ -556,34 +556,6 @@ function CreateListingPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Category *
-                    {selectedCatalyst && (
-                      <span className="text-blue-600 dark:text-blue-400 text-xs ml-2">
-                        (Auto-set to Catalysts)
-                      </span>
-                    )}
-                  </label>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 transition-all duration-200 ${
-                      selectedCatalyst 
-                        ? 'border-blue-300 dark:border-blue-600 focus:border-blue-500' 
-                        : 'border-gray-300 dark:border-gray-600 focus:border-blue-500'
-                    }`}
-                    required
-                  >
-                    <option value="">Select a category</option>
-                    {categories.map(category => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
 
               {/* Selected Catalyst Summary */}
