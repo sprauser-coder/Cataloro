@@ -427,9 +427,13 @@ export function MarketplaceProvider({ children }) {
         subcategory: 'Guitars',
         seller: {
           name: 'VintageGuitars_Pro',
+          username: 'VintageGuitars_Pro',
+          email: 'vintage.guitars.pro@example.com',
           rating: 4.9,
           reviews: 89,
           verified: true,
+          is_business: true, // Business seller
+          company_name: 'Vintage Guitars Pro LLC',
           location: 'Nashville, TN'
         },
         images: [
