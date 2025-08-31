@@ -37,11 +37,24 @@ function CreateListingPage() {
     price: '',
     category: 'General', // Default category
     condition: 'New', // Default condition
-    location: '',
+    // Address fields for listing
+    street: '',
+    post_code: '',
+    city: '',
+    country: '',
     shipping: 'pickup',
     shipping_cost: '',
     tags: [],
     features: []
+  });
+
+  // Address from profile settings
+  const [useProfileAddress, setUseProfileAddress] = useState(true); // Auto-activated checkbox
+  const [profileAddress, setProfileAddress] = useState({
+    street: '',
+    post_code: '',
+    city: '',
+    country: ''
   });
 
   // Cat Database integration
