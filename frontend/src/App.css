@@ -419,14 +419,14 @@ body:not(.dark) .cataloro-input::placeholder {
 .dark .cataloro-input:disabled,
 .dark input.cataloro-input:disabled,
 .dark textarea.cataloro-input:disabled {
-  color: white !important;
+  color: #ffffff !important;
   background: rgba(255, 255, 255, 0.2) !important;
 }
 
 .dark .cataloro-input[disabled],
 .dark input.cataloro-input[disabled],
 .dark textarea.cataloro-input[disabled] {
-  color: white !important;
+  color: #ffffff !important;
   background: rgba(255, 255, 255, 0.2) !important;
 }
 
