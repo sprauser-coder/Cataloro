@@ -1051,7 +1051,7 @@ class CataloroAPITester:
                         break
                 
                 if approved_order:
-                    contact_revealed = bool(approved_order['seller']['email'])
+                    contact_revealed = bool(approved_order['seller'].get('email', ''))
                     self.log_test("Contact Details Revealed After Approval", contact_revealed,
                                  f"Seller contact revealed: {contact_revealed}")
         
