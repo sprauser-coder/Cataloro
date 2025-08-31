@@ -697,10 +697,23 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
               {tag}
             </span>
           ))}
+          
+          {/* Business/Private Badge */}
+          <div>
+            <span
+              className={`inline-block text-white text-xs px-2 py-1 rounded-full font-medium ${
+                item.seller?.is_business 
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600' 
+                  : 'bg-gradient-to-r from-green-600 to-emerald-600'
+              }`}
+            >
+              {item.seller?.is_business ? 'Business' : 'Private'}
+            </span>
+          </div>
         </div>
 
-        {/* Enhanced Favorite Button - Always Visible */}
-        <div className="absolute top-2 right-2 space-y-2 z-20">
+        {/* Enhanced Favorite Button - Only Favorite, No Share */}
+        <div className="absolute top-2 right-2 z-20">
           <button
             onClick={(e) => onFavoriteToggle(item, e)}
             className={`p-3 backdrop-blur-lg rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 ${
@@ -715,16 +728,6 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
             ) : (
               <Heart className="w-5 h-5" />
             )}
-          </button>
-          {/* Share Button */}
-          <button 
-            onClick={(e) => handleQuickAction(e, () => {})}
-            className={`p-3 backdrop-blur-lg bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300 hover:text-blue-500 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 ${
-              isHovered ? 'opacity-100' : 'opacity-80'
-            }`}
-            title="Share this item"
-          >
-            <Share2 className="w-5 h-5" />
           </button>
         </div>
 
