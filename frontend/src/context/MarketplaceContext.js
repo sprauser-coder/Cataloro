@@ -739,10 +739,17 @@ export function MarketplaceProvider({ children }) {
       applyFiltersAndSearch(query, state.activeFilters, state.sortBy);
     },
     
-    setFilters: (filters) => {
+    setFilters: async (filters) => {
       const newFilters = { ...state.activeFilters, ...filters };
       dispatch({ type: ACTIONS.SET_FILTERS, payload: filters });
-      applyFiltersAndSearch(state.searchQuery, newFilters, state.sortBy);
+      
+      // For type and price filters, reload from backend
+      if (filters.type !== undefined || filters.priceFrom !== undefined || filters.priceTo !== undefined) {
+        await loadInitialProducts(newFilters);
+      } else {
+        // For other filters (search, sorting), use local filtering
+        applyFiltersAndSearch(state.searchQuery, newFilters, state.sortBy);
+      }
     },
     
     setSortBy: (sortBy) => {
