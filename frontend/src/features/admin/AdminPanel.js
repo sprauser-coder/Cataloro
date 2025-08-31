@@ -3468,7 +3468,7 @@ function ListingsTab({ showToast }) {
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
               {/* Activate Listings */}
               <button
-                onClick={() => handleBulkAction('activate')}
+                onClick={() => requestBulkAction('activate')}
                 className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Activate selected listings"
               >
@@ -3478,7 +3478,7 @@ function ListingsTab({ showToast }) {
 
               {/* Deactivate Listings */}
               <button
-                onClick={() => handleBulkAction('deactivate')}
+                onClick={() => requestBulkAction('deactivate')}
                 className="flex items-center justify-center space-x-2 px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Deactivate selected listings"
               >
