@@ -901,9 +901,12 @@ function ProfilePage() {
                       <h4 className="text-md font-semibold text-gray-900 dark:text-white flex items-center">
                         <Settings className="w-4 h-4 mr-2" />
                         Account Type
+                        <span className="ml-2 text-xs text-gray-500 dark:text-gray-400 font-normal">
+                          (Can be changed anytime)
+                        </span>
                       </h4>
                       
-                      {/* Business Account Checkbox */}
+                      {/* Business Account Toggle */}
                       <label className="flex items-center space-x-3 cursor-pointer">
                         <input
                           type="checkbox"
@@ -914,21 +917,23 @@ function ProfilePage() {
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center">
                           <User className="w-3 h-3 mr-1" />
-                          Business Account
+                          {profileData.is_business ? 'Switch to Private Account' : 'Switch to Business Account'}
                         </span>
                       </label>
                     </div>
 
                     {profileData.is_business ? (
                       /* Business Information Display */
-                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                         <div className="flex items-center mb-3">
-                          <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg mr-3">
-                            <Settings className="w-4 h-4 text-blue-600 dark:text-blue-300" />
+                          <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg mr-3">
+                            <Settings className="w-4 h-4 text-white" />
                           </div>
                           <div>
-                            <h5 className="font-medium text-blue-900 dark:text-blue-100">Business Account</h5>
-                            <p className="text-sm text-blue-600 dark:text-blue-300">Professional marketplace seller</p>
+                            <h5 className="font-medium text-blue-900 dark:text-blue-100">Business Account Active</h5>
+                            <p className="text-sm text-blue-600 dark:text-blue-300">
+                              Professional marketplace seller with business verification
+                            </p>
                           </div>
                         </div>
                         
@@ -936,7 +941,7 @@ function ProfilePage() {
                         <div className="space-y-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                              Company Name
+                              Company Name *
                             </label>
                             <input
                               type="text"
@@ -946,12 +951,13 @@ function ProfilePage() {
                               disabled={!isEditing}
                               className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
                               placeholder="Enter your company name"
+                              required={profileData.is_business}
                             />
                           </div>
 
                           <div className="relative">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                              Business Country
+                              Business Country *
                               {isEditing && (
                                 <span className="text-blue-600 dark:text-blue-400 text-xs ml-2">
                                   (Type to search)
@@ -967,6 +973,7 @@ function ProfilePage() {
                               disabled={!isEditing}
                               className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
                               placeholder="Enter business country"
+                              required={profileData.is_business}
                             />
                             
                             {/* Business Country Suggestions Dropdown */}
@@ -1015,18 +1022,40 @@ function ProfilePage() {
                             />
                           </div>
                         </div>
+                        
+                        {/* Business Account Benefits */}
+                        <div className="mt-4 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                          <p className="text-xs text-blue-700 dark:text-blue-300 font-medium mb-2">Business Account Benefits:</p>
+                          <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+                            <li>• Blue "Business" badge on your listings</li>
+                            <li>• Enhanced seller credibility</li>
+                            <li>• Professional seller profile</li>
+                            <li>• Business account verification</li>
+                          </ul>
+                        </div>
                       </div>
                     ) : (
                       /* Private Account Display */
-                      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
                         <div className="flex items-center">
-                          <div className="p-2 bg-green-100 dark:bg-green-800 rounded-lg mr-3">
-                            <User className="w-4 h-4 text-green-600 dark:text-green-300" />
+                          <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg mr-3">
+                            <User className="w-4 h-4 text-white" />
                           </div>
                           <div>
-                            <h5 className="font-medium text-green-900 dark:text-green-100">Private Account</h5>
+                            <h5 className="font-medium text-green-900 dark:text-green-100">Private Account Active</h5>
                             <p className="text-sm text-green-600 dark:text-green-300">Personal marketplace user</p>
                           </div>
+                        </div>
+                        
+                        {/* Private Account Info */}
+                        <div className="mt-3 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                          <p className="text-xs text-green-700 dark:text-green-300 font-medium mb-2">Private Account Features:</p>
+                          <ul className="text-xs text-green-600 dark:text-green-400 space-y-1">
+                            <li>• Green "Private" badge on your listings</li>
+                            <li>• Personal seller profile</li>
+                            <li>• Standard marketplace access</li>
+                            <li>• Can upgrade to business anytime</li>
+                          </ul>
                         </div>
                       </div>
                     )}
