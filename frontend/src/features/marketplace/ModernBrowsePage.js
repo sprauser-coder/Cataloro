@@ -908,10 +908,24 @@ function ProductCard({ item, viewMode, onAddToCart, onBuyNow, onFavoriteToggle, 
         <div className={`flex space-x-2 ${isGridView ? '' : 'mt-4'}`}>
           <button
             onClick={(e) => handleQuickAction(e, () => onBuyNow(item))}
-            className="flex-1 flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors"
+            disabled={isLoadingBuyNow}
+            className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg font-medium transition-colors ${
+              isLoadingBuyNow 
+                ? 'bg-gray-400 cursor-not-allowed text-white' 
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
+            }`}
           >
-            <ShoppingCart className="w-4 h-4" />
-            <span>Buy Now</span>
+            {isLoadingBuyNow ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Sending...</span>
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="w-4 h-4" />
+                <span>Buy Now</span>
+              </>
+            )}
           </button>
           <button 
             onClick={(e) => handleQuickAction(e, () => onMessageSeller(item, e))}
