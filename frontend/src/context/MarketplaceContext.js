@@ -368,13 +368,11 @@ export function MarketplaceProvider({ children }) {
         features: listing.features || []
       }));
       
-      // Use real listings if available
-      if (transformedListings.length > 0) {
-        dispatch({ type: ACTIONS.SET_PRODUCTS, payload: transformedListings });
-        dispatch({ type: ACTIONS.SET_LOADING, payload: false });
-        console.log('🎉 Successfully loaded', transformedListings.length, 'real listings');
-        return;
-      }
+      // Use real listings even if empty (don't fall back to demo data)
+      dispatch({ type: ACTIONS.SET_PRODUCTS, payload: transformedListings });
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+      console.log('🎉 Successfully loaded', transformedListings.length, 'real listings from API');
+      return;
         
     } catch (error) {
       console.error('Failed to load listings from API:', error);
