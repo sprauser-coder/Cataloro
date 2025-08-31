@@ -12,7 +12,7 @@ from datetime import datetime
 import uuid
 
 # Configuration
-BACKEND_URL = "https://bizcat-market.preview.emergentagent.com/api"
+BACKEND_URL = "https://seller-status-fix.preview.emergentagent.com/api"
 
 class DatabaseInvestigator:
     def __init__(self):
