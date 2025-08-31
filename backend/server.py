@@ -581,15 +581,26 @@ async def update_listing(listing_id: str, update_data: dict):
 
 @app.delete("/api/listings/{listing_id}")
 async def delete_listing(listing_id: str):
-    """Delete a listing"""
+    """Delete a listing by ID with proper ID format handling"""
     try:
+        # Try to delete by UUID 'id' field first (preferred format)
         result = await db.listings.delete_one({"id": listing_id})
         
+        # If not found by UUID, try by ObjectId (backward compatibility)
         if result.deleted_count == 0:
-            raise HTTPException(status_code=404, detail="Listing not found")
+            try:
+                from bson import ObjectId
+                if ObjectId.is_valid(listing_id):
+                    result = await db.listings.delete_one({"_id": ObjectId(listing_id)})
+            except:
+                pass  # Not a valid ObjectId, continue with original error
         
-        return {"message": "Listing deleted successfully"}
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail=f"Listing with ID {listing_id} not found")
         
+        return {"message": f"Listing {listing_id} deleted successfully", "deleted_count": result.deleted_count}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete listing: {str(e)}")
 
