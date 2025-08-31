@@ -77,11 +77,6 @@ function AdminPanel() {
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState('');
   
-  // Confirmation modal state
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [confirmAction, setConfirmAction] = useState(null);
-  const [confirmListings, setConfirmListings] = useState([]);
-  
   const { isAdmin } = useAuth();
   const { allProducts, cartItems, favorites, notifications } = useMarketplace();
   const { showToast } = useNotifications();
