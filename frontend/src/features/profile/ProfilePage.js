@@ -1280,7 +1280,7 @@ function ProfilePage() {
 
             {/* Privacy Preferences */}
             <div className="cataloro-card-glass p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Privacy Settings</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Privacy Settings</h3>
               
               <div className="space-y-4">
                 {[
