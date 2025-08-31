@@ -667,35 +667,105 @@ function ProfilePage() {
                         />
                       </div>
 
-                      <div>
+                      <div className="relative">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           City
+                          {isEditing && (
+                            <span className="text-blue-600 dark:text-blue-400 text-xs ml-2">
+                              (Type to search)
+                            </span>
+                          )}
                         </label>
                         <input
                           type="text"
                           name="city"
                           value={profileData.city}
-                          onChange={handleInputChange}
+                          onChange={handleCityChange}
+                          onFocus={() => profileData.city && setShowCitySuggestions(citySuggestions.length > 0)}
                           disabled={!isEditing}
                           className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
                           placeholder="Enter your city"
                         />
+                        
+                        {/* City Suggestions Dropdown */}
+                        {showCitySuggestions && isEditing && (
+                          <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
+                            <div className="p-3 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border-b border-gray-200 dark:border-gray-600">
+                              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                                <MapPin className="w-4 h-4 mr-2 text-blue-500" />
+                                Popular Cities ({citySuggestions.length})
+                                <span className="ml-2 text-xs text-gray-500">Click to select</span>
+                              </p>
+                            </div>
+                            {citySuggestions.map((city, index) => (
+                              <div
+                                key={index}
+                                onClick={() => selectCity(city)}
+                                className="p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-200 group"
+                              >
+                                <div className="flex items-center space-x-3">
+                                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                    {city.charAt(0)}
+                                  </div>
+                                  <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                    {city}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    <div>
+                    <div className="relative">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Country
+                        {isEditing && (
+                          <span className="text-blue-600 dark:text-blue-400 text-xs ml-2">
+                            (Type to search)
+                          </span>
+                        )}
                       </label>
                       <input
                         type="text"
                         name="country"
                         value={profileData.country}
-                        onChange={handleInputChange}
+                        onChange={handleCountryChange}
+                        onFocus={() => profileData.country && setShowCountrySuggestions(countrySuggestions.length > 0)}
                         disabled={!isEditing}
                         className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
                         placeholder="Enter your country"
                       />
+                      
+                      {/* Country Suggestions Dropdown */}
+                      {showCountrySuggestions && isEditing && (
+                        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
+                          <div className="p-3 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-b border-gray-200 dark:border-gray-600">
+                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                              <Globe className="w-4 h-4 mr-2 text-green-500" />
+                              Popular Countries ({countrySuggestions.length})
+                              <span className="ml-2 text-xs text-gray-500">Click to select</span>
+                            </p>
+                          </div>
+                          {countrySuggestions.map((country, index) => (
+                            <div
+                              key={index}
+                              onClick={() => selectCountry(country)}
+                              className="p-3 hover:bg-green-50 dark:hover:bg-green-900/20 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-200 group"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                  {country.charAt(0)}
+                                </div>
+                                <div className="font-medium text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                                  {country}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 
