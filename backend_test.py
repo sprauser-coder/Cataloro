@@ -975,7 +975,7 @@ class CataloroAPITester:
                 
                 if has_enriched_data:
                     print(f"   📋 Order details: {order['listing']['title']}")
-                    print(f"   👤 Buyer: {order['buyer']['username']}")
+                    print(f"   👤 Buyer: {order['buyer'].get('username', order['buyer'].get('full_name', 'Unknown'))}")
         
         # Test 6: Get buyer's orders (GET /api/orders/buyer/{buyer_id})
         print("\n6️⃣ Testing get buyer's orders...")
