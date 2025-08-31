@@ -1087,7 +1087,7 @@ async def create_buy_request(order_data: dict):
         if not listing:
             raise HTTPException(status_code=404, detail="Listing not found or not active")
         
-        seller_id = listing.get("user_id")
+        seller_id = listing.get("seller_id")
         if seller_id == buyer_id:
             raise HTTPException(status_code=400, detail="Cannot buy your own listing")
         
