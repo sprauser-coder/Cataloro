@@ -153,7 +153,7 @@ function ModernBrowsePage() {
   const filters = globalFilters;
   const sortBy = globalSortBy;
   const viewMode = globalViewMode;
-  const listings = allProducts;
+  // Removed unused variable
   const filteredListings = filteredProducts;
 
   // Removed categories array since we're using type filter instead
