@@ -3150,10 +3150,10 @@ function ListingsTab({ showToast }) {
               const deleteUrl = `${process.env.REACT_APP_BACKEND_URL}/api/listings/${listingId}`;
               console.log('🔍 Delete URL:', deleteUrl);
               
-              const deleteResponse = fetch(deleteUrl, {
+              const deleteResponse = await fetch(deleteUrl, {
                 method: 'DELETE'
               });
-              console.log('🔍 Delete request sent for:', listingId);
+              console.log('🔍 Delete request completed for:', listingId, 'Status:', deleteResponse.status);
               return deleteResponse;
             default:
               // For updates (activate, deactivate, feature, etc.)
