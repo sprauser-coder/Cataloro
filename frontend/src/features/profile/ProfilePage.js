@@ -967,7 +967,7 @@ function ProfilePage() {
                               value={profileData.company_name}
                               onChange={handleInputChange}
                               disabled={!isEditing}
-                              className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                              className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 dark:bg-gray-700/80 cursor-not-allowed' : ''}`}
                               placeholder="Enter your company name"
                               required={profileData.is_business}
                             />
