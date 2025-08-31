@@ -364,7 +364,7 @@ body:not(.dark) {
 .dark input.cataloro-input,
 .dark textarea.cataloro-input,
 .dark select.cataloro-input {
-  color: white !important;
+  color: #ffffff !important;
 }
 
 /* Ensure white text for all states */
@@ -384,7 +384,7 @@ body:not(.dark) {
 .dark select.cataloro-input:disabled,
 .dark select.cataloro-input:focus,
 .dark select.cataloro-input:hover {
-  color: white !important;
+  color: #ffffff !important;
 }
 
 body:not(.dark) .cataloro-input {
