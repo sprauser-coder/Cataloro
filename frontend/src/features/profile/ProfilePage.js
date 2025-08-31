@@ -1236,7 +1236,7 @@ function ProfilePage() {
                     />
                     <div>
                       <div className="font-medium text-gray-900 dark:text-white">{pref.label}</div>
-                      <div className="text-sm text-gray-600">{pref.desc}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300">{pref.desc}</div>
                     </div>
                   </label>
                 ))}
