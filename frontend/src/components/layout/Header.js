@@ -12,6 +12,7 @@ function Header() {
   const [user, setUser] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [pendingOrders, setPendingOrders] = useState(0);
+  const [notifications, setNotifications] = useState([]);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
 
@@ -25,6 +26,8 @@ function Header() {
         
         // Fetch pending orders count for sellers
         fetchPendingOrdersCount(parsedUser.id);
+        // Fetch notifications
+        fetchNotifications(parsedUser.id);
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
@@ -37,11 +40,24 @@ function Header() {
       if (response.ok) {
         const orders = await response.json();
         setPendingOrders(orders.length);
-        setUnreadCount(orders.length); // Use pending orders as notification count
       }
     } catch (error) {
       console.error('Error fetching pending orders:', error);
-      setUnreadCount(0); // Fallback to 0 notifications
+    }
+  };
+
+  const fetchNotifications = async (userId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}/notifications`);
+      if (response.ok) {
+        const userNotifications = await response.json();
+        setNotifications(userNotifications.slice(0, 5)); // Show only 5 recent notifications
+        const unreadNotifications = userNotifications.filter(n => !n.is_read);
+        setUnreadCount(unreadNotifications.length + pendingOrders);
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      setUnreadCount(pendingOrders); // Fallback to just pending orders
     }
   };
 
