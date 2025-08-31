@@ -276,11 +276,20 @@ async def browse_listings():
 
 @app.get("/api/user/my-listings/{user_id}")
 async def get_my_listings(user_id: str):
-    listings_cursor = db.listings.find({"seller_id": user_id})
-    listings = []
-    async for listing in listings_cursor:
-        listings.append(serialize_doc(listing))
-    return listings
+    """Get user's listings - only active listings for consistency with browse"""
+    try:
+        # Only return active listings to match browse page behavior
+        listings = await db.listings.find({"seller_id": user_id, "status": "active"}).sort("created_at", -1).to_list(length=None)
+        
+        # Ensure consistent ID format
+        for listing in listings:
+            if 'id' not in listing and '_id' in listing:
+                listing['id'] = str(listing['_id'])
+            listing.pop('_id', None)
+        
+        return listings
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch user listings: {str(e)}")
 
 @app.get("/api/user/my-deals/{user_id}")
 async def get_my_deals(user_id: str):
