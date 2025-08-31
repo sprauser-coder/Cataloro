@@ -222,6 +222,43 @@ function ProfilePage() {
     setCountrySuggestions([]);
   };
 
+  const handleBusinessCountryChange = (e) => {
+    const value = e.target.value;
+    setProfileData(prev => ({ ...prev, business_country: value }));
+
+    if (value.length > 1) {
+      // Filter popular countries based on input
+      const filtered = popularCountries.filter(country => 
+        country.toLowerCase().includes(value.toLowerCase())
+      ).slice(0, 8); // Limit to 8 suggestions
+
+      setBusinessCountrySuggestions(filtered);
+      setShowBusinessCountrySuggestions(filtered.length > 0);
+    } else {
+      setBusinessCountrySuggestions([]);
+      setShowBusinessCountrySuggestions(false);
+    }
+  };
+
+  const selectBusinessCountry = (country) => {
+    setProfileData(prev => ({ ...prev, business_country: country }));
+    setShowBusinessCountrySuggestions(false);
+    setBusinessCountrySuggestions([]);
+  };
+
+  const handleBusinessToggle = (checked) => {
+    setProfileData(prev => ({ 
+      ...prev, 
+      is_business: checked,
+      // Clear business fields when unchecking
+      ...(!checked && {
+        company_name: '',
+        business_country: '',
+        vat_number: ''
+      })
+    }));
+  };
+
   const handlePreferenceChange = (key, value) => {
     setPreferences({
       ...preferences,
