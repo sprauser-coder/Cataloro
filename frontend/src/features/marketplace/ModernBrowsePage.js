@@ -556,7 +556,7 @@ function ModernBrowsePage() {
   );
 }
 
-// Enhanced Product Card Component
+// Enhanced Product Card Component (used in JSX below)
 function ProductCard({ item, viewMode, onAddToCart, onFavoriteToggle, onMessageSeller, isInFavorites }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   // Removed unused state
