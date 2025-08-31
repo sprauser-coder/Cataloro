@@ -327,14 +327,29 @@ export function MarketplaceProvider({ children }) {
     localStorage.setItem('cataloro_favorites', JSON.stringify(state.favorites));
   }, [state.favorites]);
 
-  const loadInitialProducts = async () => {
+  const loadInitialProducts = async (filters = null) => {
     // Set loading state
     dispatch({ type: ACTIONS.SET_LOADING, payload: true });
     
     try {
+      // Use provided filters or current state filters
+      const currentFilters = filters || state.activeFilters;
+      
+      // Convert filter format for API call
+      const apiFilters = {};
+      if (currentFilters.type && currentFilters.type !== 'all') {
+        apiFilters.type = currentFilters.type;
+      }
+      if (currentFilters.priceFrom > 0) {
+        apiFilters.price_from = currentFilters.priceFrom;
+      }
+      if (currentFilters.priceTo < 10000) {
+        apiFilters.price_to = currentFilters.priceTo;
+      }
+      
       // Try to fetch real listings from API using marketplaceService
-      const apiResponse = await marketplaceService.browseListings();
-      console.log('✅ Loaded real listings from API:', apiResponse);
+      const apiResponse = await marketplaceService.browseListings(apiFilters);
+      console.log('✅ Loaded real listings from API with filters:', apiFilters, apiResponse);
       
       // The browse endpoint returns array format directly
       let apiListings;
