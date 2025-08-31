@@ -211,6 +211,30 @@ function CreateListingPage() {
     setLocationSuggestions([]);
   };
 
+  const handleUseProfileAddressChange = (checked) => {
+    setUseProfileAddress(checked);
+    
+    if (checked) {
+      // Use profile address
+      setFormData(prev => ({
+        ...prev,
+        street: profileAddress.street,
+        post_code: profileAddress.post_code,
+        city: profileAddress.city,
+        country: profileAddress.country
+      }));
+    } else {
+      // Clear address fields for manual input
+      setFormData(prev => ({
+        ...prev,
+        street: '',
+        post_code: '',
+        city: '',
+        country: ''
+      }));
+    }
+  };
+
   const handleTitleChange = (e) => {
     const value = e.target.value;
     setFormData(prev => ({...prev, title: value}));
