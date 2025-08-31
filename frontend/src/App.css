@@ -353,6 +353,13 @@ body:not(.dark) {
   font-family: var(--font-body);
 }
 
+/* Force white text in dark mode with maximum specificity */
+html.dark .cataloro-input,
+html.dark input.cataloro-input,
+html.dark textarea.cataloro-input {
+  color: #ffffff !important;
+}
+
 .dark .cataloro-input {
   background: rgba(255, 255, 255, 0.3) !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
