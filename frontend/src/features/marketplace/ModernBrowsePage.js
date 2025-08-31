@@ -408,7 +408,10 @@ function ModernBrowsePage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="flex items-end">
+            <div className="flex flex-col">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Actions
+              </label>
               <button
                 onClick={() => updateFilters({type: 'all', priceFrom: 0, priceTo: 10000, location: 'all', rating: 0})}
                 className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors h-10"
