@@ -3498,7 +3498,7 @@ function ListingsTab({ showToast }) {
 
               {/* Feature Listings */}
               <button
-                onClick={() => handleBulkAction('feature')}
+                onClick={() => requestBulkAction('feature')}
                 className="flex items-center justify-center space-x-2 px-4 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Feature selected listings"
               >
@@ -3508,7 +3508,7 @@ function ListingsTab({ showToast }) {
 
               {/* Approve Listings */}
               <button
-                onClick={() => handleBulkAction('approve')}
+                onClick={() => requestBulkAction('approve')}
                 className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
                 title="Approve selected listings"
               >
