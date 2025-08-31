@@ -111,11 +111,41 @@ function CreateListingPage() {
     'Prague, Czech Republic', 'Warsaw, Poland', 'Budapest, Hungary', 'Dublin, Ireland', 'Lisbon, Portugal', 'Athens, Greece'
   ];
 
-  // Fetch Cat Database on component mount
+  // Fetch Cat Database on component mount and load profile address
   useEffect(() => {
     fetchCatalystData();
     fetchCalculations();
+    loadProfileAddress();
   }, []);
+
+  const loadProfileAddress = () => {
+    try {
+      const userData = localStorage.getItem('cataloro_user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        const address = {
+          street: user.street || '',
+          post_code: user.post_code || '',
+          city: user.city || '',
+          country: user.country || ''
+        };
+        setProfileAddress(address);
+        
+        // If checkbox is checked and profile has address data, use it
+        if (useProfileAddress && (address.street || address.city)) {
+          setFormData(prev => ({
+            ...prev,
+            street: address.street,
+            post_code: address.post_code,
+            city: address.city,
+            country: address.country
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load profile address:', error);
+    }
+  };
 
   const fetchCatalystData = async () => {
     try {
