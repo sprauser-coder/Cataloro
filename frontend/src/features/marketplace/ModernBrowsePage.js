@@ -585,6 +585,19 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
   const navigate = useNavigate();
 
   const isGridView = viewMode === 'grid';
+  
+  // Debug: Log seller data for first few items
+  React.useEffect(() => {
+    if (item.id && ['2e2836dc-c1f2-48e5-94a6-9aaf2828c16a', 'listing-0', 'listing-1'].includes(item.id)) {
+      console.log(`🔍 ProductCard Debug - Item ${item.id}:`, {
+        title: item.title,
+        seller: item.seller,
+        'seller.is_business': item.seller?.is_business,
+        'seller.name': item.seller?.name,
+        'seller.username': item.seller?.username
+      });
+    }
+  }, [item.id, item.seller]);
 
   // Fetch price suggestion for catalyst items
   useEffect(() => {
