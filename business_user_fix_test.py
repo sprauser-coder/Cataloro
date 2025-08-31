@@ -37,7 +37,7 @@ def test_business_user_registration():
         # Test 2: Login and check user data
         print("2️⃣ Testing login...")
         login_response = requests.post(f"{base_url}/api/auth/login", json={
-            "email": "fixtest@business.com",
+            "email": business_data["email"],
             "password": "demo123"
         })
         
