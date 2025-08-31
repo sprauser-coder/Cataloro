@@ -615,6 +615,36 @@ async def create_listing(listing_data: dict):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create listing: {str(e)}")
 
+@app.get("/api/listings/{listing_id}")
+async def get_listing(listing_id: str):
+    """Get a single listing by ID"""
+    try:
+        # Try to find by UUID 'id' field first (preferred format)
+        listing = await db.listings.find_one({"id": listing_id})
+        
+        # If not found by UUID, try by ObjectId (backward compatibility)
+        if not listing:
+            try:
+                from bson import ObjectId
+                if ObjectId.is_valid(listing_id):
+                    listing = await db.listings.find_one({"_id": ObjectId(listing_id)})
+            except:
+                pass
+        
+        if not listing:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        
+        # Convert ObjectId to string for JSON serialization
+        if listing.get('_id'):
+            listing['_id'] = str(listing['_id'])
+        
+        return listing
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch listing: {str(e)}")
+
 @app.put("/api/listings/{listing_id}")
 async def update_listing(listing_id: str, update_data: dict):
     """Update an existing listing"""
