@@ -21,11 +21,12 @@ const initialState = {
   // Search & Filters
   searchQuery: '',
   activeFilters: {
-    category: 'all',
-    priceRange: [0, 10000],
-    condition: 'all',
+    type: 'all', // Changed from category to type (Private/Business)
+    priceFrom: 0, // Changed from priceRange array to separate from/to values
+    priceTo: 10000,
     rating: 0,
     location: 'all'
+    // Removed condition filter
   },
   
   // Products & Listings
