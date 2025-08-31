@@ -760,7 +760,7 @@ export function MarketplaceProvider({ children }) {
       showNotification('Promo code removed', 'info');
     },
     
-    // Refresh listings from API
+    // Refresh listings function (can be called from other components)
     refreshListings: async () => {
       await loadInitialProducts();
     },
