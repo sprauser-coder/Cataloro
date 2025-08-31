@@ -69,7 +69,12 @@ function ProfilePage() {
     date_joined: user?.date_joined || '2024-01-15',
     verified: user?.verified || false,
     seller_rating: user?.seller_rating || 4.8,
-    total_sales: user?.total_sales || 0
+    total_sales: user?.total_sales || 0,
+    // Business account fields
+    is_business: user?.is_business || false,
+    company_name: user?.company_name || '',
+    business_country: user?.business_country || '',
+    vat_number: user?.vat_number || ''
   });
 
   // Address suggestions state
