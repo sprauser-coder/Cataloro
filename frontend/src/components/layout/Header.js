@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, Search, LogOut, Settings, Clock } from 'lucide-react';
+import { Bell, Search, LogOut, Settings, Clock, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { UI_CONFIG, APP_ROUTES } from '../../config/directions';
 
 function Header() {
