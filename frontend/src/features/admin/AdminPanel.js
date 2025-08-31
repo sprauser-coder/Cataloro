@@ -3176,7 +3176,11 @@ function ListingsTab({ showToast }) {
           showToast?.(`${selectedListings.length} listings deactivated`, 'success');
           break;
         case 'delete':
-          setListings(listings.filter(l => !selectedListings.includes(l.id)));
+          console.log('🗑️ Executing delete case. Filtering out listings:', selectedListings);
+          const beforeCount = listings.length;
+          const filteredListings = listings.filter(l => !selectedListings.includes(l.id));
+          console.log(`🔍 Before: ${beforeCount} listings, After: ${filteredListings.length} listings`);
+          setListings(filteredListings);
           showToast?.(`${selectedListings.length} listings deleted`, 'success');
           break;
         case 'feature':
