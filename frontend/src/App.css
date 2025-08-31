@@ -387,6 +387,14 @@ body:not(.dark) .cataloro-input::placeholder {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.1) 100%);
 }
 
+.dark .cataloro-input:disabled {
+  color: white !important;
+}
+
+.dark .cataloro-input[disabled] {
+  color: white !important;
+}
+
 body:not(.dark) .cataloro-input:focus {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
 }
