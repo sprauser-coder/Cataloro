@@ -136,8 +136,11 @@ function ModernBrowsePage() {
   // Refresh listings function
   const refreshListings = async () => {
     try {
-      // This will trigger a refresh through the marketplace context
-      window.location.reload();
+      showToast('Refreshing listings...', 'info');
+      // Use the marketplace context refresh function
+      const { refreshListings: contextRefresh } = useMarketplace();
+      await contextRefresh();
+      showToast('Listings refreshed!', 'success');
     } catch (error) {
       console.error('Failed to refresh listings:', error);
       showToast('Failed to refresh listings', 'error');
