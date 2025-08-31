@@ -809,16 +809,17 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
           </div>
         </div>
 
-        {/* Location - Show only city */}
+        {/* Location - Show City, Country format */}
         <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-1" />
-            {/* Extract city from address or use city directly */}
-            {item.address?.city || 
-             (item.seller?.location && item.seller.location.includes(',') 
-               ? item.seller.location.split(',')[0].trim() 
-               : item.seller?.location) || 
-             'Location not specified'}
+            {/* Format as City, Country */}
+            {item.address?.city || item.address?.country 
+              ? `${item.address?.city || ''}${item.address?.city && item.address?.country ? ', ' : ''}${item.address?.country || ''}`.trim().replace(/^,\s*|,\s*$/g, '') || 'Location not specified'
+              : (item.seller?.location && item.seller.location.includes(',') 
+                  ? item.seller.location // Keep if already in City, Country format
+                  : item.seller?.location) || 'Location not specified'
+            }
           </div>
           {item.shipping && (
             <div className="flex items-center text-green-600 mt-1">
