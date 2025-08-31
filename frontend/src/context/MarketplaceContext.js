@@ -345,40 +345,56 @@ export function MarketplaceProvider({ children }) {
       
       console.log('📋 Processing listings:', apiListings.length);
       
+      // Debug: Log first listing to see data structure
+      if (apiListings.length > 0) {
+        console.log('🔍 First listing raw data:', JSON.stringify(apiListings[0], null, 2));
+        console.log('🔍 First listing seller data:', apiListings[0].seller);
+      }
+      
       // Transform API listings to match expected format
-      const transformedListings = apiListings.map(listing => ({
-        id: listing.id,
-        title: listing.title,
-        description: listing.description,
-        price: parseFloat(listing.price) || 0, // Ensure price is a number
-        originalPrice: (parseFloat(listing.price) || 0) * 1.1, // Add 10% as original price for demo
-        category: listing.category,
-        condition: listing.condition,
-        location: listing.location || 'Unknown',
-        images: listing.images || [],
-        // Preserve complete seller object with business information
-        seller: {
-          ...listing.seller,
-          name: listing.seller?.name || 'Unknown Seller',
-          username: listing.seller?.username || 'Unknown',
-          email: listing.seller?.email || '',
-          is_business: listing.seller?.is_business || false,
-          business_name: listing.seller?.business_name || '',
+      const transformedListings = apiListings.map((listing, index) => {
+        const transformed = {
+          id: listing.id,
+          title: listing.title,
+          description: listing.description,
+          price: parseFloat(listing.price) || 0, // Ensure price is a number
+          originalPrice: (parseFloat(listing.price) || 0) * 1.1, // Add 10% as original price for demo
+          category: listing.category,
+          condition: listing.condition,
+          location: listing.location || 'Unknown',
+          images: listing.images || [],
+          // Preserve complete seller object with business information
+          seller: {
+            ...listing.seller,
+            name: listing.seller?.name || 'Unknown Seller',
+            username: listing.seller?.username || 'Unknown',
+            email: listing.seller?.email || '',
+            is_business: listing.seller?.is_business || false,
+            business_name: listing.seller?.business_name || '',
+            verified: listing.seller?.verified || false,
+            location: listing.seller?.location || 'Unknown'
+          },
+          // Also add the address information for location display
+          address: listing.address || {},
+          rating: 4.5, // Default rating for demo
+          reviewCount: Math.floor(Math.random() * 100) + 10,
+          isHotDeal: Math.random() > 0.7,
+          hasFastShipping: Math.random() > 0.6,
           verified: listing.seller?.verified || false,
-          location: listing.seller?.location || 'Unknown'
-        },
-        // Also add the address information for location display
-        address: listing.address || {},
-        rating: 4.5, // Default rating for demo
-        reviewCount: Math.floor(Math.random() * 100) + 10,
-        isHotDeal: Math.random() > 0.7,
-        hasFastShipping: Math.random() > 0.6,
-        verified: listing.seller?.verified || false,
-        inStock: true,
-        quantity: 1,
-        tags: listing.tags || [],
-        features: listing.features || []
-      }));
+          inStock: true,
+          quantity: 1,
+          tags: listing.tags || [],
+          features: listing.features || []
+        };
+        
+        // Debug: Log transformed data for first listing
+        if (index === 0) {
+          console.log('🔄 First listing transformed:', JSON.stringify(transformed, null, 2));
+          console.log('🔄 First listing seller after transform:', transformed.seller);
+        }
+        
+        return transformed;
+      });
       
       // Use real listings even if empty (don't fall back to demo data)
       dispatch({ type: ACTIONS.SET_PRODUCTS, payload: transformedListings });
