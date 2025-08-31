@@ -794,7 +794,7 @@ function ProfilePage() {
                       </div>
 
                       <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           City
                           {isEditing && (
                             <span className="text-blue-600 dark:text-blue-400 text-xs ml-2">
