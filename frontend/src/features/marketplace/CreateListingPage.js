@@ -720,61 +720,129 @@ function CreateListingPage() {
                 </div>
               )}
 
-              {/* Location Row with Suggestions */}
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Location
-                  <span className="text-blue-600 dark:text-blue-400 text-xs ml-2">
-                    (Type to search popular cities)
-                  </span>
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleLocationChange}
-                    onFocus={() => formData.location && setShowLocationSuggestions(locationSuggestions.length > 0)}
-                    placeholder="Start typing city name (e.g., Amsterdam, Berlin, Paris...)"
-                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                  />
+              {/* Address Section with Profile Settings Integration */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-white flex items-center">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    Address Information
+                  </h4>
+                  
+                  {/* Profile Address Checkbox */}
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={useProfileAddress}
+                      onChange={(e) => handleUseProfileAddressChange(e.target.checked)}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center">
+                      <User className="w-3 h-3 mr-1" />
+                      Use profile address
+                    </span>
+                  </label>
                 </div>
-                
-                {/* Location Suggestions Dropdown */}
-                {showLocationSuggestions && (
-                  <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
-                    <div className="p-3 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-b border-gray-200 dark:border-gray-600">
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
-                        <MapPin className="w-4 h-4 mr-2 text-green-500" />
-                        Popular Locations ({locationSuggestions.length})
-                        <span className="ml-2 text-xs text-gray-500">Click to select</span>
-                      </p>
+
+                {useProfileAddress ? (
+                  /* Profile Address Display */
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                    <div className="flex items-center mb-3">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg mr-3">
+                        <User className="w-4 h-4 text-blue-600 dark:text-blue-300" />
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-blue-900 dark:text-blue-100">Using Profile Address</h5>
+                        <p className="text-sm text-blue-600 dark:text-blue-300">Address from your profile settings</p>
+                      </div>
                     </div>
-                    {locationSuggestions.map((location, index) => {
-                      const [city, country] = location.split(', ');
-                      return (
-                        <div
-                          key={index}
-                          onClick={() => selectLocation(location)}
-                          className="p-4 hover:bg-green-50 dark:hover:bg-green-900/20 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-all duration-200 group"
-                        >
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                              {city.charAt(0)}
-                            </div>
-                            <div>
-                              <div className="font-semibold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
-                                {city}
-                              </div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">
-                                {country}
-                              </div>
-                            </div>
+                    
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-100 dark:border-blue-700">
+                      {profileAddress.street || profileAddress.city ? (
+                        <div className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                          {profileAddress.street && <div>{profileAddress.street}</div>}
+                          <div className="flex space-x-2">
+                            {profileAddress.post_code && <span>{profileAddress.post_code}</span>}
+                            {profileAddress.city && <span>{profileAddress.city}</span>}
                           </div>
+                          {profileAddress.country && <div>{profileAddress.country}</div>}
                         </div>
-                      );
-                    })}
+                      ) : (
+                        <div className="text-sm text-gray-500 dark:text-gray-400 italic">
+                          No address in profile. Please uncheck to enter address manually.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  /* Manual Address Input Fields */
+                  <div className="space-y-4 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    <div className="flex items-center mb-3">
+                      <div className="p-2 bg-green-100 dark:bg-green-800 rounded-lg mr-3">
+                        <MapPin className="w-4 h-4 text-green-600 dark:text-green-300" />
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-green-900 dark:text-green-100">Custom Address</h5>
+                        <p className="text-sm text-green-600 dark:text-green-300">Enter address for this listing</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Street Address
+                      </label>
+                      <input
+                        type="text"
+                        name="street"
+                        value={formData.street}
+                        onChange={handleInputChange}
+                        placeholder="Enter street address"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Post Code
+                        </label>
+                        <input
+                          type="text"
+                          name="post_code"
+                          value={formData.post_code}
+                          onChange={handleInputChange}
+                          placeholder="Postal/ZIP code"
+                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          City
+                        </label>
+                        <input
+                          type="text"
+                          name="city"
+                          value={formData.city}
+                          onChange={handleInputChange}
+                          placeholder="Enter city"
+                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Country
+                      </label>
+                      <input
+                        type="text"
+                        name="country"
+                        value={formData.country}
+                        onChange={handleInputChange}
+                        placeholder="Enter country"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      />
+                    </div>
                   </div>
                 )}
               </div>
