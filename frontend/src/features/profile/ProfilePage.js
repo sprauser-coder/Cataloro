@@ -715,7 +715,7 @@ function ProfilePage() {
                         value={profileData.username}
                         onChange={handleInputChange}
                         disabled={!isEditing}
-                        className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                        className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 dark:bg-gray-700/80 cursor-not-allowed' : ''}`}
                         placeholder="Choose a username"
                       />
                     </div>
