@@ -354,8 +354,14 @@ body:not(.dark) {
 }
 
 .dark .cataloro-input {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.dark .cataloro-input,
+.dark input.cataloro-input,
+.dark textarea.cataloro-input {
   color: white !important;
 }
 
