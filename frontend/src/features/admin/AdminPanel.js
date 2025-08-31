@@ -3356,9 +3356,10 @@ function ListingsTab({ showToast }) {
   // Refresh listings function
   const refreshListings = async () => {
     console.log('🔄 Refreshing listings...');
-    setListings([]); // Clear current listings
+    showToast?.('Refreshing listings...', 'info');
+    setListings([]); // Clear current listings to show loading state
     await fetchListings(); // Reload from API
-    showToast?.('Listings refreshed', 'success');
+    showToast?.('✅ Listings refreshed successfully', 'success');
   };
 
   const handleDeleteListing = async (listingId) => {
