@@ -3064,11 +3064,18 @@ function ListingsTab({ showToast }) {
 
   const handleBulkAction = async (action = null) => {
     const actionToPerform = action || bulkAction;
-    if (!actionToPerform || selectedListings.length === 0) return;
+    console.log('🔍 handleBulkAction called with:', actionToPerform, 'selectedListings:', selectedListings.length);
+    
+    if (!actionToPerform || selectedListings.length === 0) {
+      console.log('❌ Early return: no action or no selected listings');
+      return;
+    }
 
     // Confirm destructive actions
     if (['delete', 'reject'].includes(actionToPerform)) {
-      if (!window.confirm(`Are you sure you want to ${actionToPerform} ${selectedListings.length} listings? This action cannot be undone.`)) {
+      const confirmed = window.confirm(`Are you sure you want to ${actionToPerform} ${selectedListings.length} listings? This action cannot be undone.`);
+      console.log('🔍 Confirmation result:', confirmed);
+      if (!confirmed) {
         return;
       }
     }
