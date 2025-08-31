@@ -3318,9 +3318,37 @@ function ListingsTab({ showToast }) {
     showToast?.('Listings refreshed', 'success');
   };
 
-  const handleDeleteListing = (listingId) => {
-    setListings(listings.filter(l => l.id !== listingId));
-    showToast?.('Listing deleted successfully', 'success');
+  const handleDeleteListing = async (listingId) => {
+    // Show confirmation dialog
+    const confirmed = window.confirm('Are you sure you want to delete this listing? This action cannot be undone.');
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      console.log('🗑️ Deleting individual listing:', listingId);
+      
+      // Call backend API to delete the listing
+      const deleteUrl = `${process.env.REACT_APP_BACKEND_URL}/api/listings/${listingId}`;
+      console.log('🔍 Delete URL:', deleteUrl);
+      
+      const response = await fetch(deleteUrl, {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to delete listing: ${response.status}`);
+      }
+      
+      console.log('✅ Backend delete successful for listing:', listingId);
+      
+      // Update local state after successful backend deletion
+      setListings(listings.filter(l => l.id !== listingId));
+      showToast?.('Listing deleted successfully', 'success');
+    } catch (error) {
+      console.error('❌ Error deleting listing:', error);
+      showToast?.(`Failed to delete listing: ${error.message}`, 'error');
+    }
   };
 
   const handleCreateListing = (listingData) => {
