@@ -3258,10 +3258,55 @@ function ListingsTab({ showToast }) {
     }
   };
 
-  // Test function to verify if handleBulkAction is accessible
-  window.testBulkDelete = () => {
-    console.log('🧪 Test bulk delete called');
-    handleBulkAction('delete');
+  // Confirmation modal state
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [confirmListings, setConfirmListings] = useState([]);
+
+  // Confirmation modal handler
+  const requestBulkAction = (action) => {
+    console.log('🔍 Requesting bulk action:', action, 'for', selectedListings.length, 'listings');
+    
+    if (selectedListings.length === 0) {
+      showToast?.('No listings selected', 'error');
+      return;
+    }
+
+    // Show confirmation for destructive actions
+    if (['delete', 'reject'].includes(action)) {
+      setConfirmAction(action);
+      setConfirmListings([...selectedListings]);
+      setShowConfirmModal(true);
+    } else {
+      // Direct execution for non-destructive actions
+      handleBulkAction(action);
+    }
+  };
+
+  // Confirmed bulk action execution
+  const executeBulkAction = async () => {
+    console.log('🚀 Executing confirmed bulk action:', confirmAction);
+    setShowConfirmModal(false);
+    
+    if (confirmAction && confirmListings.length > 0) {
+      // Temporarily set selectedListings to confirmListings for execution
+      const originalSelected = selectedListings;
+      setSelectedListings(confirmListings);
+      
+      await handleBulkAction(confirmAction);
+      
+      // Reset confirmation state
+      setConfirmAction(null);
+      setConfirmListings([]);
+    }
+  };
+
+  // Refresh listings function
+  const refreshListings = async () => {
+    console.log('🔄 Refreshing listings...');
+    setListings([]); // Clear current listings
+    await fetchListings(); // Reload from API
+    showToast?.('Listings refreshed', 'success');
   };
 
   const handleDeleteListing = (listingId) => {
