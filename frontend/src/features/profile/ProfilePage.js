@@ -283,6 +283,12 @@ function ProfilePage() {
       const updatedUser = { ...user, ...profileData };
       localStorage.setItem('cataloro_user', JSON.stringify(updatedUser));
       
+      // Also update the auth context to reflect changes immediately
+      // This ensures the user object is updated across the entire app
+      if (typeof updateUser === 'function') {
+        updateUser(updatedUser);
+      }
+      
       setIsEditing(false);
       showToast('Profile updated successfully!', 'success');
     } catch (error) {
