@@ -15,9 +15,11 @@ def test_business_user_registration():
     print("=" * 50)
     
     # Test 1: Register business user with explicit business fields
+    import time
+    timestamp = int(time.time())
     business_data = {
-        "username": "fix_test_business",
-        "email": "fixtest@business.com", 
+        "username": f"fix_test_business_{timestamp}",
+        "email": f"fixtest_{timestamp}@business.com", 
         "full_name": "Fix Test Business",
         "is_business": True,
         "business_name": "Fix Test Solutions",
