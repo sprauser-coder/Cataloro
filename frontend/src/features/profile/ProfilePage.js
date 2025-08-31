@@ -1355,7 +1355,7 @@ function ProfilePage() {
                         <Icon className="w-4 h-4 text-blue-600" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
                           {activity.action}: <span className="text-blue-600">{activity.item}</span>
                         </p>
                         <p className="text-xs text-gray-500">{activity.time}</p>
