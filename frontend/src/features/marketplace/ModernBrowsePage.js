@@ -850,7 +850,7 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
             className="flex-1 flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors"
           >
             <ShoppingCart className="w-4 h-4" />
-            <span>Add to Cart</span>
+            <span>Buy Now</span>
           </button>
           <button 
             onClick={(e) => handleQuickAction(e, () => onMessageSeller(item, e))}
@@ -861,10 +861,28 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
           </button>
         </div>
 
-        {/* Condition and Time */}
-        <div className="flex items-center justify-between mt-3 text-xs text-gray-500 dark:text-gray-400">
-          <span>Condition: {item.condition}</span>
-          <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+        {/* Date Only - Remove Condition */}
+        <div className="flex items-center justify-end mt-3 text-xs text-gray-500 dark:text-gray-400">
+          <span>
+            {item.created_at 
+              ? new Date(item.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })
+              : item.createdAt 
+                ? new Date(item.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })
+                : new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })
+            }
+          </span>
         </div>
       </div>
     </div>
