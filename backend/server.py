@@ -803,8 +803,14 @@ async def get_user_messages(user_id: str):
             message['_id'] = str(message['_id'])
             
             # Add sender information
+            print(f"DEBUG: Looking for sender with ID: {message['sender_id']}")
             sender = await db.users.find_one({"id": message['sender_id']})
-            print(f"DEBUG: Looking for sender with ID: {message['sender_id']}, found: {sender}")
+            print(f"DEBUG: Sender query result: {sender}")
+            if not sender:
+                # Try alternative lookup methods
+                print(f"DEBUG: Trying alternative sender lookup...")
+                all_users = await db.users.find({}).to_list(length=5)
+                print(f"DEBUG: Sample users in database: {[{k: v for k, v in user.items() if k in ['id', 'username', 'full_name']} for user in all_users]}")
             message['sender_name'] = sender.get('full_name', sender.get('username', 'Unknown')) if sender else 'Unknown'
             
             # Add recipient information
