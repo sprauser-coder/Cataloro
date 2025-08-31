@@ -54,6 +54,14 @@ function NotificationsPage() {
         return '⚠️';
       case 'error':
         return '❌';
+      case 'buy_request':
+        return '🛒';
+      case 'buy_approved':
+        return '✅';
+      case 'buy_rejected':
+        return '❌';
+      case 'buy_expired':
+        return '⏰';
       default:
         return '🔔';
     }
@@ -71,6 +79,14 @@ function NotificationsPage() {
         return 'border-yellow-500';
       case 'error':
         return 'border-red-500';
+      case 'buy_request':
+        return 'border-yellow-500';
+      case 'buy_approved':
+        return 'border-green-500';
+      case 'buy_rejected':
+        return 'border-red-500';
+      case 'buy_expired':
+        return 'border-orange-500';
       default:
         return 'border-gray-300';
     }
