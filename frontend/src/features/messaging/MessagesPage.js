@@ -49,6 +49,13 @@ function MessagesPage() {
   const [messageFilter, setMessageFilter] = useState('all'); // all, unread, sent
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  
+  // User search for compose
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [userSearchResults, setUserSearchResults] = useState([]);
+  const [showUserSearch, setShowUserSearch] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
 
