@@ -517,7 +517,7 @@ function ProfilePage() {
                 className={`flex items-center space-x-2 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeTab === tab.id
                     ? 'bg-blue-100/80 backdrop-blur-sm text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100/50 hover:text-gray-900'
+                    : 'text-gray-600 dark:text-white hover:bg-gray-100/50 hover:text-gray-900'
                 }`}
               >
                 <Icon className="w-4 h-4" />
