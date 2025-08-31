@@ -809,17 +809,37 @@ function ProductCard({ item, viewMode, onAddToCart, onAddToFavorites, onFavorite
           </div>
         </div>
 
-        {/* Location - Show City, Country format */}
+        {/* Location - Show only City, Country (no street) */}
         <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-1" />
-            {/* Format as City, Country */}
-            {item.address?.city || item.address?.country 
-              ? `${item.address?.city || ''}${item.address?.city && item.address?.country ? ', ' : ''}${item.address?.country || ''}`.trim().replace(/^,\s*|,\s*$/g, '') || 'Location not specified'
-              : (item.seller?.location && item.seller.location.includes(',') 
-                  ? item.seller.location // Keep if already in City, Country format
-                  : item.seller?.location) || 'Location not specified'
-            }
+            {/* Format as City, Country only - exclude street */}
+            {(() => {
+              const city = item.address?.city || '';
+              const country = item.address?.country || '';
+              
+              // If we have address data, use city and country only
+              if (city || country) {
+                const parts = [city, country].filter(Boolean);
+                return parts.length > 0 ? parts.join(', ') : 'Location not specified';
+              }
+              
+              // Fallback to seller location if no structured address
+              // If seller location is already in "City, Country" format, use it
+              // If it has more parts (like street), extract only last two parts
+              if (item.seller?.location) {
+                const locationParts = item.seller.location.split(',').map(part => part.trim());
+                if (locationParts.length >= 2) {
+                  // Take last two parts as City, Country
+                  return locationParts.slice(-2).join(', ');
+                } else {
+                  // Single part, assume it's city
+                  return locationParts[0];
+                }
+              }
+              
+              return 'Location not specified';
+            })()}
           </div>
           {item.shipping && (
             <div className="flex items-center text-green-600 mt-1">
