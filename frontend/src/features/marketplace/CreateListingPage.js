@@ -250,7 +250,7 @@ function CreateListingPage() {
   };
 
   const validateForm = () => {
-    const required = ['title', 'description', 'price', 'category', 'condition'];
+    const required = ['title', 'description', 'price'];
     
     for (let field of required) {
       if (!formData[field].trim()) {
