@@ -931,7 +931,7 @@ function ProfilePage() {
                           checked={profileData.is_business}
                           onChange={(e) => handleBusinessToggle(e.target.checked)}
                           disabled={!isEditing}
-                          className="w-4 h-4 text-blue-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-2 disabled:cursor-not-allowed"
+                          className="w-4 h-4 text-blue-600 bg-white dark:bg-gray-700 border-2 border-gray-500 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-2 disabled:cursor-not-allowed"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center">
                           <User className="w-3 h-3 mr-1" />
