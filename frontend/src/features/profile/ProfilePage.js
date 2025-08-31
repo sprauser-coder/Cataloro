@@ -58,7 +58,11 @@ function ProfilePage() {
     username: user?.username || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    address: user?.address || '',
+    // Detailed address fields instead of single address
+    street: user?.street || '',
+    post_code: user?.post_code || '',
+    city: user?.city || '',
+    country: user?.country || '',
     bio: user?.bio || 'Marketplace enthusiast and trusted seller.',
     avatar_url: user?.avatar_url || '',
     date_joined: user?.date_joined || '2024-01-15',
