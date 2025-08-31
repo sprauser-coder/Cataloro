@@ -1401,7 +1401,7 @@ function ProfilePage() {
               
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">Deactivate Account</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Deactivate Account</h4>
                   <p className="text-sm text-gray-600 mb-3">
                     Temporarily disable your account. You can reactivate it anytime.
                   </p>
