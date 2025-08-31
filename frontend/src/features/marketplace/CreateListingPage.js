@@ -52,6 +52,11 @@ function CreateListingPage() {
   const [selectedCatalyst, setSelectedCatalyst] = useState(null);
   const [loadingCatalysts, setLoadingCatalysts] = useState(false);
 
+  // Location suggestions
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [loadingLocations, setLoadingLocations] = useState(false);
+
   const [currentTag, setCurrentTag] = useState('');
   const [currentFeature, setCurrentFeature] = useState('');
 
