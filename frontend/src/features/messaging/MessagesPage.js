@@ -177,21 +177,23 @@ function MessagesPage() {
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.recipient || !newMessage.content) {
-      showToast('Please fill in recipient and message content', 'error');
+    if (!selectedUser || !newMessage.content.trim()) {
+      showToast('Please select a recipient and enter message content', 'error');
       return;
     }
 
     try {
       setSending(true);
       await liveService.sendMessage(user.id, {
-        recipient_id: newMessage.recipient,
-        subject: newMessage.subject,
+        recipient_id: selectedUser.id,
+        subject: newMessage.subject || 'New Message',
         content: newMessage.content
       });
       
       showToast('Message sent successfully!', 'success');
       setNewMessage({ recipient: '', subject: '', content: '' });
+      setSelectedUser(null);
+      setUserSearchQuery('');
       setShowCompose(false);
       await loadMessages();
     } catch (error) {
