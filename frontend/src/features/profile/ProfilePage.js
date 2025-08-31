@@ -71,6 +71,12 @@ function ProfilePage() {
     total_sales: user?.total_sales || 0
   });
 
+  // Address suggestions state
+  const [citySuggestions, setCitySuggestions] = useState([]);
+  const [countrySuggestions, setCountrySuggestions] = useState([]);
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  const [showCountrySuggestions, setShowCountrySuggestions] = useState(false);
+
   const [preferences, setPreferences] = useState({
     emailNotifications: true,
     smsNotifications: false,
