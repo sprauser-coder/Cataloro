@@ -208,57 +208,71 @@ async def get_profile(user_id: str):
 # Marketplace Endpoints
 @app.get("/api/marketplace/browse")
 async def browse_listings():
-    listings_cursor = db.listings.find({"status": "active"}).limit(50)
-    listings = []
-    async for listing in listings_cursor:
-        listings.append(serialize_doc(listing))
-    
-    # Add dummy data if empty
-    if not listings:
-        dummy_listings = [
-            {
-                "id": generate_id(),
-                "title": "MacBook Pro 16-inch",
-                "description": "Excellent condition, barely used",
-                "price": 2500.00,
-                "category": "Electronics",
-                "seller_id": "demo_seller_1",
-                "status": "active",
-                "created_at": datetime.utcnow(),
-                "images": ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400"]
-            },
-            {
-                "id": generate_id(),
-                "title": "Vintage Guitar",
-                "description": "Classic acoustic guitar with rich sound",
-                "price": 800.00,
-                "category": "Music",
-                "seller_id": "demo_seller_2",
-                "status": "active",
-                "created_at": datetime.utcnow(),
-                "images": ["https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400"]
-            },
-            {
-                "id": generate_id(),
-                "title": "Designer Handbag",
-                "description": "Authentic luxury handbag in perfect condition",
-                "price": 1200.00,
-                "category": "Fashion",
-                "seller_id": "demo_seller_3",
-                "status": "active",
-                "created_at": datetime.utcnow(),
-                "images": ["https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400"]
-            }
-        ]
+    """Browse available listings with consistent ID format"""
+    try:
+        # Only return active listings with consistent UUID format
+        listings = await db.listings.find({"status": "active"}).to_list(length=None)
         
-        # Insert dummy data
-        for listing in dummy_listings:
-            await db.listings.insert_one(listing)
+        # Ensure consistent ID format (use UUID 'id' field, not ObjectId '_id')
+        for listing in listings:
+            # Use the UUID 'id' field for consistency with /api/listings
+            if 'id' not in listing and '_id' in listing:
+                listing['id'] = str(listing['_id'])
+            # Always use the UUID id field if it exists
+            elif 'id' in listing:
+                listing['id'] = listing['id']  # Keep existing UUID
+            
+            # Remove MongoDB ObjectId to avoid confusion
+            listing.pop('_id', None)
         
-        # Return serialized dummy data
-        return [serialize_doc(listing) for listing in dummy_listings]
-    
-    return listings
+        # Add dummy data if empty
+        if not listings:
+            dummy_listings = [
+                {
+                    "id": generate_id(),
+                    "title": "MacBook Pro 16-inch",
+                    "description": "Excellent condition, barely used",
+                    "price": 2500.00,
+                    "category": "Electronics",
+                    "seller_id": "demo_seller_1",
+                    "status": "active",
+                    "created_at": datetime.utcnow(),
+                    "images": ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400"]
+                },
+                {
+                    "id": generate_id(),
+                    "title": "Vintage Guitar",
+                    "description": "Classic acoustic guitar with rich sound",
+                    "price": 800.00,
+                    "category": "Music",
+                    "seller_id": "demo_seller_2",
+                    "status": "active",
+                    "created_at": datetime.utcnow(),
+                    "images": ["https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400"]
+                },
+                {
+                    "id": generate_id(),
+                    "title": "Designer Handbag",
+                    "description": "Authentic luxury handbag in perfect condition",
+                    "price": 1200.00,
+                    "category": "Fashion",
+                    "seller_id": "demo_seller_3",
+                    "status": "active",
+                    "created_at": datetime.utcnow(),
+                    "images": ["https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400"]
+                }
+            ]
+            
+            # Insert dummy data
+            for listing in dummy_listings:
+                await db.listings.insert_one(listing)
+            
+            # Return dummy data with consistent ID format
+            return dummy_listings
+        
+        return listings
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to browse listings: {str(e)}")
 
 @app.get("/api/user/my-listings/{user_id}")
 async def get_my_listings(user_id: str):
