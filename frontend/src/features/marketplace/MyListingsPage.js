@@ -203,6 +203,18 @@ function MyListingsPage() {
 function MyListingCard({ listing, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showMenu && !event.target.closest('.listing-menu-container')) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showMenu]);
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'active':
@@ -234,30 +246,49 @@ function MyListingCard({ listing, onDelete }) {
         </span>
 
         {/* Action Menu */}
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-3 right-3 listing-menu-container">
           <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full hover:bg-white dark:hover:bg-gray-800 transition-all duration-200"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMenu(!showMenu);
+            }}
+            className="p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 shadow-lg"
           >
             <MoreHorizontal className="w-4 h-4 text-gray-600 dark:text-gray-300" />
           </button>
 
           {showMenu && (
-            <div className="absolute right-0 mt-2 w-48 cataloro-card-glass border border-white/20 py-2 z-10">
-              <button className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/10 flex items-center">
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 z-50 backdrop-blur-xl">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(false);
+                  // Add view details logic here
+                }}
+                className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center transition-colors duration-200"
+              >
                 <Eye className="w-4 h-4 mr-3" />
                 View Details
               </button>
-              <button className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/10 flex items-center">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(false);
+                  // Add edit logic here
+                }}
+                className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center transition-colors duration-200"
+              >
                 <Edit className="w-4 h-4 mr-3" />
                 Edit Listing
               </button>
+              <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   onDelete(listing.id);
                   setShowMenu(false);
                 }}
-                className="w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-500/10 dark:hover:bg-red-500/10 flex items-center"
+                className="w-full text-left px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center transition-colors duration-200"
               >
                 <Trash2 className="w-4 h-4 mr-3" />
                 Delete Listing
