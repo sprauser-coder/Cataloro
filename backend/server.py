@@ -314,9 +314,9 @@ async def browse_listings(
         # Apply seller type filter after enrichment (since we need seller info)
         if type != "all":
             if type == "Private":
-                enriched_listings = [l for l in enriched_listings if not l.get('seller', {}).get('is_business', False)]
+                enriched_listings = [listing for listing in enriched_listings if not listing.get('seller', {}).get('is_business', False)]
             elif type == "Business":
-                enriched_listings = [l for l in enriched_listings if l.get('seller', {}).get('is_business', False)]
+                enriched_listings = [listing for listing in enriched_listings if listing.get('seller', {}).get('is_business', False)]
         
         return enriched_listings
     except Exception as e:
