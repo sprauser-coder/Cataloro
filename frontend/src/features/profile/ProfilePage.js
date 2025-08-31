@@ -12,6 +12,7 @@ import {
   Camera, 
   Save, 
   Edit, 
+  Edit3,
   Shield, 
   Bell, 
   Eye, 
