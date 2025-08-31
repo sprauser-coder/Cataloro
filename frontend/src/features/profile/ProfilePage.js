@@ -39,12 +39,11 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
-import { useMarketplace } from '../../context/MarketplaceContext';
 
 function ProfilePage() {
   const { user, updateUser } = useAuth();
   const { showToast } = useNotifications();
-  const { allProducts, cartItems, favorites, orderHistory } = useMarketplace();
+  const { allProducts, cartItems, favorites, orderHistory, refreshListings } = useMarketplace();
   
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
