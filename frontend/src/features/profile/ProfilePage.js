@@ -1184,7 +1184,7 @@ function ProfilePage() {
 
             {/* Login History */}
             <div className="cataloro-card-glass p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Login Activity</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Login Activity</h3>
               
               <div className="space-y-3">
                 {[
