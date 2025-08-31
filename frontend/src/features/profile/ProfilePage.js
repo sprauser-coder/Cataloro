@@ -600,7 +600,7 @@ function ProfilePage() {
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Phone Verified</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Phone Verified</span>
                     <span className="flex items-center text-yellow-600">
                       <AlertCircle className="w-4 h-4 mr-1" />
                       Pending
