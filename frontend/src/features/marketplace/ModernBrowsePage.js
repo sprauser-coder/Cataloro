@@ -22,7 +22,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { marketplaceService } from '../../services/marketplaceService';
+// Removed unused import
 import { useMarketplace } from '../../context/MarketplaceContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
