@@ -208,24 +208,81 @@ async def get_profile(user_id: str):
 # Marketplace Endpoints
 @app.get("/api/marketplace/browse")
 async def browse_listings():
-    """Browse available listings with consistent ID format"""
+    """Browse available listings with seller information"""
     try:
         # Only return active listings with consistent UUID format
         listings = await db.listings.find({"status": "active"}).to_list(length=None)
         
-        # Ensure consistent ID format (use UUID 'id' field, not ObjectId '_id')
+        # Enrich listings with seller information
+        enriched_listings = []
         for listing in listings:
-            # Use the UUID 'id' field for consistency with /api/listings
+            # Ensure consistent ID format (use UUID 'id' field, not ObjectId '_id')
             if 'id' not in listing and '_id' in listing:
                 listing['id'] = str(listing['_id'])
-            # Always use the UUID id field if it exists
             elif 'id' in listing:
                 listing['id'] = listing['id']  # Keep existing UUID
             
             # Remove MongoDB ObjectId to avoid confusion
             listing.pop('_id', None)
+            
+            # Fetch seller information from users collection
+            seller_id = listing.get('seller_id')
+            if seller_id:
+                try:
+                    seller_profile = await db.users.find_one({"id": seller_id})
+                    if seller_profile:
+                        # Enrich listing with seller information
+                        listing['seller'] = {
+                            "name": seller_profile.get('username') or seller_profile.get('name') or seller_profile.get('email', 'Unknown'),
+                            "username": seller_profile.get('username') or seller_profile.get('name') or 'Unknown',
+                            "email": seller_profile.get('email', ''),
+                            "is_business": seller_profile.get('is_business', False),
+                            "business_name": seller_profile.get('company_name', ''),
+                            "verified": seller_profile.get('verified', False),
+                            "location": listing.get('address', {}).get('city', '') + 
+                                      (', ' + listing.get('address', {}).get('country', '') if listing.get('address', {}).get('country') else '') or
+                                      seller_profile.get('city', '') + 
+                                      (', ' + seller_profile.get('country', '') if seller_profile.get('country') else '') or
+                                      'Location not specified'
+                        }
+                    else:
+                        # Fallback seller info if profile not found
+                        listing['seller'] = {
+                            "name": "Unknown User",
+                            "username": "Unknown",
+                            "email": "",
+                            "is_business": False,
+                            "business_name": "",
+                            "verified": False,
+                            "location": "Location not specified"
+                        }
+                except Exception as seller_error:
+                    print(f"Error fetching seller info for {seller_id}: {seller_error}")
+                    # Fallback seller info
+                    listing['seller'] = {
+                        "name": "Unknown User",
+                        "username": "Unknown", 
+                        "email": "",
+                        "is_business": False,
+                        "business_name": "",
+                        "verified": False,
+                        "location": "Location not specified"
+                    }
+            else:
+                # No seller_id found
+                listing['seller'] = {
+                    "name": "Unknown User",
+                    "username": "Unknown",
+                    "email": "",
+                    "is_business": False,
+                    "business_name": "",
+                    "verified": False,
+                    "location": "Location not specified"
+                }
+            
+            enriched_listings.append(listing)
         
-        return listings
+        return enriched_listings
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to browse listings: {str(e)}")
 
