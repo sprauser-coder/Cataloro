@@ -998,9 +998,9 @@ class CataloroAPITester:
                 
                 if has_enriched_data:
                     print(f"   📋 Order details: {order['listing']['title']}")
-                    print(f"   👤 Seller: {order['seller']['username']}")
+                    print(f"   👤 Seller: {order['seller'].get('username', order['seller'].get('full_name', 'Unknown'))}")
                     # Contact details should be hidden until approval
-                    contact_hidden = not order['seller']['email']
+                    contact_hidden = not order['seller'].get('email', '')
                     self.log_test("Contact Details Hidden Before Approval", contact_hidden,
                                  f"Seller contact hidden: {contact_hidden}")
         
