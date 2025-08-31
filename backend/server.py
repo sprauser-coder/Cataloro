@@ -802,20 +802,26 @@ async def get_user_messages(user_id: str):
         for message in messages:
             message['_id'] = str(message['_id'])
             
-            # Add sender information
-            print(f"DEBUG: Looking for sender with ID: {message['sender_id']}")
+            # Add sender information with fallback lookup
             sender = await db.users.find_one({"id": message['sender_id']})
-            print(f"DEBUG: Sender query result: {sender}")
             if not sender:
-                # Try alternative lookup methods
-                print(f"DEBUG: Trying alternative sender lookup...")
-                all_users = await db.users.find({}).to_list(length=5)
-                print(f"DEBUG: Sample users in database: {[{k: v for k, v in user.items() if k in ['id', 'username', 'full_name']} for user in all_users]}")
+                # Try with _id in case it's stored differently
+                try:
+                    from bson import ObjectId
+                    sender = await db.users.find_one({"_id": ObjectId(message['sender_id'])})
+                except:
+                    pass
             message['sender_name'] = sender.get('full_name', sender.get('username', 'Unknown')) if sender else 'Unknown'
             
-            # Add recipient information
+            # Add recipient information with fallback lookup
             recipient = await db.users.find_one({"id": message['recipient_id']})
-            print(f"DEBUG: Looking for recipient with ID: {message['recipient_id']}, found: {recipient}")
+            if not recipient:
+                # Try with _id in case it's stored differently
+                try:
+                    from bson import ObjectId
+                    recipient = await db.users.find_one({"_id": ObjectId(message['recipient_id'])})
+                except:
+                    pass
             message['recipient_name'] = recipient.get('full_name', recipient.get('username', 'Unknown')) if recipient else 'Unknown'
             
             enriched_messages.append(message)
