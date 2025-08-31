@@ -229,8 +229,11 @@ async def browse_listings():
             seller_id = listing.get('seller_id')
             if seller_id:
                 try:
+                    print(f"DEBUG: Looking up seller_id: {seller_id}")
                     seller_profile = await db.users.find_one({"id": seller_id})
+                    print(f"DEBUG: Found seller_profile: {seller_profile is not None}")
                     if seller_profile:
+                        print(f"DEBUG: Seller profile data: {seller_profile}")
                         # Enrich listing with seller information
                         listing['seller'] = {
                             "name": seller_profile.get('username') or seller_profile.get('name') or seller_profile.get('email', 'Unknown'),
