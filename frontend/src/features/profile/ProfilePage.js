@@ -592,7 +592,7 @@ function ProfilePage() {
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Email Verified</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Email Verified</span>
                     <span className="flex items-center text-green-600">
                       <Check className="w-4 h-4 mr-1" />
                       Verified
