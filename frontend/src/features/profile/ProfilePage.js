@@ -722,7 +722,7 @@ function ProfilePage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       <Mail className="w-4 h-4 inline mr-2" />
                       Email Address
                     </label>
@@ -732,14 +732,14 @@ function ProfilePage() {
                       value={profileData.email}
                       onChange={handleInputChange}
                       disabled={!isEditing}
-                      className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                      className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 dark:bg-gray-700/80 cursor-not-allowed' : ''}`}
                       placeholder="Enter your email"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         <Phone className="w-4 h-4 inline mr-2" />
                         Phone Number
                       </label>
@@ -749,7 +749,7 @@ function ProfilePage() {
                         value={profileData.phone}
                         onChange={handleInputChange}
                         disabled={!isEditing}
-                        className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                        className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 dark:bg-gray-700/80 cursor-not-allowed' : ''}`}
                         placeholder="Enter your phone number"
                       />
                     </div>
@@ -763,7 +763,7 @@ function ProfilePage() {
                     </h4>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Street Address
                       </label>
                       <input
@@ -772,7 +772,7 @@ function ProfilePage() {
                         value={profileData.street}
                         onChange={handleInputChange}
                         disabled={!isEditing}
-                        className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                        className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 dark:bg-gray-700/80 cursor-not-allowed' : ''}`}
                         placeholder="Enter your street address"
                       />
                     </div>
