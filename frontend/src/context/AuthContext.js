@@ -199,6 +199,7 @@ export function AuthProvider({ children }) {
     register,
     logout,
     clearError,
+    updateUser,
     
     // Helpers
     isAdmin,
