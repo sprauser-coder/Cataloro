@@ -741,7 +741,7 @@ function MessagesPage() {
                   </button>
                   <button
                     onClick={handleSendMessage}
-                    disabled={!newMessage.recipient || !newMessage.content || sending}
+                    disabled={!selectedUser || !newMessage.content.trim() || sending}
                     className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-xl font-medium transition-colors flex items-center"
                   >
                     {sending ? (
