@@ -55,6 +55,7 @@ function ModernBrowsePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [messageContent, setMessageContent] = useState('');
   const [sending, setSending] = useState(false);
+  const [loadingBuyNow, setLoadingBuyNow] = useState({}); // Track loading state per item
 
   // Check if item is in favorites
   const isInFavorites = (itemId) => {
