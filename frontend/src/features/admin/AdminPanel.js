@@ -3066,10 +3066,6 @@ function ListingsTab({ showToast }) {
     const actionToPerform = action || bulkAction;
     if (!actionToPerform || selectedListings.length === 0) return;
 
-  const handleBulkAction = async (action = null) => {
-    const actionToPerform = action || bulkAction;
-    if (!actionToPerform || selectedListings.length === 0) return;
-
     // Confirm destructive actions
     if (['delete', 'reject'].includes(actionToPerform)) {
       if (!window.confirm(`Are you sure you want to ${actionToPerform} ${selectedListings.length} listings? This action cannot be undone.`)) {
