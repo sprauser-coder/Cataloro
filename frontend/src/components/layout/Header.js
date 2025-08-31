@@ -111,43 +111,115 @@ function Header() {
 
             {/* Notification Dropdown */}
             {showNotificationDropdown && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                <div className="px-4 py-2 border-b border-gray-100">
+              <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 max-h-96 overflow-y-auto">
+                <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                   <p className="text-sm font-medium text-gray-900">Notifications</p>
+                  <button
+                    onClick={() => fetchNotifications(user?.id)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                  </button>
                 </div>
                 
-                {pendingOrders > 0 ? (
-                  <Link
-                    to="/pending-sales"
-                    onClick={() => setShowNotificationDropdown(false)}
-                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100"
-                  >
-                    <div className="p-2 bg-yellow-100 rounded-lg mr-3">
-                      <Clock className="w-4 h-4 text-yellow-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium">
-                        {pendingOrders} Pending Buy Request{pendingOrders !== 1 ? 's' : ''}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        Customers want to buy your items
-                      </p>
-                    </div>
-                  </Link>
-                ) : (
+                {/* Pending Orders Section */}
+                {pendingOrders > 0 && (
+                  <div className="border-b border-gray-100">
+                    <Link
+                      to="/pending-sales"
+                      onClick={() => setShowNotificationDropdown(false)}
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      <div className="p-2 bg-yellow-100 rounded-lg mr-3">
+                        <Clock className="w-4 h-4 text-yellow-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">
+                          {pendingOrders} Pending Buy Request{pendingOrders !== 1 ? 's' : ''}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Customers want to buy your items • Click to manage
+                        </p>
+                      </div>
+                      <div className="text-xs text-blue-600 font-medium">
+                        Manage →
+                      </div>
+                    </Link>
+                  </div>
+                )}
+
+                {/* Recent Notifications */}
+                {notifications.length > 0 ? (
+                  <div className="max-h-64 overflow-y-auto">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={`flex items-start px-4 py-3 text-sm hover:bg-gray-50 border-b border-gray-50 ${
+                          !notification.is_read ? 'bg-blue-50/50' : ''
+                        }`}
+                      >
+                        <div className={`p-2 rounded-lg mr-3 ${
+                          notification.type === 'buy_request' ? 'bg-yellow-100' :
+                          notification.type === 'buy_approved' ? 'bg-green-100' :
+                          notification.type === 'buy_rejected' ? 'bg-red-100' :
+                          'bg-blue-100'
+                        }`}>
+                          {notification.type === 'buy_request' && <Clock className="w-4 h-4 text-yellow-600" />}
+                          {notification.type === 'buy_approved' && <CheckCircle className="w-4 h-4 text-green-600" />}
+                          {notification.type === 'buy_rejected' && <XCircle className="w-4 h-4 text-red-600" />}
+                          {!['buy_request', 'buy_approved', 'buy_rejected'].includes(notification.type) && 
+                            <Bell className="w-4 h-4 text-blue-600" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 truncate">
+                            {notification.title}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                            {notification.message}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {new Date(notification.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        {!notification.is_read && (
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : pendingOrders === 0 && (
                   <div className="px-4 py-6 text-center text-gray-500">
                     <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                     <p className="text-sm">No new notifications</p>
                   </div>
                 )}
 
-                <Link
-                  to={APP_ROUTES.NOTIFICATIONS}
-                  onClick={() => setShowNotificationDropdown(false)}
-                  className="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-blue-50"
-                >
-                  View All Notifications
-                </Link>
+                {/* Quick Actions */}
+                <div className="border-t border-gray-100 p-2">
+                  <div className="flex space-x-2">
+                    <Link
+                      to="/cart"
+                      onClick={() => setShowNotificationDropdown(false)}
+                      className="flex-1 text-center px-3 py-2 text-xs bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100"
+                    >
+                      View Cart
+                    </Link>
+                    <Link
+                      to="/pending-sales"
+                      onClick={() => setShowNotificationDropdown(false)}
+                      className="flex-1 text-center px-3 py-2 text-xs bg-yellow-50 text-yellow-700 rounded-md hover:bg-yellow-100"
+                    >
+                      Pending Sales
+                    </Link>
+                    <Link
+                      to={APP_ROUTES.NOTIFICATIONS}
+                      onClick={() => setShowNotificationDropdown(false)}
+                      className="flex-1 text-center px-3 py-2 text-xs bg-gray-50 text-gray-700 rounded-md hover:bg-gray-100"
+                    >
+                      View All
+                    </Link>
+                  </div>
+                </div>
               </div>
             )}
           </div>
