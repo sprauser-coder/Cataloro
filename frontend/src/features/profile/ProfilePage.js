@@ -905,7 +905,7 @@ function ProfilePage() {
                       value={profileData.bio}
                       onChange={handleInputChange}
                       disabled={!isEditing}
-                      className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 cursor-not-allowed' : ''}`}
+                      className={`cataloro-input ${!isEditing ? 'bg-gray-50/80 dark:bg-gray-700/80 cursor-not-allowed' : ''}`}
                       placeholder="Tell us about yourself..."
                     />
                     <p className="text-xs text-gray-500 mt-1">
