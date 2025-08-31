@@ -159,10 +159,59 @@ function ProfilePage() {
   }, [allProducts, orderHistory, favorites, user, profileData]);
 
   const handleInputChange = (e) => {
-    setProfileData({
-      ...profileData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setProfileData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleCityChange = (e) => {
+    const value = e.target.value;
+    setProfileData(prev => ({ ...prev, city: value }));
+
+    if (value.length > 1) {
+      // Filter popular cities based on input
+      const filtered = popularCities.filter(city => 
+        city.toLowerCase().includes(value.toLowerCase())
+      ).slice(0, 8); // Limit to 8 suggestions
+
+      setCitySuggestions(filtered);
+      setShowCitySuggestions(filtered.length > 0);
+    } else {
+      setCitySuggestions([]);
+      setShowCitySuggestions(false);
+    }
+  };
+
+  const handleCountryChange = (e) => {
+    const value = e.target.value;
+    setProfileData(prev => ({ ...prev, country: value }));
+
+    if (value.length > 1) {
+      // Filter popular countries based on input
+      const filtered = popularCountries.filter(country => 
+        country.toLowerCase().includes(value.toLowerCase())
+      ).slice(0, 8); // Limit to 8 suggestions
+
+      setCountrySuggestions(filtered);
+      setShowCountrySuggestions(filtered.length > 0);
+    } else {
+      setCountrySuggestions([]);
+      setShowCountrySuggestions(false);
+    }
+  };
+
+  const selectCity = (city) => {
+    setProfileData(prev => ({ ...prev, city: city }));
+    setShowCitySuggestions(false);
+    setCitySuggestions([]);
+  };
+
+  const selectCountry = (country) => {
+    setProfileData(prev => ({ ...prev, country: country }));
+    setShowCountrySuggestions(false);
+    setCountrySuggestions([]);
   };
 
   const handlePreferenceChange = (key, value) => {
