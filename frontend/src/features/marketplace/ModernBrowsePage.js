@@ -55,7 +55,8 @@ function ModernBrowsePage() {
     activeFilters: globalFilters,
     sortBy: globalSortBy,
     viewMode: globalViewMode,
-    isLoading
+    isLoading,
+    refreshListings: contextRefreshListings
   } = useMarketplace();
 
   // Message modal state
