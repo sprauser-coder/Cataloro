@@ -104,6 +104,33 @@ function ProfilePage() {
     lastActive: ''
   });
 
+  // Popular European cities for suggestions
+  const popularCities = [
+    // Germany
+    'Berlin', 'Munich', 'Hamburg', 'Frankfurt', 'Cologne', 'Stuttgart', 'Düsseldorf', 'Dortmund', 'Essen', 'Bremen',
+    // France  
+    'Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille',
+    // Netherlands
+    'Amsterdam', 'Rotterdam', 'The Hague', 'Utrecht', 'Eindhoven', 'Tilburg', 'Groningen', 'Almere',
+    // Belgium
+    'Brussels', 'Antwerp', 'Ghent', 'Bruges', 'Leuven', 'Liège',
+    // Spain
+    'Madrid', 'Barcelona', 'Valencia', 'Seville', 'Bilbao', 'Málaga', 'Zaragoza',
+    // Italy
+    'Rome', 'Milan', 'Naples', 'Turin', 'Palermo', 'Genoa', 'Bologna', 'Florence', 'Venice',
+    // United Kingdom
+    'London', 'Birmingham', 'Manchester', 'Glasgow', 'Liverpool', 'Leeds', 'Sheffield', 'Edinburgh', 'Bristol', 'Cardiff',
+    // Other European cities
+    'Vienna', 'Zurich', 'Geneva', 'Copenhagen', 'Stockholm', 'Oslo', 'Helsinki', 'Prague', 'Warsaw', 'Budapest', 'Dublin', 'Lisbon', 'Athens'
+  ];
+
+  // Popular countries
+  const popularCountries = [
+    'Germany', 'France', 'Netherlands', 'Belgium', 'Spain', 'Italy', 'United Kingdom', 'Austria', 'Switzerland',
+    'Denmark', 'Sweden', 'Norway', 'Finland', 'Czech Republic', 'Poland', 'Hungary', 'Ireland', 'Portugal', 'Greece',
+    'Luxembourg', 'Slovenia', 'Slovakia', 'Estonia', 'Latvia', 'Lithuania', 'Malta', 'Cyprus', 'Croatia', 'Romania', 'Bulgaria'
+  ];
+
   // Calculate real statistics from marketplace data
   useEffect(() => {
     const calculateStats = () => {
