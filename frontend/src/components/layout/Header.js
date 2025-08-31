@@ -11,22 +11,39 @@ import { UI_CONFIG, APP_ROUTES } from '../../config/directions';
 function Header() {
   const [user, setUser] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [pendingOrders, setPendingOrders] = useState(0);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
 
   useEffect(() => {
     // Get user from localStorage
     const userData = localStorage.getItem('cataloro_user');
     if (userData) {
       try {
-        setUser(JSON.parse(userData));
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        
+        // Fetch pending orders count for sellers
+        fetchPendingOrdersCount(parsedUser.id);
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
     }
-
-    // For now, set dummy notification count
-    setUnreadCount(2);
   }, []);
+
+  const fetchPendingOrdersCount = async (userId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/seller/${userId}`);
+      if (response.ok) {
+        const orders = await response.json();
+        setPendingOrders(orders.length);
+        setUnreadCount(orders.length); // Use pending orders as notification count
+      }
+    } catch (error) {
+      console.error('Error fetching pending orders:', error);
+      setUnreadCount(0); // Fallback to 0 notifications
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('cataloro_token');
