@@ -391,9 +391,12 @@ export function MarketplaceProvider({ children }) {
         subcategory: 'Laptops',
         seller: {
           name: 'TechGuru123',
+          username: 'TechGuru123',
+          email: 'techguru123@example.com',
           rating: 4.9,
           reviews: 156,
           verified: true,
+          is_business: false, // Private seller
           location: 'San Francisco, CA'
         },
         images: [
