@@ -286,6 +286,10 @@
 - **Agent:** testing  
   **Message:** Backend testing completed successfully. All 12 API endpoints tested and working properly. MongoDB database operational with proper data persistence. Authentication system fully functional with demo login capabilities. CORS configuration working (minor header issue doesn't affect functionality). All services running healthy. Backend is production-ready and fully integrated with frontend URL configuration.
 
+- **Agent:** main  
+  **Date:** 2025-08-31 09:18:00 UTC  
+  **Message:** ✅ CRITICAL BUG FIX COMPLETED - Status Filtering Inconsistency Resolved. **Root Cause Identified:** Frontend was calling wrong delete endpoint `/api/marketplace/listings/{id}` (404 error) instead of correct `/api/listings/{id}`. **Fix Applied:** Updated frontend configuration in `/app/frontend/src/config/directions.js` to point MARKETPLACE.LISTINGS to correct endpoint `/api/listings`. **Backend Testing Verified:** Delete operation fix confirmed working - all 7 tests passed including create listing, verify in browse/my-listings, delete operation, and verify removal from both endpoints. **Frontend Testing Verified:** Screenshots confirm My Listings page working correctly with proper delete menu functionality. **Impact:** Users can now successfully delete listings and they will be removed from both Browse and My Listings pages consistently. The perceived "inconsistency" was caused by failed delete operations that weren't actually deleting listings from the database.
+
 - **Agent:** testing  
   **Message:** Comprehensive test coverage completed: Health check ✅, Authentication (login/register/profile) ✅, Marketplace endpoints ✅, Admin dashboard ✅, Database operations ✅, Service status ✅. No critical issues found. Ready for frontend integration testing if needed.
 
