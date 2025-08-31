@@ -490,6 +490,7 @@ function ModernBrowsePage() {
               item={item}
               viewMode={viewMode}
               onAddToCart={handleAddToCart}
+              onBuyNow={handleBuyNow}
               onAddToFavorites={handleAddToFavorites}
               onFavoriteToggle={handleFavoriteToggle}
               onMessageSeller={handleMessageSeller}
