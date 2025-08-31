@@ -107,6 +107,16 @@ class Notification(BaseModel):
     is_read: bool = False
     created_at: datetime = None
 
+class Order(BaseModel):
+    id: str = None
+    buyer_id: str
+    seller_id: str
+    listing_id: str
+    status: str = "pending"  # pending, approved, rejected, expired, cancelled
+    created_at: datetime = None
+    expires_at: datetime = None
+    approved_at: datetime = None
+
 # Utility Functions
 def generate_id():
     return str(uuid.uuid4())
