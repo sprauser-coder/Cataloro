@@ -35,8 +35,8 @@ function CreateListingPage() {
     title: '',
     description: '',
     price: '',
-    category: '',
-    condition: '',
+    category: 'General', // Default category
+    condition: 'New', // Default condition
     location: '',
     shipping: 'pickup',
     shipping_cost: '',
