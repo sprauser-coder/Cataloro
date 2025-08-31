@@ -3334,20 +3334,20 @@ function ListingsTab({ showToast }) {
     setShowConfirmModal(false);
     
     if (confirmAction && confirmListings.length > 0) {
-      // Temporarily set selectedListings to confirmListings for execution
+      console.log('🎯 Calling handleBulkAction directly with confirmed listings');
+      
+      // Save current selected listings
       const originalSelected = selectedListings;
-      console.log('🔄 Setting selectedListings to:', confirmListings);
+      
+      // Temporarily set selectedListings to confirmListings for the bulk action
       setSelectedListings(confirmListings);
       
-      // Wait a moment for state to update
-      setTimeout(async () => {
-        console.log('🎯 Calling handleBulkAction with:', confirmAction);
-        await handleBulkAction(confirmAction);
-        
-        // Reset confirmation state
-        setConfirmAction(null);
-        setConfirmListings([]);
-      }, 100);
+      // Execute the bulk action directly
+      await handleBulkAction(confirmAction);
+      
+      // Reset confirmation state
+      setConfirmAction(null);
+      setConfirmListings([]);
     } else {
       console.log('❌ No confirmAction or confirmListings');
     }
