@@ -133,7 +133,11 @@ async def register_user(user_data: dict):
         "full_name": user_data["full_name"],
         "role": "user",
         "created_at": datetime.utcnow(),
-        "is_active": True
+        "is_active": True,
+        # Business account fields
+        "is_business": user_data.get("is_business", False),
+        "business_name": user_data.get("business_name", ""),
+        "company_name": user_data.get("company_name", "")
     }
     
     # Check if user exists
