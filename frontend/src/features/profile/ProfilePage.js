@@ -80,8 +80,10 @@ function ProfilePage() {
   // Address suggestions state
   const [citySuggestions, setCitySuggestions] = useState([]);
   const [countrySuggestions, setCountrySuggestions] = useState([]);
+  const [businessCountrySuggestions, setBusinessCountrySuggestions] = useState([]);
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
   const [showCountrySuggestions, setShowCountrySuggestions] = useState(false);
+  const [showBusinessCountrySuggestions, setShowBusinessCountrySuggestions] = useState(false);
 
   const [preferences, setPreferences] = useState({
     emailNotifications: true,
