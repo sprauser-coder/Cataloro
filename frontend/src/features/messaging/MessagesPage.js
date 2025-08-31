@@ -81,6 +81,34 @@ function MessagesPage() {
     element.style.height = Math.min(element.scrollHeight, 120) + 'px';
   };
 
+  // User search functionality
+  const handleUserSearch = async (query) => {
+    setUserSearchQuery(query);
+    
+    if (query.trim().length < 2) {
+      setUserSearchResults([]);
+      setShowUserSearch(false);
+      return;
+    }
+
+    try {
+      const results = await liveService.searchUsers(query);
+      setUserSearchResults(results);
+      setShowUserSearch(results.length > 0);
+    } catch (error) {
+      console.error('Error searching users:', error);
+      setUserSearchResults([]);
+      setShowUserSearch(false);
+    }
+  };
+
+  const selectUser = (selectedUserData) => {
+    setSelectedUser(selectedUserData);
+    setNewMessage(prev => ({ ...prev, recipient: selectedUserData.id }));
+    setUserSearchQuery(selectedUserData.display_name || selectedUserData.username);
+    setShowUserSearch(false);
+  };
+
   const loadMessages = async () => {
     if (!user) return;
     
