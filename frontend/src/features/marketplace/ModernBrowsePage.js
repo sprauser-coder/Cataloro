@@ -366,7 +366,7 @@ function ModernBrowsePage() {
               <select
                 value={filters.type}
                 onChange={(e) => updateFilters({...filters, type: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white h-10"
               >
                 <option value="all">All Types</option>
                 <option value="Private">Private</option>
@@ -379,7 +379,7 @@ function ModernBrowsePage() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Price Range (€)
               </label>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 h-10">
                 <div className="flex-1">
                   <input
                     type="number"
@@ -387,10 +387,10 @@ function ModernBrowsePage() {
                     min="0"
                     value={filters.priceFrom}
                     onChange={(e) => updateFilters({...filters, priceFrom: parseInt(e.target.value) || 0})}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm h-full"
                   />
                 </div>
-                <span className="text-gray-500 dark:text-gray-400">-</span>
+                <span className="text-gray-500 dark:text-gray-400 flex-shrink-0">-</span>
                 <div className="flex-1">
                   <input
                     type="number"
@@ -398,7 +398,7 @@ function ModernBrowsePage() {
                     min="0"
                     value={filters.priceTo}
                     onChange={(e) => updateFilters({...filters, priceTo: parseInt(e.target.value) || 10000})}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm h-full"
                   />
                 </div>
               </div>
@@ -411,7 +411,7 @@ function ModernBrowsePage() {
             <div className="flex items-end">
               <button
                 onClick={() => updateFilters({type: 'all', priceFrom: 0, priceTo: 10000, location: 'all', rating: 0})}
-                className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors h-10"
               >
                 Clear Filters
               </button>
