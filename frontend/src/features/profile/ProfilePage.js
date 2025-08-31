@@ -1167,7 +1167,7 @@ function ProfilePage() {
               
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-gray-700">Add an extra layer of security to your account</p>
+                  <p className="text-gray-700 dark:text-gray-300">Add an extra layer of security to your account</p>
                   <p className="text-sm text-gray-500">Use an authenticator app to generate verification codes</p>
                 </div>
                 <div className="text-right">
