@@ -1102,7 +1102,7 @@ async def create_buy_request(order_data: dict):
         # Create the order
         order_id = generate_id()
         current_time = datetime.utcnow()
-        expires_at = datetime.utcnow().replace(microsecond=0) + datetime.timedelta(hours=48)  # 48 hours from now
+        expires_at = datetime.utcnow().replace(microsecond=0) + timedelta(hours=48)  # 48 hours from now
         
         order = {
             "id": order_id,
