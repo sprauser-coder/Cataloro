@@ -618,12 +618,7 @@ function ProductCard({ item, viewMode, onAddToCart, onFavoriteToggle, onMessageS
     fetchPriceSuggestion();
   }, [item.catalyst_id, item.title, item.category]);
 
-  const handleNextImage = (e) => {
-    e.stopPropagation(); // Prevent navigation when clicking image navigation
-    if (item.images && item.images.length > 1) {
-      setCurrentImageIndex((prev) => (prev + 1) % item.images.length);
-    }
-  };
+  // Removed unused function
 
   const handleCardClick = () => {
     navigate(`/product/${item.id}`);
