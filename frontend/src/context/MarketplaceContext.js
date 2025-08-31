@@ -734,8 +734,15 @@ export function MarketplaceProvider({ children }) {
     },
     
     // Search and filter actions
-    setSearchQuery: (query) => {
+    setSearchQuery: async (query) => {
       dispatch({ type: ACTIONS.SET_SEARCH_QUERY, payload: query });
+      
+      // If we have active backend filters, reload with them and then apply search locally
+      if (state.activeFilters.type !== 'all' || state.activeFilters.priceFrom > 0 || state.activeFilters.priceTo < 10000) {
+        await loadInitialProducts(state.activeFilters);
+      }
+      
+      // Apply search and sorting locally
       applyFiltersAndSearch(query, state.activeFilters, state.sortBy);
     },
     
