@@ -269,6 +269,21 @@ class LiveService {
       throw error;
     }
   }
+
+  async searchUsers(query) {
+    try {
+      const response = await fetch(`${this.baseURL}/users/search?q=${encodeURIComponent(query)}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error searching users:', error);
+      throw error;
+    }
+  }
 }
 
 export const liveService = new LiveService();
