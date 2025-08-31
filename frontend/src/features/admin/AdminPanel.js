@@ -3017,66 +3017,46 @@ function ListingsTab({ showToast }) {
       setLoading(true);
       console.log('🔄 Fetching listings from backend...');
       
-      // Try to fetch from actual backend API first
-      try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings`);
-        if (response.ok) {
-          const backendData = await response.json();
-          console.log('📊 Backend listings response:', backendData);
-          
-          // Handle different response formats
-          let listingsArray = [];
-          if (Array.isArray(backendData)) {
-            listingsArray = backendData;
-          } else if (backendData.listings && Array.isArray(backendData.listings)) {
-            listingsArray = backendData.listings;
-          }
-          
-          // Convert backend listings to admin format
-          const backendListings = listingsArray.map((listing, index) => ({
-            id: listing.id || listing._id || `backend-${index}`,
-            title: listing.title,
-            price: listing.price,
-            category: listing.category || 'Unknown',
-            status: listing.status || 'active',
-            seller: listing.seller_id || 'Unknown Seller',
-            created_date: listing.created_at ? new Date(listing.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-            views: listing.views || Math.floor(Math.random() * 1000),
-            image: listing.images?.[0] || listing.image,
-            description: listing.description,
-            condition: listing.condition || 'New',
-            location: listing.location || 'Unknown Location'
-          }));
-          
-          console.log('✅ Successfully loaded', backendListings.length, 'listings from backend');
-          setListings(backendListings);
-          return; // Exit early if backend fetch was successful
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings`);
+      if (response.ok) {
+        const backendData = await response.json();
+        console.log('📊 Backend listings response:', backendData);
+        
+        // Handle different response formats
+        let listingsArray = [];
+        if (Array.isArray(backendData)) {
+          listingsArray = backendData;
+        } else if (backendData.listings && Array.isArray(backendData.listings)) {
+          listingsArray = backendData.listings;
         }
-      } catch (backendError) {
-        console.log('⚠️ Backend fetch failed, falling back to marketplace data:', backendError.message);
+        
+        // Convert backend listings to admin format
+        const backendListings = listingsArray.map((listing, index) => ({
+          id: listing.id || listing._id || `backend-${index}`,
+          title: listing.title,
+          price: listing.price,
+          category: listing.category || 'Unknown',
+          status: listing.status || 'active',
+          seller: listing.seller_id || 'Unknown Seller',
+          created_date: listing.created_at ? new Date(listing.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          views: listing.views || Math.floor(Math.random() * 1000),
+          image: listing.images?.[0] || listing.image,
+          description: listing.description,
+          condition: listing.condition || 'New',
+          location: listing.location || 'Unknown Location'
+        }));
+        
+        console.log('✅ Successfully loaded', backendListings.length, 'listings from backend');
+        setListings(backendListings);
+      } else {
+        console.error('❌ Backend fetch failed with status:', response.status);
+        showToast?.('Failed to load listings from backend', 'error');
+        setListings([]); // Set empty array instead of falling back to marketplace data
       }
-      
-      // Fallback to marketplace data if backend is not available
-      console.log('🔄 Using marketplace data as fallback...');
-      const listingsData = allProducts.map((product, index) => ({
-        id: product.id || `listing-${index}`,
-        title: product.title || product.name,
-        price: product.price,
-        category: product.category || 'Electronics',
-        status: product.inStock !== false ? 'active' : 'inactive',
-        seller: product.seller?.name || (typeof product.seller === 'string' ? product.seller : 'Unknown Seller'),
-        created_date: product.created_date || new Date().toISOString().split('T')[0],
-        views: product.views || Math.floor(Math.random() * 1000),
-        image: product.image,
-        description: product.description,
-        condition: product.condition || 'New',
-        location: product.location || 'New York, NY'
-      }));
-      setListings(listingsData);
-      console.log('✅ Loaded', listingsData.length, 'listings from marketplace fallback');
     } catch (error) {
       console.error('❌ Error fetching listings:', error);
-      showToast?.('Error loading listings', 'error');
+      showToast?.('Error loading listings from backend', 'error');
+      setListings([]); // Set empty array instead of falling back to marketplace data
     } finally {
       setLoading(false);
     }
