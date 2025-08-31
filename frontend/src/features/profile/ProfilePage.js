@@ -1263,7 +1263,7 @@ function ProfilePage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Currency</label>
                   <select
                     value={preferences.currency}
                     onChange={(e) => handlePreferenceChange('currency', e.target.value)}
