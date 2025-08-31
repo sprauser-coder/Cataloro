@@ -3192,7 +3192,7 @@ function ListingsTab({ showToast }) {
           
           await Promise.all(duplicatePromises);
           // Reload listings to get the new ones with proper backend IDs
-          await loadListings();
+          await fetchListings();
           showToast?.(`${selectedListings.length} listings duplicated`, 'success');
           break;
         case 'export':
