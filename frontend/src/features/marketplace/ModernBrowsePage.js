@@ -133,6 +133,17 @@ function ModernBrowsePage() {
     }
   };
 
+  // Refresh listings function
+  const refreshListings = async () => {
+    try {
+      // This will trigger a refresh through the marketplace context
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to refresh listings:', error);
+      showToast('Failed to refresh listings', 'error');
+    }
+  };
+
   const [showFilters, setShowFilters] = useState(false);
   const [heroContent, setHeroContent] = useState({
     title: 'Discover Amazing Products',
