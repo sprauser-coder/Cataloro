@@ -859,6 +859,404 @@ class CataloroAPITester:
         print(f"\n📊 add_info Integration Test Summary completed")
         return True
 
+    def test_order_management_system(self):
+        """Test comprehensive order management system functionality"""
+        print("\n🛒 Testing Order Management System...")
+        
+        if not self.regular_user or not self.admin_user:
+            print("❌ Order Management - SKIPPED (Need both regular user and admin)")
+            return False
+        
+        # Store test data
+        test_listing_id = None
+        test_order_id = None
+        
+        # Test 1: Create a test listing for order testing
+        print("\n1️⃣ Creating test listing for order management...")
+        test_listing = {
+            "title": "Order Test Listing - Premium Headphones",
+            "description": "High-quality wireless headphones for order management testing. Excellent sound quality.",
+            "price": 299.99,
+            "category": "Electronics",
+            "condition": "New",
+            "seller_id": self.admin_user['id'],  # Admin is seller
+            "images": ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"],
+            "tags": ["wireless", "headphones", "premium"],
+            "features": ["Noise cancellation", "Bluetooth 5.0", "30-hour battery"]
+        }
+        
+        success_create, create_response = self.run_test(
+            "Create Test Listing for Orders",
+            "POST",
+            "api/listings",
+            200,
+            data=test_listing
+        )
+        
+        if not success_create or 'listing_id' not in create_response:
+            print("❌ Failed to create test listing - stopping order tests")
+            return False
+        
+        test_listing_id = create_response['listing_id']
+        print(f"   ✅ Created test listing with ID: {test_listing_id}")
+        
+        # Test 2: Create buy request (POST /api/orders/create)
+        print("\n2️⃣ Testing create buy request...")
+        order_data = {
+            "listing_id": test_listing_id,
+            "buyer_id": self.regular_user['id']  # Regular user is buyer
+        }
+        
+        success_order, order_response = self.run_test(
+            "Create Buy Request",
+            "POST",
+            "api/orders/create",
+            200,
+            data=order_data
+        )
+        
+        if success_order and 'order_id' in order_response:
+            test_order_id = order_response['order_id']
+            print(f"   ✅ Created buy request with ID: {test_order_id}")
+            print(f"   ⏰ Expires at: {order_response.get('expires_at', 'N/A')}")
+        else:
+            print("❌ Failed to create buy request")
+            return False
+        
+        # Test 3: Test first-come-first-served (duplicate request should fail)
+        print("\n3️⃣ Testing first-come-first-served (duplicate request)...")
+        success_duplicate, duplicate_response = self.run_test(
+            "Duplicate Buy Request (Should Fail)",
+            "POST",
+            "api/orders/create",
+            409,  # Expecting 409 Conflict
+            data=order_data
+        )
+        
+        if success_duplicate:
+            print("   ✅ Duplicate request properly rejected with 409 status")
+        
+        # Test 4: Test cannot buy own listing
+        print("\n4️⃣ Testing cannot buy own listing...")
+        own_listing_data = {
+            "listing_id": test_listing_id,
+            "buyer_id": self.admin_user['id']  # Admin trying to buy own listing
+        }
+        
+        success_own, own_response = self.run_test(
+            "Buy Own Listing (Should Fail)",
+            "POST",
+            "api/orders/create",
+            400,  # Expecting 400 Bad Request
+            data=own_listing_data
+        )
+        
+        if success_own:
+            print("   ✅ Own listing purchase properly rejected with 400 status")
+        
+        # Test 5: Get seller's pending orders (GET /api/orders/seller/{seller_id})
+        print("\n5️⃣ Testing get seller's pending orders...")
+        success_seller_orders, seller_orders_response = self.run_test(
+            "Get Seller Pending Orders",
+            "GET",
+            f"api/orders/seller/{self.admin_user['id']}",
+            200
+        )
+        
+        if success_seller_orders:
+            print(f"   ✅ Found {len(seller_orders_response)} pending orders for seller")
+            # Verify enriched data
+            if seller_orders_response:
+                order = seller_orders_response[0]
+                required_fields = ['id', 'status', 'listing', 'buyer']
+                has_enriched_data = all(field in order for field in required_fields)
+                self.log_test("Seller Orders Enriched Data", has_enriched_data,
+                             f"Enriched order data present: {has_enriched_data}")
+                
+                if has_enriched_data:
+                    print(f"   📋 Order details: {order['listing']['title']}")
+                    print(f"   👤 Buyer: {order['buyer']['username']}")
+        
+        # Test 6: Get buyer's orders (GET /api/orders/buyer/{buyer_id})
+        print("\n6️⃣ Testing get buyer's orders...")
+        success_buyer_orders, buyer_orders_response = self.run_test(
+            "Get Buyer Orders",
+            "GET",
+            f"api/orders/buyer/{self.regular_user['id']}",
+            200
+        )
+        
+        if success_buyer_orders:
+            print(f"   ✅ Found {len(buyer_orders_response)} orders for buyer")
+            # Verify enriched data
+            if buyer_orders_response:
+                order = buyer_orders_response[0]
+                required_fields = ['id', 'status', 'listing', 'seller']
+                has_enriched_data = all(field in order for field in required_fields)
+                self.log_test("Buyer Orders Enriched Data", has_enriched_data,
+                             f"Enriched order data present: {has_enriched_data}")
+                
+                if has_enriched_data:
+                    print(f"   📋 Order details: {order['listing']['title']}")
+                    print(f"   👤 Seller: {order['seller']['username']}")
+                    # Contact details should be hidden until approval
+                    contact_hidden = not order['seller']['email']
+                    self.log_test("Contact Details Hidden Before Approval", contact_hidden,
+                                 f"Seller contact hidden: {contact_hidden}")
+        
+        # Test 7: Approve buy request (PUT /api/orders/{order_id}/approve)
+        print("\n7️⃣ Testing approve buy request...")
+        approval_data = {
+            "seller_id": self.admin_user['id']
+        }
+        
+        success_approve, approve_response = self.run_test(
+            "Approve Buy Request",
+            "PUT",
+            f"api/orders/{test_order_id}/approve",
+            200,
+            data=approval_data
+        )
+        
+        if success_approve:
+            print("   ✅ Buy request approved successfully")
+            
+            # Verify listing status changed to sold
+            success_listing_check, listing_check_response = self.run_test(
+                "Check Listing Status After Approval",
+                "GET",
+                f"api/listings/{test_listing_id}",
+                200
+            )
+            
+            if success_listing_check:
+                listing_status = listing_check_response.get('status')
+                listing_sold = listing_status == 'sold'
+                self.log_test("Listing Marked as Sold", listing_sold,
+                             f"Listing status: {listing_status} (expected: sold)")
+            
+            # Check if buyer now has contact details
+            success_buyer_contact, buyer_contact_response = self.run_test(
+                "Get Buyer Orders After Approval",
+                "GET",
+                f"api/orders/buyer/{self.regular_user['id']}",
+                200
+            )
+            
+            if success_buyer_contact and buyer_contact_response:
+                approved_order = None
+                for order in buyer_contact_response:
+                    if order['id'] == test_order_id:
+                        approved_order = order
+                        break
+                
+                if approved_order:
+                    contact_revealed = bool(approved_order['seller']['email'])
+                    self.log_test("Contact Details Revealed After Approval", contact_revealed,
+                                 f"Seller contact revealed: {contact_revealed}")
+        
+        # Test 8: Test reject functionality with a new order
+        print("\n8️⃣ Testing reject buy request...")
+        
+        # Create another test listing for rejection test
+        reject_test_listing = {
+            "title": "Reject Test Listing - Gaming Mouse",
+            "description": "Gaming mouse for rejection testing.",
+            "price": 89.99,
+            "category": "Electronics",
+            "condition": "New",
+            "seller_id": self.admin_user['id'],
+            "images": ["https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400"]
+        }
+        
+        success_reject_listing, reject_listing_response = self.run_test(
+            "Create Listing for Rejection Test",
+            "POST",
+            "api/listings",
+            200,
+            data=reject_test_listing
+        )
+        
+        if success_reject_listing:
+            reject_listing_id = reject_listing_response['listing_id']
+            
+            # Create order for rejection
+            reject_order_data = {
+                "listing_id": reject_listing_id,
+                "buyer_id": self.regular_user['id']
+            }
+            
+            success_reject_order, reject_order_response = self.run_test(
+                "Create Order for Rejection Test",
+                "POST",
+                "api/orders/create",
+                200,
+                data=reject_order_data
+            )
+            
+            if success_reject_order:
+                reject_order_id = reject_order_response['order_id']
+                
+                # Reject the order
+                rejection_data = {
+                    "seller_id": self.admin_user['id']
+                }
+                
+                success_reject, reject_response = self.run_test(
+                    "Reject Buy Request",
+                    "PUT",
+                    f"api/orders/{reject_order_id}/reject",
+                    200,
+                    data=rejection_data
+                )
+                
+                if success_reject:
+                    print("   ✅ Buy request rejected successfully")
+                    
+                    # Verify listing is still active (not sold)
+                    success_listing_active, listing_active_response = self.run_test(
+                        "Check Listing Still Active After Rejection",
+                        "GET",
+                        f"api/listings/{reject_listing_id}",
+                        200
+                    )
+                    
+                    if success_listing_active:
+                        listing_status = listing_active_response.get('status')
+                        listing_active = listing_status == 'active'
+                        self.log_test("Listing Remains Active After Rejection", listing_active,
+                                     f"Listing status: {listing_status} (expected: active)")
+            
+            # Cleanup reject test listing
+            self.run_test(
+                "Cleanup Reject Test Listing",
+                "DELETE",
+                f"api/listings/{reject_listing_id}",
+                200
+            )
+        
+        # Test 9: Test cancel functionality
+        print("\n9️⃣ Testing cancel buy request...")
+        
+        # Create another test listing for cancellation test
+        cancel_test_listing = {
+            "title": "Cancel Test Listing - Keyboard",
+            "description": "Mechanical keyboard for cancellation testing.",
+            "price": 149.99,
+            "category": "Electronics",
+            "condition": "Used - Good",
+            "seller_id": self.admin_user['id'],
+            "images": ["https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400"]
+        }
+        
+        success_cancel_listing, cancel_listing_response = self.run_test(
+            "Create Listing for Cancellation Test",
+            "POST",
+            "api/listings",
+            200,
+            data=cancel_test_listing
+        )
+        
+        if success_cancel_listing:
+            cancel_listing_id = cancel_listing_response['listing_id']
+            
+            # Create order for cancellation
+            cancel_order_data = {
+                "listing_id": cancel_listing_id,
+                "buyer_id": self.regular_user['id']
+            }
+            
+            success_cancel_order, cancel_order_response = self.run_test(
+                "Create Order for Cancellation Test",
+                "POST",
+                "api/orders/create",
+                200,
+                data=cancel_order_data
+            )
+            
+            if success_cancel_order:
+                cancel_order_id = cancel_order_response['order_id']
+                
+                # Cancel the order (buyer action)
+                cancellation_data = {
+                    "buyer_id": self.regular_user['id']
+                }
+                
+                success_cancel, cancel_response = self.run_test(
+                    "Cancel Buy Request",
+                    "PUT",
+                    f"api/orders/{cancel_order_id}/cancel",
+                    200,
+                    data=cancellation_data
+                )
+                
+                if success_cancel:
+                    print("   ✅ Buy request cancelled successfully")
+            
+            # Cleanup cancel test listing
+            self.run_test(
+                "Cleanup Cancel Test Listing",
+                "DELETE",
+                f"api/listings/{cancel_listing_id}",
+                200
+            )
+        
+        # Test 10: Test expired order cleanup
+        print("\n🔟 Testing expired order cleanup...")
+        success_cleanup, cleanup_response = self.run_test(
+            "Cleanup Expired Orders",
+            "POST",
+            "api/orders/cleanup-expired",
+            200
+        )
+        
+        if success_cleanup:
+            cleaned_count = cleanup_response.get('message', '').split()
+            print(f"   ✅ Cleanup completed: {cleanup_response.get('message', 'Success')}")
+        
+        # Test 11: Test notifications were created
+        print("\n1️⃣1️⃣ Testing order notifications...")
+        
+        # Check seller notifications
+        success_seller_notif, seller_notif_response = self.run_test(
+            "Check Seller Notifications",
+            "GET",
+            f"api/user/notifications/{self.admin_user['id']}",
+            200
+        )
+        
+        if success_seller_notif:
+            buy_request_notifs = [n for n in seller_notif_response if n.get('type') == 'buy_request']
+            self.log_test("Seller Buy Request Notifications", len(buy_request_notifs) > 0,
+                         f"Found {len(buy_request_notifs)} buy request notifications")
+        
+        # Check buyer notifications
+        success_buyer_notif, buyer_notif_response = self.run_test(
+            "Check Buyer Notifications",
+            "GET",
+            f"api/user/notifications/{self.regular_user['id']}",
+            200
+        )
+        
+        if success_buyer_notif:
+            approval_notifs = [n for n in buyer_notif_response if n.get('type') == 'buy_approved']
+            rejection_notifs = [n for n in buyer_notif_response if n.get('type') == 'buy_rejected']
+            self.log_test("Buyer Order Notifications", len(approval_notifs) > 0 or len(rejection_notifs) > 0,
+                         f"Found {len(approval_notifs)} approval + {len(rejection_notifs)} rejection notifications")
+        
+        # Cleanup main test listing
+        if test_listing_id:
+            self.run_test(
+                "Cleanup Main Test Listing",
+                "DELETE",
+                f"api/listings/{test_listing_id}",
+                200
+            )
+        
+        # Summary
+        print(f"\n📊 Order Management System Test Summary completed")
+        return True
+
     def test_listing_crud_operations(self):
         """Test comprehensive listing CRUD operations"""
         print("\n🔧 Testing Listing CRUD Operations...")
