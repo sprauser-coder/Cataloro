@@ -33,7 +33,6 @@ function ModernBrowsePage() {
   const { showToast } = useNotifications();
   // Use marketplace context
   const {
-    allProducts,
     filteredProducts,
     addToCart,
     addToFavorites,
