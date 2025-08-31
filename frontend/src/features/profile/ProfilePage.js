@@ -277,6 +277,9 @@ function ProfilePage() {
 
   const handleSaveProfile = async () => {
     try {
+      // Check if account type changed
+      const accountTypeChanged = user?.is_business !== profileData.is_business;
+      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -292,6 +295,21 @@ function ProfilePage() {
       
       setIsEditing(false);
       showToast('Profile updated successfully!', 'success');
+      
+      // If account type changed, refresh marketplace listings to update badges
+      if (accountTypeChanged && refreshListings) {
+        console.log('🔄 Account type changed, refreshing marketplace listings...');
+        showToast('Refreshing listings to update badges...', 'info');
+        setTimeout(async () => {
+          try {
+            await refreshListings();
+            showToast('Listings updated with new account type!', 'success');
+          } catch (error) {
+            console.error('Failed to refresh listings:', error);
+            showToast('Please refresh the browse page to see updated badges', 'warning');
+          }
+        }, 1500); // Small delay to ensure profile update is complete
+      }
     } catch (error) {
       showToast('Failed to update profile. Please try again.', 'error');
     }
