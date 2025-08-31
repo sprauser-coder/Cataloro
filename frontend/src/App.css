@@ -359,9 +359,31 @@ body:not(.dark) {
   color: white !important;
 }
 
+/* Ensure ALL cataloro-input fields have white text in dark mode */
 .dark .cataloro-input,
 .dark input.cataloro-input,
-.dark textarea.cataloro-input {
+.dark textarea.cataloro-input,
+.dark select.cataloro-input {
+  color: white !important;
+}
+
+/* Ensure white text for all states */
+.dark .cataloro-input:enabled,
+.dark .cataloro-input:disabled,
+.dark .cataloro-input:focus,
+.dark .cataloro-input:hover,
+.dark input.cataloro-input:enabled,
+.dark input.cataloro-input:disabled,
+.dark input.cataloro-input:focus,
+.dark input.cataloro-input:hover,
+.dark textarea.cataloro-input:enabled,
+.dark textarea.cataloro-input:disabled,
+.dark textarea.cataloro-input:focus,
+.dark textarea.cataloro-input:hover,
+.dark select.cataloro-input:enabled,
+.dark select.cataloro-input:disabled,
+.dark select.cataloro-input:focus,
+.dark select.cataloro-input:hover {
   color: white !important;
 }
 
