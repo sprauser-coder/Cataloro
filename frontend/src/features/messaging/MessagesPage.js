@@ -66,6 +66,31 @@ function MessagesPage() {
   
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
+  const messageRefs = useRef({}); // New ref for individual messages
+
+  // Enhanced scroll to message function
+  const scrollToMessage = (messageId) => {
+    const messageElement = messageRefs.current[messageId];
+    if (messageElement) {
+      messageElement.scrollIntoView({ 
+        behavior: "smooth", 
+        block: "center" 
+      });
+      
+      // Highlight the message
+      setHighlightedMessageId(messageId);
+      
+      // Remove highlight after 3 seconds
+      setTimeout(() => {
+        setHighlightedMessageId(null);
+      }, 3000);
+    }
+  };
+
+  // Toggle full page chat
+  const toggleFullPageChat = () => {
+    setIsFullPageChat(!isFullPageChat);
+  };
 
   // Scroll to bottom of messages (optional - can be triggered manually)
   const scrollToBottom = () => {
