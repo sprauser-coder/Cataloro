@@ -73,19 +73,95 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     }
   };
 
-  // Delete notification
-  const deleteNotification = async (notificationId, event) => {
-    event.stopPropagation();
+  // Delete notification (enhanced with success callback)
+  const deleteNotification = async (notificationId, event, showFeedback = true) => {
+    if (event) event.stopPropagation();
     try {
-      // Remove from local state immediately
-      setNotifications(notifications.filter(n => n.id !== notificationId));
+      // Remove from local state immediately with animation
       const deletedNotification = notifications.find(n => n.id === notificationId);
-      if (deletedNotification && !deletedNotification.is_read) {
-        setUnreadNotifications(prev => Math.max(0, prev - 1));
+      
+      // Add removal animation class before removing
+      const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
+      if (notificationElement) {
+        notificationElement.classList.add('notification-removing');
+        setTimeout(() => {
+          setNotifications(notifications.filter(n => n.id !== notificationId));
+          if (deletedNotification && !deletedNotification.is_read) {
+            setUnreadNotifications(prev => Math.max(0, prev - 1));
+          }
+        }, 300); // Match animation duration
+      } else {
+        // Immediate removal if element not found
+        setNotifications(notifications.filter(n => n.id !== notificationId));
+        if (deletedNotification && !deletedNotification.is_read) {
+          setUnreadNotifications(prev => Math.max(0, prev - 1));
+        }
       }
+      
+      // Optional feedback
+      if (showFeedback) {
+        console.log('Notification removed');
+      }
+      
       // TODO: Add API call to delete from backend if needed
     } catch (error) {
       console.error('Failed to delete notification:', error);
+    }
+  };
+
+  // Enhanced action handlers with auto-delete
+  const handleMarkAsRead = async (notificationId, event) => {
+    event.stopPropagation();
+    try {
+      await markNotificationAsRead(notificationId);
+      // Auto-delete after marking as read
+      setTimeout(() => {
+        deleteNotification(notificationId, null, false);
+      }, 1000); // 1 second delay to show the action was completed
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+    }
+  };
+
+  const handleAcceptRequest = async (notificationId, event) => {
+    event.stopPropagation();
+    try {
+      // Navigate to pending sales for approval
+      setShowNotifications(false);
+      navigate('/pending-sales');
+      // Auto-delete the notification
+      setTimeout(() => {
+        deleteNotification(notificationId, null, false);
+      }, 500);
+    } catch (error) {
+      console.error('Failed to handle accept request:', error);
+    }
+  };
+
+  const handleDeclineRequest = async (notificationId, event) => {
+    event.stopPropagation();
+    try {
+      // TODO: Add actual reject functionality
+      console.log('Request declined');
+      // Auto-delete the notification immediately
+      deleteNotification(notificationId, null, false);
+    } catch (error) {
+      console.error('Failed to handle decline request:', error);
+    }
+  };
+
+  const handleReplyToMessage = async (notificationId, event) => {
+    event.stopPropagation();
+    try {
+      // Navigate to messages
+      setShowNotifications(false);
+      navigate('/messages');
+      // Auto-delete the notification
+      setTimeout(() => {
+        deleteNotification(notificationId, null, false);
+      }, 500);
+    } catch (error) {
+      console.error('Failed to handle reply to message:', error);
     }
   };
 
