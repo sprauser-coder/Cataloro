@@ -68,6 +68,7 @@ function App() {
                   <Route path="create-listing" element={<CreateListingPage />} />
                   <Route path="edit-listing/:id" element={<EditListingPage />} />
                   <Route path="pending-sales" element={<PendingSalesPage />} />
+                  <Route path="view-all-requests" element={<ViewAllRequestsPage />} />
                   <Route path={APP_ROUTES.MY_LISTINGS} element={<MyListingsPage />} />
                   <Route path="my-orders" element={<DealsPage />} />
                   <Route path={APP_ROUTES.MY_DEALS} element={<DealsPage />} />
