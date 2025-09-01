@@ -374,8 +374,13 @@ function MessagesPage() {
       unreadCount: 0
     },
     {
-      id: 'user2', 
+      id: 'user2',
+      conversation_id: 'conv2',
       name: 'Sarah Buyer',
+      participants: [
+        { id: 'user2', name: 'Sarah Buyer' },
+        { id: user?.id || 'demo_user', name: user?.full_name || 'Demo User' }
+      ],
       messages: [
         {
           id: '2',
