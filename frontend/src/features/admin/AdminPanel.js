@@ -3286,11 +3286,22 @@ function ListingsTab({ showToast }) {
     }
   };
 
+  // Enhanced filtering logic to include pending orders
   const filteredListings = listings.filter(listing => {
-    const matchesSearch = listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = !searchTerm || 
+                         listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          listing.seller.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || listing.status === filterStatus;
-    return matchesSearch && matchesFilter;
+    
+    // Enhanced filter logic
+    if (filterStatus === 'all') {
+      return matchesSearch;
+    } else if (filterStatus === 'pending') {
+      // Show listings that either have pending status OR have pending orders
+      const hasPendingOrders = listing.pendingOrders && listing.pendingOrders > 0;
+      return matchesSearch && (listing.status === filterStatus || hasPendingOrders);
+    } else {
+      return matchesSearch && listing.status === filterStatus;
+    }
   });
 
   const handleSelectAll = (checked) => {
