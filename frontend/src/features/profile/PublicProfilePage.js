@@ -364,6 +364,69 @@ function PublicProfilePage() {
           {/* Stats & Info */}
           <div className="lg:col-span-1 space-y-8">
             
+            {/* Interactions Section - Only show for other users */}
+            {currentUser?.id !== userId && interactions.totalInteractions > 0 && (
+              <div className="cataloro-card-glass p-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                  <MessageCircle className="w-5 h-5 mr-2 text-blue-600" />
+                  Interactions with this user
+                </h3>
+                
+                <div className="space-y-4">
+                  {/* Messages */}
+                  {interactions.messages.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Recent Messages ({interactions.messages.length})</h4>
+                      <div className="space-y-2">
+                        {interactions.messages.slice(0, 3).map((message) => (
+                          <div key={message.id} className="p-3 bg-blue-50/50 dark:bg-blue-900/20 rounded-lg">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">{message.subject}</span>
+                              <span className="text-xs text-gray-500">{new Date(message.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{message.last_message}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Deals */}
+                  {interactions.deals.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Past Deals ({interactions.deals.length})</h4>
+                      <div className="space-y-2">
+                        {interactions.deals.slice(0, 3).map((deal) => (
+                          <div key={deal.id} className="p-3 bg-green-50/50 dark:bg-green-900/20 rounded-lg">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">{deal.item_title}</span>
+                              <span className={`text-xs px-2 py-1 rounded-full ${
+                                deal.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {deal.status}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-bold text-green-600">${deal.amount}</span> 
+                              <span className="text-xs text-gray-500">{new Date(deal.date).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Summary */}
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-gray-900 dark:text-white">{interactions.totalInteractions}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Total Interactions</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {/* Statistics */}
             <div className="cataloro-card-glass p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Statistics</h3>
