@@ -693,35 +693,84 @@ body:not(.dark) .kpi-label {
   width: 80%;
 }
 
-/* Modern Animations */
-.fade-in {
-  animation: fadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
+/* ===== MODERN ANIMATIONS & EFFECTS ===== */
 
+/* Fade In Animation */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.slide-in-right {
-  animation: slideInRight 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
 }
 
+/* Slide Animations */
 @keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(50px);
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* Message Highlighting Animation */
+@keyframes messageHighlight {
+  0% { 
+    background-color: rgba(251, 191, 36, 0.3);
+    transform: scale(1.02);
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+  50% { 
+    background-color: rgba(251, 191, 36, 0.2);
+    transform: scale(1.01);
   }
+  100% { 
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+.message-highlight {
+  animation: messageHighlight 2s ease-in-out;
+}
+
+/* Pulse Animation for Notifications */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Full Page Chat Transition */
+.full-page-chat-enter {
+  transform: scale(0.95);
+  opacity: 0;
+}
+
+.full-page-chat-enter-active {
+  transform: scale(1);
+  opacity: 1;
+  transition: all 0.3s ease-out;
+}
+
+.full-page-chat-exit {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.full-page-chat-exit-active {
+  transform: scale(0.95);
+  opacity: 0;
+  transition: all 0.3s ease-in;
 }
 
 /* Modern Loading Spinner */
