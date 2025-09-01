@@ -1303,3 +1303,71 @@ input[type="checkbox"]:checked::after {
 .animate-enhanced-pulse {
   animation: enhanced-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* ===== NOTIFICATIONS DROPDOWN OPTIMIZATION ===== */
+
+.notifications-dropdown-enhanced {
+  /* Prevent horizontal overflow */
+  max-width: calc(100vw - 2rem);
+  
+  /* Ensure proper positioning on small screens */
+  @media (max-width: 640px) {
+    right: 0.5rem;
+    left: 0.5rem;
+    width: auto;
+  }
+}
+
+/* Enhanced custom scrollbar for notifications */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+/* Line clamp utility for notification text */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Ensure notification items don't overflow */
+.notification-item {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Compact notification animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: slideDown 0.3s ease-out;
+}
