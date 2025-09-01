@@ -904,6 +904,19 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                       <span className="font-medium">My Listings</span>
                     </Link>
                     
+                    <Link
+                      to={`/profile/${user?.id}`}
+                      className="flex items-center px-6 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <div className="p-2 rounded-lg mr-3 group-hover:bg-white/10 transition-all duration-300" style={{
+                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 197, 253, 0.1))'
+                      }}>
+                        <Globe className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium">View Public Profile</span>
+                    </Link>
+                    
                     {user?.role === 'admin' && (
                       <Link
                         to="/admin"
