@@ -172,7 +172,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     }
   };
 
-  // Mark notification as read
+  // Mark notification as read with animation
   const markNotificationAsRead = async (notificationId) => {
     try {
       await liveService.markNotificationRead(user.id, notificationId);
@@ -185,7 +185,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     }
   };
 
-  // Mark all notifications as read
+  // Mark all notifications as read with bulk operation
   const markAllNotificationsAsRead = async () => {
     try {
       const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
@@ -194,6 +194,15 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       setUnreadNotifications(0);
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
+    }
+  };
+
+  // Request notification permission on component mount
+  const requestNotificationPermission = () => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().then(permission => {
+        console.log('Notification permission:', permission);
+      });
     }
   };
 
