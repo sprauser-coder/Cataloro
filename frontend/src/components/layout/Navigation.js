@@ -90,6 +90,13 @@ function Navigation() {
       roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR]
     },
     {
+      label: 'Messages',
+      path: '/messages',
+      icon: MessageCircle,
+      roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR],
+      hasUnreadCount: true
+    },
+    {
       label: 'Profile Page',
       path: APP_ROUTES.PROFILE,
       icon: User,
