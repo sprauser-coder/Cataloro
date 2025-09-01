@@ -14,6 +14,8 @@ function DealsPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
   const [activeFilter, setActiveFilter] = useState('all'); // For tile filtering
+  const [sortBy, setSortBy] = useState('newest'); // New sorting option
+  const [searchTerm, setSearchTerm] = useState(''); // New search functionality
   const { user } = useAuth();
   const { showToast } = useNotifications();
 
