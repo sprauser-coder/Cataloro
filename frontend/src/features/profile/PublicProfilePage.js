@@ -48,42 +48,76 @@ function PublicProfilePage() {
     totalInteractions: 0
   });
 
-  // Load interactions (messages and deals) with this user
+  // Load real interactions (messages and deals) with this user
   const loadUserInteractions = async (targetUserId) => {
     try {
-      // Mock interaction data - in real app, this would fetch from backend
-      const mockInteractions = {
-        messages: [
-          {
-            id: '1',
-            subject: 'Question about MacBook Pro',
-            last_message: 'Is this still available?',
-            created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-          },
-          {
-            id: '2', 
-            subject: 'Pickup arrangement',
-            last_message: 'When can we meet?',
-            created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-          }
-        ],
-        deals: [
-          {
-            id: '1',
-            item_title: 'iPhone 13 Pro',
-            amount: 699,
-            status: 'completed',
-            date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-          }
-        ]
+      const realInteractions = {
+        messages: [],
+        deals: []
       };
       
+      // Fetch real messages with this user
+      try {
+        const messagesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/messages/conversations/${currentUser?.id}`);
+        if (messagesResponse.ok) {
+          const conversations = await messagesResponse.json();
+          // Filter conversations with the target user
+          const userConversations = conversations.filter(conv => 
+            conv.participants?.some(p => p.id === targetUserId) ||
+            conv.user_id === targetUserId ||
+            conv.id === targetUserId
+          );
+          
+          realInteractions.messages = userConversations.slice(0, 3).map(conv => ({
+            id: conv.id || conv.conversation_id,
+            subject: conv.subject || 'Message conversation',
+            last_message: conv.last_message || conv.messages?.[0]?.content || 'Chat conversation',
+            created_at: conv.created_at || conv.last_message_at || new Date().toISOString()
+          }));
+        }
+      } catch (error) {
+        console.log('Could not fetch real messages:', error);
+      }
+      
+      // Fetch real deals with this user
+      try {
+        const dealsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/my-deals/${currentUser?.id}`);
+        if (dealsResponse.ok) {
+          const allDeals = await dealsResponse.json();
+          // Filter deals involving the target user
+          const userDeals = allDeals.filter(deal => 
+            deal.buyer_id === targetUserId || 
+            deal.seller_id === targetUserId ||
+            deal.buyer?.id === targetUserId ||
+            deal.seller?.id === targetUserId
+          );
+          
+          realInteractions.deals = userDeals.slice(0, 3).map(deal => ({
+            id: deal.id,
+            item_title: deal.listing?.title || 'Deal item',
+            amount: deal.amount || deal.listing?.price || 0,
+            status: deal.status || 'completed',
+            date: deal.approved_at || deal.created_at || new Date().toISOString()
+          }));
+        }
+      } catch (error) {
+        console.log('Could not fetch real deals:', error);
+      }
+      
+      // If no real data found, show empty state - NO DUMMY DATA
       setInteractions({
-        ...mockInteractions,
-        totalInteractions: mockInteractions.messages.length + mockInteractions.deals.length
+        ...realInteractions,
+        totalInteractions: realInteractions.messages.length + realInteractions.deals.length
       });
+      
     } catch (error) {
       console.error('Failed to load user interactions:', error);
+      // Set empty interactions instead of dummy data
+      setInteractions({
+        messages: [],
+        deals: [],
+        totalInteractions: 0
+      });
     }
   };
 
