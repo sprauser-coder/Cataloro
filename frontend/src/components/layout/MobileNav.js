@@ -57,7 +57,7 @@ function MobileNav({ isOpen, onClose }) {
       title: 'My Account',
       items: [
         { label: 'My Listings', path: '/my-listings', icon: Package },
-        { label: 'My Orders', path: '/my-orders', icon: DollarSign },
+        { label: 'My Deals', path: '/my-deals', icon: DollarSign },
         { label: 'Messages', path: '/messages', icon: MessageCircle },
         { label: 'Favorites', path: '/favorites', icon: Heart },
         { label: 'Cart', path: '/cart', icon: ShoppingCart }
