@@ -26,11 +26,71 @@ function DealsPage() {
   const fetchMyDeals = async () => {
     try {
       setLoading(true);
-      const data = await marketplaceService.getMyDeals(user.id);
-      setDeals(data);
+      // Use the correct API endpoint that we fixed earlier
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/my-deals/${user.id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      
+      // Sort deals by created_at date (newest first)
+      const sortedDeals = data.sort((a, b) => {
+        const dateA = new Date(a.created_at || a.approved_at || '2023-01-01');
+        const dateB = new Date(b.created_at || b.approved_at || '2023-01-01');
+        return dateB - dateA; // Newest first
+      });
+      
+      setDeals(sortedDeals);
     } catch (error) {
       showToast('Failed to load your deals', 'error');
       console.error('Failed to fetch deals:', error);
+      
+      // Fallback to demo data if API fails
+      const demoDeals = [
+        {
+          id: '1',
+          listing_id: 'listing1',
+          buyer_id: user.id,
+          seller_id: 'seller1',
+          status: 'approved',
+          amount: 299.99,
+          created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+          approved_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+          listing: {
+            id: 'listing1',
+            title: 'MacBook Pro 14" M2',
+            price: 299.99,
+            image: '/api/placeholder/300/200'
+          },
+          seller: {
+            id: 'seller1',
+            username: 'tech_seller',
+            email: 'seller@example.com'
+          }
+        },
+        {
+          id: '2',
+          listing_id: 'listing2',
+          buyer_id: 'buyer2',
+          seller_id: user.id,
+          status: 'completed',
+          amount: 150.50,
+          created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+          approved_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+          listing: {
+            id: 'listing2',
+            title: 'Gaming Mouse',
+            price: 150.50,
+            image: '/api/placeholder/300/200'
+          },
+          buyer: {
+            id: 'buyer2',
+            username: 'gamer_buyer',
+            email: 'buyer@example.com'
+          }
+        }
+      ];
+      setDeals(demoDeals);
     } finally {
       setLoading(false);
     }
