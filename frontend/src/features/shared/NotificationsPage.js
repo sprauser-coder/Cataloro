@@ -137,11 +137,10 @@ function NotificationsPage() {
   // Mark notification as read
   const markAsRead = async (notificationId) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/notifications/${notificationId}/read`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user?.id}/notifications/${notificationId}/read`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'user-id': user?.id
+          'Content-Type': 'application/json'
         }
       });
       
@@ -159,11 +158,10 @@ function NotificationsPage() {
   // Delete notification
   const deleteNotification = async (notificationId) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/notifications/${notificationId}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user?.id}/notifications/${notificationId}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
-          'user-id': user?.id
+          'Content-Type': 'application/json'
         }
       });
       
