@@ -246,13 +246,13 @@ function AdminPanel() {
   }
 
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'users', label: 'User Management', icon: Users },
-    { id: 'listings', label: 'Listings Management', icon: Package },
-    { id: 'business', label: 'Business', icon: Store },
-    { id: 'cat-database', label: 'Cat Database', icon: Database },
-    { id: 'settings', label: 'Site Settings', icon: Settings },
-    { id: 'site-admin', label: 'Site Administration', icon: Shield }
+    { id: 'dashboard', label: 'Dashboard', shortLabel: 'Dashboard', icon: BarChart3 },
+    { id: 'users', label: 'User Management', shortLabel: 'Users', icon: Users },
+    { id: 'listings', label: 'Listings Management', shortLabel: 'Listings', icon: Package },
+    { id: 'business', label: 'Business', shortLabel: 'Business', icon: Store },
+    { id: 'cat-database', label: 'Cat Database', shortLabel: 'Cats', icon: Database },
+    { id: 'settings', label: 'Site Settings', shortLabel: 'Settings', icon: Settings },
+    { id: 'site-admin', label: 'Site Administration', shortLabel: 'Admin', icon: Shield }
   ];
 
   return (
