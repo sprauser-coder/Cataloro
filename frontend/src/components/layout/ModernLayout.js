@@ -80,7 +80,11 @@ function ModernLayout() {
     );
   }
 
-  if (!isAuthenticated) {
+  // Allow public access to certain routes like public profiles
+  const publicRoutes = ['/profile/'];
+  const isPublicRoute = publicRoutes.some(route => location.pathname.startsWith(route));
+  
+  if (!isAuthenticated && !isPublicRoute) {
     return <Navigate to="/login" replace />;
   }
 
