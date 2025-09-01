@@ -60,7 +60,10 @@ import {
   ChevronRight,
   ChevronDown,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Globe,
+  User,
+  Home
 } from 'lucide-react';
 
 function BusinessTab({ showToast }) {
