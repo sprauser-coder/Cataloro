@@ -2985,125 +2985,15 @@ function SiteAdministrationTab({ showToast }) {
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                 <Bell className="w-5 h-5 mr-2" />
-                System Notifications Management
+                Active System Notifications
               </h4>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Manage all top-right header notifications like Welcome Back messages, alerts, and system announcements.
+                Real notifications currently active in the system. These are the actual notifications shown to users.
               </p>
               
-              {/* Notification Templates */}
+              {/* Real System Notifications Display */}
               <div className="space-y-4">
-                {[
-                  { 
-                    id: 'welcome-back', 
-                    title: 'Welcome Back Message', 
-                    description: 'Greeting message shown to returning users',
-                    template: 'Welcome back, {username}! 🎉',
-                    active: true,
-                    type: 'info'
-                  },
-                  { 
-                    id: 'new-features', 
-                    title: 'New Features Alert', 
-                    description: 'Notify users about new marketplace features',
-                    template: 'Check out our new features! 🚀',
-                    active: true,
-                    type: 'info'
-                  },
-                  { 
-                    id: 'maintenance-notice', 
-                    title: 'Maintenance Notice', 
-                    description: 'Scheduled maintenance warnings',
-                    template: 'Scheduled maintenance: {date} at {time}',
-                    active: false,
-                    type: 'warning'
-                  },
-                  { 
-                    id: 'security-alert', 
-                    title: 'Security Alerts', 
-                    description: 'Important security announcements',
-                    template: 'Security update required. Please check settings.',
-                    active: false,
-                    type: 'error'
-                  },
-                  { 
-                    id: 'sales-promotion', 
-                    title: 'Sales & Promotions', 
-                    description: 'Marketing messages and promotional offers',
-                    template: 'Limited time offer: {offer} expires {date}!',
-                    active: false,
-                    type: 'success'
-                  }
-                ].map((notification) => (
-                  <div key={notification.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${
-                          notification.type === 'info' ? 'bg-blue-500' :
-                          notification.type === 'success' ? 'bg-green-500' :
-                          notification.type === 'warning' ? 'bg-yellow-500' :
-                          'bg-red-500'
-                        }`}></div>
-                        <div>
-                          <h5 className="font-medium text-gray-900 dark:text-white">{notification.title}</h5>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{notification.description}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <button
-                          onClick={() => {
-                            // Toggle notification active state
-                            const key = `notification_${notification.id}_active`;
-                            handleConfigChange(key, !siteConfig[key]);
-                          }}
-                          className="relative inline-flex h-6 w-11 items-center rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                          style={{
-                            backgroundColor: (siteConfig[`notification_${notification.id}_active`] ?? notification.active) ? '#10B981' : '#D1D5DB'
-                          }}
-                        >
-                          <span
-                            className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
-                              (siteConfig[`notification_${notification.id}_active`] ?? notification.active) ? 'translate-x-6' : 'translate-x-1'
-                            }`}
-                          />
-                        </button>
-                        <button
-                          className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                          title="Edit notification"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                    
-                    {/* Template Editor */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Message Template:</label>
-                      <textarea
-                        value={siteConfig[`notification_${notification.id}_template`] || notification.template}
-                        onChange={(e) => handleConfigChange(`notification_${notification.id}_template`, e.target.value)}
-                        rows={2}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-                        placeholder="Enter notification message template..."
-                      />
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Available variables: {notification.id === 'welcome-back' ? '{username}' : 
-                          notification.id === 'maintenance-notice' ? '{date}, {time}' :
-                          notification.id === 'sales-promotion' ? '{offer}, {date}' : 'None'}
-                        </p>
-                        <div className="flex items-center space-x-2">
-                          <button className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                            Preview
-                          </button>
-                          <button className="text-xs text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">
-                            Test Send
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                <SystemNotificationsList />
               </div>
             </div>
 
