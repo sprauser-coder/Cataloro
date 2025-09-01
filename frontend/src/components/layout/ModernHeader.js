@@ -74,7 +74,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     }
   };
 
-  // Delete notification (enhanced with success callback)
+  // Delete notification (enhanced with backend API call)
   const deleteNotification = async (notificationId, event, showFeedback = true) => {
     if (event) event.stopPropagation();
     try {
@@ -99,12 +99,28 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
         }
       }
       
+      // Backend API call to delete notification permanently
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/notifications/${notificationId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'user-id': user?.id
+          }
+        });
+        
+        if (!response.ok) {
+          console.warn('Failed to delete notification from backend:', response.statusText);
+        }
+      } catch (apiError) {
+        console.error('API error deleting notification:', apiError);
+      }
+      
       // Optional feedback
       if (showFeedback) {
         console.log('Notification removed');
       }
       
-      // TODO: Add API call to delete from backend if needed
     } catch (error) {
       console.error('Failed to delete notification:', error);
     }
