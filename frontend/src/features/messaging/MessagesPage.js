@@ -525,12 +525,12 @@ function MessagesPage() {
             </div>
           </div>
 
-          {/* Message Thread */}
-          <div className="flex-1 flex flex-col bg-white dark:bg-gray-800">
+          {/* Message Thread - No Background */}
+          <div className="flex-1 flex flex-col">
             {selectedConversation ? (
               <>
-                {/* Thread Header */}
-                <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl">
+                {/* Thread Header - No Background */}
+                <div className="p-6 border-b border-gray-200/30 dark:border-gray-700/30">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
