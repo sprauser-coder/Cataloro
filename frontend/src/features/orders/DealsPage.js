@@ -111,11 +111,39 @@ function DealsPage() {
     setActiveTab(filter); // Also update tab
   };
 
-  // Use activeFilter instead of activeTab for consistency
-  const filteredDeals = activeFilter === 'all' ? deals : deals.filter(deal => {
-    if (activeFilter === 'totalValue') return deal.status === 'completed'; // For total value, show completed deals
-    return deal.status === activeFilter;
-  });
+  // Enhanced filtering and sorting
+  const filteredAndSortedDeals = deals
+    .filter(deal => {
+      // Filter by status
+      const statusMatch = activeFilter === 'all' || 
+                         (activeFilter === 'totalValue' ? deal.status === 'completed' : deal.status === activeFilter);
+      
+      // Filter by search term
+      const searchMatch = !searchTerm || 
+                         deal.listing?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         deal.id?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      return statusMatch && searchMatch;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.created_at || b.approved_at || '2023-01-01') - new Date(a.created_at || a.approved_at || '2023-01-01');
+        case 'oldest':
+          return new Date(a.created_at || a.approved_at || '2023-01-01') - new Date(b.created_at || b.approved_at || '2023-01-01');
+        case 'highest_value':
+          return (b.amount || 0) - (a.amount || 0);
+        case 'lowest_value':
+          return (a.amount || 0) - (b.amount || 0);
+        case 'status':
+          return (a.status || '').localeCompare(b.status || '');
+        default:
+          return 0;
+      }
+    });
+
+  // Use filtered and sorted deals instead of just filtered
+  const displayDeals = filteredAndSortedDeals;
 
   if (loading) {
     return (
