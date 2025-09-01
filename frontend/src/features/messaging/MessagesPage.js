@@ -358,6 +358,16 @@ function MessagesPage() {
           content: 'Yes, it\'s still available! When would be a good time for you to pick it up?',
           is_read: true,
           created_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          id: '5',
+          sender_id: 'user1',
+          sender_name: 'John Seller',
+          recipient_id: user?.id || 'demo_user',
+          subject: 'Re: Question about your MacBook Pro listing',
+          content: 'Great! When would be a good time to meet?',
+          is_read: true,
+          created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString()
         }
       ],
       lastMessage: null,
