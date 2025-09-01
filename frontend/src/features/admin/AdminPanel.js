@@ -2189,6 +2189,12 @@ function SiteAdministrationTab({ showToast }) {
       description: 'Customize site appearance, colors, fonts, and layout'
     },
     { 
+      id: 'content', 
+      label: 'Content Management', 
+      icon: FileText,
+      description: 'Manage info page content with rich text editing capabilities'
+    },
+    { 
       id: 'hero', 
       label: 'Hero Selection', 
       icon: Star,
