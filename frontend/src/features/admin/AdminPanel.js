@@ -215,6 +215,8 @@ function SystemNotificationsList() {
     </div>
   );
 }
+
+function AdminPanel() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dashboardData, setDashboardData] = useState(null);
   const [users, setUsers] = useState([]);
