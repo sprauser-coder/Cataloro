@@ -82,6 +82,7 @@ function App() {
                   <Route path={APP_ROUTES.FAVORITES} element={<FavoritesPage />} />
                   <Route path={APP_ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
                   <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
+                  <Route path="profile/:userId" element={<PublicProfilePage />} />
                   <Route path="settings" element={<ProfilePage />} />
                 </Route>
 
