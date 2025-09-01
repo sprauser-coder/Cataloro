@@ -36,7 +36,8 @@ import {
   RefreshCw,
   Volume2,
   VolumeX,
-  BellOff
+  BellOff,
+  Globe
 } from 'lucide-react';
 import { APP_ROUTES } from '../../config/directions';
 import { useAuth } from '../../context/AuthContext';
