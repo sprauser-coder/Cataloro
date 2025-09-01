@@ -101,11 +101,10 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       
       // Backend API call to delete notification permanently
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/notifications/${notificationId}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user?.id}/notifications/${notificationId}`, {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
-            'user-id': user?.id
+            'Content-Type': 'application/json'
           }
         });
         
