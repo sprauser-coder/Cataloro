@@ -776,19 +776,18 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                                   )}
                                   
                                   {notification.type === 'message' && (
-                                    <Link
-                                      to="/messages"
-                                      onClick={() => setShowNotifications(false)}
+                                    <button
+                                      onClick={(e) => handleReplyToMessage(notification.id, e)}
                                       className="p-1.5 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-all duration-200 hover:scale-110 group/tooltip relative"
-                                      title="Reply to message"
+                                      title="Reply to message & auto-delete"
                                     >
                                       <MessageCircle className="w-3.5 h-3.5" />
                                       {/* Tooltip */}
                                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                                        Reply to message
+                                        Reply to message & auto-delete
                                         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
                                       </div>
-                                    </Link>
+                                    </button>
                                   )}
                                 </div>
                               </div>
