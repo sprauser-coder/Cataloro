@@ -1124,6 +1124,44 @@ async def mark_notification_read(user_id: str, notification_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to mark notification as read: {str(e)}")
 
+@app.delete("/api/notifications/{notification_id}")
+async def delete_notification(notification_id: str, user_id: str = None):
+    """Delete notification by ID"""
+    try:
+        # Support both direct notification ID and user-scoped deletion
+        query = {"id": notification_id}
+        if user_id:
+            query["user_id"] = user_id
+        
+        result = await db.user_notifications.delete_one(query)
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Notification not found")
+        
+        return {"message": "Notification deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete notification: {str(e)}")
+
+@app.delete("/api/user/{user_id}/notifications/{notification_id}")
+async def delete_user_notification(user_id: str, notification_id: str):
+    """Delete specific user notification"""
+    try:
+        result = await db.user_notifications.delete_one({
+            "user_id": user_id, 
+            "id": notification_id
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Notification not found")
+        
+        return {"message": "Notification deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete notification: {str(e)}")
+
 # ============================================================================
 # ORDER MANAGEMENT ENDPOINTS
 # ============================================================================
