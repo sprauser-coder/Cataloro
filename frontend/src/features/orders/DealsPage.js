@@ -341,7 +341,7 @@ function DealsPage() {
 }
 
 // Enhanced Deal Card Component
-function DealCard({ deal, currentUserId }) {
+function DealCard({ deal, currentUserId, user }) {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'pending':
