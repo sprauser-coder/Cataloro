@@ -14,7 +14,8 @@ import {
   Bell, 
   User, 
   LogOut,
-  Clock
+  Clock,
+  MessageCircle
 } from 'lucide-react';
 import { APP_ROUTES, USER_ROLES } from '../../config/directions';
 
