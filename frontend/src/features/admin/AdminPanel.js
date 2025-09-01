@@ -3670,14 +3670,74 @@ function ListingsTab({ showToast }) {
 
       {/* FIXED Listings Table - NO HORIZONTAL SCROLLING */}
       <div className="cataloro-card-glass overflow-hidden">
+        
+        {/* Sub-tabs for Listings Status */}
         <div className="px-6 py-4 border-b border-white/10 dark:border-white/10">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">All Listings</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Listings Management</h3>
             <span className="bg-blue-100/80 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md">
               {filteredListings.length} results
             </span>
           </div>
+          
+          {/* Sub-tabs Navigation */}
+          <div className="flex items-center space-x-1 bg-gray-100/50 dark:bg-gray-800/50 rounded-lg p-1">
+            {[
+              { id: 'active', label: 'Active', count: listings.filter(l => l.status === 'active').length, color: 'green' },
+              { id: 'pending', label: 'Pending', count: listings.filter(l => l.status === 'pending').length, color: 'yellow' },
+              { id: 'inactive', label: 'Inactive', count: listings.filter(l => l.status === 'inactive').length, color: 'gray' },
+              { id: 'sold', label: 'Sold', count: listings.filter(l => l.status === 'sold').length, color: 'blue' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveSubTab(tab.id);
+                  setFilterStatus(tab.id);
+                }}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                  activeSubTab === tab.id
+                    ? `${tab.color === 'green' ? 'bg-green-600 text-white' :
+                        tab.color === 'yellow' ? 'bg-yellow-600 text-white' :
+                        tab.color === 'gray' ? 'bg-gray-600 text-white' :
+                        'bg-blue-600 text-white'} shadow-lg`
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700/50'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span className={`px-2 py-0.5 rounded-full text-xs ${
+                  activeSubTab === tab.id
+                    ? 'bg-white/20 text-white'
+                    : `${tab.color === 'green' ? 'bg-green-100 text-green-800' :
+                        tab.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :  
+                        tab.color === 'gray' ? 'bg-gray-100 text-gray-800' :
+                        'bg-blue-100 text-blue-800'} dark:bg-opacity-20`
+                }`}>
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
+        
+        {/* Filter indicator for sub-tabs */}
+        {activeSubTab !== 'active' && (
+          <div className="px-6 py-3 bg-blue-50/50 dark:bg-blue-900/20 border-b border-blue-200/50 dark:border-blue-800/50">
+            <div className="flex items-center justify-between">
+              <span className="text-blue-800 dark:text-blue-300 text-sm font-medium">
+                Showing {activeSubTab} listings ({filteredListings.length} items)
+              </span>
+              <button 
+                onClick={() => {
+                  setActiveSubTab('active');
+                  setFilterStatus('active');
+                }}
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+              >
+                Show Active
+              </button>
+            </div>
+          </div>
+        )}
         
         {/* Responsive Table - No Horizontal Scroll */}
         <div className="max-w-full">
