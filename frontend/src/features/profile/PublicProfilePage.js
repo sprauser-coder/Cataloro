@@ -183,8 +183,8 @@ function PublicProfilePage() {
         
         // Calculate user listings and stats
         const listings = allProducts.filter(p => 
-          p.seller === mockUser.username || 
-          p.seller === mockUser.full_name ||
+          p.seller === fetchedUser.username || 
+          p.seller === fetchedUser.full_name ||
           p.seller_id === userId
         );
         
