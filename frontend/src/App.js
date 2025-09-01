@@ -57,6 +57,7 @@ function App() {
                 {/* Public Routes */}
                 <Route path={APP_ROUTES.LOGIN} element={<SimpleLoginPage />} />
                 <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
+                <Route path="/info" element={<InfoPage />} />
                 
                 {/* Protected Routes with Modern Layout */}
                 <Route path="/" element={<ModernLayout />}>
