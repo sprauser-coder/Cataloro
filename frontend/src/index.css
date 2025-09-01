@@ -117,3 +117,63 @@ body {
     --color-error: #CC0000;
   }
 }
+
+/* Notification animations */
+.notification-removing {
+  animation: slideOutRight 0.3s ease-in-out forwards;
+}
+
+@keyframes slideOutRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+    max-height: 200px;
+  }
+  50% {
+    transform: translateX(100%);
+    opacity: 0;
+    max-height: 200px;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+/* Enhanced notification dropdown animations */
+.notifications-dropdown-enhanced {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Custom scrollbar for notifications */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
