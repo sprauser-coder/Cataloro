@@ -29,6 +29,7 @@ import PublicProfilePage from './features/profile/PublicProfilePage';
 import MessagesPage from './features/messaging/MessagesPage';
 import SimpleLoginPage from './features/auth/SimpleLoginPage';
 import RegisterPage from './features/auth/RegisterPage';
+import InfoPage from './features/info/InfoPage';
 
 // Import centralized configuration
 import { APP_ROUTES } from './config/directions';
