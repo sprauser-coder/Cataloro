@@ -112,6 +112,50 @@ function MessagesPage() {
     setShowUserSearch(false);
   };
 
+  // Handle deleting a conversation
+  const handleDeleteConversation = async (conversationId) => {
+    if (!window.confirm('Are you sure you want to delete this conversation? This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      // TODO: Add API call to delete conversation
+      // await liveService.deleteConversation(conversationId);
+      
+      // Remove from local state
+      setConversations(conversations.filter(c => c.conversation_id !== conversationId));
+      if (selectedConversation?.conversation_id === conversationId) {
+        setSelectedConversation(null);
+        setConversationMessages([]);
+      }
+      
+      showToast('Conversation deleted successfully', 'success');
+    } catch (error) {
+      console.error('Failed to delete conversation:', error);
+      showToast('Failed to delete conversation', 'error');
+    }
+  };
+
+  // Handle deleting a single message
+  const handleDeleteMessage = async (messageId) => {
+    if (!window.confirm('Are you sure you want to delete this message?')) {
+      return;
+    }
+    
+    try {
+      // TODO: Add API call to delete message
+      // await liveService.deleteMessage(messageId);
+      
+      // Remove from local state
+      setConversationMessages(conversationMessages.filter(m => m.id !== messageId));
+      
+      showToast('Message deleted successfully', 'success');
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+      showToast('Failed to delete message', 'error');
+    }
+  };
+
   const loadMessages = async () => {
     if (!user) return;
     
