@@ -1110,9 +1110,30 @@ function CreateListingPage() {
                 >
                   Cancel
                 </Link>
+                
+                {/* Save as Draft Button */}
+                <button
+                  type="button"
+                  onClick={handleSaveDraft}
+                  disabled={isSavingDraft || isSubmitting}
+                  className="px-6 py-3 bg-yellow-600/80 hover:bg-yellow-600/90 disabled:bg-yellow-600/50 text-white rounded-lg font-medium transition-colors flex items-center space-x-2 disabled:cursor-not-allowed"
+                >
+                  {isSavingDraft ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      <span>Save as Draft</span>
+                    </>
+                  )}
+                </button>
+                
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isSavingDraft}
                   className="px-8 py-3 bg-white/20 hover:bg-white/30 disabled:bg-white/10 text-white rounded-lg font-semibold transition-colors flex items-center space-x-2 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
