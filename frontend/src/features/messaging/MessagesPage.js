@@ -406,10 +406,10 @@ function MessagesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="max-w-6xl mx-auto h-[calc(80vh-2rem)] flex flex-col overflow-hidden m-4">
+      <div className="max-w-6xl mx-auto h-[calc(80vh-2rem)] flex flex-col m-4">
         
-        {/* Enhanced Header */}
-        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-white/20 shadow-lg p-6">
+        {/* Enhanced Header - No Background */}
+        <div className="border-b border-white/20 p-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center">
