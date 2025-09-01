@@ -385,13 +385,17 @@ function DealCard({ deal, currentUserId }) {
   const otherParty = isBuyer ? deal.seller : deal.buyer;
 
   return (
-    <div className="cataloro-card-glass p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="cataloro-card-glass p-6 hover:shadow-lg transition-all duration-300">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           {getStatusIcon(deal.status)}
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white">Deal #{deal.id?.slice(-8)}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">You are the {userRole}</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white">
+              Deal #{deal.id?.slice(-8)} • {userRole}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              {deal.listing?.title || `Listing ID: ${deal.listing_id}`}
+            </p>
           </div>
         </div>
         <span className={`px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md ${getStatusColor(deal.status)}`}>
@@ -399,65 +403,99 @@ function DealCard({ deal, currentUserId }) {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Deal Details */}
-        <div className="md:col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Deal Overview */}
+        <div>
+          <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Deal Information</h4>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-300">Amount</span>
+              <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                ${deal.amount?.toFixed(2) || '0.00'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-300">Created</span>
+              <span className="text-sm text-gray-900 dark:text-white">
+                {deal.created_at ? new Date(deal.created_at).toLocaleDateString() : 'N/A'}
+              </span>
+            </div>
+            {deal.approved_at && (
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  {deal.status === 'approved' ? 'Approved' : 'Completed'}
+                </span>
+                <span className="text-sm text-gray-900 dark:text-white">
+                  {new Date(deal.approved_at).toLocaleDateString()}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Participants */}
+        <div>
+          <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Participants</h4>
           <div className="space-y-3">
             <div>
-              <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Listing</label>
-              <p className="text-gray-900 dark:text-white">Listing ID: {deal.listing_id}</p>
+              <span className="text-sm text-gray-600 dark:text-gray-300">Buyer</span>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                {isBuyer ? 'You' : deal.buyer?.username || `User ${deal.buyer_id?.slice(-8)}`}
+              </p>
             </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Amount</label>
-                <p className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">${deal.amount?.toFixed(2)}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Date</label>
-                <p className="text-gray-900 dark:text-white">
-                  {deal.created_at ? new Date(deal.created_at).toLocaleDateString() : 'N/A'}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Buyer</label>
-                <p className="text-gray-900 dark:text-white">User {deal.buyer_id?.slice(-8)}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Seller</label>
-                <p className="text-gray-900 dark:text-white">User {deal.seller_id?.slice(-8)}</p>
-              </div>
+            <div>
+              <span className="text-sm text-gray-600 dark:text-gray-300">Seller</span>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                {!isBuyer ? 'You' : deal.seller?.username || `User ${deal.seller_id?.slice(-8)}`}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col justify-center space-y-3">
-          {deal.status === 'pending' && (
-            <>
-              <button className="cataloro-button-primary">
-                {isBuyer ? 'Confirm Receipt' : 'Mark as Shipped'}
+        <div>
+          <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Actions</h4>
+          <div className="space-y-3">
+            {deal.status === 'pending' && (
+              <>
+                <button className="w-full cataloro-button-primary text-sm py-2">
+                  {isBuyer ? 'Contact Seller' : 'Review Request'}
+                </button>
+                <button className="w-full cataloro-button-secondary text-red-600 border-red-300 hover:bg-red-50 text-sm py-2">
+                  Cancel Deal
+                </button>
+              </>
+            )}
+            
+            {deal.status === 'approved' && (
+              <>
+                <button className="w-full cataloro-button-primary text-sm py-2">
+                  {isBuyer ? 'Confirm Receipt' : 'Mark as Shipped'}
+                </button>
+                <button className="w-full cataloro-button-secondary text-sm py-2">
+                  Message {isBuyer ? 'Seller' : 'Buyer'}
+                </button>
+              </>
+            )}
+            
+            {deal.status === 'completed' && (
+              <button className="w-full cataloro-button-secondary text-sm py-2">
+                View Receipt
               </button>
-              <button className="cataloro-button-secondary text-red-600 border-red-300 hover:bg-red-50">
-                Cancel Deal
-              </button>
-            </>
-          )}
-          
-          {deal.status === 'completed' && (
-            <button className="cataloro-button-secondary">
-              View Details
-            </button>
-          )}
+            )}
 
-          {deal.status === 'disputed' && (
-            <button className="cataloro-button-primary">
-              Contact Support
-            </button>
-          )}
+            {deal.status === 'disputed' && (
+              <button className="w-full cataloro-button-primary text-sm py-2">
+                Contact Support
+              </button>
+            )}
+            
+            {(deal.status === 'cancelled' || deal.status === 'rejected') && (
+              <button className="w-full cataloro-button-secondary text-sm py-2">
+                View Details
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
