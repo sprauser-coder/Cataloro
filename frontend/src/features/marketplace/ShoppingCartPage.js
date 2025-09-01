@@ -82,18 +82,14 @@ function ShoppingCartPage() {
     if (!user) return;
     
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/seller/${user.id}`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/buyer/${user.id}`);
       if (response.ok) {
         const orders = await response.json();
-        // Get all approved orders where user is the seller
-        const sellerOrders = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/buyer/${user.id}`);
-        if (sellerOrders.ok) {
-          const buyerOrders = await sellerOrders.json();
-          setApprovedSales(buyerOrders.filter(order => order.status === 'approved'));
-        }
+        // Get approved and denied orders where user is the buyer
+        setApprovedSales(orders.filter(order => order.status === 'approved' || order.status === 'rejected'));
       }
     } catch (error) {
-      console.error('Error fetching approved sales:', error);
+      console.error('Error fetching approved/denied sales:', error);
     }
   };
 
