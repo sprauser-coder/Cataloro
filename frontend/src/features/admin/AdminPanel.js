@@ -3905,7 +3905,12 @@ function ListingsTab({ showToast }) {
           <div className="flex items-center space-x-1 bg-gray-100/50 dark:bg-gray-800/50 rounded-lg p-1">
             {[
               { id: 'active', label: 'Active', count: listings.filter(l => l.status === 'active').length, color: 'green' },
-              { id: 'pending', label: 'Pending', count: listings.filter(l => l.status === 'pending').length, color: 'yellow' },
+              { 
+                id: 'pending', 
+                label: 'Pending', 
+                count: listings.filter(l => l.status === 'pending' || (l.pendingOrders && l.pendingOrders > 0)).length, 
+                color: 'yellow' 
+              },
               { id: 'inactive', label: 'Inactive', count: listings.filter(l => l.status === 'inactive').length, color: 'gray' },
               { id: 'sold', label: 'Sold', count: listings.filter(l => l.status === 'sold').length, color: 'blue' }
             ].map((tab) => (
