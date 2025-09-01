@@ -25,6 +25,7 @@ import AdminPanel from './features/admin/AdminPanel';
 import FavoritesPage from './features/marketplace/FavoritesPage';
 import NotificationsPage from './features/shared/NotificationsPage';
 import ProfilePage from './features/profile/ProfilePage';
+import PublicProfilePage from './features/profile/PublicProfilePage';
 import MessagesPage from './features/messaging/MessagesPage';
 import SimpleLoginPage from './features/auth/SimpleLoginPage';
 import RegisterPage from './features/auth/RegisterPage';
