@@ -682,7 +682,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                         <div
                           key={notification.id}
                           data-notification-id={notification.id}
-                          className={`group px-6 py-4 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300 ${
+                          className={`group px-4 py-3 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-3 transition-all duration-300 ${
                             !notification.is_read ? 'bg-blue-50/30 dark:bg-blue-900/30' : ''
                           } ${index === 0 ? 'animate-in' : ''}`}
                           style={{
@@ -695,9 +695,9 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                             animationDelay: `${index * 0.1}s`
                           }}
                         >
-                          <div className="flex items-start space-x-3">
-                            {/* Enhanced Icon */}
-                            <div className={`p-2 rounded-full ${
+                          <div className="flex items-start space-x-2.5">
+                            {/* Compact Icon */}
+                            <div className={`p-1.5 rounded-full flex-shrink-0 ${
                               notification.type === 'message' ? 'bg-blue-100 text-blue-600' :
                               notification.type === 'favorite' ? 'bg-pink-100 text-pink-600' :
                               notification.type === 'payment' ? 'bg-green-100 text-green-600' :
@@ -706,87 +706,78 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                               notification.type === 'buy_rejected' ? 'bg-red-100 text-red-600' :
                               'bg-gray-100 text-gray-600'
                             } ${!notification.is_read ? 'animate-pulse' : ''}`}>
-                              {notification.type === 'message' ? <MessageCircle className="w-4 h-4" /> :
-                               notification.type === 'favorite' ? <Heart className="w-4 h-4" /> :
-                               notification.type === 'payment' ? <DollarSign className="w-4 h-4" /> :
-                               notification.type === 'buy_request' ? <ShoppingCart className="w-4 h-4" /> :
-                               notification.type === 'buy_approved' ? <Check className="w-4 h-4" /> :
-                               notification.type === 'buy_rejected' ? <X className="w-4 h-4" /> :
-                               <Bell className="w-4 h-4" />}
+                              {notification.type === 'message' ? <MessageCircle className="w-3.5 h-3.5" /> :
+                               notification.type === 'favorite' ? <Heart className="w-3.5 h-3.5" /> :
+                               notification.type === 'payment' ? <DollarSign className="w-3.5 h-3.5" /> :
+                               notification.type === 'buy_request' ? <ShoppingCart className="w-3.5 h-3.5" /> :
+                               notification.type === 'buy_approved' ? <Check className="w-3.5 h-3.5" /> :
+                               notification.type === 'buy_rejected' ? <X className="w-3.5 h-3.5" /> :
+                               <Bell className="w-3.5 h-3.5" />}
                             </div>
                             
-                            {/* Enhanced Content */}
-                            <div className="flex-1 min-w-0">
+                            {/* Compact Content */}
+                            <div className="flex-1 min-w-0 overflow-hidden">
                               <div className="flex items-start justify-between">
-                                <p className={`text-sm font-semibold ${!notification.is_read ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
-                                  {notification.title}
-                                </p>
-                                <div className="flex items-center space-x-1 ml-2">
+                                <div className="flex-1 min-w-0 pr-2">
+                                  <p className={`text-sm font-semibold truncate ${!notification.is_read ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                                    {notification.title}
+                                  </p>
+                                  <p className="text-xs text-gray-600 dark:text-white/70 mt-0.5 line-clamp-2 leading-tight">
+                                    {notification.message}
+                                  </p>
+                                </div>
+                                <div className="flex items-center space-x-1 flex-shrink-0">
                                   {!notification.is_read && (
-                                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"></div>
                                   )}
-                                  {/* Delete Button */}
+                                  {/* Compact Delete Button */}
                                   <button
                                     onClick={(e) => deleteNotification(notification.id, e)}
-                                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-600 transition-all duration-200"
-                                    title="Delete notification"
+                                    className="opacity-0 group-hover:opacity-100 p-0.5 text-gray-400 hover:text-red-600 transition-all duration-200"
+                                    title="Delete"
                                   >
                                     <Trash2 className="w-3 h-3" />
                                   </button>
                                 </div>
                               </div>
-                              <p className="text-xs text-gray-600 dark:text-white/70 mt-1 line-clamp-2">
-                                {notification.message}
-                              </p>
+                              
+                              {/* Compact Footer with Time and Actions */}
                               <div className="flex items-center justify-between mt-2">
                                 <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                                   <Clock className="w-3 h-3 mr-1" />
-                                  {new Date(notification.created_at).toLocaleString()}
+                                  <span className="truncate">
+                                    {new Date(notification.created_at).toLocaleDateString()} {new Date(notification.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                  </span>
                                 </div>
                                 
-                                {/* Quick Action Icon Buttons */}
-                                <div className="flex items-center space-x-1">
+                                {/* Compact Action Buttons */}
+                                <div className="flex items-center space-x-1 flex-shrink-0">
                                   {!notification.is_read && (
                                     <button
                                       onClick={(e) => handleMarkAsRead(notification.id, e)}
-                                      className="p-1.5 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-all duration-200 hover:scale-110 group/tooltip relative"
-                                      title="Mark as read & auto-delete"
+                                      className="p-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-all duration-200"
+                                      title="Mark read"
                                     >
-                                      <CheckCheck className="w-3.5 h-3.5" />
-                                      {/* Tooltip */}
-                                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                                        Mark as read & auto-delete
-                                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
-                                      </div>
+                                      <CheckCheck className="w-3 h-3" />
                                     </button>
                                   )}
                                   
-                                  {/* Enhanced Quick Actions for Different Types */}
+                                  {/* Quick Actions for Different Types */}
                                   {notification.type === 'buy_request' && (
                                     <>
                                       <button
                                         onClick={(e) => handleAcceptRequest(notification.id, e)}
-                                        className="p-1.5 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded-md hover:bg-green-200 dark:hover:bg-green-900/70 transition-all duration-200 hover:scale-110 group/tooltip relative"
-                                        title="Accept request & auto-delete"
+                                        className="p-1 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded hover:bg-green-200 dark:hover:bg-green-900/70 transition-all duration-200"
+                                        title="Accept"
                                       >
-                                        <Check className="w-3.5 h-3.5" />
-                                        {/* Tooltip */}
-                                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                                          Accept request & auto-delete
-                                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
-                                        </div>
+                                        <Check className="w-3 h-3" />
                                       </button>
                                       <button 
                                         onClick={(e) => handleDeclineRequest(notification.id, e)}
-                                        className="p-1.5 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 rounded-md hover:bg-red-200 dark:hover:bg-red-900/70 transition-all duration-200 hover:scale-110 group/tooltip relative"
-                                        title="Decline request & auto-delete"
+                                        className="p-1 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-900/70 transition-all duration-200"
+                                        title="Decline"
                                       >
-                                        <X className="w-3.5 h-3.5" />
-                                        {/* Tooltip */}
-                                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                                          Decline request & auto-delete
-                                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
-                                        </div>
+                                        <X className="w-3 h-3" />
                                       </button>
                                     </>
                                   )}
@@ -794,15 +785,10 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                                   {notification.type === 'message' && (
                                     <button
                                       onClick={(e) => handleReplyToMessage(notification.id, e)}
-                                      className="p-1.5 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-all duration-200 hover:scale-110 group/tooltip relative"
-                                      title="Reply to message & auto-delete"
+                                      className="p-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-all duration-200"
+                                      title="Reply"
                                     >
-                                      <MessageCircle className="w-3.5 h-3.5" />
-                                      {/* Tooltip */}
-                                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                                        Reply to message & auto-delete
-                                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
-                                      </div>
+                                      <MessageCircle className="w-3 h-3" />
                                     </button>
                                   )}
                                 </div>
