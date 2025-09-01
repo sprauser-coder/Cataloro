@@ -1133,7 +1133,10 @@ async def delete_notification(notification_id: str, user_id: str = None):
         if user_id:
             query["user_id"] = user_id
         
-        result = await db.user_notifications.delete_one(query)
+        # Try both collections for compatibility
+        result = await db.notifications.delete_one(query)
+        if result.deleted_count == 0:
+            result = await db.user_notifications.delete_one(query)
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Notification not found")
@@ -1148,10 +1151,17 @@ async def delete_notification(notification_id: str, user_id: str = None):
 async def delete_user_notification(user_id: str, notification_id: str):
     """Delete specific user notification"""
     try:
-        result = await db.user_notifications.delete_one({
+        # Try both collections for compatibility
+        result = await db.notifications.delete_one({
             "user_id": user_id, 
             "id": notification_id
         })
+        
+        if result.deleted_count == 0:
+            result = await db.user_notifications.delete_one({
+                "user_id": user_id, 
+                "id": notification_id
+            })
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Notification not found")
