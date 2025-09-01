@@ -106,16 +106,37 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     
     return filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   };
-  const loadNotifications = async () => {
+  // Load notifications from backend with enhanced features
+  const loadNotifications = async (showNewNotificationAlert = false) => {
     if (!user?.id) return;
     
     try {
       const userNotifications = await liveService.getUserNotifications(user.id);
       const userMessages = await liveService.getUserMessages(user.id);
       
+      // Check for new notifications since last check
+      if (showNewNotificationAlert && notifications.length > 0) {
+        const newNotifications = userNotifications.filter(n => 
+          new Date(n.created_at) > new Date(lastNotificationCheck) && !n.is_read
+        );
+        
+        if (newNotifications.length > 0) {
+          playNotificationSound();
+          // Show browser notification if supported
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification(`${newNotifications.length} new notification${newNotifications.length > 1 ? 's' : ''}`, {
+              body: newNotifications[0].title,
+              icon: '/favicon.ico',
+              tag: 'cataloro-notification'
+            });
+          }
+        }
+      }
+      
       setNotifications(userNotifications);
       setUnreadNotifications(userNotifications.filter(n => !n.is_read).length);
       setUnreadMessages(userMessages.filter(m => !m.is_read && m.sender_id !== user.id).length);
+      setLastNotificationCheck(Date.now());
     } catch (error) {
       console.error('Failed to load notifications:', error);
       // Use demo data as fallback
