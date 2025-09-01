@@ -1448,30 +1448,127 @@ async def reject_buy_request(order_id: str, rejection_data: dict):
         raise HTTPException(status_code=500, detail=f"Failed to reject buy request: {str(e)}")
 
 @app.put("/api/orders/{order_id}/cancel")
-async def cancel_buy_request(order_id: str, cancellation_data: dict):
-    """Cancel a buy request (buyer action)"""
+async def cancel_order(order_id: str, cancel_data: dict):
+    """Cancel an order"""
     try:
-        buyer_id = cancellation_data.get("buyer_id")
-        if not buyer_id:
-            raise HTTPException(status_code=400, detail="buyer_id is required")
+        user_id = cancel_data.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id is required")
         
         # Find the order
-        order = await db.orders.find_one({"id": order_id, "buyer_id": buyer_id, "status": "pending"})
+        order = await db.orders.find_one({"id": order_id})
         if not order:
-            raise HTTPException(status_code=404, detail="Order not found or not pending")
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        # Check if user is authorized to cancel (buyer or seller)
+        if user_id not in [order.get("buyer_id"), order.get("seller_id")]:
+            raise HTTPException(status_code=403, detail="Not authorized to cancel this order")
+        
+        # Can only cancel pending or approved orders
+        if order["status"] not in ["pending", "approved"]:
+            raise HTTPException(status_code=400, detail="Order cannot be cancelled")
         
         # Update order status
         await db.orders.update_one(
             {"id": order_id},
-            {"$set": {"status": "cancelled"}}
+            {"$set": {"status": "cancelled", "cancelled_at": datetime.utcnow()}}
         )
         
-        return {"message": "Buy request cancelled successfully"}
+        # If order was approved, make listing available again
+        if order["status"] == "approved":
+            await db.listings.update_one(
+                {"id": order["listing_id"]},
+                {"$set": {"status": "active", "sold_at": None}}
+            )
+        
+        return {"message": "Order cancelled successfully"}
         
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to cancel buy request: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to cancel order: {str(e)}")
+
+@app.put("/api/orders/{order_id}/ship")
+async def mark_order_shipped(order_id: str, ship_data: dict):
+    """Mark order as shipped (seller action)"""
+    try:
+        user_id = ship_data.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id is required")
+        
+        # Find the order
+        order = await db.orders.find_one({"id": order_id, "seller_id": user_id, "status": "approved"})
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found or not approved")
+        
+        # Update order status
+        await db.orders.update_one(
+            {"id": order_id},
+            {"$set": {"status": "shipped", "shipped_at": datetime.utcnow()}}
+        )
+        
+        # Create notification for buyer
+        listing = await db.listings.find_one({"id": order["listing_id"]})
+        notification = {
+            "user_id": order["buyer_id"],
+            "title": "Order Shipped!",
+            "message": f"Your order for '{listing.get('title', 'Unknown item')}' has been shipped!",
+            "type": "order_shipped",
+            "is_read": False,
+            "created_at": datetime.utcnow()
+        }
+        
+        await db.user_notifications.insert_one(notification)
+        
+        return {"message": "Order marked as shipped"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark order as shipped: {str(e)}")
+
+@app.put("/api/orders/{order_id}/complete")
+async def complete_order(order_id: str, complete_data: dict):
+    """Complete order (buyer confirms receipt)"""
+    try:
+        user_id = complete_data.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id is required")
+        
+        # Find the order
+        order = await db.orders.find_one({"id": order_id, "buyer_id": user_id})
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found or not authorized")
+        
+        # Can complete from approved or shipped status
+        if order["status"] not in ["approved", "shipped"]:
+            raise HTTPException(status_code=400, detail="Order cannot be completed")
+        
+        # Update order status
+        await db.orders.update_one(
+            {"id": order_id},
+            {"$set": {"status": "completed", "completed_at": datetime.utcnow()}}
+        )
+        
+        # Create notification for seller
+        listing = await db.listings.find_one({"id": order["listing_id"]})
+        notification = {
+            "user_id": order["seller_id"],
+            "title": "Order Completed!",
+            "message": f"Your sale of '{listing.get('title', 'Unknown item')}' has been completed!",
+            "type": "order_completed",
+            "is_read": False,
+            "created_at": datetime.utcnow()
+        }
+        
+        await db.user_notifications.insert_one(notification)
+        
+        return {"message": "Order completed successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to complete order: {str(e)}")
 
 @app.post("/api/orders/cleanup-expired")
 async def cleanup_expired_orders():
