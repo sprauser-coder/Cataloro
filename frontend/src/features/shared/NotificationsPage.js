@@ -190,14 +190,11 @@ function NotificationsPage() {
       console.error('Failed to mark all as read:', error);
     }
   };
-      created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-      metadata: { amount: 459, item: 'Canon Camera Lens' }
-    },
-    {
-      id: '6',
-      title: 'Profile View',
-      message: 'Your profile was viewed 12 times today.',
-      type: 'profile_view',
+
+  // Handle refresh
+  const handleRefresh = () => {
+    fetchNotifications();
+  };
       is_read: true,
       priority: 'low',
       created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
