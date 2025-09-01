@@ -458,10 +458,40 @@ function DealCard({ deal, currentUserId }) {
           <div className="space-y-3">
             {deal.status === 'pending' && (
               <>
-                <button className="w-full cataloro-button-primary text-sm py-2">
+                <button 
+                  onClick={() => {
+                    if (isBuyer) {
+                      // Contact seller
+                      const sellerId = deal.seller_id || deal.seller?.id;
+                      window.location.href = `/messages?user=${sellerId}&subject=Deal ${deal.id}`;
+                    } else {
+                      // Review request - go to pending sales
+                      window.location.href = `/pending-sales`;
+                    }
+                  }}
+                  className="w-full cataloro-button-primary text-sm py-2"
+                >
                   {isBuyer ? 'Contact Seller' : 'Review Request'}
                 </button>
-                <button className="w-full cataloro-button-secondary text-red-600 border-red-300 hover:bg-red-50 text-sm py-2">
+                <button 
+                  onClick={async () => {
+                    if (confirm('Are you sure you want to cancel this deal?')) {
+                      try {
+                        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/${deal.id}/cancel`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ user_id: user.id })
+                        });
+                        if (response.ok) {
+                          window.location.reload();
+                        }
+                      } catch (error) {
+                        console.error('Failed to cancel deal:', error);
+                      }
+                    }
+                  }}
+                  className="w-full cataloro-button-secondary text-red-600 border-red-300 hover:bg-red-50 text-sm py-2"
+                >
                   Cancel Deal
                 </button>
               </>
@@ -469,29 +499,69 @@ function DealCard({ deal, currentUserId }) {
             
             {deal.status === 'approved' && (
               <>
-                <button className="w-full cataloro-button-primary text-sm py-2">
+                <button 
+                  onClick={async () => {
+                    try {
+                      const action = isBuyer ? 'complete' : 'ship';
+                      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/${deal.id}/${action}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: user.id })
+                      });
+                      if (response.ok) {
+                        window.location.reload();
+                      }
+                    } catch (error) {
+                      console.error('Failed to update deal status:', error);
+                    }
+                  }}
+                  className="w-full cataloro-button-primary text-sm py-2"
+                >
                   {isBuyer ? 'Confirm Receipt' : 'Mark as Shipped'}
                 </button>
-                <button className="w-full cataloro-button-secondary text-sm py-2">
+                <button 
+                  onClick={() => {
+                    const otherUserId = isBuyer ? (deal.seller_id || deal.seller?.id) : (deal.buyer_id || deal.buyer?.id);
+                    window.location.href = `/messages?user=${otherUserId}&subject=Deal ${deal.id}`;
+                  }}
+                  className="w-full cataloro-button-secondary text-sm py-2"
+                >
                   Message {isBuyer ? 'Seller' : 'Buyer'}
                 </button>
               </>
             )}
             
             {deal.status === 'completed' && (
-              <button className="w-full cataloro-button-secondary text-sm py-2">
+              <button 
+                onClick={() => {
+                  // Generate and view receipt
+                  window.open(`/receipt/${deal.id}`, '_blank');
+                }}
+                className="w-full cataloro-button-secondary text-sm py-2"
+              >
                 View Receipt
               </button>
             )}
 
             {deal.status === 'disputed' && (
-              <button className="w-full cataloro-button-primary text-sm py-2">
+              <button 
+                onClick={() => {
+                  window.location.href = `/support?deal=${deal.id}`;
+                }}
+                className="w-full cataloro-button-primary text-sm py-2"
+              >
                 Contact Support
               </button>
             )}
             
             {(deal.status === 'cancelled' || deal.status === 'rejected') && (
-              <button className="w-full cataloro-button-secondary text-sm py-2">
+              <button 
+                onClick={() => {
+                  // Show deal details modal or navigate to details page
+                  alert(`Deal ${deal.id} was ${deal.status}. Reason: ${deal.reason || 'No reason provided'}`);
+                }}
+                className="w-full cataloro-button-secondary text-sm py-2"
+              >
                 View Details
               </button>
             )}
