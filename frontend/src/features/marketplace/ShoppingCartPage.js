@@ -50,11 +50,13 @@ function ShoppingCartPage() {
 
   const [promoCode, setPromoCode] = useState('');
   const [pendingOrders, setPendingOrders] = useState([]);
+  const [approvedSales, setApprovedSales] = useState([]);
   const [loadingPending, setLoadingPending] = useState(false);
 
   useEffect(() => {
     if (user) {
       fetchPendingOrders();
+      fetchApprovedSales();
     }
   }, [user]);
 
@@ -73,6 +75,25 @@ function ShoppingCartPage() {
       console.error('Error fetching pending orders:', error);
     } finally {
       setLoadingPending(false);
+    }
+  };
+
+  const fetchApprovedSales = async () => {
+    if (!user) return;
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/seller/${user.id}`);
+      if (response.ok) {
+        const orders = await response.json();
+        // Get all approved orders where user is the seller
+        const sellerOrders = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/buyer/${user.id}`);
+        if (sellerOrders.ok) {
+          const buyerOrders = await sellerOrders.json();
+          setApprovedSales(buyerOrders.filter(order => order.status === 'approved'));
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching approved sales:', error);
     }
   };
 
