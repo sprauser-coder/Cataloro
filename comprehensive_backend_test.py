@@ -15,7 +15,7 @@ import uuid
 from datetime import datetime
 
 class CataloroLiveFunctionalityTester:
-    def __init__(self, base_url="https://marketplace-pro-7.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-marketplace.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.user_token = None
