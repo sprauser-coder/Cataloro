@@ -288,8 +288,8 @@ function AdminPanel() {
                     }`}
                   >
                     <Icon className="w-4 h-4 lg:w-5 lg:h-5 mr-1 lg:mr-2 flex-shrink-0" />
-                    <span className="hidden sm:inline">{tab.label}</span>
-                    <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+                    <span className="hidden lg:inline">{tab.label}</span>
+                    <span className="lg:hidden">{tab.shortLabel}</span>
                   </button>
                 );
               })}
