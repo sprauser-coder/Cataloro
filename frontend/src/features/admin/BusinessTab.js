@@ -237,7 +237,7 @@ function BusinessTab({ showToast }) {
         { id: 1, title: 'Enter Search Query', page: '/browse', icon: Search, status: 'completed' },
         { id: 2, title: 'Apply Filters', page: '/browse', icon: Filter, status: 'completed' },
         { id: 3, title: 'View Results', page: '/browse', icon: Eye, status: 'completed' },
-        { id: 4, title: 'Sort & Refine', page: '/browse', icon: ArrowUpDown, status: 'completed' },
+        { id: 4, title: 'Sort & Refine', page: '/browse', icon: Filter, status: 'completed' },
         { id: 5, title: 'Product Selection', page: '/product/:id', icon: Target, status: 'completed' }
       ],
       metrics: {
