@@ -51,7 +51,6 @@ function MessagesPage() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNewMessagePopup, setShowNewMessagePopup] = useState(false);
   const [newMessagePopup, setNewMessagePopup] = useState(null);
-  const messagesEndRef = useRef(null);
   const [isTyping, setIsTyping] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
   const [sending, setSending] = useState(false);
