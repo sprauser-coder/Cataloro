@@ -800,20 +800,20 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     )}
                   </div>
                   
-                  {/* Enhanced Footer */}
-                  <div className="px-6 py-3 border-t border-white/10">
+                  {/* Compact Footer */}
+                  <div className="px-4 py-2 border-t border-white/10">
                     <div className="flex items-center justify-between">
                       <Link
                         to="/notifications"
-                        className="text-sm text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white font-medium flex items-center transition-colors"
+                        className="text-xs text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white font-medium flex items-center transition-colors"
                         onClick={() => setShowNotifications(false)}
                       >
                         View all notifications
-                        <TrendingUp className="w-4 h-4 ml-1" />
+                        <TrendingUp className="w-3 h-3 ml-1" />
                       </Link>
                       
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {getFilteredNotifications().length} notification{getFilteredNotifications().length !== 1 ? 's' : ''}
+                        {getFilteredNotifications().length} total
                       </div>
                     </div>
                   </div>
