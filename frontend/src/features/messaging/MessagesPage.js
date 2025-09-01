@@ -559,7 +559,17 @@ function MessagesPage() {
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 truncate mb-1">
+                        <p 
+                          className="text-sm text-gray-600 dark:text-gray-400 truncate mb-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (conversation.lastMessage) {
+                              selectConversation(conversation);
+                              setTimeout(() => scrollToMessage(conversation.lastMessage.id), 100);
+                            }
+                          }}
+                          title="Click to scroll to this message"
+                        >
                           {conversation.lastMessage?.subject || 'No subject'}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
