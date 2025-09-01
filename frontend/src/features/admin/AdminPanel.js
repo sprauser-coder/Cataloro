@@ -248,6 +248,7 @@ function AdminPanel() {
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'users', label: 'User Management', icon: Users },
     { id: 'listings', label: 'Listings Management', icon: Package },
+    { id: 'business', label: 'Business', icon: Store },
     { id: 'cat-database', label: 'Cat Database', icon: Database },
     { id: 'settings', label: 'Site Settings', icon: Settings },
     { id: 'site-admin', label: 'Site Administration', icon: Shield }
