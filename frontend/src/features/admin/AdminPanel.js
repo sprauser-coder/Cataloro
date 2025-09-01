@@ -270,27 +270,30 @@ function AdminPanel() {
         </div>
       </div>
 
-      {/* Tab Navigation - Ultra Modern */}
+      {/* Tab Navigation - Responsive Design */}
       <div className="cataloro-card-glass">
         <div className="border-b border-white/10 dark:border-white/10">
-          <nav className="-mb-px flex space-x-8 px-6">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center px-6 py-4 text-sm font-medium border-b-2 ${
-                    activeTab === tab.id
-                      ? 'text-gray-900 dark:text-white border-blue-600 bg-white/10 dark:bg-white/10 backdrop-blur-md rounded-t-lg'
-                      : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 rounded-t-lg'
-                  }`}
-                >
-                  <Icon className="w-5 h-5 mr-2" />
-                  {tab.label}
-                </button>
-              );
-            })}
+          <nav className="-mb-px overflow-x-auto">
+            <div className="flex space-x-2 lg:space-x-4 xl:space-x-6 px-4 lg:px-6 min-w-max">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center px-3 lg:px-4 xl:px-6 py-3 lg:py-4 text-xs lg:text-sm font-medium border-b-2 whitespace-nowrap transition-all duration-200 ${
+                      activeTab === tab.id
+                        ? 'text-gray-900 dark:text-white border-blue-600 bg-white/10 dark:bg-white/10 backdrop-blur-md rounded-t-lg'
+                        : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 rounded-t-lg'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 lg:w-5 lg:h-5 mr-1 lg:mr-2 flex-shrink-0" />
+                    <span className="hidden sm:inline">{tab.label}</span>
+                    <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+                  </button>
+                );
+              })}
+            </div>
           </nav>
         </div>
       </div>
