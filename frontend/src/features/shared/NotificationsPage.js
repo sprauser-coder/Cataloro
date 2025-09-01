@@ -241,27 +241,19 @@ function NotificationsPage() {
     }
   };
 
-  // Mark notification as read
-  const handleMarkAsRead = (notificationId) => {
-    setNotifications(notifications.map(n => 
-      n.id === notificationId ? { ...n, is_read: true } : n
-    ));
-    setUnreadCount(prev => Math.max(0, prev - 1));
+  // Mark notification as read - Updated to use API
+  const handleMarkAsRead = async (notificationId) => {
+    await markAsRead(notificationId);
   };
 
-  // Mark all as read
-  const handleMarkAllAsRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, is_read: true })));
-    setUnreadCount(0);
+  // Mark all as read - Updated to use API
+  const handleMarkAllAsRead = async () => {
+    await markAllAsRead();
   };
 
-  // Delete notification
-  const handleDelete = (notificationId) => {
-    const deleted = notifications.find(n => n.id === notificationId);
-    setNotifications(notifications.filter(n => n.id !== notificationId));
-    if (deleted && !deleted.is_read) {
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    }
+  // Delete notification - Updated to use API
+  const handleDelete = async (notificationId) => {
+    await deleteNotification(notificationId);
   };
 
   // Bulk actions
