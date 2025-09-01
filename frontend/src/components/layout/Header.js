@@ -180,6 +180,41 @@ function Header() {
                           <p className="text-xs text-gray-400 mt-1">
                             {new Date(notification.created_at).toLocaleDateString()}
                           </p>
+                          
+                          {/* Notification Actions */}
+                          <div className="flex space-x-2 mt-2">
+                            {!notification.is_read && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  markNotificationAsRead(notification.id);
+                                }}
+                                className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
+                              >
+                                Mark Read
+                              </button>
+                            )}
+                            
+                            {notification.type === 'buy_request' && notification.order_id && (
+                              <Link
+                                to="/pending-sales"
+                                onClick={() => setShowNotificationDropdown(false)}
+                                className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded hover:bg-yellow-200"
+                              >
+                                View Request
+                              </Link>
+                            )}
+                            
+                            {notification.type === 'buy_approved' && (
+                              <Link
+                                to="/cart"
+                                onClick={() => setShowNotificationDropdown(false)}
+                                className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200"
+                              >
+                                View Details
+                              </Link>
+                            )}
+                          </div>
                         </div>
                         {!notification.is_read && (
                           <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
