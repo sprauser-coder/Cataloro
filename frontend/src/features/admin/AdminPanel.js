@@ -313,6 +313,12 @@ function AdminPanel() {
         />
       )}
       
+      {activeTab === 'business' && (
+        <BusinessTab 
+          showToast={showToast}
+        />
+      )}
+      
       {activeTab === 'cat-database' && (
         <CatDatabaseTab 
           showToast={showToast}
