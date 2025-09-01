@@ -230,148 +230,266 @@ function NotificationsPage() {
   };
 
   return (
-      case 'success':
-        return '✅';
-      case 'warning':
-        return '⚠️';
-      case 'error':
-        return '❌';
-      case 'buy_request':
-        return '🛒';
-      case 'buy_approved':
-        return '✅';
-      case 'buy_rejected':
-        return '❌';
-      case 'buy_expired':
-        return '⏰';
-      default:
-        return '🔔';
-    }
-  };
-
-  const getNotificationTypeColor = (type) => {
-    switch (type) {
-      case 'message':
-        return 'border-blue-500';
-      case 'info':
-        return 'border-blue-500';
-      case 'success':
-        return 'border-green-500';
-      case 'warning':
-        return 'border-yellow-500';
-      case 'error':
-        return 'border-red-500';
-      case 'buy_request':
-        return 'border-yellow-500';
-      case 'buy_approved':
-        return 'border-green-500';
-      case 'buy_rejected':
-        return 'border-red-500';
-      case 'buy_expired':
-        return 'border-orange-500';
-      default:
-        return 'border-gray-300';
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="spinner"></div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="fade-in">
-      {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Notifications</h1>
-            <p className="text-gray-600">Stay updated with your marketplace activity</p>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex space-x-3">
-            {unreadCount > 0 && (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Header */}
+        <div className="cataloro-card-glass p-8 mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center space-x-4 mb-6 lg:mb-0">
+              <div className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl">
+                <Bell className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Notifications</h1>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}` : 'All caught up!'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              {/* Sound toggle */}
               <button
-                onClick={handleMarkAllAsRead}
-                className="cataloro-button-secondary flex items-center"
+                onClick={() => {
+                  const newSoundEnabled = !soundEnabled;
+                  setSoundEnabled(newSoundEnabled);
+                  localStorage.setItem('cataloro_notification_sound', newSoundEnabled.toString());
+                }}
+                className="p-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title={soundEnabled ? 'Disable sounds' : 'Enable sounds'}
               >
-                <CheckCheck className="w-4 h-4 mr-2" />
-                Mark All Read
+                {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
               </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Stats and Filters */}
-      <div className="cataloro-card p-6 mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-          {/* Stats */}
-          <div className="flex space-x-6">
-            <div>
-              <span className="text-2xl font-bold text-blue-600">{notifications.length}</span>
-              <span className="text-sm text-gray-600 ml-1">Total</span>
-            </div>
-            <div>
-              <span className="text-2xl font-bold text-orange-600">{unreadCount}</span>
-              <span className="text-sm text-gray-600 ml-1">Unread</span>
-            </div>
-            <div>
-              <span className="text-2xl font-bold text-green-600">{notifications.length - unreadCount}</span>
-              <span className="text-sm text-gray-600 ml-1">Read</span>
+              
+              {/* Refresh */}
+              <button
+                onClick={() => window.location.reload()}
+                className="p-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Refresh notifications"
+              >
+                <RefreshCw className="w-5 h-5" />
+              </button>
+              
+              {/* Mark all read */}
+              {unreadCount > 0 && (
+                <button
+                  onClick={handleMarkAllAsRead}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                >
+                  Mark All Read
+                </button>
+              )}
             </div>
           </div>
+        </div>
 
-          {/* Filter */}
-          <div className="flex items-center space-x-3">
-            <Filter className="w-5 h-5 text-gray-400" />
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="cataloro-input w-auto"
-            >
-              <option value="all">All Notifications</option>
-              <option value="unread">Unread Only</option>
-              <option value="read">Read Only</option>
-            </select>
+        {/* Filters and Search */}
+        <div className="cataloro-card-glass p-6 mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            
+            {/* Search */}
+            <div className="relative flex-1 lg:max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search notifications..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-3 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Filter buttons */}
+            <div className="flex items-center space-x-2">
+              {[
+                { id: 'all', label: 'All', count: notifications.length },
+                { id: 'unread', label: 'Unread', count: unreadCount },
+                { id: 'message', label: 'Messages', count: notifications.filter(n => n.type === 'message').length },
+                { id: 'buy_request', label: 'Requests', count: notifications.filter(n => n.type === 'buy_request').length }
+              ].map(filterOption => (
+                <button
+                  key={filterOption.id}
+                  onClick={() => setFilter(filterOption.id)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    filter === filterOption.id
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {filterOption.label}
+                  {filterOption.count > 0 && (
+                    <span className="ml-2 px-2 py-0.5 bg-white/20 rounded-full text-xs">
+                      {filterOption.count}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Notifications List */}
-      {filteredNotifications.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Bell className="w-8 h-8 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {filter === 'all' ? 'No notifications' : `No ${filter} notifications`}
-          </h3>
-          <p className="text-gray-600">
-            {filter === 'all' 
-              ? 'When you get notifications, they\'ll appear here'
-              : `You don't have any ${filter} notifications at the moment`
-            }
-          </p>
-        </div>
-      ) : (
+        {/* Notifications List */}
         <div className="space-y-4">
-          {filteredNotifications.map((notification) => (
-            <NotificationCard
-              key={notification.id}
-              notification={notification}
-              onMarkAsRead={handleMarkAsRead}
-              onDelete={handleDelete}
-              getIcon={getNotificationIcon}
-              getTypeColor={getNotificationTypeColor}
-            />
-          ))}
+          {loading ? (
+            <div className="cataloro-card-glass p-12 text-center">
+              <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Loading notifications...</h3>
+            </div>
+          ) : filteredNotifications.length === 0 ? (
+            <div className="cataloro-card-glass p-12 text-center">
+              <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Bell className="w-12 h-12 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                {searchTerm ? 'No matching notifications' : 'No notifications'}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300">
+                {searchTerm ? 'Try adjusting your search terms.' : 'When you have new activity, it will appear here.'}
+              </p>
+            </div>
+          ) : (
+            filteredNotifications.map((notification) => {
+              const color = getNotificationColor(notification.type);
+              const isSelected = selectedNotifications.includes(notification.id);
+              
+              return (
+                <div
+                  key={notification.id}
+                  className={`cataloro-card-glass p-6 transition-all duration-300 hover:scale-[1.02] cursor-pointer ${
+                    !notification.is_read ? 'ring-2 ring-blue-500/30 bg-blue-50/30 dark:bg-blue-900/20' : ''
+                  } ${isSelected ? 'ring-2 ring-purple-500/50' : ''}`}
+                  onClick={() => {
+                    if (!notification.is_read) {
+                      handleMarkAsRead(notification.id);
+                    }
+                    if (notification.action_url) {
+                      window.location.href = notification.action_url;
+                    }
+                  }}
+                >
+                  <div className="flex items-start space-x-4">
+                    
+                    {/* Notification Icon */}
+                    <div className={`p-3 rounded-xl ${
+                      color === 'blue' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' :
+                      color === 'pink' ? 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400' :
+                      color === 'yellow' ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                      color === 'green' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' :
+                      color === 'red' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' :
+                      color === 'purple' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' :
+                      'bg-gray-100 text-gray-600 dark:bg-gray-900/30 dark:text-gray-400'
+                    }`}>
+                      {getNotificationIcon(notification.type)}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                            {notification.title}
+                          </h4>
+                          <p className="text-gray-600 dark:text-gray-300 mb-3">
+                            {notification.message}
+                          </p>
+                          
+                          {/* Metadata */}
+                          {notification.metadata && (
+                            <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
+                              {notification.metadata.amount && (
+                                <span className="flex items-center">
+                                  <DollarSign className="w-4 h-4 mr-1" />
+                                  ${notification.metadata.amount}
+                                </span>
+                              )}
+                              {notification.metadata.item && (
+                                <span className="flex items-center">
+                                  <Package className="w-4 h-4 mr-1" />
+                                  {notification.metadata.item}
+                                </span>
+                              )}
+                              {notification.metadata.views && (
+                                <span className="flex items-center">
+                                  <Eye className="w-4 h-4 mr-1" />
+                                  {notification.metadata.views} views
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Timestamp */}
+                          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <Clock className="w-4 h-4 mr-2" />
+                            {new Date(notification.created_at).toLocaleString()}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center space-x-2 ml-4">
+                          {!notification.is_read && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMarkAsRead(notification.id);
+                              }}
+                              className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                              title="Mark as read"
+                            >
+                              <Check className="w-4 h-4" />
+                            </button>
+                          )}
+                          
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(notification.id);
+                            }}
+                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                            title="Delete notification"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                          
+                          {notification.action_url && (
+                            <Link
+                              to={notification.action_url}
+                              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                              title="Go to related page"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <ArrowRight className="w-4 h-4" />
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Unread indicator */}
+                    {!notification.is_read && (
+                      <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse mt-1"></div>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
-      )}
+
+        {/* Summary */}
+        {filteredNotifications.length > 0 && (
+          <div className="cataloro-card-glass p-6 mt-8">
+            <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
+              <span>
+                Showing {filteredNotifications.length} of {notifications.length} notifications
+              </span>
+              <span>
+                {unreadCount} unread
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
