@@ -195,39 +195,6 @@ function NotificationsPage() {
   const handleRefresh = () => {
     fetchNotifications();
   };
-      is_read: true,
-      priority: 'low',
-      created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-      metadata: { views: 12 }
-    },
-    {
-      id: '7',
-      title: 'System Update',
-      message: 'New features have been added to the marketplace. Check them out!',
-      type: 'system',
-      is_read: false,
-      priority: 'medium',
-      created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      action_url: '/browse'
-    }
-  ];
-
-  useEffect(() => {
-    const loadNotifications = async () => {
-      setLoading(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setNotifications(demoNotifications);
-      setUnreadCount(demoNotifications.filter(n => !n.is_read).length);
-      setLoading(false);
-    };
-
-    loadNotifications();
-    
-    // Load sound preference
-    const soundPref = localStorage.getItem('cataloro_notification_sound');
-    setSoundEnabled(soundPref !== 'false');
-  }, []);
 
   // Filter and search notifications
   const filteredNotifications = notifications.filter(notification => {
