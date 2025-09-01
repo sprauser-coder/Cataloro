@@ -52,6 +52,9 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [siteBranding, setSiteBranding] = useState({});
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [notificationFilter, setNotificationFilter] = useState('all'); // all, unread, read
+  const [lastNotificationCheck, setLastNotificationCheck] = useState(Date.now());
   const navigate = useNavigate();
   const location = useLocation();
   const userMenuRef = useRef(null);
