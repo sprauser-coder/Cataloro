@@ -32,6 +32,7 @@ import {
   X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { liveService } from '../../services/liveService';
 import { Link } from 'react-router-dom';
 
 function NotificationsPage() {
