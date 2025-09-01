@@ -573,18 +573,34 @@ function MessagesPage() {
                           )}
                           <div className={`${!showAvatar ? (isOwn ? 'mr-11' : 'ml-11') : ''}`}>
                             <div
-                              className={`px-4 py-3 rounded-2xl ${
+                              className={`group relative px-4 py-3 rounded-2xl ${
                                 isOwn
                                   ? 'bg-blue-600 text-white'
                                   : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
                               }`}
                             >
+                              {/* Delete Message Button */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteMessage(message.id);
+                                }}
+                                className={`absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 rounded-full transition-all duration-200 hover:scale-110 ${
+                                  isOwn 
+                                    ? 'bg-red-500/20 text-red-200 hover:bg-red-500/30' 
+                                    : 'bg-red-500/10 text-red-600 hover:bg-red-500/20'
+                                }`}
+                                title="Delete message"
+                              >
+                                <DeleteIcon className="w-3 h-3" />
+                              </button>
+                              
                               {showAvatar && message.subject && (
                                 <p className={`text-xs font-medium mb-1 ${isOwn ? 'text-blue-100' : 'text-gray-600 dark:text-gray-400'}`}>
                                   {message.subject}
                                 </p>
                               )}
-                              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                              <p className="text-sm whitespace-pre-wrap pr-6">{message.content}</p>
                             </div>
                             <div className={`flex items-center mt-1 space-x-2 text-xs text-gray-500 dark:text-gray-400 ${isOwn ? 'justify-end' : 'justify-start'}`}>
                               <span>{new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
