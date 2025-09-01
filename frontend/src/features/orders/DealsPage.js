@@ -340,15 +340,19 @@ function DealsPage() {
   );
 }
 
-// Deal Card Component
+// Enhanced Deal Card Component
 function DealCard({ deal, currentUserId }) {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'pending':
         return <Clock className="w-5 h-5 text-orange-500" />;
+      case 'approved':
+        return <CheckCircle className="w-5 h-5 text-green-500" />;
       case 'completed':
         return <CheckCircle className="w-5 h-5 text-green-500" />;
       case 'cancelled':
+        return <XCircle className="w-5 h-5 text-red-500" />;
+      case 'rejected':
         return <XCircle className="w-5 h-5 text-red-500" />;
       case 'disputed':
         return <AlertCircle className="w-5 h-5 text-yellow-500" />;
@@ -361,9 +365,13 @@ function DealCard({ deal, currentUserId }) {
     switch (status) {
       case 'pending':
         return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300';
+      case 'approved':
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300';
       case 'completed':
         return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
       case 'cancelled':
+        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
+      case 'rejected':
         return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
       case 'disputed':
         return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300';
@@ -374,6 +382,7 @@ function DealCard({ deal, currentUserId }) {
 
   const isBuyer = deal.buyer_id === currentUserId;
   const userRole = isBuyer ? 'Buyer' : 'Seller';
+  const otherParty = isBuyer ? deal.seller : deal.buyer;
 
   return (
     <div className="cataloro-card-glass p-6">
