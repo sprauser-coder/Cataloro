@@ -132,11 +132,14 @@ function Header() {
 
             {/* Notification Dropdown */}
             {showNotificationDropdown && (
-              <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 max-h-96 overflow-y-auto">
+              <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-[9999] max-h-96 overflow-y-auto">
                 <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                   <p className="text-sm font-medium text-gray-900">Notifications</p>
                   <button
-                    onClick={() => fetchNotifications(user?.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fetchNotifications(user?.id);
+                    }}
                     className="text-gray-400 hover:text-gray-600"
                   >
                     <RefreshCw className="w-4 h-4" />
