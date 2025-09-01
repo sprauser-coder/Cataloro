@@ -481,14 +481,24 @@ function MessagesPage() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <button className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <Phone className="w-5 h-5" />
+                      {/* Delete Conversation Button */}
+                      <button 
+                        onClick={() => handleDeleteConversation(selectedConversation.conversation_id)}
+                        className="p-2 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        title="Delete conversation"
+                      >
+                        <DeleteIcon className="w-5 h-5" />
                       </button>
-                      <button className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <Video className="w-5 h-5" />
-                      </button>
-                      <button className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <Info className="w-5 h-5" />
+                      {/* View User Profile Button */}
+                      <button 
+                        onClick={() => {
+                          const otherUserId = selectedConversation.participants?.find(p => p.id !== user?.id)?.id || 'unknown';
+                          window.location.href = `/profile/${otherUserId}`;
+                        }}
+                        className="p-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                        title="View user profile"
+                      >
+                        <User className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
