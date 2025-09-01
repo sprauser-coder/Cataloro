@@ -435,8 +435,8 @@ function MessagesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="max-w-6xl mx-auto h-[calc(80vh-2rem)] flex flex-col m-4">
+    <div className={`${isFullPageChat ? 'fixed inset-0 z-50 bg-white dark:bg-gray-900' : 'min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900'}`}>
+      <div className={`${isFullPageChat ? 'h-full' : 'max-w-6xl mx-auto h-[calc(80vh-2rem)]'} flex flex-col ${isFullPageChat ? 'p-0' : 'm-4'}`}>
         
         {/* Enhanced Header - No Background */}
         <div className="border-b border-white/20 p-6">
@@ -454,6 +454,25 @@ function MessagesPage() {
               <p className="text-gray-600 dark:text-gray-300">Communicate with buyers and sellers</p>
             </div>
             <div className="flex items-center space-x-4 mt-4 lg:mt-0">
+              {/* Full Page Chat Toggle Button */}
+              <button
+                onClick={toggleFullPageChat}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl font-medium transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                title={isFullPageChat ? "Exit full page" : "Enter full page chat"}
+              >
+                {isFullPageChat ? (
+                  <>
+                    <Minimize2 className="w-5 h-5 mr-2" />
+                    Exit Full Page
+                  </>
+                ) : (
+                  <>
+                    <Maximize2 className="w-5 h-5 mr-2" />
+                    Full Page Chat
+                  </>
+                )}
+              </button>
+              
               {/* Message Filter */}
               <select
                 value={messageFilter}
