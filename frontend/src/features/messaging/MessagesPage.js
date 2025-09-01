@@ -588,12 +588,12 @@ function MessagesPage() {
           <div className="flex-1 flex flex-col">
             {selectedConversation ? (
               <>
-                {/* Thread Header - No Background */}
-                <div className="p-6 border-b border-gray-200/30 dark:border-gray-700/30">
+                {/* Thread Header - Simplified, No Background */}
+                <div className="p-4 border-b border-gray-200/30 dark:border-gray-700/30 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                        <User className="w-6 h-6 text-white" />
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                        <User className="w-5 h-5 text-white" />
                       </div>
                       <div>
                         <h3 className="text-lg font-bold text-gray-900 dark:text-white">
@@ -628,8 +628,8 @@ function MessagesPage() {
                   </div>
                 </div>
 
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900/50 dark:to-gray-800">
+                {/* Messages - Clean design without headers */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-3 bg-gradient-to-b from-gray-50/30 to-white/50 dark:from-gray-900/30 dark:to-gray-800/50">
                   {/* Messages - newest at bottom */}
                   {conversationMessages
                     .slice() // Create a copy to avoid mutating original array
@@ -637,11 +637,15 @@ function MessagesPage() {
                     .map((message, index, reversedArray) => {
                     const isOwn = message.sender_id === user?.id;
                     const showAvatar = index === 0 || reversedArray[index - 1].sender_id !== message.sender_id;
+                    const isHighlighted = highlightedMessageId === message.id;
                     
                     return (
                       <div
                         key={message.id}
-                        className={`flex ${isOwn ? 'justify-end' : 'justify-start'} ${showAvatar ? 'mt-4' : 'mt-1'}`}
+                        ref={(el) => messageRefs.current[message.id] = el}
+                        className={`flex ${isOwn ? 'justify-end' : 'justify-start'} ${showAvatar ? 'mt-4' : 'mt-2'} ${
+                          isHighlighted ? 'animate-pulse' : ''
+                        }`}
                       >
                         <div className={`flex space-x-3 max-w-xs lg:max-w-md ${isOwn ? 'flex-row-reverse space-x-reverse' : ''}`}>
                           {showAvatar && (
@@ -653,10 +657,12 @@ function MessagesPage() {
                           )}
                           <div className={`${!showAvatar ? (isOwn ? 'mr-11' : 'ml-11') : ''}`}>
                             <div
-                              className={`group relative px-4 py-3 rounded-2xl ${
-                                isOwn
-                                  ? 'bg-blue-600 text-white'
-                                  : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
+                              className={`group relative px-4 py-3 rounded-2xl transition-all duration-300 ${
+                                isHighlighted 
+                                  ? 'ring-2 ring-yellow-400 bg-yellow-50 dark:bg-yellow-900/20' 
+                                  : isOwn
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
                               }`}
                             >
                               {/* Delete Message Button */}
@@ -675,11 +681,7 @@ function MessagesPage() {
                                 <DeleteIcon className="w-3 h-3" />
                               </button>
                               
-                              {showAvatar && message.subject && (
-                                <p className={`text-xs font-medium mb-1 ${isOwn ? 'text-blue-100' : 'text-gray-600 dark:text-gray-400'}`}>
-                                  {message.subject}
-                                </p>
-                              )}
+                              {/* Message content without subject headers */}
                               <p className="text-sm whitespace-pre-wrap pr-6">{message.content}</p>
                             </div>
                             <div className={`flex items-center mt-1 space-x-2 text-xs text-gray-500 dark:text-gray-400 ${isOwn ? 'justify-end' : 'justify-start'}`}>
