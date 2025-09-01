@@ -1051,36 +1051,11 @@ input[type="checkbox"]:checked::after {
 }
 
 /* ===== RESPONSIVE ADMIN TAB NAVIGATION ===== */
-/* Custom scrollbar for horizontal tab navigation */
-.admin-tab-nav::-webkit-scrollbar {
-  height: 4px;
-}
-
-.admin-tab-nav::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-}
-
-.admin-tab-nav::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.5);
-  border-radius: 2px;
-}
-
-.admin-tab-nav::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.7);
-}
-
-/* Smooth scrolling for tab navigation */
-.admin-tab-nav {
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(59, 130, 246, 0.5) rgba(255, 255, 255, 0.1);
-}
-
 /* Tab transition improvements */
 .admin-tab-button {
   transition: all 0.2s ease-in-out;
   will-change: transform, background-color;
+  min-height: 3rem;
 }
 
 .admin-tab-button:hover {
@@ -1090,4 +1065,10 @@ input[type="checkbox"]:checked::after {
 .admin-tab-button.active {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Ensure tabs fit evenly */
+.admin-tab-button span {
+  word-break: break-word;
+  hyphens: auto;
 }
