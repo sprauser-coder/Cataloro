@@ -652,44 +652,77 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                                   {new Date(notification.created_at).toLocaleString()}
                                 </div>
                                 
-                                {/* Quick Action Buttons */}
-                                {!notification.is_read && (
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      markNotificationAsRead(notification.id);
-                                    }}
-                                    className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-colors"
-                                  >
-                                    Mark Read
-                                  </button>
-                                )}
-                                
-                                {/* Enhanced Quick Actions for Different Types */}
-                                {notification.type === 'buy_request' && (
-                                  <div className="flex space-x-1">
-                                    <Link
-                                      to="/pending-sales"
-                                      onClick={() => setShowNotifications(false)}
-                                      className="text-xs bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-900/70 transition-colors"
+                                {/* Quick Action Icon Buttons */}
+                                <div className="flex items-center space-x-1">
+                                  {!notification.is_read && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        markNotificationAsRead(notification.id);
+                                      }}
+                                      className="p-1.5 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-all duration-200 hover:scale-110 group/tooltip relative"
+                                      title="Mark as read"
                                     >
-                                      Approve
-                                    </Link>
-                                    <button className="text-xs bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-900/70 transition-colors">
-                                      Reject
+                                      <CheckCheck className="w-3.5 h-3.5" />
+                                      {/* Tooltip */}
+                                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                                        Mark as read
+                                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                      </div>
                                     </button>
-                                  </div>
-                                )}
-                                
-                                {notification.type === 'message' && (
-                                  <Link
-                                    to="/messages"
-                                    onClick={() => setShowNotifications(false)}
-                                    className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-colors"
-                                  >
-                                    Reply
-                                  </Link>
-                                )}
+                                  )}
+                                  
+                                  {/* Enhanced Quick Actions for Different Types */}
+                                  {notification.type === 'buy_request' && (
+                                    <>
+                                      <Link
+                                        to="/pending-sales"
+                                        onClick={() => setShowNotifications(false)}
+                                        className="p-1.5 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded-md hover:bg-green-200 dark:hover:bg-green-900/70 transition-all duration-200 hover:scale-110 group/tooltip relative"
+                                        title="Accept request"
+                                      >
+                                        <Check className="w-3.5 h-3.5" />
+                                        {/* Tooltip */}
+                                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                                          Accept request
+                                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                        </div>
+                                      </Link>
+                                      <button 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          // TODO: Add reject functionality
+                                          showToast && showToast('Request declined', 'info');
+                                        }}
+                                        className="p-1.5 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 rounded-md hover:bg-red-200 dark:hover:bg-red-900/70 transition-all duration-200 hover:scale-110 group/tooltip relative"
+                                        title="Decline request"
+                                      >
+                                        <X className="w-3.5 h-3.5" />
+                                        {/* Tooltip */}
+                                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                                          Decline request
+                                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                        </div>
+                                      </button>
+                                    </>
+                                  )}
+                                  
+                                  {notification.type === 'message' && (
+                                    <Link
+                                      to="/messages"
+                                      onClick={() => setShowNotifications(false)}
+                                      className="p-1.5 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-all duration-200 hover:scale-110 group/tooltip relative"
+                                      title="Reply to message"
+                                    >
+                                      <MessageCircle className="w-3.5 h-3.5" />
+                                      {/* Tooltip */}
+                                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                                        Reply to message
+                                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                                      </div>
+                                    </Link>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
