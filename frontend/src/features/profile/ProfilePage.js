@@ -31,6 +31,7 @@ import {
   Download,
   Upload,
   Check,
+  CheckCircle,
   X,
   AlertCircle,
   RefreshCw,
