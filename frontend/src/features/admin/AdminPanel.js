@@ -3039,6 +3039,7 @@ function ListingsTab({ showToast }) {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [activeSubTab, setActiveSubTab] = useState('active'); // Sub-tab state
   const [selectedListings, setSelectedListings] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingListing, setEditingListing] = useState(null);
