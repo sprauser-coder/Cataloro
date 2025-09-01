@@ -60,7 +60,52 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   const userMenuRef = useRef(null);
   const notificationRef = useRef(null);
 
-  // Load notifications from backend
+  // Enhanced notification sound
+  const playNotificationSound = () => {
+    if (soundEnabled) {
+      try {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmIdBz6S3fPNeSsFJICO89iMOQkXZL7n6KdUFAg+ltryxnkpBSl+zfDZjjkKGGG+6OSlSxELStPx07dORgk2jNnuw3MoByJ9yvDQjj0KFmSx5eeScxELTanxx4A=');
+        audio.volume = 0.3;
+        audio.play().catch(console.error);
+      } catch (error) {
+        console.error('Could not play notification sound:', error);
+      }
+    }
+  };
+
+  // Delete notification
+  const deleteNotification = async (notificationId, event) => {
+    event.stopPropagation();
+    try {
+      // Remove from local state immediately
+      setNotifications(notifications.filter(n => n.id !== notificationId));
+      const deletedNotification = notifications.find(n => n.id === notificationId);
+      if (deletedNotification && !deletedNotification.is_read) {
+        setUnreadNotifications(prev => Math.max(0, prev - 1));
+      }
+      // TODO: Add API call to delete from backend if needed
+    } catch (error) {
+      console.error('Failed to delete notification:', error);
+    }
+  };
+
+  // Enhanced notification filtering
+  const getFilteredNotifications = () => {
+    let filtered = notifications;
+    
+    switch (notificationFilter) {
+      case 'unread':
+        filtered = notifications.filter(n => !n.is_read);
+        break;
+      case 'read':
+        filtered = notifications.filter(n => n.is_read);
+        break;
+      default:
+        filtered = notifications;
+    }
+    
+    return filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  };
   const loadNotifications = async () => {
     if (!user?.id) return;
     
