@@ -332,13 +332,18 @@ function MessagesPage() {
   const demoConversations = [
     {
       id: 'user1',
+      conversation_id: 'conv1',
       name: 'John Seller',
+      participants: [
+        { id: 'user1', name: 'John Seller' },
+        { id: user?.id || 'demo_user', name: user?.full_name || 'Demo User' }
+      ],
       messages: [
         {
           id: '1',
           sender_id: 'user1',
           sender_name: 'John Seller',
-          recipient_id: user?.id,
+          recipient_id: user?.id || 'demo_user',
           subject: 'Question about your MacBook Pro listing',
           content: 'Hi! Is the MacBook Pro still available? I\'m very interested and can pick it up today. I can offer the full asking price.',
           is_read: false,
@@ -346,8 +351,8 @@ function MessagesPage() {
         },
         {
           id: '4',
-          sender_id: user?.id,
-          sender_name: user?.full_name || 'You',
+          sender_id: user?.id || 'demo_user',
+          sender_name: user?.full_name || 'Demo User',
           recipient_id: 'user1',
           subject: 'Re: Question about your MacBook Pro listing',
           content: 'Yes, it\'s still available! When would be a good time for you to pick it up?',
