@@ -31,7 +31,12 @@ import {
   Star,
   Clock,
   Eye,
-  TrendingUp
+  TrendingUp,
+  Trash2,
+  RefreshCw,
+  Volume2,
+  VolumeX,
+  BellOff
 } from 'lucide-react';
 import { APP_ROUTES } from '../../config/directions';
 import { useAuth } from '../../context/AuthContext';
