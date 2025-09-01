@@ -2589,6 +2589,13 @@ function SiteAdministrationTab({ showToast }) {
           </div>
         )}
 
+        {/* Content Management Section */}
+        {activeSection === 'content' && (
+          <div className="space-y-6">
+            <ContentManagementSystem />
+          </div>
+        )}
+
         {/* Hero Selection Section */}
         {activeSection === 'hero' && (
           <div className="space-y-6">
