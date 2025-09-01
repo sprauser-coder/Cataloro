@@ -1,10 +1,11 @@
 /**
- * CATALORO - Simple Login Page (No Context Dependencies)
+ * CATALORO - Ultra-Modern Login Page
+ * Premium glassmorphism design with advanced animations
  */
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Store, ArrowRight, Shield, User, Sparkles } from 'lucide-react';
 import { UI_CONFIG } from '../../config/directions';
 
 function SimpleLoginPage() {
@@ -16,6 +17,7 @@ function SimpleLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Check if user is already logged in
   React.useEffect(() => {
@@ -42,6 +44,7 @@ function SimpleLoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setIsAnimating(true);
     setError(null);
     
     try {
