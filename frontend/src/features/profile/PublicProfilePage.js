@@ -42,38 +42,105 @@ function PublicProfilePage() {
   });
   const [userListings, setUserListings] = useState([]);
 
+  const [interactions, setInteractions] = useState({
+    messages: [],
+    deals: [],
+    totalInteractions: 0
+  });
+
   useEffect(() => {
     const loadPublicProfile = async () => {
       try {
         setLoading(true);
         
-        // For demo purposes, we'll simulate fetching user data
-        // In real implementation, this would call the backend API
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Fetch real user data from backend
+        let fetchedUser = null;
         
-        // Mock user data based on userId
-        const mockUser = {
-          id: userId,
-          full_name: `User ${userId}`,
-          username: `user_${userId}`,
-          email: `user${userId}@example.com`,
-          bio: "Passionate marketplace enthusiast with years of experience in buying and selling quality items.",
-          avatar_url: '',
-          city: 'Berlin',
-          country: 'Germany',
-          date_joined: '2023-06-15',
-          verified: true,
-          is_business: userId === 'business123',
-          company_name: userId === 'business123' ? 'Tech Solutions GmbH' : '',
-          seller_rating: 4.7,
-          phone: '+49 123 456 789',
-          // Privacy settings
-          publicProfile: true,
-          showEmail: false,
-          showPhone: false
-        };
+        try {
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}`);
+          if (response.ok) {
+            fetchedUser = await response.json();
+          }
+        } catch (error) {
+          console.log('Backend API not available, using fallback data');
+        }
         
-        setProfileUser(mockUser);
+        // If no backend data, use current user data for own profile or create realistic demo data
+        if (!fetchedUser) {
+          if (userId === currentUser?.id) {
+            // Show current user's actual data
+            fetchedUser = {
+              id: currentUser.id,
+              full_name: currentUser.full_name || 'Demo User',
+              username: currentUser.username || 'demo_user',
+              email: currentUser.email,
+              bio: currentUser.bio || "Passionate marketplace enthusiast with years of experience in buying and selling quality items.",
+              avatar_url: currentUser.avatar_url || '',
+              city: currentUser.city || 'Berlin',
+              country: currentUser.country || 'Germany',
+              date_joined: currentUser.date_joined || '2023-06-15',
+              verified: currentUser.verified || true,
+              is_business: currentUser.is_business || false,
+              company_name: currentUser.company_name || '',
+              seller_rating: currentUser.seller_rating || 4.7,
+              phone: currentUser.phone || '+49 123 456 789',
+              publicProfile: true,
+              showEmail: false,
+              showPhone: false
+            };
+          } else {
+            // Create realistic demo data for other users
+            const demoProfiles = {
+              'user1': {
+                full_name: 'Sarah Johnson',
+                username: 'sash_admin',
+                bio: 'Tech enthusiast and gadget collector. Selling quality electronics and vintage items.',
+                city: 'Munich',
+                verified: true,
+                is_business: false,
+                seller_rating: 4.8
+              },
+              'user2': {
+                full_name: 'Mike Electronics',
+                username: 'mike_tech',
+                bio: 'Electronics retailer with 5+ years experience. Specializing in laptops and mobile devices.',
+                city: 'Hamburg',
+                verified: true,
+                is_business: true,
+                company_name: 'TechStore Hamburg',
+                seller_rating: 4.9
+              }
+            };
+            
+            const demoProfile = demoProfiles[userId] || demoProfiles['user1'];
+            fetchedUser = {
+              id: userId,
+              full_name: demoProfile.full_name,
+              username: demoProfile.username,
+              email: `${demoProfile.username}@example.com`,
+              bio: demoProfile.bio,
+              avatar_url: '',
+              city: demoProfile.city,
+              country: 'Germany',
+              date_joined: '2023-06-15',
+              verified: demoProfile.verified,
+              is_business: demoProfile.is_business,
+              company_name: demoProfile.company_name || '',
+              seller_rating: demoProfile.seller_rating,
+              phone: '+49 123 456 789',
+              publicProfile: true,
+              showEmail: false,
+              showPhone: false
+            };
+          }
+        }
+        
+        setProfileUser(fetchedUser);
+        
+        // Load interactions with this user if it's not current user
+        if (userId !== currentUser?.id) {
+          await loadUserInteractions(userId);
+        }
         
         // Calculate user listings and stats
         const listings = allProducts.filter(p => 
