@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class MyListingsInvestigator:
-    def __init__(self, base_url="https://seller-status-fix.preview.emergentagent.com"):
+    def __init__(self, base_url="https://trade-platform-30.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
         self.test_user_id = "68b191ec38e6062fee10bd27"  # admin@cataloro.com as mentioned in review

@@ -9,7 +9,7 @@ import json
 
 def test_listing_creation_detailed():
     """Test the exact scenario users are reporting"""
-    base_url = "https://seller-status-fix.preview.emergentagent.com"
+    base_url = "https://trade-platform-30.preview.emergentagent.com"
     
     print("🔍 DETAILED LISTING CREATION ANALYSIS")
     print("=" * 50)

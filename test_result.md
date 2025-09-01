@@ -270,7 +270,7 @@
    - All services healthy and responsive
 
 3. **Environment Configuration** ✅ PASSED
-   - Backend URL: https://seller-status-fix.preview.emergentagent.com ✅ WORKING
+   - Backend URL: https://trade-platform-30.preview.emergentagent.com ✅ WORKING
    - MongoDB URL: mongodb://localhost:27017 ✅ WORKING
    - All API routes properly prefixed with '/api'
 

@@ -10,7 +10,7 @@ import json
 import time
 
 class PersistentListingsTest:
-    def __init__(self, base_url="https://seller-status-fix.preview.emergentagent.com"):
+    def __init__(self, base_url="https://trade-platform-30.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
         self.admin_user = None
