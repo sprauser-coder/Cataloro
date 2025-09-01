@@ -48,6 +48,45 @@ function PublicProfilePage() {
     totalInteractions: 0
   });
 
+  // Load interactions (messages and deals) with this user
+  const loadUserInteractions = async (targetUserId) => {
+    try {
+      // Mock interaction data - in real app, this would fetch from backend
+      const mockInteractions = {
+        messages: [
+          {
+            id: '1',
+            subject: 'Question about MacBook Pro',
+            last_message: 'Is this still available?',
+            created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+          },
+          {
+            id: '2', 
+            subject: 'Pickup arrangement',
+            last_message: 'When can we meet?',
+            created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+          }
+        ],
+        deals: [
+          {
+            id: '1',
+            item_title: 'iPhone 13 Pro',
+            amount: 699,
+            status: 'completed',
+            date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+          }
+        ]
+      };
+      
+      setInteractions({
+        ...mockInteractions,
+        totalInteractions: mockInteractions.messages.length + mockInteractions.deals.length
+      });
+    } catch (error) {
+      console.error('Failed to load user interactions:', error);
+    }
+  };
+
   useEffect(() => {
     const loadPublicProfile = async () => {
       try {
