@@ -1050,6 +1050,84 @@ input[type="checkbox"]:checked::after {
   animation: toast-slide-out 0.3s ease-in;
 }
 
+/* ===== NOTIFICATION ICON BUTTON TOOLTIPS ===== */
+/* Enhanced tooltip animations */
+@keyframes tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.group\/tooltip:hover .tooltip-content {
+  animation: tooltip-fade-in 0.2s ease-out;
+}
+
+/* Icon button hover effects */
+.notification-icon-btn {
+  transition: all 0.2s ease-in-out;
+  position: relative;
+}
+
+.notification-icon-btn:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+
+.notification-icon-btn:active {
+  transform: scale(0.95);
+}
+
+/* Tooltip arrow styling */
+.tooltip-arrow {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid #1f2937;
+}
+
+.dark .tooltip-arrow {
+  border-top-color: #374151;
+}
+
+/* Better tooltip positioning */
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-content {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  background-color: #1f2937;
+  color: white;
+  font-size: 11px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 1000;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.dark .tooltip-content {
+  background-color: #374151;
+}
+
+.tooltip-wrapper:hover .tooltip-content {
+  opacity: 1;
+}
+
 /* ===== RESPONSIVE ADMIN TAB NAVIGATION ===== */
 /* Tab transition improvements */
 .admin-tab-button {
