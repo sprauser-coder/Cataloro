@@ -230,6 +230,14 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     // Load notifications if user is available
     if (user?.id) {
       loadNotifications();
+      requestNotificationPermission();
+      
+      // Set up real-time notification polling every 30 seconds
+      const notificationInterval = setInterval(() => {
+        loadNotifications(true);
+      }, 30000);
+      
+      return () => clearInterval(notificationInterval);
     }
 
     // Listen for localStorage changes (when admin updates branding)
@@ -252,6 +260,12 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       window.removeEventListener('brandingUpdated', handleBrandingUpdate);
     };
   }, [user?.id]);
+
+  // Load sound preference from localStorage
+  useEffect(() => {
+    const soundPref = localStorage.getItem('cataloro_notification_sound');
+    setSoundEnabled(soundPref !== 'false');
+  }, []);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
