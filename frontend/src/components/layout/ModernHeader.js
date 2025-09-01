@@ -585,9 +585,9 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 )}
               </button>
 
-              {/* Enhanced Notifications Dropdown - State-of-the-Art Design */}
+              {/* Enhanced Notifications Dropdown - Redesigned for Better Width Management */}
               {showNotifications && (
-                <div className="absolute right-0 mt-3 w-96 rounded-2xl shadow-2xl py-3 z-50 notifications-dropdown-enhanced animate-in" style={{
+                <div className="absolute right-0 mt-3 w-80 max-w-[90vw] rounded-2xl shadow-2xl py-3 z-50 notifications-dropdown-enhanced animate-in" style={{
                   background: darkMode 
                     ? 'rgba(0, 0, 0, 0.95)'
                     : 'rgba(255, 255, 255, 0.95)',
@@ -597,35 +597,35 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     : '1px solid rgba(0, 0, 0, 0.2)',
                   animation: 'slideDown 0.3s ease-out'
                 }}>
-                  {/* Enhanced Header with Controls */}
-                  <div className="px-6 py-4 border-b border-white/10">
+                  {/* Compact Header with Controls */}
+                  <div className="px-4 py-3 border-b border-white/10">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-bold text-gray-900 dark:text-white text-lg flex items-center">
-                        <Bell className="w-5 h-5 mr-2" />
+                      <h3 className="font-bold text-gray-900 dark:text-white text-base flex items-center">
+                        <Bell className="w-4 h-4 mr-2" />
                         Notifications
                         {unreadNotifications > 0 && (
-                          <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
+                          <span className="ml-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full animate-pulse">
                             {unreadNotifications}
                           </span>
                         )}
                       </h3>
                     </div>
                     
-                    {/* Enhanced Controls */}
+                    {/* Compact Controls */}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        {/* Filter Dropdown */}
+                      <div className="flex items-center space-x-1.5">
+                        {/* Compact Filter Dropdown */}
                         <select
                           value={notificationFilter}
                           onChange={(e) => setNotificationFilter(e.target.value)}
-                          className="text-xs bg-transparent border border-white/20 rounded-lg px-2 py-1 text-gray-600 dark:text-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="text-xs bg-transparent border border-white/20 rounded-md px-1.5 py-1 text-gray-600 dark:text-white/80 focus:outline-none focus:ring-1 focus:ring-blue-500 min-w-0 w-16"
                         >
                           <option value="all">All</option>
-                          <option value="unread">Unread</option>
+                          <option value="unread">New</option>
                           <option value="read">Read</option>
                         </select>
                         
-                        {/* Sound Toggle */}
+                        {/* Compact Action Buttons */}
                         <button
                           onClick={() => {
                             const newSoundEnabled = !soundEnabled;
@@ -635,21 +635,20 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                           className="p-1 text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white transition-colors"
                           title={soundEnabled ? 'Disable sound' : 'Enable sound'}
                         >
-                          {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                          {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
                         </button>
                         
-                        {/* Refresh Button */}
                         <button 
                           onClick={() => loadNotifications()}
                           className="p-1 text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white transition-colors"
-                          title="Refresh notifications"
+                          title="Refresh"
                         >
-                          <RefreshCw className="w-4 h-4" />
+                          <RefreshCw className="w-3.5 h-3.5" />
                         </button>
                       </div>
                       
                       {/* Quick Actions */}
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center">
                         {unreadNotifications > 0 && (
                           <button 
                             onClick={markAllNotificationsAsRead}
@@ -665,11 +664,11 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   {/* Scrollable Notifications List */}
                   <div className="max-h-80 overflow-y-auto custom-scrollbar">
                     {getFilteredNotifications().length === 0 ? (
-                      <div className="px-6 py-8 text-center">
-                        <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                          <Bell className="w-8 h-8 text-gray-400" />
+                      <div className="px-4 py-6 text-center">
+                        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Bell className="w-6 h-6 text-gray-400" />
                         </div>
-                        <p className="text-gray-600 dark:text-gray-400 font-medium">
+                        <p className="text-gray-600 dark:text-gray-400 font-medium text-sm">
                           {notificationFilter === 'all' ? 'No notifications yet' : 
                            notificationFilter === 'unread' ? 'No unread notifications' : 
                            'No read notifications'}
