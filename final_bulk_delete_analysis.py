@@ -11,7 +11,7 @@ import time
 def final_analysis():
     """Comprehensive analysis of the bulk delete issue"""
     
-    base_url = "https://trade-platform-30.preview.emergentagent.com"
+    base_url = "https://marketplace-pro-7.preview.emergentagent.com"
     
     print("🔍 FINAL ANALYSIS: Admin Panel Bulk Delete Issue")
     print("=" * 60)

@@ -13,7 +13,7 @@ export const API_CONFIG = {
   // Development URLs (Emergent environment)  
   development: {
     BACKEND_URL: process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001',
-    FRONTEND_URL: 'https://trade-platform-30.preview.emergentagent.com'
+    FRONTEND_URL: 'https://marketplace-pro-7.preview.emergentagent.com'
   },
   // Production URLs (Your server)
   production: {

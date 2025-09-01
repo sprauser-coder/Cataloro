@@ -10,7 +10,7 @@ import sys
 
 def test_favorites_bug_fix():
     """Test the favorites bug fix comprehensively"""
-    base_url = 'https://trade-platform-30.preview.emergentagent.com'
+    base_url = 'https://marketplace-pro-7.preview.emergentagent.com'
     
     print("🚀 Testing Favorites Bug Fix - Full Listing Details")
     print("=" * 60)

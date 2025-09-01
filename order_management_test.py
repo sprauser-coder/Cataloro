@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import time
 
 class OrderManagementTester:
-    def __init__(self, base_url="https://trade-platform-30.preview.emergentagent.com"):
+    def __init__(self, base_url="https://marketplace-pro-7.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_user = None
         self.regular_user = None
