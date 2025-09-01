@@ -271,6 +271,13 @@ function Header() {
                       Pending Sales
                     </Link>
                     <Link
+                      to="/view-all-requests"
+                      onClick={() => setShowNotificationDropdown(false)}
+                      className="flex-1 text-center px-3 py-2 text-xs bg-purple-50 text-purple-700 rounded-md hover:bg-purple-100"
+                    >
+                      All Requests
+                    </Link>
+                    <Link
                       to="/notifications"
                       onClick={() => setShowNotificationDropdown(false)}
                       className="flex-1 text-center px-3 py-2 text-xs bg-gray-50 text-gray-700 rounded-md hover:bg-gray-100"
