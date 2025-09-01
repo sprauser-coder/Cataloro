@@ -228,10 +228,17 @@ function MyListingCard({ listing, onDelete }) {
           className="listing-image"
         />
         
-        {/* Status Badge */}
-        <span className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(listing.status)}`}>
-          {listing.status.toUpperCase()}
+        {/* Status Badge - Enhanced for Drafts */}
+        <span className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(listing.status || (listing.is_draft ? 'draft' : 'active'))}`}>
+          {(listing.status || (listing.is_draft ? 'DRAFT' : 'ACTIVE')).toUpperCase()}
         </span>
+        
+        {/* Draft Indicator */}
+        {(listing.is_draft || listing.status === 'draft') && (
+          <div className="absolute top-3 right-16 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
+            DRAFT
+          </div>
+        )}
 
         {/* Action Menu */}
         <div className="absolute top-3 right-3 listing-menu-container">
