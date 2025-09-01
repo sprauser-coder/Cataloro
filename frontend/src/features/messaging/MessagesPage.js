@@ -27,9 +27,7 @@ import {
   Paperclip,
   Image as ImageIcon,
   Smile,
-  Phone,
-  Video,
-  Info
+  Trash2 as DeleteIcon
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
