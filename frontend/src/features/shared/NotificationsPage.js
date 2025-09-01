@@ -46,59 +46,150 @@ function NotificationsPage() {
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Enhanced demo notifications with more variety
-  const demoNotifications = [
-    {
-      id: '1',
-      title: 'New Message from Sarah',
-      message: 'Hi! Is your MacBook Pro still available? I\'m very interested.',
-      type: 'message',
-      is_read: false,
-      priority: 'high',
-      user_avatar: '/api/placeholder/40/40',
-      created_at: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-      action_url: '/messages',
-      metadata: { sender_id: 'user123', conversation_id: 'conv1' }
-    },
-    {
-      id: '2', 
-      title: 'Buy Request Approved',
-      message: 'Your purchase request for iPhone 14 Pro has been approved by the seller.',
-      type: 'buy_approved',
-      is_read: false,
-      priority: 'high',
-      created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-      action_url: '/my-deals',
-      metadata: { amount: 899, item: 'iPhone 14 Pro' }
-    },
-    {
-      id: '3',
-      title: 'Listing Favorited',
-      message: 'Someone added your "Gaming Setup" to their favorites.',
-      type: 'favorite',
-      is_read: false,
-      priority: 'medium',
-      created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      metadata: { listing_id: 'listing123' }
-    },
-    {
-      id: '4',
-      title: 'New Buy Request',
-      message: 'Mike wants to buy your "Vintage Guitar" for $1,200.',
-      type: 'buy_request',
-      is_read: true,
-      priority: 'high',
-      created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-      action_url: '/pending-sales',
-      metadata: { buyer: 'Mike', amount: 1200, item: 'Vintage Guitar' }
-    },
-    {
-      id: '5',
-      title: 'Payment Received',
-      message: 'You received $459 for the sale of "Canon Camera Lens".',
-      type: 'payment',
-      is_read: true,
-      priority: 'high',
+  // Fetch real notifications from backend
+  const fetchNotifications = async () => {
+    if (!user?.id) return;
+    
+    setLoading(true);
+    try {
+      // Fetch real notifications from backend
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/notifications/${user.id}`);
+      if (response.ok) {
+        const realNotifications = await response.json();
+        setNotifications(realNotifications || []);
+        setUnreadCount(realNotifications.filter(n => !n.is_read).length);
+      } else {
+        throw new Error('Failed to fetch notifications');
+      }
+    } catch (error) {
+      console.error('Failed to load real notifications:', error);
+      
+      // Enhanced demo notifications as fallback
+      const enhancedDemoNotifications = [
+        {
+          id: '1',
+          title: 'New Message from Sarah',
+          message: 'Hi! Is your MacBook Pro still available? I\'m very interested.',
+          type: 'message',
+          is_read: false,
+          priority: 'high',
+          user_avatar: '/api/placeholder/40/40',
+          created_at: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+          action_url: '/messages',
+          metadata: { sender_id: 'user123', conversation_id: 'conv1' }
+        },
+        {
+          id: '2', 
+          title: 'Buy Request Approved',
+          message: 'Your purchase request for iPhone 14 Pro has been approved by the seller.',
+          type: 'buy_approved',
+          is_read: false,
+          priority: 'high',
+          created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+          action_url: '/my-deals',
+          metadata: { amount: 899, item: 'iPhone 14 Pro' }
+        },
+        {
+          id: '3',
+          title: 'Listing Favorited',
+          message: 'Someone added your "Gaming Setup" to their favorites.',
+          type: 'favorite',
+          is_read: false,
+          priority: 'medium',
+          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          metadata: { listing_id: 'listing123' }
+        },
+        {
+          id: '4',
+          title: 'New Buy Request',
+          message: 'Mike wants to buy your "Vintage Guitar" for $1,200.',
+          type: 'buy_request',
+          is_read: true,
+          priority: 'high',
+          created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+          action_url: '/pending-sales',
+          metadata: { buyer: 'Mike', amount: 1200, item: 'Vintage Guitar' }
+        },
+        {
+          id: '5',
+          title: 'Payment Received',
+          message: 'You received $459 for the sale of "Canon Camera Lens".',
+          type: 'payment',
+          is_read: true,
+          priority: 'high',
+          created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+          metadata: { amount: 459, item: 'Canon Camera Lens' }
+        }
+      ];
+      
+      setNotifications(enhancedDemoNotifications);
+      setUnreadCount(enhancedDemoNotifications.filter(n => !n.is_read).length);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load notifications on component mount and when user changes
+  useEffect(() => {
+    fetchNotifications();
+  }, [user]);
+
+  // Mark notification as read
+  const markAsRead = async (notificationId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/notifications/${notificationId}/read`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'user-id': user?.id
+        }
+      });
+      
+      if (response.ok) {
+        setNotifications(notifications.map(n => 
+          n.id === notificationId ? { ...n, is_read: true } : n
+        ));
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+    }
+  };
+
+  // Delete notification
+  const deleteNotification = async (notificationId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/notifications/${notificationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'user-id': user?.id
+        }
+      });
+      
+      if (response.ok) {
+        const deletedNotification = notifications.find(n => n.id === notificationId);
+        setNotifications(notifications.filter(n => n.id !== notificationId));
+        if (deletedNotification && !deletedNotification.is_read) {
+          setUnreadCount(prev => Math.max(0, prev - 1));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to delete notification:', error);
+    }
+  };
+
+  // Mark all as read
+  const markAllAsRead = async () => {
+    try {
+      const unreadNotifications = notifications.filter(n => !n.is_read);
+      await Promise.all(unreadNotifications.map(n => markAsRead(n.id)));
+      setNotifications(notifications.map(n => ({ ...n, is_read: true })));
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Failed to mark all as read:', error);
+    }
+  };
       created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
       metadata: { amount: 459, item: 'Canon Camera Lens' }
     },
