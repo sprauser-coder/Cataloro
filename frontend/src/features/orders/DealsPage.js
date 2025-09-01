@@ -211,17 +211,68 @@ function DealsPage() {
         </button>
       </div>
 
+      {/* Enhanced Controls Section */}
+      <div className="cataloro-card-glass mb-8">
+        <div className="p-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+            
+            {/* Search Bar */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search deals by item or ID..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-3 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Sort Options */}
+            <div className="flex items-center space-x-3">
+              <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="highest_value">Highest Value</option>
+                <option value="lowest_value">Lowest Value</option>
+                <option value="status">By Status</option>
+              </select>
+            </div>
+
+            {/* Results Count */}
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              {displayDeals.length} of {deals.length} deals
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Filter Indicator */}
-      {activeFilter !== 'all' && (
+      {(activeFilter !== 'all' || searchTerm) && (
         <div className="mb-4 flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-          <span className="text-blue-800 dark:text-blue-300 font-medium">
-            Showing {activeFilter === 'totalValue' ? 'completed' : activeFilter} deals ({filteredDeals.length} items)
-          </span>
+          <div className="flex items-center space-x-4">
+            <span className="text-blue-800 dark:text-blue-300 font-medium">
+              Active filters: {activeFilter !== 'all' && `Status: ${activeFilter === 'totalValue' ? 'completed' : activeFilter}`}
+              {searchTerm && ` | Search: "${searchTerm}"`}
+            </span>
+            <span className="text-blue-600 dark:text-blue-400">
+              ({displayDeals.length} results)
+            </span>
+          </div>
           <button 
-            onClick={() => {setActiveFilter('all'); setActiveTab('all');}}
+            onClick={() => {
+              setActiveFilter('all'); 
+              setActiveTab('all');
+              setSearchTerm('');
+            }}
             className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
           >
-            Show All
+            Clear All
           </button>
         </div>
       )}
