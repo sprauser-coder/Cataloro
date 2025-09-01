@@ -55,6 +55,8 @@ function MessagesPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
   const [sending, setSending] = useState(false);
+  const [isFullPageChat, setIsFullPageChat] = useState(false); // New state for full page chat
+  const [highlightedMessageId, setHighlightedMessageId] = useState(null); // New state for message highlighting
   
   // User search for compose
   const [userSearchQuery, setUserSearchQuery] = useState('');
