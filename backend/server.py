@@ -606,6 +606,95 @@ async def upload_logo(file: UploadFile = File(...), mode: str = "light"):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload logo: {str(e)}")
 
+@app.get("/api/admin/content")
+async def get_content():
+    """Get info page content for CMS"""
+    try:
+        # Get content from database or return defaults
+        content = await db.site_content.find_one({"type": "info_page"})
+        
+        if not content:
+            # Return default content structure
+            default_content = {
+                "hero": {
+                    "title": "Cataloro",
+                    "subtitle": "Ultra-Modern Marketplace Platform",
+                    "description": "Experience the future of online commerce with our cutting-edge marketplace featuring real-time messaging, intelligent notifications, advanced search, and seamless transactions.",
+                    "primaryButtonText": "Get Started",
+                    "secondaryButtonText": "Browse Marketplace"
+                },
+                "stats": [
+                    {"label": "Active Users", "value": "10K+"},
+                    {"label": "Products Listed", "value": "50K+"},
+                    {"label": "Successful Deals", "value": "25K+"},
+                    {"label": "User Rating", "value": "4.9★"}
+                ],
+                "features": {
+                    "title": "Platform Features",
+                    "description": "Discover all the powerful features that make our marketplace the most advanced platform for buying and selling."
+                },
+                "cta": {
+                    "title": "Ready to Get Started?",
+                    "description": "Join thousands of users who are already experiencing the future of online commerce. Create your account today and start buying or selling with confidence.",
+                    "primaryButtonText": "Start Your Journey",
+                    "secondaryButtonText": "Explore Platform"
+                }
+            }
+            return default_content
+        
+        # Remove MongoDB _id field
+        content.pop('_id', None)
+        content.pop('type', None)
+        return content
+        
+    except Exception as e:
+        # Return default content on error
+        return {
+            "hero": {
+                "title": "Cataloro",
+                "subtitle": "Ultra-Modern Marketplace Platform",
+                "description": "Experience the future of online commerce with our cutting-edge marketplace featuring real-time messaging, intelligent notifications, advanced search, and seamless transactions.",
+                "primaryButtonText": "Get Started",
+                "secondaryButtonText": "Browse Marketplace"
+            },
+            "stats": [
+                {"label": "Active Users", "value": "10K+"},
+                {"label": "Products Listed", "value": "50K+"},
+                {"label": "Successful Deals", "value": "25K+"},
+                {"label": "User Rating", "value": "4.9★"}
+            ],
+            "features": {
+                "title": "Platform Features",
+                "description": "Discover all the powerful features that make our marketplace the most advanced platform for buying and selling."
+            },
+            "cta": {
+                "title": "Ready to Get Started?",
+                "description": "Join thousands of users who are already experiencing the future of online commerce. Create your account today and start buying or selling with confidence.",
+                "primaryButtonText": "Start Your Journey",
+                "secondaryButtonText": "Explore Platform"
+            }
+        }
+
+@app.put("/api/admin/content")
+async def update_content(content_data: dict):
+    """Update info page content"""
+    try:
+        # Add metadata
+        content_data["type"] = "info_page"
+        content_data["updated_at"] = datetime.utcnow().isoformat()
+        
+        # Update or insert content
+        result = await db.site_content.update_one(
+            {"type": "info_page"},
+            {"$set": content_data},
+            upsert=True
+        )
+        
+        return {"message": "Content updated successfully", "modified": result.modified_count}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update content: {str(e)}")
+
 # Marketplace Listings Endpoints
 @app.get("/api/listings")
 async def get_all_listings(
