@@ -220,11 +220,13 @@ function ModernBrowsePage() {
       const data = await response.json();
 
       if (response.ok) {
-        showToast(`Buy request sent for "${item.title}"! Seller has 48 hours to respond.`, 'success');
-        // Show additional info about next steps
+        showToast(`Buy request sent for "${item.title}"! Redirecting to cart...`, 'success');
+        
+        // Navigate to cart to show pending item after short delay
         setTimeout(() => {
-          showToast('Check your cart to see pending requests or cancel if needed.', 'info');
-        }, 2000);
+          navigate('/cart');
+        }, 1500);
+        
       } else if (response.status === 409) {
         showToast('This item already has a pending buy request', 'warning');
       } else {
