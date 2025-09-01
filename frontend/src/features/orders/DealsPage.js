@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Package, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Package, Clock, CheckCircle, XCircle, AlertCircle, Search, Filter, SortAsc, SortDesc, Calendar, DollarSign } from 'lucide-react';
 import { marketplaceService } from '../../services/marketplaceService';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
