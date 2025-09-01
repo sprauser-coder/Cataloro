@@ -268,7 +268,7 @@ function Header() {
                       Pending Sales
                     </Link>
                     <Link
-                      to={APP_ROUTES.NOTIFICATIONS}
+                      to="/notifications"
                       onClick={() => setShowNotificationDropdown(false)}
                       className="flex-1 text-center px-3 py-2 text-xs bg-gray-50 text-gray-700 rounded-md hover:bg-gray-100"
                     >
