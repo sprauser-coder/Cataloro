@@ -666,6 +666,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                       getFilteredNotifications().map((notification, index) => (
                         <div
                           key={notification.id}
+                          data-notification-id={notification.id}
                           className={`group px-6 py-4 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300 ${
                             !notification.is_read ? 'bg-blue-50/30 dark:bg-blue-900/30' : ''
                           } ${index === 0 ? 'animate-in' : ''}`}
