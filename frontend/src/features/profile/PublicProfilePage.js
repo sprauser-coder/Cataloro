@@ -194,9 +194,9 @@ function PublicProfilePage() {
           totalListings: listings.length,
           activeListings: listings.filter(p => p.inStock !== false).length,
           totalSales: Math.floor(Math.random() * 50) + 10,
-          avgRating: mockUser.seller_rating,
+          avgRating: fetchedUser.seller_rating,
           responseRate: Math.floor(Math.random() * 20) + 80,
-          memberSince: mockUser.date_joined,
+          memberSince: fetchedUser.date_joined,
           lastActive: 'Active today'
         };
         
