@@ -334,9 +334,21 @@ function ShoppingCartPage() {
                   <div className="text-sm text-green-600 dark:text-green-400 font-medium mb-2">
                     ✅ Approved
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                     {new Date(order.approved_at).toLocaleDateString()}
                   </div>
+                  {/* Chat Now Button */}
+                  <button
+                    onClick={() => {
+                      // Navigate to messages and start conversation with seller
+                      const sellerId = order.seller_id || order.seller?.id;
+                      window.location.href = `/messages?user=${sellerId}&subject=Order ${order.id}`;
+                    }}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-medium transition-colors flex items-center space-x-2"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Chat Now</span>
+                  </button>
                 </div>
               </div>
             ))}
