@@ -53,13 +53,14 @@ function NotificationsPage() {
     setLoading(true);
     try {
       // Fetch real notifications from backend
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/notifications/${user.id}`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/notifications/${user.id}`);
       if (response.ok) {
         const realNotifications = await response.json();
+        console.log('Fetched real notifications:', realNotifications);
         setNotifications(realNotifications || []);
         setUnreadCount(realNotifications.filter(n => !n.is_read).length);
       } else {
-        throw new Error('Failed to fetch notifications');
+        throw new Error(`Failed to fetch notifications: ${response.status}`);
       }
     } catch (error) {
       console.error('Failed to load real notifications:', error);
