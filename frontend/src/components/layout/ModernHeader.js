@@ -692,7 +692,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           // TODO: Add reject functionality
-                                          showToast && showToast('Request declined', 'info');
+                                          console.log('Request declined');
                                         }}
                                         className="p-1.5 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 rounded-md hover:bg-red-200 dark:hover:bg-red-900/70 transition-all duration-200 hover:scale-110 group/tooltip relative"
                                         title="Decline request"
