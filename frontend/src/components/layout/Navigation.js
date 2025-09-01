@@ -22,6 +22,7 @@ import { APP_ROUTES, USER_ROLES } from '../../config/directions';
 function Navigation() {
   const location = useLocation();
   const [user, setUser] = useState(null);
+  const [messageUnreadCount, setMessageUnreadCount] = useState(0);
 
   useEffect(() => {
     // Get user from localStorage
@@ -33,6 +34,34 @@ function Navigation() {
         console.error('Error parsing user data:', error);
       }
     }
+
+    // Get unread message count from localStorage
+    const unreadCount = localStorage.getItem('messageUnreadCount');
+    if (unreadCount) {
+      setMessageUnreadCount(parseInt(unreadCount, 10));
+    }
+
+    // Listen for unread count changes
+    const handleStorageChange = (e) => {
+      if (e.key === 'messageUnreadCount') {
+        setMessageUnreadCount(parseInt(e.newValue || '0', 10));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check periodically for updates
+    const interval = setInterval(() => {
+      const currentCount = localStorage.getItem('messageUnreadCount');
+      if (currentCount) {
+        setMessageUnreadCount(parseInt(currentCount, 10));
+      }
+    }, 5000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
   }, []);
 
   const isAdmin = () => user?.role === USER_ROLES.ADMIN;
