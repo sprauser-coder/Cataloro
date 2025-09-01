@@ -398,6 +398,77 @@ function CreateListingPage() {
     return true;
   };
 
+  const handleSaveDraft = async () => {
+    setIsSavingDraft(true);
+
+    try {
+      // Get user data from localStorage
+      const userData = localStorage.getItem('cataloro_user');
+      const user = userData ? JSON.parse(userData) : null;
+
+      if (!user) {
+        alert('Please log in to save draft');
+        navigate('/login');
+        return;
+      }
+
+      // Prepare draft data
+      const draftData = {
+        ...formData,
+        price: formData.price ? parseFloat(formData.price) : 0,
+        shipping_cost: formData.shipping_cost ? parseFloat(formData.shipping_cost) : 0,
+        seller_id: user.id,
+        seller: {
+          name: user.name || user.full_name || user.email,
+          username: user.username || user.name || user.email,
+          email: user.email,
+          verified: user.verified || false,
+          is_business: user.is_business || false,
+          company_name: user.company_name || null,
+          location: [formData.street, formData.city, formData.country].filter(Boolean).join(', ') || 'Not specified'
+        },
+        address: {
+          street: formData.street,
+          post_code: formData.post_code,
+          city: formData.city,
+          country: formData.country,
+          use_profile_address: useProfileAddress
+        },
+        images: imagePreviews,
+        created_at: new Date().toISOString(),
+        status: 'draft', // Mark as draft
+        is_draft: true,
+        ...(selectedCatalyst && {
+          catalyst_id: selectedCatalyst.cat_id,
+          catalyst_name: selectedCatalyst.name,
+          is_catalyst_listing: true,
+          calculated_price: getCalculatedPrice(selectedCatalyst.cat_id),
+          catalyst_specs: {
+            ceramic_weight: selectedCatalyst.ceramic_weight,
+            pt_ppm: selectedCatalyst.pt_ppm,
+            pd_ppm: selectedCatalyst.pd_ppm,
+            rh_ppm: selectedCatalyst.rh_ppm
+          }
+        })
+      };
+
+      // Save as draft
+      await marketplaceService.createListing(draftData);
+
+      // Show success message
+      alert('Draft saved successfully! You can finish it later from My Listings.');
+
+      // Navigate to my listings page
+      navigate('/my-listings');
+
+    } catch (error) {
+      console.error('Failed to save draft:', error);
+      alert('Failed to save draft. Please try again.');
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
