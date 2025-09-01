@@ -60,7 +60,30 @@ import {
   Network,
   Phone,
   CloudUpload,
-  Store
+  Store,
+  ArrowRight,
+  ArrowDown,
+  UserPlus,
+  ShoppingBag,
+  MessageCircle,
+  CreditCard,
+  FileText,
+  ThumbsUp,
+  Truck,
+  MapPin,
+  Clock,
+  CheckSquare,
+  Calendar,
+  Target,
+  TrendingDown,
+  AlertCircle,
+  Info,
+  HelpCircle,
+  BookOpen,
+  Layers,
+  GitBranch,
+  RotateCcw,
+  ExternalLink
 } from 'lucide-react';
 import { adminService } from '../../services/adminService';
 import { useAuth } from '../../context/AuthContext';
