@@ -332,7 +332,7 @@ function DealsPage() {
       ) : (
         <div className="space-y-4">
           {displayDeals.map((deal) => (
-            <DealCard key={deal.id} deal={deal} currentUserId={user.id} />
+            <DealCard key={deal.id} deal={deal} currentUserId={user.id} user={user} />
           ))}
         </div>
       )}
