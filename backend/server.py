@@ -351,13 +351,69 @@ async def get_my_listings(user_id: str):
 
 @app.get("/api/user/my-deals/{user_id}")
 async def get_my_deals(user_id: str):
-    deals_cursor = db.deals.find({
-        "$or": [{"buyer_id": user_id}, {"seller_id": user_id}]
-    })
-    deals = []
-    async for deal in deals_cursor:
-        deals.append(serialize_doc(deal))
-    return deals
+    """Get all deals (approved orders) for a user - both as buyer and seller"""
+    try:
+        # Get all orders where user is buyer or seller and status is approved
+        orders_cursor = db.orders.find({
+            "$and": [
+                {"$or": [{"buyer_id": user_id}, {"seller_id": user_id}]},
+                {"status": {"$in": ["approved", "completed"]}}
+            ]
+        }).sort("created_at", -1)
+        
+        deals = []
+        async for order in orders_cursor:
+            # Enrich with listing data
+            listing = await db.listings.find_one({"id": order.get("listing_id")})
+            
+            # Enrich with buyer data if user is seller
+            buyer_info = {}
+            if order.get("buyer_id") != user_id:
+                buyer = await db.users.find_one({"id": order.get("buyer_id")})
+                if buyer:
+                    buyer_info = {
+                        "id": buyer.get("id"),
+                        "username": buyer.get("username", "Unknown"),
+                        "email": buyer.get("email", "")
+                    }
+            
+            # Enrich with seller data if user is buyer
+            seller_info = {}
+            if order.get("seller_id") != user_id:
+                seller = await db.users.find_one({"id": order.get("seller_id")})
+                if seller:
+                    seller_info = {
+                        "id": seller.get("id"),
+                        "username": seller.get("username", "Unknown"),
+                        "email": seller.get("email", "")
+                    }
+            
+            # Create deal object
+            deal = {
+                "id": order.get("id"),
+                "listing_id": order.get("listing_id"),
+                "buyer_id": order.get("buyer_id"),
+                "seller_id": order.get("seller_id"),
+                "status": order.get("status"),
+                "amount": listing.get("price", 0) if listing else 0,
+                "created_at": order.get("created_at"),
+                "approved_at": order.get("approved_at"),
+                "listing": {
+                    "id": listing.get("id", ""),
+                    "title": listing.get("title", "Unknown Item"),
+                    "price": listing.get("price", 0),
+                    "image": listing.get("images", [""])[0] if listing and listing.get("images") else ""
+                } if listing else {},
+                "buyer": buyer_info,
+                "seller": seller_info
+            }
+            
+            deals.append(deal)
+        
+        return deals
+    except Exception as e:
+        print(f"Error fetching deals: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch deals: {str(e)}")
 
 @app.get("/api/user/notifications/{user_id}")
 async def get_notifications(user_id: str):
