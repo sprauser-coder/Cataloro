@@ -2100,6 +2100,12 @@ function SiteAdministrationTab({ showToast }) {
       description: 'Manage notifications, emails, and messaging systems'
     },
     { 
+      id: 'notifications', 
+      label: 'Notification Center', 
+      icon: Bell,
+      description: 'Manage system notifications like Welcome Back messages, alerts, and announcements'
+    },
+    { 
       id: 'system', 
       label: 'System & Maintenance', 
       icon: Server,
