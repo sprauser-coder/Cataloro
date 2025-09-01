@@ -300,8 +300,8 @@ function NotificationsPage() {
               />
             </div>
 
-            {/* Filter buttons - Fixed alignment */}
-            <div className="flex flex-wrap items-center gap-2">
+            {/* Filter buttons - Enhanced alignment */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2">
               {[
                 { id: 'all', label: 'All', count: notifications.length },
                 { id: 'unread', label: 'Unread', count: unreadCount },
