@@ -25,7 +25,8 @@ import {
   CheckCircle,
   Star,
   Clock,
-  MapPin
+  MapPin,
+  MessageCircle
 } from 'lucide-react';
 
 function ShoppingCartPage() {
