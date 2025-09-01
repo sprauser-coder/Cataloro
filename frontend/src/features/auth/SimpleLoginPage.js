@@ -67,9 +67,6 @@ function SimpleLoginPage() {
       localStorage.setItem('cataloro_token', data.token);
       localStorage.setItem('cataloro_user', JSON.stringify(data.user));
       
-      // Show success and redirect to marketplace
-      alert(`✅ Login Successful!\nWelcome ${data.user.full_name}!\nRole: ${data.user.role}`);
-      
       // Redirect to marketplace
       window.location.href = '/browse';
       
