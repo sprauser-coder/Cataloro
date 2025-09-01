@@ -105,7 +105,7 @@ function MyListingsPage() {
       </div>
 
       {/* Stats Cards - CLICKABLE & REDUCED MARGIN */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
         <button
           onClick={() => handleTileClick('all')}
           className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
@@ -135,19 +135,9 @@ function MyListingsPage() {
           }`}
         >
           <div className="p-6 text-center">
-            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'draft').length}</div>
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'draft' || l.is_draft).length}</div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Drafts</div>
-          </div>
-        </button>
-        <button
-          onClick={() => handleTileClick('sold')}
-          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
-            activeFilter === 'sold' ? 'ring-2 ring-gray-500 bg-gray-50/20 dark:bg-gray-900/20' : ''
-          }`}
-        >
-          <div className="p-6 text-center">
-            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-gray-600 to-slate-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'sold').length}</div>
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Sold</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Finish & publish later</div>
           </div>
         </button>
       </div>
