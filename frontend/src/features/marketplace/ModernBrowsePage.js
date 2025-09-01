@@ -31,6 +31,7 @@ import { liveService } from '../../services/liveService';
 function ModernBrowsePage() {
   const { user } = useAuth();
   const { showToast } = useNotifications();
+  const navigate = useNavigate();
   // Use marketplace context
   const {
     filteredProducts,
