@@ -3254,23 +3254,48 @@ function ListingsTab({ showToast }) {
           listingsArray = backendData.listings;
         }
         
-        // Convert backend listings to admin format
-        const backendListings = listingsArray.map((listing, index) => ({
-          id: listing.id || listing._id || `backend-${index}`,
-          title: listing.title,
-          price: listing.price,
-          category: listing.category || 'Unknown',
-          status: listing.status || 'active',
-          seller: listing.seller_id || 'Unknown Seller',
-          created_date: listing.created_at ? new Date(listing.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-          views: listing.views || Math.floor(Math.random() * 1000),
-          image: listing.images?.[0] || listing.image,
-          description: listing.description,
-          condition: listing.condition || 'New',
-          location: listing.location || 'Unknown Location'
-        }));
+        // Fetch pending orders data to enrich listings
+        let allOrders = [];
+        try {
+          const ordersResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/orders`);
+          if (ordersResponse.ok) {
+            allOrders = await ordersResponse.json();
+          } else {
+            // Fallback: fetch some sample orders
+            const fallbackResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/seller/admin`);
+            if (fallbackResponse.ok) {
+              allOrders = await fallbackResponse.json();
+            }
+          }
+        } catch (orderError) {
+          console.log('⚠️ Could not fetch orders data:', orderError);
+        }
         
-        console.log('✅ Successfully loaded', backendListings.length, 'listings from backend');
+        // Convert backend listings to admin format with pending orders count
+        const backendListings = listingsArray.map((listing, index) => {
+          // Count pending orders for this listing
+          const pendingOrders = allOrders.filter(order => 
+            order.listing_id === listing.id && order.status === 'pending'
+          ).length;
+          
+          return {
+            id: listing.id || listing._id || `backend-${index}`,
+            title: listing.title,
+            price: listing.price,
+            category: listing.category || 'Unknown',
+            status: listing.status || 'active',
+            seller: listing.seller_id || 'Unknown Seller',
+            created_date: listing.created_at ? new Date(listing.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            views: listing.views || Math.floor(Math.random() * 1000),
+            image: listing.images?.[0] || listing.image,
+            description: listing.description,
+            condition: listing.condition || 'New',
+            location: listing.location || 'Unknown Location',
+            pendingOrders: pendingOrders // Add pending orders count
+          };
+        });
+        
+        console.log('✅ Successfully loaded', backendListings.length, 'listings from backend with pending orders data');
         setListings(backendListings);
       } else {
         console.error('❌ Backend fetch failed with status:', response.status);
