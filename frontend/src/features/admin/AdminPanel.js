@@ -270,11 +270,11 @@ function AdminPanel() {
         </div>
       </div>
 
-      {/* Tab Navigation - Responsive Design */}
+      {/* Tab Navigation - Fixed Width Container */}
       <div className="cataloro-card-glass">
         <div className="border-b border-white/10 dark:border-white/10">
-          <nav className="-mb-px admin-tab-nav overflow-x-auto">
-            <div className="flex space-x-1 lg:space-x-2 xl:space-x-4 px-2 lg:px-4 xl:px-6 min-w-max">
+          <nav className="-mb-px">
+            <div className="flex justify-between px-2 lg:px-4 xl:px-6">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -282,16 +282,18 @@ function AdminPanel() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`admin-tab-button flex items-center px-2 lg:px-3 xl:px-4 py-2.5 lg:py-3 xl:py-4 text-xs lg:text-sm font-medium border-b-2 whitespace-nowrap ${
+                    className={`admin-tab-button flex flex-col sm:flex-row items-center justify-center px-1 sm:px-2 lg:px-3 py-2 lg:py-3 text-xs lg:text-sm font-medium border-b-2 transition-all duration-200 flex-1 ${
                       isActive
                         ? 'active text-gray-900 dark:text-white border-blue-600 bg-white/10 dark:bg-white/10 backdrop-blur-md rounded-t-lg'
                         : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 rounded-t-lg'
                     }`}
                     title={tab.label}
                   >
-                    <Icon className="w-4 h-4 lg:w-5 lg:h-5 mr-1 lg:mr-2 flex-shrink-0" />
-                    <span className="hidden md:inline lg:hidden xl:inline">{tab.label}</span>
-                    <span className="md:hidden lg:inline xl:hidden">{tab.shortLabel}</span>
+                    <Icon className="w-4 h-4 lg:w-5 lg:h-5 mb-1 sm:mb-0 sm:mr-1 lg:mr-2 flex-shrink-0" />
+                    <span className="text-xs sm:text-xs lg:text-sm leading-tight text-center sm:text-left">
+                      <span className="hidden xl:inline">{tab.label}</span>
+                      <span className="xl:hidden">{tab.shortLabel}</span>
+                    </span>
                   </button>
                 );
               })}
