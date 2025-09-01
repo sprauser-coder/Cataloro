@@ -78,7 +78,8 @@ export const APP_ROUTES = {
   NOTIFICATIONS: '/notifications',
   PROFILE: '/profile',
   LOGIN: '/login',
-  REGISTER: '/register'
+  REGISTER: '/register',
+  INFO: '/info'
 };
 
 // UI Configuration
