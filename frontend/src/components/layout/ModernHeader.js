@@ -493,86 +493,203 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 )}
               </button>
 
-              {/* Enhanced Notifications Dropdown - Real Data */}
+              {/* Enhanced Notifications Dropdown - State-of-the-Art Design */}
               {showNotifications && (
-                <div className="absolute right-0 mt-3 w-96 rounded-2xl shadow-2xl py-3 z-50 notifications-dropdown-enhanced" style={{
+                <div className="absolute right-0 mt-3 w-96 rounded-2xl shadow-2xl py-3 z-50 notifications-dropdown-enhanced animate-in" style={{
                   background: darkMode 
                     ? 'rgba(0, 0, 0, 0.95)'
                     : 'rgba(255, 255, 255, 0.95)',
                   backdropFilter: 'blur(25px)',
                   border: darkMode 
                     ? '1px solid rgba(255, 255, 255, 0.2)' 
-                    : '1px solid rgba(0, 0, 0, 0.2)'
+                    : '1px solid rgba(0, 0, 0, 0.2)',
+                  animation: 'slideDown 0.3s ease-out'
                 }}>
+                  {/* Enhanced Header with Controls */}
                   <div className="px-6 py-4 border-b border-white/10">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-3">
                       <h3 className="font-bold text-gray-900 dark:text-white text-lg flex items-center">
                         <Bell className="w-5 h-5 mr-2" />
                         Notifications
                         {unreadNotifications > 0 && (
-                          <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                          <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
                             {unreadNotifications}
                           </span>
                         )}
                       </h3>
-                      {unreadNotifications > 0 && (
-                        <button 
-                          onClick={markAllNotificationsAsRead}
-                          className="text-sm text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white font-medium transition-colors"
+                    </div>
+                    
+                    {/* Enhanced Controls */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        {/* Filter Dropdown */}
+                        <select
+                          value={notificationFilter}
+                          onChange={(e) => setNotificationFilter(e.target.value)}
+                          className="text-xs bg-transparent border border-white/20 rounded-lg px-2 py-1 text-gray-600 dark:text-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                          Mark all read
+                          <option value="all">All</option>
+                          <option value="unread">Unread</option>
+                          <option value="read">Read</option>
+                        </select>
+                        
+                        {/* Sound Toggle */}
+                        <button
+                          onClick={() => {
+                            const newSoundEnabled = !soundEnabled;
+                            setSoundEnabled(newSoundEnabled);
+                            localStorage.setItem('cataloro_notification_sound', newSoundEnabled.toString());
+                          }}
+                          className="p-1 text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white transition-colors"
+                          title={soundEnabled ? 'Disable sound' : 'Enable sound'}
+                        >
+                          {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
                         </button>
-                      )}
+                        
+                        {/* Refresh Button */}
+                        <button 
+                          onClick={() => loadNotifications()}
+                          className="p-1 text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white transition-colors"
+                          title="Refresh notifications"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                        </button>
+                      </div>
+                      
+                      {/* Quick Actions */}
+                      <div className="flex items-center space-x-2">
+                        {unreadNotifications > 0 && (
+                          <button 
+                            onClick={markAllNotificationsAsRead}
+                            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 font-medium transition-colors"
+                          >
+                            Mark all read
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="max-h-80 overflow-y-auto">
-                    {notifications.length === 0 ? (
+                  {/* Scrollable Notifications List */}
+                  <div className="max-h-80 overflow-y-auto custom-scrollbar">
+                    {getFilteredNotifications().length === 0 ? (
                       <div className="px-6 py-8 text-center">
-                        <Bell className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-gray-600 dark:text-gray-400">No notifications yet</p>
+                        <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Bell className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-400 font-medium">
+                          {notificationFilter === 'all' ? 'No notifications yet' : 
+                           notificationFilter === 'unread' ? 'No unread notifications' : 
+                           'No read notifications'}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                          We'll notify you when something important happens
+                        </p>
                       </div>
                     ) : (
-                      notifications.map((notification) => (
+                      getFilteredNotifications().map((notification, index) => (
                         <div
                           key={notification.id}
-                          onClick={() => markNotificationAsRead(notification.id)}
-                          className={`px-6 py-4 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300 ${
+                          className={`group px-6 py-4 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-4 transition-all duration-300 ${
                             !notification.is_read ? 'bg-blue-50/30 dark:bg-blue-900/30' : ''
-                          }`}
+                          } ${index === 0 ? 'animate-in' : ''}`}
                           style={{
                             borderColor: notification.type === 'message' ? '#667eea' :
                                       notification.type === 'favorite' ? '#f093fb' :
-                                      notification.type === 'payment' ? '#43e97b' : '#9ca3af'
+                                      notification.type === 'payment' ? '#43e97b' :
+                                      notification.type === 'buy_request' ? '#fbbf24' :
+                                      notification.type === 'buy_approved' ? '#10b981' :
+                                      notification.type === 'buy_rejected' ? '#ef4444' : '#9ca3af',
+                            animationDelay: `${index * 0.1}s`
                           }}
                         >
                           <div className="flex items-start space-x-3">
+                            {/* Enhanced Icon */}
                             <div className={`p-2 rounded-full ${
                               notification.type === 'message' ? 'bg-blue-100 text-blue-600' :
                               notification.type === 'favorite' ? 'bg-pink-100 text-pink-600' :
                               notification.type === 'payment' ? 'bg-green-100 text-green-600' :
+                              notification.type === 'buy_request' ? 'bg-yellow-100 text-yellow-600' :
+                              notification.type === 'buy_approved' ? 'bg-green-100 text-green-600' :
+                              notification.type === 'buy_rejected' ? 'bg-red-100 text-red-600' :
                               'bg-gray-100 text-gray-600'
-                            }`}>
+                            } ${!notification.is_read ? 'animate-pulse' : ''}`}>
                               {notification.type === 'message' ? <MessageCircle className="w-4 h-4" /> :
                                notification.type === 'favorite' ? <Heart className="w-4 h-4" /> :
                                notification.type === 'payment' ? <DollarSign className="w-4 h-4" /> :
+                               notification.type === 'buy_request' ? <ShoppingCart className="w-4 h-4" /> :
+                               notification.type === 'buy_approved' ? <Check className="w-4 h-4" /> :
+                               notification.type === 'buy_rejected' ? <X className="w-4 h-4" /> :
                                <Bell className="w-4 h-4" />}
                             </div>
+                            
+                            {/* Enhanced Content */}
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-start justify-between">
                                 <p className={`text-sm font-semibold ${!notification.is_read ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
                                   {notification.title}
                                 </p>
-                                {!notification.is_read && (
-                                  <div className="w-2 h-2 bg-blue-600 rounded-full ml-2"></div>
-                                )}
+                                <div className="flex items-center space-x-1 ml-2">
+                                  {!notification.is_read && (
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                                  )}
+                                  {/* Delete Button */}
+                                  <button
+                                    onClick={(e) => deleteNotification(notification.id, e)}
+                                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-600 transition-all duration-200"
+                                    title="Delete notification"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </button>
+                                </div>
                               </div>
-                              <p className="text-xs text-gray-600 dark:text-white/70 mt-1">
+                              <p className="text-xs text-gray-600 dark:text-white/70 mt-1 line-clamp-2">
                                 {notification.message}
                               </p>
-                              <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                <Clock className="w-3 h-3 mr-1" />
-                                {new Date(notification.created_at).toLocaleString()}
+                              <div className="flex items-center justify-between mt-2">
+                                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                  <Clock className="w-3 h-3 mr-1" />
+                                  {new Date(notification.created_at).toLocaleString()}
+                                </div>
+                                
+                                {/* Quick Action Buttons */}
+                                {!notification.is_read && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      markNotificationAsRead(notification.id);
+                                    }}
+                                    className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-colors"
+                                  >
+                                    Mark Read
+                                  </button>
+                                )}
+                                
+                                {/* Enhanced Quick Actions for Different Types */}
+                                {notification.type === 'buy_request' && (
+                                  <div className="flex space-x-1">
+                                    <Link
+                                      to="/pending-sales"
+                                      onClick={() => setShowNotifications(false)}
+                                      className="text-xs bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-900/70 transition-colors"
+                                    >
+                                      Approve
+                                    </Link>
+                                    <button className="text-xs bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-900/70 transition-colors">
+                                      Reject
+                                    </button>
+                                  </div>
+                                )}
+                                
+                                {notification.type === 'message' && (
+                                  <Link
+                                    to="/messages"
+                                    onClick={() => setShowNotifications(false)}
+                                    className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-colors"
+                                  >
+                                    Reply
+                                  </Link>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -581,15 +698,22 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     )}
                   </div>
                   
+                  {/* Enhanced Footer */}
                   <div className="px-6 py-3 border-t border-white/10">
-                    <Link
-                      to="/notifications"
-                      className="text-sm text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white font-medium flex items-center"
-                      onClick={() => setShowNotifications(false)}
-                    >
-                      View all notifications
-                      <TrendingUp className="w-4 h-4 ml-1" />
-                    </Link>
+                    <div className="flex items-center justify-between">
+                      <Link
+                        to="/notifications"
+                        className="text-sm text-gray-600 dark:text-white/80 hover:text-gray-800 dark:hover:text-white font-medium flex items-center transition-colors"
+                        onClick={() => setShowNotifications(false)}
+                      >
+                        View all notifications
+                        <TrendingUp className="w-4 h-4 ml-1" />
+                      </Link>
+                      
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {getFilteredNotifications().length} notification{getFilteredNotifications().length !== 1 ? 's' : ''}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
