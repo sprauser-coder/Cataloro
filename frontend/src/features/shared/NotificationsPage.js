@@ -494,59 +494,6 @@ function NotificationsPage() {
   );
 }
 
-// Notification Card Component
-function NotificationCard({ notification, onMarkAsRead, onDelete, getIcon, getTypeColor }) {
-  return (
-    <div className={`
-      notification-item
-      ${notification.is_read ? 'notification-read' : 'notification-unread'}
-      ${getTypeColor(notification.type)}
-    `}>
-      <div className="flex items-start space-x-4">
-        {/* Icon */}
-        <div className="flex-shrink-0 text-2xl">
-          {getIcon(notification.type)}
-        </div>
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h4 className={`font-medium ${notification.is_read ? 'text-gray-700' : 'text-gray-900'}`}>
-                {notification.title}
-              </h4>
-              <p className={`mt-1 text-sm ${notification.is_read ? 'text-gray-500' : 'text-gray-700'}`}>
-                {notification.message}
-              </p>
-              <p className="mt-2 text-xs text-gray-400">
-                {notification.created_at ? new Date(notification.created_at).toLocaleString() : 'Just now'}
-              </p>
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center space-x-2 ml-4">
-              {!notification.is_read && (
-                <button
-                  onClick={() => onMarkAsRead(notification.id)}
-                  className="p-1 text-gray-400 hover:text-blue-600 transition-colors duration-200"
-                  title="Mark as read"
-                >
-                  <Check className="w-4 h-4" />
-                </button>
-              )}
-              <button
-                onClick={() => onDelete(notification.id)}
-                className="p-1 text-gray-400 hover:text-red-600 transition-colors duration-200"
-                title="Delete notification"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default NotificationsPage;
