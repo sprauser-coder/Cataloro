@@ -254,17 +254,39 @@ function MyListingCard({ listing, onDelete }) {
 
           {showMenu && (
             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 z-50 backdrop-blur-xl">
-              <Link
-                to={`/product/${listing.id}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowMenu(false);
-                }}
-                className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center transition-colors duration-200"
-              >
-                <Eye className="w-4 h-4 mr-3" />
-                View Details
-              </Link>
+              {/* Draft-specific actions */}
+              {(listing.is_draft || listing.status === 'draft') && (
+                <>
+                  <Link
+                    to={`/edit-listing/${listing.id}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMenu(false);
+                    }}
+                    className="w-full text-left px-4 py-3 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center transition-colors duration-200"
+                  >
+                    <Edit className="w-4 h-4 mr-3" />
+                    Finish & Publish
+                  </Link>
+                  <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
+                </>
+              )}
+              
+              {/* Regular actions for non-draft listings */}
+              {!(listing.is_draft || listing.status === 'draft') && (
+                <Link
+                  to={`/product/${listing.id}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowMenu(false);
+                  }}
+                  className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center transition-colors duration-200"
+                >
+                  <Eye className="w-4 h-4 mr-3" />
+                  View Details
+                </Link>
+              )}
+              
               <Link
                 to={`/edit-listing/${listing.id}`}
                 onClick={(e) => {
@@ -274,7 +296,7 @@ function MyListingCard({ listing, onDelete }) {
                 className="w-full text-left px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center transition-colors duration-200"
               >
                 <Edit className="w-4 h-4 mr-3" />
-                Edit Listing
+                {(listing.is_draft || listing.status === 'draft') ? 'Continue Editing' : 'Edit Listing'}
               </Link>
               <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
               <button
