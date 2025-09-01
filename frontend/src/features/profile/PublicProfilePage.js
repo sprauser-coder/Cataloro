@@ -92,91 +92,57 @@ function PublicProfilePage() {
       try {
         setLoading(true);
         
-        // Fetch real user data from backend
+        // Fetch real user data from backend based on userId parameter
         let fetchedUser = null;
         
         try {
-          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}`);
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/profile/${userId}`);
           if (response.ok) {
             fetchedUser = await response.json();
+            console.log('Fetched user data:', fetchedUser);
+          } else {
+            console.log('Backend user not found, trying alternative endpoint');
+            // Try alternative endpoint
+            const altResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}`);
+            if (altResponse.ok) {
+              fetchedUser = await altResponse.json();
+            }
           }
         } catch (error) {
-          console.log('Backend API not available, using fallback data');
+          console.log('Backend API error:', error);
         }
         
-        // If no backend data, use current user data for own profile or create realistic demo data
+        // If no backend data found, return error - NO DUMMY DATA
         if (!fetchedUser) {
-          if (userId === currentUser?.id) {
-            // Show current user's actual data
-            fetchedUser = {
-              id: currentUser.id,
-              full_name: currentUser.full_name || 'Demo User',
-              username: currentUser.username || 'demo_user',
-              email: currentUser.email,
-              bio: currentUser.bio || "Passionate marketplace enthusiast with years of experience in buying and selling quality items.",
-              avatar_url: currentUser.avatar_url || '',
-              city: currentUser.city || 'Berlin',
-              country: currentUser.country || 'Germany',
-              date_joined: currentUser.date_joined || '2023-06-15',
-              verified: currentUser.verified || true,
-              is_business: currentUser.is_business || false,
-              company_name: currentUser.company_name || '',
-              seller_rating: currentUser.seller_rating || 4.7,
-              phone: currentUser.phone || '+49 123 456 789',
-              publicProfile: true,
-              showEmail: false,
-              showPhone: false
-            };
-          } else {
-            // Create realistic demo data for other users
-            const demoProfiles = {
-              'user1': {
-                full_name: 'Sarah Johnson',
-                username: 'sash_admin',
-                bio: 'Tech enthusiast and gadget collector. Selling quality electronics and vintage items.',
-                city: 'Munich',
-                verified: true,
-                is_business: false,
-                seller_rating: 4.8
-              },
-              'user2': {
-                full_name: 'Mike Electronics',
-                username: 'mike_tech',
-                bio: 'Electronics retailer with 5+ years experience. Specializing in laptops and mobile devices.',
-                city: 'Hamburg',
-                verified: true,
-                is_business: true,
-                company_name: 'TechStore Hamburg',
-                seller_rating: 4.9
-              }
-            };
-            
-            const demoProfile = demoProfiles[userId] || demoProfiles['user1'];
-            fetchedUser = {
-              id: userId,
-              full_name: demoProfile.full_name,
-              username: demoProfile.username,
-              email: `${demoProfile.username}@example.com`,
-              bio: demoProfile.bio,
-              avatar_url: '',
-              city: demoProfile.city,
-              country: 'Germany',
-              date_joined: '2023-06-15',
-              verified: demoProfile.verified,
-              is_business: demoProfile.is_business,
-              company_name: demoProfile.company_name || '',
-              seller_rating: demoProfile.seller_rating,
-              phone: '+49 123 456 789',
-              publicProfile: true,
-              showEmail: false,
-              showPhone: false
-            };
-          }
+          setProfileUser(null);
+          setLoading(false);
+          return;
         }
         
-        setProfileUser(fetchedUser);
+        // Use the actual fetched user data
+        const realUserData = {
+          id: fetchedUser.id,
+          full_name: fetchedUser.full_name || fetchedUser.name || 'Unknown User',
+          username: fetchedUser.username || fetchedUser.email?.split('@')[0] || 'unknown',
+          email: fetchedUser.email,
+          bio: fetchedUser.bio || `${fetchedUser.full_name || 'User'} is a marketplace member.`,
+          avatar_url: fetchedUser.avatar_url || '',
+          city: fetchedUser.city || 'Not specified',
+          country: fetchedUser.country || 'Not specified',
+          date_joined: fetchedUser.date_joined || fetchedUser.created_at || '2023-01-01',
+          verified: fetchedUser.verified || false,
+          is_business: fetchedUser.is_business || false,
+          company_name: fetchedUser.company_name || '',
+          seller_rating: fetchedUser.seller_rating || 0,
+          phone: fetchedUser.phone || '',
+          publicProfile: fetchedUser.publicProfile !== false, // Default to true unless explicitly false
+          showEmail: fetchedUser.showEmail || false,
+          showPhone: fetchedUser.showPhone || false
+        };
         
-        // Load interactions with this user if it's not current user
+        setProfileUser(realUserData);
+        
+        // Load real interactions with this user if it's not current user
         if (userId !== currentUser?.id) {
           await loadUserInteractions(userId);
         }
