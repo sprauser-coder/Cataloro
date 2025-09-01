@@ -302,24 +302,36 @@ function DealsPage() {
       </div>
 
       {/* Deals List */}
-      {filteredDeals.length === 0 ? (
+      {displayDeals.length === 0 ? (
         <div className="text-center py-12">
           <div className="cataloro-card-glass p-12">
             <div className="w-24 h-24 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <Package className="w-12 h-12 text-gray-600 dark:text-gray-300" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">No deals found</h3>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+              {searchTerm ? 'No matching deals found' : 'No deals found'}
+            </h3>
             <p className="text-gray-600 dark:text-gray-300 max-w-md mx-auto">
-              {activeTab === 'all' 
-                ? 'Start buying or selling to see your deals here'
-                : `No ${activeTab} deals at the moment`
+              {searchTerm 
+                ? `No deals match your search for "${searchTerm}"`
+                : activeTab === 'all' 
+                  ? 'Start buying or selling to see your deals here'
+                  : `No ${activeTab} deals at the moment`
               }
             </p>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="mt-4 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
+              >
+                Clear search
+              </button>
+            )}
           </div>
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredDeals.map((deal) => (
+          {displayDeals.map((deal) => (
             <DealCard key={deal.id} deal={deal} currentUserId={user.id} />
           ))}
         </div>
