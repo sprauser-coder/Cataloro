@@ -1,6 +1,6 @@
 /**
- * CATALORO - Content Management System
- * Rich text editor for managing info page content
+ * CATALORO - Advanced Content Management System
+ * Enhanced CMS with comprehensive content editing, SEO, and media management
  */
 
 import React, { useState, useEffect } from 'react';
@@ -20,43 +20,141 @@ import {
   Type,
   Image,
   Link,
-  BarChart3
+  BarChart3,
+  Plus,
+  Minus,
+  ArrowUp,
+  ArrowDown,
+  Globe,
+  Search,
+  Tag,
+  Palette,
+  Monitor,
+  Smartphone,
+  Upload,
+  X,
+  Copy,
+  ExternalLink,
+  Zap,
+  Target,
+  Users,
+  TrendingUp
 } from 'lucide-react';
 
 function ContentManagementSystem() {
   const [contentSections, setContentSections] = useState({
+    seo: {
+      title: 'Cataloro - Ultra-Modern Marketplace Platform',
+      description: 'Experience the future of online commerce with cutting-edge marketplace featuring real-time messaging, intelligent notifications, and seamless transactions.',
+      keywords: 'marketplace, ecommerce, online shopping, buy sell, real-time messaging',
+      ogImage: '',
+      canonicalUrl: '/info'
+    },
     hero: {
       title: 'Cataloro',
       subtitle: 'Ultra-Modern Marketplace Platform',
       description: 'Experience the future of online commerce with our cutting-edge marketplace featuring real-time messaging, intelligent notifications, advanced search, and seamless transactions.',
       primaryButtonText: 'Get Started',
-      secondaryButtonText: 'Browse Marketplace'
+      primaryButtonLink: '/login',
+      secondaryButtonText: 'Browse Marketplace',
+      secondaryButtonLink: '/browse',
+      backgroundStyle: 'gradient',
+      showLogo: true,
+      logoAnimation: true
     },
     stats: [
-      { label: 'Active Users', value: '10K+' },
-      { label: 'Products Listed', value: '50K+' },
-      { label: 'Successful Deals', value: '25K+' },
-      { label: 'User Rating', value: '4.9★' }
+      { label: 'Active Users', value: '10K+', icon: 'users', color: 'blue' },
+      { label: 'Products Listed', value: '50K+', icon: 'package', color: 'green' },
+      { label: 'Successful Deals', value: '25K+', icon: 'trending', color: 'purple' },
+      { label: 'User Rating', value: '4.9★', icon: 'star', color: 'yellow' }
     ],
     features: {
       title: 'Platform Features',
       description: 'Discover all the powerful features that make our marketplace the most advanced platform for buying and selling.',
+      showIcons: true,
       categories: [
         {
+          id: 'marketplace-core',
           name: 'Marketplace Core',
-          description: 'Essential marketplace functionality with advanced search and product management.'
+          description: 'Essential marketplace functionality with advanced search and product management.',
+          icon: 'store',
+          color: 'blue-purple',
+          features: [
+            'Real-time search with auto-suggestions',
+            'Advanced filtering and categorization',
+            'Smart product recommendations',
+            'Price comparison tools'
+          ]
         },
         {
+          id: 'shopping-experience',
           name: 'Shopping Experience', 
-          description: 'Seamless shopping with cart management, favorites, and secure transactions.'
+          description: 'Seamless shopping with cart management, favorites, and secure transactions.',
+          icon: 'shopping-cart',
+          color: 'green-teal',
+          features: [
+            'One-click shopping cart',
+            'Wishlist and favorites system',
+            'Secure payment processing',
+            '48-hour approval system'
+          ]
         },
         {
+          id: 'communication',
           name: 'Communication',
-          description: 'Real-time messaging, notifications, and user profile management.'
+          description: 'Real-time messaging, notifications, and user profile management.',
+          icon: 'message-circle',
+          color: 'orange-red',
+          features: [
+            'Real-time chat system',
+            'Smart notifications',
+            'User verification system',
+            'Review and rating system'
+          ]
         },
         {
+          id: 'management-tools',
           name: 'Management Tools',
-          description: 'Comprehensive admin and user management tools with analytics.'
+          description: 'Comprehensive admin and user management tools with analytics.',
+          icon: 'settings',
+          color: 'purple-pink',
+          features: [
+            'Advanced analytics dashboard',
+            'Inventory management',
+            'Bulk operations',
+            'Performance insights'
+          ]
+        }
+      ]
+    },
+    testimonials: {
+      enabled: true,
+      title: 'What Our Users Say',
+      description: 'Join thousands of satisfied users who trust Cataloro for their marketplace needs.',
+      items: [
+        {
+          id: '1',
+          name: 'Sarah Johnson',
+          role: 'Power Seller',
+          avatar: '',
+          content: 'Cataloro has transformed how I sell online. The real-time messaging and advanced analytics have boosted my sales by 300%!',
+          rating: 5
+        },
+        {
+          id: '2', 
+          name: 'Mike Chen',
+          role: 'Regular Buyer',
+          avatar: '',
+          content: 'The search functionality is incredible. I can find exactly what Im looking for in seconds. Best marketplace experience ever!',
+          rating: 5
+        },
+        {
+          id: '3',
+          name: 'Emily Rodriguez',
+          role: 'Business Owner',
+          avatar: '',
+          content: 'The admin tools and inventory management features have streamlined our entire operation. Highly recommended!',
+          rating: 5
         }
       ]
     },
@@ -64,32 +162,54 @@ function ContentManagementSystem() {
       title: 'Ready to Get Started?',
       description: 'Join thousands of users who are already experiencing the future of online commerce. Create your account today and start buying or selling with confidence.',
       primaryButtonText: 'Start Your Journey',
-      secondaryButtonText: 'Explore Platform'
+      primaryButtonLink: '/login',
+      secondaryButtonText: 'Explore Platform',
+      secondaryButtonLink: '/browse',
+      backgroundStyle: 'gradient',
+      showStats: true
+    },
+    footer: {
+      companyDescription: 'Cataloro is the future of online commerce, providing cutting-edge marketplace solutions for modern buyers and sellers.',
+      socialLinks: {
+        twitter: '',
+        facebook: '',
+        instagram: '',
+        linkedin: ''
+      },
+      footerLinks: [
+        { title: 'About', url: '/info' },
+        { title: 'Contact', url: '/contact' },
+        { title: 'Privacy', url: '/privacy' },
+        { title: 'Terms', url: '/terms' }
+      ]
     }
   });
 
-  const [activeSection, setActiveSection] = useState('hero');
+  const [activeSection, setActiveSection] = useState('seo');
   const [isLoading, setSaveLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null);
   const [previewMode, setPreviewMode] = useState(false);
+  const [previewDevice, setPreviewDevice] = useState('desktop');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
-  // Quill editor configuration
+  // Enhanced Quill editor configuration
   const quillModules = {
     toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
       [{ 'color': [] }, { 'background': [] }],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
       [{ 'align': [] }],
-      ['link', 'image'],
+      ['link', 'image', 'video'],
+      ['code-block'],
       ['clean']
     ],
   };
 
   const quillFormats = [
-    'header', 'bold', 'italic', 'underline', 'strike',
-    'color', 'background', 'list', 'bullet', 'align',
-    'link', 'image'
+    'header', 'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'color', 'background', 'list', 'bullet', 'indent', 'align',
+    'link', 'image', 'video', 'code-block'
   ];
 
   // Save content to backend
@@ -104,7 +224,11 @@ function ContentManagementSystem() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('cataloro_token')}`
         },
-        body: JSON.stringify(contentSections)
+        body: JSON.stringify({
+          ...contentSections,
+          lastUpdated: new Date().toISOString(),
+          version: Date.now()
+        })
       });
 
       if (response.ok) {
@@ -133,24 +257,51 @@ function ContentManagementSystem() {
       
       if (response.ok) {
         const data = await response.json();
-        setContentSections(data);
+        setContentSections(prev => ({ ...prev, ...data }));
       }
     } catch (error) {
       console.error('Load error:', error);
     }
   };
 
+  // Auto-save functionality
+  useEffect(() => {
+    const autoSaveInterval = setInterval(() => {
+      if (contentSections) {
+        localStorage.setItem('cataloro_cms_draft', JSON.stringify(contentSections));
+      }
+    }, 30000); // Auto-save every 30 seconds
+
+    return () => clearInterval(autoSaveInterval);
+  }, [contentSections]);
+
   useEffect(() => {
     loadContent();
+    
+    // Load draft from localStorage if available
+    const draft = localStorage.getItem('cataloro_cms_draft');
+    if (draft) {
+      try {
+        const draftData = JSON.parse(draft);
+        setContentSections(prev => ({ ...prev, ...draftData }));
+      } catch (error) {
+        console.error('Error loading draft:', error);
+      }
+    }
   }, []);
+
+  // Update functions for different sections
+  const updateSEOContent = (field, value) => {
+    setContentSections(prev => ({
+      ...prev,
+      seo: { ...prev.seo, [field]: value }
+    }));
+  };
 
   const updateHeroContent = (field, value) => {
     setContentSections(prev => ({
       ...prev,
-      hero: {
-        ...prev.hero,
-        [field]: value
-      }
+      hero: { ...prev.hero, [field]: value }
     }));
   };
 
@@ -163,12 +314,110 @@ function ContentManagementSystem() {
     }));
   };
 
+  const addStat = () => {
+    setContentSections(prev => ({
+      ...prev,
+      stats: [...prev.stats, { label: 'New Stat', value: '0', icon: 'zap', color: 'blue' }]
+    }));
+  };
+
+  const removeStat = (index) => {
+    setContentSections(prev => ({
+      ...prev,
+      stats: prev.stats.filter((_, i) => i !== index)
+    }));
+  };
+
   const updateFeaturesContent = (field, value) => {
+    setContentSections(prev => ({
+      ...prev,
+      features: { ...prev.features, [field]: value }
+    }));
+  };
+
+  const updateFeatureCategory = (categoryId, field, value) => {
     setContentSections(prev => ({
       ...prev,
       features: {
         ...prev.features,
-        [field]: value
+        categories: prev.features.categories.map(cat =>
+          cat.id === categoryId ? { ...cat, [field]: value } : cat
+        )
+      }
+    }));
+  };
+
+  const addFeatureCategory = () => {
+    const newId = `category-${Date.now()}`;
+    setContentSections(prev => ({
+      ...prev,
+      features: {
+        ...prev.features,
+        categories: [...prev.features.categories, {
+          id: newId,
+          name: 'New Category',
+          description: 'Category description',
+          icon: 'zap',
+          color: 'blue-purple',
+          features: ['Feature 1', 'Feature 2']
+        }]
+      }
+    }));
+  };
+
+  const removeFeatureCategory = (categoryId) => {
+    setContentSections(prev => ({
+      ...prev,
+      features: {
+        ...prev.features,
+        categories: prev.features.categories.filter(cat => cat.id !== categoryId)
+      }
+    }));
+  };
+
+  const updateTestimonials = (field, value) => {
+    setContentSections(prev => ({
+      ...prev,
+      testimonials: { ...prev.testimonials, [field]: value }
+    }));
+  };
+
+  const updateTestimonialItem = (id, field, value) => {
+    setContentSections(prev => ({
+      ...prev,
+      testimonials: {
+        ...prev.testimonials,
+        items: prev.testimonials.items.map(item =>
+          item.id === id ? { ...item, [field]: value } : item
+        )
+      }
+    }));
+  };
+
+  const addTestimonial = () => {
+    const newId = `testimonial-${Date.now()}`;
+    setContentSections(prev => ({
+      ...prev,
+      testimonials: {
+        ...prev.testimonials,
+        items: [...prev.testimonials.items, {
+          id: newId,
+          name: 'New User',
+          role: 'Customer',
+          avatar: '',
+          content: 'Great experience with Cataloro!',
+          rating: 5
+        }]
+      }
+    }));
+  };
+
+  const removeTestimonial = (id) => {
+    setContentSections(prev => ({
+      ...prev,
+      testimonials: {
+        ...prev.testimonials,
+        items: prev.testimonials.items.filter(item => item.id !== id)
       }
     }));
   };
@@ -176,35 +425,79 @@ function ContentManagementSystem() {
   const updateCTAContent = (field, value) => {
     setContentSections(prev => ({
       ...prev,
-      cta: {
-        ...prev.cta,
-        [field]: value
-      }
+      cta: { ...prev.cta, [field]: value }
     }));
   };
 
+  const updateFooterContent = (field, value) => {
+    setContentSections(prev => ({
+      ...prev,
+      footer: { ...prev.footer, [field]: value }
+    }));
+  };
+
+  // Image upload handler
+  const handleImageUpload = async (file, section, field) => {
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('section', section);
+      formData.append('field', field);
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload-image`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('cataloro_token')}`
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Update the appropriate field with the image URL
+        if (section === 'seo') {
+          updateSEOContent(field, data.imageUrl);
+        }
+        // Add more sections as needed
+      }
+    } catch (error) {
+      console.error('Image upload error:', error);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const sections = [
+    { id: 'seo', name: 'SEO & Meta', icon: Search },
     { id: 'hero', name: 'Hero Section', icon: Layout },
     { id: 'stats', name: 'Statistics', icon: BarChart3 },
     { id: 'features', name: 'Features', icon: Settings },
-    { id: 'cta', name: 'Call to Action', icon: Sparkles }
+    { id: 'testimonials', name: 'Testimonials', icon: Users },
+    { id: 'cta', name: 'Call to Action', icon: Target },
+    { id: 'footer', name: 'Footer', icon: Globe }
   ];
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {/* Enhanced Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center space-x-3">
             <Edit3 className="w-8 h-8 text-blue-600" />
-            <span>Content Management System</span>
+            <span>Advanced Content Management</span>
           </h2>
           <p className="text-gray-600 dark:text-gray-300 mt-2">
-            Manage the content of your info page with rich text editing capabilities
+            Comprehensive content management with SEO, media, and advanced editing capabilities
           </p>
         </div>
 
         <div className="flex items-center space-x-3">
+          {/* Auto-save indicator */}
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Auto-save: Active
+          </div>
+
           {/* Save Status */}
           {saveStatus && (
             <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
@@ -220,6 +513,26 @@ function ContentManagementSystem() {
             </div>
           )}
 
+          {/* Preview Device Toggle */}
+          <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <button
+              onClick={() => setPreviewDevice('desktop')}
+              className={`p-2 rounded transition-colors ${
+                previewDevice === 'desktop' ? 'bg-white dark:bg-gray-700 shadow' : ''
+              }`}
+            >
+              <Monitor className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setPreviewDevice('mobile')}
+              className={`p-2 rounded transition-colors ${
+                previewDevice === 'mobile' ? 'bg-white dark:bg-gray-700 shadow' : ''
+              }`}
+            >
+              <Smartphone className="w-4 h-4" />
+            </button>
+          </div>
+
           {/* Action Buttons */}
           <button
             onClick={() => setPreviewMode(!previewMode)}
@@ -230,8 +543,16 @@ function ContentManagementSystem() {
           </button>
 
           <button
-            onClick={loadContent}
+            onClick={() => window.open('/info', '_blank')}
             className="flex items-center space-x-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-colors duration-200"
+          >
+            <ExternalLink className="w-4 h-4" />
+            <span>Live Preview</span>
+          </button>
+
+          <button
+            onClick={loadContent}
+            className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Reload</span>
