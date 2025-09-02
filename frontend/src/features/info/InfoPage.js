@@ -188,6 +188,9 @@ function InfoPage() {
       secondaryButtonText: 'Explore Features',
       secondaryButtonLink: '/browse',
       backgroundImage: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1920&h=1080&fit=crop&crop=center',
+      heroImage: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop&crop=center',
+      showHeroImage: true,
+      heroImagePosition: 'right',
       showVideo: false,
       videoUrl: 'https://player.vimeo.com/video/123456789'
     },
