@@ -139,20 +139,19 @@ function BrowsePage() {
     }
   };
 
-  const filteredListings = listings.filter(listing =>
-    listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    listing.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const sortedListings = [...filteredListings].sort((a, b) => {
+  const sortedListings = [...listings].sort((a, b) => {
     switch (sortBy) {
       case 'price_low':
-        return a.price - b.price;
+        return (a.price || 0) - (b.price || 0);
       case 'price_high':
-        return b.price - a.price;
+        return (b.price || 0) - (a.price || 0);
+      case 'popular':
+        return (b.views || 0) - (a.views || 0);
+      case 'rating':
+        return (b.rating || 0) - (a.rating || 0);
       case 'newest':
       default:
-        return new Date(b.created_at) - new Date(a.created_at);
+        return new Date(b.created_at || Date.now()) - new Date(a.created_at || Date.now());
     }
   });
 
