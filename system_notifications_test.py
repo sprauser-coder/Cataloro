@@ -159,10 +159,16 @@ class SystemNotificationsAPITester:
         )
         
         if success_get_user:
-            print(f"   Found {len(user_notifications)} user system notifications")
+            # Handle both direct list and wrapped response
+            if isinstance(user_notifications, dict) and 'notifications' in user_notifications:
+                notifications_list = user_notifications['notifications']
+            else:
+                notifications_list = user_notifications if isinstance(user_notifications, list) else []
+            
+            print(f"   Found {len(notifications_list)} user system notifications")
             # Check if our created notification appears for the user
-            if self.test_notification_id:
-                found_notification = any(n.get('id') == self.test_notification_id for n in user_notifications)
+            if self.test_notification_id and notifications_list:
+                found_notification = any(n.get('id') == self.test_notification_id for n in notifications_list)
                 self.log_test("System Notification Delivery to User", found_notification,
                              f"Created notification delivered to user: {found_notification}")
         
