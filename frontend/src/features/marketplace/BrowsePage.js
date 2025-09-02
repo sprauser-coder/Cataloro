@@ -186,7 +186,7 @@ function BrowsePage() {
       <div className="mb-6">
         <SmartSearchBar
           onSearch={handleSearch}
-          placeholder="Search with AI-powered suggestions..."
+          placeholder="Search catalysts by metal, reaction type, or application..."
           className="max-w-2xl"
         />
       </div>
