@@ -70,11 +70,12 @@ function BrowsePage() {
 
 
 
-  const handleAddToFavorites = async (listingId) => {
+  const handleAddToFavorites = async () => {
     try {
       // Implementation for adding to favorites
       showToast('Added to favorites', 'success');
     } catch (error) {
+      console.error('Failed to add to favorites:', error);
       showToast('Failed to add to favorites', 'error');
     }
   };
