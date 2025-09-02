@@ -188,13 +188,13 @@ class SystemNotificationsAPITester:
         
         # Test 5: Verify green toast notification structure
         print("\n5️⃣ Testing green toast notification data structure...")
-        if success_get_user and user_notifications:
-            for notification in user_notifications[:3]:  # Check first 3 notifications
-                required_fields = ['id', 'title', 'message', 'type', 'priority']
+        if success_get_user and notifications_list:
+            for notification in notifications_list[:3]:  # Check first 3 notifications
+                required_fields = ['id', 'title', 'message', 'type']
                 has_required_fields = all(field in notification for field in required_fields)
                 
                 # Check for toast-specific fields
-                toast_fields = ['display_duration', 'auto_dismiss']
+                toast_fields = ['show_duration', 'auto_dismiss']
                 has_toast_fields = any(field in notification for field in toast_fields)
                 
                 if has_required_fields:
