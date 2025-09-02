@@ -475,7 +475,7 @@ function DealCard({ deal, currentUserId, user }) {
                 </button>
                 <button 
                   onClick={async () => {
-                    if (confirm('Are you sure you want to cancel this deal?')) {
+                    if (window.confirm('Are you sure you want to cancel this deal?')) {
                       try {
                         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/${deal.id}/cancel`, {
                           method: 'PUT',
