@@ -89,6 +89,7 @@ import { adminService } from '../../services/adminService';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import ContentManagementSystem from './ContentManagementSystem';
+import SystemNotificationsManager from './SystemNotificationsManager';
 import { useNotifications } from '../../context/NotificationContext';
 import { applySiteConfiguration } from '../../utils/siteConfiguration';
 import BusinessTab from './BusinessTab';
