@@ -256,21 +256,28 @@ function AdvancedFilters({ onFiltersChange, initialFilters = {}, className = "" 
       {isOpen && (
         <div className="absolute z-40 top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Category Filter */}
+            {/* Metal Type Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Tag className="h-4 w-4 inline mr-1" />
-                Category
+                Metal Type
               </label>
               <select
-                value={filters.category}
-                onChange={(e) => handleFilterChange('category', e.target.value)}
+                value={filters.metalType || 'all'}
+                onChange={(e) => handleFilterChange('metalType', e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
+                <option value="all">All Metals</option>
+                <option value="platinum">Platinum</option>
+                <option value="palladium">Palladium</option>
+                <option value="rhodium">Rhodium</option>
+                <option value="nickel">Nickel</option>
+                <option value="cobalt">Cobalt</option>
+                <option value="iron">Iron</option>
+                <option value="copper">Copper</option>
+                <option value="ruthenium">Ruthenium</option>
+                <option value="gold">Gold</option>
+                <option value="silver">Silver</option>
               </select>
             </div>
 
