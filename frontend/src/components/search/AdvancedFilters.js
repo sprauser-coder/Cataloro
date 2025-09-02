@@ -305,21 +305,26 @@ function AdvancedFilters({ onFiltersChange, initialFilters = {}, className = "" 
               </select>
             </div>
 
-            {/* Location Filter */}
+            {/* Application Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <MapPin className="h-4 w-4 inline mr-1" />
-                Location
+                Application
               </label>
               <select
-                value={filters.location}
-                onChange={(e) => handleFilterChange('location', e.target.value)}
+                value={filters.application || 'all'}
+                onChange={(e) => handleFilterChange('application', e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">Any Location</option>
-                {locations.map(location => (
-                  <option key={location} value={location}>{location}</option>
-                ))}
+                <option value="all">All Applications</option>
+                <option value="petrochemical">Petrochemical</option>
+                <option value="pharmaceutical">Pharmaceutical</option>
+                <option value="environmental">Environmental</option>
+                <option value="fine-chemical">Fine Chemical</option>
+                <option value="automotive">Automotive</option>
+                <option value="energy">Energy</option>
+                <option value="polymer">Polymer</option>
+                <option value="food">Food Processing</option>
               </select>
             </div>
 
