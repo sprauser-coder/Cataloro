@@ -2196,6 +2196,12 @@ function SiteAdministrationTab({ showToast }) {
       description: 'Manage info page content with rich text editing capabilities'
     },
     { 
+      id: 'system-notifications', 
+      label: 'System Notifications Manager', 
+      icon: Bell,
+      description: 'Manage green toast notifications that appear in the top right corner with event triggers'
+    },
+    { 
       id: 'hero', 
       label: 'Hero Selection', 
       icon: Star,
