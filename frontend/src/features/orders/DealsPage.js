@@ -531,7 +531,8 @@ function DealsPage() {
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Value</div>
           </div>
         </button>
-      </div>
+        </div>
+      )}
 
       {/* Enhanced Controls Section */}
       <div className="cataloro-card-glass mb-8">
