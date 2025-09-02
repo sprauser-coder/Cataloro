@@ -22,6 +22,9 @@ from bson import ObjectId
 from dotenv import load_dotenv
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
+# Load environment variables
+load_dotenv()
+
 # Initialize FastAPI app
 app = FastAPI(
     title="Cataloro Marketplace API",
