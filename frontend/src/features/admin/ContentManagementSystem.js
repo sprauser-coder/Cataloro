@@ -728,7 +728,7 @@ function ContentManagementSystem() {
               <div className="space-y-6">
                 <div className="flex items-center space-x-3 mb-6">
                   <Layout className="w-6 h-6 text-blue-600" />
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Hero Section</h3>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Hero Section with Images</h3>
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">
@@ -754,7 +754,7 @@ function ContentManagementSystem() {
                         value={contentSections.hero.subtitle}
                         onChange={(e) => updateHeroContent('subtitle', e.target.value)}
                         className="cataloro-input"
-                        placeholder="Ultra-Modern Marketplace Platform"
+                        placeholder="The Future of Online Marketplace"
                       />
                     </div>
                   </div>
@@ -773,6 +773,92 @@ function ContentManagementSystem() {
                     />
                   </div>
 
+                  {/* Hero Background Image Management */}
+                  <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+                      <Camera className="w-5 h-5 text-purple-600" />
+                      <span>Hero Background Image</span>
+                    </h4>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                          Background Image URL
+                        </label>
+                        <div className="flex space-x-2">
+                          <input
+                            type="url"
+                            value={contentSections.hero.backgroundImage || ''}
+                            onChange={(e) => updateHeroContent('backgroundImage', e.target.value)}
+                            className="cataloro-input flex-1"
+                            placeholder="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1920&h=1080"
+                          />
+                          <button
+                            onClick={() => document.getElementById('hero-bg-upload').click()}
+                            className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors flex items-center space-x-2"
+                            disabled={uploadingImage}
+                          >
+                            <Upload className="w-4 h-4" />
+                            <span>Upload</span>
+                          </button>
+                          <input
+                            id="hero-bg-upload"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'hero', 'backgroundImage')}
+                            className="hidden"
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Image Preview */}
+                      {contentSections.hero.backgroundImage && (
+                        <div className="relative">
+                          <img
+                            src={contentSections.hero.backgroundImage}
+                            alt="Hero Background Preview"
+                            className="w-full h-32 object-cover rounded-lg"
+                          />
+                          <button
+                            onClick={() => updateHeroContent('backgroundImage', '')}
+                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Stock Image Quick Select */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                          Quick Select Stock Images
+                        </label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {[
+                            'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1920&h=1080&fit=crop&crop=center',
+                            'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1920&h=1080&fit=crop&crop=center',
+                            'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&h=1080&fit=crop&crop=center'
+                          ].map((url, index) => (
+                            <button
+                              key={index}
+                              onClick={() => updateHeroContent('backgroundImage', url)}
+                              className="relative group"
+                            >
+                              <img
+                                src={url}
+                                alt={`Stock ${index + 1}`}
+                                className="w-full h-20 object-cover rounded-lg group-hover:opacity-75 transition-opacity"
+                              />
+                              <div className="absolute inset-0 bg-purple-600/0 group-hover:bg-purple-600/20 rounded-lg transition-colors flex items-center justify-center">
+                                <CheckCircle className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
@@ -784,7 +870,7 @@ function ContentManagementSystem() {
                           value={contentSections.hero.primaryButtonText}
                           onChange={(e) => updateHeroContent('primaryButtonText', e.target.value)}
                           className="cataloro-input"
-                          placeholder="Get Started"
+                          placeholder="Start Trading Now"
                         />
                         <input
                           type="text"
@@ -805,7 +891,7 @@ function ContentManagementSystem() {
                           value={contentSections.hero.secondaryButtonText}
                           onChange={(e) => updateHeroContent('secondaryButtonText', e.target.value)}
                           className="cataloro-input"
-                          placeholder="Browse Marketplace"
+                          placeholder="Explore Features"
                         />
                         <input
                           type="text"
@@ -818,45 +904,207 @@ function ContentManagementSystem() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                        Background Style
-                      </label>
-                      <select
-                        value={contentSections.hero.backgroundStyle}
-                        onChange={(e) => updateHeroContent('backgroundStyle', e.target.value)}
-                        className="cataloro-input"
-                      >
-                        <option value="gradient">Gradient</option>
-                        <option value="solid">Solid Color</option>
-                        <option value="image">Background Image</option>
-                      </select>
-                    </div>
-                    <div className="flex items-center space-x-4">
+                  {/* Video Section */}
+                  <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+                      <Play className="w-5 h-5 text-green-600" />
+                      <span>Hero Video (Optional)</span>
+                    </h4>
+                    
+                    <div className="flex items-center space-x-4 mb-4">
                       <label className="flex items-center space-x-2">
                         <input
                           type="checkbox"
-                          checked={contentSections.hero.showLogo}
-                          onChange={(e) => updateHeroContent('showLogo', e.target.checked)}
+                          checked={contentSections.hero.showVideo || false}
+                          onChange={(e) => updateHeroContent('showVideo', e.target.checked)}
                           className="rounded border-gray-300"
                         />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">Show Logo</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Show Video</span>
                       </label>
                     </div>
-                    <div className="flex items-center space-x-4">
-                      <label className="flex items-center space-x-2">
+
+                    {contentSections.hero.showVideo && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                          Video URL (YouTube, Vimeo, etc.)
+                        </label>
                         <input
-                          type="checkbox"
-                          checked={contentSections.hero.logoAnimation}
-                          onChange={(e) => updateHeroContent('logoAnimation', e.target.checked)}
-                          className="rounded border-gray-300"
+                          type="url"
+                          value={contentSections.hero.videoUrl || ''}
+                          onChange={(e) => updateHeroContent('videoUrl', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="https://player.vimeo.com/video/123456789"
                         />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">Logo Animation</span>
-                      </label>
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* About Section Editor */}
+            {activeSection === 'about' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <Award className="w-6 h-6 text-blue-600" />
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">About Section</h3>
+                  </div>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={contentSections.about?.enabled || false}
+                      onChange={(e) => updateAboutContent('enabled', e.target.checked)}
+                      className="rounded border-gray-300"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Enable Section</span>
+                  </label>
+                </div>
+
+                {contentSections.about?.enabled && (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                          Section Title
+                        </label>
+                        <input
+                          type="text"
+                          value={contentSections.about?.title || ''}
+                          onChange={(e) => updateAboutContent('title', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="About Cataloro"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                          Subtitle
+                        </label>
+                        <input
+                          type="text"
+                          value={contentSections.about?.subtitle || ''}
+                          onChange={(e) => updateAboutContent('subtitle', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="Revolutionizing Digital Commerce"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        Description
+                      </label>
+                      <ReactQuill
+                        value={contentSections.about?.description || ''}
+                        onChange={(value) => updateAboutContent('description', value)}
+                        modules={quillModules}
+                        formats={quillFormats}
+                        theme="snow"
+                        className="bg-white dark:bg-gray-800 rounded-lg"
+                      />
+                    </div>
+
+                    {/* About Image Management */}
+                    <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+                        <Image className="w-5 h-5 text-blue-600" />
+                        <span>About Section Image</span>
+                      </h4>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                            About Image URL
+                          </label>
+                          <div className="flex space-x-2">
+                            <input
+                              type="url"
+                              value={contentSections.about?.image || ''}
+                              onChange={(e) => updateAboutContent('image', e.target.value)}
+                              className="cataloro-input flex-1"
+                              placeholder="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600"
+                            />
+                            <button
+                              onClick={() => document.getElementById('about-image-upload').click()}
+                              className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors flex items-center space-x-2"
+                              disabled={uploadingImage}
+                            >
+                              <Upload className="w-4 h-4" />
+                              <span>Upload</span>
+                            </button>
+                            <input
+                              id="about-image-upload"
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'about', 'image')}
+                              className="hidden"
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Image Preview */}
+                        {contentSections.about?.image && (
+                          <div className="relative">
+                            <img
+                              src={contentSections.about.image}
+                              alt="About Section Preview"
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <button
+                              onClick={() => updateAboutContent('image', '')}
+                              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Stock Image Quick Select */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                            Quick Select About Images
+                          </label>
+                          <div className="grid grid-cols-4 gap-2">
+                            {[
+                              'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop&crop=center',
+                              'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop&crop=center',
+                              'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=600&fit=crop&crop=center',
+                              'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop&crop=center'
+                            ].map((url, index) => (
+                              <button
+                                key={index}
+                                onClick={() => updateAboutContent('image', url)}
+                                className="relative group"
+                              >
+                                <img
+                                  src={url}
+                                  alt={`About Stock ${index + 1}`}
+                                  className="w-full h-16 object-cover rounded-lg group-hover:opacity-75 transition-opacity"
+                                />
+                                <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/20 rounded-lg transition-colors flex items-center justify-center">
+                                  <CheckCircle className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* About Features */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        Key Features (one per line)
+                      </label>
+                      <textarea
+                        value={contentSections.about?.features?.join('\n') || ''}
+                        onChange={(e) => updateAboutContent('features', e.target.value.split('\n').filter(f => f.trim()))}
+                        className="cataloro-input h-24 resize-none"
+                        placeholder="AI-Powered Matching&#10;Real-time Communication&#10;Advanced Security&#10;Global Reach"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
