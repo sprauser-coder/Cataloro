@@ -34,12 +34,28 @@ import { useNotifications } from '../../context/NotificationContext';
 function DealsPage() {
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all');
-  const [activeFilter, setActiveFilter] = useState('all'); // For tile filtering
-  const [sortBy, setSortBy] = useState('newest'); // New sorting option
-  const [searchTerm, setSearchTerm] = useState(''); // New search functionality
+  const [liveStats, setLiveStats] = useState({
+    totalDeals: 0,
+    totalValue: 0,
+    pendingDeals: 0,
+    completedDeals: 0,
+    averageOrderValue: 0,
+    successRate: 0,
+    monthlyTrend: 0,
+    topCategories: [],
+    recentActivity: []
+  });
+  const [activeTab, setActiveTab] = useState('overview');
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const [realTimeUpdates, setRealTimeUpdates] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  
   const { user } = useAuth();
   const { showToast } = useNotifications();
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     if (user?.id) {
