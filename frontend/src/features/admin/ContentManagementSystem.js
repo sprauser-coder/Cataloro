@@ -429,6 +429,20 @@ function ContentManagementSystem() {
     }));
   };
 
+  const updateAboutContent = (field, value) => {
+    setContentSections(prev => ({
+      ...prev,
+      about: { ...prev.about, [field]: value }
+    }));
+  };
+
+  const updateTeamContent = (field, value) => {
+    setContentSections(prev => ({
+      ...prev,
+      team: { ...prev.team, [field]: value }
+    }));
+  };
+
   const updateFooterContent = (field, value) => {
     setContentSections(prev => ({
       ...prev,
