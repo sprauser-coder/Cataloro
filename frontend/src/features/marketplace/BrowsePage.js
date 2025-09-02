@@ -9,20 +9,10 @@ import {
   Grid3X3, 
   List, 
   Heart, 
-  Eye, 
-  MapPin,
-  Clock,
-  ShoppingCart,
-  MessageCircle,
   SlidersHorizontal,
-  X,
-  Send,
-  User,
-  Database,
-  RefreshCw,
-  Filter
+  X
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
 import { useNotifications } from '../../context/NotificationContext';
 import { useAuth } from '../../context/AuthContext';
