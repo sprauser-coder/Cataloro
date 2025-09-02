@@ -2110,8 +2110,8 @@ async def get_ai_chat():
             
         chat = LlmChat(
             api_key=api_key,
-            session_id="marketplace_search",
-            system_message="You are an AI assistant specialized in e-commerce search and product recommendations. Help users find the right products by understanding their intent and providing relevant suggestions. Be concise and helpful."
+            session_id="catalyst_search",
+            system_message="You are an AI assistant specialized in catalyst marketplace search. Help users find chemical catalysts by understanding their chemical needs, reaction types, and process requirements. Focus on catalyst properties like selectivity, activity, stability, and application areas. Be precise and technically relevant."
         ).with_model("openai", "gpt-4o-mini")
         
         return chat
