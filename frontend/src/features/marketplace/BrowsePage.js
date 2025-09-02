@@ -93,7 +93,7 @@ function BrowsePage() {
             });
           }
           
-          showToast(`Found ${data.total || 0} results with AI search`, 'success');
+          showToast(`Found ${data.total || 0} catalysts with AI search`, 'success');
           return;
         }
       }
