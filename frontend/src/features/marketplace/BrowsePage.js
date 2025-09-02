@@ -1,12 +1,16 @@
 /**
- * CATALORO - Browse Page
- * Tile pattern display of all active listings with modern design
+ * CATALORO - Enhanced Browse Page with AI-Powered Search
+ * Advanced marketplace browsing with intelligent search and recommendations
  */
 
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Grid, List, Heart, DollarSign } from 'lucide-react';
+import { Search, Filter, Grid, List, Heart, DollarSign, Sparkles, TrendingUp } from 'lucide-react';
 import { marketplaceService } from '../../services/marketplaceService';
 import { useNotifications } from '../../context/NotificationContext';
+import { useAuth } from '../../context/AuthContext';
+import SmartSearchBar from '../../components/search/SmartSearchBar';
+import AdvancedFilters from '../../components/search/AdvancedFilters';
+import RecommendationsPanel from '../../components/recommendations/RecommendationsPanel';
 
 function BrowsePage() {
   const [listings, setListings] = useState([]);
