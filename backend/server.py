@@ -2191,21 +2191,21 @@ async def intelligent_search(search_data: dict):
         
         # Let AI understand the search intent and enhance the query
         intent_prompt = f"""
-        Analyze this search query: "{query}"
+        Analyze this catalyst search query: "{query}"
         
-        Extract key information:
-        1. Product category (if any)
-        2. Key features or specifications mentioned
-        3. Price range hints (budget, cheap, expensive, premium, etc.)
-        4. Condition preferences (new, used, refurbished, etc.)
+        Extract key chemical and technical information:
+        1. Metal type (platinum, palladium, nickel, etc.)
+        2. Reaction type (hydrogenation, oxidation, cracking, etc.)
+        3. Application area (petrochemical, pharmaceutical, environmental, etc.)
+        4. Technical specifications (surface area, particle size, support material, etc.)
         
         Return a JSON object with extracted information:
         {{
-            "category": "category name or null",
-            "keywords": ["key", "words", "to", "search"],
-            "price_intent": "budget|mid-range|premium|null",
-            "condition_intent": "new|used|refurbished|null",
-            "enhanced_query": "enhanced search terms"
+            "metal_type": "metal name or null",
+            "reaction_type": "reaction type or null", 
+            "application": "application area or null",
+            "keywords": ["key", "technical", "terms"],
+            "enhanced_query": "enhanced technical search terms"
         }}
         """
         
