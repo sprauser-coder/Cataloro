@@ -57,83 +57,170 @@ function DealsPage() {
   const { showToast } = useNotifications();
   const intervalRef = useRef(null);
 
-  useEffect(() => {
-    if (user?.id) {
-      fetchMyDeals();
-    }
-  }, [user?.id]);
-
-  const fetchMyDeals = async () => {
+  // Load deals and live statistics
+  const fetchLiveDealsData = useCallback(async (showRefreshToast = false) => {
     try {
-      setLoading(true);
-      // Use the correct API endpoint that we fixed earlier
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/my-deals/${user.id}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
+      if (showRefreshToast) setRefreshing(true);
       
-      // Sort deals by created_at date (newest first)
-      const sortedDeals = data.sort((a, b) => {
+      // Fetch user deals
+      const dealsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/my-deals/${user.id}`);
+      let dealsData = [];
+      
+      if (dealsResponse.ok) {
+        dealsData = await dealsResponse.json();
+        console.log('✅ Live deals data loaded:', dealsData.length, 'deals');
+      } else {
+        console.log('⚠️ Using fallback for deals data');
+        throw new Error('API unavailable');
+      }
+      
+      // Sort deals by date
+      const sortedDeals = dealsData.sort((a, b) => {
         const dateA = new Date(a.created_at || a.approved_at || '2023-01-01');
         const dateB = new Date(b.created_at || b.approved_at || '2023-01-01');
-        return dateB - dateA; // Newest first
+        return dateB - dateA;
       });
       
       setDeals(sortedDeals);
-    } catch (error) {
-      showToast('Failed to load your deals', 'error');
-      console.error('Failed to fetch deals:', error);
       
-      // Fallback to demo data if API fails
-      const demoDeals = [
-        {
-          id: '1',
-          listing_id: 'listing1',
-          buyer_id: user.id,
-          seller_id: 'seller1',
-          status: 'approved',
-          amount: 299.99,
-          created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          approved_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-          listing: {
-            id: 'listing1',
-            title: 'MacBook Pro 14" M2',
-            price: 299.99,
-            image: '/api/placeholder/300/200'
-          },
-          seller: {
-            id: 'seller1',
-            username: 'tech_seller',
-            email: 'seller@example.com'
-          }
-        },
-        {
-          id: '2',
-          listing_id: 'listing2',
-          buyer_id: 'buyer2',
-          seller_id: user.id,
-          status: 'completed',
-          amount: 150.50,
-          created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          approved_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-          listing: {
-            id: 'listing2',
-            title: 'Gaming Mouse',
-            price: 150.50,
-            image: '/api/placeholder/300/200'
-          },
-          buyer: {
-            id: 'buyer2',
-            username: 'gamer_buyer',
-            email: 'buyer@example.com'
-          }
-        }
-      ];
-      setDeals(demoDeals);
+      // Calculate live statistics
+      const stats = calculateLiveStats(dealsData);
+      setLiveStats(stats);
+      
+      setLastUpdated(new Date());
+      
+      if (showRefreshToast) {
+        showToast(`✅ Updated: ${dealsData.length} deals loaded with live statistics`, 'success');
+      }
+      
+    } catch (error) {
+      console.error('❌ Failed to fetch live deals data:', error);
+      if (showRefreshToast) {
+        showToast('⚠️ Failed to refresh live data - using cached data', 'warning');
+      }
+      
+      // Only set loading to false, keep any existing data
+      setDeals(prev => prev.length > 0 ? prev : []); // Keep existing data or empty array
+      
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  }, [user?.id, showToast]);
+
+  // Calculate comprehensive live statistics
+  const calculateLiveStats = (dealsData) => {
+    if (!dealsData || dealsData.length === 0) {
+      return {
+        totalDeals: 0,
+        totalValue: 0,
+        pendingDeals: 0,
+        completedDeals: 0,
+        averageOrderValue: 0,
+        successRate: 0,
+        monthlyTrend: 0,
+        topCategories: [],
+        recentActivity: []
+      };
+    }
+
+    const completedDeals = dealsData.filter(d => d.status === 'completed');
+    const pendingDeals = dealsData.filter(d => d.status === 'pending' || d.status === 'approved');
+    const totalValue = completedDeals.reduce((sum, d) => sum + (parseFloat(d.amount) || 0), 0);
+    const avgOrderValue = completedDeals.length > 0 ? totalValue / completedDeals.length : 0;
+    const successRate = dealsData.length > 0 ? (completedDeals.length / dealsData.length) * 100 : 0;
+
+    // Calculate monthly trend (compare last 30 days vs previous 30 days)
+    const now = new Date();
+    const last30Days = dealsData.filter(d => {
+      const dealDate = new Date(d.created_at || d.approved_at);
+      const daysDiff = (now - dealDate) / (1000 * 60 * 60 * 24);
+      return daysDiff <= 30;
+    });
+    
+    const previous30Days = dealsData.filter(d => {
+      const dealDate = new Date(d.created_at || d.approved_at);
+      const daysDiff = (now - dealDate) / (1000 * 60 * 60 * 24);
+      return daysDiff > 30 && daysDiff <= 60;
+    });
+
+    const monthlyTrend = previous30Days.length > 0 
+      ? ((last30Days.length - previous30Days.length) / previous30Days.length) * 100 
+      : 0;
+
+    // Top categories (from listing data if available)
+    const categoryCount = {};
+    dealsData.forEach(deal => {
+      const category = deal.listing?.category || 'Uncategorized';
+      categoryCount[category] = (categoryCount[category] || 0) + 1;
+    });
+    
+    const topCategories = Object.entries(categoryCount)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([category, count]) => ({ category, count }));
+
+    // Recent activity (last 10 deals)
+    const recentActivity = dealsData
+      .slice(0, 10)
+      .map(deal => ({
+        id: deal.id,
+        type: deal.buyer_id === user?.id ? 'purchase' : 'sale',
+        title: deal.listing?.title || 'Deal',
+        amount: deal.amount,
+        status: deal.status,
+        date: deal.created_at || deal.approved_at
+      }));
+
+    return {
+      totalDeals: dealsData.length,
+      totalValue,
+      pendingDeals: pendingDeals.length,
+      completedDeals: completedDeals.length,
+      averageOrderValue: avgOrderValue,
+      successRate,
+      monthlyTrend,
+      topCategories,
+      recentActivity
+    };
+  };
+
+  // Set up real-time updates
+  useEffect(() => {
+    if (user?.id) {
+      fetchLiveDealsData();
+      
+      if (realTimeUpdates) {
+        intervalRef.current = setInterval(() => {
+          fetchLiveDealsData();
+        }, 30000); // Update every 30 seconds
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [user?.id, realTimeUpdates, fetchLiveDealsData]);
+
+  const handleRefresh = () => {
+    fetchLiveDealsData(true);
+  };
+
+  const toggleRealTimeUpdates = () => {
+    setRealTimeUpdates(prev => {
+      const newValue = !prev;
+      if (newValue) {
+        showToast('🔄 Real-time updates enabled', 'success');
+      } else {
+        showToast('⏸️ Real-time updates paused', 'info');
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      }
+      return newValue;
+    });
   };
 
   const tabs = [
