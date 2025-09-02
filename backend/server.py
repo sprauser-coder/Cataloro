@@ -2128,15 +2128,14 @@ async def get_ai_search_suggestions(search_data: dict):
         if not query or len(query.strip()) < 2:
             return {"suggestions": []}
         
-        # Get available categories and popular products for context
-        categories = await db.listings.distinct("category")
-        popular_products = await db.listings.find({"status": "active"}).sort("views", -1).limit(5).to_list(length=5)
+        # Get available catalysts and popular products for context
+        popular_catalysts = await db.listings.find({"status": "active"}).sort("views", -1).limit(5).to_list(length=5)
         
         # Create context for AI
         ai_context = f"""
-        User is searching for: "{query}"
-        Available categories: {', '.join(categories)}
-        Popular products: {[p.get('title', '') for p in popular_products]}
+        User is searching for catalysts: "{query}"
+        Popular catalysts: {[p.get('title', '') for p in popular_catalysts]}
+        Available catalyst data: {[p.get('add_info', '')[:100] + '...' if p.get('add_info') else '' for p in popular_catalysts]}
         """
         
         if context.get('previous_searches'):
