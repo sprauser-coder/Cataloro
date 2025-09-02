@@ -3945,15 +3945,42 @@ function ListingsTab({ showToast }) {
           {/* Sub-tabs Navigation */}
           <div className="flex items-center space-x-1 bg-gray-100/50 dark:bg-gray-800/50 rounded-lg p-1">
             {[
-              { id: 'active', label: 'Active', count: listings.filter(l => l.status === 'active').length, color: 'green' },
+              { 
+                id: 'active', 
+                label: 'Active', 
+                count: listings.filter(l => l.status === 'active' || l.status === 'approved').length, 
+                color: 'green' 
+              },
               { 
                 id: 'pending', 
                 label: 'Pending', 
-                count: listings.filter(l => l.status === 'pending' || (l.pendingOrders && l.pendingOrders > 0)).length, 
+                count: listings.filter(l => 
+                  l.status === 'pending' || 
+                  l.status === 'awaiting_approval' || 
+                  (l.pendingOrders && l.pendingOrders > 0)
+                ).length, 
                 color: 'yellow' 
               },
-              { id: 'inactive', label: 'Inactive', count: listings.filter(l => l.status === 'inactive').length, color: 'gray' },
-              { id: 'sold', label: 'Sold', count: listings.filter(l => l.status === 'sold').length, color: 'blue' }
+              { 
+                id: 'inactive', 
+                label: 'Inactive', 
+                count: listings.filter(l => 
+                  l.status === 'inactive' || 
+                  l.status === 'deactivated' || 
+                  l.status === 'paused'
+                ).length, 
+                color: 'gray' 
+              },
+              { 
+                id: 'sold', 
+                label: 'Sold', 
+                count: listings.filter(l => 
+                  l.status === 'sold' || 
+                  l.status === 'completed' || 
+                  l.status === 'finished'
+                ).length, 
+                color: 'blue' 
+              }
             ].map((tab) => (
               <button
                 key={tab.id}
