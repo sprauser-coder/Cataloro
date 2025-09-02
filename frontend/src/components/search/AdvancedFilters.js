@@ -160,8 +160,8 @@ function AdvancedFilters({ onFiltersChange, initialFilters = {}, className = "" 
   ];
 
   const commonFeatures = [
-    'Free Shipping', 'Fast Delivery', 'Warranty Included', 'Return Policy',
-    'Brand New', 'Verified Seller', 'Local Pickup', 'Negotiable Price'
+    'High Surface Area', 'Stable at High Temperature', 'Regenerable', 'Low Deactivation',
+    'High Selectivity', 'Single Site', 'Supported', 'Bulk Catalyst'
   ];
 
   return (
