@@ -816,6 +816,139 @@ function ContentManagementSystem() {
                     />
                   </div>
 
+                  {/* Hero PNG/Image Management */}
+                  <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
+                      <Image className="w-5 h-5 text-blue-600" />
+                      <span>Hero PNG/Image (Foreground)</span>
+                    </h4>
+                    
+                    <div className="space-y-4">
+                      {/* Show Hero Image Toggle */}
+                      <div className="flex items-center space-x-4">
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={contentSections.hero.showHeroImage || false}
+                            onChange={(e) => updateHeroContent('showHeroImage', e.target.checked)}
+                            className="rounded border-gray-300"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Show Hero Image</span>
+                        </label>
+                        
+                        {contentSections.hero.showHeroImage && (
+                          <div className="flex items-center space-x-4">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Position:</label>
+                            <select
+                              value={contentSections.hero.heroImagePosition || 'right'}
+                              onChange={(e) => updateHeroContent('heroImagePosition', e.target.value)}
+                              className="text-sm bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded px-2 py-1"
+                            >
+                              <option value="left">Left</option>
+                              <option value="right">Right</option>
+                            </select>
+                          </div>
+                        )}
+                      </div>
+
+                      {contentSections.hero.showHeroImage && (
+                        <>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                              Hero Image URL (PNG, JPG, or any format)
+                            </label>
+                            <div className="flex space-x-2">
+                              <input
+                                type="url"
+                                value={contentSections.hero.heroImage || ''}
+                                onChange={(e) => updateHeroContent('heroImage', e.target.value)}
+                                className="cataloro-input flex-1"
+                                placeholder="https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600"
+                              />
+                              <button
+                                onClick={() => document.getElementById('hero-image-upload').click()}
+                                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-colors flex items-center space-x-2 shadow-lg"
+                                disabled={uploadingImage}
+                              >
+                                <Upload className="w-4 h-4" />
+                                <span>Upload PNG</span>
+                              </button>
+                              <input
+                                id="hero-image-upload"
+                                type="file"
+                                accept="image/*,.png,.jpg,.jpeg,.gif,.webp"
+                                onChange={(e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'hero', 'heroImage')}
+                                className="hidden"
+                              />
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              Supports PNG, JPG, JPEG, GIF, WebP. Recommended: 800x600px or higher.
+                            </p>
+                          </div>
+                          
+                          {/* Hero Image Preview */}
+                          {contentSections.hero.heroImage && (
+                            <div className="relative">
+                              <div className="relative bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg p-4">
+                                <img
+                                  src={contentSections.hero.heroImage}
+                                  alt="Hero Image Preview"
+                                  className="w-full h-48 object-contain rounded-lg"
+                                />
+                                <button
+                                  onClick={() => updateHeroContent('heroImage', '')}
+                                  className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                                  title="Remove Image"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                              <div className="mt-2 text-center">
+                                <span className="text-xs text-gray-600 dark:text-gray-400">
+                                  Preview - Position: {contentSections.hero.heroImagePosition || 'right'}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Stock Hero Images Quick Select */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                              Quick Select Hero Images
+                            </label>
+                            <div className="grid grid-cols-4 gap-2">
+                              {[
+                                'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop&crop=center',
+                                'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop&crop=center',
+                                'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&h=600&fit=crop&crop=center',
+                                'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=600&fit=crop&crop=center'
+                              ].map((url, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => updateHeroContent('heroImage', url)}
+                                  className="relative group"
+                                  title={`Hero Image ${index + 1}`}
+                                >
+                                  <img
+                                    src={url}
+                                    alt={`Hero ${index + 1}`}
+                                    className="w-full h-16 object-cover rounded-lg group-hover:opacity-75 transition-opacity border-2 border-transparent group-hover:border-blue-500"
+                                  />
+                                  <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/20 rounded-lg transition-colors flex items-center justify-center">
+                                    <CheckCircle className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              Professional stock images optimized for hero sections
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Hero Background Image Management */}
                   <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
