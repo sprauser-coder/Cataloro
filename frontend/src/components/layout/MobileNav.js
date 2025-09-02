@@ -22,7 +22,8 @@ import {
   Search,
   Zap,
   TrendingUp,
-  Award
+  Award,
+  Globe
 } from 'lucide-react';
 
 function MobileNav({ isOpen, onClose }) {
