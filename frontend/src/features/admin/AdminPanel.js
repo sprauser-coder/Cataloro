@@ -2597,6 +2597,13 @@ function SiteAdministrationTab({ showToast }) {
           </div>
         )}
 
+        {/* System Notifications Section */}
+        {activeSection === 'system-notifications' && (
+          <div className="space-y-6">
+            <SystemNotificationsManager />
+          </div>
+        )}
+
         {/* Hero Selection Section */}
         {activeSection === 'hero' && (
           <div className="space-y-6">
