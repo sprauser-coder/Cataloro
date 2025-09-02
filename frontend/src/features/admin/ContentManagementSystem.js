@@ -1432,7 +1432,7 @@ function ContentManagementSystem() {
                       placeholder='[{"title": "About", "url": "/info"}]'
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Format: [{"title": "Link Name", "url": "/path"}]
+                      Format: [&#123;&quot;title&quot;: &quot;Link Name&quot;, &quot;url&quot;: &quot;/path&quot;&#125;]
                     </p>
                   </div>
                 </div>
