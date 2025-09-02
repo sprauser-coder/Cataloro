@@ -62,8 +62,11 @@ function ContentManagementSystem() {
       secondaryButtonText: 'Browse Marketplace',
       secondaryButtonLink: '/browse',
       backgroundStyle: 'gradient',
+      backgroundImage: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1920&h=1080&fit=crop&crop=center',
       showLogo: true,
-      logoAnimation: true
+      logoAnimation: true,
+      showVideo: false,
+      videoUrl: ''
     },
     stats: [
       { label: 'Active Users', value: '10K+', icon: 'users', color: 'blue' },
