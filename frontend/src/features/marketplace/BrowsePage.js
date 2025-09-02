@@ -169,8 +169,8 @@ function BrowsePage() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Browse Marketplace</h1>
-            <p className="text-gray-600">Discover amazing items with AI-powered search</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Catalyst Database</h1>
+            <p className="text-gray-600">Find chemical catalysts with AI-powered technical search</p>
           </div>
           
           {searchMode === 'ai' && (
