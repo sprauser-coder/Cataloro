@@ -2724,6 +2724,183 @@ async def remove_from_favorites(user_id: str, listing_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to remove favorite: {str(e)}")
 
 # ============================================================================
+# SYSTEM NOTIFICATIONS MANAGEMENT - FOR GREEN TOAST NOTIFICATIONS
+# ============================================================================
+
+@app.get("/api/admin/system-notifications")
+async def get_system_notifications():
+    """Get all system notifications for admin management"""
+    try:
+        notifications = await db.system_notifications.find({}).sort("created_at", -1).to_list(length=100)
+        
+        for notification in notifications:
+            notification['_id'] = str(notification['_id'])
+        
+        return {"notifications": notifications}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch system notifications: {str(e)}")
+
+@app.post("/api/admin/system-notifications")
+async def create_system_notification(notification_data: dict):
+    """Create a new system notification (green toast notification)"""
+    try:
+        notification = {
+            "id": str(uuid.uuid4()),
+            "title": notification_data.get("title", "System Notification"),
+            "message": notification_data.get("message", ""),
+            "type": notification_data.get("type", "info"),  # success, info, warning, error
+            "target_users": notification_data.get("target_users", "all"),  # all, new_users, specific_ids
+            "user_ids": notification_data.get("user_ids", []),  # specific user IDs if target_users is specific_ids
+            "show_duration": notification_data.get("show_duration", 5000),  # milliseconds
+            "is_active": notification_data.get("is_active", True),
+            "created_at": datetime.utcnow().isoformat(),
+            "expires_at": notification_data.get("expires_at"),  # optional expiration
+            "auto_dismiss": notification_data.get("auto_dismiss", True),
+            "display_count": 0,
+            "click_count": 0
+        }
+        
+        await db.system_notifications.insert_one(notification)
+        
+        return {"message": "System notification created successfully", "notification_id": notification["id"]}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create system notification: {str(e)}")
+
+@app.put("/api/admin/system-notifications/{notification_id}")
+async def update_system_notification(notification_id: str, notification_data: dict):
+    """Update a system notification"""
+    try:
+        update_data = {
+            "title": notification_data.get("title"),
+            "message": notification_data.get("message"),
+            "type": notification_data.get("type"),
+            "target_users": notification_data.get("target_users"),
+            "user_ids": notification_data.get("user_ids", []),
+            "show_duration": notification_data.get("show_duration"),
+            "is_active": notification_data.get("is_active"),
+            "expires_at": notification_data.get("expires_at"),
+            "auto_dismiss": notification_data.get("auto_dismiss"),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        # Remove None values
+        update_data = {k: v for k, v in update_data.items() if v is not None}
+        
+        result = await db.system_notifications.update_one(
+            {"id": notification_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Notification not found")
+        
+        return {"message": "System notification updated successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update system notification: {str(e)}")
+
+@app.delete("/api/admin/system-notifications/{notification_id}")
+async def delete_system_notification(notification_id: str):
+    """Delete a system notification"""
+    try:
+        result = await db.system_notifications.delete_one({"id": notification_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Notification not found")
+        
+        return {"message": "System notification deleted successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete system notification: {str(e)}")
+
+@app.get("/api/user/{user_id}/system-notifications")
+async def get_user_system_notifications(user_id: str):
+    """Get active system notifications for a specific user"""
+    try:
+        current_time = datetime.utcnow().isoformat()
+        
+        # Get all active notifications
+        query = {
+            "is_active": True,
+            "$or": [
+                {"expires_at": {"$exists": False}},
+                {"expires_at": None},
+                {"expires_at": {"$gt": current_time}}
+            ]
+        }
+        
+        notifications = await db.system_notifications.find(query).sort("created_at", -1).to_list(length=50)
+        
+        # Filter notifications for this user
+        user_notifications = []
+        for notif in notifications:
+            if (notif["target_users"] == "all" or 
+                (notif["target_users"] == "specific_ids" and user_id in notif.get("user_ids", []))):
+                
+                # Check if user has already seen this notification
+                seen = await db.notification_views.find_one({
+                    "user_id": user_id,
+                    "notification_id": notif["id"]
+                })
+                
+                if not seen:
+                    notif['_id'] = str(notif['_id'])
+                    user_notifications.append(notif)
+        
+        return {"notifications": user_notifications}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch user notifications: {str(e)}")
+
+@app.post("/api/user/{user_id}/system-notifications/{notification_id}/view")
+async def mark_system_notification_viewed(user_id: str, notification_id: str):
+    """Mark a system notification as viewed by a user"""
+    try:
+        view_record = {
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "notification_id": notification_id,
+            "viewed_at": datetime.utcnow().isoformat()
+        }
+        
+        # Check if already viewed
+        existing = await db.notification_views.find_one({
+            "user_id": user_id,
+            "notification_id": notification_id
+        })
+        
+        if not existing:
+            await db.notification_views.insert_one(view_record)
+            
+            # Increment display count
+            await db.system_notifications.update_one(
+                {"id": notification_id},
+                {"$inc": {"display_count": 1}}
+            )
+        
+        return {"message": "Notification marked as viewed"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark notification as viewed: {str(e)}")
+
+@app.post("/api/user/{user_id}/system-notifications/{notification_id}/click")
+async def track_system_notification_click(user_id: str, notification_id: str):
+    """Track when a user clicks on a system notification"""
+    try:
+        # Increment click count
+        await db.system_notifications.update_one(
+            {"id": notification_id},
+            {"$inc": {"click_count": 1}}
+        )
+        
+        return {"message": "Notification click tracked"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to track notification click: {str(e)}")
+
+# ============================================================================
 # STARTUP EVENT
 # ============================================================================
 
