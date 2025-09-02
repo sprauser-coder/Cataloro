@@ -679,11 +679,20 @@ async def get_content():
 
 @app.put("/api/admin/content")
 async def update_content(content_data: dict):
-    """Update info page content"""
+    """Update info page content with enhanced features"""
     try:
         # Add metadata
         content_data["type"] = "info_page"
         content_data["updated_at"] = datetime.utcnow().isoformat()
+        content_data["version"] = int(time.time())
+        
+        # Validate content structure
+        if "seo" in content_data:
+            seo = content_data["seo"]
+            if len(seo.get("title", "")) > 60:
+                return {"warning": "SEO title is longer than recommended 60 characters"}
+            if len(seo.get("description", "")) > 160:
+                return {"warning": "Meta description is longer than recommended 160 characters"}
         
         # Update or insert content
         result = await db.site_content.update_one(
@@ -692,10 +701,81 @@ async def update_content(content_data: dict):
             upsert=True
         )
         
-        return {"message": "Content updated successfully", "modified": result.modified_count}
+        return {
+            "message": "Content updated successfully", 
+            "modified": result.modified_count,
+            "version": content_data["version"]
+        }
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update content: {str(e)}")
+
+@app.post("/api/admin/upload-image")
+async def upload_image(
+    image: UploadFile = File(...),
+    section: str = Form(...),
+    field: str = Form(...)
+):
+    """Upload image for CMS content"""
+    try:
+        # Validate file type
+        if not image.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Create upload directory if it doesn't exist
+        upload_dir = "uploads/cms"
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Generate unique filename
+        file_extension = image.filename.split('.')[-1]
+        unique_filename = f"{section}_{field}_{int(time.time())}.{file_extension}"
+        file_path = os.path.join(upload_dir, unique_filename)
+        
+        # Save file
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+        
+        # Return URL (adjust based on your static file serving setup)
+        image_url = f"/uploads/cms/{unique_filename}"
+        
+        return {"imageUrl": image_url, "filename": unique_filename}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
+
+@app.get("/api/admin/content/versions")
+async def get_content_versions():
+    """Get version history of content changes"""
+    try:
+        versions = await db.site_content_history.find(
+            {"type": "info_page"}, 
+            {"version": 1, "updated_at": 1, "_id": 0}
+        ).sort("version", -1).limit(10).to_list(None)
+        
+        return {"versions": versions}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get versions: {str(e)}")
+
+@app.post("/api/admin/content/backup")
+async def backup_current_content():
+    """Create backup of current content"""
+    try:
+        current_content = await db.site_content.find_one({"type": "info_page"})
+        
+        if current_content:
+            backup_data = current_content.copy()
+            backup_data["backup_date"] = datetime.utcnow().isoformat()
+            backup_data["backup_version"] = int(time.time())
+            
+            await db.site_content_history.insert_one(backup_data)
+            
+            return {"message": "Backup created successfully", "backup_version": backup_data["backup_version"]}
+        else:
+            raise HTTPException(status_code=404, detail="No content found to backup")
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create backup: {str(e)}")
 
 # Marketplace Listings Endpoints
 @app.get("/api/listings")
