@@ -11,7 +11,7 @@ import { MarketplaceProvider } from './context/MarketplaceContext';
 import ModernLayout from './components/layout/ModernLayout';
 
 // Modern Feature Components
-import ModernBrowsePage from './features/marketplace/ModernBrowsePage';
+import BrowsePage from './features/marketplace/BrowsePage';
 import CategoriesPage from './features/marketplace/CategoriesPage';
 import ShoppingCartPage from './features/marketplace/ShoppingCartPage';
 import ProductDetailPage from './features/marketplace/ProductDetailPage';
