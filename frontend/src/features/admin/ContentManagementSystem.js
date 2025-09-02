@@ -486,6 +486,7 @@ function ContentManagementSystem() {
     { id: 'seo', name: 'SEO & Meta', icon: Search },
     { id: 'hero', name: 'Hero Section', icon: Layout },
     { id: 'stats', name: 'Statistics', icon: BarChart3 },
+    { id: 'about', name: 'About Section', icon: Award },
     { id: 'features', name: 'Features', icon: Settings },
     { id: 'testimonials', name: 'Testimonials', icon: Users },
     { id: 'cta', name: 'Call to Action', icon: Target },
