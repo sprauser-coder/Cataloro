@@ -31,14 +31,91 @@ function BrowsePage() {
     fetchListings();
   }, []);
 
+  useEffect(() => {
+    if (searchQuery || Object.keys(filters).length > 0) {
+      performSearch();
+    } else {
+      fetchListings();
+    }
+  }, [filters, sortBy]);
+
   const fetchListings = async () => {
     try {
       setLoading(true);
       const data = await marketplaceService.browseListings();
-      setListings(data);
+      setListings(Array.isArray(data) ? data : []);
+      setTotalCount(Array.isArray(data) ? data.length : 0);
+      setShowRecommendations((!searchQuery && Object.keys(filters).length === 0));
     } catch (error) {
       showToast('Failed to load listings', 'error');
       console.error('Failed to fetch listings:', error);
+      setListings([]);
+      setTotalCount(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const performSearch = async (query = searchQuery, useAI = false) => {
+    try {
+      setLoading(true);
+      setShowRecommendations(false);
+      
+      if (useAI && query && query.length >= 2) {
+        // Use AI-powered intelligent search
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/search/intelligent`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: query,
+            filters: filters,
+            limit: 20
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setListings(data.results || []);
+          setTotalCount(data.total || 0);
+          setSearchIntent(data.search_intent || {});
+          setSearchMode('ai');
+          
+          // Save search history if user is logged in
+          if (user?.id) {
+            await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/search/save-history`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                user_id: user.id,
+                query: query,
+                results_count: data.total || 0
+              })
+            });
+          }
+          
+          showToast(`Found ${data.total || 0} results with AI search`, 'success');
+          return;
+        }
+      }
+      
+      // Fallback to standard search
+      setSearchMode('standard');
+      const data = await marketplaceService.browseListings(filters);
+      const filteredData = Array.isArray(data) ? data.filter(item => 
+        !query || 
+        item.title.toLowerCase().includes(query.toLowerCase()) ||
+        item.description.toLowerCase().includes(query.toLowerCase()) ||
+        item.category.toLowerCase().includes(query.toLowerCase())
+      ) : [];
+      
+      setListings(filteredData);
+      setTotalCount(filteredData.length);
+      
+    } catch (error) {
+      showToast('Search failed', 'error');
+      console.error('Search failed:', error);
+      setListings([]);
+      setTotalCount(0);
     } finally {
       setLoading(false);
     }
