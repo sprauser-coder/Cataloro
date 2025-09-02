@@ -49,6 +49,7 @@ function MobileNav({ isOpen, onClose }) {
       title: 'Marketplace',
       items: [
         { label: 'Browse All', path: '/browse', icon: Store },
+        { label: 'About Platform', path: '/info', icon: Globe },
         { label: 'Categories', path: '/categories', icon: Grid3X3 },
         { label: 'Search', path: '/search', icon: Search },
         { label: 'Trending', path: '/trending', icon: TrendingUp }
