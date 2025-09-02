@@ -72,51 +72,7 @@ function BrowsePage() {
     });
   };
 
-  // Handle message seller
-  const handleMessageSeller = (item, e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (!user) {
-      showToast('Please login to message sellers', 'info');
-      return;
-    }
-    
-    if (item.seller_id === user.id) {
-      showToast("You can't message yourself about your own listing", 'info');
-      return;
-    }
-    
-    setSelectedProduct(item);
-    setMessageContent(`Hi! I'm interested in your catalyst "${item.title}". Is it still available?`);
-    setShowMessageModal(true);
-  };
 
-  // Send message
-  const sendMessage = async () => {
-    if (!messageContent.trim()) return;
-    
-    setSending(true);
-    try {
-      await liveService.sendMessage(
-        user.id,
-        selectedProduct.seller_id,
-        messageContent.trim(),
-        'text',
-        { listing_id: selectedProduct.id, listing_title: selectedProduct.title }
-      );
-      
-      showToast('Message sent successfully!', 'success');
-      setShowMessageModal(false);
-      setMessageContent('');
-      setSelectedProduct(null);
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      showToast('Failed to send message', 'error');
-    } finally {
-      setSending(false);
-    }
-  };
 
   const handleAddToFavorites = async (listingId) => {
     try {
