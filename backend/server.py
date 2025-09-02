@@ -2147,8 +2147,8 @@ async def get_ai_search_suggestions(search_data: dict):
         prompt = f"""
         {ai_context}
         
-        Based on the user's search query and available products, provide 5 relevant search suggestions that would help them find what they're looking for. Return only a JSON array of strings, nothing else.
-        Example: ["wireless headphones", "gaming headphones", "noise cancelling headphones", "bluetooth earbuds", "studio headphones"]
+        Based on the user's catalyst search query, provide 5 relevant search suggestions that would help them find the right catalysts. Focus on chemical properties, reaction types, and applications. Return only a JSON array of strings, nothing else.
+        Example: ["palladium hydrogenation catalyst", "zeolite cracking catalyst", "platinum oxidation catalyst", "nickel methanation catalyst", "rhodium carbonylation catalyst"]
         """
         
         user_message = UserMessage(text=prompt.strip())
