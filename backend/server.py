@@ -2510,6 +2510,220 @@ async def get_search_history(user_id: str, limit: int = 20):
         return {"history": []}
 
 # ============================================================================
+# REVIEW & RATING SYSTEM - PHASE 2: ENHANCED SOCIAL COMMERCE
+# ============================================================================
+
+@app.post("/api/reviews/create")
+async def create_review(review_data: dict):
+    """Create a new catalyst review"""
+    try:
+        review = {
+            "id": str(uuid.uuid4()),
+            "listing_id": review_data.get("listing_id"),
+            "user_id": review_data.get("user_id"),
+            "user_name": review_data.get("user_name"),
+            "user_avatar": review_data.get("user_avatar"),
+            "rating": review_data.get("rating", 5),
+            "title": review_data.get("title", ""),
+            "content": review_data.get("content", ""),
+            "technical_details": review_data.get("technical_details", {}),  # Catalyst-specific
+            "performance_rating": review_data.get("performance_rating", {}),  # Activity, selectivity, stability
+            "would_recommend": review_data.get("would_recommend", True),
+            "verified": review_data.get("verified", False),
+            "helpful_count": 0,
+            "created_at": datetime.utcnow().isoformat(),
+            "images": review_data.get("images", [])
+        }
+        
+        await db.reviews.insert_one(review)
+        
+        # Update listing average rating
+        await update_listing_rating(review["listing_id"])
+        
+        return {"message": "Review created successfully", "review_id": review["id"]}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create review: {str(e)}")
+
+@app.get("/api/reviews/listing/{listing_id}")
+async def get_listing_reviews(listing_id: str, sort_by: str = "newest", limit: int = 20):
+    """Get reviews for a specific catalyst listing"""
+    try:
+        # Build sort criteria
+        sort_criteria = []
+        if sort_by == "newest":
+            sort_criteria = [("created_at", -1)]
+        elif sort_by == "oldest":
+            sort_criteria = [("created_at", 1)]
+        elif sort_by == "highest":
+            sort_criteria = [("rating", -1)]
+        elif sort_by == "lowest":
+            sort_criteria = [("rating", 1)]
+        elif sort_by == "helpful":
+            sort_criteria = [("helpful_count", -1)]
+        else:
+            sort_criteria = [("created_at", -1)]
+        
+        # Get reviews
+        cursor = db.reviews.find({"listing_id": listing_id}).sort(sort_criteria).limit(limit)
+        reviews = []
+        
+        async for review in cursor:
+            review['_id'] = str(review['_id'])
+            reviews.append(review)
+        
+        # Calculate rating statistics
+        if reviews:
+            ratings = [r["rating"] for r in reviews]
+            avg_rating = sum(ratings) / len(ratings)
+            rating_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+            for rating in ratings:
+                rating_counts[rating] += 1
+        else:
+            avg_rating = 0
+            rating_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        
+        return {
+            "reviews": reviews,
+            "average_rating": avg_rating,
+            "total_reviews": len(reviews),
+            "rating_distribution": rating_counts
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch reviews: {str(e)}")
+
+@app.post("/api/reviews/{review_id}/helpful")
+async def mark_review_helpful(review_id: str, user_data: dict):
+    """Mark a review as helpful"""
+    try:
+        user_id = user_data.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=400, detail="User ID required")
+        
+        # Check if user already marked this review as helpful
+        existing = await db.review_helpful.find_one({"review_id": review_id, "user_id": user_id})
+        if existing:
+            return {"message": "Already marked as helpful"}
+        
+        # Add helpful record
+        await db.review_helpful.insert_one({
+            "id": str(uuid.uuid4()),
+            "review_id": review_id,
+            "user_id": user_id,
+            "created_at": datetime.utcnow().isoformat()
+        })
+        
+        # Update helpful count
+        await db.reviews.update_one(
+            {"id": review_id},
+            {"$inc": {"helpful_count": 1}}
+        )
+        
+        return {"message": "Review marked as helpful"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark helpful: {str(e)}")
+
+@app.post("/api/reviews/{review_id}/response")
+async def add_seller_response(review_id: str, response_data: dict):
+    """Add seller response to a review"""
+    try:
+        seller_response = {
+            "content": response_data.get("content"),
+            "seller_id": response_data.get("seller_id"),
+            "created_at": datetime.utcnow().isoformat()
+        }
+        
+        await db.reviews.update_one(
+            {"id": review_id},
+            {"$set": {"seller_response": seller_response}}
+        )
+        
+        return {"message": "Seller response added successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to add response: {str(e)}")
+
+async def update_listing_rating(listing_id: str):
+    """Update listing's average rating based on reviews"""
+    try:
+        # Get all reviews for this listing
+        cursor = db.reviews.find({"listing_id": listing_id})
+        reviews = await cursor.to_list(length=None)
+        
+        if reviews:
+            avg_rating = sum(r["rating"] for r in reviews) / len(reviews)
+            total_reviews = len(reviews)
+        else:
+            avg_rating = 0
+            total_reviews = 0
+        
+        # Update listing
+        await db.listings.update_one(
+            {"id": listing_id},
+            {"$set": {"average_rating": avg_rating, "review_count": total_reviews}}
+        )
+        
+    except Exception as e:
+        print(f"Error updating listing rating: {e}")
+
+@app.get("/api/user/{user_id}/favorites")
+async def get_user_favorites(user_id: str):
+    """Get user's favorite catalysts"""
+    try:
+        favorites = await db.user_favorites.find({"user_id": user_id}).to_list(length=50)
+        
+        # Get full listing details for each favorite
+        favorite_listings = []
+        for fav in favorites:
+            listing = await db.listings.find_one({"id": fav["item_id"]})
+            if listing:
+                listing['_id'] = str(listing['_id'])
+                favorite_listings.append(listing)
+        
+        return {"favorites": favorite_listings}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch favorites: {str(e)}")
+
+@app.post("/api/user/{user_id}/favorites/{listing_id}")
+async def add_to_favorites(user_id: str, listing_id: str):
+    """Add catalyst to user's favorites"""
+    try:
+        # Check if already in favorites
+        existing = await db.user_favorites.find_one({"user_id": user_id, "item_id": listing_id})
+        if existing:
+            return {"message": "Already in favorites"}
+        
+        favorite = {
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "item_id": listing_id,
+            "created_at": datetime.utcnow().isoformat()
+        }
+        
+        await db.user_favorites.insert_one(favorite)
+        return {"message": "Added to favorites"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to add favorite: {str(e)}")
+
+@app.delete("/api/user/{user_id}/favorites/{listing_id}")
+async def remove_from_favorites(user_id: str, listing_id: str):
+    """Remove catalyst from user's favorites"""
+    try:
+        result = await db.user_favorites.delete_one({"user_id": user_id, "item_id": listing_id})
+        
+        if result.deleted_count > 0:
+            return {"message": "Removed from favorites"}
+        else:
+            return {"message": "Not found in favorites"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to remove favorite: {str(e)}")
+
+# ============================================================================
 # STARTUP EVENT
 # ============================================================================
 
