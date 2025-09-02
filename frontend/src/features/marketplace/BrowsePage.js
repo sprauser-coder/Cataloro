@@ -18,7 +18,14 @@ function BrowsePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('newest');
+  const [filters, setFilters] = useState({});
+  const [totalCount, setTotalCount] = useState(0);
+  const [searchMode, setSearchMode] = useState('standard'); // 'standard' or 'ai'
+  const [searchIntent, setSearchIntent] = useState({});
+  const [showRecommendations, setShowRecommendations] = useState(true);
+  
   const { showToast } = useNotifications();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchListings();
