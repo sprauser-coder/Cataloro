@@ -281,10 +281,59 @@ function DealsPage() {
 
   return (
     <div className="fade-in">
-      {/* Page Header */}
+      {/* Enhanced Header with Live Status */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Deals</h1>
-        <p className="text-gray-600 dark:text-gray-300">Track your buying and selling transactions</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+              <Activity className="w-8 h-8 mr-3 text-blue-600" />
+              Live Deals Dashboard
+            </h1>
+            <p className="text-gray-600 dark:text-gray-300">
+              Real-time tracking of your marketplace transactions and performance
+            </p>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            {/* Real-time Status */}
+            <div className="flex items-center space-x-2">
+              <div className={`w-3 h-3 rounded-full ${realTimeUpdates ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {realTimeUpdates ? 'Live' : 'Paused'}
+              </span>
+            </div>
+            
+            {/* Last Updated */}
+            {lastUpdated && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Updated: {lastUpdated.toLocaleTimeString()}
+              </span>
+            )}
+            
+            {/* Controls */}
+            <div className="flex space-x-2">
+              <button
+                onClick={toggleRealTimeUpdates}
+                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  realTimeUpdates 
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {realTimeUpdates ? 'Pause' : 'Resume'} Live
+              </button>
+              
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center"
+              >
+                <RefreshCw className={`w-4 h-4 mr-1 ${refreshing ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Stats Cards - CLICKABLE & REDUCED MARGIN */}
