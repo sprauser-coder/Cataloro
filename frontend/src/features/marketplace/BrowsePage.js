@@ -16,7 +16,6 @@ import { useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
 import { useNotifications } from '../../context/NotificationContext';
 import { useAuth } from '../../context/AuthContext';
-import { liveService } from '../../services/liveService';
 
 function BrowsePage() {
   const [listings, setListings] = useState([]);
