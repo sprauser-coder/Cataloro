@@ -162,14 +162,35 @@ function ContentManagementSystem() {
       ]
     },
     cta: {
-      title: 'Ready to Get Started?',
-      description: 'Join thousands of users who are already experiencing the future of online commerce. Create your account today and start buying or selling with confidence.',
+      title: 'Ready to Transform Your Trading?',
+      description: 'Join thousands of users experiencing the future of online commerce. Create your account today and start buying or selling with confidence.',
       primaryButtonText: 'Start Your Journey',
       primaryButtonLink: '/login',
       secondaryButtonText: 'Explore Platform',
       secondaryButtonLink: '/browse',
       backgroundStyle: 'gradient',
+      backgroundImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&h=1080&fit=crop&crop=center',
       showStats: true
+    },
+    about: {
+      enabled: true,
+      title: 'About Cataloro',
+      subtitle: 'Revolutionizing Digital Commerce',
+      description: 'Founded with the vision to transform online trading, we combine cutting-edge technology with user-centric design to create the ultimate marketplace experience.',
+      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop&crop=center',
+      features: [
+        'AI-Powered Matching',
+        'Real-time Communication', 
+        'Advanced Security',
+        'Global Reach'
+      ]
+    },
+    team: {
+      enabled: true,
+      title: 'Meet Our Team',
+      description: 'Passionate experts dedicated to revolutionizing digital commerce.',
+      backgroundImage: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&h=1080&fit=crop&crop=center',
+      members: []
     },
     footer: {
       companyDescription: 'Cataloro is the future of online commerce, providing cutting-edge marketplace solutions for modern buyers and sellers.',
