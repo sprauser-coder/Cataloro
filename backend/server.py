@@ -19,6 +19,8 @@ from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
 import motor.motor_asyncio
 from bson import ObjectId
+from dotenv import load_dotenv
+from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 # Initialize FastAPI app
 app = FastAPI(
