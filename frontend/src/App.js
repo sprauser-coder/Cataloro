@@ -66,7 +66,7 @@ function App() {
                   <Route path="categories" element={<CategoriesPage />} />
                   <Route path="cart" element={<ShoppingCartPage />} />
                   <Route path="product/:productId" element={<ProductDetailPage />} />
-                  <Route path="search" element={<BrowsePage />} />
+                  <Route path="search" element={<ModernBrowsePage />} />
                   <Route path="trending" element={<BrowsePage />} />
                   <Route path="create-listing" element={<CreateListingPage />} />
                   <Route path="edit-listing/:id" element={<EditListingPage />} />
