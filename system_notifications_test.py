@@ -382,12 +382,12 @@ class SystemNotificationsAPITester:
 
         user_id = self.regular_user['id']
         
-        # Test 1: GET /api/messages/conversations/{user_id} (for response rate calculation)
-        print("\n1️⃣ Testing GET /api/messages/conversations/{user_id}...")
+        # Test 1: GET /api/user/{user_id}/messages (for response rate calculation)
+        print("\n1️⃣ Testing GET /api/user/{user_id}/messages...")
         success_conversations, conversations_response = self.run_test(
-            "GET Message Conversations",
+            "GET User Messages",
             "GET",
-            f"api/messages/conversations/{user_id}",
+            f"api/user/{user_id}/messages",
             200
         )
         
