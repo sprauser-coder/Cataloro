@@ -570,9 +570,9 @@ function ContentManagementSystem() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Section Navigation */}
+        {/* Enhanced Section Navigation */}
         <div className="lg:col-span-1">
-          <div className="cataloro-card-glass p-6 backdrop-blur-2xl border-white/30">
+          <div className="cataloro-card-glass p-6 backdrop-blur-2xl border-white/30 sticky top-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
               <FileText className="w-5 h-5 text-blue-600" />
               <span>Content Sections</span>
@@ -586,7 +586,7 @@ function ContentManagementSystem() {
                     onClick={() => setActiveSection(section.id)}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                       activeSection === section.id
-                        ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
+                        ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 scale-105'
                         : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                     }`}
                   >
@@ -596,45 +596,167 @@ function ContentManagementSystem() {
                 );
               })}
             </div>
+
+            {/* Quick Actions */}
+            <div className="mt-6 pt-6 border-t border-white/20">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Quick Actions</h4>
+              <div className="space-y-2">
+                <button
+                  onClick={() => window.open('/info', '_blank')}
+                  className="w-full flex items-center space-x-2 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  <span>View Live Site</span>
+                </button>
+                <button
+                  onClick={() => {
+                    const draft = JSON.stringify(contentSections, null, 2);
+                    navigator.clipboard.writeText(draft);
+                    alert('Content copied to clipboard!');
+                  }}
+                  className="w-full flex items-center space-x-2 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <Copy className="w-3 h-3" />
+                  <span>Copy Content</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Content Editor */}
+        {/* Enhanced Content Editor */}
         <div className="lg:col-span-3">
-          <div className="cataloro-card-glass p-8 backdrop-blur-2xl border-white/30">
-            {/* Hero Section Editor */}
-            {activeSection === 'hero' && (
+          <div className="cataloro-card-glass p-8 backdrop-blur-2xl border-white/30 min-h-[600px]">
+            {/* SEO & Meta Section Editor */}
+            {activeSection === 'seo' && (
               <div className="space-y-6">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center space-x-2">
-                  <Layout className="w-5 h-5 text-blue-600" />
-                  <span>Hero Section</span>
-                </h3>
+                <div className="flex items-center space-x-3 mb-6">
+                  <Search className="w-6 h-6 text-blue-600" />
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">SEO & Meta Tags</h3>
+                </div>
 
                 <div className="grid grid-cols-1 gap-6">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                      Main Title
+                      Page Title (SEO)
                     </label>
                     <input
                       type="text"
-                      value={contentSections.hero.title}
-                      onChange={(e) => updateHeroContent('title', e.target.value)}
+                      value={contentSections.seo.title}
+                      onChange={(e) => updateSEOContent('title', e.target.value)}
                       className="cataloro-input"
-                      placeholder="Enter main title"
+                      placeholder="Cataloro - Ultra-Modern Marketplace Platform"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Max 60 characters recommended. Current: {contentSections.seo.title.length}</p>
                   </div>
 
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                      Subtitle
+                      Meta Description
+                    </label>
+                    <textarea
+                      value={contentSections.seo.description}
+                      onChange={(e) => updateSEOContent('description', e.target.value)}
+                      className="cataloro-input h-24 resize-none"
+                      placeholder="Experience the future of online commerce..."
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Max 160 characters recommended. Current: {contentSections.seo.description.length}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                      Keywords (comma-separated)
                     </label>
                     <input
                       type="text"
-                      value={contentSections.hero.subtitle}
-                      onChange={(e) => updateHeroContent('subtitle', e.target.value)}
+                      value={contentSections.seo.keywords}
+                      onChange={(e) => updateSEOContent('keywords', e.target.value)}
                       className="cataloro-input"
-                      placeholder="Enter subtitle"
+                      placeholder="marketplace, ecommerce, online shopping, buy sell"
                     />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        Open Graph Image URL
+                      </label>
+                      <div className="flex space-x-2">
+                        <input
+                          type="text"
+                          value={contentSections.seo.ogImage}
+                          onChange={(e) => updateSEOContent('ogImage', e.target.value)}
+                          className="cataloro-input flex-1"
+                          placeholder="https://example.com/og-image.jpg"
+                        />
+                        <button
+                          onClick={() => document.getElementById('og-image-upload').click()}
+                          className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                          disabled={uploadingImage}
+                        >
+                          <Upload className="w-4 h-4" />
+                        </button>
+                        <input
+                          id="og-image-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'seo', 'ogImage')}
+                          className="hidden"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        Canonical URL
+                      </label>
+                      <input
+                        type="text"
+                        value={contentSections.seo.canonicalUrl}
+                        onChange={(e) => updateSEOContent('canonicalUrl', e.target.value)}
+                        className="cataloro-input"
+                        placeholder="/info"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Enhanced Hero Section Editor */}
+            {activeSection === 'hero' && (
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <Layout className="w-6 h-6 text-blue-600" />
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Hero Section</h3>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        Main Title
+                      </label>
+                      <input
+                        type="text"
+                        value={contentSections.hero.title}
+                        onChange={(e) => updateHeroContent('title', e.target.value)}
+                        className="cataloro-input"
+                        placeholder="Cataloro"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        Subtitle
+                      </label>
+                      <input
+                        type="text"
+                        value={contentSections.hero.subtitle}
+                        onChange={(e) => updateHeroContent('subtitle', e.target.value)}
+                        className="cataloro-input"
+                        placeholder="Ultra-Modern Marketplace Platform"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -654,180 +776,189 @@ function ContentManagementSystem() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                        Primary Button Text
+                        Primary Button
                       </label>
-                      <input
-                        type="text"
-                        value={contentSections.hero.primaryButtonText}
-                        onChange={(e) => updateHeroContent('primaryButtonText', e.target.value)}
-                        className="cataloro-input"
-                        placeholder="Primary button text"
-                      />
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={contentSections.hero.primaryButtonText}
+                          onChange={(e) => updateHeroContent('primaryButtonText', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="Get Started"
+                        />
+                        <input
+                          type="text"
+                          value={contentSections.hero.primaryButtonLink}
+                          onChange={(e) => updateHeroContent('primaryButtonLink', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="/login"
+                        />
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                        Secondary Button Text
+                        Secondary Button
                       </label>
-                      <input
-                        type="text"
-                        value={contentSections.hero.secondaryButtonText}
-                        onChange={(e) => updateHeroContent('secondaryButtonText', e.target.value)}
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={contentSections.hero.secondaryButtonText}
+                          onChange={(e) => updateHeroContent('secondaryButtonText', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="Browse Marketplace"
+                        />
+                        <input
+                          type="text"
+                          value={contentSections.hero.secondaryButtonLink}
+                          onChange={(e) => updateHeroContent('secondaryButtonLink', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="/browse"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        Background Style
+                      </label>
+                      <select
+                        value={contentSections.hero.backgroundStyle}
+                        onChange={(e) => updateHeroContent('backgroundStyle', e.target.value)}
                         className="cataloro-input"
-                        placeholder="Secondary button text"
-                      />
+                      >
+                        <option value="gradient">Gradient</option>
+                        <option value="solid">Solid Color</option>
+                        <option value="image">Background Image</option>
+                      </select>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={contentSections.hero.showLogo}
+                          onChange={(e) => updateHeroContent('showLogo', e.target.checked)}
+                          className="rounded border-gray-300"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Show Logo</span>
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={contentSections.hero.logoAnimation}
+                          onChange={(e) => updateHeroContent('logoAnimation', e.target.checked)}
+                          className="rounded border-gray-300"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Logo Animation</span>
+                      </label>
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Statistics Section Editor */}
+            {/* Enhanced Statistics Section Editor */}
             {activeSection === 'stats' && (
               <div className="space-y-6">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center space-x-2">
-                  <BarChart3 className="w-5 h-5 text-blue-600" />
-                  <span>Statistics Section</span>
-                </h3>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <BarChart3 className="w-6 h-6 text-blue-600" />
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Statistics Section</h3>
+                  </div>
+                  <button
+                    onClick={addStat}
+                    className="flex items-center space-x-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Stat</span>
+                  </button>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {contentSections.stats.map((stat, index) => (
-                    <div key={index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
-                        Statistic {index + 1}
-                      </h4>
+                    <div key={index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg relative">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-semibold text-gray-900 dark:text-white">
+                          Statistic {index + 1}
+                        </h4>
+                        {contentSections.stats.length > 1 && (
+                          <button
+                            onClick={() => removeStat(index)}
+                            className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                       <div className="space-y-3">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                            Value
-                          </label>
-                          <input
-                            type="text"
-                            value={stat.value}
-                            onChange={(e) => updateStatContent(index, 'value', e.target.value)}
-                            className="cataloro-input"
-                            placeholder="e.g., 10K+"
-                          />
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                              Value
+                            </label>
+                            <input
+                              type="text"
+                              value={stat.value}
+                              onChange={(e) => updateStatContent(index, 'value', e.target.value)}
+                              className="cataloro-input text-sm"
+                              placeholder="10K+"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                              Label
+                            </label>
+                            <input
+                              type="text"
+                              value={stat.label}
+                              onChange={(e) => updateStatContent(index, 'label', e.target.value)}
+                              className="cataloro-input text-sm"
+                              placeholder="Active Users"
+                            />
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                            Label
-                          </label>
-                          <input
-                            type="text"
-                            value={stat.label}
-                            onChange={(e) => updateStatContent(index, 'label', e.target.value)}
-                            className="cataloro-input"
-                            placeholder="e.g., Active Users"
-                          />
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                              Icon
+                            </label>
+                            <select
+                              value={stat.icon}
+                              onChange={(e) => updateStatContent(index, 'icon', e.target.value)}
+                              className="cataloro-input text-sm"
+                            >
+                              <option value="users">Users</option>
+                              <option value="package">Package</option>
+                              <option value="trending">Trending</option>
+                              <option value="star">Star</option>
+                              <option value="zap">Zap</option>
+                              <option value="target">Target</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                              Color
+                            </label>
+                            <select
+                              value={stat.color}
+                              onChange={(e) => updateStatContent(index, 'color', e.target.value)}
+                              className="cataloro-input text-sm"
+                            >
+                              <option value="blue">Blue</option>
+                              <option value="green">Green</option>
+                              <option value="purple">Purple</option>
+                              <option value="yellow">Yellow</option>
+                              <option value="red">Red</option>
+                              <option value="pink">Pink</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-            )}
-
-            {/* Features Section Editor */}
-            {activeSection === 'features' && (
-              <div className="space-y-6">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center space-x-2">
-                  <Settings className="w-5 h-5 text-blue-600" />
-                  <span>Features Section</span>
-                </h3>
-
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                      Section Title
-                    </label>
-                    <input
-                      type="text"
-                      value={contentSections.features.title}
-                      onChange={(e) => updateFeaturesContent('title', e.target.value)}
-                      className="cataloro-input"
-                      placeholder="Section title"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                      Section Description
-                    </label>
-                    <ReactQuill
-                      value={contentSections.features.description}
-                      onChange={(value) => updateFeaturesContent('description', value)}
-                      modules={quillModules}
-                      formats={quillFormats}
-                      theme="snow"
-                      className="bg-white dark:bg-gray-800 rounded-lg"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* CTA Section Editor */}
-            {activeSection === 'cta' && (
-              <div className="space-y-6">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center space-x-2">
-                  <Sparkles className="w-5 h-5 text-blue-600" />
-                  <span>Call to Action Section</span>
-                </h3>
-
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                      CTA Title
-                    </label>
-                    <input
-                      type="text"
-                      value={contentSections.cta.title}
-                      onChange={(e) => updateCTAContent('title', e.target.value)}
-                      className="cataloro-input"
-                      placeholder="Call to action title"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                      CTA Description
-                    </label>
-                    <ReactQuill
-                      value={contentSections.cta.description}
-                      onChange={(value) => updateCTAContent('description', value)}
-                      modules={quillModules}
-                      formats={quillFormats}
-                      theme="snow"
-                      className="bg-white dark:bg-gray-800 rounded-lg"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                        Primary Button Text
-                      </label>
-                      <input
-                        type="text"
-                        value={contentSections.cta.primaryButtonText}
-                        onChange={(e) => updateCTAContent('primaryButtonText', e.target.value)}
-                        className="cataloro-input"
-                        placeholder="Primary button text"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                        Secondary Button Text
-                      </label>
-                      <input
-                        type="text"
-                        value={contentSections.cta.secondaryButtonText}
-                        onChange={(e) => updateCTAContent('secondaryButtonText', e.target.value)}
-                        className="cataloro-input"
-                        placeholder="Secondary button text"
-                      />
-                    </div>
-                  </div>
                 </div>
               </div>
             )}
