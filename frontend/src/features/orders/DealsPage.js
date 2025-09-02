@@ -1,11 +1,33 @@
 /**
- * CATALORO - Deals Page
- * All executed listings from the user (bought/offered)
+ * CATALORO - Live Deals Dashboard
+ * Real-time executed deals with live statistics and data
  */
 
-import React, { useState, useEffect } from 'react';
-import { Package, Clock, CheckCircle, XCircle, AlertCircle, Search, Filter, SortAsc, SortDesc, Calendar, DollarSign } from 'lucide-react';
-import { marketplaceService } from '../../services/marketplaceService';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { 
+  Package, 
+  Clock, 
+  CheckCircle, 
+  XCircle, 
+  AlertCircle, 
+  Search, 
+  Filter, 
+  Calendar, 
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  PieChart,
+  Activity,
+  RefreshCw,
+  Download,
+  Star,
+  MapPin,
+  User,
+  MessageCircle,
+  Eye,
+  Zap
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 
