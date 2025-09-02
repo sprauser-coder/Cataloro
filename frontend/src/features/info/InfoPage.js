@@ -277,54 +277,93 @@ function InfoPage() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
-          <div className="mb-8">
-            <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md rounded-full px-6 py-3 mb-6">
-              <Sparkles className="w-5 h-5 text-yellow-400" />
-              <span className="text-white font-medium">The Future is Here</span>
-            </div>
-            
-            <h1 className="text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-pink-200 mb-6 leading-tight">
-              {safeContent.hero.title}
-            </h1>
-            
-            <h2 className="text-3xl md:text-4xl font-bold text-purple-200 mb-8">
-              {safeContent.hero.subtitle}
-            </h2>
-            
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12 leading-relaxed">
-              {safeContent.hero.description}
-            </p>
-          </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+            {/* Hero Text Content */}
+            <div className={`${safeContent.hero.heroImagePosition === 'left' ? 'lg:order-2' : 'lg:order-1'} text-center lg:text-left`}>
+              <div className="mb-8">
+                <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md rounded-full px-6 py-3 mb-6">
+                  <Sparkles className="w-5 h-5 text-yellow-400" />
+                  <span className="text-white font-medium">The Future is Here</span>
+                </div>
+                
+                <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-pink-200 mb-6 leading-tight">
+                  {safeContent.hero.title}
+                </h1>
+                
+                <h2 className="text-2xl md:text-3xl font-bold text-purple-200 mb-8">
+                  {safeContent.hero.subtitle}
+                </h2>
+                
+                <p className="text-lg md:text-xl text-gray-300 mb-12 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                  {safeContent.hero.description}
+                </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-            <Link
-              to={safeContent.hero.primaryButtonLink}
-              className="group relative px-10 py-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-purple-500/25"
-            >
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative flex items-center justify-center space-x-3">
-                <span>{safeContent.hero.primaryButtonText}</span>
-                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
+                  <Link
+                    to={safeContent.hero.primaryButtonLink}
+                    className="group relative px-10 py-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-purple-500/25"
+                  >
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="relative flex items-center justify-center space-x-3">
+                      <span>{safeContent.hero.primaryButtonText}</span>
+                      <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
+                    </div>
+                  </Link>
+                  
+                  <Link
+                    to={safeContent.hero.secondaryButtonLink}
+                    className="group px-10 py-5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-lg hover:bg-white/20 transition-all duration-300 transform hover:scale-105"
+                  >
+                    <div className="flex items-center justify-center space-x-3">
+                      <Play className="w-6 h-6" />
+                      <span>{safeContent.hero.secondaryButtonText}</span>
+                    </div>
+                  </Link>
+                </div>
               </div>
-            </Link>
-            
-            <Link
-              to={safeContent.hero.secondaryButtonLink}
-              className="group px-10 py-5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-lg hover:bg-white/20 transition-all duration-300 transform hover:scale-105"
-            >
-              <div className="flex items-center justify-center space-x-3">
-                <Play className="w-6 h-6" />
-                <span>{safeContent.hero.secondaryButtonText}</span>
+            </div>
+
+            {/* Hero Image */}
+            {safeContent.hero.showHeroImage && safeContent.hero.heroImage && (
+              <div className={`${safeContent.hero.heroImagePosition === 'left' ? 'lg:order-1' : 'lg:order-2'} relative`}>
+                <div className="relative group">
+                  {/* Floating Glow Effect */}
+                  <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+                  
+                  {/* Main Image Container */}
+                  <div className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl">
+                    <img
+                      src={safeContent.hero.heroImage}
+                      alt="Hero"
+                      className="w-full h-auto max-h-96 object-contain rounded-2xl transform group-hover:scale-105 transition-transform duration-500"
+                    />
+                    
+                    {/* Floating Elements Around Image */}
+                    <div className="absolute -top-6 -right-6 w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-xl animate-bounce">
+                      <Rocket className="w-6 h-6 text-white" />
+                    </div>
+                    
+                    <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-xl">
+                      <Zap className="w-8 h-8 text-white" />
+                    </div>
+                    
+                    <div className="absolute top-1/2 -right-8 w-10 h-10 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                      <Star className="w-5 h-5 text-white" />
+                    </div>
+                  </div>
+                </div>
               </div>
-            </Link>
+            )}
           </div>
 
           {/* Scroll Indicator */}
-          <div className="animate-bounce">
-            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-              <div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse" />
+          <div className="flex justify-center mt-16">
+            <div className="animate-bounce">
+              <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+                <div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse" />
+              </div>
             </div>
           </div>
         </div>
