@@ -237,20 +237,45 @@ function DealsPage() {
     setActiveTab(filter); // Also update tab
   };
 
-  // Enhanced filtering and sorting
-  const filteredAndSortedDeals = deals
-    .filter(deal => {
-      // Filter by status
-      const statusMatch = activeFilter === 'all' || 
-                         (activeFilter === 'totalValue' ? deal.status === 'completed' : deal.status === activeFilter);
+  // Enhanced filtering and sorting with REAL DATA
+  const getFilteredDeals = () => {
+    if (activeTab === 'overview' || activeTab === 'analytics') {
+      return []; // These tabs don't show deal lists
+    }
+
+    return deals.filter(deal => {
+      // Filter by active tab
+      let statusMatch = true;
+      
+      switch (activeTab) {
+        case 'all':
+          statusMatch = true; // Show all deals
+          break;
+        case 'pending':
+          statusMatch = deal.status === 'pending' || deal.status === 'approved' || deal.status === 'in_progress';
+          break;
+        case 'completed':
+          statusMatch = deal.status === 'completed' || deal.status === 'delivered' || deal.status === 'finished';
+          break;
+        case 'cancelled':
+          statusMatch = deal.status === 'cancelled' || deal.status === 'rejected' || deal.status === 'failed';
+          break;
+        default:
+          statusMatch = true;
+      }
       
       // Filter by search term
       const searchMatch = !searchTerm || 
                          deal.listing?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         deal.id?.toLowerCase().includes(searchTerm.toLowerCase());
+                         deal.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         deal.seller?.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         deal.buyer?.username?.toLowerCase().includes(searchTerm.toLowerCase());
       
       return statusMatch && searchMatch;
-    })
+    });
+  };
+
+  const filteredAndSortedDeals = getFilteredDeals()
     .sort((a, b) => {
       switch (sortBy) {
         case 'newest':
