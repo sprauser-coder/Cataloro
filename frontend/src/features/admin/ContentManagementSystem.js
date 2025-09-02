@@ -962,6 +962,482 @@ function ContentManagementSystem() {
                 </div>
               </div>
             )}
+
+            {/* Enhanced Features Section Editor */}
+            {activeSection === 'features' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <Settings className="w-6 h-6 text-blue-600" />
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Features Section</h3>
+                  </div>
+                  <button
+                    onClick={addFeatureCategory}
+                    className="flex items-center space-x-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Category</span>
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        Section Title
+                      </label>
+                      <input
+                        type="text"
+                        value={contentSections.features.title}
+                        onChange={(e) => updateFeaturesContent('title', e.target.value)}
+                        className="cataloro-input"
+                        placeholder="Platform Features"
+                      />
+                    </div>
+                    <div className="flex items-center space-x-4 pt-6">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={contentSections.features.showIcons}
+                          onChange={(e) => updateFeaturesContent('showIcons', e.target.checked)}
+                          className="rounded border-gray-300"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Show Icons</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                      Section Description
+                    </label>
+                    <ReactQuill
+                      value={contentSections.features.description}
+                      onChange={(value) => updateFeaturesContent('description', value)}
+                      modules={quillModules}
+                      formats={quillFormats}
+                      theme="snow"
+                      className="bg-white dark:bg-gray-800 rounded-lg"
+                    />
+                  </div>
+
+                  {/* Feature Categories */}
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Feature Categories</h4>
+                    {contentSections.features.categories.map((category, index) => (
+                      <div key={category.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                        <div className="flex items-center justify-between mb-4">
+                          <h5 className="font-medium text-gray-900 dark:text-white">Category {index + 1}</h5>
+                          <button
+                            onClick={() => removeFeatureCategory(category.id)}
+                            className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                              Category Name
+                            </label>
+                            <input
+                              type="text"
+                              value={category.name}
+                              onChange={(e) => updateFeatureCategory(category.id, 'name', e.target.value)}
+                              className="cataloro-input text-sm"
+                              placeholder="Category name"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                              Color Scheme
+                            </label>
+                            <select
+                              value={category.color}
+                              onChange={(e) => updateFeatureCategory(category.id, 'color', e.target.value)}
+                              className="cataloro-input text-sm"
+                            >
+                              <option value="blue-purple">Blue to Purple</option>
+                              <option value="green-teal">Green to Teal</option>
+                              <option value="orange-red">Orange to Red</option>
+                              <option value="purple-pink">Purple to Pink</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                            Description
+                          </label>
+                          <textarea
+                            value={category.description}
+                            onChange={(e) => updateFeatureCategory(category.id, 'description', e.target.value)}
+                            className="cataloro-input text-sm h-20 resize-none"
+                            placeholder="Category description"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                            Features (one per line)
+                          </label>
+                          <textarea
+                            value={category.features.join('\n')}
+                            onChange={(e) => updateFeatureCategory(category.id, 'features', e.target.value.split('\n').filter(f => f.trim()))}
+                            className="cataloro-input text-sm h-24 resize-none"
+                            placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Testimonials Section Editor */}
+            {activeSection === 'testimonials' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <Users className="w-6 h-6 text-blue-600" />
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Testimonials Section</h3>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={contentSections.testimonials.enabled}
+                        onChange={(e) => updateTestimonials('enabled', e.target.checked)}
+                        className="rounded border-gray-300"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">Enable Section</span>
+                    </label>
+                    <button
+                      onClick={addTestimonial}
+                      className="flex items-center space-x-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add Testimonial</span>
+                    </button>
+                  </div>
+                </div>
+
+                {contentSections.testimonials.enabled && (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                          Section Title
+                        </label>
+                        <input
+                          type="text"
+                          value={contentSections.testimonials.title}
+                          onChange={(e) => updateTestimonials('title', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="What Our Users Say"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        Section Description
+                      </label>
+                      <textarea
+                        value={contentSections.testimonials.description}
+                        onChange={(e) => updateTestimonials('description', e.target.value)}
+                        className="cataloro-input h-20 resize-none"
+                        placeholder="Join thousands of satisfied users..."
+                      />
+                    </div>
+
+                    {/* Testimonial Items */}
+                    <div className="space-y-4">
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Testimonials</h4>
+                      {contentSections.testimonials.items.map((testimonial, index) => (
+                        <div key={testimonial.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                          <div className="flex items-center justify-between mb-4">
+                            <h5 className="font-medium text-gray-900 dark:text-white">Testimonial {index + 1}</h5>
+                            <button
+                              onClick={() => removeTestimonial(testimonial.id)}
+                              className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-3 gap-4 mb-4">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                                Name
+                              </label>
+                              <input
+                                type="text"
+                                value={testimonial.name}
+                                onChange={(e) => updateTestimonialItem(testimonial.id, 'name', e.target.value)}
+                                className="cataloro-input text-sm"
+                                placeholder="John Doe"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                                Role
+                              </label>
+                              <input
+                                type="text"
+                                value={testimonial.role}
+                                onChange={(e) => updateTestimonialItem(testimonial.id, 'role', e.target.value)}
+                                className="cataloro-input text-sm"
+                                placeholder="Power Seller"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                                Rating
+                              </label>
+                              <select
+                                value={testimonial.rating}
+                                onChange={(e) => updateTestimonialItem(testimonial.id, 'rating', parseInt(e.target.value))}
+                                className="cataloro-input text-sm"
+                              >
+                                <option value={5}>5 Stars</option>
+                                <option value={4}>4 Stars</option>
+                                <option value={3}>3 Stars</option>
+                                <option value={2}>2 Stars</option>
+                                <option value={1}>1 Star</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                              Testimonial Content
+                            </label>
+                            <textarea
+                              value={testimonial.content}
+                              onChange={(e) => updateTestimonialItem(testimonial.id, 'content', e.target.value)}
+                              className="cataloro-input text-sm h-20 resize-none"
+                              placeholder="This platform has been amazing..."
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Enhanced CTA Section Editor */}
+            {activeSection === 'cta' && (
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <Target className="w-6 h-6 text-blue-600" />
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Call to Action Section</h3>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        CTA Title
+                      </label>
+                      <input
+                        type="text"
+                        value={contentSections.cta.title}
+                        onChange={(e) => updateCTAContent('title', e.target.value)}
+                        className="cataloro-input"
+                        placeholder="Ready to Get Started?"
+                      />
+                    </div>
+                    <div className="flex items-center space-x-4 pt-6">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={contentSections.cta.showStats}
+                          onChange={(e) => updateCTAContent('showStats', e.target.checked)}
+                          className="rounded border-gray-300"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Show Stats</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                      CTA Description
+                    </label>
+                    <ReactQuill
+                      value={contentSections.cta.description}
+                      onChange={(value) => updateCTAContent('description', value)}
+                      modules={quillModules}
+                      formats={quillFormats}
+                      theme="snow"
+                      className="bg-white dark:bg-gray-800 rounded-lg"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        Primary Button
+                      </label>
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={contentSections.cta.primaryButtonText}
+                          onChange={(e) => updateCTAContent('primaryButtonText', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="Start Your Journey"
+                        />
+                        <input
+                          type="text"
+                          value={contentSections.cta.primaryButtonLink}
+                          onChange={(e) => updateCTAContent('primaryButtonLink', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="/login"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        Secondary Button
+                      </label>
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={contentSections.cta.secondaryButtonText}
+                          onChange={(e) => updateCTAContent('secondaryButtonText', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="Explore Platform"
+                        />
+                        <input
+                          type="text"
+                          value={contentSections.cta.secondaryButtonLink}
+                          onChange={(e) => updateCTAContent('secondaryButtonLink', e.target.value)}
+                          className="cataloro-input"
+                          placeholder="/browse"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                      Background Style
+                    </label>
+                    <select
+                      value={contentSections.cta.backgroundStyle}
+                      onChange={(e) => updateCTAContent('backgroundStyle', e.target.value)}
+                      className="cataloro-input"
+                    >
+                      <option value="gradient">Gradient</option>
+                      <option value="solid">Solid Color</option>
+                      <option value="image">Background Image</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Enhanced Footer Section Editor */}
+            {activeSection === 'footer' && (
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <Globe className="w-6 h-6 text-blue-600" />
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Footer Section</h3>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                      Company Description
+                    </label>
+                    <textarea
+                      value={contentSections.footer.companyDescription}
+                      onChange={(e) => updateFooterContent('companyDescription', e.target.value)}
+                      className="cataloro-input h-24 resize-none"
+                      placeholder="Cataloro is the future of online commerce..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                      Social Media Links
+                    </label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                          Twitter
+                        </label>
+                        <input
+                          type="url"
+                          value={contentSections.footer.socialLinks.twitter}
+                          onChange={(e) => updateFooterContent('socialLinks', { ...contentSections.footer.socialLinks, twitter: e.target.value })}
+                          className="cataloro-input text-sm"
+                          placeholder="https://twitter.com/cataloro"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                          Facebook
+                        </label>
+                        <input
+                          type="url"
+                          value={contentSections.footer.socialLinks.facebook}
+                          onChange={(e) => updateFooterContent('socialLinks', { ...contentSections.footer.socialLinks, facebook: e.target.value })}
+                          className="cataloro-input text-sm"
+                          placeholder="https://facebook.com/cataloro"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                          Instagram
+                        </label>
+                        <input
+                          type="url"
+                          value={contentSections.footer.socialLinks.instagram}
+                          onChange={(e) => updateFooterContent('socialLinks', { ...contentSections.footer.socialLinks, instagram: e.target.value })}
+                          className="cataloro-input text-sm"
+                          placeholder="https://instagram.com/cataloro"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                          LinkedIn
+                        </label>
+                        <input
+                          type="url"
+                          value={contentSections.footer.socialLinks.linkedin}
+                          onChange={(e) => updateFooterContent('socialLinks', { ...contentSections.footer.socialLinks, linkedin: e.target.value })}
+                          className="cataloro-input text-sm"
+                          placeholder="https://linkedin.com/company/cataloro"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                      Footer Links (JSON format)
+                    </label>
+                    <textarea
+                      value={JSON.stringify(contentSections.footer.footerLinks, null, 2)}
+                      onChange={(e) => {
+                        try {
+                          const parsed = JSON.parse(e.target.value);
+                          updateFooterContent('footerLinks', parsed);
+                        } catch (error) {
+                          // Invalid JSON, don't update
+                        }
+                      }}
+                      className="cataloro-input h-32 resize-none font-mono text-sm"
+                      placeholder='[{"title": "About", "url": "/info"}]'
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Format: [{"title": "Link Name", "url": "/path"}]
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
