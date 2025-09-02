@@ -1,0 +1,449 @@
+/**
+ * CATALORO - Notifications Center Page
+ * Extension of the header notification tab with full management capabilities
+ */
+
+import React, { useState, useEffect } from 'react';
+import { 
+  Bell, 
+  X, 
+  CheckCircle, 
+  AlertCircle, 
+  Info, 
+  Gift,
+  Settings,
+  Trash2,
+  MarkAsUnreadIcon,
+  Eye,
+  EyeOff,
+  Filter,
+  Search,
+  RefreshCw
+} from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
+
+function NotificationsCenterPage() {
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all'); // 'all', 'unread', 'read', 'system'
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedNotifications, setSelectedNotifications] = useState([]);
+  
+  const { user } = useAuth();
+  const { showToast } = useNotifications();
+
+  useEffect(() => {
+    loadNotifications();
+  }, [user?.id]);
+
+  const loadNotifications = async () => {
+    try {
+      setLoading(true);
+      
+      // Load notifications from backend
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setNotifications(data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+      } else {
+        // Fallback - load from localStorage (header notifications)
+        const headerNotifications = JSON.parse(localStorage.getItem('user_notifications') || '[]');
+        setNotifications(headerNotifications);
+      }
+    } catch (error) {
+      console.error('Error loading notifications:', error);
+      showToast('Failed to load notifications', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const markAsRead = async (notificationIds) => {
+    try {
+      const idsArray = Array.isArray(notificationIds) ? notificationIds : [notificationIds];
+      
+      for (const id of idsArray) {
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ read: true })
+        });
+      }
+      
+      // Update local state
+      setNotifications(prev => 
+        prev.map(notif => 
+          idsArray.includes(notif.id) ? { ...notif, read: true } : notif
+        )
+      );
+      
+      showToast('Marked as read', 'success');
+    } catch (error) {
+      console.error('Error marking as read:', error);
+      showToast('Failed to mark as read', 'error');
+    }
+  };
+
+  const markAsUnread = async (notificationIds) => {
+    try {
+      const idsArray = Array.isArray(notificationIds) ? notificationIds : [notificationIds];
+      
+      for (const id of idsArray) {
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ read: false })
+        });
+      }
+      
+      // Update local state
+      setNotifications(prev => 
+        prev.map(notif => 
+          idsArray.includes(notif.id) ? { ...notif, read: false } : notif
+        )
+      );
+      
+      showToast('Marked as unread', 'success');
+    } catch (error) {
+      console.error('Error marking as unread:', error);
+      showToast('Failed to mark as unread', 'error');
+    }
+  };
+
+  const deleteNotifications = async (notificationIds) => {
+    try {
+      const idsArray = Array.isArray(notificationIds) ? notificationIds : [notificationIds];
+      
+      for (const id of idsArray) {
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications/${id}`, {
+          method: 'DELETE'
+        });
+      }
+      
+      // Update local state
+      setNotifications(prev => prev.filter(notif => !idsArray.includes(notif.id)));
+      setSelectedNotifications([]);
+      
+      showToast(`Deleted ${idsArray.length} notification(s)`, 'success');
+    } catch (error) {
+      console.error('Error deleting notifications:', error);
+      showToast('Failed to delete notifications', 'error');
+    }
+  };
+
+  const markAllAsRead = async () => {
+    const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
+    if (unreadIds.length > 0) {
+      await markAsRead(unreadIds);
+    }
+  };
+
+  const toggleSelectNotification = (id) => {
+    setSelectedNotifications(prev => 
+      prev.includes(id) 
+        ? prev.filter(nid => nid !== id)
+        : [...prev, id]
+    );
+  };
+
+  const selectAll = () => {
+    setSelectedNotifications(filteredNotifications.map(n => n.id));
+  };
+
+  const deselectAll = () => {
+    setSelectedNotifications([]);
+  };
+
+  // Filter notifications
+  const filteredNotifications = notifications.filter(notification => {
+    const matchesFilter = filter === 'all' || 
+      (filter === 'unread' && !notification.read) ||
+      (filter === 'read' && notification.read) ||
+      (filter === 'system' && notification.type === 'system');
+    
+    const matchesSearch = !searchTerm || 
+      notification.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      notification.message?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    return matchesFilter && matchesSearch;
+  });
+
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case 'success':
+        return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case 'warning':
+        return <AlertCircle className="w-5 h-5 text-yellow-500" />;
+      case 'error':
+        return <AlertCircle className="w-5 h-5 text-red-500" />;
+      case 'info':
+        return <Info className="w-5 h-5 text-blue-500" />;
+      case 'welcome':
+        return <Gift className="w-5 h-5 text-purple-500" />;
+      default:
+        return <Bell className="w-5 h-5 text-gray-500" />;
+    }
+  };
+
+  const getNotificationColor = (type) => {
+    switch (type) {
+      case 'success':
+        return 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-700';
+      case 'warning':
+        return 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-700';
+      case 'error':
+        return 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700';
+      case 'info':
+        return 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-700';
+      case 'welcome':
+        return 'bg-purple-50 border-purple-200 dark:bg-purple-900/20 dark:border-purple-700';
+      default:
+        return 'bg-gray-50 border-gray-200 dark:bg-gray-800/50 dark:border-gray-700';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="fade-in">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Notifications Center</h1>
+          <p className="text-gray-600 dark:text-gray-300">Manage all your notifications</p>
+        </div>
+        
+        <div className="cataloro-card-glass p-8 text-center">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">Loading notifications...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fade-in">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Notifications Center</h1>
+        <p className="text-gray-600 dark:text-gray-300">
+          Manage all your system notifications and alerts
+        </p>
+      </div>
+
+      {/* Controls */}
+      <div className="cataloro-card-glass p-6 mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          
+          {/* Search and Filter */}
+          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 flex-1">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search notifications..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-3 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Filter className="w-5 h-5 text-gray-400" />
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Notifications</option>
+                <option value="unread">Unread Only</option>
+                <option value="read">Read Only</option>
+                <option value="system">System Notifications</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center space-x-3">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {filteredNotifications.length} of {notifications.length} notifications
+            </span>
+            
+            <button
+              onClick={loadNotifications}
+              className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              title="Refresh"
+            >
+              <RefreshCw className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={markAllAsRead}
+              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Mark All Read
+            </button>
+          </div>
+        </div>
+
+        {/* Bulk Actions */}
+        {selectedNotifications.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {selectedNotifications.length} selected
+                </span>
+                
+                <button
+                  onClick={selectAll}
+                  className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
+                >
+                  Select All
+                </button>
+                
+                <button
+                  onClick={deselectAll}
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                >
+                  Deselect All
+                </button>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => markAsRead(selectedNotifications)}
+                  className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-lg hover:bg-green-200 transition-colors flex items-center"
+                >
+                  <Eye className="w-4 h-4 mr-1" />
+                  Mark Read
+                </button>
+                
+                <button
+                  onClick={() => markAsUnread(selectedNotifications)}
+                  className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-lg hover:bg-blue-200 transition-colors flex items-center"
+                >
+                  <EyeOff className="w-4 h-4 mr-1" />
+                  Mark Unread
+                </button>
+                
+                <button
+                  onClick={() => deleteNotifications(selectedNotifications)}
+                  className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-lg hover:bg-red-200 transition-colors flex items-center"
+                >
+                  <Trash2 className="w-4 h-4 mr-1" />
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Notifications List */}
+      {filteredNotifications.length === 0 ? (
+        <div className="cataloro-card-glass p-12 text-center">
+          <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            {searchTerm ? 'No matching notifications' : 'No notifications'}
+          </h3>
+          <p className="text-gray-600 dark:text-gray-300">
+            {searchTerm 
+              ? `No notifications match your search for "${searchTerm}"`
+              : filter === 'unread' 
+                ? "You're all caught up! No unread notifications."
+                : "You don't have any notifications yet."
+            }
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filteredNotifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={`p-6 rounded-xl border transition-all duration-200 ${
+                getNotificationColor(notification.type)
+              } ${!notification.read ? 'ring-2 ring-blue-200 dark:ring-blue-700' : ''}`}
+            >
+              <div className="flex items-start space-x-4">
+                {/* Checkbox */}
+                <input
+                  type="checkbox"
+                  checked={selectedNotifications.includes(notification.id)}
+                  onChange={() => toggleSelectNotification(notification.id)}
+                  className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+
+                {/* Icon */}
+                <div className="flex-shrink-0 mt-1">
+                  {getNotificationIcon(notification.type)}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {notification.title}
+                    </h4>
+                    
+                    <div className="flex items-center space-x-2">
+                      {!notification.read && (
+                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                      )}
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {new Date(notification.created_at || notification.timestamp).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-700 dark:text-gray-300 mb-4">
+                    {notification.message || notification.content}
+                  </p>
+
+                  {/* Actions */}
+                  <div className="flex items-center space-x-4">
+                    {!notification.read ? (
+                      <button
+                        onClick={() => markAsRead(notification.id)}
+                        className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 flex items-center"
+                      >
+                        <Eye className="w-4 h-4 mr-1" />
+                        Mark as read
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => markAsUnread(notification.id)}
+                        className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center"
+                      >
+                        <EyeOff className="w-4 h-4 mr-1" />
+                        Mark as unread
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => deleteNotifications(notification.id)}
+                      className="text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 flex items-center"
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Load More */}
+      {filteredNotifications.length > 0 && filteredNotifications.length < notifications.length && (
+        <div className="text-center mt-8">
+          <button className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+            Load More Notifications
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default NotificationsCenterPage;
