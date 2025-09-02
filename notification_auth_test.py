@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class NotificationAuthTester:
-    def __init__(self, base_url="https://cataloro-marketplace.preview.emergentagent.com"):
+    def __init__(self, base_url="https://catalog-admin-2.preview.emergentagent.com"):
         self.base_url = base_url
         self.demo_user = None
         self.demo_user_token = None

@@ -7,7 +7,7 @@ import requests
 import json
 
 def test_complete_flow():
-    base_url = "https://cataloro-marketplace.preview.emergentagent.com"
+    base_url = "https://catalog-admin-2.preview.emergentagent.com"
     
     # Create two test users
     user1_data = {

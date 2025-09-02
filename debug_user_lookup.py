@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_user_lookup():
-    base_url = "https://cataloro-marketplace.preview.emergentagent.com"
+    base_url = "https://catalog-admin-2.preview.emergentagent.com"
     
     # Get all users to see how they're stored
     print("Getting all users from admin endpoint...")
