@@ -32,11 +32,7 @@ function BrowsePage() {
     location: 'all'
   });
   
-  // Message modal state
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [messageContent, setMessageContent] = useState('');
-  const [sending, setSending] = useState(false);
+
   
   const { showToast } = useNotifications();
   const { user } = useAuth();
