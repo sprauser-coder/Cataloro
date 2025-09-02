@@ -3339,22 +3339,35 @@ function ListingsTab({ showToast }) {
     }
   };
 
-  // Enhanced filtering logic to include pending orders
+  // Enhanced filtering logic with REAL DATA for sub-tabs
   const filteredListings = listings.filter(listing => {
     const matchesSearch = !searchTerm || 
                          listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          listing.seller.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Enhanced filter logic
-    if (filterStatus === 'all') {
-      return matchesSearch;
-    } else if (filterStatus === 'pending') {
-      // Show listings that either have pending status OR have pending orders
-      const hasPendingOrders = listing.pendingOrders && listing.pendingOrders > 0;
-      return matchesSearch && (listing.status === filterStatus || hasPendingOrders);
-    } else {
-      return matchesSearch && listing.status === filterStatus;
+    // Use activeSubTab instead of filterStatus for sub-tab filtering
+    let statusMatch = true;
+    
+    switch (activeSubTab) {
+      case 'active':
+        statusMatch = listing.status === 'active' || listing.status === 'approved';
+        break;
+      case 'pending':
+        // Show listings that have pending status OR have pending orders
+        const hasPendingOrders = listing.pendingOrders && listing.pendingOrders > 0;
+        statusMatch = listing.status === 'pending' || listing.status === 'awaiting_approval' || hasPendingOrders;
+        break;
+      case 'inactive':
+        statusMatch = listing.status === 'inactive' || listing.status === 'deactivated' || listing.status === 'paused';
+        break;
+      case 'sold':
+        statusMatch = listing.status === 'sold' || listing.status === 'completed' || listing.status === 'finished';
+        break;
+      default:
+        statusMatch = true;
     }
+    
+    return matchesSearch && statusMatch;
   });
 
   const handleSelectAll = (checked) => {
