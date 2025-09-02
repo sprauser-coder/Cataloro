@@ -34,14 +34,23 @@ function BrowsePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('newest');
-  const [filters, setFilters] = useState({});
-  const [totalCount, setTotalCount] = useState(0);
-  const [searchMode, setSearchMode] = useState('standard'); // 'standard' or 'ai'
-  const [searchIntent, setSearchIntent] = useState({});
-  const [showRecommendations, setShowRecommendations] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    category: 'all',
+    priceRange: 'all',
+    condition: 'all',
+    location: 'all'
+  });
+  
+  // Message modal state
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [messageContent, setMessageContent] = useState('');
+  const [sending, setSending] = useState(false);
   
   const { showToast } = useNotifications();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchListings();
