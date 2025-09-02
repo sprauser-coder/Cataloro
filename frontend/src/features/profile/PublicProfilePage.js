@@ -130,16 +130,34 @@ function PublicProfilePage() {
         let fetchedUser = null;
         
         try {
+          // First try to get profile from auth/profile endpoint (this is working according to backend tests)
           const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/profile/${userId}`);
           if (response.ok) {
             fetchedUser = await response.json();
             console.log('Fetched user data:', fetchedUser);
           } else {
-            console.log('Backend user not found, trying alternative endpoint');
-            // Try alternative endpoint
+            console.log('Primary profile endpoint failed, trying user endpoint...');
+            // Fallback to user endpoint  
             const altResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}`);
             if (altResponse.ok) {
               fetchedUser = await altResponse.json();
+            } else {
+              console.log('Both profile endpoints failed, trying listings endpoint...');
+              // Additional fallback - try to get user info from listings
+              const listingsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings?seller_id=${userId}`);
+              if (listingsResponse.ok) {
+                const listingsData = await listingsResponse.json();
+                if (listingsData.length > 0 && listingsData[0].seller) {
+                  fetchedUser = listingsData[0].seller;
+                  // Also set the listings data since we have it
+                  const listings = listingsData.filter(p => 
+                    p.seller === fetchedUser.username || 
+                    p.seller === fetchedUser.full_name ||
+                    p.seller_id === userId
+                  );
+                  setUserListings(listings.slice(0, 6));
+                }
+              }
             }
           }
         } catch (error) {
