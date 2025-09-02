@@ -1,16 +1,32 @@
 /**
- * CATALORO - Enhanced Browse Page with AI-Powered Search
- * Advanced marketplace browsing with intelligent search and recommendations
+ * CATALORO - Catalyst Database Browse Page
+ * Browse and search chemical catalysts with hero-style interface
  */
 
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Grid, List, Heart, DollarSign, Sparkles, TrendingUp } from 'lucide-react';
+import { 
+  Search, 
+  Grid3X3, 
+  List, 
+  Heart, 
+  Eye, 
+  MapPin,
+  Clock,
+  ShoppingCart,
+  MessageCircle,
+  SlidersHorizontal,
+  X,
+  Send,
+  User,
+  Database,
+  RefreshCw,
+  Filter
+} from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
 import { useNotifications } from '../../context/NotificationContext';
 import { useAuth } from '../../context/AuthContext';
-import SmartSearchBar from '../../components/search/SmartSearchBar';
-import AdvancedFilters from '../../components/search/AdvancedFilters';
-import RecommendationsPanel from '../../components/recommendations/RecommendationsPanel';
+import { liveService } from '../../services/liveService';
 
 function BrowsePage() {
   const [listings, setListings] = useState([]);
