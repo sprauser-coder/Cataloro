@@ -521,6 +521,43 @@ function PublicProfilePage() {
               </div>
             </div>
 
+            {/* Additional User Information */}
+            <div className="cataloro-card-glass p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Additional Information</h3>
+              
+              <div className="space-y-4">
+                {profileUser.is_business && profileUser.company_name && (
+                  <div className="flex items-center">
+                    <Settings className="w-5 h-5 text-blue-600 mr-3" />
+                    <div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300">Company</div>
+                      <div className="font-medium text-gray-900 dark:text-white">{profileUser.company_name}</div>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="flex items-center">
+                  <Shield className="w-5 h-5 text-green-600 mr-3" />
+                  <div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300">Account Status</div>
+                    <div className="font-medium text-gray-900 dark:text-white">
+                      {profileUser.verified ? 'Verified Member' : 'Standard Member'}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <Globe className="w-5 h-5 text-purple-600 mr-3" />
+                  <div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300">Profile Type</div>
+                    <div className="font-medium text-gray-900 dark:text-white">
+                      {profileUser.is_business ? 'Business Account' : 'Personal Account'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Member Info */}
             <div className="cataloro-card-glass p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Member Info</h3>
