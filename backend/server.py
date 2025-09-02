@@ -2519,7 +2519,7 @@ async def startup_event():
     """Initialize application on startup"""
     try:
         # Test database connection
-        await db.admin.command('ping')
+        await client.admin.command('ping')
         print("✅ Connected to MongoDB successfully")
         
         # Test AI service
