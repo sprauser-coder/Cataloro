@@ -281,20 +281,27 @@ function AdvancedFilters({ onFiltersChange, initialFilters = {}, className = "" 
               </select>
             </div>
 
-            {/* Condition Filter */}
+            {/* Reaction Type Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Condition
+                Reaction Type
               </label>
               <select
-                value={filters.condition}
-                onChange={(e) => handleFilterChange('condition', e.target.value)}
+                value={filters.reactionType || 'all'}
+                onChange={(e) => handleFilterChange('reactionType', e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">Any Condition</option>
-                {conditions.map(condition => (
-                  <option key={condition.value} value={condition.value}>{condition.label}</option>
-                ))}
+                <option value="all">All Reactions</option>
+                <option value="hydrogenation">Hydrogenation</option>
+                <option value="oxidation">Oxidation</option>
+                <option value="dehydrogenation">Dehydrogenation</option>
+                <option value="isomerization">Isomerization</option>
+                <option value="polymerization">Polymerization</option>
+                <option value="cracking">Cracking</option>
+                <option value="reforming">Reforming</option>
+                <option value="methanation">Methanation</option>
+                <option value="carbonylation">Carbonylation</option>
+                <option value="coupling">Coupling</option>
               </select>
             </div>
 
