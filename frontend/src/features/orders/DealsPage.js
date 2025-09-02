@@ -336,8 +336,155 @@ function DealsPage() {
         </div>
       </div>
 
-      {/* Stats Cards - CLICKABLE & REDUCED MARGIN */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-4">
+      {/* Live Overview Dashboard - Only show when overview tab is active */}
+      {activeTab === 'overview' && (
+        <div className="space-y-8 mb-8">
+          {/* Key Metrics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="cataloro-card-glass p-6 text-center">
+              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {liveStats.totalDeals}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Deals</div>
+              <div className="flex items-center justify-center mt-2">
+                {liveStats.monthlyTrend >= 0 ? (
+                  <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                ) : (
+                  <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                )}
+                <span className={`text-xs ${liveStats.monthlyTrend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {Math.abs(liveStats.monthlyTrend).toFixed(1)}%
+                </span>
+              </div>
+            </div>
+
+            <div className="cataloro-card-glass p-6 text-center">
+              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                ${liveStats.totalValue.toFixed(2)}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Value</div>
+              <div className="text-xs text-gray-500 mt-2">
+                Avg: ${liveStats.averageOrderValue.toFixed(2)}
+              </div>
+            </div>
+
+            <div className="cataloro-card-glass p-6 text-center">
+              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">
+                {liveStats.pendingDeals}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Pending</div>
+              <div className="text-xs text-gray-500 mt-2">
+                Requires attention
+              </div>
+            </div>
+
+            <div className="cataloro-card-glass p-6 text-center">
+              <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                {liveStats.successRate.toFixed(1)}%
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Success Rate</div>
+              <div className="text-xs text-gray-500 mt-2">
+                {liveStats.completedDeals} completed
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Activity & Top Categories */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Recent Activity Feed */}
+            <div className="cataloro-card-glass p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Zap className="w-5 h-5 mr-2 text-yellow-500" />
+                Recent Activity
+              </h3>
+              
+              {liveStats.recentActivity.length === 0 ? (
+                <div className="text-center py-8">
+                  <Activity className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">No recent activity</p>
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-80 overflow-y-auto">
+                  {liveStats.recentActivity.map((activity, index) => (
+                    <div key={activity.id || index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className={`p-2 rounded-full ${
+                          activity.type === 'purchase' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'
+                        }`}>
+                          {activity.type === 'purchase' ? 
+                            <Package className="w-4 h-4" /> : 
+                            <DollarSign className="w-4 h-4" />
+                          }
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900 dark:text-white text-sm">
+                            {activity.type === 'purchase' ? 'Purchased' : 'Sold'}: {activity.title}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {new Date(activity.date).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-green-600">${activity.amount}</div>
+                        <div className={`text-xs px-2 py-1 rounded-full ${
+                          activity.status === 'completed' ? 'bg-green-100 text-green-700' :
+                          activity.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-gray-100 text-gray-700'
+                        }`}>
+                          {activity.status}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Top Categories */}
+            <div className="cataloro-card-glass p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <PieChart className="w-5 h-5 mr-2 text-purple-500" />
+                Top Categories
+              </h3>
+              
+              {liveStats.topCategories.length === 0 ? (
+                <div className="text-center py-8">
+                  <PieChart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">No category data</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {liveStats.topCategories.map((category, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-3 h-3 rounded-full ${{
+                          0: 'bg-blue-500',
+                          1: 'bg-green-500', 
+                          2: 'bg-yellow-500',
+                          3: 'bg-purple-500',
+                          4: 'bg-red-500'
+                        }[index]}`}></div>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {category.category}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-gray-900 dark:text-white">{category.count}</div>
+                        <div className="text-xs text-gray-500">deals</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stats Cards - Show for other tabs */}
+      {activeTab !== 'overview' && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-4">
         <button
           onClick={() => handleTileClick('all')}
           className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
