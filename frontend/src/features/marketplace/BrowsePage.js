@@ -245,7 +245,7 @@ function BrowsePage() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-gray-600">
-              Showing {totalCount} listings
+              Showing {totalCount} catalysts
               {searchQuery && ` for "${searchQuery}"`}
               {searchMode === 'ai' && searchIntent.enhanced_query && searchIntent.enhanced_query !== searchQuery && (
                 <span className="ml-2 text-blue-600 text-sm">
@@ -254,10 +254,11 @@ function BrowsePage() {
               )}
             </p>
             
-            {searchMode === 'ai' && searchIntent.category && (
+            {searchMode === 'ai' && searchIntent.metal_type && (
               <p className="text-sm text-blue-600 mt-1">
                 <Sparkles className="h-3 w-3 inline mr-1" />
-                AI detected category: {searchIntent.category}
+                AI detected metal: {searchIntent.metal_type}
+                {searchIntent.reaction_type && ` • Reaction: ${searchIntent.reaction_type}`}
               </p>
             )}
           </div>
