@@ -604,22 +604,26 @@ function DealsPage() {
       <div className="cataloro-card-glass mb-8">
         <div className="border-b border-white/10">
           <nav className="-mb-px flex space-x-8 px-6">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-2 text-sm font-medium transition-all duration-300 border-b-2 ${
-                  activeTab === tab.id
-                    ? 'text-gray-900 dark:text-white border-blue-600'
-                    : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                {tab.label}
-                <span className="ml-2 bg-white/20 dark:bg-white/10 text-gray-600 dark:text-gray-300 py-1 px-2 rounded-full text-xs backdrop-blur-md">
-                  {tab.count}
-                </span>
-              </button>
-            ))}
+            {tabs.map((tab) => {
+              const IconComponent = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`py-4 px-2 text-sm font-medium transition-all duration-300 border-b-2 flex items-center ${
+                    activeTab === tab.id
+                      ? 'text-gray-900 dark:text-white border-blue-600'
+                      : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                >
+                  <IconComponent className="w-4 h-4 mr-2" />
+                  {tab.label}
+                  <span className="ml-2 bg-white/20 dark:bg-white/10 text-gray-600 dark:text-gray-300 py-1 px-2 rounded-full text-xs backdrop-blur-md">
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
           </nav>
         </div>
       </div>
