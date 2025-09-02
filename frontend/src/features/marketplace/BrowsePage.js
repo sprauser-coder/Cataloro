@@ -36,7 +36,6 @@ function BrowsePage() {
   
   const { showToast } = useNotifications();
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchListings();
