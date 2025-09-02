@@ -224,10 +224,11 @@ function DealsPage() {
   };
 
   const tabs = [
-    { id: 'all', label: 'All Deals', count: deals.length },
-    { id: 'pending', label: 'Pending', count: deals.filter(d => d.status === 'pending').length },
-    { id: 'completed', label: 'Completed', count: deals.filter(d => d.status === 'completed').length },
-    { id: 'cancelled', label: 'Cancelled', count: deals.filter(d => d.status === 'cancelled').length }
+    { id: 'overview', label: 'Live Overview', icon: Activity, count: liveStats.totalDeals },
+    { id: 'all', label: 'All Deals', icon: Package, count: deals.length },
+    { id: 'pending', label: 'Pending', icon: Clock, count: deals.filter(d => d.status === 'pending' || d.status === 'approved').length },
+    { id: 'completed', label: 'Completed', icon: CheckCircle, count: deals.filter(d => d.status === 'completed').length },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3, count: liveStats.topCategories.length }
   ];
 
   // Handle tile clicks for filtering
