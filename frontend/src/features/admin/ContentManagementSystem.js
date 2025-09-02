@@ -77,6 +77,7 @@ function ContentManagementSystem() {
     features: {
       title: 'Platform Features',
       description: 'Discover all the powerful features that make our marketplace the most advanced platform for buying and selling.',
+      backgroundImage: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=1920&h=1080&fit=crop&crop=center',
       showIcons: true,
       categories: [
         {
