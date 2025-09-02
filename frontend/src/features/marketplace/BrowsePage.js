@@ -142,16 +142,24 @@ function BrowsePage() {
     }
   };
 
-  const sortedListings = [...listings].sort((a, b) => {
+  // Filter and sort listings
+  const filteredListings = listings.filter(listing => {
+    const matchesSearch = !searchQuery || 
+      listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      listing.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = filters.category === 'all' || listing.category === filters.category;
+    const matchesCondition = filters.condition === 'all' || listing.condition === filters.condition;
+    
+    return matchesSearch && matchesCategory && matchesCondition;
+  });
+
+  const sortedListings = [...filteredListings].sort((a, b) => {
     switch (sortBy) {
       case 'price_low':
         return (a.price || 0) - (b.price || 0);
       case 'price_high':
         return (b.price || 0) - (a.price || 0);
-      case 'popular':
-        return (b.views || 0) - (a.views || 0);
-      case 'rating':
-        return (b.rating || 0) - (a.rating || 0);
       case 'newest':
       default:
         return new Date(b.created_at || Date.now()) - new Date(a.created_at || Date.now());
@@ -168,59 +176,103 @@ function BrowsePage() {
 
   return (
     <div className="fade-in">
-      {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Catalyst Database</h1>
-            <p className="text-gray-600">Find chemical catalysts with AI-powered technical search</p>
+      {/* Hero Search Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white rounded-2xl p-8 mb-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl font-bold mb-4">Chemical Catalyst Database</h1>
+          <p className="text-xl text-blue-100 mb-8">
+            Discover high-performance catalysts for your chemical processes
+          </p>
+          
+          {/* Hero Search Bar */}
+          <div className="relative max-w-2xl mx-auto mb-6">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search className="h-6 w-6 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearch}
+              placeholder="Search by catalyst name, metal type, or reaction..."
+              className="block w-full pl-12 pr-4 py-4 text-lg border-0 rounded-xl bg-white/90 backdrop-blur-sm shadow-lg focus:ring-4 focus:ring-white/30 focus:bg-white transition-all duration-200 text-gray-900 placeholder-gray-500"
+            />
           </div>
           
-          {searchMode === 'ai' && (
-            <div className="hidden md:flex items-center px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
-              <Sparkles className="h-4 w-4 text-white mr-2" />
-              <span className="text-white text-sm font-medium">AI Search Active</span>
-            </div>
-          )}
+          {/* Quick Filter Chips */}
+          <div className="flex flex-wrap justify-center gap-3">
+            <button 
+              onClick={() => setSearchQuery('platinum')}
+              className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium hover:bg-white/30 transition-all duration-200"
+            >
+              Platinum Catalysts
+            </button>
+            <button 
+              onClick={() => setSearchQuery('hydrogenation')}
+              className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium hover:bg-white/30 transition-all duration-200"
+            >
+              Hydrogenation
+            </button>
+            <button 
+              onClick={() => setSearchQuery('oxidation')}
+              className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium hover:bg-white/30 transition-all duration-200"
+            >
+              Oxidation
+            </button>
+            <button 
+              onClick={() => setSearchQuery('zeolite')}
+              className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium hover:bg-white/30 transition-all duration-200"
+            >
+              Zeolites
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Smart Search Bar */}
-      <div className="mb-6">
-        <SmartSearchBar
-          onSearch={handleSearch}
-          placeholder="Search catalysts by metal, reaction type, or application..."
-          className="max-w-2xl"
-        />
-      </div>
-
-      {/* Advanced Filters and Controls */}
-      <div className="cataloro-card p-6 mb-8">
+      {/* Filters and Controls */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-          {/* Advanced Filters */}
-          <div className="flex-1">
-            <AdvancedFilters
-              onFiltersChange={handleFiltersChange}
-              initialFilters={filters}
-            />
+          {/* Filter Toggle */}
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all duration-200"
+            >
+              <SlidersHorizontal className="w-4 h-4 mr-2" />
+              Filters
+              {(filters.category !== 'all' || filters.condition !== 'all') && (
+                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                  Active
+                </span>
+              )}
+            </button>
+            
+            {(filters.category !== 'all' || filters.condition !== 'all') && (
+              <button
+                onClick={clearFilters}
+                className="text-sm text-gray-600 hover:text-gray-800 flex items-center"
+              >
+                <X className="w-4 h-4 mr-1" />
+                Clear All
+              </button>
+            )}
           </div>
 
-          {/* Controls */}
+          {/* Results and Controls */}
           <div className="flex items-center space-x-4">
-            {/* Sort Dropdown */}
+            <p className="text-gray-600">
+              {sortedListings.length} catalysts found
+            </p>
+            
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="cataloro-input w-auto"
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="newest">Newest First</option>
               <option value="price_low">Price: Low to High</option>
               <option value="price_high">Price: High to Low</option>
-              <option value="popular">Most Popular</option>
-              <option value="rating">Highest Rated</option>
             </select>
 
-            {/* View Mode Toggle */}
             <div className="flex bg-gray-100 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('grid')}
@@ -228,7 +280,7 @@ function BrowsePage() {
                   viewMode === 'grid' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600'
                 }`}
               >
-                <Grid className="w-4 h-4" />
+                <Grid3X3 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
@@ -241,52 +293,67 @@ function BrowsePage() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Search Intent & Results Info */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-gray-600">
-              Showing {totalCount} catalysts
-              {searchQuery && ` for "${searchQuery}"`}
-              {searchMode === 'ai' && searchIntent.enhanced_query && searchIntent.enhanced_query !== searchQuery && (
-                <span className="ml-2 text-blue-600 text-sm">
-                  • Enhanced: "{searchIntent.enhanced_query}"
-                </span>
-              )}
-            </p>
+        {/* Expandable Filters */}
+        {showFilters && (
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 pt-6 border-t border-gray-200">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <select
+                value={filters.category}
+                onChange={(e) => handleFilterChange('category', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">All Categories</option>
+                <option value="catalysts">Catalysts</option>
+              </select>
+            </div>
             
-            {searchMode === 'ai' && searchIntent.metal_type && (
-              <p className="text-sm text-blue-600 mt-1">
-                <Sparkles className="h-3 w-3 inline mr-1" />
-                AI detected metal: {searchIntent.metal_type}
-                {searchIntent.reaction_type && ` • Reaction: ${searchIntent.reaction_type}`}
-              </p>
-            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Condition</label>
+              <select
+                value={filters.condition}
+                onChange={(e) => handleFilterChange('condition', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Any Condition</option>
+                <option value="new">New</option>
+                <option value="used">Used</option>
+                <option value="refurbished">Refurbished</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+              <select
+                value={filters.priceRange}
+                onChange={(e) => handleFilterChange('priceRange', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Any Price</option>
+                <option value="0-100">Under $100</option>
+                <option value="100-500">$100 - $500</option>
+                <option value="500-1000">$500 - $1,000</option>
+                <option value="1000+">Over $1,000</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+              <select
+                value={filters.location}
+                onChange={(e) => handleFilterChange('location', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">Any Location</option>
+                <option value="local">Local Only</option>
+                <option value="nationwide">Nationwide</option>
+                <option value="international">International</option>
+              </select>
+            </div>
           </div>
-          
-          {searchQuery && (
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setSearchMode('standard');
-                fetchListings();
-              }}
-              className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200"
-            >
-              Clear Search
-            </button>
-          )}
-        </div>
+        )}
       </div>
-
-      {/* Recommendations Panel - Show when no search/filters active */}
-      {showRecommendations && (
-        <div className="mb-8">
-          <RecommendationsPanel limit={6} />
-        </div>
-      )}
 
       {/* Listings Grid/List */}
       {sortedListings.length === 0 ? (
