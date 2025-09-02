@@ -167,25 +167,39 @@ function BrowsePage() {
     <div className="fade-in">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Browse Marketplace</h1>
-        <p className="text-gray-600">Discover amazing items from our community</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Browse Marketplace</h1>
+            <p className="text-gray-600">Discover amazing items with AI-powered search</p>
+          </div>
+          
+          {searchMode === 'ai' && (
+            <div className="hidden md:flex items-center px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+              <Sparkles className="h-4 w-4 text-white mr-2" />
+              <span className="text-white text-sm font-medium">AI Search Active</span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Search and Filters */}
+      {/* Smart Search Bar */}
+      <div className="mb-6">
+        <SmartSearchBar
+          onSearch={handleSearch}
+          placeholder="Search with AI-powered suggestions..."
+          className="max-w-2xl"
+        />
+      </div>
+
+      {/* Advanced Filters and Controls */}
       <div className="cataloro-card p-6 mb-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-          {/* Search Bar */}
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search listings..."
-                value={searchQuery}
-                onChange={handleSearch}
-                className="cataloro-input pl-10"
-              />
-            </div>
+          {/* Advanced Filters */}
+          <div className="flex-1">
+            <AdvancedFilters
+              onFiltersChange={handleFiltersChange}
+              initialFilters={filters}
+            />
           </div>
 
           {/* Controls */}
@@ -199,6 +213,8 @@ function BrowsePage() {
               <option value="newest">Newest First</option>
               <option value="price_low">Price: Low to High</option>
               <option value="price_high">Price: High to Low</option>
+              <option value="popular">Most Popular</option>
+              <option value="rating">Highest Rated</option>
             </select>
 
             {/* View Mode Toggle */}
@@ -224,13 +240,49 @@ function BrowsePage() {
         </div>
       </div>
 
-      {/* Results Count */}
+      {/* Search Intent & Results Info */}
       <div className="mb-6">
-        <p className="text-gray-600">
-          Showing {sortedListings.length} listings
-          {searchQuery && ` for "${searchQuery}"`}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-600">
+              Showing {totalCount} listings
+              {searchQuery && ` for "${searchQuery}"`}
+              {searchMode === 'ai' && searchIntent.enhanced_query && searchIntent.enhanced_query !== searchQuery && (
+                <span className="ml-2 text-blue-600 text-sm">
+                  • Enhanced: "{searchIntent.enhanced_query}"
+                </span>
+              )}
+            </p>
+            
+            {searchMode === 'ai' && searchIntent.category && (
+              <p className="text-sm text-blue-600 mt-1">
+                <Sparkles className="h-3 w-3 inline mr-1" />
+                AI detected category: {searchIntent.category}
+              </p>
+            )}
+          </div>
+          
+          {searchQuery && (
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSearchMode('standard');
+                fetchListings();
+              }}
+              className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200"
+            >
+              Clear Search
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Recommendations Panel - Show when no search/filters active */}
+      {showRecommendations && (
+        <div className="mb-8">
+          <RecommendationsPanel limit={6} />
+        </div>
+      )}
 
       {/* Listings Grid/List */}
       {sortedListings.length === 0 ? (
