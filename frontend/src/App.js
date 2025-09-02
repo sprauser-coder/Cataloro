@@ -62,7 +62,7 @@ function App() {
                 {/* Protected Routes with Modern Layout */}
                 <Route path="/" element={<ModernLayout />}>
                   <Route index element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
-                  <Route path={APP_ROUTES.BROWSE} element={<ModernBrowsePage />} />
+                  <Route path={APP_ROUTES.BROWSE} element={<BrowsePage />} />
                   <Route path="categories" element={<CategoriesPage />} />
                   <Route path="cart" element={<ShoppingCartPage />} />
                   <Route path="product/:productId" element={<ProductDetailPage />} />
