@@ -392,15 +392,15 @@ class SystemNotificationsAPITester:
         )
         
         if success_conversations:
-            print(f"   Found {len(conversations_response)} conversations for response rate calculation")
+            print(f"   Found {len(conversations_response)} messages for response rate calculation")
             
-            # Verify conversation data structure for response rate calculation
+            # Verify message data structure for response rate calculation
             if conversations_response:
-                conversation = conversations_response[0]
-                response_rate_fields = ['participant_id', 'last_message_at', 'message_count', 'response_time']
-                has_response_fields = any(field in conversation for field in response_rate_fields)
-                self.log_test("Conversation Response Rate Data", has_response_fields,
-                             f"Conversation has response rate calculation fields: {has_response_fields}")
+                message = conversations_response[0]
+                response_rate_fields = ['sender_id', 'recipient_id', 'created_at', 'is_read']
+                has_response_fields = all(field in message for field in response_rate_fields)
+                self.log_test("Message Response Rate Data", has_response_fields,
+                             f"Message has response rate calculation fields: {has_response_fields}")
         
         # Test 2: User favorites data
         print("\n2️⃣ Testing user favorites data...")
