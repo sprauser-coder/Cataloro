@@ -653,39 +653,122 @@ function DealsPage() {
         </div>
       </div>
 
-      {/* Deals List */}
-      {displayDeals.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="cataloro-card-glass p-12">
-            <div className="w-24 h-24 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Package className="w-12 h-12 text-gray-600 dark:text-gray-300" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              {searchTerm ? 'No matching deals found' : 'No deals found'}
+      {/* Deals List - Show for deal tabs */}
+      {(activeTab === 'all' || activeTab === 'pending' || activeTab === 'completed' || activeTab === 'cancelled') && (
+        <div className="cataloro-card-glass p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              {activeTab === 'all' ? 'All Deals' : 
+               activeTab === 'pending' ? 'Pending Deals' :
+               activeTab === 'completed' ? 'Completed Deals' :
+               'Cancelled Deals'} ({filteredAndSortedDeals.length})
             </h3>
-            <p className="text-gray-600 dark:text-gray-300 max-w-md mx-auto">
-              {searchTerm 
-                ? `No deals match your search for "${searchTerm}"`
-                : activeTab === 'all' 
-                  ? 'Start buying or selling to see your deals here'
-                  : `No ${activeTab} deals at the moment`
-              }
-            </p>
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className="mt-4 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
+            
+            <div className="flex items-center space-x-4">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm"
               >
-                Clear search
-              </button>
-            )}
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="highest_value">Highest Value</option>
+                <option value="lowest_value">Lowest Value</option>
+                <option value="status">By Status</option>
+              </select>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {displayDeals.map((deal) => (
-            <DealCard key={deal.id} deal={deal} currentUserId={user.id} user={user} />
-          ))}
+
+          {filteredAndSortedDeals.length === 0 ? (
+            <div className="text-center py-12">
+              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h4 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+                No {activeTab === 'all' ? '' : activeTab} deals found
+              </h4>
+              <p className="text-gray-600 dark:text-gray-300">
+                {searchTerm ? `No deals match your search for "${searchTerm}"` : 
+                 activeTab === 'all' ? 'You haven\'t made any deals yet' :
+                 `You don't have any ${activeTab} deals`}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredAndSortedDeals.map((deal) => (
+                <div key={deal.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      {deal.listing?.image && (
+                        <img
+                          src={deal.listing.image}
+                          alt={deal.listing.title}
+                          className="w-16 h-16 object-cover rounded-lg"
+                        />
+                      )}
+                      
+                      <div>
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          {deal.listing?.title || 'Deal #' + deal.id}
+                        </h4>
+                        
+                        <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600 dark:text-gray-300">
+                          <span className="flex items-center">
+                            <User className="w-4 h-4 mr-1" />
+                            {deal.buyer_id === user?.id ? 
+                              `Seller: ${deal.seller?.username || deal.seller?.full_name || 'Unknown'}` :
+                              `Buyer: ${deal.buyer?.username || deal.buyer?.full_name || 'Unknown'}`
+                            }
+                          </span>
+                          
+                          <span className="flex items-center">
+                            <Calendar className="w-4 h-4 mr-1" />
+                            {new Date(deal.created_at || deal.approved_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-green-600 mb-2">
+                        ${parseFloat(deal.amount || 0).toFixed(2)}
+                      </div>
+                      
+                      <div className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
+                        deal.status === 'completed' ? 'bg-green-100 text-green-800' :
+                        deal.status === 'pending' || deal.status === 'approved' ? 'bg-yellow-100 text-yellow-800' :
+                        deal.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {deal.status?.charAt(0).toUpperCase() + deal.status?.slice(1) || 'Unknown'}
+                      </div>
+                      
+                      <div className="text-xs text-gray-500 mt-2">
+                        Deal ID: {deal.id.slice(0, 8)}...
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Deal Actions */}
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                      {deal.buyer_id === user?.id ? 'You purchased this item' : 'You sold this item'}
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                      <button className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-lg hover:bg-blue-200 transition-colors flex items-center">
+                        <MessageCircle className="w-4 h-4 mr-1" />
+                        Message
+                      </button>
+                      
+                      <button className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors flex items-center">
+                        <Eye className="w-4 h-4 mr-1" />
+                        Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
