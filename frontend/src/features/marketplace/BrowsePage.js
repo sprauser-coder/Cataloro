@@ -121,9 +121,13 @@ function BrowsePage() {
     }
   };
 
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-    // In a real app, you'd debounce this and call the API
+  const handleSearch = (query, useAI = true) => {
+    setSearchQuery(query);
+    performSearch(query, useAI);
+  };
+
+  const handleFiltersChange = (newFilters) => {
+    setFilters(newFilters);
   };
 
   const handleAddToFavorites = async (listingId) => {
