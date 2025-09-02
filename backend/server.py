@@ -2096,6 +2096,446 @@ async def delete_catalyst_database():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete catalyst database: {str(e)}")
 
+# ============================================================================
+# AI-POWERED SEARCH & RECOMMENDATIONS ENDPOINTS
+# ============================================================================
+
+# Initialize AI chat for search suggestions
+async def get_ai_chat():
+    """Get initialized AI chat client"""
+    try:
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="AI service not configured")
+            
+        chat = LlmChat(
+            api_key=api_key,
+            session_id="marketplace_search",
+            system_message="You are an AI assistant specialized in e-commerce search and product recommendations. Help users find the right products by understanding their intent and providing relevant suggestions. Be concise and helpful."
+        ).with_model("openai", "gpt-4o-mini")
+        
+        return chat
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to initialize AI service: {str(e)}")
+
+@app.post("/api/search/ai-suggestions")
+async def get_ai_search_suggestions(search_data: dict):
+    """Get AI-powered search suggestions"""
+    try:
+        query = search_data.get("query", "")
+        context = search_data.get("context", {})
+        
+        if not query or len(query.strip()) < 2:
+            return {"suggestions": []}
+        
+        # Get available categories and popular products for context
+        categories = await db.listings.distinct("category")
+        popular_products = await db.listings.find({"status": "active"}).sort("views", -1).limit(5).to_list(length=5)
+        
+        # Create context for AI
+        ai_context = f"""
+        User is searching for: "{query}"
+        Available categories: {', '.join(categories)}
+        Popular products: {[p.get('title', '') for p in popular_products]}
+        """
+        
+        if context.get('previous_searches'):
+            ai_context += f"\nPrevious searches: {', '.join(context['previous_searches'][-3:])}"
+        
+        chat = await get_ai_chat()
+        
+        # Generate search suggestions
+        prompt = f"""
+        {ai_context}
+        
+        Based on the user's search query and available products, provide 5 relevant search suggestions that would help them find what they're looking for. Return only a JSON array of strings, nothing else.
+        Example: ["wireless headphones", "gaming headphones", "noise cancelling headphones", "bluetooth earbuds", "studio headphones"]
+        """
+        
+        user_message = UserMessage(text=prompt.strip())
+        response = await chat.send_message(user_message)
+        
+        # Parse AI response
+        try:
+            import json
+            suggestions = json.loads(response.strip())
+            if isinstance(suggestions, list) and len(suggestions) <= 5:
+                return {"suggestions": suggestions}
+            else:
+                return {"suggestions": suggestions[:5] if isinstance(suggestions, list) else []}
+        except:
+            # Fallback to manual suggestions if AI response parsing fails
+            fallback_suggestions = []
+            for category in categories:
+                if query.lower() in category.lower():
+                    fallback_suggestions.append(category)
+            return {"suggestions": fallback_suggestions[:5]}
+        
+    except Exception as e:
+        print(f"AI search error: {str(e)}")
+        # Return empty suggestions on error, don't break the user experience
+        return {"suggestions": []}
+
+@app.post("/api/search/intelligent")
+async def intelligent_search(search_data: dict):
+    """Perform AI-enhanced intelligent search"""
+    try:
+        query = search_data.get("query", "")
+        filters = search_data.get("filters", {})
+        limit = min(search_data.get("limit", 20), 50)
+        
+        if not query or len(query.strip()) < 2:
+            return {"results": [], "total": 0, "enhanced_query": query}
+        
+        # Get AI chat
+        chat = await get_ai_chat()
+        
+        # Let AI understand the search intent and enhance the query
+        intent_prompt = f"""
+        Analyze this search query: "{query}"
+        
+        Extract key information:
+        1. Product category (if any)
+        2. Key features or specifications mentioned
+        3. Price range hints (budget, cheap, expensive, premium, etc.)
+        4. Condition preferences (new, used, refurbished, etc.)
+        
+        Return a JSON object with extracted information:
+        {{
+            "category": "category name or null",
+            "keywords": ["key", "words", "to", "search"],
+            "price_intent": "budget|mid-range|premium|null",
+            "condition_intent": "new|used|refurbished|null",
+            "enhanced_query": "enhanced search terms"
+        }}
+        """
+        
+        user_message = UserMessage(text=intent_prompt.strip())
+        ai_response = await chat.send_message(user_message)
+        
+        # Parse AI intent analysis
+        search_intent = {}
+        try:
+            import json
+            search_intent = json.loads(ai_response.strip())
+        except:
+            search_intent = {"keywords": query.split(), "enhanced_query": query}
+        
+        # Build enhanced search query
+        search_terms = search_intent.get("keywords", query.split())
+        enhanced_query = search_intent.get("enhanced_query", query)
+        
+        # Build MongoDB query
+        mongo_query = {"status": "active"}
+        
+        # Text search with enhanced terms
+        if search_terms:
+            text_conditions = []
+            for term in search_terms:
+                term_regex = {"$regex": term, "$options": "i"}
+                text_conditions.append({
+                    "$or": [
+                        {"title": term_regex},
+                        {"description": term_regex},
+                        {"category": term_regex},
+                        {"tags": term_regex}
+                    ]
+                })
+            
+            if len(text_conditions) == 1:
+                mongo_query.update(text_conditions[0])
+            else:
+                mongo_query["$and"] = text_conditions
+        
+        # Apply AI-detected category filter
+        if search_intent.get("category") and not filters.get("category"):
+            mongo_query["category"] = {"$regex": search_intent["category"], "$options": "i"}
+        
+        # Apply other filters
+        if filters.get("category") and filters["category"] != "all":
+            mongo_query["category"] = filters["category"]
+        
+        if filters.get("condition") and filters["condition"] != "all":
+            mongo_query["condition"] = filters["condition"]
+        
+        if filters.get("min_price") is not None:
+            mongo_query["price"] = {"$gte": filters["min_price"]}
+        
+        if filters.get("max_price") is not None:
+            if "price" in mongo_query:
+                mongo_query["price"]["$lte"] = filters["max_price"]
+            else:
+                mongo_query["price"] = {"$lte": filters["max_price"]}
+        
+        # AI-based price intent filtering
+        if search_intent.get("price_intent") and not (filters.get("min_price") or filters.get("max_price")):
+            if search_intent["price_intent"] == "budget":
+                mongo_query["price"] = {"$lte": 100}
+            elif search_intent["price_intent"] == "premium":
+                mongo_query["price"] = {"$gte": 500}
+        
+        # Execute search
+        cursor = db.listings.find(mongo_query).sort("created_at", -1).limit(limit)
+        results = []
+        
+        async for listing in cursor:
+            listing['_id'] = str(listing['_id'])
+            results.append(listing)
+        
+        # Get total count
+        total = await db.listings.count_documents(mongo_query)
+        
+        return {
+            "results": results,
+            "total": total,
+            "enhanced_query": enhanced_query,
+            "search_intent": search_intent,
+            "applied_filters": filters
+        }
+        
+    except Exception as e:
+        print(f"Intelligent search error: {str(e)}")
+        # Fallback to regular search
+        return await search_listings_fallback(query, filters, limit)
+
+async def search_listings_fallback(query: str, filters: dict, limit: int = 20):
+    """Fallback search function when AI search fails"""
+    try:
+        mongo_query = {"status": "active"}
+        
+        # Simple text search
+        if query:
+            text_regex = {"$regex": query, "$options": "i"}
+            mongo_query["$or"] = [
+                {"title": text_regex},
+                {"description": text_regex},
+                {"category": text_regex}
+            ]
+        
+        # Apply filters
+        if filters.get("category") and filters["category"] != "all":
+            mongo_query["category"] = filters["category"]
+        
+        if filters.get("condition") and filters["condition"] != "all":
+            mongo_query["condition"] = filters["condition"]
+        
+        if filters.get("min_price") is not None:
+            mongo_query["price"] = {"$gte": filters["min_price"]}
+        
+        if filters.get("max_price") is not None:
+            if "price" in mongo_query:
+                mongo_query["price"]["$lte"] = filters["max_price"]
+            else:
+                mongo_query["price"] = {"$lte": filters["max_price"]}
+        
+        cursor = db.listings.find(mongo_query).sort("created_at", -1).limit(limit)
+        results = []
+        
+        async for listing in cursor:
+            listing['_id'] = str(listing['_id'])
+            results.append(listing)
+        
+        total = await db.listings.count_documents(mongo_query)
+        
+        return {
+            "results": results,
+            "total": total,
+            "enhanced_query": query,
+            "search_intent": {},
+            "applied_filters": filters
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+
+@app.get("/api/recommendations/{user_id}")
+async def get_personalized_recommendations(user_id: str, limit: int = 10):
+    """Get AI-powered personalized product recommendations"""
+    try:
+        # Get user's interaction history
+        user_favorites = await db.user_favorites.find({"user_id": user_id}).to_list(length=20)
+        user_cart = await db.user_cart.find({"user_id": user_id}).to_list(length=10)
+        user_orders = await db.orders.find({"buyer_id": user_id}).to_list(length=10)
+        
+        # Get detailed product information for user history
+        interacted_items = []
+        item_ids = []
+        
+        # Collect item IDs from all user interactions
+        for fav in user_favorites:
+            item_ids.append(fav["item_id"])
+        for cart_item in user_cart:
+            item_ids.append(cart_item["item_id"])
+        for order in user_orders:
+            order_listing = await db.listings.find_one({"id": order["listing_id"]})
+            if order_listing:
+                interacted_items.append(order_listing)
+        
+        # Get full listing details for favorites and cart items
+        for item_id in item_ids:
+            listing = await db.listings.find_one({"id": item_id})
+            if listing:
+                interacted_items.append(listing)
+        
+        # Use AI to analyze user preferences and generate recommendations
+        if interacted_items:
+            chat = await get_ai_chat()
+            
+            # Create user profile for AI
+            user_categories = [item.get("category", "") for item in interacted_items]
+            user_price_ranges = [item.get("price", 0) for item in interacted_items]
+            user_titles = [item.get("title", "") for item in interacted_items[:5]]  # Limit for context
+            
+            avg_price = sum(user_price_ranges) / len(user_price_ranges) if user_price_ranges else 0
+            
+            profile_prompt = f"""
+            Based on user's interaction history:
+            - Interested categories: {list(set(user_categories))}
+            - Average price range: ${avg_price:.2f}
+            - Recent products: {user_titles}
+            
+            Generate 3-5 search queries that would find similar or complementary products this user might like.
+            Return only a JSON array of search strings.
+            Example: ["wireless gaming mouse", "mechanical keyboards", "gaming headsets"]
+            """
+            
+            user_message = UserMessage(text=profile_prompt.strip())
+            ai_response = await chat.send_message(user_message)
+            
+            # Parse AI recommendations
+            try:
+                import json
+                recommendation_queries = json.loads(ai_response.strip())
+            except:
+                # Fallback to category-based recommendations
+                recommendation_queries = list(set(user_categories))[:3]
+            
+            # Search for recommended products
+            all_recommendations = []
+            for query in recommendation_queries:
+                if isinstance(query, str) and query.strip():
+                    search_results = await search_listings_fallback(query, {}, 5)
+                    all_recommendations.extend(search_results["results"])
+            
+            # Remove duplicates and items user already interacted with
+            seen_ids = set(item_ids)
+            unique_recommendations = []
+            for rec in all_recommendations:
+                if rec["id"] not in seen_ids and len(unique_recommendations) < limit:
+                    unique_recommendations.append(rec)
+                    seen_ids.add(rec["id"])
+            
+            return {
+                "recommendations": unique_recommendations,
+                "total": len(unique_recommendations),
+                "user_profile": {
+                    "preferred_categories": list(set(user_categories)),
+                    "average_price": avg_price,
+                    "interaction_count": len(interacted_items)
+                }
+            }
+        
+        else:
+            # No user history - return popular/trending items
+            popular_items = await db.listings.find({"status": "active"}).sort("views", -1).limit(limit).to_list(length=limit)
+            for item in popular_items:
+                item['_id'] = str(item['_id'])
+            
+            return {
+                "recommendations": popular_items,
+                "total": len(popular_items),
+                "user_profile": {
+                    "preferred_categories": [],
+                    "average_price": 0,
+                    "interaction_count": 0
+                }
+            }
+        
+    except Exception as e:
+        print(f"Recommendations error: {str(e)}")
+        # Fallback to popular items
+        try:
+            popular_items = await db.listings.find({"status": "active"}).sort("created_at", -1).limit(limit).to_list(length=limit)
+            for item in popular_items:
+                item['_id'] = str(item['_id'])
+            return {
+                "recommendations": popular_items,
+                "total": len(popular_items),
+                "user_profile": {"error": "fallback_mode"}
+            }
+        except:
+            return {"recommendations": [], "total": 0, "user_profile": {"error": "service_unavailable"}}
+
+@app.post("/api/search/save-history")
+async def save_search_history(search_data: dict):
+    """Save user search history for better recommendations"""
+    try:
+        user_id = search_data.get("user_id")
+        query = search_data.get("query", "").strip()
+        
+        if not user_id or not query or len(query) < 2:
+            return {"message": "Invalid search data"}
+        
+        # Save search history
+        search_record = {
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "query": query,
+            "timestamp": datetime.utcnow().isoformat(),
+            "results_count": search_data.get("results_count", 0)
+        }
+        
+        await db.search_history.insert_one(search_record)
+        
+        return {"message": "Search history saved"}
+        
+    except Exception as e:
+        print(f"Save search history error: {str(e)}")
+        return {"message": "Failed to save search history"}
+
+@app.get("/api/search/history/{user_id}")
+async def get_search_history(user_id: str, limit: int = 20):
+    """Get user's search history"""
+    try:
+        history = await db.search_history.find(
+            {"user_id": user_id}
+        ).sort("timestamp", -1).limit(limit).to_list(length=limit)
+        
+        for record in history:
+            record['_id'] = str(record['_id'])
+        
+        return {"history": history}
+        
+    except Exception as e:
+        print(f"Get search history error: {str(e)}")
+        return {"history": []}
+
+# ============================================================================
+# STARTUP EVENT
+# ============================================================================
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize application on startup"""
+    try:
+        # Test database connection
+        await db.admin.command('ping')
+        print("✅ Connected to MongoDB successfully")
+        
+        # Test AI service
+        try:
+            api_key = os.environ.get('EMERGENT_LLM_KEY')
+            if api_key:
+                print("✅ AI service configured successfully")
+            else:
+                print("⚠️ AI service not configured - search will use fallback mode")
+        except Exception as e:
+            print(f"⚠️ AI service initialization warning: {e}")
+            
+    except Exception as e:
+        print(f"❌ Failed to connect to MongoDB: {e}")
+        raise
+
 # Run server
 if __name__ == "__main__":
     import uvicorn
