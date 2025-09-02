@@ -38,7 +38,10 @@ import {
   Zap,
   Target,
   Users,
-  TrendingUp
+  TrendingUp,
+  Award,
+  Camera,
+  Play
 } from 'lucide-react';
 
 function ContentManagementSystem() {
