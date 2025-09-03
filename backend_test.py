@@ -1,384 +1,344 @@
 #!/usr/bin/env python3
 """
-System Notification Fix Testing
-Testing the hardcoded "Welcome back!" message fix and proper system notification management
+SOLD ITEMS FUNCTIONALITY COMPREHENSIVE TESTING
+Testing the enhanced sold items functionality that includes accepted tenders
 """
 
 import requests
 import json
 import time
-import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
-# Get backend URL from environment
+# Configuration
 BACKEND_URL = "https://market-upgrade-2.preview.emergentagent.com/api"
 
-class SystemNotificationTester:
-    def __init__(self):
-        self.test_results = []
-        self.test_user_id = None
-        self.test_admin_id = None
-        
-    def log_test(self, test_name, passed, details=""):
-        """Log test results"""
-        status = "✅ PASSED" if passed else "❌ FAILED"
-        print(f"{status}: {test_name}")
-        if details:
-            print(f"   Details: {details}")
-        self.test_results.append({
-            "test": test_name,
-            "passed": passed,
-            "details": details
+def test_sold_items_functionality():
+    """Test the sold items endpoint with accepted tenders functionality"""
+    print("🎯 SOLD ITEMS ENHANCEMENT COMPREHENSIVE TESTING")
+    print("=" * 60)
+    
+    results = {
+        "tests_passed": 0,
+        "tests_failed": 0,
+        "critical_issues": [],
+        "test_details": []
+    }
+    
+    try:
+        # Test 1: Login and get user ID
+        print("\n1. 🔐 USER AUTHENTICATION")
+        login_response = requests.post(f"{BACKEND_URL}/auth/login", json={
+            "email": "admin@cataloro.com",
+            "password": "admin123"
         })
-    
-    def test_login_without_system_notifications(self):
-        """Test 1: Login flow with no active system notifications - should create NO notifications"""
-        print("\n=== TEST 1: Login Without Active System Notifications ===")
         
-        try:
-            # First, ensure no active system notifications exist for login event
-            # We'll clear any existing ones by checking admin endpoints
-            
-            # Create a test user for login
-            test_email = f"test_user_{int(time.time())}@test.com"
-            login_data = {
-                "email": test_email,
-                "username": "test_user_notifications"
-            }
-            
-            # Perform login
-            response = requests.post(f"{BACKEND_URL}/auth/login", json=login_data)
-            
-            if response.status_code == 200:
-                login_result = response.json()
-                self.test_user_id = login_result.get("user", {}).get("id")
-                
-                # Wait a moment for any notifications to be processed
-                time.sleep(2)
-                
-                # Check if any notifications were created for this user
-                notif_response = requests.get(f"{BACKEND_URL}/user/{self.test_user_id}/notifications")
-                
-                if notif_response.status_code == 200:
-                    notifications = notif_response.json()
-                    
-                    # Filter for system notifications created during login
-                    system_notifications = [n for n in notifications if n.get("type") == "system"]
-                    hardcoded_welcome = [n for n in notifications if "Welcome back" in n.get("message", "")]
-                    
-                    # Test should pass if NO system notifications or hardcoded welcome messages
-                    if len(system_notifications) == 0 and len(hardcoded_welcome) == 0:
-                        self.log_test(
-                            "Login without system notifications", 
-                            True, 
-                            f"No system notifications created (found {len(notifications)} total notifications, 0 system, 0 hardcoded welcome)"
-                        )
-                    else:
-                        self.log_test(
-                            "Login without system notifications", 
-                            False, 
-                            f"Unexpected notifications created: {len(system_notifications)} system, {len(hardcoded_welcome)} hardcoded welcome"
-                        )
-                else:
-                    self.log_test("Login without system notifications", False, f"Failed to fetch notifications: {notif_response.status_code}")
-            else:
-                self.log_test("Login without system notifications", False, f"Login failed: {response.status_code}")
-                
-        except Exception as e:
-            self.log_test("Login without system notifications", False, f"Exception: {str(e)}")
-    
-    def test_system_notifications_collection_query(self):
-        """Test 2: Verify trigger_system_notifications queries system_notifications collection"""
-        print("\n=== TEST 2: System Notifications Collection Query ===")
-        
-        try:
-            # Create a system notification in the system_notifications collection
-            # First login as admin to access admin endpoints
-            admin_login = {
-                "email": "admin@cataloro.com",
-                "username": "admin"
-            }
-            
-            admin_response = requests.post(f"{BACKEND_URL}/auth/login", json=admin_login)
-            
-            if admin_response.status_code == 200:
-                admin_result = admin_response.json()
-                self.test_admin_id = admin_result.get("user", {}).get("id")
-                
-                # Try to create a system notification via admin endpoint
-                system_notif_data = {
-                    "title": "Test Login Notification",
-                    "message": "This is a test system notification for login events",
-                    "event_type": "login",
-                    "is_active": True,
-                    "id": str(uuid.uuid4())
-                }
-                
-                # Check if admin system notifications endpoint exists
-                admin_notif_response = requests.post(f"{BACKEND_URL}/admin/system-notifications", json=system_notif_data)
-                
-                if admin_notif_response.status_code in [200, 201]:
-                    self.log_test(
-                        "System notifications collection setup", 
-                        True, 
-                        "Successfully created system notification via admin endpoint"
-                    )
-                else:
-                    # If admin endpoint doesn't exist, we'll test the function behavior directly
-                    self.log_test(
-                        "System notifications collection setup", 
-                        True, 
-                        f"Admin endpoint not available ({admin_notif_response.status_code}), testing function behavior"
-                    )
-            else:
-                self.log_test("System notifications collection setup", False, f"Admin login failed: {admin_response.status_code}")
-                
-        except Exception as e:
-            self.log_test("System notifications collection setup", False, f"Exception: {str(e)}")
-    
-    def test_login_with_active_system_notifications(self):
-        """Test 3: Login with active system notifications - should create proper notifications"""
-        print("\n=== TEST 3: Login With Active System Notifications ===")
-        
-        try:
-            # Create another test user to test with system notifications
-            test_email = f"test_user_with_notif_{int(time.time())}@test.com"
-            login_data = {
-                "email": test_email,
-                "username": "test_user_with_notifications"
-            }
-            
-            # Perform login
-            response = requests.post(f"{BACKEND_URL}/auth/login", json=login_data)
-            
-            if response.status_code == 200:
-                login_result = response.json()
-                test_user_id = login_result.get("user", {}).get("id")
-                
-                # Wait for notifications to be processed
-                time.sleep(2)
-                
-                # Check notifications
-                notif_response = requests.get(f"{BACKEND_URL}/user/{test_user_id}/notifications")
-                
-                if notif_response.status_code == 200:
-                    notifications = notif_response.json()
-                    
-                    # Look for system notifications (not hardcoded ones)
-                    system_notifications = [n for n in notifications if n.get("type") == "system"]
-                    hardcoded_welcome = [n for n in notifications if "Welcome back" in n.get("message", "")]
-                    
-                    # Check if notifications are properly structured (from system_notifications collection)
-                    proper_system_notifs = [
-                        n for n in system_notifications 
-                        if n.get("system_notification_id") is not None
-                    ]
-                    
-                    # Test passes if we have proper system notifications and NO hardcoded welcome messages
-                    if len(hardcoded_welcome) == 0:
-                        self.log_test(
-                            "No hardcoded welcome messages", 
-                            True, 
-                            f"No hardcoded 'Welcome back' messages found (total notifications: {len(notifications)})"
-                        )
-                    else:
-                        self.log_test(
-                            "No hardcoded welcome messages", 
-                            False, 
-                            f"Found {len(hardcoded_welcome)} hardcoded welcome messages"
-                        )
-                    
-                    # Test system notification structure
-                    if len(system_notifications) > 0:
-                        sample_notif = system_notifications[0]
-                        has_proper_structure = all(
-                            field in sample_notif for field in ["title", "message", "type", "user_id", "created_at"]
-                        )
-                        
-                        self.log_test(
-                            "System notification structure", 
-                            has_proper_structure, 
-                            f"System notifications have proper structure: {has_proper_structure}"
-                        )
-                    else:
-                        self.log_test(
-                            "System notification structure", 
-                            True, 
-                            "No system notifications found (expected if no active system notifications in collection)"
-                        )
-                        
-                else:
-                    self.log_test("Login with system notifications", False, f"Failed to fetch notifications: {notif_response.status_code}")
-            else:
-                self.log_test("Login with system notifications", False, f"Login failed: {response.status_code}")
-                
-        except Exception as e:
-            self.log_test("Login with system notifications", False, f"Exception: {str(e)}")
-    
-    def test_system_notifications_admin_management(self):
-        """Test 4: System notifications admin management endpoints"""
-        print("\n=== TEST 4: System Notifications Admin Management ===")
-        
-        try:
-            # Test admin system notifications endpoints
-            admin_get_response = requests.get(f"{BACKEND_URL}/admin/system-notifications")
-            
-            if admin_get_response.status_code == 200:
-                system_notifs = admin_get_response.json()
-                self.log_test(
-                    "Admin system notifications GET", 
-                    True, 
-                    f"Successfully retrieved {len(system_notifs)} system notifications"
-                )
-                
-                # Test creating a new system notification
-                new_system_notif = {
-                    "title": "Test System Notification",
-                    "message": "This is a test notification managed by admin",
-                    "event_type": "login",
-                    "is_active": True,
-                    "target_users": "all",
-                    "show_duration": 5000,
-                    "auto_dismiss": True
-                }
-                
-                create_response = requests.post(f"{BACKEND_URL}/admin/system-notifications", json=new_system_notif)
-                
-                if create_response.status_code in [200, 201]:
-                    self.log_test(
-                        "Admin system notifications CREATE", 
-                        True, 
-                        "Successfully created system notification via admin panel"
-                    )
-                else:
-                    self.log_test(
-                        "Admin system notifications CREATE", 
-                        False, 
-                        f"Failed to create system notification: {create_response.status_code}"
-                    )
-                    
-            elif admin_get_response.status_code == 404:
-                self.log_test(
-                    "Admin system notifications GET", 
-                    True, 
-                    "Admin system notifications endpoint not implemented (expected for this test)"
-                )
-            else:
-                self.log_test(
-                    "Admin system notifications GET", 
-                    False, 
-                    f"Unexpected response: {admin_get_response.status_code}"
-                )
-                
-        except Exception as e:
-            self.log_test("System notifications admin management", False, f"Exception: {str(e)}")
-    
-    def test_no_hardcoded_notifications_in_code(self):
-        """Test 5: Verify no hardcoded notifications are created during login"""
-        print("\n=== TEST 5: No Hardcoded Notifications in Login Flow ===")
-        
-        try:
-            # Create multiple test users and verify none get hardcoded notifications
-            test_users = []
-            
-            for i in range(3):
-                test_email = f"test_no_hardcode_{i}_{int(time.time())}@test.com"
-                login_data = {
-                    "email": test_email,
-                    "username": f"test_user_no_hardcode_{i}"
-                }
-                
-                response = requests.post(f"{BACKEND_URL}/auth/login", json=login_data)
-                
-                if response.status_code == 200:
-                    user_data = response.json().get("user", {})
-                    test_users.append(user_data.get("id"))
-            
-            # Wait for all notifications to be processed
-            time.sleep(3)
-            
-            # Check each user for hardcoded notifications
-            hardcoded_found = 0
-            total_notifications = 0
-            
-            for user_id in test_users:
-                if user_id:
-                    notif_response = requests.get(f"{BACKEND_URL}/user/{user_id}/notifications")
-                    
-                    if notif_response.status_code == 200:
-                        notifications = notif_response.json()
-                        total_notifications += len(notifications)
-                        
-                        # Check for hardcoded messages
-                        hardcoded = [
-                            n for n in notifications 
-                            if any(phrase in n.get("message", "").lower() for phrase in [
-                                "welcome back", "new message", "listing viewed"
-                            ])
-                        ]
-                        hardcoded_found += len(hardcoded)
-            
-            if hardcoded_found == 0:
-                self.log_test(
-                    "No hardcoded notifications", 
-                    True, 
-                    f"No hardcoded notifications found across {len(test_users)} users ({total_notifications} total notifications)"
-                )
-            else:
-                self.log_test(
-                    "No hardcoded notifications", 
-                    False, 
-                    f"Found {hardcoded_found} hardcoded notifications across {len(test_users)} users"
-                )
-                
-        except Exception as e:
-            self.log_test("No hardcoded notifications", False, f"Exception: {str(e)}")
-    
-    def run_all_tests(self):
-        """Run all system notification tests"""
-        print("🔍 SYSTEM NOTIFICATION FIX TESTING")
-        print("=" * 50)
-        
-        # Run all tests
-        self.test_login_without_system_notifications()
-        self.test_system_notifications_collection_query()
-        self.test_login_with_active_system_notifications()
-        self.test_system_notifications_admin_management()
-        self.test_no_hardcoded_notifications_in_code()
-        
-        # Summary
-        print("\n" + "=" * 50)
-        print("📊 TEST SUMMARY")
-        print("=" * 50)
-        
-        passed_tests = sum(1 for result in self.test_results if result["passed"])
-        total_tests = len(self.test_results)
-        
-        print(f"Total Tests: {total_tests}")
-        print(f"Passed: {passed_tests}")
-        print(f"Failed: {total_tests - passed_tests}")
-        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
-        
-        print("\nDetailed Results:")
-        for result in self.test_results:
-            status = "✅" if result["passed"] else "❌"
-            print(f"{status} {result['test']}")
-            if result["details"]:
-                print(f"   {result['details']}")
-        
-        # Overall assessment
-        if passed_tests == total_tests:
-            print("\n🎉 ALL TESTS PASSED - System notification fix is working correctly!")
-            return True
+        if login_response.status_code == 200:
+            user_data = login_response.json()
+            user_id = user_data["user"]["id"]
+            print(f"   ✅ Login successful - User ID: {user_id}")
+            results["tests_passed"] += 1
+            results["test_details"].append("✅ User authentication successful")
         else:
-            print(f"\n⚠️  {total_tests - passed_tests} TESTS FAILED - System notification fix needs attention")
-            return False
+            print(f"   ❌ Login failed: {login_response.status_code}")
+            results["tests_failed"] += 1
+            results["critical_issues"].append("User authentication failed")
+            return results
+        
+        # Test 2: Test sold items endpoint basic functionality
+        print("\n2. 📊 SOLD ITEMS ENDPOINT BASIC TEST")
+        sold_items_response = requests.get(f"{BACKEND_URL}/user/{user_id}/sold-items")
+        
+        if sold_items_response.status_code == 200:
+            sold_data = sold_items_response.json()
+            print(f"   ✅ Sold items endpoint accessible")
+            print(f"   📈 Response structure: {list(sold_data.keys())}")
+            
+            # Verify response structure
+            if "items" in sold_data and "stats" in sold_data:
+                print(f"   ✅ Proper response structure with items and stats")
+                print(f"   📊 Current sold items count: {len(sold_data['items'])}")
+                print(f"   💰 Stats: {sold_data['stats']}")
+                results["tests_passed"] += 1
+                results["test_details"].append("✅ Sold items endpoint structure correct")
+            else:
+                print(f"   ❌ Invalid response structure")
+                results["tests_failed"] += 1
+                results["critical_issues"].append("Sold items endpoint structure invalid")
+        else:
+            print(f"   ❌ Sold items endpoint failed: {sold_items_response.status_code}")
+            results["tests_failed"] += 1
+            results["critical_issues"].append("Sold items endpoint not accessible")
+        
+        # Test 3: Create test listing for tender testing
+        print("\n3. 🏷️ CREATE TEST LISTING FOR TENDER TESTING")
+        test_listing_data = {
+            "title": "Sold Items Test - Premium Headphones",
+            "description": "High-quality headphones for testing sold items functionality with accepted tenders",
+            "price": 150.0,
+            "category": "Electronics",
+            "condition": "New",
+            "seller_id": user_id,
+            "images": ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"],
+            "tags": ["headphones", "audio", "premium"],
+            "features": ["Noise cancelling", "Wireless", "Premium sound"]
+        }
+        
+        create_response = requests.post(f"{BACKEND_URL}/listings", json=test_listing_data)
+        
+        if create_response.status_code == 200:
+            listing_data = create_response.json()
+            test_listing_id = listing_data["listing_id"]
+            print(f"   ✅ Test listing created - ID: {test_listing_id}")
+            results["tests_passed"] += 1
+            results["test_details"].append("✅ Test listing creation successful")
+        else:
+            print(f"   ❌ Test listing creation failed: {create_response.status_code}")
+            results["tests_failed"] += 1
+            results["critical_issues"].append("Test listing creation failed")
+            return results
+        
+        # Test 4: Create test buyer and submit tender
+        print("\n4. 👤 CREATE TEST BUYER AND SUBMIT TENDER")
+        
+        # Register test buyer
+        buyer_data = {
+            "username": "test_buyer_sold_items",
+            "email": "buyer_sold_items@test.com",
+            "full_name": "Test Buyer for Sold Items",
+            "is_business": False
+        }
+        
+        buyer_register_response = requests.post(f"{BACKEND_URL}/auth/register", json=buyer_data)
+        
+        if buyer_register_response.status_code == 200:
+            buyer_response_data = buyer_register_response.json()
+            buyer_id = buyer_response_data["user_id"]
+            print(f"   ✅ Test buyer created - ID: {buyer_id}")
+            results["tests_passed"] += 1
+            results["test_details"].append("✅ Test buyer creation successful")
+        else:
+            print(f"   ❌ Test buyer creation failed: {buyer_register_response.status_code}")
+            results["tests_failed"] += 1
+            results["critical_issues"].append("Test buyer creation failed")
+            return results
+        
+        # Submit tender offer
+        tender_data = {
+            "listing_id": test_listing_id,
+            "buyer_id": buyer_id,
+            "offer_amount": 175.0  # Higher than starting price
+        }
+        
+        tender_response = requests.post(f"{BACKEND_URL}/tenders/submit", json=tender_data)
+        
+        if tender_response.status_code == 200:
+            tender_result = tender_response.json()
+            tender_id = tender_result["tender_id"]
+            print(f"   ✅ Tender submitted - ID: {tender_id}")
+            print(f"   💰 Tender amount: €{tender_data['offer_amount']}")
+            results["tests_passed"] += 1
+            results["test_details"].append("✅ Tender submission successful")
+        else:
+            print(f"   ❌ Tender submission failed: {tender_response.status_code}")
+            results["tests_failed"] += 1
+            results["critical_issues"].append("Tender submission failed")
+            return results
+        
+        # Test 5: Accept the tender
+        print("\n5. ✅ ACCEPT TENDER AND TEST SOLD ITEMS UPDATE")
+        
+        accept_response = requests.put(f"{BACKEND_URL}/tenders/{tender_id}/accept")
+        
+        if accept_response.status_code == 200:
+            print(f"   ✅ Tender accepted successfully")
+            results["tests_passed"] += 1
+            results["test_details"].append("✅ Tender acceptance successful")
+            
+            # Wait a moment for database updates
+            time.sleep(2)
+            
+            # Test sold items endpoint after tender acceptance
+            print("\n6. 🔍 VERIFY ACCEPTED TENDER IN SOLD ITEMS")
+            updated_sold_response = requests.get(f"{BACKEND_URL}/user/{user_id}/sold-items")
+            
+            if updated_sold_response.status_code == 200:
+                updated_sold_data = updated_sold_response.json()
+                print(f"   ✅ Updated sold items retrieved")
+                print(f"   📊 New sold items count: {len(updated_sold_data['items'])}")
+                
+                # Check if our accepted tender appears in sold items
+                found_tender_item = False
+                for item in updated_sold_data["items"]:
+                    if item.get("source") == "tender" and item.get("tender_id") == tender_id:
+                        found_tender_item = True
+                        print(f"   ✅ Accepted tender found in sold items!")
+                        print(f"   📋 Item details:")
+                        print(f"      - Listing: {item.get('listing', {}).get('title', 'N/A')}")
+                        print(f"      - Final price: €{item.get('final_price', 0)}")
+                        print(f"      - Buyer: {item.get('buyer', {}).get('full_name', 'N/A')}")
+                        print(f"      - Sold date: {item.get('sold_at', 'N/A')}")
+                        print(f"      - Source: {item.get('source', 'N/A')}")
+                        
+                        # Verify data integrity
+                        if (item.get('final_price') == 175.0 and 
+                            item.get('source') == 'tender' and
+                            item.get('listing', {}).get('title') == 'Sold Items Test - Premium Headphones'):
+                            print(f"   ✅ Data integrity verified - all fields correct")
+                            results["tests_passed"] += 1
+                            results["test_details"].append("✅ Accepted tender data integrity verified")
+                        else:
+                            print(f"   ⚠️ Data integrity issues detected")
+                            results["tests_failed"] += 1
+                            results["critical_issues"].append("Accepted tender data integrity issues")
+                        break
+                
+                if found_tender_item:
+                    results["tests_passed"] += 1
+                    results["test_details"].append("✅ Accepted tender appears in sold items")
+                else:
+                    print(f"   ❌ Accepted tender NOT found in sold items")
+                    results["tests_failed"] += 1
+                    results["critical_issues"].append("Accepted tender missing from sold items")
+                
+                # Test statistics update
+                stats = updated_sold_data.get("stats", {})
+                print(f"\n   📊 SOLD ITEMS STATISTICS:")
+                print(f"      - Total sold: {stats.get('totalSold', 0)}")
+                print(f"      - Total revenue: €{stats.get('totalRevenue', 0)}")
+                print(f"      - Average price: €{stats.get('averagePrice', 0)}")
+                print(f"      - This month: {stats.get('thisMonth', 0)}")
+                
+                if stats.get('totalSold', 0) > 0:
+                    print(f"   ✅ Statistics properly calculated")
+                    results["tests_passed"] += 1
+                    results["test_details"].append("✅ Sold items statistics calculated correctly")
+                else:
+                    print(f"   ⚠️ Statistics calculation issues")
+                    results["tests_failed"] += 1
+                    results["critical_issues"].append("Sold items statistics calculation issues")
+                    
+            else:
+                print(f"   ❌ Failed to retrieve updated sold items: {updated_sold_response.status_code}")
+                results["tests_failed"] += 1
+                results["critical_issues"].append("Failed to retrieve updated sold items")
+        else:
+            print(f"   ❌ Tender acceptance failed: {accept_response.status_code}")
+            results["tests_failed"] += 1
+            results["critical_issues"].append("Tender acceptance failed")
+        
+        # Test 6: Verify listing status changed to sold
+        print("\n7. 🏷️ VERIFY LISTING STATUS CHANGED TO SOLD")
+        
+        listing_check_response = requests.get(f"{BACKEND_URL}/listings/{test_listing_id}")
+        
+        if listing_check_response.status_code == 200:
+            listing_data = listing_check_response.json()
+            listing_status = listing_data.get("status", "unknown")
+            print(f"   📋 Listing status: {listing_status}")
+            
+            if listing_status == "sold":
+                print(f"   ✅ Listing correctly marked as sold")
+                results["tests_passed"] += 1
+                results["test_details"].append("✅ Listing status updated to sold")
+            else:
+                print(f"   ❌ Listing status not updated to sold")
+                results["tests_failed"] += 1
+                results["critical_issues"].append("Listing status not updated after tender acceptance")
+        else:
+            print(f"   ❌ Failed to check listing status: {listing_check_response.status_code}")
+            results["tests_failed"] += 1
+            results["critical_issues"].append("Failed to verify listing status")
+        
+        # Test 7: Test with existing deals (if any)
+        print("\n8. 🔍 TEST SOLD ITEMS WITH MIXED SOURCES")
+        
+        final_sold_response = requests.get(f"{BACKEND_URL}/user/{user_id}/sold-items")
+        
+        if final_sold_response.status_code == 200:
+            final_sold_data = final_sold_response.json()
+            items = final_sold_data.get("items", [])
+            
+            # Count sources
+            tender_sources = len([item for item in items if item.get("source") == "tender"])
+            deal_sources = len([item for item in items if item.get("source") == "deal"])
+            
+            print(f"   📊 SOLD ITEMS SOURCE BREAKDOWN:")
+            print(f"      - From accepted tenders: {tender_sources}")
+            print(f"      - From completed deals: {deal_sources}")
+            print(f"      - Total sold items: {len(items)}")
+            
+            if tender_sources > 0:
+                print(f"   ✅ Accepted tenders properly included in sold items")
+                results["tests_passed"] += 1
+                results["test_details"].append("✅ Mixed source sold items working correctly")
+            else:
+                print(f"   ❌ No accepted tenders found in sold items")
+                results["tests_failed"] += 1
+                results["critical_issues"].append("Accepted tenders not included in sold items")
+            
+            # Verify sorting (most recent first)
+            if len(items) > 1:
+                dates = [item.get("sold_at", "") for item in items if item.get("sold_at")]
+                if dates == sorted(dates, reverse=True):
+                    print(f"   ✅ Sold items properly sorted by date (newest first)")
+                    results["tests_passed"] += 1
+                    results["test_details"].append("✅ Sold items sorting verified")
+                else:
+                    print(f"   ⚠️ Sold items sorting may have issues")
+                    results["tests_failed"] += 1
+                    results["critical_issues"].append("Sold items sorting issues")
+        
+    except Exception as e:
+        print(f"\n❌ CRITICAL ERROR during testing: {str(e)}")
+        results["tests_failed"] += 1
+        results["critical_issues"].append(f"Critical testing error: {str(e)}")
+    
+    return results
+
+def main():
+    """Main testing function"""
+    print("🚀 STARTING SOLD ITEMS FUNCTIONALITY TESTING")
+    print("Testing enhanced sold items that includes accepted tenders")
+    print("=" * 80)
+    
+    start_time = time.time()
+    results = test_sold_items_functionality()
+    end_time = time.time()
+    
+    # Print comprehensive results
+    print("\n" + "=" * 80)
+    print("📋 COMPREHENSIVE TEST RESULTS")
+    print("=" * 80)
+    
+    print(f"\n📊 SUMMARY:")
+    print(f"   ✅ Tests Passed: {results['tests_passed']}")
+    print(f"   ❌ Tests Failed: {results['tests_failed']}")
+    print(f"   ⏱️ Total Time: {end_time - start_time:.2f} seconds")
+    
+    success_rate = (results['tests_passed'] / (results['tests_passed'] + results['tests_failed']) * 100) if (results['tests_passed'] + results['tests_failed']) > 0 else 0
+    print(f"   📈 Success Rate: {success_rate:.1f}%")
+    
+    print(f"\n✅ SUCCESSFUL TESTS:")
+    for detail in results['test_details']:
+        print(f"   {detail}")
+    
+    if results['critical_issues']:
+        print(f"\n❌ CRITICAL ISSUES FOUND:")
+        for issue in results['critical_issues']:
+            print(f"   ❌ {issue}")
+    
+    # Overall status
+    if results['tests_failed'] == 0:
+        print(f"\n🎉 SOLD ITEMS FUNCTIONALITY STATUS: ✅ FULLY OPERATIONAL")
+        print("   All tests passed - accepted tenders properly integrated into sold items")
+    elif results['tests_failed'] <= 2:
+        print(f"\n⚠️ SOLD ITEMS FUNCTIONALITY STATUS: ⚠️ MOSTLY WORKING")
+        print("   Minor issues detected but core functionality operational")
+    else:
+        print(f"\n❌ SOLD ITEMS FUNCTIONALITY STATUS: ❌ CRITICAL ISSUES")
+        print("   Major problems detected - requires immediate attention")
+    
+    return results
 
 if __name__ == "__main__":
-    tester = SystemNotificationTester()
-    success = tester.run_all_tests()
-    
-    if success:
-        print("\n✅ SYSTEM NOTIFICATION FIX VERIFICATION: PASSED")
-    else:
-        print("\n❌ SYSTEM NOTIFICATION FIX VERIFICATION: FAILED")
+    main()
