@@ -491,6 +491,7 @@ function TendersPage() {
                                   title="Message bidder"
                                 >
                                   <MessageCircle className="w-4 h-4" />
+                                  <span>Message</span>
                                 </button>
                               </div>
                             </div>
