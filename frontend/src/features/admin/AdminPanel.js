@@ -227,6 +227,17 @@ function AdminPanel() {
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState('');
   
+  // User creation state
+  const [showCreateUser, setShowCreateUser] = useState(false);
+  const [newUserData, setNewUserData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    full_name: '',
+    role: 'user'
+  });
+  const [creatingUser, setCreatingUser] = useState(false);
+  
   const { isAdmin } = useAuth();
   const { allProducts, cartItems, favorites, notifications } = useMarketplace();
   const { showToast } = useNotifications();
