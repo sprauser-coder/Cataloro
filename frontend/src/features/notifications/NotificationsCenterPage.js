@@ -572,7 +572,7 @@ function NotificationsCenterPage() {
                   </p>
 
                   {/* Actions */}
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-4 flex-wrap">
                     {!notification.read ? (
                       <button
                         onClick={() => markAsRead(notification.id)}
@@ -588,6 +588,24 @@ function NotificationsCenterPage() {
                       >
                         <EyeOff className="w-4 h-4 mr-1" />
                         Mark as unread
+                      </button>
+                    )}
+
+                    {!notification.archived ? (
+                      <button
+                        onClick={() => archiveNotifications(notification.id)}
+                        className="text-sm text-yellow-600 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-200 flex items-center"
+                      >
+                        <Archive className="w-4 h-4 mr-1" />
+                        Archive
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => unarchiveNotifications(notification.id)}
+                        className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 flex items-center"
+                      >
+                        <Archive className="w-4 h-4 mr-1" />
+                        Unarchive
                       </button>
                     )}
 
