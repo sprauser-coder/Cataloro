@@ -327,7 +327,14 @@ function ModernBrowsePage() {
       }
     } catch (error) {
       console.error('Error submitting tender:', error);
-      showToast('Failed to submit tender offer. Please try again.', 'error');
+      setBidConfirmationModal({
+        show: true,
+        bidAmount: parseFloat(offerAmount),
+        itemTitle: item.title,
+        itemId: item.id,
+        success: false,
+        errorMessage: 'Network error. Please check your connection and try again.'
+      });
     } finally {
       // Clear loading state for this item
       setSubmittingTenders(prev => ({ ...prev, [item.id]: false }));
