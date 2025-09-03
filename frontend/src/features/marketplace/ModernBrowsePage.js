@@ -67,6 +67,15 @@ function ModernBrowsePage() {
   
   // User active bids
   const [userActiveBids, setUserActiveBids] = useState({});
+  
+  // Full-page bid confirmation modal
+  const [bidConfirmationModal, setBidConfirmationModal] = useState({
+    show: false,
+    bidAmount: 0,
+    itemTitle: '',
+    itemId: '',
+    success: false
+  });
 
   // Check if item is in favorites
   const isInFavorites = (itemId) => {
