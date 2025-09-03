@@ -503,12 +503,11 @@ function ModernBrowsePage() {
               item={item}
               viewMode={viewMode}
               onAddToCart={handleAddToCart}
-              onBuyNow={handleBuyNow}
-              onAddToFavorites={handleAddToFavorites}
+              onSubmitTender={handleSubmitTender}
               onFavoriteToggle={handleFavoriteToggle}
               onMessageSeller={handleMessageSeller}
               isInFavorites={isInFavorites}
-              isLoadingBuyNow={loadingBuyNow[item.id] || false}
+              isSubmittingTender={submittingTenders[item.id] || false}
             />
           ))}
         </div>
