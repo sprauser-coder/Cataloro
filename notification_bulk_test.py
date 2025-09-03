@@ -20,6 +20,11 @@ class NotificationBulkTester:
         self.tests_run = 0
         self.tests_passed = 0
         self.session = requests.Session()
+        # Disable SSL verification for testing environment
+        self.session.verify = False
+        # Disable SSL warnings
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         self.test_notifications = []
 
     def log_test(self, name, success, details=""):
