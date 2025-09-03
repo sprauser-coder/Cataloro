@@ -907,35 +907,64 @@ function ProductCard({ item, viewMode, onAddToCart, onBuyNow, onFavoriteToggle, 
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className={`flex space-x-2 ${isGridView ? '' : 'mt-4'}`}>
-          <button
-            onClick={(e) => handleQuickAction(e, () => onBuyNow(item))}
-            disabled={isLoadingBuyNow}
-            className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg font-medium transition-colors ${
-              isLoadingBuyNow 
-                ? 'bg-gray-400 cursor-not-allowed text-white' 
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
-          >
-            {isLoadingBuyNow ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Sending...</span>
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="w-4 h-4" />
-                <span>Buy Now</span>
-              </>
-            )}
-          </button>
+        {/* Tender Offer Section */}
+        <div className={`${isGridView ? '' : 'mt-4'}`}>
+          {/* Current Highest Bid Display */}
+          {item.highest_bid && (
+            <div className="mb-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-yellow-800 dark:text-yellow-300 font-medium">
+                  Current highest bid:
+                </span>
+                <span className="text-yellow-900 dark:text-yellow-200 font-bold">
+                  €{parseFloat(item.highest_bid).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          )}
+          
+          {/* Tender Input Form */}
+          <div className="flex space-x-2">
+            <div className="flex-1">
+              <input
+                type="number"
+                min={item.highest_bid || item.price || 0}
+                step="10"
+                placeholder={`Min: €${(item.highest_bid || item.price || 0).toFixed(2)}`}
+                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                onChange={(e) => {
+                  const input = e.target;
+                  input.dataset.offerAmount = e.target.value;
+                }}
+              />
+            </div>
+            <button
+              onClick={(e) => {
+                const input = e.target.parentElement.previousElementSibling?.querySelector('input') || 
+                             e.target.parentElement.parentElement.querySelector('input');
+                const offerAmount = parseFloat(input?.value || 0);
+                if (offerAmount && offerAmount >= (item.highest_bid || item.price || 0)) {
+                  handleQuickAction(e, () => onSubmitTender(item, offerAmount));
+                  input.value = ''; // Clear input after submission
+                } else {
+                  alert(`Please enter an amount of at least €${(item.highest_bid || item.price || 0).toFixed(2)}`);
+                }
+              }}
+              className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+              title="Submit tender offer"
+            >
+              <span>Offer</span>
+            </button>
+          </div>
+          
+          {/* Message Seller Button */}
           <button 
             onClick={(e) => handleQuickAction(e, () => onMessageSeller(item, e))}
-            className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-all duration-200"
+            className="w-full mt-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
             title="Message seller"
           >
             <MessageCircle className="w-4 h-4" />
+            <span>Message Seller</span>
           </button>
         </div>
 
