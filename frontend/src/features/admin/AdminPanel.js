@@ -270,14 +270,20 @@ function AdminPanel() {
       setLoading(true);
       const data = await adminService.getDashboard();
       
-      // Merge with real marketplace data
-      const realKPIs = calculateRealKPIs();
+      // Use real backend data directly
       setDashboardData({
-        kpis: { ...data?.kpis, ...realKPIs },
-        recent_activity: data?.recent_activity || generateRecentActivity()
+        kpis: data?.kpis || {
+          total_users: 0,
+          total_listings: 0,
+          active_listings: 0,
+          total_deals: 0,
+          revenue: 0.0,
+          growth_rate: 0.0
+        },
+        recent_activity: data?.recent_activity || []
       });
     } catch (error) {
-      showToast('Failed to load dashboard data, showing local data', 'warning');
+      showToast('Failed to load dashboard data', 'error');
       // Use real marketplace data as fallback
       const realKPIs = calculateRealKPIs();
       setDashboardData({
