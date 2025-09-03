@@ -680,10 +680,7 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
     navigate(`/product/${item.id}`);
   };
 
-  const handleQuickAction = (e, action) => {
-    e.stopPropagation(); // Prevent navigation when clicking action buttons
-    action();
-  };
+
 
   return (
     <div 
