@@ -425,31 +425,35 @@ function NotificationsCenterPage() {
         {/* Bulk Actions */}
         {selectedNotifications.length > 0 && (
           <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
+                  <CheckSquare className="w-4 h-4 mr-1" />
                   {selectedNotifications.length} selected
                 </span>
                 
                 <button
                   onClick={selectAll}
-                  className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
+                  className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 flex items-center"
                 >
-                  Select All
+                  <Square className="w-4 h-4 mr-1" />
+                  Select All ({filteredNotifications.length})
                 </button>
                 
                 <button
                   onClick={deselectAll}
-                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center"
                 >
+                  <X className="w-4 h-4 mr-1" />
                   Deselect All
                 </button>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   onClick={() => markAsRead(selectedNotifications)}
-                  className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-lg hover:bg-green-200 transition-colors flex items-center"
+                  disabled={bulkActionLoading}
+                  className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-lg hover:bg-green-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Eye className="w-4 h-4 mr-1" />
                   Mark Read
@@ -457,15 +461,46 @@ function NotificationsCenterPage() {
                 
                 <button
                   onClick={() => markAsUnread(selectedNotifications)}
-                  className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-lg hover:bg-blue-200 transition-colors flex items-center"
+                  disabled={bulkActionLoading}
+                  className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-lg hover:bg-blue-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <EyeOff className="w-4 h-4 mr-1" />
                   Mark Unread
                 </button>
                 
                 <button
-                  onClick={() => deleteNotifications(selectedNotifications)}
-                  className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-lg hover:bg-red-200 transition-colors flex items-center"
+                  onClick={() => handleBulkAction(() => archiveNotifications(selectedNotifications))}
+                  disabled={bulkActionLoading}
+                  className="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm rounded-lg hover:bg-yellow-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Archive className="w-4 h-4 mr-1" />
+                  Archive
+                </button>
+
+                {filter === 'archived' && (
+                  <button
+                    onClick={() => handleBulkAction(() => unarchiveNotifications(selectedNotifications))}
+                    disabled={bulkActionLoading}
+                    className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-lg hover:bg-purple-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Archive className="w-4 h-4 mr-1" />
+                    Unarchive
+                  </button>
+                )}
+                
+                <button
+                  onClick={exportNotifications}
+                  disabled={bulkActionLoading}
+                  className="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded-lg hover:bg-indigo-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Download className="w-4 h-4 mr-1" />
+                  Export
+                </button>
+                
+                <button
+                  onClick={() => handleBulkAction(() => deleteNotifications(selectedNotifications))}
+                  disabled={bulkActionLoading}
+                  className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-lg hover:bg-red-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Trash2 className="w-4 h-4 mr-1" />
                   Delete
