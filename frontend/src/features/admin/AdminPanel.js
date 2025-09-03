@@ -251,60 +251,8 @@ function AdminPanel() {
     }
   };
 
-  // Main tab definitions - COMPLETE LIST
-  const mainTabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'users', label: 'User Management', icon: Users },
-    { id: 'content', label: 'Content Management', icon: FileText },
-    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-    { id: 'notifications', label: 'System Notifications', icon: Bell },
-    { id: 'business', label: 'Business Process Map', icon: Store },
-    { id: 'administration', label: 'Site Administration', icon: Settings },
-    { id: 'security', label: 'Security', icon: Shield },
-    { id: 'tools', label: 'Developer Tools', icon: Code }
-  ];
-
-  // Sub-tab definitions
-  const getSubTabs = () => {
-    switch (activeTab) {
-      case 'administration':
-        return [
-          { id: 'settings', label: 'General Settings', icon: Settings },
-          { id: 'basis', label: 'Cat Database & Basis', icon: Database },
-          { id: 'hero', label: 'Hero Selection', icon: Layout },
-          { id: 'appearance', label: 'Appearance', icon: Palette },
-          { id: 'email', label: 'Email Settings', icon: Mail }
-        ];
-      case 'analytics':
-        return [
-          { id: 'overview', label: 'Overview', icon: BarChart3 },
-          { id: 'users', label: 'User Analytics', icon: Users },
-          { id: 'sales', label: 'Sales Analytics', icon: DollarSign },
-          { id: 'performance', label: 'Performance', icon: TrendingUp }
-        ];
-      case 'tools':
-        return [
-          { id: 'database', label: 'Database Tools', icon: Database },
-          { id: 'logs', label: 'System Logs', icon: FileText },
-          { id: 'backup', label: 'Backup & Restore', icon: Archive },
-          { id: 'maintenance', label: 'Maintenance', icon: Settings }
-        ];
-      case 'security':
-        return [
-          { id: 'permissions', label: 'Permissions', icon: Shield },
-          { id: 'audit', label: 'Audit Logs', icon: Search },
-          { id: 'firewall', label: 'Firewall', icon: Lock },
-          { id: 'monitoring', label: 'Monitoring', icon: Eye }
-        ];
-      default:
-        return [];
-    }
-  };
-
-  const subTabs = getSubTabs();
-  const { kpis, recent_activity } = dashboardData || {};
-
-  if (loading && activeTab === 'dashboard') {
+  // Loading screen for dashboard
+  if (loading && activeSection === 'dashboard') {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
@@ -317,82 +265,109 @@ function AdminPanel() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* COMPLETE HEADER */}
+      {/* Clean Header */}
       <div className="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-full">
-          {/* Top Header */}
-          <div className="px-8 py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl">
-                  <Shield className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Cataloro Admin Panel</h1>
-                  <p className="text-gray-600 dark:text-gray-400">Complete marketplace management system</p>
-                </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl">
+                <Shield className="w-8 h-8 text-white" />
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Welcome, <span className="font-semibold">{user?.username || 'Administrator'}</span>
-                </div>
-                <button
-                  onClick={fetchRealDashboardData}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  <span>Refresh</span>
-                </button>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Cataloro Admin Panel</h1>
+                <p className="text-gray-600 dark:text-gray-400">Complete marketplace management system</p>
               </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Welcome, <span className="font-semibold">{user?.username || 'Administrator'}</span>
+              </div>
+              <button
+                onClick={fetchRealDashboardData}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Refresh</span>
+              </button>
             </div>
           </div>
 
-          {/* MAIN TAB NAVIGATION */}
-          <div className="px-8">
-            <div className="border-b border-gray-200 dark:border-gray-700">
-              <nav className="flex space-x-8">
-                {mainTabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      setActiveTab(tab.id);
-                      setActiveSubTab(getSubTabs()[0]?.id || 'overview');
-                    }}
-                    className={`flex items-center space-x-2 px-1 py-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                      activeTab === tab.id
-                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:border-gray-300'
-                    }`}
-                  >
-                    <tab.icon className="w-5 h-5" />
-                    <span>{tab.label}</span>
-                  </button>
-                ))}
-              </nav>
-            </div>
+          {/* Clean Navigation */}
+          <div className="border-t border-gray-200 dark:border-gray-700">
+            <nav className="flex space-x-8">
+              <button
+                onClick={() => setActiveSection('dashboard')}
+                className={`flex items-center space-x-2 px-1 py-4 border-b-2 font-medium text-sm transition-colors ${
+                  activeSection === 'dashboard'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                <BarChart3 className="w-5 h-5" />
+                <span>Dashboard</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveSection('users')}
+                className={`flex items-center space-x-2 px-1 py-4 border-b-2 font-medium text-sm transition-colors ${
+                  activeSection === 'users'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                <Users className="w-5 h-5" />
+                <span>User Management</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveSection('content')}
+                className={`flex items-center space-x-2 px-1 py-4 border-b-2 font-medium text-sm transition-colors ${
+                  activeSection === 'content'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                <FileText className="w-5 h-5" />
+                <span>Content Management</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveSection('notifications')}
+                className={`flex items-center space-x-2 px-1 py-4 border-b-2 font-medium text-sm transition-colors ${
+                  activeSection === 'notifications'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                <Bell className="w-5 h-5" />
+                <span>Notifications</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveSection('business')}
+                className={`flex items-center space-x-2 px-1 py-4 border-b-2 font-medium text-sm transition-colors ${
+                  activeSection === 'business'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                <Package className="w-5 h-5" />
+                <span>Business Process</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveSection('settings')}
+                className={`flex items-center space-x-2 px-1 py-4 border-b-2 font-medium text-sm transition-colors ${
+                  activeSection === 'settings'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                <Settings className="w-5 h-5" />
+                <span>Settings</span>
+              </button>
+            </nav>
           </div>
-
-          {/* SUB-TAB NAVIGATION */}
-          {subTabs.length > 0 && (
-            <div className="px-8 py-4 bg-gray-50 dark:bg-gray-700/50">
-              <nav className="flex space-x-6">
-                {subTabs.map((subTab) => (
-                  <button
-                    key={subTab.id}
-                    onClick={() => setActiveSubTab(subTab.id)}
-                    className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                      activeSubTab === subTab.id
-                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                  >
-                    <subTab.icon className="w-4 h-4" />
-                    <span>{subTab.label}</span>
-                  </button>
-                ))}
-              </nav>
-            </div>
-          )}
         </div>
       </div>
 
