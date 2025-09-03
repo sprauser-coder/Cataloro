@@ -112,6 +112,9 @@ class CatalystPriceSettings(BaseModel):
     renumeration_pt: float
     renumeration_pd: float
     renumeration_rh: float
+    # Price range configuration (percentages)
+    price_range_min_percent: Optional[float] = 10.0  # Default -10%
+    price_range_max_percent: Optional[float] = 10.0  # Default +10%
 
 class CatalystPriceOverride(BaseModel):
     catalyst_id: str
