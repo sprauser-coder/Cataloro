@@ -498,6 +498,74 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   </Link>
                 );
               })}
+              
+              {/* Tenders Dropdown */}
+              {user && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowTendersMenu(!showTendersMenu)}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
+                      (location.pathname === '/tenders' || location.pathname === '/my-tenders')
+                        ? 'bg-white/20 dark:bg-white/20 text-gray-900 dark:text-white shadow-lg backdrop-blur-md'
+                        : 'text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10'
+                    }`}
+                    style={(location.pathname === '/tenders' || location.pathname === '/my-tenders') ? {
+                      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
+                      backdropFilter: 'blur(20px)',
+                      boxShadow: '0 4px 15px rgba(255, 255, 255, 0.1)'
+                    } : {}}
+                  >
+                    <DollarSign className="w-4 h-4" />
+                    <span className="font-medium">Tenders</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showTendersMenu ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {/* Tenders Dropdown Menu */}
+                  {showTendersMenu && (
+                    <div className="absolute top-full left-0 mt-2 w-64 rounded-xl shadow-2xl py-2 z-50" style={{
+                      background: darkMode 
+                        ? 'rgba(0, 0, 0, 0.95)'
+                        : 'rgba(255, 255, 255, 0.95)',
+                      backdropFilter: 'blur(25px)',
+                      border: darkMode 
+                        ? '1px solid rgba(255, 255, 255, 0.2)' 
+                        : '1px solid rgba(0, 0, 0, 0.2)'
+                    }}>
+                      <Link
+                        to={APP_ROUTES.TENDERS}
+                        className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
+                        onClick={() => setShowTendersMenu(false)}
+                      >
+                        <div className="p-2 rounded-lg mr-3 group-hover:bg-white/10 transition-all duration-300" style={{
+                          background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(74, 222, 128, 0.1))'
+                        }}>
+                          <Shield className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="font-medium">Manage Tenders</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Review & accept offers</p>
+                        </div>
+                      </Link>
+                      
+                      <Link
+                        to={APP_ROUTES.MY_TENDERS}
+                        className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
+                        onClick={() => setShowTendersMenu(false)}
+                      >
+                        <div className="p-2 rounded-lg mr-3 group-hover:bg-white/10 transition-all duration-300" style={{
+                          background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(196, 181, 253, 0.1))'
+                        }}>
+                          <TrendingUp className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="font-medium">My Tenders</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Track your offers</p>
+                        </div>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
             </nav>
           </div>
 
