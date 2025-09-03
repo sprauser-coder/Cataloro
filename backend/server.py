@@ -297,6 +297,73 @@ async def get_profile(user_id: str):
         raise HTTPException(status_code=404, detail="User not found")
     return serialize_doc(user)
 
+@app.put("/api/auth/profile/{user_id}")
+async def update_profile(user_id: str, profile_data: dict):
+    """Update user profile with persistent data"""
+    try:
+        # Prepare update data with timestamp
+        update_data = {
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        # Handle profile fields
+        if "profile" in profile_data:
+            profile_info = profile_data["profile"]
+            
+            # Ensure address field is properly handled
+            profile_fields = ["full_name", "bio", "location", "phone", "company", "website", "address"]
+            for field in profile_fields:
+                if field in profile_info:
+                    update_data[f"profile.{field}"] = profile_info[field]
+        
+        # Handle settings
+        if "settings" in profile_data:
+            settings_info = profile_data["settings"]
+            settings_fields = ["notifications", "email_updates", "public_profile"]
+            for field in settings_fields:
+                if field in settings_info:
+                    update_data[f"settings.{field}"] = settings_info[field]
+        
+        # Handle direct user fields
+        user_fields = ["username", "email"]
+        for field in user_fields:
+            if field in profile_data:
+                # Check if email/username already exists for other users
+                if field in ["email", "username"]:
+                    existing = await db.users.find_one({
+                        field: profile_data[field],
+                        "id": {"$ne": user_id}
+                    })
+                    if existing:
+                        raise HTTPException(status_code=400, detail=f"{field.title()} already exists")
+                
+                update_data[field] = profile_data[field]
+        
+        # Update user in database
+        result = await db.users.update_one(
+            {"id": user_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get updated user data
+        updated_user = await db.users.find_one({"id": user_id})
+        if updated_user:
+            return {
+                "message": "Profile updated successfully",
+                "user": serialize_doc(updated_user)
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to retrieve updated profile")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error updating profile: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update profile: {str(e)}")
+
 # Marketplace Endpoints
 @app.get("/api/marketplace/browse")
 async def browse_listings(
