@@ -165,11 +165,11 @@ def test_admin_panel_endpoints():
             results["tests_failed"] += 1
             results["critical_issues"].append("Settings endpoint not accessible")
         
-        # Test 4: GET /api/admin/catalyst-price-settings - Price Settings
+        # Test 4: GET /api/admin/catalyst/price-settings - Price Settings
         print("\n4. 💰 CATALYST PRICE SETTINGS TEST")
         
         # First check if the endpoint exists by trying to access it
-        price_settings_response = requests.get(f"{BACKEND_URL}/admin/catalyst-price-settings")
+        price_settings_response = requests.get(f"{BACKEND_URL}/admin/catalyst/price-settings")
         
         if price_settings_response.status_code == 200:
             price_data = price_settings_response.json()
