@@ -93,18 +93,21 @@ class TenderOffererTester:
             data=seller_data
         )
         
-        if success_seller:
-            # Login seller to get user object
-            login_success, login_response = self.run_test(
-                "Login Seller User",
-                "POST",
-                "api/auth/login",
-                200,
-                data={"email": "seller@tendertest.com", "password": "demo123"}
-            )
-            if login_success:
-                self.seller_user = login_response['user']
-                print(f"   ✅ Seller user created: {self.seller_user['id']}")
+        # If user already exists, try to login directly
+        if not success_seller:
+            print("   ℹ️  Seller user may already exist, attempting login...")
+        
+        # Login seller to get user object (whether newly created or existing)
+        login_success, login_response = self.run_test(
+            "Login Seller User",
+            "POST",
+            "api/auth/login",
+            200,
+            data={"email": "seller@tendertest.com", "password": "demo123"}
+        )
+        if login_success:
+            self.seller_user = login_response['user']
+            print(f"   ✅ Seller user available: {self.seller_user['id']}")
         
         # Create buyer users
         buyer_data_list = [
