@@ -922,6 +922,27 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
 
         {/* Tender Offer Section */}
         <div className={`${isGridView ? '' : 'mt-4'} relative z-30`}>
+          {/* Tender Confirmation Message */}
+          {tenderConfirmation?.visible && (
+            <div className="mb-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 animate-pulse">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="text-green-800 dark:text-green-300 font-semibold text-sm">
+                    ✅ Tender Submitted Successfully!
+                  </p>
+                  <p className="text-green-700 dark:text-green-400 text-xs">
+                    Your offer of €{tenderConfirmation.amount.toFixed(2)} has been submitted to the seller
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* Current Highest Bid Display */}
           {item.highest_bid && (
             <div className="mb-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
@@ -967,10 +988,18 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
                   alert(`Please enter an amount of at least €${(item.highest_bid || item.price || 0).toFixed(2)}`);
                 }
               }}
-              className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+              disabled={isSubmittingTender}
+              className="px-6 py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
               title="Submit tender offer"
             >
-              <span>Offer</span>
+              {isSubmittingTender ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Submitting...</span>
+                </>
+              ) : (
+                <span>Offer</span>
+              )}
             </button>
           </div>
           
