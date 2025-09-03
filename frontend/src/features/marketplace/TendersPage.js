@@ -31,22 +31,35 @@ function TendersPage() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   
-  // Get tab from URL parameters, default to 'manage'
+  // Get tab from URL parameters, default to 'listings'
   const urlTab = searchParams.get('tab');
   const listingId = searchParams.get('listing');
   
-  const [activeTab, setActiveTab] = useState(urlTab === 'my-tenders' ? 'my-tenders' : 'manage');
+  const [activeTab, setActiveTab] = useState(
+    urlTab === 'tenders' ? 'tenders' : 
+    urlTab === 'sold' ? 'sold' : 'listings'
+  );
   
-  // Manage Tenders State
+  // My Listings State (previously Manage Tenders)
   const [tendersOverview, setTendersOverview] = useState([]);
   const [loadingManage, setLoadingManage] = useState(true);
   const [selectedListing, setSelectedListing] = useState(null);
   const [acceptingTender, setAcceptingTender] = useState(null);
   const [rejectingTender, setRejectingTender] = useState(null);
   
-  // My Tenders State
+  // Tenders State (previously My Tenders)
   const [myTenders, setMyTenders] = useState([]);
   const [loadingMyTenders, setLoadingMyTenders] = useState(true);
+
+  // Sold Items State (new)
+  const [soldItems, setSoldItems] = useState([]);
+  const [loadingSoldItems, setLoadingSoldItems] = useState(true);
+  const [soldItemsStats, setSoldItemsStats] = useState({
+    totalSold: 0,
+    totalRevenue: 0,
+    averagePrice: 0,
+    thisMonth: 0
+  });
 
   useEffect(() => {
     if (user) {
