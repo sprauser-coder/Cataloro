@@ -8,7 +8,7 @@ import requests
 import json
 
 class AdditionalVisibilityTests:
-    def __init__(self, base_url="https://tender-system.preview.emergentagent.com"):
+    def __init__(self, base_url="https://bid-manager-5.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
 
