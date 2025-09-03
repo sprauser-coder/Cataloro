@@ -1037,9 +1037,9 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
             <div className="flex-1">
               <input
                 type="number"
-                min={item.highest_bid || item.price || 0}
+                min={item.bid_info?.highest_bid || item.price || 0}
                 step="10"
-                placeholder={`Min: €${(item.highest_bid || item.price || 0).toFixed(2)}`}
+                placeholder={`Min: €${(item.bid_info?.highest_bid || item.price || 0).toFixed(2)}`}
                 className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 onClick={(e) => e.stopPropagation()}
                 onFocus={(e) => e.stopPropagation()}
