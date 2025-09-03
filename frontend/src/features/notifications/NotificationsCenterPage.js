@@ -44,7 +44,38 @@ function NotificationsCenterPage() {
 
   useEffect(() => {
     loadNotifications();
-  }, [user?.id]);
+    
+    // Keyboard shortcuts for bulk actions
+    const handleKeyPress = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case 'a':
+            e.preventDefault();
+            selectAll();
+            break;
+          case 'd':
+            e.preventDefault();
+            deselectAll();
+            break;
+          case 'r':
+            if (selectedNotifications.length > 0) {
+              e.preventDefault();
+              markAsRead(selectedNotifications);
+            }
+            break;
+          case 'Delete':
+            if (selectedNotifications.length > 0) {
+              e.preventDefault();
+              handleBulkAction(() => deleteNotifications(selectedNotifications));
+            }
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [user?.id, selectedNotifications]);
 
   const loadNotifications = async () => {
     try {
