@@ -1696,6 +1696,16 @@ async def get_seller_tenders_overview(seller_id: str):
         # Get all seller's active listings
         listings = await db.listings.find({"seller_id": seller_id, "status": "active"}).to_list(length=None)
         
+        # Get seller information
+        seller = await db.users.find_one({"id": seller_id})
+        seller_info = {
+            "id": seller.get("id", ""),
+            "username": seller.get("username", "Unknown"),
+            "full_name": seller.get("full_name", ""),
+            "is_business": seller.get("is_business", False),
+            "business_name": seller.get("business_name", "")
+        } if seller else {}
+        
         overview = []
         for listing in listings:
             # Get active tenders for this listing
@@ -1711,7 +1721,9 @@ async def get_seller_tenders_overview(seller_id: str):
                 buyer_info = {
                     "id": buyer.get("id", ""),
                     "username": buyer.get("username", "Unknown"),
-                    "full_name": buyer.get("full_name", "")
+                    "full_name": buyer.get("full_name", ""),
+                    "is_business": buyer.get("is_business", False),
+                    "business_name": buyer.get("business_name", "")
                 } if buyer else {}
                 
                 enriched_tender = {
@@ -1727,8 +1739,10 @@ async def get_seller_tenders_overview(seller_id: str):
                     "id": listing["id"],
                     "title": listing["title"],
                     "price": listing["price"],
-                    "images": listing.get("images", [])
+                    "images": listing.get("images", []),
+                    "seller_id": listing.get("seller_id", "")
                 },
+                "seller": seller_info,
                 "tender_count": len(tenders),
                 "highest_offer": tenders[0]["offer_amount"] if tenders else 0,
                 "tenders": enriched_tenders
