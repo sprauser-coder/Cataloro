@@ -192,53 +192,54 @@ function ModernBrowsePage() {
     addToCart(item);
   };
 
-  const handleBuyNow = async (item) => {
+  const handleSubmitTender = async (item, offerAmount) => {
     if (!user) {
-      showToast('Please login to make a purchase', 'error');
+      showToast('Please login to submit tender offers', 'error');
       return;
     }
 
-    if (item.seller?.username === user.username) {
-      showToast('You cannot buy your own listing', 'error');
+    if (item.seller?.username === user.username || item.seller_id === user.id) {
+      showToast('You cannot bid on your own listing', 'error');
       return;
     }
 
     // Set loading state for this specific item
-    setLoadingBuyNow(prev => ({ ...prev, [item.id]: true }));
+    setSubmittingTenders(prev => ({ ...prev, [item.id]: true }));
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/orders/create`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           listing_id: item.id,
-          buyer_id: user.id
+          buyer_id: user.id,
+          offer_amount: parseFloat(offerAmount)
         })
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        showToast(`Buy request sent for "${item.title}"! Redirecting to cart...`, 'success');
+        showToast(`Tender offer of €${offerAmount} submitted successfully!`, 'success');
         
-        // Navigate to cart to show pending item after short delay
+        // Refresh listings to show updated highest bid
         setTimeout(() => {
-          navigate('/cart');
-        }, 1500);
+          contextRefreshListings();
+        }, 1000);
         
-      } else if (response.status === 409) {
-        showToast('This item already has a pending buy request', 'warning');
+      } else if (response.status === 400) {
+        showToast(data.detail || 'Invalid tender offer', 'error');
       } else {
-        showToast(data.detail || 'Failed to create buy request', 'error');
+        showToast(data.detail || 'Failed to submit tender offer', 'error');
       }
     } catch (error) {
-      console.error('Error creating buy request:', error);
-      showToast('Failed to create buy request. Please try again.', 'error');
+      console.error('Error submitting tender:', error);
+      showToast('Failed to submit tender offer. Please try again.', 'error');
     } finally {
       // Clear loading state for this item
-      setLoadingBuyNow(prev => ({ ...prev, [item.id]: false }));
+      setSubmittingTenders(prev => ({ ...prev, [item.id]: false }));
     }
   };
 
