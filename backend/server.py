@@ -249,7 +249,7 @@ async def login_user(credentials: dict):
     else:
         user_id = generate_id()
     
-    # Trigger login-based system notifications
+    # Trigger login-based system notifications AFTER getting proper user_id
     try:
         print(f"DEBUG: Triggering login notification for user_id: {user_id}")
         await trigger_system_notifications(user_id, "login")
@@ -259,9 +259,12 @@ async def login_user(credentials: dict):
         import traceback
         traceback.print_exc()
     
+    # Serialize user for response
+    serialized_user = serialize_doc(user) if user else None
+    
     return {
         "message": "Login successful",
-        "user": serialize_doc(user),
+        "user": serialized_user,
         "token": f"mock_token_{user_id}"
     }
 
