@@ -245,9 +245,13 @@ async def login_user(credentials: dict):
     
     # Trigger login-based system notifications
     try:
+        print(f"DEBUG: Triggering login notification for user_id: {user_id}")
         await trigger_system_notifications(user_id, "login")
+        print(f"DEBUG: Login notification triggered successfully for user_id: {user_id}")
     except Exception as e:
         print(f"Error triggering login notifications: {e}")
+        import traceback
+        traceback.print_exc()
     
     return {
         "message": "Login successful",
