@@ -2858,6 +2858,30 @@ async def get_price_range_settings():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch price range settings: {str(e)}")
 
+@app.get("/api/user/{user_id}/active-bids")
+async def get_user_active_bids(user_id: str):
+    """Get user's active bids for all listings"""
+    try:
+        # Get all active tenders from this user
+        user_tenders = await db.tenders.find({"buyer_id": user_id, "status": "active"}).to_list(length=None)
+        
+        # Organize by listing_id for easy lookup
+        active_bids = {}
+        for tender in user_tenders:
+            listing_id = tender.get('listing_id')
+            if listing_id:
+                active_bids[listing_id] = {
+                    "tender_id": tender.get('id', str(tender.get('_id', ''))),
+                    "amount": tender.get('offer_amount', 0),
+                    "submitted_at": tender.get('created_at', ''),
+                    "status": tender.get('status', 'active')
+                }
+        
+        return {"active_bids": active_bids}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch user active bids: {str(e)}")
+
 @app.get("/api/admin/catalyst/calculations")
 async def get_catalyst_calculations():
     """Get calculated prices for all catalysts"""
