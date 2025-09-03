@@ -577,27 +577,89 @@ async def get_notifications(user_id: str):
 # Admin Endpoints
 @app.get("/api/admin/dashboard")
 async def get_admin_dashboard():
-    # Get KPIs
-    total_users = await db.users.count_documents({})
-    total_listings = await db.listings.count_documents({})
-    active_listings = await db.listings.count_documents({"status": "active"})
-    total_deals = await db.deals.count_documents({})
-    
-    return {
-        "kpis": {
-            "total_users": total_users or 156,  # Demo data
-            "total_listings": total_listings or 234,
-            "active_listings": active_listings or 189,
-            "total_deals": total_deals or 67,
-            "revenue": 45680.50,  # Demo revenue
-            "growth_rate": 12.5   # Demo growth
-        },
-        "recent_activity": [
-            {"action": "New user registered", "timestamp": datetime.utcnow()},
-            {"action": "Listing created", "timestamp": datetime.utcnow()},
-            {"action": "Deal completed", "timestamp": datetime.utcnow()}
-        ]
-    }
+    """Get real-time admin dashboard with accurate KPIs"""
+    try:
+        # Get accurate KPIs from database
+        total_users = await db.users.count_documents({})
+        total_listings = await db.listings.count_documents({})
+        active_listings = await db.listings.count_documents({"status": "active"})
+        total_deals = await db.deals.count_documents({})
+        
+        # Count accepted tenders as additional deals
+        accepted_tenders = await db.tenders.count_documents({"status": "accepted"})
+        
+        # Calculate revenue from completed deals and accepted tenders
+        completed_deals = await db.deals.find({"status": "completed"}).to_list(length=None)
+        accepted_tender_list = await db.tenders.find({"status": "accepted"}).to_list(length=None)
+        
+        total_revenue = 0.0
+        for deal in completed_deals:
+            total_revenue += deal.get("final_price", deal.get("price", 0))
+        
+        for tender in accepted_tender_list:
+            total_revenue += tender.get("offer_amount", 0)
+        
+        # Calculate growth rate based on recent activity
+        from datetime import datetime, timedelta
+        last_month = datetime.utcnow() - timedelta(days=30)
+        
+        recent_users = await db.users.count_documents({
+            "created_at": {"$gte": last_month.isoformat()}
+        })
+        
+        growth_rate = (recent_users / max(total_users, 1)) * 100 if total_users > 0 else 0
+        
+        # Get recent activity
+        recent_activity = []
+        
+        # Get recent users (last 5)
+        recent_users_list = await db.users.find({}).sort("created_at", -1).limit(3).to_list(length=3)
+        for user in recent_users_list:
+            recent_activity.append({
+                "action": f"New user registered: {user.get('username', 'Unknown')}",
+                "timestamp": user.get("created_at", datetime.utcnow().isoformat())
+            })
+        
+        # Get recent listings (last 2) 
+        recent_listings = await db.listings.find({}).sort("created_at", -1).limit(2).to_list(length=2)
+        for listing in recent_listings:
+            recent_activity.append({
+                "action": f"New listing: {listing.get('title', 'Unknown')}",
+                "timestamp": listing.get("created_at", datetime.utcnow().isoformat())
+            })
+        
+        # Sort by timestamp
+        recent_activity.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+        recent_activity = recent_activity[:5]  # Keep only last 5 activities
+        
+        return {
+            "kpis": {
+                "total_users": total_users,
+                "total_listings": total_listings,
+                "active_listings": active_listings,
+                "total_deals": total_deals + accepted_tenders,  # Include accepted tenders
+                "revenue": round(total_revenue, 2),
+                "growth_rate": round(growth_rate, 1)
+            },
+            "recent_activity": recent_activity
+        }
+        
+    except Exception as e:
+        print(f"Error getting admin dashboard: {e}")
+        # Return minimal fallback data on error
+        return {
+            "kpis": {
+                "total_users": 0,
+                "total_listings": 0,
+                "active_listings": 0,
+                "total_deals": 0,
+                "revenue": 0.0,
+                "growth_rate": 0.0
+            },
+            "recent_activity": [
+                {"action": "System initialized", "timestamp": datetime.utcnow().isoformat()}
+            ]
+        }
 
 @app.get("/api/admin/users")
 async def get_all_users():
