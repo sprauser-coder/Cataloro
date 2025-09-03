@@ -103,7 +103,7 @@ function MyListingsPage() {
       </div>
 
       {/* Stats Cards - CLICKABLE & REDUCED MARGIN */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
         <button
           onClick={() => handleTileClick('all')}
           className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
@@ -124,6 +124,18 @@ function MyListingsPage() {
           <div className="p-6 text-center">
             <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'active').length}</div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Active</div>
+          </div>
+        </button>
+        <button
+          onClick={() => handleTileClick('closed')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'closed' ? 'ring-2 ring-red-500 bg-red-50/20 dark:bg-red-900/20' : ''
+          }`}
+        >
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">{listings.filter(l => l.status === 'sold' || l.status === 'closed').length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Closed</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Sold & completed</div>
           </div>
         </button>
         <button
