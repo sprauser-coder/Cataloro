@@ -887,7 +887,10 @@ async def get_site_settings():
                 "require_approval": False,
                 "email_notifications": True,
                 "commission_rate": 5.0,
-                "max_file_size": 10
+                "max_file_size": 10,
+                "hero_display_mode": "full_width",  # Options: full_width, boxed, centered
+                "hero_background_style": "gradient",  # Options: gradient, image, solid
+                "hero_text_alignment": "center"  # Options: left, center, right
             }
             return default_settings
         
