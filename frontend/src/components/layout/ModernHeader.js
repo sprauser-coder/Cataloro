@@ -504,7 +504,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
               
               {/* Tenders Dropdown */}
               {user && (
-                <div className="relative">
+                <div className="relative tenders-dropdown">
                   <button
                     onClick={() => setShowTendersMenu(!showTendersMenu)}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
