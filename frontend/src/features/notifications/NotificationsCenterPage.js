@@ -18,7 +18,13 @@ import {
   EyeOff,
   Filter,
   Search,
-  RefreshCw
+  RefreshCw,
+  Archive,
+  Download,
+  AlertTriangle,
+  Check,
+  Square,
+  CheckSquare
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
