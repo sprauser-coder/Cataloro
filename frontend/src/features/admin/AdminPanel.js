@@ -1109,8 +1109,15 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
       {/* Users Table - STANDARDIZED SPACING */}
       <div className="cataloro-card-glass overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/10 dark:border-white/10">
+        <div className="px-6 py-4 border-b border-white/10 dark:border-white/10 flex justify-between items-center">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">User Management</h3>
+          <button
+            onClick={() => setShowCreateUser(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
+          >
+            <Users className="w-4 h-4" />
+            <span>Create New User</span>
+          </button>
         </div>
         
         <div className="overflow-x-auto">
