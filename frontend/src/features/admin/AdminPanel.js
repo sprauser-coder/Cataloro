@@ -347,6 +347,63 @@ function AdminPanel() {
     }
   };
 
+  const createUser = async () => {
+    try {
+      setCreatingUser(true);
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/admin/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUserData)
+      });
+
+      if (response.ok) {
+        showToast('User created successfully!', 'success');
+        setShowCreateUser(false);
+        setNewUserData({
+          username: '',
+          email: '',
+          password: '',
+          full_name: '',
+          role: 'user'
+        });
+        fetchUsers(); // Refresh users list
+      } else {
+        const error = await response.json();
+        showToast(error.detail || 'Failed to create user', 'error');
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
+      showToast('Failed to create user', 'error');
+    } finally {
+      setCreatingUser(false);
+    }
+  };
+
+  const deleteUser = async (userId) => {
+    if (!confirm('Are you sure you want to delete this user?')) return;
+    
+    try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/admin/users/${userId}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        showToast('User deleted successfully!', 'success');
+        fetchUsers(); // Refresh users list
+      } else {
+        const error = await response.json();
+        showToast(error.detail || 'Failed to delete user', 'error');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      showToast('Failed to delete user', 'error');
+    }
+  };
+
   const fetchSettings = async () => {
     try {
       const data = await adminService.getSettings();
