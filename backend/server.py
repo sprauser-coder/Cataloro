@@ -1490,12 +1490,24 @@ async def get_buyer_tenders(buyer_id: str):
             "buyer_id": buyer_id
         }).sort("created_at", -1).to_list(length=None)
         
-        # Enrich with listing information
+        # Enrich with listing and seller information
         enriched_tenders = []
         for tender in tenders:
             listing = await db.listings.find_one({"id": tender["listing_id"]})
             if not listing:
                 continue
+            
+            # Get seller information
+            seller = await db.users.find_one({"id": listing.get("seller_id")})
+            seller_info = {
+                "id": seller.get("id", ""),
+                "username": seller.get("username", "Unknown"),
+                "full_name": seller.get("full_name", ""),
+                "email": seller.get("email", ""),
+                "is_business": seller.get("is_business", False),
+                "business_name": seller.get("business_name", ""),
+                "created_at": seller.get("created_at", "")
+            } if seller else {}
                 
             enriched_tender = {
                 "id": tender["id"],
@@ -1506,8 +1518,10 @@ async def get_buyer_tenders(buyer_id: str):
                     "id": listing.get("id", ""),
                     "title": listing.get("title", ""),
                     "price": listing.get("price", 0),
-                    "images": listing.get("images", [])
-                }
+                    "images": listing.get("images", []),
+                    "seller_id": listing.get("seller_id", "")
+                },
+                "seller": seller_info
             }
             enriched_tenders.append(enriched_tender)
         
