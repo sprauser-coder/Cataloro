@@ -116,9 +116,62 @@ function ProductDetailPage() {
   const isFavorite = favorites.some(fav => fav.id === product.id);
   const images = product.images || [product.image || 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500'];
 
-  const handleAddToCart = () => {
-    const cartItem = { ...product, quantity: 1 };
-    addToCart(cartItem);
+  const handleSubmitTender = async () => {
+    if (!user) {
+      showToast('Please login to submit tender offers', 'error');
+      return;
+    }
+
+    if (product.seller?.username === user.username || product.seller_id === user.id) {
+      showToast('You cannot bid on your own listing', 'error');
+      return;
+    }
+
+    const offerAmount = parseFloat(tenderAmount);
+    const minimumBid = product.highest_bid || product.price || 0;
+
+    if (!offerAmount || offerAmount < minimumBid) {
+      showToast(`Please enter an amount of at least €${minimumBid.toFixed(2)}`, 'error');
+      return;
+    }
+
+    setSubmittingTender(true);
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          listing_id: product.id,
+          buyer_id: user.id,
+          offer_amount: offerAmount
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showToast(`Tender offer of €${offerAmount.toFixed(2)} submitted successfully!`, 'success');
+        setTenderAmount(''); // Clear input
+        
+        // Update product with new highest bid if this is higher
+        if (offerAmount > (product.highest_bid || 0)) {
+          setProduct(prev => ({ ...prev, highest_bid: offerAmount }));
+        }
+        
+      } else if (response.status === 400) {
+        showToast(data.detail || 'Invalid tender offer', 'error');
+      } else {
+        showToast(data.detail || 'Failed to submit tender offer', 'error');
+      }
+    } catch (error) {
+      console.error('Error submitting tender:', error);
+      showToast('Failed to submit tender offer. Please try again.', 'error');
+    } finally {
+      setSubmittingTender(false);
+    }
   };
 
   const handleAddToFavorites = () => {
