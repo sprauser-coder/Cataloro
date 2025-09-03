@@ -55,9 +55,15 @@ function NotificationToast() {
     }
   };
 
-  const addToast = (message, type = 'info', duration = 5000) => {
+  const addToast = (message, type = 'info', duration = 5000, systemNotificationId = null) => {
     const id = Date.now() + Math.random();
-    const newToast = { id, message, type, duration };
+    const newToast = { 
+      id, 
+      message, 
+      type, 
+      duration,
+      systemNotificationId // Store the system notification ID for tracking
+    };
     
     setToasts(prev => [...prev, newToast]);
 
