@@ -6,10 +6,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMarketplace } from '../../context/MarketplaceContext';
+import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
 import {
   Heart,
   Share2,
-  ShoppingCart,
+  DollarSign,
   Star,
   MapPin,
   Truck,
