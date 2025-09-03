@@ -44,6 +44,8 @@ class TenderVisibilityTester:
                 response = self.session.post(url, json=data, headers=headers)
             elif method == 'PUT':
                 response = self.session.put(url, json=data, headers=headers)
+            elif method == 'DELETE':
+                response = self.session.delete(url, headers=headers)
             else:
                 raise ValueError(f"Unsupported method: {method}")
 
