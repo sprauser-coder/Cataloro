@@ -277,7 +277,14 @@ function ModernBrowsePage() {
       const data = await response.json();
 
       if (response.ok) {
-        showToast(`Tender offer of €${offerAmount} submitted successfully!`, 'success');
+        // Show full-page bid confirmation modal
+        setBidConfirmationModal({
+          show: true,
+          bidAmount: parseFloat(offerAmount),
+          itemTitle: item.title,
+          itemId: item.id,
+          success: true
+        });
         
         // Show visual confirmation for this specific item
         setTenderConfirmations(prev => ({ 
