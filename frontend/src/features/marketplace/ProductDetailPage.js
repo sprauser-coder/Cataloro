@@ -53,6 +53,7 @@ function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [tenderAmount, setTenderAmount] = useState('');
   const [submittingTender, setSubmittingTender] = useState(false);
+  const [tenderConfirmation, setTenderConfirmation] = useState(null);
   const [priceSuggestion, setPriceSuggestion] = useState(null);
   const [loadingSuggestion, setLoadingSuggestion] = useState(false);
 
