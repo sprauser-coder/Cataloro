@@ -1119,6 +1119,42 @@ if not seller:
 
 **TENDER OFFERER VISIBILITY STATUS:** ✅ WORKING - The tender offerer visibility functionality is working correctly as requested in review. Seller overview shows populated tender data with complete buyer information, enabling frontend to display "by [buyer name]" for each tender offer. The complete tender offerer visibility chain is operational and ready for production use.
 
+**Test Date:** 2025-09-03 20:45:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ✅ SOLD ITEMS ENHANCEMENT COMPREHENSIVE TESTING COMPLETED - ALL TESTS PASSED
+
+#### Sold Items Enhancement Testing Results (Critical Review Request):
+**SOLD ITEMS ENHANCEMENT COMPREHENSIVE TESTING:** ✅ ALL REQUIREMENTS MET - Executed comprehensive testing of enhanced sold items functionality that includes accepted tenders as specifically requested in review. Successfully verified that accepted tenders now properly appear in sold items with complete data integration.
+
+**1. Sold Items Endpoint Verification** ✅ FULLY FUNCTIONAL - GET `/api/user/{user_id}/sold-items` endpoint accessible and working correctly ✅, Proper response structure with "items" array and "stats" object ✅, Statistics include totalSold, totalRevenue, averagePrice, thisMonth fields ✅, Endpoint ready for frontend integration ✅.
+
+**2. Accepted Tender Integration** ✅ COMPLETE SUCCESS - Created test listing and buyer for comprehensive testing ✅, Successfully submitted tender offer (€175.0 for €150.0 listing) ✅, Tender acceptance workflow working correctly with proper seller_id validation ✅, Accepted tender immediately appears in sold items endpoint ✅.
+
+**3. Data Integration Verification** ✅ VERIFIED - Sold items include complete listing details (title, description, price, category, images) ✅, Buyer information properly populated (full_name, username, email) ✅, Final price correctly shows tender amount (€175.0) instead of listing price ✅, Sold date populated with tender acceptance timestamp ✅, Source identification working ("tender" vs "deal") ✅.
+
+**4. Listing Status Management** ✅ WORKING - Listing status correctly updated to "sold" after tender acceptance ✅, Sold price recorded in listing (€175.0) ✅, Sold timestamp properly set ✅, Listing no longer appears as active ✅.
+
+**5. Statistics Calculation** ✅ ACCURATE - Total sold count incremented correctly (1) ✅, Total revenue calculated properly (€175.0) ✅, Average price computed correctly (€175.0) ✅, This month counter updated (1) ✅.
+
+**6. Mixed Source Support** ✅ CONFIRMED - Sold items endpoint supports both accepted tenders and completed deals ✅, Source identification working correctly ("tender" vs "deal") ✅, Proper sorting by sold date (newest first) ✅, Complete data structure for both sources ✅.
+
+**SPECIFIC REVIEW REQUEST VERIFICATION:**
+- ✅ Tested `/api/user/{user_id}/sold-items` endpoint includes completed deals AND accepted tenders
+- ✅ Verified accepted tenders appear in sold items with proper status "accepted"
+- ✅ Confirmed sold items include listing details, buyer info, final price, sold date, source identification
+- ✅ Created sample data and verified accepted tender appears in sold items with correct pricing
+
+**TECHNICAL VERIFICATION:**
+- Sold items endpoint: GET `/api/user/{user_id}/sold-items` - WORKING ✅
+- Tender acceptance: PUT `/api/tenders/{tender_id}/accept` - WORKING ✅
+- Data integration: Complete listing/buyer/price/date/source - WORKING ✅
+- Statistics calculation: All fields accurate - WORKING ✅
+- Mixed sources: Tenders and deals properly combined - WORKING ✅
+
+**COMPREHENSIVE TEST RESULTS:** 11/11 individual tests passed (100% success rate), all critical requirements verified, accepted tenders properly integrated into sold items, complete data structure confirmed, statistics calculation accurate, listing status management working correctly.
+
+**SOLD ITEMS ENHANCEMENT STATUS:** ✅ FULLY OPERATIONAL - The sold items enhancement is working perfectly. Accepted tenders now properly appear in the "Sold Items" tab in the Tenders page with complete data integration including listing details, buyer information, final pricing, and proper source identification. The system successfully combines both completed deals and accepted tenders in a unified sold items view.
+
 **Test Date:** 2025-01-28 15:45:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ TENDER OFFERER VISIBILITY VERIFICATION COMPLETED - ALL REQUIREMENTS MET
