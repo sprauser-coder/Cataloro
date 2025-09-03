@@ -55,6 +55,24 @@ function TendersPage() {
     }
   }, [user, activeTab]);
 
+  // Handle URL parameters for specific listing expansion
+  useEffect(() => {
+    if (listingId && activeTab === 'manage') {
+      // Auto-expand the specific listing when URL contains listing parameter
+      setSelectedListing(listingId);
+    }
+  }, [listingId, activeTab]);
+
+  // Update tab when URL parameters change
+  useEffect(() => {
+    const urlTab = searchParams.get('tab');
+    if (urlTab === 'my-tenders') {
+      setActiveTab('my-tenders');
+    } else if (urlTab === 'manage') {
+      setActiveTab('manage');
+    }
+  }, [searchParams]);
+
   // Manage Tenders Functions
   const fetchTendersOverview = async () => {
     if (!user) return;
