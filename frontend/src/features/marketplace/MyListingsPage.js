@@ -12,11 +12,16 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 
 function MyListingsPage() {
-  const [listings, setListings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState('all'); // For filtering by tile clicks
   const { user } = useAuth();
   const { showToast } = useNotifications();
+  const [searchParams] = useSearchParams();
+  
+  // Get filter from URL parameters
+  const urlFilter = searchParams.get('filter');
+  
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState(urlFilter || 'all'); // Use URL filter if available
   const navigate = useNavigate();
 
   useEffect(() => {
