@@ -86,18 +86,15 @@ function AdminPanel() {
 
   // Data fetching effects
   useEffect(() => {
-    if (activeTab === 'dashboard') {
+    if (activeSection === 'dashboard') {
       fetchRealDashboardData();
-    } else if (activeTab === 'users') {
+    } else if (activeSection === 'users') {
       fetchUsers();
-    } else if (activeSubTab === 'settings' || activeTab === 'administration') {
+    } else if (activeSection === 'settings') {
       fetchSettings();
-    } else if (activeSubTab === 'basis' || activeTab === 'administration') {
       fetchPriceSettings();
-    } else if (activeTab === 'analytics') {
-      fetchAnalyticsData();
     }
-  }, [activeTab, activeSubTab]);
+  }, [activeSection]);
 
   // Complete data fetching functions
   const fetchRealDashboardData = async () => {
