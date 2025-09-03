@@ -856,6 +856,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                         <div
                           key={notification.id}
                           data-notification-id={notification.id}
+                          onClick={() => handleNotificationClick(notification)}
                           className={`group px-4 py-3 hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer border-l-3 transition-all duration-300 ${
                             !notification.is_read ? 'bg-blue-50/30 dark:bg-blue-900/30' : ''
                           } ${index === 0 ? 'animate-in' : ''}`}
@@ -865,7 +866,12 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                                       notification.type === 'payment' ? '#43e97b' :
                                       notification.type === 'buy_request' ? '#fbbf24' :
                                       notification.type === 'buy_approved' ? '#10b981' :
-                                      notification.type === 'buy_rejected' ? '#ef4444' : '#9ca3af',
+                                      notification.type === 'buy_rejected' ? '#ef4444' :
+                                      notification.type === 'tender_accepted' ? '#10b981' :
+                                      notification.type === 'tender_offer' ? '#f59e0b' :
+                                      notification.type === 'tender_rejected' ? '#ef4444' :
+                                      notification.type === 'new_tender_offer' ? '#f59e0b' :
+                                      notification.type === 'order_completed' ? '#10b981' : '#9ca3af',
                             animationDelay: `${index * 0.1}s`
                           }}
                         >
