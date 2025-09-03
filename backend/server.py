@@ -3712,6 +3712,79 @@ async def track_system_notification_click(user_id: str, notification_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to track notification click: {str(e)}")
 
+@app.get("/api/user/{user_id}/sold-items")
+async def get_user_sold_items(user_id: str):
+    """Get sold items for a user"""
+    try:
+        # Get completed deals where user is the seller
+        deals_cursor = db.deals.find({
+            "seller_id": user_id,
+            "status": "completed"
+        }).sort("completion_date", -1)
+        
+        deals = await deals_cursor.to_list(length=None)
+        
+        sold_items = []
+        total_revenue = 0
+        this_month_count = 0
+        current_month = datetime.now().month
+        current_year = datetime.now().year
+        
+        for deal in deals:
+            # Get listing details
+            listing = await db.listings.find_one({"id": deal.get("listing_id")})
+            
+            # Get buyer details
+            buyer = await db.users.find_one({"id": deal.get("buyer_id")})
+            
+            final_price = deal.get("final_price", deal.get("price", 0))
+            total_revenue += final_price
+            
+            # Count this month's sales
+            completion_date = deal.get("completion_date")
+            if completion_date:
+                try:
+                    if isinstance(completion_date, str):
+                        completion_date = datetime.fromisoformat(completion_date.replace('Z', '+00:00'))
+                    elif hasattr(completion_date, 'month'):
+                        # It's already a datetime object
+                        pass
+                    
+                    if completion_date.month == current_month and completion_date.year == current_year:
+                        this_month_count += 1
+                except:
+                    pass
+            
+            sold_item = {
+                "id": deal.get("id", str(deal.get("_id"))),
+                "listing": serialize_doc(listing) if listing else None,
+                "buyer": serialize_doc(buyer) if buyer else None,
+                "final_price": final_price,
+                "sold_at": deal.get("completion_date"),
+                "deal_id": deal.get("id", str(deal.get("_id")))
+            }
+            sold_items.append(sold_item)
+        
+        # Calculate statistics
+        total_sold = len(sold_items)
+        average_price = total_revenue / total_sold if total_sold > 0 else 0
+        
+        stats = {
+            "totalSold": total_sold,
+            "totalRevenue": total_revenue,
+            "averagePrice": average_price,
+            "thisMonth": this_month_count
+        }
+        
+        return {
+            "items": sold_items,
+            "stats": stats
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching sold items for user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch sold items: {str(e)}")
+
 # ============================================================================
 # STARTUP EVENT
 # ============================================================================
