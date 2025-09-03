@@ -59,6 +59,15 @@ function ModernBrowsePage() {
   const [submittingTenders, setSubmittingTenders] = useState({}); // Track tender submission state per item
   const [tenderConfirmations, setTenderConfirmations] = useState({}); // Track successful tender submissions
 
+  // Dynamic price range settings
+  const [priceRangeSettings, setPriceRangeSettings] = useState({
+    price_range_min_percent: 10.0,
+    price_range_max_percent: 10.0
+  });
+  
+  // User active bids
+  const [userActiveBids, setUserActiveBids] = useState({});
+
   // Check if item is in favorites
   const isInFavorites = (itemId) => {
     return favorites.some(fav => fav.id === itemId);
