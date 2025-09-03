@@ -1010,6 +1010,15 @@ async def update_listing(listing_id: str, update_data: dict):
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Listing not found")
         
+        # Clean up favorites if listing is being set to inactive or sold
+        status = update_data.get("status")
+        if status in ["inactive", "sold"]:
+            try:
+                await db.user_favorites.delete_many({"item_id": listing_id})
+                print(f"DEBUG: Cleaned up favorites for {status} listing {listing_id}")
+            except Exception as fav_error:
+                print(f"Warning: Failed to clean up favorites for {status} listing: {fav_error}")
+        
         return {"message": "Listing updated successfully"}
         
     except HTTPException:
