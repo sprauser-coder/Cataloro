@@ -389,19 +389,29 @@ function NotificationsCenterPage() {
   });
 
   const getNotificationIcon = (type) => {
+    const iconClass = "w-6 h-6";
     switch (type) {
       case 'success':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return <CheckCircle className={`${iconClass} text-green-600`} />;
       case 'warning':
-        return <AlertCircle className="w-5 h-5 text-yellow-500" />;
+        return <AlertCircle className={`${iconClass} text-yellow-600`} />;
       case 'error':
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
+        return <AlertCircle className={`${iconClass} text-red-600`} />;
       case 'info':
-        return <Info className="w-5 h-5 text-blue-500" />;
+        return <Info className={`${iconClass} text-blue-600`} />;
       case 'welcome':
-        return <Gift className="w-5 h-5 text-purple-500" />;
+        return <Gift className={`${iconClass} text-purple-600`} />;
+      case 'system':
+        return <Settings className={`${iconClass} text-indigo-600`} />;
+      case 'message':
+        return <Bell className={`${iconClass} text-cyan-600`} />;
+      case 'alert':
+        return <AlertTriangle className={`${iconClass} text-orange-600`} />;
+      case 'order':
+      case 'order_complete':
+        return <CheckCircle className={`${iconClass} text-green-600`} />;
       default:
-        return <Bell className="w-5 h-5 text-gray-500" />;
+        return <Bell className={`${iconClass} text-gray-600`} />;
     }
   };
 
