@@ -612,33 +612,28 @@ function NotificationsCenterPage() {
             <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-4">
                 {/* Master Checkbox */}
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0}
-                    onChange={() => {
-                      if (selectedNotifications.length === filteredNotifications.length) {
-                        deselectAll();
-                      } else {
-                        selectAll();
-                      }
-                    }}
-                    className="sr-only"
-                  />
-                  <div className={`w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
+                <div 
+                  className={`w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center cursor-pointer ${
                     selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0
                       ? 'bg-purple-500 border-purple-500 shadow-lg'
                       : selectedNotifications.length > 0
                         ? 'bg-purple-200 border-purple-400'
                         : 'border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500'
-                  }`}>
-                    {selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0 ? (
-                      <Check className="w-4 h-4 text-white" />
-                    ) : selectedNotifications.length > 0 ? (
-                      <div className="w-2 h-2 bg-purple-600 rounded-sm"></div>
-                    ) : null}
-                  </div>
-                </label>
+                  }`}
+                  onClick={() => {
+                    if (selectedNotifications.length === filteredNotifications.length) {
+                      deselectAll();
+                    } else {
+                      selectAll();
+                    }
+                  }}
+                >
+                  {selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0 ? (
+                    <Check className="w-4 h-4 text-white" />
+                  ) : selectedNotifications.length > 0 ? (
+                    <div className="w-2 h-2 bg-purple-600 rounded-sm"></div>
+                  ) : null}
+                </div>
                 
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   {selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0
