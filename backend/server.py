@@ -1036,6 +1036,13 @@ async def delete_listing(listing_id: str):
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail=f"Listing with ID {listing_id} not found")
         
+        # Clean up favorites - remove this listing from all users' favorites
+        try:
+            await db.user_favorites.delete_many({"item_id": listing_id})
+            print(f"DEBUG: Cleaned up favorites for deleted listing {listing_id}")
+        except Exception as fav_error:
+            print(f"Warning: Failed to clean up favorites for listing {listing_id}: {fav_error}")
+        
         return {"message": f"Listing {listing_id} deleted successfully", "deleted_count": result.deleted_count}
     except HTTPException:
         raise
