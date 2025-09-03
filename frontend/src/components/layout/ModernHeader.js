@@ -369,11 +369,14 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
         setShowNotifications(false);
       }
+      if (showTendersMenu && !event.target.closest('.tenders-dropdown')) {
+        setShowTendersMenu(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [showUserMenu, showNotifications, showTendersMenu]);
 
   const handleLogout = () => {
     localStorage.removeItem('cataloro_token');
