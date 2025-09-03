@@ -277,7 +277,7 @@ function TendersPage() {
         </div>
         
         <button
-          onClick={() => activeTab === 'manage' ? loadTendersOverview() : fetchMyTenders()}
+          onClick={() => activeTab === 'listings' ? loadTendersOverview() : activeTab === 'tenders' ? loadMyTenders() : loadSoldItems()}
           className="mt-4 lg:mt-0 flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
