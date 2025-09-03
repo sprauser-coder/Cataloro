@@ -614,6 +614,48 @@ function NotificationsCenterPage() {
           </button>
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      {showConfirmDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md mx-4 shadow-2xl">
+            <div className="flex items-center mb-4">
+              <AlertTriangle className="w-6 h-6 text-yellow-500 mr-3" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Confirm Bulk Action
+              </h3>
+            </div>
+            
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              Are you sure you want to perform this action on {selectedNotifications.length} selected notification{selectedNotifications.length > 1 ? 's' : ''}? This action cannot be undone.
+            </p>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={confirmBulkAction}
+                disabled={bulkActionLoading}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {bulkActionLoading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                ) : (
+                  <Check className="w-4 h-4 mr-2" />
+                )}
+                Confirm
+              </button>
+              
+              <button
+                onClick={cancelBulkAction}
+                disabled={bulkActionLoading}
+                className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <X className="w-4 h-4 mr-2" />
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
