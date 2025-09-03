@@ -153,11 +153,11 @@ class TenderVisibilityTester:
             print("❌ Missing buyer user or test listing")
             return False
         
-        # Submit multiple tender offers with different amounts
+        # Submit multiple tender offers with different amounts (must be >= listing price of 1500)
         tender_offers = [
-            {"amount": 1200.00, "description": "First offer - good price"},
-            {"amount": 1350.00, "description": "Second offer - better price"},
-            {"amount": 1450.00, "description": "Third offer - competitive price"}
+            {"amount": 1500.00, "description": "First offer - starting price"},
+            {"amount": 1600.00, "description": "Second offer - better price"},
+            {"amount": 1750.00, "description": "Third offer - competitive price"}
         ]
         
         success_count = 0
