@@ -1005,6 +1005,27 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
             </div>
           )}
           
+          {/* User's Active Bid Status */}
+          {userActiveBids[item.id] && (
+            <div className="mb-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-blue-800 dark:text-blue-300 font-medium">
+                  Your active bid:
+                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-blue-900 dark:text-blue-200 font-bold">
+                    €{parseFloat(userActiveBids[item.id].amount).toFixed(2)}
+                  </span>
+                  {item.bid_info?.highest_bidder_id === user?.id && (
+                    <span className="text-green-600 dark:text-green-400 text-xs font-semibold px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-full">
+                      Highest Bidder
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* Tender Input Form */}
           <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
             <div className="flex-1">
