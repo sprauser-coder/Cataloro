@@ -705,30 +705,23 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 )}
               </Link>
 
-              {/* Cart */}
+              {/* Create Listing Button (replaced shopping cart) */}
               <Link
-                to="/cart"
+                to="/create-listing"
                 className="relative p-3 text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white transition-all duration-300 group"
                 style={{
                   background: darkMode 
-                    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)'
-                    : 'linear-gradient(135deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.04) 100%)',
+                    ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(34, 197, 94, 0.1) 100%)'
+                    : 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%)',
                   backdropFilter: 'blur(20px)',
                   borderRadius: '16px',
                   border: darkMode 
-                    ? '1px solid rgba(255, 255, 255, 0.1)'
-                    : '1px solid rgba(0, 0, 0, 0.1)'
+                    ? '1px solid rgba(34, 197, 94, 0.2)'
+                    : '1px solid rgba(34, 197, 94, 0.15)'
                 }}
+                title="Create New Listing"
               >
-                <ShoppingCart className="w-5 h-5" />
-                {(cartItems?.length > 0 || cartItems > 0) && (
-                  <span className="absolute -top-2 -right-2 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold text-[10px]" style={{
-                    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                    boxShadow: '0 4px 15px rgba(240, 147, 251, 0.4)'
-                  }}>
-                    {Array.isArray(cartItems) ? cartItems.length : cartItems}
-                  </span>
-                )}
+                <Plus className="w-5 h-5 text-green-600 dark:text-green-400" />
               </Link>
             </div>
 
