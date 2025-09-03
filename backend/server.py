@@ -26,6 +26,10 @@ import logging
 # Load environment variables
 load_dotenv()
 
+# Setup logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
 # Initialize FastAPI app
 app = FastAPI(
     title="Cataloro Marketplace API",
