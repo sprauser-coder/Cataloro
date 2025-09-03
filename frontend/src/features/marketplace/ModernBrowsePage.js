@@ -880,7 +880,7 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
                           Market Range
                         </div>
                         <div className="text-sm font-bold text-indigo-900 dark:text-indigo-100 leading-tight">
-                          €{(priceSuggestion * 0.9).toFixed(0)} - €{(priceSuggestion * 1.1).toFixed(0)}
+                          €{(priceSuggestion * (100 - priceRangeSettings.price_range_min_percent) / 100).toFixed(0)} - €{(priceSuggestion * (100 + priceRangeSettings.price_range_max_percent) / 100).toFixed(0)}
                         </div>
                       </div>
                     </div>
