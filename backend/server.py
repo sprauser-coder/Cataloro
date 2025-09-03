@@ -39,14 +39,16 @@ origins = [
     "http://localhost:3000",  # Development
     "http://localhost:3001",  # Development alternative
     "https://cataloro-marketplace-1.preview.emergentagent.com",  # Emergent preview domain
+    "*"  # Allow all origins temporarily for debugging
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # MongoDB Connection
