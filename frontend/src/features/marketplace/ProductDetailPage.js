@@ -157,6 +157,18 @@ function ProductDetailPage() {
         showToast(`Tender offer of €${offerAmount.toFixed(2)} submitted successfully!`, 'success');
         setTenderAmount(''); // Clear input
         
+        // Show confirmation message
+        setTenderConfirmation({
+          amount: offerAmount,
+          timestamp: new Date(),
+          visible: true
+        });
+        
+        // Hide confirmation after 8 seconds (longer for detail page)
+        setTimeout(() => {
+          setTenderConfirmation(prev => prev ? { ...prev, visible: false } : null);
+        }, 8000);
+        
         // Update product with new highest bid if this is higher
         if (offerAmount > (product.highest_bid || 0)) {
           setProduct(prev => ({ ...prev, highest_bid: offerAmount }));
