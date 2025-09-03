@@ -174,7 +174,7 @@ function TendersPage() {
 
       if (response.ok) {
         showToast('Tender offer rejected', 'info');
-        fetchTendersOverview(); // Refresh data
+        loadTendersOverview(); // Refresh data
       } else {
         const errorData = await response.json();
         showToast(errorData.detail || 'Failed to reject tender', 'error');
