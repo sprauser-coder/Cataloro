@@ -704,6 +704,95 @@ function ModernBrowsePage() {
           </div>
         </div>
       )}
+
+      {/* Bid Confirmation Modal */}
+      {bidConfirmationModal.show && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full">
+            <div className={`p-6 border-b border-gray-200 dark:border-gray-700 ${
+              bidConfirmationModal.success 
+                ? 'bg-gradient-to-r from-green-600 to-emerald-600' 
+                : 'bg-gradient-to-r from-red-600 to-pink-600'
+            }`}>
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-white flex items-center">
+                  {bidConfirmationModal.success ? (
+                    <>
+                      <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      Bid Submitted Successfully!
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      Bid Submission Failed
+                    </>
+                  )}
+                </h3>
+                <button
+                  onClick={() => setBidConfirmationModal({ ...bidConfirmationModal, show: false })}
+                  className="text-white hover:text-gray-200 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <div className="text-center">
+                <div className="mb-4">
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {bidConfirmationModal.itemTitle}
+                  </h4>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                    €{bidConfirmationModal.bidAmount?.toFixed(2)}
+                  </div>
+                </div>
+
+                {bidConfirmationModal.success ? (
+                  <div className="space-y-3">
+                    <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
+                      <p className="text-green-800 dark:text-green-300 font-medium">
+                        🎉 Your tender offer has been submitted successfully!
+                      </p>
+                      <p className="text-green-700 dark:text-green-400 text-sm mt-1">
+                        The seller will be notified and can accept or decline your offer.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800">
+                      <p className="text-red-800 dark:text-red-300 font-medium">
+                        ❌ {bidConfirmationModal.errorMessage}
+                      </p>
+                      <p className="text-red-700 dark:text-red-400 text-sm mt-1">
+                        Please check your bid amount and try again.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-6">
+                  <button
+                    onClick={() => setBidConfirmationModal({ ...bidConfirmationModal, show: false })}
+                    className={`w-full px-6 py-3 rounded-xl font-medium transition-colors ${
+                      bidConfirmationModal.success
+                        ? 'bg-green-600 hover:bg-green-700 text-white'
+                        : 'bg-red-600 hover:bg-red-700 text-white'
+                    }`}
+                  >
+                    {bidConfirmationModal.success ? 'Great!' : 'Try Again'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
