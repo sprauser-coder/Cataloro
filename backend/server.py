@@ -154,6 +154,7 @@ def serialize_doc(doc):
 async def trigger_system_notifications(user_id: str, event_type: str):
     """Trigger system notifications based on user events"""
     try:
+        print(f"DEBUG: trigger_system_notifications called with user_id={user_id}, event_type={event_type}")
         if event_type == "login":
             # Create a welcome back notification
             notification = {
@@ -165,9 +166,14 @@ async def trigger_system_notifications(user_id: str, event_type: str):
                 "created_at": datetime.utcnow().isoformat(),
                 "id": str(uuid.uuid4())
             }
-            await db.user_notifications.insert_one(notification)
+            print(f"DEBUG: Created notification object: {notification}")
+            result = await db.user_notifications.insert_one(notification)
+            print(f"DEBUG: Database insert result: {result.inserted_id}")
+            print(f"DEBUG: Login notification created successfully for user {user_id}")
     except Exception as e:
         print(f"Error in trigger_system_notifications: {e}")
+        import traceback
+        traceback.print_exc()
         # Don't raise the exception to avoid breaking the main flow
 
 # Health Check
