@@ -53,23 +53,32 @@ function NotificationsCenterPage() {
         switch (e.key) {
           case 'a':
             e.preventDefault();
-            selectAll();
+            setSelectedNotifications(prev => {
+              const allIds = filteredNotifications.map(n => n.id);
+              return allIds.length > 0 ? allIds : [];
+            });
             break;
           case 'd':
             e.preventDefault();
-            deselectAll();
+            setSelectedNotifications([]);
             break;
           case 'r':
-            if (selectedNotifications.length > 0) {
-              e.preventDefault();
-              markAsRead(selectedNotifications);
-            }
+            e.preventDefault();
+            setSelectedNotifications(prev => {
+              if (prev.length > 0) {
+                markAsRead(prev);
+              }
+              return prev;
+            });
             break;
           case 'Delete':
-            if (selectedNotifications.length > 0) {
-              e.preventDefault();
-              handleBulkAction(() => deleteNotifications(selectedNotifications));
-            }
+            e.preventDefault();
+            setSelectedNotifications(prev => {
+              if (prev.length > 0) {
+                handleBulkAction(() => deleteNotifications(prev));
+              }
+              return prev;
+            });
             break;
         }
       }
@@ -77,7 +86,7 @@ function NotificationsCenterPage() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [selectedNotifications]); // Keep only selectedNotifications for keyboard shortcuts
+  }, []); // Remove selectedNotifications from dependency array to prevent re-renders
 
   const loadNotifications = async () => {
     try {
