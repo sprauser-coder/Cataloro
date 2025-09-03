@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-SOLD ITEMS FUNCTIONALITY COMPREHENSIVE TESTING
-Testing the enhanced sold items functionality that includes accepted tenders
+ADMIN PANEL & PROFILE FIXES COMPREHENSIVE TESTING
+Testing critical admin panel and profile fixes as requested in review
 """
 
 import requests
