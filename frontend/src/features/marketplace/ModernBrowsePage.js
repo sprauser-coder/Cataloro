@@ -573,6 +573,7 @@ function ModernBrowsePage() {
               tenderConfirmation={tenderConfirmations[item.id]}
               priceRangeSettings={priceRangeSettings}
               userActiveBids={userActiveBids}
+              user={user}
             />
           ))}
         </div>
