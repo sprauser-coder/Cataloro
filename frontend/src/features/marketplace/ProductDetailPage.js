@@ -51,6 +51,8 @@ function ProductDetailPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedTab, setSelectedTab] = useState('description');
   const [loading, setLoading] = useState(true);
+  const [tenderAmount, setTenderAmount] = useState('');
+  const [submittingTender, setSubmittingTender] = useState(false);
   const [priceSuggestion, setPriceSuggestion] = useState(null);
   const [loadingSuggestion, setLoadingSuggestion] = useState(false);
 
