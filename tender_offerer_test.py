@@ -142,18 +142,21 @@ class TenderOffererTester:
                 data=buyer_data
             )
             
-            if success_buyer:
-                # Login buyer to get user object
-                login_success, login_response = self.run_test(
-                    f"Login Buyer User {i+1}",
-                    "POST",
-                    "api/auth/login", 
-                    200,
-                    data={"email": buyer_data["email"], "password": "demo123"}
-                )
-                if login_success:
-                    self.buyer_users.append(login_response['user'])
-                    print(f"   ✅ Buyer {i+1} created: {login_response['user']['id']}")
+            # If user creation failed (likely already exists), try login directly
+            if not success_buyer:
+                print(f"   ℹ️  Buyer {i+1} may already exist, attempting login...")
+            
+            # Login buyer to get user object (whether newly created or existing)
+            login_success, login_response = self.run_test(
+                f"Login Buyer User {i+1}",
+                "POST",
+                "api/auth/login", 
+                200,
+                data={"email": buyer_data["email"], "password": "demo123"}
+            )
+            if login_success:
+                self.buyer_users.append(login_response['user'])
+                print(f"   ✅ Buyer {i+1} available: {login_response['user']['id']}")
         
         return len(self.buyer_users) >= 2 and self.seller_user is not None
 
