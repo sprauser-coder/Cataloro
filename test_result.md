@@ -67,6 +67,42 @@
 ## Test Results
 
 ### Backend Tests
+**Test Date:** 2025-01-28 19:20:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ✅ CRITICAL PRICE DISPLAY BUG FIXED AND VERIFIED - ALL TESTS PASSED
+
+#### Critical Price Display Bug Fix Testing Results:
+**PRICE DISPLAY BUG INVESTIGATION AND FIX:** ✅ CRITICAL BUG IDENTIFIED AND SUCCESSFULLY FIXED - Comprehensive testing of price display issue in browse listings completed with successful resolution.
+
+**1. Bug Identification** ✅ CONFIRMED - Main title prices were showing starting prices instead of highest bid amounts for products with active bids: MercedesKT1125 showing €70 instead of €100, TRPSAK333 showing €135 instead of €140, FiatLancia51750412 showing €140 instead of €180, VW074131701G showing €190 instead of €200, no strikethrough "starting" price text was displayed.
+
+**2. Root Cause Analysis** ✅ IDENTIFIED - API data investigation revealed bid_info was correctly present in backend responses with accurate highest_bid values, but MarketplaceContext transformation was not preserving bid_info data from API responses, causing frontend to lose critical bidding information needed for price display logic.
+
+**3. Code Fix Implementation** ✅ APPLIED - Modified /app/frontend/src/context/MarketplaceContext.js lines 371-413 to preserve bid_info data during API response transformation, added bid_info preservation with fallback structure for listings without bids, ensured highest_bid, has_bids, total_bids, and highest_bidder_id fields are maintained.
+
+**4. Fix Verification Testing** ✅ SUCCESSFUL - After fix implementation, all 4 products now correctly display highest bid as main title price: MercedesKT1125 shows €100.00 (was €70.00), TRPSAK333 shows €140.00 (was €135.00), FiatLancia51750412 shows €180.00 (was €140.00), VW074131701G shows €200.00 (was €190.00), all products now show strikethrough starting prices correctly.
+
+**5. Strikethrough Price Display** ✅ WORKING - All products with bids now properly display strikethrough starting prices: "€70.00 starting", "€135.00 starting", "€140.00 starting", "€190.00 starting", visual indication clearly shows price escalation from starting to current highest bid.
+
+**6. Bid Indicators Verification** ✅ FUNCTIONAL - All products display proper bid indicators: "Your active bid" indicators present, "Highest Bidder" badges working correctly, bid status information accurately reflects user's bidding activity.
+
+**7. Console Error Check** ✅ CLEAN - No JavaScript console errors detected during testing, price display logic functioning without errors, all bid_info data properly accessible to frontend components.
+
+**TECHNICAL VERIFICATION:**
+- API bid_info data: All 4 listings contain complete bid_info structure with accurate highest_bid values
+- Frontend transformation: bid_info now preserved during MarketplaceContext data processing  
+- Price display logic: Conditional rendering working correctly (highest_bid when has_bids=true, starting price otherwise)
+- Strikethrough display: Conditional rendering of starting price with line-through styling when bids exist
+- Cross-reference validation: UI prices match API highest_bid values exactly
+
+**BEFORE FIX vs AFTER FIX COMPARISON:**
+- MercedesKT1125: €70.00 → €100.00 ✅ (€30 difference correctly displayed)
+- TRPSAK333: €135.00 → €140.00 ✅ (€5 difference correctly displayed)  
+- FiatLancia51750412: €140.00 → €180.00 ✅ (€40 difference correctly displayed)
+- VW074131701G: €190.00 → €200.00 ✅ (€10 difference correctly displayed)
+
+**CRITICAL PRICE DISPLAY BUG STATUS:** ✅ FIXED - The price display issue has been completely resolved. Main title prices now correctly show highest bid amounts instead of starting prices, strikethrough starting prices are properly displayed, and all bid information is accurately reflected in the UI. The bug was caused by missing bid_info preservation in the MarketplaceContext transformation and has been permanently fixed.
+
 **Test Date:** 2025-01-28 18:30:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ BID INFO BROWSE ENDPOINT COMPREHENSIVE TESTING COMPLETED - ALL TESTS PASSED
