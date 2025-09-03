@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { 
   DollarSign, 
   Users, 
@@ -24,7 +25,14 @@ import { useNotifications } from '../../context/NotificationContext';
 function TendersPage() {
   const { user } = useAuth();
   const { showToast } = useNotifications();
-  const [activeTab, setActiveTab] = useState('manage'); // 'manage' or 'my-tenders'
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  
+  // Get tab from URL parameters, default to 'manage'
+  const urlTab = searchParams.get('tab');
+  const listingId = searchParams.get('listing');
+  
+  const [activeTab, setActiveTab] = useState(urlTab === 'my-tenders' ? 'my-tenders' : 'manage');
   
   // Manage Tenders State
   const [tendersOverview, setTendersOverview] = useState([]);
