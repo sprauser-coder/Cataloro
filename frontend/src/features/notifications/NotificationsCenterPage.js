@@ -3,7 +3,7 @@
  * Extension of the header notification tab with full management capabilities
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Bell, 
   X, 
