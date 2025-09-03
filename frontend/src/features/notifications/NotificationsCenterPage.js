@@ -394,6 +394,7 @@ function NotificationsCenterPage() {
                 <option value="unread">Unread Only</option>
                 <option value="read">Read Only</option>
                 <option value="system">System Notifications</option>
+                <option value="archived">Archived</option>
               </select>
             </div>
           </div>
