@@ -164,19 +164,6 @@ function AdminPanel() {
     }
   };
 
-  const fetchAnalyticsData = async () => {
-    try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
-      const response = await fetch(`${backendUrl}/api/admin/analytics?range=${selectedDateRange}`);
-      if (response.ok) {
-        const data = await response.json();
-        setAnalyticsData(data);
-      }
-    } catch (error) {
-      console.error('Analytics fetch error:', error);
-    }
-  };
-
   // Complete management functions
   const createUser = async () => {
     try {
