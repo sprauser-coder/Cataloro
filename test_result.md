@@ -399,7 +399,7 @@
    - All services healthy and responsive
 
 3. **Environment Configuration** ✅ PASSED
-   - Backend URL: https://catalog-admin-2.preview.emergentagent.com ✅ WORKING
+   - Backend URL: https://cataloro-marketplace-1.preview.emergentagent.com ✅ WORKING
    - MongoDB URL: mongodb://localhost:27017 ✅ WORKING
    - All API routes properly prefixed with '/api'
 
