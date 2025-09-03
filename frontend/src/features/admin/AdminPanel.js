@@ -1,3 +1,8 @@
+/**
+ * CATALORO - Ultra-Modern Admin Panel
+ * Real KPI functionality, complete user management, and site customization
+ */
+
 import React, { useState, useEffect } from 'react';
 import { 
   Users, 
@@ -5,40 +10,119 @@ import {
   DollarSign, 
   TrendingUp, 
   Settings, 
+  Upload,
+  Edit,
+  Trash2,
+  Ban,
+  CheckCircle,
   BarChart3,
-  Shield,
-  Bell,
-  Globe,
-  RefreshCw,
+  PieChart,
+  Activity,
+  Eye,
+  Heart,
+  ShoppingCart,
+  Star,
+  Camera,
   Save,
   X,
-  Trash2,
-  Edit,
-  Plus,
-  Store,
+  RefreshCw,
+  Download,
+  AlertTriangle,
+  Shield,
   Palette,
+  Globe,
+  Lock,
+  Zap,
   Mail,
+  Bell,
+  Monitor,
+  Smartphone,
+  Code,
   Database,
+  Server,
+  Wifi,
+  Search,
+  Filter,
+  ToggleLeft,
+  ToggleRight,
+  Sliders,
   Layout,
+  Type,
   FileText,
-  Award,
+  Layers,
+  Calendar,
+  Clock,
   Target,
-  Search
+  Award,
+  Megaphone,
+  PlusCircle,
+  MinusCircle,
+  ArrowUp,
+  ArrowDown,
+  ExternalLink,
+  Copy,
+  Grid,
+  List,
+  MoreHorizontal,
+  CheckSquare,
+  Square,
+  Archive,
+  Flag,
+  HelpCircle,
+  Info,
+  Lightbulb,
+  Bookmark,
+  Tag,
+  Paperclip,
+  Image,
+  Video,
+  Music,
+  Headphones,
+  Phone,
+  MessageSquare,
+  MessageCircle,
+  AtSign,
+  Hash,
+  Percent,
+  CreditCard,
+  PaymentCard,
+  Banknote,
+  Coins,
+  Wallet,
+  Receipt,
+  ShoppingBag,
+  Store,
+  Storefront,
+  Building,
+  Home,
+  MapPin,
+  Navigation,
+  Compass,
+  Map,
+  Route,
+  Car,
+  Truck,
+  Ship,
+  Plane
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { useNotifications } from '../../context/NotificationContext';
 
-// Import all admin components
+// Import specialized admin components
 import ContentManagementSystem from './ContentManagementSystem';
 import SystemNotificationsManager from './SystemNotificationsManager';
 import BusinessTab from './BusinessTab';
 
+import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
+
 function AdminPanel() {
+  // Main state management
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dashboardData, setDashboardData] = useState(null);
   const [users, setUsers] = useState([]);
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState('');
   
   // User creation state
   const [showCreateUser, setShowCreateUser] = useState(false);
@@ -50,24 +134,40 @@ function AdminPanel() {
     role: 'user'
   });
   const [creatingUser, setCreatingUser] = useState(false);
-  
+
+  // Price settings state
+  const [priceSettings, setPriceSettings] = useState({
+    pt_price: 25.0,
+    pd_price: 18.0,
+    rh_price: 45.0,
+    renumeration_pt: 0.95,
+    renumeration_pd: 0.92,
+    renumeration_rh: 0.88,
+    price_range_min_percent: 10.0,
+    price_range_max_percent: 10.0
+  });
+
   const { user } = useAuth();
   const { showToast } = useNotifications();
 
-  // Admin check
-  const isUserAdmin = user && (user.role === 'admin' || user.email === 'admin@cataloro.com');
-  
-  if (!isUserAdmin) {
+  // Admin access control
+  const isAdmin = () => {
+    return user && (user.role === 'admin' || user.email === 'admin@cataloro.com');
+  };
+
+  if (!isAdmin()) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Access Denied</h2>
-          <p className="text-gray-600 dark:text-gray-400">You need admin privileges to access this panel.</p>
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="text-center p-8">
+          <Shield className="w-24 h-24 text-red-500 mx-auto mb-4" />
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Access Denied</h2>
+          <p className="text-gray-600 dark:text-gray-400">You need administrator privileges to access this panel.</p>
         </div>
       </div>
     );
   }
 
+  // Data fetching functions
   useEffect(() => {
     if (activeTab === 'dashboard') {
       fetchRealDashboardData();
@@ -75,6 +175,8 @@ function AdminPanel() {
       fetchUsers();
     } else if (activeTab === 'settings') {
       fetchSettings();
+    } else if (activeTab === 'basis') {
+      fetchPriceSettings();
     }
   }, [activeTab]);
 
@@ -86,6 +188,7 @@ function AdminPanel() {
       
       if (response.ok) {
         const data = await response.json();
+        // Use REAL backend data only - no fake data
         setDashboardData({
           kpis: data?.kpis || {
             total_users: 0,
@@ -132,6 +235,20 @@ function AdminPanel() {
     }
   };
 
+  const fetchPriceSettings = async () => {
+    try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/admin/catalyst-price-settings`);
+      if (response.ok) {
+        const data = await response.json();
+        setPriceSettings(data);
+      }
+    } catch (error) {
+      console.error('Price settings fetch error:', error);
+    }
+  };
+
+  // User management functions
   const createUser = async () => {
     try {
       setCreatingUser(true);
@@ -179,6 +296,7 @@ function AdminPanel() {
     }
   };
 
+  // Settings management
   const updateSettings = async (newSettings) => {
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
@@ -199,16 +317,37 @@ function AdminPanel() {
     }
   };
 
-  // Complete tab definitions with all original functionality
+  const updatePriceSettings = async () => {
+    try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/admin/catalyst-price-settings`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(priceSettings)
+      });
+
+      if (response.ok) {
+        showToast('Price settings updated successfully!', 'success');
+      } else {
+        showToast('Failed to update price settings', 'error');
+      }
+    } catch (error) {
+      showToast('Failed to update price settings', 'error');
+    }
+  };
+
+  // Tab definitions (ORIGINAL FULL LIST)
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3, description: 'Overview and KPIs' },
-    { id: 'users', label: 'User Management', icon: Users, description: 'Manage users and roles' },
-    { id: 'content', label: 'Content Management', icon: FileText, description: 'CMS and content editing' },
-    { id: 'analytics', label: 'Analytics', icon: TrendingUp, description: 'Performance metrics' },
-    { id: 'notifications', label: 'System Notifications', icon: Bell, description: 'Notification management' },
-    { id: 'business', label: 'Business Process Map', icon: Store, description: 'Process visualization' },
-    { id: 'settings', label: 'Site Administration', icon: Settings, description: 'System settings' },
-    { id: 'security', label: 'Security', icon: Shield, description: 'Security and permissions' }
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'users', label: 'User Management', icon: Users },
+    { id: 'content', label: 'Content Management', icon: FileText },
+    { id: 'analytics', label: 'Analytics & Reports', icon: TrendingUp },
+    { id: 'notifications', label: 'System Notifications', icon: Bell },
+    { id: 'business', label: 'Business Process Map', icon: Store },
+    { id: 'basis', label: 'Cat Database & Basis', icon: Database },
+    { id: 'settings', label: 'Site Administration', icon: Settings },
+    { id: 'security', label: 'Security & Permissions', icon: Shield },
+    { id: 'tools', label: 'Developer Tools', icon: Code }
   ];
 
   const { kpis, recent_activity } = dashboardData || {};
@@ -216,465 +355,505 @@ function AdminPanel() {
   if (loading && activeTab === 'dashboard') {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <RefreshCw className="w-8 h-8 animate-spin text-purple-600" />
-        <span className="ml-3 text-gray-600 dark:text-gray-400">Loading dashboard...</span>
+        <div className="text-center">
+          <RefreshCw className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-400">Loading admin dashboard...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="flex">
-        {/* Enhanced Sidebar with all tabs */}
-        <div className="w-72 bg-white dark:bg-gray-800 shadow-xl border-r border-gray-200 dark:border-gray-700">
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg">
-                <Shield className="w-6 h-6 text-white" />
+      {/* ORIGINAL HEADER WITH TABS ON TOP */}
+      <div className="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-full px-8 py-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl">
+                <Shield className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Admin Panel</h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Complete Management Suite</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Panel</h1>
+                <p className="text-gray-600 dark:text-gray-400">Complete marketplace management system</p>
               </div>
             </div>
+            <div className="flex items-center space-x-4">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Welcome, <span className="font-semibold">{user?.username || 'Administrator'}</span>
+              </div>
+              <button
+                onClick={fetchRealDashboardData}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Refresh</span>
+              </button>
+            </div>
           </div>
-          
-          <nav className="mt-6 px-3">
-            <div className="space-y-1">
+
+          {/* ORIGINAL TAB NAVIGATION ON TOP */}
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            <nav className="flex space-x-8">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center px-4 py-3 text-left text-sm font-medium rounded-lg transition-all duration-200 group ${
+                  className={`flex items-center space-x-2 px-1 py-4 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
-                      ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg transform scale-105'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:border-gray-300'
                   }`}
                 >
-                  <tab.icon className={`w-5 h-5 mr-3 ${activeTab === tab.id ? 'text-white' : 'text-gray-500'}`} />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span>{tab.label}</span>
-                      {activeTab === tab.id && <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>}
-                    </div>
-                    <div className={`text-xs mt-1 ${activeTab === tab.id ? 'text-purple-100' : 'text-gray-500'}`}>
-                      {tab.description}
-                    </div>
-                  </div>
+                  <tab.icon className="w-5 h-5" />
+                  <span>{tab.label}</span>
                 </button>
               ))}
-            </div>
-          </nav>
-
-          {/* Admin User Info */}
-          <div className="absolute bottom-6 left-6 right-6">
-            <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">
-                    {user?.username?.charAt(0).toUpperCase() || 'A'}
-                  </span>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">
-                    {user?.username || 'Admin'}
-                  </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400">Administrator</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="flex-1 overflow-hidden">
-          <div className="h-full overflow-y-auto">
-            <div className="p-8">
-              {/* Dashboard Tab */}
-              {activeTab === 'dashboard' && (
-                <div className="space-y-8">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h2>
-                      <p className="text-gray-600 dark:text-gray-400 mt-1">Real-time marketplace metrics and insights</p>
-                    </div>
-                    <button
-                      onClick={fetchRealDashboardData}
-                      className="flex items-center space-x-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-900/40 transition-colors"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                      <span>Refresh Data</span>
-                    </button>
-                  </div>
-
-                  {/* Enhanced KPI Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-purple-100 text-sm font-medium">Total Users</p>
-                          <p className="text-3xl font-bold mt-1">{kpis?.total_users || 0}</p>
-                          <p className="text-purple-200 text-xs mt-2">↗ Real database count</p>
-                        </div>
-                        <Users className="w-12 h-12 text-purple-200" />
-                      </div>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-blue-100 text-sm font-medium">Total Listings</p>
-                          <p className="text-3xl font-bold mt-1">{kpis?.total_listings || 0}</p>
-                          <p className="text-blue-200 text-xs mt-2">↗ Active marketplace items</p>
-                        </div>
-                        <Package className="w-12 h-12 text-blue-200" />
-                      </div>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-green-100 text-sm font-medium">Revenue</p>
-                          <p className="text-3xl font-bold mt-1">€{kpis?.revenue?.toFixed(2) || '0.00'}</p>
-                          <p className="text-green-200 text-xs mt-2">↗ From completed deals</p>
-                        </div>
-                        <DollarSign className="w-12 h-12 text-green-200" />
-                      </div>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-orange-100 text-sm font-medium">Growth Rate</p>
-                          <p className="text-3xl font-bold mt-1">{kpis?.growth_rate?.toFixed(1) || '0.0'}%</p>
-                          <p className="text-orange-200 text-xs mt-2">↗ Monthly growth</p>
-                        </div>
-                        <TrendingUp className="w-12 h-12 text-orange-200" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Recent Activity */}
-                  {recent_activity && recent_activity.length > 0 && (
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg">
-                      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                          <BarChart3 className="w-5 h-5 mr-2 text-purple-600" />
-                          Recent Activity
-                        </h3>
-                      </div>
-                      <div className="p-6">
-                        <div className="space-y-4">
-                          {recent_activity.map((activity, index) => (
-                            <div key={index} className="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                              <div className="flex-1">
-                                <span className="text-gray-900 dark:text-gray-100 font-medium">{activity.action}</span>
-                                <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">
-                                  {new Date(activity.timestamp).toLocaleString()}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* User Management Tab */}
-              {activeTab === 'users' && (
-                <div className="space-y-8">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h2 className="text-3xl font-bold text-gray-900 dark:text-white">User Management</h2>
-                      <p className="text-gray-600 dark:text-gray-400 mt-1">Manage users, roles, and permissions</p>
-                    </div>
-                    <button
-                      onClick={() => setShowCreateUser(true)}
-                      className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-                    >
-                      <Plus className="w-5 h-5" />
-                      <span>Create New User</span>
-                    </button>
-                  </div>
-
-                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-700">
-                          <tr>
-                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
-                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
-                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Joined</th>
-                            <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                          {users.map((user) => (
-                            <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center">
-                                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                                    <span className="text-white font-bold text-sm">
-                                      {user.username?.charAt(0).toUpperCase() || 'U'}
-                                    </span>
-                                  </div>
-                                  <div className="ml-4">
-                                    <div className="text-sm font-medium text-gray-900 dark:text-white">{user.username}</div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                                  user.role === 'admin' 
-                                    ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' 
-                                    : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                                }`}>
-                                  {user.role}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                                  Active
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button
-                                  onClick={() => deleteUser(user.id)}
-                                  className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Content Management Tab */}
-              {activeTab === 'content' && (
-                <div>
-                  <ContentManagementSystem />
-                </div>
-              )}
-
-              {/* System Notifications Tab */}
-              {activeTab === 'notifications' && (
-                <div>
-                  <SystemNotificationsManager />
-                </div>
-              )}
-
-              {/* Business Process Map Tab */}
-              {activeTab === 'business' && (
-                <div>
-                  <BusinessTab showToast={showToast} />
-                </div>
-              )}
-
-              {/* Site Administration Tab */}
-              {activeTab === 'settings' && (
-                <div className="space-y-8">
-                  <div>
-                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Site Administration</h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Configure site settings and appearance</p>
-                  </div>
-
-                  {/* Hero Display Configuration */}
-                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg">
-                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                        <Layout className="w-5 h-5 mr-2 text-purple-600" />
-                        Hero Display Configuration
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-                        Customize how the hero section appears on your site
-                      </p>
-                    </div>
-                    <div className="p-6 space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Display Mode
-                          </label>
-                          <select
-                            value={settings.hero_display_mode || 'full_width'}
-                            onChange={(e) => updateSettings({...settings, hero_display_mode: e.target.value})}
-                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                          >
-                            <option value="full_width">Full Width</option>
-                            <option value="boxed">Boxed</option>
-                            <option value="centered">Centered</option>
-                          </select>
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Background Style
-                          </label>
-                          <select
-                            value={settings.hero_background_style || 'gradient'}
-                            onChange={(e) => updateSettings({...settings, hero_background_style: e.target.value})}
-                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                          >
-                            <option value="gradient">Gradient</option>
-                            <option value="image">Image</option>
-                            <option value="solid">Solid</option>
-                          </select>
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Text Alignment
-                          </label>
-                          <select
-                            value={settings.hero_text_alignment || 'center'}
-                            onChange={(e) => updateSettings({...settings, hero_text_alignment: e.target.value})}
-                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                          >
-                            <option value="left">Left</option>
-                            <option value="center">Center</option>
-                            <option value="right">Right</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Placeholder for other tabs */}
-              {['analytics', 'security'].includes(activeTab) && (
-                <div className="text-center py-16">
-                  <div className="max-w-md mx-auto">
-                    <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                      {activeTab === 'analytics' ? (
-                        <TrendingUp className="w-12 h-12 text-white" />
-                      ) : (
-                        <Shield className="w-12 h-12 text-white" />
-                      )}
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                      {tabs.find(t => t.id === activeTab)?.label}
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-400 mb-6">
-                      {tabs.find(t => t.id === activeTab)?.description}
-                    </p>
-                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                      <p className="text-blue-800 dark:text-blue-300 text-sm">
-                        This section is under development and will be available in a future update.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            </nav>
           </div>
         </div>
       </div>
 
+      {/* MAIN CONTENT AREA */}
+      <div className="max-w-full px-8 py-8">
+        {/* Dashboard Tab */}
+        {activeTab === 'dashboard' && (
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Dashboard Overview</h2>
+              <p className="text-gray-600 dark:text-gray-400">Real-time marketplace metrics and key performance indicators</p>
+            </div>
+
+            {/* KPI Cards with REAL data */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div className="flex items-center">
+                  <Users className="w-8 h-8 text-blue-600" />
+                  <div className="ml-4">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Users</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {kpis?.total_users || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div className="flex items-center">
+                  <Package className="w-8 h-8 text-green-600" />
+                  <div className="ml-4">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Listings</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {kpis?.total_listings || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div className="flex items-center">
+                  <DollarSign className="w-8 h-8 text-purple-600" />
+                  <div className="ml-4">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Revenue</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      €{kpis?.revenue?.toFixed(2) || '0.00'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div className="flex items-center">
+                  <TrendingUp className="w-8 h-8 text-orange-600" />
+                  <div className="ml-4">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Growth Rate</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {kpis?.growth_rate?.toFixed(1) || '0.0'}%
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            {recent_activity && recent_activity.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Activity</h3>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-3">
+                    {recent_activity.map((activity, index) => (
+                      <div key={index} className="flex items-center space-x-3 text-sm">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span className="text-gray-700 dark:text-gray-300">{activity.action}</span>
+                        <span className="text-gray-500 dark:text-gray-400">
+                          {new Date(activity.timestamp).toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* User Management Tab */}
+        {activeTab === 'users' && (
+          <div className="space-y-8">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">User Management</h2>
+                <p className="text-gray-600 dark:text-gray-400">Manage users and their roles</p>
+              </div>
+              <button
+                onClick={() => setShowCreateUser(true)}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              >
+                <Users className="w-4 h-4" />
+                <span>Create New User</span>
+              </button>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-700">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Joined</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  {users.map((user) => (
+                    <tr key={user.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">{user.username}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                          Active
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() => deleteUser(user.id)}
+                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 ml-2"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Content Management Tab */}
+        {activeTab === 'content' && (
+          <div>
+            <ContentManagementSystem />
+          </div>
+        )}
+
+        {/* System Notifications Tab */}
+        {activeTab === 'notifications' && (
+          <div>
+            <SystemNotificationsManager />
+          </div>
+        )}
+
+        {/* Business Process Map Tab */}
+        {activeTab === 'business' && (
+          <div>
+            <BusinessTab showToast={showToast} />
+          </div>
+        )}
+
+        {/* Cat Database & Basis Tab */}
+        {activeTab === 'basis' && (
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Cat Database & Basis</h2>
+              <p className="text-gray-600 dark:text-gray-400">Manage catalyst database and pricing basis settings</p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Catalyst Price Settings</h3>
+              </div>
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PT Price</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={priceSettings.pt_price}
+                      onChange={(e) => setPriceSettings({...priceSettings, pt_price: parseFloat(e.target.value) || 0})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PD Price</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={priceSettings.pd_price}
+                      onChange={(e) => setPriceSettings({...priceSettings, pd_price: parseFloat(e.target.value) || 0})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">RH Price</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={priceSettings.rh_price}
+                      onChange={(e) => setPriceSettings({...priceSettings, rh_price: parseFloat(e.target.value) || 0})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Price Range Settings Section */}
+                <div className="mt-8">
+                  <div className="mb-4">
+                    <h4 className="text-md font-semibold text-gray-900 dark:text-white">Price Range Configuration</h4>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                      Configure the dynamic price range percentages for catalog listings.
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Minimum Price Reduction (%)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          max="50"
+                          value={priceSettings.price_range_min_percent}
+                          onChange={(e) => setPriceSettings({...priceSettings, price_range_min_percent: parseFloat(e.target.value) || 0})}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-8"
+                        />
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">%</span>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Currently: -{priceSettings.price_range_min_percent}% from base price
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Maximum Price Increase (%)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          max="100"
+                          value={priceSettings.price_range_max_percent}
+                          onChange={(e) => setPriceSettings({...priceSettings, price_range_max_percent: parseFloat(e.target.value) || 0})}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-8"
+                        />
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">%</span>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Currently: +{priceSettings.price_range_max_percent}% from base price
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Price Range Preview */}
+                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div className="text-sm text-blue-800 dark:text-blue-300">
+                      <strong>Preview:</strong> For a €100.00 base price, the range will be €{(100 * (100 - priceSettings.price_range_min_percent) / 100).toFixed(2)} - €{(100 * (100 + priceSettings.price_range_max_percent) / 100).toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <button
+                    onClick={updatePriceSettings}
+                    className="flex items-center space-x-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>Save Price Settings</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Site Administration Tab */}
+        {activeTab === 'settings' && (
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Site Administration</h2>
+              <p className="text-gray-600 dark:text-gray-400">Configure site settings and appearance</p>
+            </div>
+
+            {/* Hero Display Configuration */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Hero Display Configuration</h3>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Display Mode
+                    </label>
+                    <select
+                      value={settings.hero_display_mode || 'full_width'}
+                      onChange={(e) => updateSettings({...settings, hero_display_mode: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <option value="full_width">Full Width</option>
+                      <option value="boxed">Boxed</option>
+                      <option value="centered">Centered</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Background Style
+                    </label>
+                    <select
+                      value={settings.hero_background_style || 'gradient'}
+                      onChange={(e) => updateSettings({...settings, hero_background_style: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <option value="gradient">Gradient</option>
+                      <option value="image">Image</option>
+                      <option value="solid">Solid</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Text Alignment
+                    </label>
+                    <select
+                      value={settings.hero_text_alignment || 'center'}
+                      onChange={(e) => updateSettings({...settings, hero_text_alignment: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <option value="left">Left</option>
+                      <option value="center">Center</option>
+                      <option value="right">Right</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Placeholder for other tabs */}
+        {['analytics', 'security', 'tools'].includes(activeTab) && (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              {tabs.find(t => t.id === activeTab)?.label}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">This section is under development.</p>
+          </div>
+        )}
+      </div>
+
       {/* Create User Modal */}
       {showCreateUser && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                  <Plus className="w-5 h-5 mr-2 text-purple-600" />
-                  Create New User
-                </h3>
-                <button 
-                  onClick={() => setShowCreateUser(false)} 
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Create New User</h3>
+              <button onClick={() => setShowCreateUser(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
             <form onSubmit={(e) => { e.preventDefault(); createUser(); }} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Username*</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username*</label>
                 <input
                   type="text"
                   required
                   value={newUserData.username}
                   onChange={(e) => setNewUserData({...newUserData, username: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Enter username"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email*</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email*</label>
                 <input
                   type="email"
                   required
                   value={newUserData.email}
                   onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Enter email address"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password*</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password*</label>
                 <input
                   type="password"
                   required
                   value={newUserData.password}
                   onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Enter password"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
-                <input
-                  type="text"
-                  value={newUserData.full_name}
-                  onChange={(e) => setNewUserData({...newUserData, full_name: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Enter full name"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Role*</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role*</label>
                 <select
                   value={newUserData.role}
                   onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex justify-end space-x-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowCreateUser(false)}
-                  className="px-6 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={creatingUser}
-                  className="px-6 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:from-purple-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-2"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors flex items-center space-x-2"
                 >
                   {creatingUser ? (
                     <>
