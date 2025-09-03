@@ -299,6 +299,57 @@ function NotificationsCenterPage() {
     setConfirmAction(null);
   };
 
+  const handleSingleDelete = async (notificationId, notificationType) => {
+    try {
+      // Enhanced deletion logic for different notification types and collections
+      setBulkActionLoading(true);
+      
+      const endpoints = [
+        `api/user/${user.id}/notifications/${notificationId}`,
+        `api/notifications/${notificationId}?user_id=${user.id}`,
+        `api/user/${user.id}/system-notifications/${notificationId}`
+      ];
+      
+      let deleteSuccess = false;
+      let lastError = null;
+      
+      // Try multiple endpoints to ensure deletion works for all notification types
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/${endpoint}`, {
+            method: 'DELETE'
+          });
+          
+          if (response.ok) {
+            deleteSuccess = true;
+            console.log(`✅ Successfully deleted notification via: ${endpoint}`);
+            break;
+          } else {
+            console.log(`⚠️ Delete attempt failed via ${endpoint}: ${response.status}`);
+          }
+        } catch (error) {
+          lastError = error;
+          console.log(`❌ Delete attempt error via ${endpoint}:`, error);
+        }
+      }
+      
+      if (deleteSuccess) {
+        // Update local state
+        setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
+        setSelectedNotifications(prev => prev.filter(id => id !== notificationId));
+        showToast('Notification deleted successfully', 'success');
+      } else {
+        console.error('All deletion attempts failed:', lastError);
+        showToast(`Failed to delete notification (${notificationType}). Please try again.`, 'error');
+      }
+    } catch (error) {
+      console.error('Error in handleSingleDelete:', error);
+      showToast('Failed to delete notification', 'error');
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
   const markAllAsRead = async () => {
     const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
     if (unreadIds.length > 0) {
