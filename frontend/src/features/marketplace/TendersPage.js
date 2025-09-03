@@ -91,8 +91,8 @@ function TendersPage() {
     }
   }, [searchParams]);
 
-  // Manage Tenders Functions
-  const fetchTendersOverview = async () => {
+  // My Listings Functions (previously Manage Tenders Functions)
+  const loadTendersOverview = async () => {
     if (!user) return;
     
     try {
