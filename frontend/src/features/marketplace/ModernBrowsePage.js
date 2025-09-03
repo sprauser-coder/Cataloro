@@ -525,6 +525,7 @@ function ModernBrowsePage() {
               onMessageSeller={handleMessageSeller}
               isInFavorites={isInFavorites}
               isSubmittingTender={submittingTenders[item.id] || false}
+              tenderConfirmation={tenderConfirmations[item.id]}
             />
           ))}
         </div>
