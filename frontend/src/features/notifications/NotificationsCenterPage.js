@@ -294,9 +294,10 @@ function NotificationsCenterPage() {
   // Filter notifications
   const filteredNotifications = notifications.filter(notification => {
     const matchesFilter = filter === 'all' || 
-      (filter === 'unread' && !notification.read) ||
-      (filter === 'read' && notification.read) ||
-      (filter === 'system' && notification.type === 'system');
+      (filter === 'unread' && !notification.read && !notification.archived) ||
+      (filter === 'read' && notification.read && !notification.archived) ||
+      (filter === 'system' && notification.type === 'system' && !notification.archived) ||
+      (filter === 'archived' && notification.archived);
     
     const matchesSearch = !searchTerm || 
       notification.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
