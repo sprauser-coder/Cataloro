@@ -908,7 +908,7 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
         )}
 
         {/* Tender Offer Section */}
-        <div className={`${isGridView ? '' : 'mt-4'}`}>
+        <div className={`${isGridView ? '' : 'mt-4'} relative z-30`}>
           {/* Current Highest Bid Display */}
           {item.highest_bid && (
             <div className="mb-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
@@ -924,7 +924,7 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
           )}
           
           {/* Tender Input Form */}
-          <div className="flex space-x-2">
+          <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
             <div className="flex-1">
               <input
                 type="number"
@@ -932,7 +932,10 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
                 step="10"
                 placeholder={`Min: €${(item.highest_bid || item.price || 0).toFixed(2)}`}
                 className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                onClick={(e) => e.stopPropagation()}
+                onFocus={(e) => e.stopPropagation()}
                 onChange={(e) => {
+                  e.stopPropagation();
                   const input = e.target;
                   input.dataset.offerAmount = e.target.value;
                 }}
@@ -940,11 +943,12 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
             </div>
             <button
               onClick={(e) => {
+                e.stopPropagation();
                 const input = e.target.parentElement.previousElementSibling?.querySelector('input') || 
                              e.target.parentElement.parentElement.querySelector('input');
                 const offerAmount = parseFloat(input?.value || 0);
                 if (offerAmount && offerAmount >= (item.highest_bid || item.price || 0)) {
-                  handleQuickAction(e, () => onSubmitTender(item, offerAmount));
+                  onSubmitTender(item, offerAmount);
                   input.value = ''; // Clear input after submission
                 } else {
                   alert(`Please enter an amount of at least €${(item.highest_bid || item.price || 0).toFixed(2)}`);
@@ -959,7 +963,10 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
           
           {/* Message Seller Button */}
           <button 
-            onClick={(e) => handleQuickAction(e, () => onMessageSeller(item, e))}
+            onClick={(e) => {
+              e.stopPropagation();
+              onMessageSeller(item, e);
+            }}
             className="w-full mt-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
             title="Message seller"
           >
