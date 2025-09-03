@@ -506,9 +506,12 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       showToast('Error navigating from notification', 'error');
     }
   };
-    localStorage.removeItem('cataloro_token');
-    localStorage.removeItem('cataloro_user');
+  
+  // Handle logout functionality
+  const handleLogout = () => {
+    logout();
     navigate('/login');
+    showToast('Logged out successfully', 'success');
   };
 
   const isActive = (path) => location.pathname === path;
