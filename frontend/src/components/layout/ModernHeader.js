@@ -907,6 +907,19 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     </Link>
                     
                     <Link
+                      to="/tenders"
+                      className="flex items-center px-6 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <div className="p-2 rounded-lg mr-3 group-hover:bg-white/10 transition-all duration-300" style={{
+                        background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(74, 222, 128, 0.1))'
+                      }}>
+                        <DollarSign className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium">Manage Tenders</span>
+                    </Link>
+                    
+                    <Link
                       to={`/profile/${user?.id}`}
                       className="flex items-center px-6 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
                       onClick={() => setShowUserMenu(false)}
