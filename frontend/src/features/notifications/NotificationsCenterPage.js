@@ -431,25 +431,48 @@ function NotificationsCenterPage() {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center space-x-3">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              {filteredNotifications.length} of {notifications.length} notifications
-            </span>
+          <div className="flex flex-col lg:flex-row lg:items-center space-y-3 lg:space-y-0 lg:space-x-4">
+            <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+              <span className="flex items-center">
+                <Bell className="w-4 h-4 mr-1" />
+                {filteredNotifications.length} of {notifications.length}
+              </span>
+              <span className="flex items-center">
+                <Eye className="w-4 h-4 mr-1" />
+                {notifications.filter(n => !n.read).length} unread
+              </span>
+              <span className="flex items-center">
+                <Archive className="w-4 h-4 mr-1" />
+                {notifications.filter(n => n.archived).length} archived
+              </span>
+            </div>
             
-            <button
-              onClick={loadNotifications}
-              className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-              title="Refresh"
-            >
-              <RefreshCw className="w-5 h-5" />
-            </button>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={loadNotifications}
+                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                title="Refresh (Ctrl+R)"
+              >
+                <RefreshCw className="w-5 h-5" />
+              </button>
 
-            <button
-              onClick={markAllAsRead}
-              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Mark All Read
-            </button>
+              <button
+                onClick={markAllAsRead}
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                title="Mark All Read (Ctrl+Shift+R)"
+              >
+                Mark All Read
+              </button>
+
+              <button
+                onClick={exportNotifications}
+                className="px-4 py-2 bg-indigo-100 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-200 transition-colors flex items-center"
+                title="Export All (Ctrl+E)"
+              >
+                <Download className="w-4 h-4 mr-1" />
+                Export All
+              </button>
+            </div>
           </div>
         </div>
 
