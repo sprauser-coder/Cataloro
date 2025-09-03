@@ -1,6 +1,6 @@
 /**
  * CATALORO - Unified Tenders Page
- * Contains two tabs: Manage Tenders (for sellers) and My Tenders (for buyers)
+ * Contains three tabs: My Listings (for sellers), Tenders (for buyers), and Sold Items
  */
 
 import React, { useState, useEffect } from 'react';
@@ -16,7 +16,10 @@ import {
   AlertCircle,
   MessageCircle,
   Eye,
-  RefreshCw
+  RefreshCw,
+  Package,
+  Store,
+  TrendingDown
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
