@@ -76,7 +76,7 @@ function App() {
                   <Route path="view-all-requests" element={<ViewAllRequestsPage />} />
                   <Route path={APP_ROUTES.MY_LISTINGS} element={<MyListingsPage />} />
 
-                  <Route path={APP_ROUTES.MY_DEALS} element={<DealsPage />} />
+
                   <Route path="messages" element={<MessagesPage />} />
                   <Route path={APP_ROUTES.TENDERS.substring(1)} element={<TenderManagementPage />} />
                   <Route path={APP_ROUTES.MY_TENDERS.substring(1)} element={<MyTendersPage />} />
