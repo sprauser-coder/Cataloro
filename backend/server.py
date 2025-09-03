@@ -163,26 +163,31 @@ async def trigger_system_notifications(user_id: str, event_type: str):
     """Trigger system notifications based on user events"""
     try:
         print(f"DEBUG: trigger_system_notifications called with user_id={user_id}, event_type={event_type}")
-        if event_type == "login":
-            # Create a welcome back notification
+        
+        # Get active system notifications that should be triggered for this event
+        system_notifications = await db.system_notifications.find({
+            "is_active": True,
+            "event_type": event_type  # Only trigger notifications for this specific event
+        }).to_list(length=None)
+        
+        for sys_notif in system_notifications:
             notification = {
                 "user_id": user_id,
-                "title": "Welcome back!",
-                "message": "You have successfully logged in to Cataloro Marketplace.",
+                "title": sys_notif.get("title", "System Notification"),
+                "message": sys_notif.get("message", "You have a new system notification."),
                 "type": "system",
                 "is_read": False,
                 "created_at": datetime.utcnow().isoformat(),
-                "id": str(uuid.uuid4())
+                "id": str(uuid.uuid4()),
+                "system_notification_id": sys_notif.get("id")
             }
-            print(f"DEBUG: Created notification object: {notification}")
+            print(f"DEBUG: Created system notification: {notification}")
             result = await db.user_notifications.insert_one(notification)
-            print(f"DEBUG: Database insert result: {result.inserted_id}")
-            print(f"DEBUG: Login notification created successfully for user {user_id}")
+            print(f"DEBUG: System notification created successfully for user {user_id}")
+            
     except Exception as e:
-        print(f"Error in trigger_system_notifications: {e}")
-        import traceback
-        traceback.print_exc()
-        # Don't raise the exception to avoid breaking the main flow
+        print(f"ERROR: Failed to trigger system notifications: {e}")
+        # Don't raise the exception as this shouldn't break the login flow
 
 # Health Check
 @app.get("/api/health")
