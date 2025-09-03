@@ -1725,6 +1725,13 @@ async def get_seller_tenders_overview(seller_id: str):
             enriched_tenders = []
             for tender in tenders:
                 buyer = await db.users.find_one({"id": tender["buyer_id"]})
+                if not buyer:
+                    try:
+                        from bson import ObjectId
+                        buyer = await db.users.find_one({"_id": ObjectId(tender["buyer_id"])})
+                    except:
+                        pass
+                        
                 buyer_info = {
                     "id": buyer.get("id", ""),
                     "username": buyer.get("username", "Unknown"),
