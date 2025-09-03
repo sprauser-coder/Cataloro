@@ -96,7 +96,7 @@ function AdminPanel() {
     }
   }, [activeSection]);
 
-  // Complete data fetching functions
+  // Data fetching functions
   const fetchRealDashboardData = async () => {
     try {
       setLoading(true);
@@ -164,7 +164,7 @@ function AdminPanel() {
     }
   };
 
-  // Complete management functions
+  // Management functions
   const createUser = async () => {
     try {
       setCreatingUser(true);
@@ -250,6 +250,8 @@ function AdminPanel() {
       showToast('Failed to update price settings', 'error');
     }
   };
+
+  const { kpis, recent_activity } = dashboardData || {};
 
   // Loading screen for dashboard
   if (loading && activeSection === 'dashboard') {
@@ -371,10 +373,10 @@ function AdminPanel() {
         </div>
       </div>
 
-      {/* MAIN CONTENT AREA */}
-      <div className="max-w-full px-8 py-8">
-        {/* Dashboard Tab */}
-        {activeTab === 'dashboard' && (
+      {/* Main Content Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Dashboard Section */}
+        {activeSection === 'dashboard' && (
           <div className="space-y-8">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Dashboard Overview</h2>
@@ -473,8 +475,8 @@ function AdminPanel() {
           </div>
         )}
 
-        {/* User Management Tab */}
-        {activeTab === 'users' && (
+        {/* User Management Section */}
+        {activeSection === 'users' && (
           <div className="space-y-8">
             <div className="flex justify-between items-center">
               <div>
@@ -538,12 +540,6 @@ function AdminPanel() {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end space-x-2">
                             <button
-                              onClick={() => setEditingUser(user)}
-                              className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
                               onClick={() => deleteUser(user.id)}
                               className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                             >
@@ -560,69 +556,29 @@ function AdminPanel() {
           </div>
         )}
 
-        {/* Content Management Tab */}
-        {activeTab === 'content' && (
+        {/* Content Management Section */}
+        {activeSection === 'content' && (
           <div>
             <ContentManagementSystem />
           </div>
         )}
 
-        {/* Analytics Tab */}
-        {activeTab === 'analytics' && (
-          <div className="space-y-8">
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics & Reports</h2>
-                <p className="text-gray-600 dark:text-gray-400">Comprehensive marketplace analytics and insights</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <select
-                  value={selectedDateRange}
-                  onChange={(e) => setSelectedDateRange(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="7d">Last 7 days</option>
-                  <option value="30d">Last 30 days</option>
-                  <option value="90d">Last 3 months</option>
-                  <option value="1y">Last year</option>
-                </select>
-                <button
-                  onClick={fetchAnalyticsData}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  <span>Refresh</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Analytics Sub-tabs Content */}
-            {activeSubTab === 'overview' && (
-              <div className="text-center py-16">
-                <BarChart3 className="w-24 h-24 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Analytics Overview</h3>
-                <p className="text-gray-600 dark:text-gray-400">Comprehensive analytics dashboard coming soon</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* System Notifications Tab */}
-        {activeTab === 'notifications' && (
+        {/* System Notifications Section */}
+        {activeSection === 'notifications' && (
           <div>
             <SystemNotificationsManager />
           </div>
         )}
 
-        {/* Business Process Map Tab */}
-        {activeTab === 'business' && (
+        {/* Business Process Section */}
+        {activeSection === 'business' && (
           <div>
             <BusinessTab showToast={showToast} />
           </div>
         )}
 
-        {/* Site Administration Tab */}
-        {activeTab === 'administration' && (
+        {/* Settings Section */}
+        {activeSection === 'settings' && (
           <div className="space-y-8">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Site Administration</h2>
@@ -630,227 +586,182 @@ function AdminPanel() {
             </div>
 
             {/* Cat Database & Basis */}
-            {activeSubTab === 'basis' && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                    <Database className="w-5 h-5 mr-2 text-blue-600" />
-                    Cat Database & Basis
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-                    Manage catalyst database and pricing basis settings
-                  </p>
-                </div>
-                <div className="p-6 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PT Price</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={priceSettings.pt_price}
-                        onChange={(e) => setPriceSettings({...priceSettings, pt_price: parseFloat(e.target.value) || 0})}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PD Price</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={priceSettings.pd_price}
-                        onChange={(e) => setPriceSettings({...priceSettings, pd_price: parseFloat(e.target.value) || 0})}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">RH Price</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={priceSettings.rh_price}
-                        onChange={(e) => setPriceSettings({...priceSettings, rh_price: parseFloat(e.target.value) || 0})}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                  <Database className="w-5 h-5 mr-2 text-blue-600" />
+                  Cat Database & Basis
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                  Manage catalyst database and pricing basis settings
+                </p>
+              </div>
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PT Price</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={priceSettings.pt_price}
+                      onChange={(e) => setPriceSettings({...priceSettings, pt_price: parseFloat(e.target.value) || 0})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PD Price</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={priceSettings.pd_price}
+                      onChange={(e) => setPriceSettings({...priceSettings, pd_price: parseFloat(e.target.value) || 0})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">RH Price</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={priceSettings.rh_price}
+                      onChange={(e) => setPriceSettings({...priceSettings, rh_price: parseFloat(e.target.value) || 0})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
 
-                  {/* Price Range Settings Section */}
-                  <div className="mt-8">
-                    <div className="mb-4">
-                      <h4 className="text-md font-semibold text-gray-900 dark:text-white">Price Range Configuration</h4>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">
-                        Configure the dynamic price range percentages for catalog listings.
+                {/* Price Range Settings Section */}
+                <div className="mt-8">
+                  <div className="mb-4">
+                    <h4 className="text-md font-semibold text-gray-900 dark:text-white">Price Range Configuration</h4>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                      Configure the dynamic price range percentages for catalog listings.
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Minimum Price Reduction (%)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          max="50"
+                          value={priceSettings.price_range_min_percent}
+                          onChange={(e) => setPriceSettings({...priceSettings, price_range_min_percent: parseFloat(e.target.value) || 0})}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-8"
+                        />
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">%</span>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Currently: -{priceSettings.price_range_min_percent}% from base price
                       </p>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Minimum Price Reduction (%)
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="number"
-                            step="0.1"
-                            min="0"
-                            max="50"
-                            value={priceSettings.price_range_min_percent}
-                            onChange={(e) => setPriceSettings({...priceSettings, price_range_min_percent: parseFloat(e.target.value) || 0})}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-8"
-                          />
-                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">%</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          Currently: -{priceSettings.price_range_min_percent}% from base price
-                        </p>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Maximum Price Increase (%)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          max="100"
+                          value={priceSettings.price_range_max_percent}
+                          onChange={(e) => setPriceSettings({...priceSettings, price_range_max_percent: parseFloat(e.target.value) || 0})}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-8"
+                        />
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">%</span>
                       </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Maximum Price Increase (%)
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="number"
-                            step="0.1"
-                            min="0"
-                            max="100"
-                            value={priceSettings.price_range_max_percent}
-                            onChange={(e) => setPriceSettings({...priceSettings, price_range_max_percent: parseFloat(e.target.value) || 0})}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-8"
-                          />
-                          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">%</span>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          Currently: +{priceSettings.price_range_max_percent}% from base price
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Price Range Preview */}
-                    <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                      <div className="text-sm text-blue-800 dark:text-blue-300">
-                        <strong>Preview:</strong> For a €100.00 base price, the range will be €{(100 * (100 - priceSettings.price_range_min_percent) / 100).toFixed(2)} - €{(100 * (100 + priceSettings.price_range_max_percent) / 100).toFixed(2)}
-                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Currently: +{priceSettings.price_range_max_percent}% from base price
+                      </p>
                     </div>
                   </div>
-
-                  <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <button
-                      onClick={updatePriceSettings}
-                      className="flex items-center space-x-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-                    >
-                      <Save className="w-4 h-4" />
-                      <span>Save Price Settings</span>
-                    </button>
+                  
+                  {/* Price Range Preview */}
+                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div className="text-sm text-blue-800 dark:text-blue-300">
+                      <strong>Preview:</strong> For a €100.00 base price, the range will be €{(100 * (100 - priceSettings.price_range_min_percent) / 100).toFixed(2)} - €{(100 * (100 + priceSettings.price_range_max_percent) / 100).toFixed(2)}
+                    </div>
                   </div>
                 </div>
+
+                <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <button
+                    onClick={updatePriceSettings}
+                    className="flex items-center space-x-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>Save Price Settings</span>
+                  </button>
+                </div>
               </div>
-            )}
+            </div>
 
             {/* Hero Selection */}
-            {activeSubTab === 'hero' && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                    <Layout className="w-5 h-5 mr-2 text-purple-600" />
-                    Hero Selection & Display Options
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-                    Configure hero section display and layout options
-                  </p>
-                </div>
-                <div className="p-6 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Display Mode
-                      </label>
-                      <select
-                        value={settings.hero_display_mode || 'full_width'}
-                        onChange={(e) => updateSettings({...settings, hero_display_mode: e.target.value})}
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      >
-                        <option value="full_width">Full Width</option>
-                        <option value="boxed">Boxed</option>
-                        <option value="centered">Centered</option>
-                      </select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Background Style
-                      </label>
-                      <select
-                        value={settings.hero_background_style || 'gradient'}
-                        onChange={(e) => updateSettings({...settings, hero_background_style: e.target.value})}
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      >
-                        <option value="gradient">Gradient</option>
-                        <option value="image">Image</option>
-                        <option value="solid">Solid</option>
-                      </select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Text Alignment
-                      </label>
-                      <select
-                        value={settings.hero_text_alignment || 'center'}
-                        onChange={(e) => updateSettings({...settings, hero_text_alignment: e.target.value})}
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      >
-                        <option value="left">Left</option>
-                        <option value="center">Center</option>
-                        <option value="right">Right</option>
-                      </select>
-                    </div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                  <Layout className="w-5 h-5 mr-2 text-purple-600" />
+                  Hero Selection & Display Options
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                  Configure hero section display and layout options
+                </p>
+              </div>
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Display Mode
+                    </label>
+                    <select
+                      value={settings.hero_display_mode || 'full_width'}
+                      onChange={(e) => updateSettings({...settings, hero_display_mode: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                      <option value="full_width">Full Width</option>
+                      <option value="boxed">Boxed</option>
+                      <option value="centered">Centered</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Background Style
+                    </label>
+                    <select
+                      value={settings.hero_background_style || 'gradient'}
+                      onChange={(e) => updateSettings({...settings, hero_background_style: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                      <option value="gradient">Gradient</option>
+                      <option value="image">Image</option>
+                      <option value="solid">Solid</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Text Alignment
+                    </label>
+                    <select
+                      value={settings.hero_text_alignment || 'center'}
+                      onChange={(e) => updateSettings({...settings, hero_text_alignment: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                      <option value="left">Left</option>
+                      <option value="center">Center</option>
+                      <option value="right">Right</option>
+                    </select>
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* General Settings */}
-            {activeSubTab === 'settings' && (
-              <div className="text-center py-16">
-                <Settings className="w-24 h-24 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">General Settings</h3>
-                <p className="text-gray-600 dark:text-gray-400">Site configuration options coming soon</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Security Tab */}
-        {activeTab === 'security' && (
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Security & Permissions</h2>
-              <p className="text-gray-600 dark:text-gray-400">Manage security settings and user permissions</p>
-            </div>
-
-            <div className="text-center py-16">
-              <Shield className="w-24 h-24 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Security Dashboard</h3>
-              <p className="text-gray-600 dark:text-gray-400">Advanced security features coming soon</p>
-            </div>
-          </div>
-        )}
-
-        {/* Developer Tools Tab */}
-        {activeTab === 'tools' && (
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Developer Tools</h2>
-              <p className="text-gray-600 dark:text-gray-400">System maintenance and developer utilities</p>
-            </div>
-
-            <div className="text-center py-16">
-              <Code className="w-24 h-24 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Developer Tools</h3>
-              <p className="text-gray-600 dark:text-gray-400">System tools and utilities coming soon</p>
             </div>
           </div>
         )}
