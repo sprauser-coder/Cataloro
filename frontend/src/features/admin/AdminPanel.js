@@ -5110,6 +5110,67 @@ function CatDatabaseTab({ showToast }) {
               </div>
             </div>
             
+            {/* Price Range Settings Section */}
+            <div className="mt-8">
+              <div className="mb-4">
+                <h4 className="text-md font-semibold text-gray-900 dark:text-white">Price Range Configuration</h4>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Configure the dynamic price range percentages for catalog listings.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Minimum Price Reduction (%)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="50"
+                      value={priceSettings.price_range_min_percent}
+                      onChange={(e) => setPriceSettings({...priceSettings, price_range_min_percent: parseFloat(e.target.value) || 0})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-8"
+                    />
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">%</span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Currently: -{priceSettings.price_range_min_percent}% from base price
+                  </p>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Maximum Price Increase (%)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="100"
+                      value={priceSettings.price_range_max_percent}
+                      onChange={(e) => setPriceSettings({...priceSettings, price_range_max_percent: parseFloat(e.target.value) || 0})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-8"
+                    />
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">%</span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Currently: +{priceSettings.price_range_max_percent}% from base price
+                  </p>
+                </div>
+              </div>
+              
+              {/* Price Range Preview */}
+              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="text-sm text-blue-800 dark:text-blue-300">
+                  <strong>Preview:</strong> For a €100.00 base price, the range will be €{(100 * (100 - priceSettings.price_range_min_percent) / 100).toFixed(2)} - €{(100 * (100 + priceSettings.price_range_max_percent) / 100).toFixed(2)}
+                </div>
+              </div>
+            </div>
+            
             <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={handleUpdatePriceSettings}
