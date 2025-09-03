@@ -154,22 +154,69 @@ function NotificationsCenterPage() {
 
   const deleteNotifications = async (notificationIds) => {
     try {
+      setBulkActionLoading(true);
       const idsArray = Array.isArray(notificationIds) ? notificationIds : [notificationIds];
       
+      let successCount = 0;
+      let failureCount = 0;
+      
       for (const id of idsArray) {
-        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications/${id}`, {
-          method: 'DELETE'
-        });
+        const notification = notifications.find(n => n.id === id);
+        const notificationType = notification?.type || 'unknown';
+        
+        // Try multiple deletion endpoints for better compatibility
+        const endpoints = [
+          `api/user/${user.id}/notifications/${id}`,
+          `api/notifications/${id}?user_id=${user.id}`,
+          `api/user/${user.id}/system-notifications/${id}`
+        ];
+        
+        let deleteSuccess = false;
+        
+        for (const endpoint of endpoints) {
+          try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/${endpoint}`, {
+              method: 'DELETE'
+            });
+            
+            if (response.ok) {
+              deleteSuccess = true;
+              successCount++;
+              console.log(`✅ Successfully deleted ${notificationType} notification via: ${endpoint}`);
+              break;
+            }
+          } catch (error) {
+            console.log(`❌ Delete attempt error for ${notificationType} via ${endpoint}:`, error);
+          }
+        }
+        
+        if (!deleteSuccess) {
+          failureCount++;
+          console.error(`❌ Failed to delete ${notificationType} notification with ID: ${id}`);
+        }
       }
       
-      // Update local state
-      setNotifications(prev => prev.filter(notif => !idsArray.includes(notif.id)));
-      setSelectedNotifications([]);
+      // Update local state for successfully deleted notifications
+      if (successCount > 0) {
+        setNotifications(prev => prev.filter(notif => !idsArray.includes(notif.id) || 
+          !notifications.find(n => n.id === notif.id && idsArray.includes(notif.id))));
+        setSelectedNotifications([]);
+      }
       
-      showToast(`Deleted ${idsArray.length} notification(s)`, 'success');
+      // Show appropriate feedback
+      if (failureCount === 0) {
+        showToast(`Successfully deleted ${successCount} notification(s)`, 'success');
+      } else if (successCount === 0) {
+        showToast(`Failed to delete ${failureCount} notification(s). Please try again.`, 'error');
+      } else {
+        showToast(`Deleted ${successCount} notification(s), ${failureCount} failed. Please try again for the failed ones.`, 'warning');
+      }
+      
     } catch (error) {
-      console.error('Error deleting notifications:', error);
+      console.error('Error in bulk delete:', error);
       showToast('Failed to delete notifications', 'error');
+    } finally {
+      setBulkActionLoading(false);
     }
   };
 
