@@ -78,6 +78,7 @@ function App() {
                   <Route path="my-orders" element={<DealsPage />} />
                   <Route path={APP_ROUTES.MY_DEALS} element={<DealsPage />} />
                   <Route path="messages" element={<MessagesPage />} />
+                  <Route path="tenders" element={<TenderManagementPage />} />
                   <Route path="notifications" element={<NotificationsCenterPage />} />
                   <Route path="analytics" element={<AdminPanel />} />
                   <Route path="performance" element={<AdminPanel />} />
