@@ -2794,6 +2794,27 @@ async def update_price_settings(settings: CatalystPriceSettings):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update price settings: {str(e)}")
 
+@app.get("/api/marketplace/price-range-settings")
+async def get_price_range_settings():
+    """Get price range configuration for frontend calculations"""
+    try:
+        settings = await db.catalyst_price_settings.find_one({"type": "price_settings"})
+        
+        if not settings:
+            # Return default range settings
+            return {
+                "price_range_min_percent": 10.0,  # Default -10%
+                "price_range_max_percent": 10.0   # Default +10%
+            }
+        
+        return {
+            "price_range_min_percent": settings.get("price_range_min_percent", 10.0),
+            "price_range_max_percent": settings.get("price_range_max_percent", 10.0)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch price range settings: {str(e)}")
+
 @app.get("/api/admin/catalyst/calculations")
 async def get_catalyst_calculations():
     """Get calculated prices for all catalysts"""
