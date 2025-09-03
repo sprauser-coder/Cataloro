@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 class FocusedAdminTester:
-    def __init__(self, base_url="https://cataloro-marketplace-1.preview.emergentagent.com"):
+    def __init__(self, base_url="https://tender-system.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_user = None
         self.test_listing_ids = []
