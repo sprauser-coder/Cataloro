@@ -523,7 +523,6 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   const navigationItems = [
     { label: 'About', path: '/info', icon: Globe },
     { label: 'Browse', path: '/browse', icon: Store },
-    { label: 'Listings', path: '/my-listings', icon: Package },
   ];
 
   return (
