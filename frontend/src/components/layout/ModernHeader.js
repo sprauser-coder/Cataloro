@@ -37,7 +37,8 @@ import {
   Volume2,
   VolumeX,
   BellOff,
-  Globe
+  Globe,
+  Plus
 } from 'lucide-react';
 import { APP_ROUTES } from '../../config/directions';
 import { useAuth } from '../../context/AuthContext';
