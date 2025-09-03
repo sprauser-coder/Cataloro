@@ -225,6 +225,21 @@ function ModernBrowsePage() {
       if (response.ok) {
         showToast(`Tender offer of €${offerAmount} submitted successfully!`, 'success');
         
+        // Show visual confirmation for this specific item
+        setTenderConfirmations(prev => ({ 
+          ...prev, 
+          [item.id]: {
+            amount: parseFloat(offerAmount),
+            timestamp: new Date(),
+            visible: true
+          }
+        }));
+        
+        // Hide confirmation after 5 seconds
+        setTimeout(() => {
+          setTenderConfirmations(prev => ({ ...prev, [item.id]: { ...prev[item.id], visible: false } }));
+        }, 5000);
+        
         // Refresh listings to show updated highest bid
         setTimeout(() => {
           contextRefreshListings();
