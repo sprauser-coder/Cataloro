@@ -36,9 +36,10 @@ import {
 function ProductDetailPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { showToast } = useNotifications();
   const {
     allProducts,
-    addToCart,
     addToFavorites,
     removeFromFavorites,
     favorites,
