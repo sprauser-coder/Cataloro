@@ -77,8 +77,7 @@ function App() {
 
 
                   <Route path="messages" element={<MessagesPage />} />
-                  <Route path={APP_ROUTES.TENDERS.substring(1)} element={<TenderManagementPage />} />
-                  <Route path={APP_ROUTES.MY_TENDERS.substring(1)} element={<MyTendersPage />} />
+                  <Route path={APP_ROUTES.TENDERS.substring(1)} element={<TendersPage />} />
                   <Route path="notifications" element={<NotificationsCenterPage />} />
                   <Route path="analytics" element={<AdminPanel />} />
                   <Route path="performance" element={<AdminPanel />} />
