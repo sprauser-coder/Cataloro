@@ -378,7 +378,134 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showUserMenu, showNotifications, showTendersMenu]);
 
-  const handleLogout = () => {
+  // Smart notification click handler
+  const handleNotificationClick = async (notification) => {
+    try {
+      // Mark notification as read first
+      await markAsRead(notification.id);
+      
+      // Close notifications dropdown
+      setShowNotifications(false);
+      
+      // Navigate based on notification type
+      switch (notification.type) {
+        case 'tender_accepted':
+          // Navigate to Tenders page, My Tenders tab
+          navigate('/tenders');
+          // Set a URL parameter to indicate which tab should be active
+          setTimeout(() => {
+            const urlParams = new URLSearchParams();
+            urlParams.set('tab', 'my-tenders');
+            navigate('/tenders?' + urlParams.toString(), { replace: true });
+          }, 100);
+          break;
+          
+        case 'tender_offer':
+        case 'new_tender_offer':
+          // Navigate to Tenders page, Manage Tenders tab
+          navigate('/tenders');
+          setTimeout(() => {
+            const urlParams = new URLSearchParams();
+            urlParams.set('tab', 'manage');
+            if (notification.listing_id) {
+              urlParams.set('listing', notification.listing_id);
+            }
+            navigate('/tenders?' + urlParams.toString(), { replace: true });
+          }, 100);
+          break;
+          
+        case 'tender_rejected':
+          // Navigate to Tenders page, My Tenders tab
+          navigate('/tenders');
+          setTimeout(() => {
+            const urlParams = new URLSearchParams();
+            urlParams.set('tab', 'my-tenders');
+            navigate('/tenders?' + urlParams.toString(), { replace: true });
+          }, 100);
+          break;
+          
+        case 'order_completed':
+        case 'order_shipped':
+        case 'listing_sold':
+          // Navigate to My Listings page with Closed filter
+          navigate('/my-listings');
+          setTimeout(() => {
+            const urlParams = new URLSearchParams();
+            urlParams.set('filter', 'closed');
+            navigate('/my-listings?' + urlParams.toString(), { replace: true });
+          }, 100);
+          break;
+          
+        case 'message':
+        case 'new_message':
+          // Navigate to Messages page
+          if (notification.message_id) {
+            navigate(`/messages?id=${notification.message_id}`);
+          } else {
+            navigate('/messages');
+          }
+          break;
+          
+        case 'buy_request':
+        case 'purchase_request':
+          // Navigate to My Listings page with Active filter
+          navigate('/my-listings');
+          setTimeout(() => {
+            const urlParams = new URLSearchParams();
+            urlParams.set('filter', 'active');
+            navigate('/my-listings?' + urlParams.toString(), { replace: true });
+          }, 100);
+          break;
+          
+        case 'buy_approved':
+        case 'purchase_approved':
+          // Navigate to shopping cart
+          navigate('/cart');
+          break;
+          
+        case 'buy_rejected':
+        case 'purchase_rejected':
+          // Navigate to browse page to find alternatives
+          navigate('/browse');
+          break;
+          
+        case 'favorite':
+        case 'wishlist_update':
+          // Navigate to favorites page
+          navigate('/favorites');
+          break;
+          
+        case 'listing_approved':
+        case 'listing_updated':
+          // Navigate to My Listings
+          navigate('/my-listings');
+          break;
+          
+        case 'profile_update':
+        case 'account_update':
+          // Navigate to profile settings
+          navigate('/profile');
+          break;
+          
+        case 'system':
+        case 'announcement':
+          // Navigate to notifications center for full details
+          navigate('/notifications');
+          break;
+          
+        default:
+          // For unknown notification types, go to notifications center
+          navigate('/notifications');
+          break;
+      }
+      
+      showToast(`Navigating to ${notification.title}`, 'info');
+      
+    } catch (error) {
+      console.error('Error handling notification click:', error);
+      showToast('Error navigating from notification', 'error');
+    }
+  };
     localStorage.removeItem('cataloro_token');
     localStorage.removeItem('cataloro_user');
     navigate('/login');
