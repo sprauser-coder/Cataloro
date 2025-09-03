@@ -534,7 +534,9 @@ function NotificationsCenterPage() {
               key={notification.id}
               className={`p-6 rounded-xl border transition-all duration-200 ${
                 getNotificationColor(notification.type)
-              } ${!notification.read ? 'ring-2 ring-blue-200 dark:ring-blue-700' : ''}`}
+              } ${!notification.read ? 'ring-2 ring-blue-200 dark:ring-blue-700' : ''} ${
+                notification.archived ? 'opacity-75 border-dashed' : ''
+              }`}
             >
               <div className="flex items-start space-x-4">
                 {/* Checkbox */}
