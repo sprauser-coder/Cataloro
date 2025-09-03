@@ -42,6 +42,7 @@ import {
 import { APP_ROUTES } from '../../config/directions';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
+import { useNotifications } from '../../context/NotificationContext';
 import { liveService } from '../../services/liveService';
 
 function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileMenuOpen }) {
