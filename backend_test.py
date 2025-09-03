@@ -147,7 +147,11 @@ def test_sold_items_functionality():
         # Test 5: Accept the tender
         print("\n5. ✅ ACCEPT TENDER AND TEST SOLD ITEMS UPDATE")
         
-        accept_response = requests.put(f"{BACKEND_URL}/tenders/{tender_id}/accept")
+        accept_data = {
+            "seller_id": user_id
+        }
+        
+        accept_response = requests.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", json=accept_data)
         
         if accept_response.status_code == 200:
             print(f"   ✅ Tender accepted successfully")
