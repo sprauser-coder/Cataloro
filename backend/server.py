@@ -2886,8 +2886,9 @@ async def get_ai_search_suggestions(search_data: dict):
                 return {"suggestions": suggestions[:5] if isinstance(suggestions, list) else []}
         except:
             # Fallback to manual suggestions if AI response parsing fails
+            fallback_categories = ["automotive catalyst", "industrial catalyst", "precious metal catalyst", "zeolite catalyst", "hydrogenation catalyst"]
             fallback_suggestions = []
-            for category in categories:
+            for category in fallback_categories:
                 if query.lower() in category.lower():
                     fallback_suggestions.append(category)
             return {"suggestions": fallback_suggestions[:5]}
