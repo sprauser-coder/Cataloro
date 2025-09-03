@@ -10,7 +10,7 @@ import time
 from datetime import datetime, timedelta
 
 # Configuration
-BACKEND_URL = "https://market-upgrade-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-2.preview.emergentagent.com/api"
 
 def test_admin_panel_and_profile_fixes():
     """Test the critical admin panel and profile fixes"""
