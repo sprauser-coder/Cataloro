@@ -243,13 +243,16 @@ async def login_user(credentials: dict):
             # Refresh user data
             user = await db.users.find_one({"email": credentials["email"]})
     
-    # Get user ID for token - handle both new users (with 'id') and existing users (with '_id')
-    if user:
-        user_id = user.get('id') or str(user.get('_id'))
+    # Serialize user data first to get proper ID format
+    serialized_user = serialize_doc(user) if user else None
+    
+    # Get user ID for token - use serialized user's ID for consistency
+    if serialized_user:
+        user_id = serialized_user.get('id')
     else:
         user_id = generate_id()
     
-    # Trigger login-based system notifications AFTER getting proper user_id
+    # Trigger login-based system notifications with proper user_id format
     try:
         print(f"DEBUG: Triggering login notification for user_id: {user_id}")
         await trigger_system_notifications(user_id, "login")
@@ -258,9 +261,6 @@ async def login_user(credentials: dict):
         print(f"Error triggering login notifications: {e}")
         import traceback
         traceback.print_exc()
-    
-    # Serialize user for response
-    serialized_user = serialize_doc(user) if user else None
     
     return {
         "message": "Login successful",
