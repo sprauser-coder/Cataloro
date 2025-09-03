@@ -57,6 +57,7 @@ function ModernBrowsePage() {
   const [messageContent, setMessageContent] = useState('');
   const [sending, setSending] = useState(false);
   const [submittingTenders, setSubmittingTenders] = useState({}); // Track tender submission state per item
+  const [tenderConfirmations, setTenderConfirmations] = useState({}); // Track successful tender submissions
 
   // Check if item is in favorites
   const isInFavorites = (itemId) => {
