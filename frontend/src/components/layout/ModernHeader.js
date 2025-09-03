@@ -907,7 +907,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     </Link>
                     
                     <Link
-                      to="/tenders"
+                      to={APP_ROUTES.TENDERS}
                       className="flex items-center px-6 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
                       onClick={() => setShowUserMenu(false)}
                     >
@@ -920,7 +920,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     </Link>
                     
                     <Link
-                      to="/my-tenders"
+                      to={APP_ROUTES.MY_TENDERS}
                       className="flex items-center px-6 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
                       onClick={() => setShowUserMenu(false)}
                     >
