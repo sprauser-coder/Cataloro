@@ -187,8 +187,8 @@ function TendersPage() {
     }
   };
 
-  // My Tenders Functions
-  const fetchMyTenders = async () => {
+  // Tenders Functions (previously My Tenders Functions)
+  const loadMyTenders = async () => {
     if (!user) return;
     
     try {
