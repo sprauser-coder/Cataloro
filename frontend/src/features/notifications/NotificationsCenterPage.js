@@ -44,7 +44,9 @@ function NotificationsCenterPage() {
 
   useEffect(() => {
     loadNotifications();
-    
+  }, [user?.id]);
+
+  useEffect(() => {
     // Keyboard shortcuts for bulk actions
     const handleKeyPress = (e) => {
       if (e.ctrlKey || e.metaKey) {
@@ -75,7 +77,7 @@ function NotificationsCenterPage() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [user?.id, selectedNotifications]);
+  }, [selectedNotifications]); // Keep only selectedNotifications for keyboard shortcuts
 
   const loadNotifications = async () => {
     try {
