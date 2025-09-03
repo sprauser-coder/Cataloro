@@ -1886,6 +1886,18 @@ class CataloroAPITester:
                 print(f"⚠️  {3 - bulk_tests_passed} bulk action test suites failed")
                 self.log_test("Bulk Actions & add_info Complete", False, f"{3 - bulk_tests_passed} test suites failed")
 
+        # NEW: Tender Offerer Visibility Test (as requested in review)
+        print("\n🔥 PRIORITY: Testing Tender Offerer Visibility...")
+        if admin_login_success and user_login_success:
+            tender_visibility_success = self.test_tender_offerer_visibility()
+            
+            if tender_visibility_success:
+                print("🎉 Tender offerer visibility test completed successfully!")
+                self.log_test("Tender Offerer Visibility Complete", True, "All tender visibility features working")
+            else:
+                print("⚠️ Tender offerer visibility test had issues")
+                self.log_test("Tender Offerer Visibility Complete", False, "Tender visibility tests failed")
+
         # Print results
         print("\n" + "=" * 60)
         print(f"📊 Test Results: {self.tests_passed}/{self.tests_run} tests passed")
