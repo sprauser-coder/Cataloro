@@ -947,10 +947,10 @@ function CreateListingPage() {
                   Review all information above and click create to publish your listing to the marketplace.
                 </p>
               </div>
-              <div className="flex space-x-4">
+              <div className="flex justify-end space-x-4">
                 <Link
-                  to="/my-listings"
-                  className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-lg font-medium transition-colors"
+                  to="/browse"
+                  className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors"
                 >
                   Cancel
                 </Link>
@@ -960,7 +960,7 @@ function CreateListingPage() {
                   type="button"
                   onClick={handleSaveDraft}
                   disabled={isSavingDraft || isSubmitting}
-                  className="px-6 py-3 bg-yellow-600/80 hover:bg-yellow-600/90 disabled:bg-yellow-600/50 text-white rounded-lg font-medium transition-colors flex items-center space-x-2 disabled:cursor-not-allowed"
+                  className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 disabled:bg-yellow-400 text-white rounded-lg font-medium transition-colors flex items-center space-x-2 disabled:cursor-not-allowed"
                 >
                   {isSavingDraft ? (
                     <>
@@ -978,7 +978,7 @@ function CreateListingPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting || isSavingDraft}
-                  className="px-8 py-3 bg-white/20 hover:bg-white/30 disabled:bg-white/10 text-white rounded-lg font-semibold transition-colors flex items-center space-x-2 disabled:cursor-not-allowed"
+                  className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-semibold transition-colors flex items-center space-x-2 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <>
