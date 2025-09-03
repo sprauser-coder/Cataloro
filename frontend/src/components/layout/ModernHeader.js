@@ -382,7 +382,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   const handleNotificationClick = async (notification) => {
     try {
       // Mark notification as read first
-      await markAsRead(notification.id);
+      await markNotificationAsRead(notification.id);
       
       // Close notifications dropdown
       setShowNotifications(false);
