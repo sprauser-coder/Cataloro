@@ -237,8 +237,11 @@ async def login_user(credentials: dict):
             # Refresh user data
             user = await db.users.find_one({"email": credentials["email"]})
     
-    # Get user ID for token
-    user_id = user.get('id') if user else generate_id()
+    # Get user ID for token - handle both new users (with 'id') and existing users (with '_id')
+    if user:
+        user_id = user.get('id') or str(user.get('_id'))
+    else:
+        user_id = generate_id()
     
     # Trigger login-based system notifications
     try:
