@@ -435,15 +435,59 @@ function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Add to Cart */}
+          {/* Tender Submission Section */}
           <div className="space-y-4">
-            <button
-              onClick={handleAddToCart}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
-            >
-              <ShoppingCart className="w-6 h-6" />
-              <span>Add to Cart - €{product.price.toLocaleString()}</span>
-            </button>
+            {/* Current Highest Bid Display */}
+            {product.highest_bid && (
+              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-200 dark:border-yellow-800">
+                <div className="flex items-center justify-between">
+                  <span className="text-yellow-800 dark:text-yellow-300 font-medium">
+                    Current highest bid:
+                  </span>
+                  <span className="text-yellow-900 dark:text-yellow-200 font-bold text-lg">
+                    €{parseFloat(product.highest_bid).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            )}
+            
+            {/* Tender Input Form */}
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Your Tender Offer (€)
+              </label>
+              <div className="flex space-x-3">
+                <input
+                  type="number"
+                  min={product.highest_bid || product.price || 0}
+                  step="10"
+                  value={tenderAmount}
+                  onChange={(e) => setTenderAmount(e.target.value)}
+                  placeholder={`Minimum: €${(product.highest_bid || product.price || 0).toFixed(2)}`}
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                />
+                <button
+                  onClick={handleSubmitTender}
+                  disabled={submittingTender || !tenderAmount}
+                  className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                >
+                  {submittingTender ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Submitting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <DollarSign className="w-5 h-5" />
+                      <span>Submit Offer</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Enter your competitive offer. Minimum bid: €{(product.highest_bid || product.price || 0).toFixed(2)}
+              </p>
+            </div>
           </div>
 
           {/* Shipping and Trust Indicators */}
