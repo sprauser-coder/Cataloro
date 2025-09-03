@@ -2319,6 +2319,13 @@ async def approve_buy_request(order_id: str, approval_data: dict):
             {"$set": {"status": "sold", "sold_at": current_time}}
         )
         
+        # Clean up favorites for sold listing
+        try:
+            await db.user_favorites.delete_many({"item_id": order["listing_id"]})
+            print(f"DEBUG: Cleaned up favorites for sold listing {order['listing_id']}")
+        except Exception as fav_error:
+            print(f"Warning: Failed to clean up favorites for sold listing: {fav_error}")
+        
         # Create notification for buyer
         listing = await db.listings.find_one({"id": order["listing_id"]})
         notification = {
