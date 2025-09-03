@@ -73,6 +73,8 @@ export const APP_ROUTES = {
   BROWSE: '/browse',
   MY_LISTINGS: '/my-listings',
   MY_DEALS: '/my-deals',
+  TENDERS: '/tenders',
+  MY_TENDERS: '/my-tenders',
   ADMIN_PANEL: '/admin',
   FAVORITES: '/favorites',
   NOTIFICATIONS: '/notifications',
