@@ -101,9 +101,10 @@ def test_sold_items_functionality():
         print("\n4. 👤 CREATE TEST BUYER AND SUBMIT TENDER")
         
         # Register test buyer
+        unique_timestamp = int(time.time())
         buyer_data = {
-            "username": "test_buyer_sold_items",
-            "email": "buyer_sold_items@test.com",
+            "username": f"test_buyer_sold_items_{unique_timestamp}",
+            "email": f"buyer_sold_items_{unique_timestamp}@test.com",
             "full_name": "Test Buyer for Sold Items",
             "is_business": False
         }
