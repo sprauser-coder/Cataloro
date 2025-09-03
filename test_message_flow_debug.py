@@ -7,7 +7,7 @@ import requests
 import json
 
 def test_complete_flow():
-    base_url = "https://bid-manager-5.preview.emergentagent.com"
+    base_url = "https://tender-fix.preview.emergentagent.com"
     
     # Create two test users
     user1_data = {

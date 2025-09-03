@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_messaging():
-    base_url = "https://bid-manager-5.preview.emergentagent.com"
+    base_url = "https://tender-fix.preview.emergentagent.com"
     
     # Create a test user
     user_data = {

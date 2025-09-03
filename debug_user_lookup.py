@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_user_lookup():
-    base_url = "https://bid-manager-5.preview.emergentagent.com"
+    base_url = "https://tender-fix.preview.emergentagent.com"
     
     # Get all users to see how they're stored
     print("Getting all users from admin endpoint...")
