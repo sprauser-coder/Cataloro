@@ -1,23 +1,59 @@
 /**
  * CATALORO - Modern Notification Toast System
- * Beautiful toast notifications with animations
+ * Beautiful toast notifications with animations - Integrated with Admin System Notifications
  */
 
 import React, { useState, useEffect } from 'react';
-import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
+import { X, CheckCircle, AlertCircle, Info, AlertTriangle, Bell } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 function NotificationToast() {
   const [toasts, setToasts] = useState([]);
+  const { user, isAuthenticated } = useAuth();
 
-  // Demo function to add toasts (can be called from anywhere in the app)
+  // Load system notifications from backend instead of hardcoded demo
   useEffect(() => {
-    // Add demo toast after component mounts
-    const timer = setTimeout(() => {
-      addToast('Welcome to the new Cataloro!', 'success');
-    }, 2000);
+    if (isAuthenticated && user?.id) {
+      loadSystemNotifications();
+    }
+  }, [isAuthenticated, user?.id]);
 
-    return () => clearTimeout(timer);
-  }, []);
+  const loadSystemNotifications = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/system-notifications`);
+      if (response.ok) {
+        const data = await response.json();
+        const notifications = data.notifications || [];
+        
+        // Show each system notification as a toast
+        notifications.forEach((notification, index) => {
+          setTimeout(() => {
+            addToast(
+              notification.message, 
+              notification.type || 'info', 
+              notification.show_duration || 5000,
+              notification.id
+            );
+            
+            // Mark as viewed after displaying
+            markNotificationViewed(notification.id);
+          }, index * 1000); // Stagger multiple notifications
+        });
+      }
+    } catch (error) {
+      console.error('Error loading system notifications:', error);
+    }
+  };
+
+  const markNotificationViewed = async (notificationId) => {
+    try {
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/system-notifications/${notificationId}/view`, {
+        method: 'POST'
+      });
+    } catch (error) {
+      console.error('Error marking notification as viewed:', error);
+    }
+  };
 
   const addToast = (message, type = 'info', duration = 5000) => {
     const id = Date.now() + Math.random();
