@@ -68,6 +68,8 @@ function MyListingsPage() {
         return listings.filter(l => l.status === 'active');
       case 'drafts':
         return listings.filter(l => l.status === 'draft' || l.is_draft);
+      case 'closed':
+        return listings.filter(l => l.status === 'sold' || l.status === 'closed');
       default:
         return listings;
     }
