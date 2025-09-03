@@ -240,6 +240,12 @@ async def login_user(credentials: dict):
     # Get user ID for token
     user_id = user.get('id') if user else generate_id()
     
+    # Trigger login-based system notifications
+    try:
+        await trigger_system_notifications(user_id, "login")
+    except Exception as e:
+        print(f"Error triggering login notifications: {e}")
+    
     return {
         "message": "Login successful",
         "user": serialize_doc(user),
