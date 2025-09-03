@@ -394,6 +394,49 @@ async def browse_listings(
             
             enriched_listings.append(listing)
         
+        # Enrich with tender/bid information for each listing
+        for listing in enriched_listings:
+            listing_id = listing.get('id')
+            if listing_id:
+                try:
+                    # Get all tenders for this listing
+                    tenders = await db.tenders.find({"listing_id": listing_id}).to_list(length=None)
+                    
+                    if tenders:
+                        # Sort by offer amount to find highest bid
+                        tenders.sort(key=lambda x: x.get('offer_amount', 0), reverse=True)
+                        highest_tender = tenders[0]
+                        
+                        listing['bid_info'] = {
+                            "has_bids": True,
+                            "total_bids": len(tenders),
+                            "highest_bid": highest_tender.get('offer_amount', 0),
+                            "highest_bidder_id": highest_tender.get('buyer_id', '')
+                        }
+                    else:
+                        listing['bid_info'] = {
+                            "has_bids": False,
+                            "total_bids": 0,
+                            "highest_bid": listing.get('price', 0),  # Use starting price
+                            "highest_bidder_id": ''
+                        }
+                except Exception as bid_error:
+                    print(f"Error fetching bid info for listing {listing_id}: {bid_error}")
+                    # Fallback bid info
+                    listing['bid_info'] = {
+                        "has_bids": False,
+                        "total_bids": 0,
+                        "highest_bid": listing.get('price', 0),
+                        "highest_bidder_id": ''
+                    }
+            else:
+                listing['bid_info'] = {
+                    "has_bids": False,
+                    "total_bids": 0,
+                    "highest_bid": listing.get('price', 0),
+                    "highest_bidder_id": ''
+                }
+        
         # Apply seller type filter after enrichment (since we need seller info)
         if type != "all":
             if type == "Private":
