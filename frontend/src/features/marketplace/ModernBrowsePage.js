@@ -678,7 +678,7 @@ function ModernBrowsePage() {
 }
 
 // Enhanced Product Card Component (used in JSX below)
-function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteToggle, onMessageSeller, isInFavorites, isSubmittingTender, tenderConfirmation, priceRangeSettings, userActiveBids }) {
+function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteToggle, onMessageSeller, isInFavorites, isSubmittingTender, tenderConfirmation, priceRangeSettings, userActiveBids, user }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   // Removed unused state
   const [priceSuggestion, setPriceSuggestion] = useState(null);
