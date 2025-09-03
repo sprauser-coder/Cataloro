@@ -571,6 +571,8 @@ function ModernBrowsePage() {
               isInFavorites={isInFavorites}
               isSubmittingTender={submittingTenders[item.id] || false}
               tenderConfirmation={tenderConfirmations[item.id]}
+              priceRangeSettings={priceRangeSettings}
+              userActiveBids={userActiveBids}
             />
           ))}
         </div>
