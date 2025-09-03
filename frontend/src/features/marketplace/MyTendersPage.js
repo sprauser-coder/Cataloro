@@ -227,6 +227,22 @@ function MyTendersPage() {
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Starting Price: €{tender.listing.price.toFixed(2)}
                       </p>
+                      {/* Seller Information */}
+                      {tender.seller && (
+                        <div className="mt-2 flex items-center space-x-2">
+                          <span className="text-xs text-gray-500 dark:text-gray-500">Seller:</span>
+                          <div className="flex items-center space-x-1">
+                            {tender.seller.is_business && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                Business
+                              </span>
+                            )}
+                            <span className="text-sm font-medium text-gray-900 dark:text-white">
+                              {tender.seller.business_name || tender.seller.full_name || tender.seller.username}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                     
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(tender.status)}`}>
