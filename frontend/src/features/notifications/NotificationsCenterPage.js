@@ -582,104 +582,143 @@ function NotificationsCenterPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {filteredNotifications.map((notification) => (
             <div
               key={notification.id}
-              className={`p-6 rounded-xl border transition-all duration-200 ${
+              className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 hover:shadow-lg ${
                 getNotificationColor(notification.type)
-              } ${!notification.read ? 'ring-2 ring-blue-200 dark:ring-blue-700' : ''} ${
+              } ${!notification.read ? 'ring-2 ring-blue-200 dark:ring-blue-700 shadow-md' : ''} ${
                 notification.archived ? 'opacity-75 border-dashed' : ''
-              }`}
+              } ${selectedNotifications.includes(notification.id) ? 'ring-2 ring-purple-500 shadow-lg transform scale-[1.02]' : ''}`}
             >
-              <div className="flex items-start space-x-4">
-                {/* Checkbox */}
-                <input
-                  type="checkbox"
-                  checked={selectedNotifications.includes(notification.id)}
-                  onChange={() => toggleSelectNotification(notification.id)}
-                  className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
+              {/* Selection Overlay */}
+              {selectedNotifications.includes(notification.id) && (
+                <div className="absolute inset-0 bg-purple-500/10 dark:bg-purple-400/10"></div>
+              )}
 
-                {/* Icon */}
-                <div className="flex-shrink-0 mt-1">
-                  {getNotificationIcon(notification.type)}
-                </div>
+              <div className="p-6">
+                <div className="flex items-start space-x-4">
+                  {/* Enhanced Checkbox */}
+                  <div className="flex-shrink-0 pt-1">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedNotifications.includes(notification.id)}
+                        onChange={() => toggleSelectNotification(notification.id)}
+                        className="sr-only"
+                      />
+                      <div className={`w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
+                        selectedNotifications.includes(notification.id)
+                          ? 'bg-purple-500 border-purple-500 shadow-lg'
+                          : 'border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500'
+                      }`}>
+                        {selectedNotifications.includes(notification.id) && (
+                          <Check className="w-4 h-4 text-white" />
+                        )}
+                      </div>
+                    </label>
+                  </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {notification.title}
-                      </h4>
-                      {notification.archived && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-                          <Archive className="w-3 h-3 mr-1" />
-                          Archived
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      {!notification.read && (
-                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                      )}
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {new Date(notification.created_at || notification.timestamp).toLocaleString()}
-                      </span>
+                  {/* Notification Icon */}
+                  <div className="flex-shrink-0 pt-1">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      selectedNotifications.includes(notification.id) ? 'scale-110' : ''
+                    } transition-transform duration-200`}>
+                      {getNotificationIcon(notification.type)}
                     </div>
                   </div>
 
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">
-                    {notification.message || notification.content}
-                  </p>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
+                          {notification.title}
+                        </h4>
+                        
+                        {/* Status Badges */}
+                        <div className="flex items-center space-x-2">
+                          {!notification.read && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                              <span className="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
+                              New
+                            </span>
+                          )}
+                          
+                          {notification.archived && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                              <Archive className="w-3 h-3 mr-1" />
+                              Archived
+                            </span>
+                          )}
 
-                  {/* Actions */}
-                  <div className="flex items-center space-x-4 flex-wrap">
-                    {!notification.read ? (
-                      <button
-                        onClick={() => markAsRead(notification.id)}
-                        className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 flex items-center"
-                      >
-                        <Eye className="w-4 h-4 mr-1" />
-                        Mark as read
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => markAsUnread(notification.id)}
-                        className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center"
-                      >
-                        <EyeOff className="w-4 h-4 mr-1" />
-                        Mark as unread
-                      </button>
-                    )}
+                          {notification.type === 'system' && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                              <Settings className="w-3 h-3 mr-1" />
+                              System
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span>{new Date(notification.created_at || notification.timestamp).toLocaleString()}</span>
+                      </div>
+                    </div>
 
-                    {!notification.archived ? (
-                      <button
-                        onClick={() => archiveNotifications(notification.id)}
-                        className="text-sm text-yellow-600 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-200 flex items-center"
-                      >
-                        <Archive className="w-4 h-4 mr-1" />
-                        Archive
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => unarchiveNotifications(notification.id)}
-                        className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 flex items-center"
-                      >
-                        <Archive className="w-4 h-4 mr-1" />
-                        Unarchive
-                      </button>
-                    )}
+                    <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-2">
+                      {notification.message || notification.content}
+                    </p>
 
-                    <button
-                      onClick={() => deleteNotifications(notification.id)}
-                      className="text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 flex items-center"
-                    >
-                      <Trash2 className="w-4 h-4 mr-1" />
-                      Delete
-                    </button>
+                    {/* Enhanced Actions */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        {!notification.read ? (
+                          <button
+                            onClick={() => markAsRead(notification.id)}
+                            className="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-200 transition-colors"
+                          >
+                            <Eye className="w-4 h-4 mr-1" />
+                            Mark Read
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => markAsUnread(notification.id)}
+                            className="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors"
+                          >
+                            <EyeOff className="w-4 h-4 mr-1" />
+                            Mark Unread
+                          </button>
+                        )}
+
+                        {!notification.archived ? (
+                          <button
+                            onClick={() => archiveNotifications(notification.id)}
+                            className="inline-flex items-center px-3 py-1.5 bg-yellow-100 text-yellow-700 text-sm font-medium rounded-lg hover:bg-yellow-200 transition-colors"
+                          >
+                            <Archive className="w-4 h-4 mr-1" />
+                            Archive
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => unarchiveNotifications(notification.id)}
+                            className="inline-flex items-center px-3 py-1.5 bg-purple-100 text-purple-700 text-sm font-medium rounded-lg hover:bg-purple-200 transition-colors"
+                          >
+                            <Archive className="w-4 h-4 mr-1" />
+                            Unarchive
+                          </button>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={() => handleSingleDelete(notification.id, notification.type)}
+                        className="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-colors group-hover:shadow-md"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
