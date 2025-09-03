@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class CataloroLiveCMSTester:
-    def __init__(self, base_url="https://tender-fix.preview.emergentagent.com"):
+    def __init__(self, base_url="https://market-upgrade-2.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
         self.tests_run = 0
@@ -74,7 +74,7 @@ class CataloroLiveCMSTester:
                 "description": "Discover Cataloro, the cutting-edge marketplace platform featuring real-time messaging, intelligent notifications, advanced search, and seamless transactions for buyers and sellers.",
                 "keywords": ["marketplace", "e-commerce", "online trading", "buy sell platform", "cataloro", "modern commerce", "digital marketplace"],
                 "ogImage": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&h=630",
-                "canonicalUrl": "https://tender-fix.preview.emergentagent.com/info"
+                "canonicalUrl": "https://market-upgrade-2.preview.emergentagent.com/info"
             },
             "hero": {
                 "title": "Cataloro",

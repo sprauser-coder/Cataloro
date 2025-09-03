@@ -11,7 +11,7 @@ from datetime import datetime
 import uuid
 
 class BrowseListingsDebugTester:
-    def __init__(self, base_url="https://tender-fix.preview.emergentagent.com"):
+    def __init__(self, base_url="https://market-upgrade-2.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
         self.admin_user = None
