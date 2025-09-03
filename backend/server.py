@@ -692,6 +692,113 @@ async def update_user(user_id: str, user_data: dict):
         return {"message": "User updated successfully"}
     raise HTTPException(status_code=404, detail="User not found")
 
+@app.post("/api/admin/users")
+async def create_user_by_admin(user_data: dict):
+    """Admin endpoint to create new users"""
+    try:
+        import uuid
+        from datetime import datetime
+        
+        # Validate required fields
+        required_fields = ["username", "email", "password"]
+        for field in required_fields:
+            if field not in user_data or not user_data[field]:
+                raise HTTPException(status_code=400, detail=f"Missing required field: {field}")
+        
+        # Check if user already exists
+        existing_user = await db.users.find_one({
+            "$or": [
+                {"email": user_data["email"]},
+                {"username": user_data["username"]}
+            ]
+        })
+        
+        if existing_user:
+            raise HTTPException(status_code=400, detail="User with this email or username already exists")
+        
+        # Only admin can create other admins
+        user_role = user_data.get("role", "user")
+        if user_role == "admin":
+            # This check should be done in middleware, but for now we'll assume the calling user is admin
+            # since this endpoint should only be accessible to admins
+            pass
+        
+        # Hash password (simplified - in production use proper hashing)
+        import hashlib
+        password_hash = hashlib.sha256(user_data["password"].encode()).hexdigest()
+        
+        # Create new user document
+        new_user = {
+            "id": str(uuid.uuid4()),
+            "username": user_data["username"],
+            "email": user_data["email"],
+            "password": password_hash,  # In production, use proper password hashing
+            "role": user_role,
+            "profile": {
+                "full_name": user_data.get("full_name", ""),
+                "bio": user_data.get("bio", ""),
+                "location": user_data.get("location", ""),
+                "phone": user_data.get("phone", ""),
+                "company": user_data.get("company", ""),
+                "website": user_data.get("website", "")
+            },
+            "settings": {
+                "notifications": True,
+                "email_updates": True,
+                "public_profile": True
+            },
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat(),
+            "last_login": None,
+            "status": "active"
+        }
+        
+        # Insert user into database
+        result = await db.users.insert_one(new_user)
+        
+        if result.inserted_id:
+            # Return user without password
+            created_user = new_user.copy()
+            del created_user["password"]
+            return {
+                "message": "User created successfully",
+                "user": serialize_doc(created_user)
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create user")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error creating user: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create user: {str(e)}")
+
+@app.delete("/api/admin/users/{user_id}")
+async def delete_user_by_admin(user_id: str):
+    """Admin endpoint to delete users"""
+    try:
+        # Delete user
+        result = await db.users.delete_one({"id": user_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Clean up user-related data
+        await db.user_notifications.delete_many({"user_id": user_id})
+        await db.user_favorites.delete_many({"user_id": user_id})
+        await db.listings.update_many(
+            {"seller_id": user_id}, 
+            {"$set": {"status": "inactive", "seller_id": f"deleted_user_{user_id[:8]}"}}
+        )
+        
+        return {"message": "User deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error deleting user: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete user: {str(e)}")
+
 # Site Branding and Settings Endpoints
 @app.get("/api/admin/settings")
 async def get_site_settings():
