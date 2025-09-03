@@ -63,10 +63,12 @@ function TendersPage() {
 
   useEffect(() => {
     if (user) {
-      if (activeTab === 'manage') {
-        fetchTendersOverview();
-      } else {
-        fetchMyTenders();
+      if (activeTab === 'listings') {
+        loadTendersOverview();
+      } else if (activeTab === 'tenders') {
+        loadMyTenders();
+      } else if (activeTab === 'sold') {
+        loadSoldItems();
       }
     }
   }, [user, activeTab]);
