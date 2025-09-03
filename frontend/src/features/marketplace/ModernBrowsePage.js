@@ -198,6 +198,42 @@ function ModernBrowsePage() {
     };
   }, []);
 
+  // Fetch price range settings and user active bids
+  useEffect(() => {
+    const fetchPriceRangeSettings = async () => {
+      try {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+        const response = await fetch(`${backendUrl}/api/marketplace/price-range-settings`);
+        
+        if (response.ok) {
+          const settings = await response.json();
+          setPriceRangeSettings(settings);
+        }
+      } catch (error) {
+        console.error('Error fetching price range settings:', error);
+      }
+    };
+
+    const fetchUserActiveBids = async () => {
+      if (user?.id) {
+        try {
+          const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+          const response = await fetch(`${backendUrl}/api/user/${user.id}/active-bids`);
+          
+          if (response.ok) {
+            const { active_bids } = await response.json();
+            setUserActiveBids(active_bids);
+          }
+        } catch (error) {
+          console.error('Error fetching user active bids:', error);
+        }
+      }
+    };
+
+    fetchPriceRangeSettings();
+    fetchUserActiveBids();
+  }, [user?.id]);
+
   const handleAddToCart = (item) => {
     addToCart(item);
   };
