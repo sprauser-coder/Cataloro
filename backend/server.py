@@ -1710,6 +1710,367 @@ async def get_seller_tenders_overview(seller_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to get seller tenders overview: {str(e)}")
 
 # ============================================================================
+# TENDER/BIDDING SYSTEM ENDPOINTS
+# ============================================================================
+
+@app.post("/api/tenders/submit")
+async def submit_tender(tender_data: dict):
+    """Submit a tender offer for a listing"""
+    try:
+        listing_id = tender_data.get("listing_id")
+        buyer_id = tender_data.get("buyer_id")
+        offer_amount = tender_data.get("offer_amount")
+        
+        if not listing_id or not buyer_id or not offer_amount:
+            raise HTTPException(status_code=400, detail="listing_id, buyer_id, and offer_amount are required")
+        
+        # Check if listing exists and is active
+        listing = await db.listings.find_one({"id": listing_id, "status": "active"})
+        if not listing:
+            raise HTTPException(status_code=404, detail="Listing not found or not active")
+        
+        seller_id = listing.get("seller_id")
+        if seller_id == buyer_id:
+            raise HTTPException(status_code=400, detail="Cannot bid on your own listing")
+        
+        # Check if offer meets minimum bid requirement (current highest bid)
+        existing_tenders = await db.tenders.find({
+            "listing_id": listing_id,
+            "status": "active"
+        }).sort("offer_amount", -1).to_list(length=1)
+        
+        minimum_bid = listing.get("price", 0)  # Starting price from listing
+        if existing_tenders:
+            minimum_bid = max(minimum_bid, existing_tenders[0]["offer_amount"])
+        
+        if offer_amount < minimum_bid:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Offer must be at least €{minimum_bid:.2f} (current highest bid or starting price)"
+            )
+        
+        # Create the tender
+        tender_id = generate_id()
+        current_time = datetime.utcnow()
+        
+        tender = {
+            "id": tender_id,
+            "listing_id": listing_id,
+            "buyer_id": buyer_id,
+            "seller_id": seller_id,
+            "offer_amount": float(offer_amount),
+            "status": "active",  # active, accepted, rejected, withdrawn
+            "created_at": current_time,
+            "updated_at": current_time
+        }
+        
+        await db.tenders.insert_one(tender)
+        
+        # Create notification for seller
+        notification = {
+            "user_id": seller_id,
+            "title": "New Tender Offer",
+            "message": f"New tender offer of €{offer_amount:.2f} for your listing: {listing.get('title', 'Unknown item')}",
+            "type": "tender_offer",
+            "is_read": False,
+            "created_at": current_time.isoformat(),
+            "id": str(uuid.uuid4()),
+            "tender_id": tender_id,
+            "listing_id": listing_id
+        }
+        
+        await db.user_notifications.insert_one(notification)
+        
+        return {
+            "message": "Tender submitted successfully",
+            "tender_id": tender_id,
+            "minimum_next_bid": float(offer_amount)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to submit tender: {str(e)}")
+
+@app.get("/api/tenders/listing/{listing_id}")
+async def get_listing_tenders(listing_id: str):
+    """Get all active tenders for a listing (seller view)"""
+    try:
+        tenders = await db.tenders.find({
+            "listing_id": listing_id,
+            "status": "active"
+        }).sort("offer_amount", -1).to_list(length=None)
+        
+        # Enrich with buyer information
+        enriched_tenders = []
+        for tender in tenders:
+            buyer = await db.users.find_one({"id": tender["buyer_id"]})
+            buyer_info = {
+                "id": buyer.get("id", ""),
+                "username": buyer.get("username", "Unknown"),
+                "full_name": buyer.get("full_name", ""),
+                "created_at": buyer.get("created_at", "")
+            } if buyer else {}
+            
+            enriched_tender = {
+                "id": tender["id"],
+                "offer_amount": tender["offer_amount"],
+                "status": tender["status"],
+                "created_at": tender["created_at"].isoformat() if tender.get("created_at") else "",
+                "buyer": buyer_info
+            }
+            enriched_tenders.append(enriched_tender)
+        
+        return enriched_tenders
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get listing tenders: {str(e)}")
+
+@app.get("/api/tenders/buyer/{buyer_id}")
+async def get_buyer_tenders(buyer_id: str):
+    """Get all tenders submitted by a buyer"""
+    try:
+        tenders = await db.tenders.find({
+            "buyer_id": buyer_id
+        }).sort("created_at", -1).to_list(length=None)
+        
+        # Enrich with listing information
+        enriched_tenders = []
+        for tender in tenders:
+            listing = await db.listings.find_one({"id": tender["listing_id"]})
+            if not listing:
+                continue
+                
+            enriched_tender = {
+                "id": tender["id"],
+                "offer_amount": tender["offer_amount"],
+                "status": tender["status"],
+                "created_at": tender["created_at"].isoformat() if tender.get("created_at") else "",
+                "listing": {
+                    "id": listing.get("id", ""),
+                    "title": listing.get("title", ""),
+                    "price": listing.get("price", 0),
+                    "images": listing.get("images", [])
+                }
+            }
+            enriched_tenders.append(enriched_tender)
+        
+        return enriched_tenders
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get buyer tenders: {str(e)}")
+
+@app.put("/api/tenders/{tender_id}/accept")
+async def accept_tender(tender_id: str, acceptance_data: dict):
+    """Accept a tender offer"""
+    try:
+        seller_id = acceptance_data.get("seller_id")
+        if not seller_id:
+            raise HTTPException(status_code=400, detail="seller_id is required")
+        
+        # Find the tender
+        tender = await db.tenders.find_one({"id": tender_id, "seller_id": seller_id, "status": "active"})
+        if not tender:
+            raise HTTPException(status_code=404, detail="Tender not found or not active")
+        
+        current_time = datetime.utcnow()
+        
+        # Update tender status to accepted
+        await db.tenders.update_one(
+            {"id": tender_id},
+            {
+                "$set": {
+                    "status": "accepted",
+                    "accepted_at": current_time,
+                    "updated_at": current_time
+                }
+            }
+        )
+        
+        # Reject all other tenders for this listing
+        await db.tenders.update_many(
+            {
+                "listing_id": tender["listing_id"],
+                "status": "active",
+                "id": {"$ne": tender_id}
+            },
+            {
+                "$set": {
+                    "status": "rejected",
+                    "rejected_at": current_time,
+                    "updated_at": current_time
+                }
+            }
+        )
+        
+        # Update listing status to sold
+        await db.listings.update_one(
+            {"id": tender["listing_id"]},
+            {"$set": {"status": "sold", "sold_at": current_time, "sold_price": tender["offer_amount"]}}
+        )
+        
+        # Get listing details for notifications
+        listing = await db.listings.find_one({"id": tender["listing_id"]})
+        
+        # Create notification for winning buyer
+        winning_notification = {
+            "user_id": tender["buyer_id"],
+            "title": "Tender Accepted!",
+            "message": f"Congratulations! Your tender of €{tender['offer_amount']:.2f} for '{listing.get('title', 'Unknown item')}' has been accepted!",
+            "type": "tender_accepted",
+            "is_read": False,
+            "created_at": current_time.isoformat(),
+            "id": str(uuid.uuid4()),
+            "tender_id": tender_id,
+            "listing_id": tender["listing_id"]
+        }
+        
+        await db.user_notifications.insert_one(winning_notification)
+        
+        # Send automated message to winning buyer
+        message = {
+            "sender_id": seller_id,
+            "recipient_id": tender["buyer_id"],
+            "subject": f"Tender Accepted - {listing.get('title', 'Listing')}",
+            "content": f"Congratulations! I have accepted your tender offer of €{tender['offer_amount']:.2f} for {listing.get('title', 'the listing')}. Please contact me to arrange payment and delivery details.",
+            "is_read": False,
+            "created_at": current_time.isoformat(),
+            "id": str(uuid.uuid4())
+        }
+        
+        await db.user_messages.insert_one(message)
+        
+        # Create notifications for losing bidders
+        losing_tenders = await db.tenders.find({
+            "listing_id": tender["listing_id"],
+            "status": "rejected",
+            "id": {"$ne": tender_id}
+        }).to_list(length=None)
+        
+        for losing_tender in losing_tenders:
+            losing_notification = {
+                "user_id": losing_tender["buyer_id"],
+                "title": "Tender Not Selected",
+                "message": f"Your tender of €{losing_tender['offer_amount']:.2f} for '{listing.get('title', 'Unknown item')}' was not selected. The item has been sold to another buyer.",
+                "type": "tender_rejected",
+                "is_read": False,
+                "created_at": current_time.isoformat(),
+                "id": str(uuid.uuid4()),
+                "tender_id": losing_tender["id"],
+                "listing_id": tender["listing_id"]
+            }
+            
+            await db.user_notifications.insert_one(losing_notification)
+        
+        return {"message": "Tender accepted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to accept tender: {str(e)}")
+
+@app.put("/api/tenders/{tender_id}/reject")
+async def reject_tender(tender_id: str, rejection_data: dict):
+    """Reject a specific tender offer"""
+    try:
+        seller_id = rejection_data.get("seller_id")
+        if not seller_id:
+            raise HTTPException(status_code=400, detail="seller_id is required")
+        
+        # Find the tender
+        tender = await db.tenders.find_one({"id": tender_id, "seller_id": seller_id, "status": "active"})
+        if not tender:
+            raise HTTPException(status_code=404, detail="Tender not found or not active")
+        
+        current_time = datetime.utcnow()
+        
+        # Update tender status to rejected
+        await db.tenders.update_one(
+            {"id": tender_id},
+            {
+                "$set": {
+                    "status": "rejected",
+                    "rejected_at": current_time,
+                    "updated_at": current_time
+                }
+            }
+        )
+        
+        # Create notification for buyer
+        listing = await db.listings.find_one({"id": tender["listing_id"]})
+        notification = {
+            "user_id": tender["buyer_id"],
+            "title": "Tender Rejected",
+            "message": f"Your tender of €{tender['offer_amount']:.2f} for '{listing.get('title', 'Unknown item')}' has been rejected by the seller.",
+            "type": "tender_rejected",
+            "is_read": False,
+            "created_at": current_time.isoformat(),
+            "id": str(uuid.uuid4()),
+            "tender_id": tender_id,
+            "listing_id": tender["listing_id"]
+        }
+        
+        await db.user_notifications.insert_one(notification)
+        
+        return {"message": "Tender rejected successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reject tender: {str(e)}")
+
+@app.get("/api/tenders/seller/{seller_id}/overview")
+async def get_seller_tenders_overview(seller_id: str):
+    """Get overview of all tenders for all seller's listings"""
+    try:
+        # Get all seller's active listings
+        listings = await db.listings.find({"seller_id": seller_id, "status": "active"}).to_list(length=None)
+        
+        overview = []
+        for listing in listings:
+            # Get active tenders for this listing
+            tenders = await db.tenders.find({
+                "listing_id": listing["id"],
+                "status": "active"
+            }).sort("offer_amount", -1).to_list(length=None)
+            
+            # Enrich tenders with buyer info
+            enriched_tenders = []
+            for tender in tenders:
+                buyer = await db.users.find_one({"id": tender["buyer_id"]})
+                buyer_info = {
+                    "id": buyer.get("id", ""),
+                    "username": buyer.get("username", "Unknown"),
+                    "full_name": buyer.get("full_name", "")
+                } if buyer else {}
+                
+                enriched_tender = {
+                    "id": tender["id"],
+                    "offer_amount": tender["offer_amount"],
+                    "created_at": tender["created_at"].isoformat() if tender.get("created_at") else "",
+                    "buyer": buyer_info
+                }
+                enriched_tenders.append(enriched_tender)
+            
+            listing_overview = {
+                "listing": {
+                    "id": listing["id"],
+                    "title": listing["title"],
+                    "price": listing["price"],
+                    "images": listing.get("images", [])
+                },
+                "tender_count": len(tenders),
+                "highest_offer": tenders[0]["offer_amount"] if tenders else 0,
+                "tenders": enriched_tenders
+            }
+            overview.append(listing_overview)
+        
+        return overview
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get seller tenders overview: {str(e)}")
+
+# ============================================================================
 # ORDER MANAGEMENT ENDPOINTS
 # ============================================================================
 
