@@ -555,9 +555,17 @@ function NotificationsCenterPage() {
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {notification.title}
-                    </h4>
+                    <div className="flex items-center space-x-2">
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {notification.title}
+                      </h4>
+                      {notification.archived && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                          <Archive className="w-3 h-3 mr-1" />
+                          Archived
+                        </span>
+                      )}
+                    </div>
                     
                     <div className="flex items-center space-x-2">
                       {!notification.read && (
