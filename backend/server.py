@@ -3734,21 +3734,21 @@ async def track_system_notification_click(user_id: str, notification_id: str):
 
 @app.get("/api/user/{user_id}/sold-items")
 async def get_user_sold_items(user_id: str):
-    """Get sold items for a user"""
+    """Get sold items for a user - includes accepted tenders and completed deals"""
     try:
-        # Get completed deals where user is the seller
+        sold_items = []
+        total_revenue = 0
+        this_month_count = 0
+        current_month = datetime.now().month
+        current_year = datetime.now().year
+        
+        # Method 1: Get completed deals where user is the seller
         deals_cursor = db.deals.find({
             "seller_id": user_id,
             "status": "completed"
         }).sort("completion_date", -1)
         
         deals = await deals_cursor.to_list(length=None)
-        
-        sold_items = []
-        total_revenue = 0
-        this_month_count = 0
-        current_month = datetime.now().month
-        current_year = datetime.now().year
         
         for deal in deals:
             # Get listing details
@@ -3781,9 +3781,61 @@ async def get_user_sold_items(user_id: str):
                 "buyer": serialize_doc(buyer) if buyer else None,
                 "final_price": final_price,
                 "sold_at": deal.get("completion_date"),
-                "deal_id": deal.get("id", str(deal.get("_id")))
+                "deal_id": deal.get("id", str(deal.get("_id"))),
+                "source": "deal"
             }
             sold_items.append(sold_item)
+        
+        # Method 2: Get accepted tenders where user is the seller
+        # First get user's listings
+        user_listings = await db.listings.find({"seller_id": user_id}).to_list(length=None)
+        listing_ids = [listing.get("id") for listing in user_listings if listing.get("id")]
+        
+        if listing_ids:
+            # Get accepted tenders for user's listings
+            accepted_tenders = await db.tenders.find({
+                "listing_id": {"$in": listing_ids},
+                "status": "accepted"
+            }).sort("accepted_at", -1).to_list(length=None)
+            
+            for tender in accepted_tenders:
+                # Get listing details
+                listing = await db.listings.find_one({"id": tender.get("listing_id")})
+                
+                # Get buyer details
+                buyer = await db.users.find_one({"id": tender.get("buyer_id")})
+                
+                final_price = tender.get("offer_amount", 0)
+                total_revenue += final_price
+                
+                # Count this month's sales
+                accepted_date = tender.get("accepted_at")
+                if accepted_date:
+                    try:
+                        if isinstance(accepted_date, str):
+                            accepted_date = datetime.fromisoformat(accepted_date.replace('Z', '+00:00'))
+                        elif hasattr(accepted_date, 'month'):
+                            # It's already a datetime object
+                            pass
+                        
+                        if accepted_date.month == current_month and accepted_date.year == current_year:
+                            this_month_count += 1
+                    except:
+                        pass
+                
+                sold_item = {
+                    "id": tender.get("id", str(tender.get("_id"))),
+                    "listing": serialize_doc(listing) if listing else None,
+                    "buyer": serialize_doc(buyer) if buyer else None,
+                    "final_price": final_price,
+                    "sold_at": tender.get("accepted_at"),
+                    "tender_id": tender.get("id", str(tender.get("_id"))),
+                    "source": "tender"
+                }
+                sold_items.append(sold_item)
+        
+        # Sort all sold items by sold_at date (most recent first)
+        sold_items.sort(key=lambda x: x.get("sold_at", ""), reverse=True)
         
         # Calculate statistics
         total_sold = len(sold_items)
