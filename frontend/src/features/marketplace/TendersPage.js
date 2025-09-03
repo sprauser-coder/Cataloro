@@ -248,6 +248,34 @@ function TendersPage() {
     }
   };
 
+  // Sold Items Functions (new)
+  const loadSoldItems = async () => {
+    try {
+      setLoadingSoldItems(true);
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/sold-items`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSoldItems(data.items || []);
+        setSoldItemsStats(data.stats || {
+          totalSold: 0,
+          totalRevenue: 0,
+          averagePrice: 0,
+          thisMonth: 0
+        });
+      } else {
+        console.error('Failed to fetch sold items');
+        showToast('Failed to load sold items', 'error');
+      }
+    } catch (error) {
+      console.error('Failed to fetch sold items:', error);
+      showToast('Failed to load sold items', 'error');
+    } finally {
+      setLoadingSoldItems(false);
+    }
+  };
+
   if (!user) {
     return (
       <div className="text-center py-12">
