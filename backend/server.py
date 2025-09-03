@@ -1698,6 +1698,13 @@ async def get_seller_tenders_overview(seller_id: str):
         
         # Get seller information
         seller = await db.users.find_one({"id": seller_id})
+        if not seller:
+            try:
+                from bson import ObjectId
+                seller = await db.users.find_one({"_id": ObjectId(seller_id)})
+            except:
+                pass
+                
         seller_info = {
             "id": seller.get("id", ""),
             "username": seller.get("username", "Unknown"),
