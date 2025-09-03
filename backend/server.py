@@ -1358,6 +1358,40 @@ async def mark_notification_read(user_id: str, notification_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to mark notification as read: {str(e)}")
 
+@app.put("/api/user/{user_id}/notifications/{notification_id}")
+async def update_notification(user_id: str, notification_id: str, update_data: dict):
+    """Update notification properties (read, archived, etc.)"""
+    try:
+        # Prepare update fields
+        update_fields = {}
+        
+        if "read" in update_data:
+            update_fields["is_read"] = update_data["read"]
+            if update_data["read"]:
+                update_fields["read_at"] = datetime.utcnow().isoformat()
+        
+        if "archived" in update_data:
+            update_fields["archived"] = update_data["archived"]
+            update_fields["archived_at"] = datetime.utcnow().isoformat() if update_data["archived"] else None
+            
+        if not update_fields:
+            raise HTTPException(status_code=400, detail="No valid update fields provided")
+        
+        # Update the notification
+        result = await db.user_notifications.update_one(
+            {"user_id": user_id, "id": notification_id},
+            {"$set": update_fields}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Notification not found")
+        
+        return {"message": "Notification updated successfully", "updated_fields": list(update_fields.keys())}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update notification: {str(e)}")
+
 @app.delete("/api/notifications/{notification_id}")
 async def delete_notification(notification_id: str, user_id: str = None):
     """Delete notification by ID"""
