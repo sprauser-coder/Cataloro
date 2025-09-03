@@ -516,170 +516,217 @@ function NotificationsCenterPage() {
 
       {/* Controls */}
       <div className="cataloro-card-glass p-6 mb-8">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+        <div className="flex flex-col space-y-4">
           
-          {/* Search and Filter */}
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 flex-1">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search notifications..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-3 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Filter className="w-5 h-5 text-gray-400" />
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Notifications</option>
-                <option value="unread">Unread Only</option>
-                <option value="read">Read Only</option>
-                <option value="system">System Notifications</option>
-                <option value="archived">Archived</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex flex-col lg:flex-row lg:items-center space-y-3 lg:space-y-0 lg:space-x-4">
-            <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
-              <span className="flex items-center">
-                <Bell className="w-4 h-4 mr-1" />
-                {filteredNotifications.length} of {notifications.length}
-              </span>
-              <span className="flex items-center">
-                <Eye className="w-4 h-4 mr-1" />
-                {notifications.filter(n => !n.read).length} unread
-              </span>
-              <span className="flex items-center">
-                <Archive className="w-4 h-4 mr-1" />
-                {notifications.filter(n => n.archived).length} archived
-              </span>
-            </div>
+          {/* Top Row: Search, Filter, and Actions */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={loadNotifications}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                title="Refresh (Ctrl+R)"
-              >
-                <RefreshCw className="w-5 h-5" />
-              </button>
-
-              <button
-                onClick={markAllAsRead}
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                title="Mark All Read (Ctrl+Shift+R)"
-              >
-                Mark All Read
-              </button>
-
-              <button
-                onClick={exportNotifications}
-                className="px-4 py-2 bg-indigo-100 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-200 transition-colors flex items-center"
-                title="Export All (Ctrl+E)"
-              >
-                <Download className="w-4 h-4 mr-1" />
-                Export All
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Bulk Actions */}
-        {selectedNotifications.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
-                  <CheckSquare className="w-4 h-4 mr-1" />
-                  {selectedNotifications.length} selected
-                </span>
-                
-                <button
-                  onClick={selectAll}
-                  className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 flex items-center"
-                >
-                  <Square className="w-4 h-4 mr-1" />
-                  Select All ({filteredNotifications.length})
-                </button>
-                
-                <button
-                  onClick={deselectAll}
-                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center"
-                >
-                  <X className="w-4 h-4 mr-1" />
-                  Deselect All
-                </button>
+            {/* Search and Filter */}
+            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 flex-1">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search notifications..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-3 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  onClick={() => markAsRead(selectedNotifications)}
-                  disabled={bulkActionLoading}
-                  className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-lg hover:bg-green-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              <div className="flex items-center space-x-2">
+                <Filter className="w-5 h-5 text-gray-400" />
+                <select
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  className="px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
+                  <option value="all">All Notifications</option>
+                  <option value="unread">Unread Only</option>
+                  <option value="read">Read Only</option>
+                  <option value="system">System Notifications</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col lg:flex-row lg:items-center space-y-3 lg:space-y-0 lg:space-x-4">
+              <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+                <span className="flex items-center">
+                  <Bell className="w-4 h-4 mr-1" />
+                  {filteredNotifications.length} of {notifications.length}
+                </span>
+                <span className="flex items-center">
                   <Eye className="w-4 h-4 mr-1" />
-                  Mark Read
-                </button>
-                
-                <button
-                  onClick={() => markAsUnread(selectedNotifications)}
-                  disabled={bulkActionLoading}
-                  className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-lg hover:bg-blue-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <EyeOff className="w-4 h-4 mr-1" />
-                  Mark Unread
-                </button>
-                
-                <button
-                  onClick={() => handleBulkAction(() => archiveNotifications(selectedNotifications))}
-                  disabled={bulkActionLoading}
-                  className="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm rounded-lg hover:bg-yellow-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+                  {notifications.filter(n => !n.read).length} unread
+                </span>
+                <span className="flex items-center">
                   <Archive className="w-4 h-4 mr-1" />
-                  Archive
+                  {notifications.filter(n => n.archived).length} archived
+                </span>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={loadNotifications}
+                  className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  title="Refresh (Ctrl+R)"
+                >
+                  <RefreshCw className="w-5 h-5" />
                 </button>
 
-                {filter === 'archived' && (
-                  <button
-                    onClick={() => handleBulkAction(() => unarchiveNotifications(selectedNotifications))}
-                    disabled={bulkActionLoading}
-                    className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-lg hover:bg-purple-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Archive className="w-4 h-4 mr-1" />
-                    Unarchive
-                  </button>
-                )}
-                
+                <button
+                  onClick={markAllAsRead}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                  title="Mark All Read (Ctrl+Shift+R)"
+                >
+                  Mark All Read
+                </button>
+
                 <button
                   onClick={exportNotifications}
-                  disabled={bulkActionLoading}
-                  className="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded-lg hover:bg-indigo-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-indigo-100 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-200 transition-colors flex items-center"
+                  title="Export All (Ctrl+E)"
                 >
                   <Download className="w-4 h-4 mr-1" />
-                  Export
-                </button>
-                
-                <button
-                  onClick={() => handleBulkAction(() => deleteNotifications(selectedNotifications))}
-                  disabled={bulkActionLoading}
-                  className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded-lg hover:bg-red-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Trash2 className="w-4 h-4 mr-1" />
-                  Delete
+                  Export All
                 </button>
               </div>
             </div>
           </div>
-        )}
+
+          {/* Master Selection Row */}
+          {filteredNotifications.length > 0 && (
+            <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex items-center space-x-4">
+                {/* Master Checkbox */}
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0}
+                    onChange={() => {
+                      if (selectedNotifications.length === filteredNotifications.length) {
+                        deselectAll();
+                      } else {
+                        selectAll();
+                      }
+                    }}
+                    className="sr-only"
+                  />
+                  <div className={`w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
+                    selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0
+                      ? 'bg-purple-500 border-purple-500 shadow-lg'
+                      : selectedNotifications.length > 0
+                        ? 'bg-purple-200 border-purple-400'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500'
+                  }`}>
+                    {selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0 ? (
+                      <Check className="w-4 h-4 text-white" />
+                    ) : selectedNotifications.length > 0 ? (
+                      <div className="w-2 h-2 bg-purple-600 rounded-sm"></div>
+                    ) : null}
+                  </div>
+                </label>
+                
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {selectedNotifications.length === filteredNotifications.length && filteredNotifications.length > 0
+                    ? `All ${filteredNotifications.length} notifications selected`
+                    : selectedNotifications.length > 0
+                      ? `${selectedNotifications.length} of ${filteredNotifications.length} notifications selected`
+                      : `Select notifications for bulk actions`
+                  }
+                </span>
+
+                {selectedNotifications.length > 0 && (
+                  <button
+                    onClick={deselectAll}
+                    className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 flex items-center"
+                  >
+                    <X className="w-4 h-4 mr-1" />
+                    Clear Selection
+                  </button>
+                )}
+              </div>
+
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Use Ctrl+A to select all, Ctrl+D to deselect
+              </div>
+            </div>
+          )}
+
+          {/* Bulk Actions */}
+          {selectedNotifications.length > 0 && (
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <div className="flex items-center space-x-2">
+                  <CheckSquare className="w-5 h-5 text-purple-600" />
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    Bulk Actions for {selectedNotifications.length} selected notifications
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => markAsRead(selectedNotifications)}
+                    disabled={bulkActionLoading}
+                    className="px-4 py-2 bg-green-100 text-green-700 text-sm font-medium rounded-lg hover:bg-green-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Eye className="w-4 h-4 mr-1" />
+                    Mark Read
+                  </button>
+                  
+                  <button
+                    onClick={() => markAsUnread(selectedNotifications)}
+                    disabled={bulkActionLoading}
+                    className="px-4 py-2 bg-blue-100 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <EyeOff className="w-4 h-4 mr-1" />
+                    Mark Unread
+                  </button>
+                  
+                  <button
+                    onClick={() => handleBulkAction(() => archiveNotifications(selectedNotifications))}
+                    disabled={bulkActionLoading}
+                    className="px-4 py-2 bg-yellow-100 text-yellow-700 text-sm font-medium rounded-lg hover:bg-yellow-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Archive className="w-4 h-4 mr-1" />
+                    Archive
+                  </button>
+
+                  {filter === 'archived' && (
+                    <button
+                      onClick={() => handleBulkAction(() => unarchiveNotifications(selectedNotifications))}
+                      disabled={bulkActionLoading}
+                      className="px-4 py-2 bg-purple-100 text-purple-700 text-sm font-medium rounded-lg hover:bg-purple-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Archive className="w-4 h-4 mr-1" />
+                      Unarchive
+                    </button>
+                  )}
+                  
+                  <button
+                    onClick={exportNotifications}
+                    disabled={bulkActionLoading}
+                    className="px-4 py-2 bg-indigo-100 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Download className="w-4 h-4 mr-1" />
+                    Export Selected
+                  </button>
+                  
+                  <button
+                    onClick={() => handleBulkAction(() => deleteNotifications(selectedNotifications))}
+                    disabled={bulkActionLoading}
+                    className="px-4 py-2 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Delete Selected
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Notifications List */}
