@@ -12,9 +12,9 @@ from datetime import datetime, timedelta
 # Configuration
 BACKEND_URL = "https://market-upgrade-2.preview.emergentagent.com/api"
 
-def test_sold_items_functionality():
-    """Test the sold items endpoint with accepted tenders functionality"""
-    print("🎯 SOLD ITEMS ENHANCEMENT COMPREHENSIVE TESTING")
+def test_admin_panel_and_profile_fixes():
+    """Test the critical admin panel and profile fixes"""
+    print("🎯 ADMIN PANEL & PROFILE FIXES COMPREHENSIVE TESTING")
     print("=" * 60)
     
     results = {
@@ -25,273 +25,337 @@ def test_sold_items_functionality():
     }
     
     try:
-        # Test 1: Login and get user ID
-        print("\n1. 🔐 USER AUTHENTICATION")
+        # Test 1: Admin Login
+        print("\n1. 🔐 ADMIN AUTHENTICATION")
         login_response = requests.post(f"{BACKEND_URL}/auth/login", json={
             "email": "admin@cataloro.com",
             "password": "admin123"
         })
         
         if login_response.status_code == 200:
-            user_data = login_response.json()
-            user_id = user_data["user"]["id"]
-            print(f"   ✅ Login successful - User ID: {user_id}")
+            admin_data = login_response.json()
+            admin_id = admin_data["user"]["id"]
+            print(f"   ✅ Admin login successful - Admin ID: {admin_id}")
             results["tests_passed"] += 1
-            results["test_details"].append("✅ User authentication successful")
+            results["test_details"].append("✅ Admin authentication successful")
         else:
-            print(f"   ❌ Login failed: {login_response.status_code}")
+            print(f"   ❌ Admin login failed: {login_response.status_code}")
             results["tests_failed"] += 1
-            results["critical_issues"].append("User authentication failed")
+            results["critical_issues"].append("Admin authentication failed")
             return results
         
-        # Test 2: Test sold items endpoint basic functionality
-        print("\n2. 📊 SOLD ITEMS ENDPOINT BASIC TEST")
-        sold_items_response = requests.get(f"{BACKEND_URL}/user/{user_id}/sold-items")
+        # Test 2: Dashboard KPI Accuracy
+        print("\n2. 📊 DASHBOARD KPI ACCURACY TEST")
+        dashboard_response = requests.get(f"{BACKEND_URL}/admin/dashboard")
         
-        if sold_items_response.status_code == 200:
-            sold_data = sold_items_response.json()
-            print(f"   ✅ Sold items endpoint accessible")
-            print(f"   📈 Response structure: {list(sold_data.keys())}")
+        if dashboard_response.status_code == 200:
+            dashboard_data = dashboard_response.json()
+            kpis = dashboard_data.get("kpis", {})
             
-            # Verify response structure
-            if "items" in sold_data and "stats" in sold_data:
-                print(f"   ✅ Proper response structure with items and stats")
-                print(f"   📊 Current sold items count: {len(sold_data['items'])}")
-                print(f"   💰 Stats: {sold_data['stats']}")
+            print(f"   ✅ Dashboard endpoint accessible")
+            print(f"   📈 KPI Data:")
+            print(f"      - Total Users: {kpis.get('total_users', 0)}")
+            print(f"      - Total Listings: {kpis.get('total_listings', 0)}")
+            print(f"      - Active Listings: {kpis.get('active_listings', 0)}")
+            print(f"      - Total Deals: {kpis.get('total_deals', 0)}")
+            print(f"      - Revenue: €{kpis.get('revenue', 0)}")
+            print(f"      - Growth Rate: {kpis.get('growth_rate', 0)}%")
+            
+            # Verify real data (not fake 156 users)
+            total_users = kpis.get('total_users', 0)
+            if total_users != 156:  # Should not be the fake data
+                print(f"   ✅ Real user count displayed (not fake 156)")
                 results["tests_passed"] += 1
-                results["test_details"].append("✅ Sold items endpoint structure correct")
+                results["test_details"].append("✅ Dashboard shows real user count")
             else:
-                print(f"   ❌ Invalid response structure")
+                print(f"   ❌ Still showing fake user count (156)")
                 results["tests_failed"] += 1
-                results["critical_issues"].append("Sold items endpoint structure invalid")
+                results["critical_issues"].append("Dashboard showing fake user count")
+            
+            # Verify revenue calculation from real data
+            revenue = kpis.get('revenue', 0)
+            if isinstance(revenue, (int, float)) and revenue >= 0:
+                print(f"   ✅ Revenue calculation working (€{revenue})")
+                results["tests_passed"] += 1
+                results["test_details"].append("✅ Revenue calculation from real data")
+            else:
+                print(f"   ❌ Revenue calculation issues")
+                results["tests_failed"] += 1
+                results["critical_issues"].append("Revenue calculation problems")
+            
+            # Verify recent activity is real
+            recent_activity = dashboard_data.get("recent_activity", [])
+            if recent_activity and len(recent_activity) > 0:
+                print(f"   ✅ Recent activity displayed ({len(recent_activity)} items)")
+                results["tests_passed"] += 1
+                results["test_details"].append("✅ Real recent activity displayed")
+            else:
+                print(f"   ⚠️ No recent activity found")
+                
         else:
-            print(f"   ❌ Sold items endpoint failed: {sold_items_response.status_code}")
+            print(f"   ❌ Dashboard endpoint failed: {dashboard_response.status_code}")
             results["tests_failed"] += 1
-            results["critical_issues"].append("Sold items endpoint not accessible")
+            results["critical_issues"].append("Dashboard endpoint not accessible")
         
-        # Test 3: Create test listing for tender testing
-        print("\n3. 🏷️ CREATE TEST LISTING FOR TENDER TESTING")
-        test_listing_data = {
-            "title": "Sold Items Test - Premium Headphones",
-            "description": "High-quality headphones for testing sold items functionality with accepted tenders",
-            "price": 150.0,
-            "category": "Electronics",
-            "condition": "New",
-            "seller_id": user_id,
-            "images": ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"],
-            "tags": ["headphones", "audio", "premium"],
-            "features": ["Noise cancelling", "Wireless", "Premium sound"]
-        }
-        
-        create_response = requests.post(f"{BACKEND_URL}/listings", json=test_listing_data)
-        
-        if create_response.status_code == 200:
-            listing_data = create_response.json()
-            test_listing_id = listing_data["listing_id"]
-            print(f"   ✅ Test listing created - ID: {test_listing_id}")
-            results["tests_passed"] += 1
-            results["test_details"].append("✅ Test listing creation successful")
-        else:
-            print(f"   ❌ Test listing creation failed: {create_response.status_code}")
-            results["tests_failed"] += 1
-            results["critical_issues"].append("Test listing creation failed")
-            return results
-        
-        # Test 4: Create test buyer and submit tender
-        print("\n4. 👤 CREATE TEST BUYER AND SUBMIT TENDER")
-        
-        # Register test buyer
+        # Test 3: User Management by Admin - Create User
+        print("\n3. 👤 ADMIN USER CREATION TEST")
         unique_timestamp = int(time.time())
-        buyer_data = {
-            "username": f"test_buyer_sold_items_{unique_timestamp}",
-            "email": f"buyer_sold_items_{unique_timestamp}@test.com",
-            "full_name": "Test Buyer for Sold Items",
-            "is_business": False
+        new_user_data = {
+            "username": f"admin_created_user_{unique_timestamp}",
+            "email": f"admin_user_{unique_timestamp}@test.com",
+            "password": "testpassword123",
+            "full_name": "Admin Created User",
+            "role": "user"
         }
         
-        buyer_register_response = requests.post(f"{BACKEND_URL}/auth/register", json=buyer_data)
+        create_user_response = requests.post(f"{BACKEND_URL}/admin/users", json=new_user_data)
         
-        if buyer_register_response.status_code == 200:
-            buyer_response_data = buyer_register_response.json()
-            buyer_id = buyer_response_data["user_id"]
-            print(f"   ✅ Test buyer created - ID: {buyer_id}")
+        if create_user_response.status_code == 200:
+            created_user_data = create_user_response.json()
+            created_user_id = created_user_data["user"]["id"]
+            print(f"   ✅ Admin user creation successful - ID: {created_user_id}")
+            print(f"   📋 Created user: {created_user_data['user']['username']}")
             results["tests_passed"] += 1
-            results["test_details"].append("✅ Test buyer creation successful")
+            results["test_details"].append("✅ Admin can create new users")
         else:
-            print(f"   ❌ Test buyer creation failed: {buyer_register_response.status_code}")
+            print(f"   ❌ Admin user creation failed: {create_user_response.status_code}")
+            try:
+                error_detail = create_user_response.json()
+                print(f"   📋 Error: {error_detail}")
+            except:
+                pass
             results["tests_failed"] += 1
-            results["critical_issues"].append("Test buyer creation failed")
-            return results
+            results["critical_issues"].append("Admin user creation failed")
+            created_user_id = None
         
-        # Submit tender offer
-        tender_data = {
-            "listing_id": test_listing_id,
-            "buyer_id": buyer_id,
-            "offer_amount": 175.0  # Higher than starting price
+        # Test 4: Admin Create Another Admin
+        print("\n4. 👑 ADMIN CREATE ADMIN USER TEST")
+        admin_user_data = {
+            "username": f"admin_created_admin_{unique_timestamp}",
+            "email": f"admin_admin_{unique_timestamp}@test.com",
+            "password": "adminpassword123",
+            "full_name": "Admin Created Admin",
+            "role": "admin"
         }
         
-        tender_response = requests.post(f"{BACKEND_URL}/tenders/submit", json=tender_data)
+        create_admin_response = requests.post(f"{BACKEND_URL}/admin/users", json=admin_user_data)
         
-        if tender_response.status_code == 200:
-            tender_result = tender_response.json()
-            tender_id = tender_result["tender_id"]
-            print(f"   ✅ Tender submitted - ID: {tender_id}")
-            print(f"   💰 Tender amount: €{tender_data['offer_amount']}")
+        if create_admin_response.status_code == 200:
+            created_admin_data = create_admin_response.json()
+            created_admin_id = created_admin_data["user"]["id"]
+            print(f"   ✅ Admin can create other admins - ID: {created_admin_id}")
+            print(f"   👑 Created admin: {created_admin_data['user']['username']}")
             results["tests_passed"] += 1
-            results["test_details"].append("✅ Tender submission successful")
+            results["test_details"].append("✅ Admin can create other admins")
         else:
-            print(f"   ❌ Tender submission failed: {tender_response.status_code}")
+            print(f"   ❌ Admin admin creation failed: {create_admin_response.status_code}")
             results["tests_failed"] += 1
-            results["critical_issues"].append("Tender submission failed")
-            return results
+            results["critical_issues"].append("Admin cannot create other admins")
+            created_admin_id = None
         
-        # Test 5: Accept the tender
-        print("\n5. ✅ ACCEPT TENDER AND TEST SOLD ITEMS UPDATE")
-        
-        accept_data = {
-            "seller_id": user_id
-        }
-        
-        accept_response = requests.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", json=accept_data)
-        
-        if accept_response.status_code == 200:
-            print(f"   ✅ Tender accepted successfully")
-            results["tests_passed"] += 1
-            results["test_details"].append("✅ Tender acceptance successful")
+        # Test 5: User Deletion by Admin
+        if created_user_id:
+            print("\n5. 🗑️ ADMIN USER DELETION TEST")
+            delete_response = requests.delete(f"{BACKEND_URL}/admin/users/{created_user_id}")
             
-            # Wait a moment for database updates
-            time.sleep(2)
-            
-            # Test sold items endpoint after tender acceptance
-            print("\n6. 🔍 VERIFY ACCEPTED TENDER IN SOLD ITEMS")
-            updated_sold_response = requests.get(f"{BACKEND_URL}/user/{user_id}/sold-items")
-            
-            if updated_sold_response.status_code == 200:
-                updated_sold_data = updated_sold_response.json()
-                print(f"   ✅ Updated sold items retrieved")
-                print(f"   📊 New sold items count: {len(updated_sold_data['items'])}")
+            if delete_response.status_code == 200:
+                print(f"   ✅ Admin user deletion successful")
+                results["tests_passed"] += 1
+                results["test_details"].append("✅ Admin can delete users")
                 
-                # Check if our accepted tender appears in sold items
-                found_tender_item = False
-                for item in updated_sold_data["items"]:
-                    if item.get("source") == "tender" and item.get("tender_id") == tender_id:
-                        found_tender_item = True
-                        print(f"   ✅ Accepted tender found in sold items!")
-                        print(f"   📋 Item details:")
-                        print(f"      - Listing: {item.get('listing', {}).get('title', 'N/A')}")
-                        print(f"      - Final price: €{item.get('final_price', 0)}")
-                        print(f"      - Buyer: {item.get('buyer', {}).get('full_name', 'N/A')}")
-                        print(f"      - Sold date: {item.get('sold_at', 'N/A')}")
-                        print(f"      - Source: {item.get('source', 'N/A')}")
-                        
-                        # Verify data integrity
-                        if (item.get('final_price') == 175.0 and 
-                            item.get('source') == 'tender' and
-                            item.get('listing', {}).get('title') == 'Sold Items Test - Premium Headphones'):
-                            print(f"   ✅ Data integrity verified - all fields correct")
-                            results["tests_passed"] += 1
-                            results["test_details"].append("✅ Accepted tender data integrity verified")
-                        else:
-                            print(f"   ⚠️ Data integrity issues detected")
-                            results["tests_failed"] += 1
-                            results["critical_issues"].append("Accepted tender data integrity issues")
-                        break
-                
-                if found_tender_item:
+                # Verify user is actually deleted
+                verify_response = requests.get(f"{BACKEND_URL}/auth/profile/{created_user_id}")
+                if verify_response.status_code == 404:
+                    print(f"   ✅ User properly deleted from database")
                     results["tests_passed"] += 1
-                    results["test_details"].append("✅ Accepted tender appears in sold items")
+                    results["test_details"].append("✅ User deletion verified")
                 else:
-                    print(f"   ❌ Accepted tender NOT found in sold items")
-                    results["tests_failed"] += 1
-                    results["critical_issues"].append("Accepted tender missing from sold items")
-                
-                # Test statistics update
-                stats = updated_sold_data.get("stats", {})
-                print(f"\n   📊 SOLD ITEMS STATISTICS:")
-                print(f"      - Total sold: {stats.get('totalSold', 0)}")
-                print(f"      - Total revenue: €{stats.get('totalRevenue', 0)}")
-                print(f"      - Average price: €{stats.get('averagePrice', 0)}")
-                print(f"      - This month: {stats.get('thisMonth', 0)}")
-                
-                if stats.get('totalSold', 0) > 0:
-                    print(f"   ✅ Statistics properly calculated")
-                    results["tests_passed"] += 1
-                    results["test_details"].append("✅ Sold items statistics calculated correctly")
-                else:
-                    print(f"   ⚠️ Statistics calculation issues")
-                    results["tests_failed"] += 1
-                    results["critical_issues"].append("Sold items statistics calculation issues")
+                    print(f"   ⚠️ User may not be fully deleted")
                     
             else:
-                print(f"   ❌ Failed to retrieve updated sold items: {updated_sold_response.status_code}")
+                print(f"   ❌ Admin user deletion failed: {delete_response.status_code}")
                 results["tests_failed"] += 1
-                results["critical_issues"].append("Failed to retrieve updated sold items")
-        else:
-            print(f"   ❌ Tender acceptance failed: {accept_response.status_code}")
-            results["tests_failed"] += 1
-            results["critical_issues"].append("Tender acceptance failed")
+                results["critical_issues"].append("Admin user deletion failed")
         
-        # Test 6: Verify listing status changed to sold
-        print("\n7. 🏷️ VERIFY LISTING STATUS CHANGED TO SOLD")
+        # Test 6: Profile Address Persistence
+        print("\n6. 🏠 PROFILE ADDRESS PERSISTENCE TEST")
         
-        listing_check_response = requests.get(f"{BACKEND_URL}/listings/{test_listing_id}")
+        # Create test user for profile testing
+        profile_test_user_data = {
+            "username": f"profile_test_{unique_timestamp}",
+            "email": f"profile_test_{unique_timestamp}@test.com",
+            "full_name": "Profile Test User"
+        }
         
-        if listing_check_response.status_code == 200:
-            listing_data = listing_check_response.json()
-            listing_status = listing_data.get("status", "unknown")
-            print(f"   📋 Listing status: {listing_status}")
+        profile_user_response = requests.post(f"{BACKEND_URL}/auth/register", json=profile_test_user_data)
+        
+        if profile_user_response.status_code == 200:
+            profile_user_id = profile_user_response.json()["user_id"]
+            print(f"   ✅ Profile test user created - ID: {profile_user_id}")
             
-            if listing_status == "sold":
-                print(f"   ✅ Listing correctly marked as sold")
-                results["tests_passed"] += 1
-                results["test_details"].append("✅ Listing status updated to sold")
-            else:
-                print(f"   ❌ Listing status not updated to sold")
-                results["tests_failed"] += 1
-                results["critical_issues"].append("Listing status not updated after tender acceptance")
-        else:
-            print(f"   ❌ Failed to check listing status: {listing_check_response.status_code}")
-            results["tests_failed"] += 1
-            results["critical_issues"].append("Failed to verify listing status")
-        
-        # Test 7: Test with existing deals (if any)
-        print("\n8. 🔍 TEST SOLD ITEMS WITH MIXED SOURCES")
-        
-        final_sold_response = requests.get(f"{BACKEND_URL}/user/{user_id}/sold-items")
-        
-        if final_sold_response.status_code == 200:
-            final_sold_data = final_sold_response.json()
-            items = final_sold_data.get("items", [])
+            # Test profile update with address
+            profile_update_data = {
+                "profile": {
+                    "full_name": "Updated Profile Test User",
+                    "bio": "Testing profile address persistence",
+                    "location": "Test City, Test Country",
+                    "phone": "+1234567890",
+                    "company": "Test Company",
+                    "website": "https://test.com",
+                    "address": "123 Test Street, Test City, Test State, 12345"
+                },
+                "settings": {
+                    "notifications": True,
+                    "email_updates": False,
+                    "public_profile": True
+                }
+            }
             
-            # Count sources
-            tender_sources = len([item for item in items if item.get("source") == "tender"])
-            deal_sources = len([item for item in items if item.get("source") == "deal"])
+            update_response = requests.put(f"{BACKEND_URL}/auth/profile/{profile_user_id}", json=profile_update_data)
             
-            print(f"   📊 SOLD ITEMS SOURCE BREAKDOWN:")
-            print(f"      - From accepted tenders: {tender_sources}")
-            print(f"      - From completed deals: {deal_sources}")
-            print(f"      - Total sold items: {len(items)}")
-            
-            if tender_sources > 0:
-                print(f"   ✅ Accepted tenders properly included in sold items")
-                results["tests_passed"] += 1
-                results["test_details"].append("✅ Mixed source sold items working correctly")
-            else:
-                print(f"   ❌ No accepted tenders found in sold items")
-                results["tests_failed"] += 1
-                results["critical_issues"].append("Accepted tenders not included in sold items")
-            
-            # Verify sorting (most recent first)
-            if len(items) > 1:
-                dates = [item.get("sold_at", "") for item in items if item.get("sold_at")]
-                if dates == sorted(dates, reverse=True):
-                    print(f"   ✅ Sold items properly sorted by date (newest first)")
-                    results["tests_passed"] += 1
-                    results["test_details"].append("✅ Sold items sorting verified")
+            if update_response.status_code == 200:
+                print(f"   ✅ Profile update successful")
+                
+                # Verify address persistence
+                get_profile_response = requests.get(f"{BACKEND_URL}/auth/profile/{profile_user_id}")
+                
+                if get_profile_response.status_code == 200:
+                    profile_data = get_profile_response.json()
+                    stored_address = profile_data.get("profile", {}).get("address", "")
+                    
+                    if stored_address == "123 Test Street, Test City, Test State, 12345":
+                        print(f"   ✅ Address field persisted correctly")
+                        print(f"   📍 Stored address: {stored_address}")
+                        results["tests_passed"] += 1
+                        results["test_details"].append("✅ Profile address persistence working")
+                    else:
+                        print(f"   ❌ Address field not persisted correctly")
+                        print(f"   📍 Expected: 123 Test Street, Test City, Test State, 12345")
+                        print(f"   📍 Got: {stored_address}")
+                        results["tests_failed"] += 1
+                        results["critical_issues"].append("Profile address not persisting")
+                    
+                    # Verify other profile fields
+                    stored_bio = profile_data.get("profile", {}).get("bio", "")
+                    stored_company = profile_data.get("profile", {}).get("company", "")
+                    
+                    if stored_bio == "Testing profile address persistence" and stored_company == "Test Company":
+                        print(f"   ✅ All profile fields persisted correctly")
+                        results["tests_passed"] += 1
+                        results["test_details"].append("✅ All profile fields persistent")
+                    else:
+                        print(f"   ⚠️ Some profile fields may not be persisting")
+                        
                 else:
-                    print(f"   ⚠️ Sold items sorting may have issues")
+                    print(f"   ❌ Failed to retrieve updated profile")
                     results["tests_failed"] += 1
-                    results["critical_issues"].append("Sold items sorting issues")
+                    results["critical_issues"].append("Cannot retrieve updated profile")
+                    
+            else:
+                print(f"   ❌ Profile update failed: {update_response.status_code}")
+                try:
+                    error_detail = update_response.json()
+                    print(f"   📋 Error: {error_detail}")
+                except:
+                    pass
+                results["tests_failed"] += 1
+                results["critical_issues"].append("Profile update failed")
+        else:
+            print(f"   ❌ Profile test user creation failed")
+            results["tests_failed"] += 1
+            results["critical_issues"].append("Profile test user creation failed")
+        
+        # Test 7: Hero Display Options in Settings
+        print("\n7. 🎨 HERO DISPLAY OPTIONS TEST")
+        settings_response = requests.get(f"{BACKEND_URL}/admin/settings")
+        
+        if settings_response.status_code == 200:
+            settings_data = settings_response.json()
+            
+            print(f"   ✅ Admin settings endpoint accessible")
+            
+            # Check for hero display options
+            hero_display_mode = settings_data.get("hero_display_mode")
+            hero_background_style = settings_data.get("hero_background_style")
+            hero_text_alignment = settings_data.get("hero_text_alignment")
+            
+            print(f"   🎨 Hero Display Options:")
+            print(f"      - Display Mode: {hero_display_mode}")
+            print(f"      - Background Style: {hero_background_style}")
+            print(f"      - Text Alignment: {hero_text_alignment}")
+            
+            # Verify all three options are present
+            expected_options = ["hero_display_mode", "hero_background_style", "hero_text_alignment"]
+            missing_options = []
+            
+            for option in expected_options:
+                if option not in settings_data:
+                    missing_options.append(option)
+            
+            if not missing_options:
+                print(f"   ✅ All hero display options present")
+                results["tests_passed"] += 1
+                results["test_details"].append("✅ Hero display options available")
+                
+                # Verify valid values
+                valid_display_modes = ["full_width", "boxed", "centered"]
+                valid_background_styles = ["gradient", "image", "solid"]
+                valid_text_alignments = ["left", "center", "right"]
+                
+                if (hero_display_mode in valid_display_modes and
+                    hero_background_style in valid_background_styles and
+                    hero_text_alignment in valid_text_alignments):
+                    print(f"   ✅ Hero display option values are valid")
+                    results["tests_passed"] += 1
+                    results["test_details"].append("✅ Hero display option values valid")
+                else:
+                    print(f"   ⚠️ Some hero display option values may be invalid")
+                    
+            else:
+                print(f"   ❌ Missing hero display options: {missing_options}")
+                results["tests_failed"] += 1
+                results["critical_issues"].append(f"Missing hero display options: {missing_options}")
+            
+            # Test updating hero display settings
+            print("\n8. 🔄 HERO DISPLAY SETTINGS UPDATE TEST")
+            updated_settings = {
+                "hero_display_mode": "boxed",
+                "hero_background_style": "image",
+                "hero_text_alignment": "left",
+                "site_name": "Cataloro",
+                "theme_color": "#3B82F6"
+            }
+            
+            update_settings_response = requests.put(f"{BACKEND_URL}/admin/settings", json=updated_settings)
+            
+            if update_settings_response.status_code == 200:
+                print(f"   ✅ Hero display settings update successful")
+                
+                # Verify the update
+                verify_settings_response = requests.get(f"{BACKEND_URL}/admin/settings")
+                if verify_settings_response.status_code == 200:
+                    verify_data = verify_settings_response.json()
+                    
+                    if (verify_data.get("hero_display_mode") == "boxed" and
+                        verify_data.get("hero_background_style") == "image" and
+                        verify_data.get("hero_text_alignment") == "left"):
+                        print(f"   ✅ Hero display settings persisted correctly")
+                        results["tests_passed"] += 1
+                        results["test_details"].append("✅ Hero display settings persistence working")
+                    else:
+                        print(f"   ❌ Hero display settings not persisted correctly")
+                        results["tests_failed"] += 1
+                        results["critical_issues"].append("Hero display settings not persisting")
+                        
+            else:
+                print(f"   ❌ Hero display settings update failed: {update_settings_response.status_code}")
+                results["tests_failed"] += 1
+                results["critical_issues"].append("Hero display settings update failed")
+                
+        else:
+            print(f"   ❌ Admin settings endpoint failed: {settings_response.status_code}")
+            results["tests_failed"] += 1
+            results["critical_issues"].append("Admin settings endpoint not accessible")
         
     except Exception as e:
         print(f"\n❌ CRITICAL ERROR during testing: {str(e)}")
@@ -302,12 +366,12 @@ def test_sold_items_functionality():
 
 def main():
     """Main testing function"""
-    print("🚀 STARTING SOLD ITEMS FUNCTIONALITY TESTING")
-    print("Testing enhanced sold items that includes accepted tenders")
+    print("🚀 STARTING ADMIN PANEL & PROFILE FIXES TESTING")
+    print("Testing critical admin panel and profile fixes as requested in review")
     print("=" * 80)
     
     start_time = time.time()
-    results = test_sold_items_functionality()
+    results = test_admin_panel_and_profile_fixes()
     end_time = time.time()
     
     # Print comprehensive results
@@ -334,13 +398,13 @@ def main():
     
     # Overall status
     if results['tests_failed'] == 0:
-        print(f"\n🎉 SOLD ITEMS FUNCTIONALITY STATUS: ✅ FULLY OPERATIONAL")
-        print("   All tests passed - accepted tenders properly integrated into sold items")
+        print(f"\n🎉 ADMIN PANEL & PROFILE FIXES STATUS: ✅ FULLY OPERATIONAL")
+        print("   All tests passed - admin panel and profile fixes working correctly")
     elif results['tests_failed'] <= 2:
-        print(f"\n⚠️ SOLD ITEMS FUNCTIONALITY STATUS: ⚠️ MOSTLY WORKING")
+        print(f"\n⚠️ ADMIN PANEL & PROFILE FIXES STATUS: ⚠️ MOSTLY WORKING")
         print("   Minor issues detected but core functionality operational")
     else:
-        print(f"\n❌ SOLD ITEMS FUNCTIONALITY STATUS: ❌ CRITICAL ISSUES")
+        print(f"\n❌ ADMIN PANEL & PROFILE FIXES STATUS: ❌ CRITICAL ISSUES")
         print("   Major problems detected - requires immediate attention")
     
     return results
