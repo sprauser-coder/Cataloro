@@ -34,15 +34,12 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 
 function AdminPanel() {
-  // Complete state management
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [activeSubTab, setActiveSubTab] = useState('overview');
+  // Core state management
+  const [activeSection, setActiveSection] = useState('dashboard');
   const [dashboardData, setDashboardData] = useState(null);
   const [users, setUsers] = useState([]);
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
-  const [logoFile, setLogoFile] = useState(null);
-  const [logoPreview, setLogoPreview] = useState('');
   
   // User management states
   const [showCreateUser, setShowCreateUser] = useState(false);
@@ -54,7 +51,6 @@ function AdminPanel() {
     role: 'user'
   });
   const [creatingUser, setCreatingUser] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
 
   // Price settings states
   const [priceSettings, setPriceSettings] = useState({
@@ -67,14 +63,6 @@ function AdminPanel() {
     price_range_min_percent: 10.0,
     price_range_max_percent: 10.0
   });
-
-  // Analytics states
-  const [analyticsData, setAnalyticsData] = useState(null);
-  const [selectedDateRange, setSelectedDateRange] = useState('7d');
-  
-  // Tools states
-  const [selectedTool, setSelectedTool] = useState('database');
-  const [toolsData, setToolsData] = useState({});
 
   const { user } = useAuth();
   const { showToast } = useNotifications();
