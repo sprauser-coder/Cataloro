@@ -307,9 +307,23 @@ function ModernBrowsePage() {
         }, 1000);
         
       } else if (response.status === 400) {
-        showToast(data.detail || 'Invalid tender offer', 'error');
+        setBidConfirmationModal({
+          show: true,
+          bidAmount: parseFloat(offerAmount),
+          itemTitle: item.title,
+          itemId: item.id,
+          success: false,
+          errorMessage: data.detail || 'Invalid tender offer'
+        });
       } else {
-        showToast(data.detail || 'Failed to submit tender offer', 'error');
+        setBidConfirmationModal({
+          show: true,
+          bidAmount: parseFloat(offerAmount),
+          itemTitle: item.title,
+          itemId: item.id,
+          success: false,
+          errorMessage: 'Failed to submit tender offer'
+        });
       }
     } catch (error) {
       console.error('Error submitting tender:', error);
