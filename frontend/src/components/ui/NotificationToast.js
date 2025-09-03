@@ -85,6 +85,8 @@ function NotificationToast() {
         return <AlertCircle className="w-5 h-5 text-red-600" />;
       case 'warning':
         return <AlertTriangle className="w-5 h-5 text-orange-600" />;
+      case 'welcome':
+        return <Bell className="w-5 h-5 text-purple-600" />;
       default:
         return <Info className="w-5 h-5 text-blue-600" />;
     }
@@ -98,10 +100,20 @@ function NotificationToast() {
         return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200';
       case 'warning':
         return 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-800 dark:text-orange-200';
+      case 'welcome':
+        return 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-200';
       default:
         return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200';
     }
   };
+
+  // Expose addToast function globally for manual use (backward compatibility)
+  useEffect(() => {
+    window.showToast = addToast;
+    return () => {
+      delete window.showToast;
+    };
+  }, []);
 
   if (toasts.length === 0) return null;
 
