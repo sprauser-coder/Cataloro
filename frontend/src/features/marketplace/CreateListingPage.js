@@ -934,73 +934,7 @@ function CreateListingPage() {
             </div>
           </div>
 
-          {/* Shipping Information */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Shipping & Delivery
-            </h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Shipping Options
-                </label>
-                <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="shipping"
-                      value="pickup"
-                      checked={formData.shipping === 'pickup'}
-                      onChange={handleInputChange}
-                      className="mr-2"
-                    />
-                    <span className="text-gray-700 dark:text-gray-300">Local pickup only</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="shipping"
-                      value="shipping"
-                      checked={formData.shipping === 'shipping'}
-                      onChange={handleInputChange}
-                      className="mr-2"
-                    />
-                    <span className="text-gray-700 dark:text-gray-300">I can ship this item</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="shipping"
-                      value="both"
-                      checked={formData.shipping === 'both'}
-                      onChange={handleInputChange}
-                      className="mr-2"
-                    />
-                    <span className="text-gray-700 dark:text-gray-300">Both pickup and shipping</span>
-                  </label>
-                </div>
-              </div>
 
-              {(formData.shipping === 'shipping' || formData.shipping === 'both') && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Shipping Cost (€)
-                  </label>
-                  <input
-                    type="number"
-                    name="shipping_cost"
-                    value={formData.shipping_cost}
-                    onChange={handleInputChange}
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
 
           {/* Tags and Features */}
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
