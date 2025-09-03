@@ -46,8 +46,9 @@ import { useNotifications } from '../../context/NotificationContext';
 import { liveService } from '../../services/liveService';
 
 function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileMenuOpen }) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { cartItems, favoriteCount } = useMarketplace();
+  const { showToast } = useNotifications();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showTendersMenu, setShowTendersMenu] = useState(false);
