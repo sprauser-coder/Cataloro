@@ -75,7 +75,7 @@ function App() {
                   <Route path="pending-sales" element={<PendingSalesPage />} />
                   <Route path="view-all-requests" element={<ViewAllRequestsPage />} />
                   <Route path={APP_ROUTES.MY_LISTINGS} element={<MyListingsPage />} />
-                  <Route path="my-orders" element={<DealsPage />} />
+
                   <Route path={APP_ROUTES.MY_DEALS} element={<DealsPage />} />
                   <Route path="messages" element={<MessagesPage />} />
                   <Route path={APP_ROUTES.TENDERS.substring(1)} element={<TenderManagementPage />} />
