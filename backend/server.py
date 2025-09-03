@@ -151,6 +151,25 @@ def serialize_doc(doc):
         del doc["_id"]
     return doc
 
+async def trigger_system_notifications(user_id: str, event_type: str):
+    """Trigger system notifications based on user events"""
+    try:
+        if event_type == "login":
+            # Create a welcome back notification
+            notification = {
+                "user_id": user_id,
+                "title": "Welcome back!",
+                "message": "You have successfully logged in to Cataloro Marketplace.",
+                "type": "system",
+                "is_read": False,
+                "created_at": datetime.utcnow().isoformat(),
+                "id": str(uuid.uuid4())
+            }
+            await db.user_notifications.insert_one(notification)
+    except Exception as e:
+        print(f"Error in trigger_system_notifications: {e}")
+        # Don't raise the exception to avoid breaking the main flow
+
 # Health Check
 @app.get("/api/health")
 async def health_check():
