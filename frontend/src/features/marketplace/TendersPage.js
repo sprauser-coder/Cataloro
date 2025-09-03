@@ -359,8 +359,8 @@ function TendersPage() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'manage' ? (
-        // Manage Tenders Tab Content
+      {activeTab === 'listings' ? (
+        // My Listings Tab Content (previously Manage Tenders)
         <div className="space-y-6">
           {/* Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
