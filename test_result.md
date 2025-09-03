@@ -798,6 +798,45 @@ if not seller:
 
 **COMPREHENSIVE TEST RESULTS:** 25/33 individual tests passed (75.8% success rate), all core tender offerer visibility requirements met, seller overview endpoint fully functional, buyer information completely populated, frontend display chain verified and working.
 
+**Test Date:** 2025-01-28 18:45:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ✅ ENHANCED BULK NOTIFICATION FUNCTIONALITY TESTING COMPLETED - ALL TESTS PASSED
+
+#### Enhanced Bulk Notification Functionality Test Results:
+**COMPREHENSIVE BULK NOTIFICATION TESTING:** ✅ ALL REQUIREMENTS MET - Executed specialized testing of enhanced bulk notification functionality as requested in review. Successfully tested new general notification update endpoint, existing read-only endpoint, notification retrieval with archived field, and bulk operations scenarios.
+
+**1. New General Notification Update Endpoint Testing** ✅ FULLY FUNCTIONAL - PUT `/api/user/{user_id}/notifications/{notification_id}` endpoint working correctly with all payload variations ✅, Successfully tested `{"read": true}` - mark as read functionality ✅, Successfully tested `{"read": false}` - mark as unread functionality ✅, Successfully tested `{"archived": true}` - archive notification functionality ✅, Successfully tested `{"archived": false}` - unarchive notification functionality ✅, Successfully tested `{"read": true, "archived": true}` - combined updates functionality ✅, Proper error handling for invalid notification IDs (404 status) ✅, Proper validation for empty update data (400 status) ✅.
+
+**2. Existing Read-Only Endpoint Verification** ✅ WORKING CORRECTLY - PUT `/api/user/{user_id}/notifications/{notification_id}/read` endpoint still functional ✅, Proper response message "Notification marked as read" confirmed ✅, Backward compatibility maintained with existing notification system ✅, No breaking changes detected in legacy endpoint ✅.
+
+**3. Notification Retrieval with Archived Field** ✅ VERIFIED - GET `/api/user/{user_id}/notifications` returns notifications with archived field ✅, All required fields present (id, user_id, title, message, type, is_read, created_at, archived) ✅, Archived field properly populated in notification responses ✅, Retrieved 10 notifications with complete data structure ✅, Timestamp fields (read_at, archived_at) properly included ✅.
+
+**4. Bulk Operations Scenarios Testing** ✅ COMPREHENSIVE SUCCESS - Bulk mark as read scenario: 3/3 notifications successfully updated ✅, Bulk archive scenario: 2/2 notifications successfully archived ✅, Bulk unarchive scenario: 2/2 notifications successfully unarchived ✅, Mixed bulk operations: 2/2 combined read+archive operations successful ✅, All bulk scenarios working correctly for frontend integration ✅.
+
+**5. State Persistence Verification** ✅ CONFIRMED - Notification state changes persist correctly across API calls ✅, Read and archived states maintained after updates ✅, Timestamp fields (read_at, archived_at) properly set and persisted ✅, Database consistency verified through multiple API calls ✅, State persistence working for both individual and bulk operations ✅.
+
+**6. Test Data Management** ✅ COMPLETE - Created 4 test notifications for comprehensive testing ✅, Successfully cleaned up all test notifications after testing ✅, No test data pollution in production database ✅, Proper test isolation and cleanup procedures followed ✅.
+
+**ENHANCED NOTIFICATION FEATURES VERIFICATION:**
+- ✅ New general update endpoint supports read/unread operations
+- ✅ New general update endpoint supports archive/unarchive operations  
+- ✅ Combined operations (read + archived) working in single API call
+- ✅ Proper error handling and validation implemented
+- ✅ Backward compatibility with existing read-only endpoint maintained
+- ✅ Archived field included in notification retrieval responses
+- ✅ Bulk operations scenarios fully supported for frontend implementation
+
+**TECHNICAL FINDINGS:**
+- General notification update endpoint working with proper field validation
+- Updated fields tracking correctly returned in API responses (is_read, read_at, archived, archived_at)
+- Error handling properly implemented for invalid IDs and empty payloads
+- State persistence verified across multiple API calls and database operations
+- All notification CRUD operations working correctly with enhanced functionality
+
+**COMPREHENSIVE TEST RESULTS:** 44/44 individual tests passed (100% success rate), 5/5 major test categories passed, all enhanced bulk notification functionality requirements met, new general update endpoint fully operational, existing endpoints maintained compatibility, notification retrieval includes archived field, bulk operations scenarios verified, state persistence confirmed.
+
+**ENHANCED BULK NOTIFICATION STATUS:** ✅ FULLY OPERATIONAL - The enhanced bulk notification functionality is working perfectly. All new endpoints are functional, existing endpoints maintain compatibility, and the system is ready for frontend bulk operations including archive/unarchive, bulk read/unread, and combined operations. The notification system now supports comprehensive bulk management as requested.
+
 **TENDER OFFERER VISIBILITY STATUS:** ✅ WORKING - The tender offerer visibility functionality is working correctly as requested in review. Seller overview shows populated tender data with complete buyer information, enabling frontend to display "by [buyer name]" for each tender offer. The complete tender offerer visibility chain is operational and ready for production use.
 
 **Test Date:** 2025-01-28 15:45:00 UTC  
