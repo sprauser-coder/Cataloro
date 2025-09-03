@@ -142,6 +142,132 @@ function NotificationsCenterPage() {
     }
   };
 
+  const archiveNotifications = async (notificationIds) => {
+    try {
+      setBulkActionLoading(true);
+      const idsArray = Array.isArray(notificationIds) ? notificationIds : [notificationIds];
+      
+      for (const id of idsArray) {
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ archived: true })
+        });
+      }
+      
+      // Update local state
+      setNotifications(prev => 
+        prev.map(notif => 
+          idsArray.includes(notif.id) ? { ...notif, archived: true } : notif
+        )
+      );
+      setSelectedNotifications([]);
+      
+      showToast(`Archived ${idsArray.length} notification(s)`, 'success');
+    } catch (error) {
+      console.error('Error archiving notifications:', error);
+      showToast('Failed to archive notifications', 'error');
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const unarchiveNotifications = async (notificationIds) => {
+    try {
+      setBulkActionLoading(true);
+      const idsArray = Array.isArray(notificationIds) ? notificationIds : [notificationIds];
+      
+      for (const id of idsArray) {
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ archived: false })
+        });
+      }
+      
+      // Update local state
+      setNotifications(prev => 
+        prev.map(notif => 
+          idsArray.includes(notif.id) ? { ...notif, archived: false } : notif
+        )
+      );
+      setSelectedNotifications([]);
+      
+      showToast(`Unarchived ${idsArray.length} notification(s)`, 'success');
+    } catch (error) {
+      console.error('Error unarchiving notifications:', error);
+      showToast('Failed to unarchive notifications', 'error');
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const exportNotifications = () => {
+    try {
+      const exportData = selectedNotifications.length > 0 
+        ? notifications.filter(n => selectedNotifications.includes(n.id))
+        : filteredNotifications;
+      
+      const csvContent = [
+        ['Title', 'Message', 'Type', 'Read', 'Archived', 'Created At'].join(','),
+        ...exportData.map(n => [
+          `"${n.title || ''}"`,
+          `"${(n.message || n.content || '').replace(/"/g, '""')}"`,
+          n.type || 'info',
+          n.read ? 'Yes' : 'No',
+          n.archived ? 'Yes' : 'No',
+          new Date(n.created_at || n.timestamp).toLocaleString()
+        ].join(','))
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `notifications-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showToast(`Exported ${exportData.length} notifications`, 'success');
+    } catch (error) {
+      console.error('Error exporting notifications:', error);
+      showToast('Failed to export notifications', 'error');
+    }
+  };
+
+  const handleBulkAction = (action) => {
+    if (selectedNotifications.length === 0) {
+      showToast('Please select notifications first', 'warning');
+      return;
+    }
+
+    setConfirmAction(() => action);
+    setShowConfirmDialog(true);
+  };
+
+  const confirmBulkAction = async () => {
+    if (!confirmAction) return;
+    
+    setBulkActionLoading(true);
+    setShowConfirmDialog(false);
+    
+    try {
+      await confirmAction();
+    } catch (error) {
+      console.error('Bulk action error:', error);
+    } finally {
+      setBulkActionLoading(false);
+      setConfirmAction(null);
+    }
+  };
+
+  const cancelBulkAction = () => {
+    setShowConfirmDialog(false);
+    setConfirmAction(null);
+  };
+
   const markAllAsRead = async () => {
     const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
     if (unreadIds.length > 0) {
