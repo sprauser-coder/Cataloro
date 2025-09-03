@@ -906,7 +906,10 @@ async def get_site_settings():
             "logo_url": "/favicon.ico",
             "logo_light_url": "",
             "logo_dark_url": "",
-            "theme_color": "#3B82F6"
+            "theme_color": "#3B82F6",
+            "hero_display_mode": "full_width",
+            "hero_background_style": "gradient",
+            "hero_text_alignment": "center"
         }
 
 @app.put("/api/admin/settings")
