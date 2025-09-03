@@ -520,6 +520,25 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   <span className="font-medium">Tenders</span>
                 </Link>
               )}
+              
+              {/* Admin Link - Always highlighted with yellow/orange background */}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm text-gray-900 dark:text-gray-900 shadow-lg backdrop-blur-md"
+                  style={{
+                    background: location.pathname === '/admin' 
+                      ? 'linear-gradient(135deg, rgba(255, 193, 7, 0.9) 0%, rgba(255, 152, 0, 0.8) 100%)'
+                      : 'linear-gradient(135deg, rgba(255, 193, 7, 0.7) 0%, rgba(255, 152, 0, 0.6) 100%)',
+                    backdropFilter: 'blur(20px)',
+                    boxShadow: '0 4px 15px rgba(255, 193, 7, 0.3)',
+                    border: '1px solid rgba(255, 193, 7, 0.4)'
+                  }}
+                >
+                  <Shield className="w-4 h-4" />
+                  <span className="font-medium">Admin</span>
+                </Link>
+              )}
             </nav>
           </div>
 
