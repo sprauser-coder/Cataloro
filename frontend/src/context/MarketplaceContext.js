@@ -379,6 +379,13 @@ export function MarketplaceProvider({ children }) {
           condition: listing.condition,
           location: listing.location || 'Unknown',
           images: listing.images || [],
+          // CRITICAL: Preserve bid_info from API for price display logic
+          bid_info: listing.bid_info || {
+            has_bids: false,
+            total_bids: 0,
+            highest_bid: parseFloat(listing.price) || 0,
+            highest_bidder_id: ''
+          },
           // Preserve complete seller object with business information
           seller: {
             ...listing.seller,
