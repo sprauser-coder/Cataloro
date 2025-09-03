@@ -92,6 +92,43 @@
 
 **SELLER INFORMATION VISIBILITY STATUS:** ❌ NOT WORKING - The seller information visibility fix is not functioning as expected. While the endpoint structure is correct, the critical seller information is missing from responses, preventing the frontend from displaying complete seller details including business information.
 
+**Test Date:** 2025-01-28 12:30:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ❌ TENDER OFFERER VISIBILITY COMPREHENSIVE TESTING COMPLETED - ROOT CAUSE IDENTIFIED
+
+#### Tender Offerer Visibility Detailed Investigation Results:
+**COMPREHENSIVE TENDER VISIBILITY TESTING:** ❌ CRITICAL DATABASE QUERY ISSUE CONFIRMED - Executed specialized testing of tender offerer visibility issue as requested in review. Root cause identified and confirmed through detailed diagnostic testing.
+
+**1. Test Setup and Data Creation** ✅ SUCCESSFUL - Created test users (seller: business account, buyer: individual account) ✅, Created test listing with €1500 starting price ✅, Successfully submitted 3 tender offers (€1500, €1600, €1750) ✅, All test data creation and API endpoints working correctly ✅.
+
+**2. Seller Overview Endpoint Structure** ✅ WORKING - GET /api/tenders/seller/{seller_id}/overview endpoint accessible with 200 status ✅, Response structure includes all expected fields (listing, seller, tender_count, highest_offer, tenders) ✅, Endpoint returns proper array format with listing data ✅.
+
+**3. Seller Information Population Issue** ❌ CRITICAL FAILURE CONFIRMED - Seller field consistently returns empty object {} instead of populated seller data ❌, Database query `await db.users.find_one({"id": seller_id})` in seller overview endpoint failing to find user ❌, Same seller ID works perfectly in profile endpoint `/api/auth/profile/{seller_id}` ✅.
+
+**4. Root Cause Analysis - Database Query Logic** ❌ MISSING FALLBACK LOGIC IDENTIFIED - Profile endpoint (lines 230-244) includes fallback logic to try ObjectId lookup when UUID lookup fails ✅, Seller overview endpoint (line 1700) only attempts UUID lookup without ObjectId fallback ❌, User IDs are stored as ObjectId format (24-character hex string) but overview endpoint only queries by UUID ❌.
+
+**5. Buyer Information Impact** ❌ SECONDARY ISSUE - Tenders not being associated with listings in overview response ❌, Buyer information cannot be tested because tender association is failing ❌, Frontend cannot display "by [buyer name]" information due to missing tender data ❌.
+
+**TECHNICAL DIAGNOSIS:**
+- Seller ID from login: "68b82ddb577e02c4e9d5a3bc" (24-character ObjectId format)
+- Profile endpoint query: `await db.users.find_one({"id": user_id})` with ObjectId fallback - WORKS ✅
+- Overview endpoint query: `await db.users.find_one({"id": seller_id})` without fallback - FAILS ❌
+- The seller overview endpoint needs the same fallback logic as the profile endpoint
+
+**EXACT FIX REQUIRED:**
+The seller overview endpoint at line 1700 needs to implement the same fallback logic as the profile endpoint:
+```python
+seller = await db.users.find_one({"id": seller_id})
+if not seller:
+    try:
+        from bson import ObjectId
+        seller = await db.users.find_one({"_id": ObjectId(seller_id)})
+    except:
+        pass
+```
+
+**TENDER OFFERER VISIBILITY STATUS:** ❌ NOT WORKING - Root cause identified as missing ObjectId fallback logic in seller overview endpoint database query. The seller information visibility issue prevents frontend from displaying complete seller and buyer information in tender offers. Fix required in backend database query logic.
+
 **Test Date:** 2025-01-27 23:58:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ COMPREHENSIVE BACKEND IMPROVEMENTS TESTING COMPLETED - ALL MAJOR FEATURES PASSED
