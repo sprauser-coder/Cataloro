@@ -66,7 +66,7 @@ function TendersPage() {
       if (activeTab === 'listings') {
         loadTendersOverview();
       } else if (activeTab === 'tenders') {
-        loadMyTenders();
+        fetchMyTenders();
       } else if (activeTab === 'sold') {
         loadSoldItems();
       }
