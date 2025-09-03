@@ -1712,6 +1712,13 @@ async def accept_tender(tender_id: str, acceptance_data: dict):
             {"$set": {"status": "sold", "sold_at": current_time, "sold_price": tender["offer_amount"]}}
         )
         
+        # Clean up favorites for sold listing
+        try:
+            await db.user_favorites.delete_many({"item_id": tender["listing_id"]})
+            print(f"DEBUG: Cleaned up favorites for sold listing {tender['listing_id']}")
+        except Exception as fav_error:
+            print(f"Warning: Failed to clean up favorites for sold listing: {fav_error}")
+        
         # Get listing details for notifications
         listing = await db.listings.find_one({"id": tender["listing_id"]})
         
