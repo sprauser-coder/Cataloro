@@ -24,6 +24,26 @@ function MyListingsPage() {
   const [activeFilter, setActiveFilter] = useState(urlFilter || 'all'); // Use URL filter if available
   const navigate = useNavigate();
 
+  // Update URL parameters when activeFilter changes
+  useEffect(() => {
+    const currentParams = new URLSearchParams(window.location.search);
+    if (activeFilter !== 'all') {
+      currentParams.set('filter', activeFilter);
+    } else {
+      currentParams.delete('filter');
+    }
+    const newUrl = `${window.location.pathname}${currentParams.toString() ? '?' + currentParams.toString() : ''}`;
+    window.history.replaceState({}, '', newUrl);
+  }, [activeFilter]);
+
+  // Sync activeFilter with URL parameters
+  useEffect(() => {
+    const urlFilter = searchParams.get('filter');
+    if (urlFilter && urlFilter !== activeFilter) {
+      setActiveFilter(urlFilter);
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     if (user?.id) {
       fetchMyListings();
