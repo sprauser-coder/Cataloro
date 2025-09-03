@@ -1602,6 +1602,205 @@ class CataloroAPITester:
         
         return overall_success
 
+    def test_tender_offerer_visibility(self):
+        """Test tender offerer visibility issue as requested in review"""
+        print("\n🎯 Testing Tender Offerer Visibility...")
+        
+        if not self.regular_user or not self.admin_user:
+            print("❌ Tender Visibility Test - SKIPPED (Need both users)")
+            return False
+        
+        # Store test data
+        test_listings = []
+        test_tenders = []
+        
+        # Step 1: Create test listings matching review requirements
+        print("\n1️⃣ Creating test listings (MitsubishiAH €600 and Ford6G915E211FA €80)...")
+        
+        listings_config = [
+            {
+                "title": "MitsubishiAH Premium Catalyst",
+                "description": "High-quality Mitsubishi catalyst with excellent precious metal content. Perfect for automotive applications.",
+                "price": 600.0,
+                "category": "Automotive",
+                "condition": "Used - Good",
+                "seller_id": self.admin_user['id'],  # Admin as seller
+                "images": ["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"],
+                "tags": ["mitsubishi", "catalyst", "automotive"]
+            },
+            {
+                "title": "Ford 6G915E211FA Catalyst Unit",
+                "description": "Original Ford catalyst unit 6G915E211FA. Tested and verified for quality precious metal content.",
+                "price": 80.0,
+                "category": "Automotive", 
+                "condition": "Used - Fair",
+                "seller_id": self.admin_user['id'],  # Admin as seller
+                "images": ["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"],
+                "tags": ["ford", "catalyst", "automotive"]
+            }
+        ]
+        
+        for i, listing_data in enumerate(listings_config):
+            success, response = self.run_test(
+                f"Create Test Listing {i+1} - {listing_data['title'][:20]}...",
+                "POST",
+                "api/listings",
+                200,
+                data=listing_data
+            )
+            
+            if success and 'listing_id' in response:
+                test_listings.append({
+                    'id': response['listing_id'],
+                    'title': listing_data['title'],
+                    'price': listing_data['price']
+                })
+                print(f"   ✅ Created listing: {response['listing_id']}")
+        
+        if len(test_listings) < 2:
+            print("❌ Failed to create required test listings")
+            return False
+        
+        # Step 2: Create 2-3 tender offers for existing listings
+        print("\n2️⃣ Creating 2-3 tender offers for existing listings...")
+        
+        tender_configs = [
+            # Offers for MitsubishiAH (€600 listing)
+            {
+                "listing_id": test_listings[0]['id'],
+                "buyer_id": self.regular_user['id'],
+                "offer_amount": 650.0,
+                "buyer_name": "Demo User"
+            },
+            # Offers for Ford (€80 listing) 
+            {
+                "listing_id": test_listings[1]['id'],
+                "buyer_id": self.regular_user['id'],
+                "offer_amount": 95.0,
+                "buyer_name": "Demo User"
+            }
+        ]
+        
+        for i, tender_config in enumerate(tender_configs):
+            tender_data = {
+                "listing_id": tender_config['listing_id'],
+                "buyer_id": tender_config['buyer_id'],
+                "offer_amount": tender_config['offer_amount']
+            }
+            
+            success, response = self.run_test(
+                f"Create Tender Offer {i+1} - €{tender_config['offer_amount']}",
+                "POST",
+                "api/tenders/submit",
+                200,
+                data=tender_data
+            )
+            
+            if success and 'tender_id' in response:
+                test_tenders.append({
+                    'id': response['tender_id'],
+                    'listing_id': tender_config['listing_id'],
+                    'offer_amount': tender_config['offer_amount'],
+                    'buyer_name': tender_config['buyer_name']
+                })
+                print(f"   ✅ Created tender: {response['tender_id']}")
+        
+        # Step 3: Verify seller overview endpoint returns complete buyer information
+        print("\n3️⃣ Verifying seller overview endpoint returns complete buyer information...")
+        
+        success, response = self.run_test(
+            "Get Seller Tenders Overview",
+            "GET",
+            f"api/tenders/seller/{self.admin_user['id']}/overview",
+            200
+        )
+        
+        if not success:
+            print("❌ Failed to get seller overview")
+            # Cleanup and return
+            for listing in test_listings:
+                self.run_test("Cleanup Listing", "DELETE", f"api/listings/{listing['id']}", 200)
+            return False
+        
+        print(f"\n📊 Seller Overview Analysis:")
+        print(f"   Found {len(response)} listings with tender data")
+        
+        # Analyze response structure
+        complete_buyer_info_count = 0
+        total_tenders = 0
+        seller_info_populated = False
+        
+        for i, listing_overview in enumerate(response):
+            listing_info = listing_overview.get('listing', {})
+            seller_info = listing_overview.get('seller', {})
+            tenders = listing_overview.get('tenders', [])
+            
+            print(f"\n   📋 Listing {i+1}: {listing_info.get('title', 'Unknown')}")
+            print(f"      Tender Count: {len(tenders)}")
+            
+            # Check seller information
+            if seller_info.get('full_name') and seller_info.get('username'):
+                seller_info_populated = True
+                print(f"      ✅ Seller Info: {seller_info.get('full_name')} ({seller_info.get('username')})")
+            else:
+                print(f"      ❌ Seller Info: Incomplete - {seller_info}")
+            
+            # Check buyer information in tenders
+            for j, tender in enumerate(tenders):
+                buyer_info = tender.get('buyer', {})
+                offer_amount = tender.get('offer_amount', 0)
+                total_tenders += 1
+                
+                # Check if buyer information is complete for frontend display
+                buyer_name = buyer_info.get('full_name') or buyer_info.get('username')
+                if buyer_name:
+                    complete_buyer_info_count += 1
+                    print(f"         ✅ Tender {j+1}: €{offer_amount} by {buyer_name}")
+                else:
+                    print(f"         ❌ Tender {j+1}: €{offer_amount} - Missing buyer name")
+                    print(f"            Buyer info: {buyer_info}")
+        
+        # Step 4: Ensure tender data includes buyer full_name and username for frontend display
+        print("\n4️⃣ Verifying frontend display requirements...")
+        
+        frontend_ready = complete_buyer_info_count == total_tenders and total_tenders > 0
+        
+        # Test results
+        self.log_test("Seller Overview Endpoint Accessible", success, f"Status: 200, Found {len(response)} listings")
+        self.log_test("Seller Information Populated", seller_info_populated, 
+                     f"Seller info complete: {seller_info_populated}")
+        self.log_test("Complete Buyer Information for All Tenders", frontend_ready,
+                     f"Complete buyer info: {complete_buyer_info_count}/{total_tenders} tenders")
+        
+        # Test specific frontend display format
+        display_examples = []
+        for overview in response:
+            for tender in overview.get('tenders', []):
+                buyer = tender.get('buyer', {})
+                offer_amount = tender.get('offer_amount', 0)
+                buyer_name = buyer.get('full_name') or buyer.get('username')
+                if buyer_name:
+                    display_examples.append(f"€{offer_amount} by {buyer_name}")
+        
+        frontend_display_ready = len(display_examples) > 0
+        self.log_test("Frontend Display Format Ready", frontend_display_ready,
+                     f"Can display: {', '.join(display_examples)}")
+        
+        # Cleanup test data
+        print("\n🧹 Cleaning up test data...")
+        for listing in test_listings:
+            self.run_test("Cleanup Test Listing", "DELETE", f"api/listings/{listing['id']}", 200)
+        
+        # Summary
+        all_checks_passed = success and seller_info_populated and frontend_ready and frontend_display_ready
+        
+        if all_checks_passed:
+            print("🎉 All tender offerer visibility checks passed!")
+        else:
+            print("⚠️  Some tender offerer visibility checks failed")
+        
+        return all_checks_passed
+
     def run_all_tests(self):
         """Run complete test suite"""
         print("🚀 Starting Cataloro Marketplace API Tests")
