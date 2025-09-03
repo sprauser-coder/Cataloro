@@ -450,6 +450,33 @@ function ProductDetailPage() {
 
           {/* Tender Submission Section */}
           <div className="space-y-4">
+            {/* Tender Confirmation Message */}
+            {tenderConfirmation?.visible && (
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border-2 border-green-300 dark:border-green-700 animate-pulse">
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-green-800 dark:text-green-300 font-bold text-lg">
+                      🎉 Tender Offer Submitted Successfully!
+                    </h4>
+                    <p className="text-green-700 dark:text-green-400 text-sm mt-1">
+                      Your competitive offer of <strong>€{tenderConfirmation.amount.toFixed(2)}</strong> has been submitted to the seller.
+                    </p>
+                    <p className="text-green-600 dark:text-green-500 text-xs mt-2">
+                      📧 You will receive a notification when the seller responds to your offer.
+                    </p>
+                    <p className="text-green-600 dark:text-green-500 text-xs">
+                      📱 Track all your tenders in "My Tenders" section.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {/* Current Highest Bid Display */}
             {product.highest_bid && (
               <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-200 dark:border-yellow-800">
