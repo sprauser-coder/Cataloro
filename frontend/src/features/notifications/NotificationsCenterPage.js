@@ -776,23 +776,18 @@ function NotificationsCenterPage() {
                 <div className="flex items-start space-x-4">
                   {/* Enhanced Checkbox */}
                   <div className="flex-shrink-0 pt-1">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectedNotifications.includes(notification.id)}
-                        onChange={() => toggleSelectNotification(notification.id)}
-                        className="sr-only"
-                      />
-                      <div className={`w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
+                    <div 
+                      className={`w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center cursor-pointer ${
                         selectedNotifications.includes(notification.id)
                           ? 'bg-purple-500 border-purple-500 shadow-lg'
                           : 'border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500'
-                      }`}>
-                        {selectedNotifications.includes(notification.id) && (
-                          <Check className="w-4 h-4 text-white" />
-                        )}
-                      </div>
-                    </label>
+                      }`}
+                      onClick={() => toggleSelectNotification(notification.id)}
+                    >
+                      {selectedNotifications.includes(notification.id) && (
+                        <Check className="w-4 h-4 text-white" />
+                      )}
+                    </div>
                   </div>
 
                   {/* Notification Icon */}
