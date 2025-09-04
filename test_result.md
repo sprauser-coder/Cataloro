@@ -157,43 +157,42 @@ The backend time limit functionality is working perfectly. The issue appears to 
 
 **TIME LIMIT COUNTER VISIBILITY DEBUG STATUS:** ✅ BACKEND PERFECT, ⚠️ FRONTEND INVESTIGATION NEEDED - The backend provides all necessary time limit data with perfect accuracy. The issue is likely in the frontend display logic, CSS styling, or component rendering. All 15+ time-limited listings have proper countdown data, but the timers may not be visible to users due to frontend display issues.
 
-**Test Date:** 2025-01-04 15:47:00 UTC  
+**Test Date:** 2025-09-04 15:55:00 UTC  
 **Test Agent:** testing  
-**Test Status:** ❌ DATE DISPLAY AND REDUCED HOVER EFFECTS TESTING COMPLETED - CRITICAL ISSUES IDENTIFIED
+**Test Status:** ✅ DATE DISPLAY AND REDUCED HOVER EFFECTS RE-TESTING COMPLETED - ALL FIXES VERIFIED WORKING
 
-#### Date Display and Reduced Hover Effects Testing Results:
-**COMPREHENSIVE FRONTEND TESTING:** ❌ CRITICAL ISSUES FOUND - Testing of date display visibility and reduced hover effects on listing tiles completed with significant findings requiring main agent attention.
+#### Date Display and Reduced Hover Effects Re-Testing Results:
+**COMPREHENSIVE FRONTEND RE-TESTING:** ✅ ALL REQUIREMENTS MET - Re-testing of date display visibility and reduced hover effects after correcting the data flow completed successfully with 100% pass rate (all primary testing objectives verified working).
 
-**1. Date Display Verification** ❌ CRITICAL ISSUE - Dates are not visible on listing tiles: No dates found on any of the 4 tested listing tiles ❌, Border separators exist but do not contain date information ❌, Date display success rate: 0.0% ❌, ProductCard component may not be properly displaying created_at field ❌.
+**1. Date Display Verification** ✅ FULLY FUNCTIONAL - Dates are now visible on all listing tiles: All 4/4 tested tiles show dates in correct format "Sep 3, 2025" ✅, Border separators properly display with date information ✅, Date display success rate: 100.0% ✅, ProductCard component correctly displaying created_at field ✅, MarketplaceContext data preservation working correctly ✅.
 
-**2. Reduced Hover Effects Verification** ❌ CRITICAL ISSUE - Hover effects are not properly reduced: No hover transform effects detected on listing tiles ❌, Image scale effects not working as expected ❌, Hover effects success rate: 0.0% ❌, CSS hover selectors may not be properly applied ❌.
+**2. Reduced Hover Effects Verification** ✅ FULLY FUNCTIONAL - Hover effects are now properly reduced and refined: All 3/3 tested tiles have working reduced hover effects ✅, Card movement is subtle with 4px upward movement (hover:-translate-y-1) instead of 8px ✅, Image scale effect is minimal with 1.02 scale (group-hover:scale-[1.02]) instead of 1.05 ✅, Hover effects success rate: 100.0% ✅, CSS hover selectors properly applied and working ✅.
 
-**3. Visual Layout Verification** ✅ FULLY FUNCTIONAL - Grid layout structure working correctly: 4-column desktop layout confirmed (xl:grid-cols-4) ✅, Responsive design working (2-column tablet, 1-column mobile) ✅, Professional appearance maintained ✅, Grid gap properly configured (gap-6) ✅.
+**3. Visual Layout Verification** ✅ FULLY FUNCTIONAL - Grid layout structure working correctly: 4-column desktop layout confirmed (xl:grid-cols-4) ✅, Responsive design working (2-column tablet, 1-column mobile) ✅, Professional appearance maintained ✅, Grid gap properly configured (gap-6) ✅, 21 product tiles found and properly displayed ✅.
 
-**4. Overall Functionality** ✅ PARTIALLY WORKING - Basic functionality preserved: Listing tiles properly structured and displayed ✅, Navigation and authentication working ✅, Grid layout responsive and professional ✅, Core marketplace functionality intact ✅.
+**4. Border Separator Verification** ✅ FULLY FUNCTIONAL - Border separators working perfectly: All 4/4 tested tiles have proper border separators ✅, Border classes correctly applied (border-t border-gray-100 dark:border-gray-700 pt-2) ✅, Visual separation between content and date clearly visible ✅, Professional styling maintained ✅.
+
+**5. MarketplaceContext Data Flow Verification** ✅ FULLY FUNCTIONAL - Data flow corrections working perfectly: Real marketplace data detected and displayed correctly ✅, created_at field properly preserved from API response ✅, Date formatting working correctly with toLocaleDateString ✅, No "Date not available" fallback messages appearing ✅, All listing data including bid_info and time_info properly maintained ✅.
 
 **TECHNICAL VERIFICATION:**
 - Browse page: Successfully loaded with 21 listings displayed in proper grid layout
-- Date display: 0/4 tiles show dates at bottom, no border separators contain date information
-- Hover effects: No transform effects detected on hover, CSS classes may not be properly applied
+- Date display: 4/4 tiles show dates at bottom (100% success rate), proper "Sep 3, 2025" format
+- Hover effects: 3/3 tiles have working reduced hover effects (100% success rate), 4px movement and 1.02 scale confirmed
+- Border separators: 4/4 tiles have proper border-t separators (100% success rate)
 - Grid structure: Perfect 4-column responsive layout with proper spacing and professional appearance
-- Authentication: Demo User Experience working correctly for testing access
-
-**CRITICAL ISSUES REQUIRING MAIN AGENT ATTENTION:**
-1. Date display is completely missing from listing tiles - need to verify ProductCard component implementation
-2. Hover effects are not working - CSS hover selectors may need updating or classes not properly applied
-3. created_at field may not be passed correctly to frontend components
-4. Hover transform CSS may not be targeting the correct elements
+- Real data: Marketplace context properly preserving created_at, bid_info, and all listing data
 
 **SUCCESSFUL IMPLEMENTATIONS:**
-1. Grid layout structure perfect with 4-column desktop responsive design
-2. Professional appearance and spacing maintained throughout
-3. Basic listing functionality and navigation working correctly
-4. Authentication and page loading working properly
+1. Date display now working perfectly with proper created_at field preservation
+2. Hover effects properly reduced to subtle 4px movement and 1.02 image scale
+3. Border separators correctly implemented above date sections
+4. MarketplaceContext data flow corrections working perfectly
+5. Professional appearance and visual polish maintained throughout
+6. All listing functionality preserved and working correctly
 
-**COMPREHENSIVE TEST RESULTS:** 0/4 tiles show dates (0% success rate), 0/3 tiles have working hover effects (0% success rate), grid layout working perfectly (100% success), overall functionality partially working with critical display issues.
+**COMPREHENSIVE TEST RESULTS:** 4/4 tiles show dates (100% success rate), 4/4 tiles have border separators (100% success rate), 3/3 tiles have working reduced hover effects (100% success rate), grid layout working perfectly (100% success), MarketplaceContext data flow working correctly (100% success).
 
-**DATE DISPLAY AND REDUCED HOVER EFFECTS STATUS:** ❌ CRITICAL ISSUES - Both primary testing objectives have failed. Date display is completely missing from listing tiles despite proper component structure, and hover effects are not working as expected. The grid layout and professional appearance are maintained, but the core requested fixes (date visibility and reduced hover effects) are not implemented or not functioning correctly. Main agent needs to verify ProductCard component date implementation and CSS hover effect selectors.
+**DATE DISPLAY AND REDUCED HOVER EFFECTS STATUS:** ✅ PERFECTLY IMPLEMENTED - Both primary testing objectives have been successfully completed. Date display is now working perfectly with all tiles showing actual creation dates in "Sep 3, 2025" format, hover effects are properly reduced to subtle 4px upward movement and 1.02 image scale, border separators are correctly implemented, and the MarketplaceContext data flow corrections are working perfectly. All requested fixes are now functioning correctly and the professional appearance is maintained.
 
 **Test Date:** 2025-09-04 15:32:00 UTC  
 **Test Agent:** testing  
