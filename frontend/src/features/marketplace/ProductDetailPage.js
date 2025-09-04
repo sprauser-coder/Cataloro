@@ -602,14 +602,21 @@ function ProductDetailPage() {
             )}
             
             {/* Current Highest Bid Display */}
-            {product.highest_bid && (
+            {(product.bid_info?.has_bids || product.highest_bid) && (
               <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-200 dark:border-yellow-800">
                 <div className="flex items-center justify-between">
-                  <span className="text-yellow-800 dark:text-yellow-300 font-medium">
-                    Current highest bid:
-                  </span>
+                  <div>
+                    <span className="text-yellow-800 dark:text-yellow-300 font-medium">
+                      Current highest bid:
+                    </span>
+                    {product.bid_info?.total_bids > 0 && (
+                      <div className="text-yellow-700 dark:text-yellow-400 text-xs mt-1">
+                        {product.bid_info.total_bids} bid{product.bid_info.total_bids > 1 ? 's' : ''} received
+                      </div>
+                    )}
+                  </div>
                   <span className="text-yellow-900 dark:text-yellow-200 font-bold text-lg">
-                    €{parseFloat(product.highest_bid).toFixed(2)}
+                    €{parseFloat(product.bid_info?.highest_bid || product.highest_bid || 0).toFixed(2)}
                   </span>
                 </div>
               </div>
