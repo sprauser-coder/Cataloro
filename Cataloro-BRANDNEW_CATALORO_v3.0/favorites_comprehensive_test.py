@@ -10,7 +10,7 @@ import sys
 
 def test_favorites_bug_fix():
     """Test the favorites bug fix comprehensively"""
-    base_url = 'https://cataloro-admin-4.preview.emergentagent.com'
+    base_url = 'https://bid-manager-5.preview.emergentagent.com'
     
     print("🚀 Testing Favorites Bug Fix - Full Listing Details")
     print("=" * 60)
