@@ -941,6 +941,119 @@ function CreateListingPage() {
 
 
 
+          {/* Time Limit Section */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+              <Clock className="w-6 h-6 mr-2" />
+              Time Limit (Optional)
+            </h2>
+            
+            <div className="space-y-6">
+              {/* Enable Time Limit Toggle */}
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  id="has_time_limit"
+                  name="has_time_limit"
+                  checked={formData.has_time_limit}
+                  onChange={(e) => setFormData({...formData, has_time_limit: e.target.checked})}
+                  className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label htmlFor="has_time_limit" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Set a time limit for this listing
+                </label>
+              </div>
+              
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Add urgency to your listing! When time runs out, the highest bidder automatically wins.
+              </p>
+
+              {formData.has_time_limit && (
+                <div className="space-y-6 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                  {/* Duration Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                      Duration
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {[
+                        { value: 24, label: '24 Hours', desc: '1 day' },
+                        { value: 48, label: '48 Hours', desc: '2 days' },
+                        { value: 168, label: '1 Week', desc: '7 days' },
+                        { value: 720, label: '1 Month', desc: '30 days' }
+                      ].map((option) => (
+                        <label key={option.value} className="relative">
+                          <input
+                            type="radio"
+                            name="time_limit_hours"
+                            value={option.value}
+                            checked={formData.time_limit_hours === option.value}
+                            onChange={(e) => setFormData({...formData, time_limit_hours: parseInt(e.target.value)})}
+                            className="sr-only"
+                          />
+                          <div className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                            formData.time_limit_hours === option.value
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                              : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                          }`}>
+                            <div className="text-center">
+                              <div className="font-semibold text-sm">{option.label}</div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{option.desc}</div>
+                            </div>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Display Position Selection */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                      Countdown Display Position
+                    </label>
+                    <select
+                      name="time_display_position"
+                      value={formData.time_display_position}
+                      onChange={(e) => setFormData({...formData, time_display_position: e.target.value})}
+                      className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="top-right">Top Right Corner</option>
+                      <option value="top-left">Top Left Corner</option>
+                      <option value="bottom-right">Bottom Right Corner</option>
+                      <option value="bottom-left">Bottom Left Corner</option>
+                      <option value="center-top">Center Top</option>
+                      <option value="center-bottom">Center Bottom</option>
+                    </select>
+                  </div>
+
+                  {/* Preview */}
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview</h4>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      Your listing will expire in <span className="font-mono text-blue-600 dark:text-blue-400">
+                        {formData.time_limit_hours === 24 ? '1 day' : 
+                         formData.time_limit_hours === 48 ? '2 days' :
+                         formData.time_limit_hours === 168 ? '1 week' : '1 month'}
+                      </span> after publication.
+                      <br />
+                      The countdown timer will appear in the <span className="font-medium">
+                        {formData.time_display_position.replace('-', ' ')}
+                      </span> of your listing tile.
+                    </div>
+                  </div>
+
+                  {/* Warning */}
+                  <div className="flex items-start space-x-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5" />
+                    <div className="text-sm text-amber-700 dark:text-amber-300">
+                      <strong>Important:</strong> When your listing expires, the highest bidder at that moment will automatically win, regardless of how many bids were placed. You can extend the time limit later if needed.
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
 
           {/* Submit Section */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
