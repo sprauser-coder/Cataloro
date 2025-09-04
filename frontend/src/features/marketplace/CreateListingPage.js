@@ -47,7 +47,11 @@ function CreateListingPage() {
     shipping: 'pickup',
     shipping_cost: '',
     tags: [],
-    features: []
+    features: [],
+    // Time limit functionality
+    has_time_limit: false,
+    time_limit_hours: 24,
+    time_display_position: 'top-right' // Display position option for countdown
   });
 
   // Address from profile settings
