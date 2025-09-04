@@ -88,7 +88,7 @@ class TenderManagementTester:
             )
             return False
     
-    def test_price_settings_retrieval(self):
+    def test_tender_overview_endpoint(self):
         """Test 2: Price Settings Retrieval"""
         try:
             response = self.session.get(f"{self.backend_url}/admin/catalyst/price-settings")
