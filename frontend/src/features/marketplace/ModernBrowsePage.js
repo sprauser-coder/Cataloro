@@ -947,7 +947,7 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
         <img
           src={item.images?.[currentImageIndex] || item.images?.[0] || '/api/placeholder/400/300'}
           alt={item.title}
-          className={`object-cover transition-transform duration-300 group-hover:scale-102 ${
+          className={`object-cover transition-transform duration-300 group-hover:scale-[1.02] ${
             isGridView ? 'w-full h-64' : 'w-full h-full rounded-lg'
           }`}
         />
