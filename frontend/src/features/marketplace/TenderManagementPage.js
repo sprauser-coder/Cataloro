@@ -7,12 +7,23 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
+  DollarSign, 
+  Clock, 
+  Users, 
+  CheckCircle, 
+  XCircle,
+  MessageCircle,
+  Eye,
+  TrendingUp,
   RefreshCw,
   Plus,
+  Edit,
+  Trash2,
+  MoreHorizontal,
   FileText,
   Settings
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
