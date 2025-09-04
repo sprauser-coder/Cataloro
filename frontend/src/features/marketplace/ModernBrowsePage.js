@@ -1229,9 +1229,9 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
                 step="10"
                 placeholder={
                   item.time_info?.is_expired 
-                    ? "Listing Expired" 
+                    ? "Bid..." 
                     : item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids
-                      ? "You're the highest bidder"
+                      ? "Bid..."
                       : `Min: €${(item.bid_info?.highest_bid || item.price || 0).toFixed(2)}`
                 }
                 disabled={item.time_info?.is_expired || (item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids)}
