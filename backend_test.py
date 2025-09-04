@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Dynamic Price Range Configuration Testing
-Testing the Cat Database & Basis section price range functionality
+TenderManagementPage Backend Testing
+Testing both Tender Management and Listings Management functionality
 """
 
 import requests
@@ -13,7 +13,7 @@ from datetime import datetime
 # Get backend URL from environment
 BACKEND_URL = "https://cataloro-dash.preview.emergentagent.com/api"
 
-class PriceRangeConfigTester:
+class TenderManagementTester:
     def __init__(self):
         self.backend_url = BACKEND_URL
         self.test_results = []
