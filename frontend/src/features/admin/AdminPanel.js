@@ -4607,7 +4607,9 @@ function CatDatabaseTab({ showToast }) {
     rh_price: 45.0,
     renumeration_pt: 0.95,
     renumeration_pd: 0.92,
-    renumeration_rh: 0.88
+    renumeration_rh: 0.88,
+    price_range_min_percent: 10.0,
+    price_range_max_percent: 10.0
   });
   const [calculations, setCalculations] = useState([]);
   const [loading, setLoading] = useState(false);
