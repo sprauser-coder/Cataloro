@@ -165,6 +165,25 @@ def serialize_doc(doc):
         del doc["_id"]
     return doc
 
+def format_time_remaining(total_seconds):
+    """Format time remaining in seconds to human readable string"""
+    if total_seconds <= 0:
+        return "EXPIRED"
+    
+    days = total_seconds // 86400
+    hours = (total_seconds % 86400) // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    
+    if days > 0:
+        return f"{days}d {hours}h {minutes}m"
+    elif hours > 0:
+        return f"{hours}h {minutes}m"
+    elif minutes > 0:
+        return f"{minutes}m {seconds}s"
+    else:
+        return f"{seconds}s"
+
 async def trigger_system_notifications(user_id: str, event_type: str):
     """Trigger system notifications based on user events"""
     try:
