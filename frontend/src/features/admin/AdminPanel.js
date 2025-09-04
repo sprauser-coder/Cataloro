@@ -85,17 +85,17 @@ function AdminPanel() {
     );
   }
 
-  // Data fetching effects
+  // Data fetching effects - RESTORE ORIGINAL LOGIC
   useEffect(() => {
-    if (activeSection === 'dashboard') {
+    if (activeTab === 'dashboard') {
       fetchRealDashboardData();
-    } else if (activeSection === 'users') {
+    } else if (activeTab === 'users') {
       fetchUsers();
-    } else if (activeSection === 'settings') {
+    } else if (activeTab === 'administration') {
       fetchSettings();
       fetchPriceSettings();
     }
-  }, [activeSection]);
+  }, [activeTab, activeSubTab]);
 
   // Data fetching functions
   const fetchRealDashboardData = async () => {
