@@ -1083,7 +1083,20 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
           )}
 
           {/* Time Limit Countdown Badge */}
-          {item.time_info?.has_time_limit && (
+          {(() => {
+            // Debug logging to help identify the issue
+            if (item.time_info) {
+              console.log('Time limit badge check:', {
+                itemId: item.id,
+                itemTitle: item.title,
+                has_time_limit: item.time_info.has_time_limit,
+                time_remaining_seconds: item.time_info.time_remaining_seconds,
+                expires_at: item.time_info.expires_at,
+                is_expired: item.time_info.is_expired
+              });
+            }
+            return item.time_info?.has_time_limit;
+          })() && (
             <div className="mb-3">
               <div className={`relative overflow-hidden rounded-xl border-2 ${
                 item.time_info.is_expired 
