@@ -972,9 +972,6 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
           }`}
         />
         
-        {/* Countdown Timer */}
-        <CountdownTimer timeInfo={item.time_info} />
-        
         {/* Image Indicators */}
         {item.images && item.images.length > 1 && (
           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1 z-20">
