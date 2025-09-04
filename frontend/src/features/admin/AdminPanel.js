@@ -5190,26 +5190,46 @@ function CatDatabaseTab({ showToast }) {
               </div>
               
               {/* Preview Section */}
-              <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <h5 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Range Preview</h5>
+              <div className={`mt-4 p-4 rounded-lg transition-all duration-300 ${
+                priceRangeUpdated 
+                  ? 'bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700' 
+                  : 'bg-gray-50 dark:bg-gray-800'
+              }`}>
+                <div className="flex items-center justify-between mb-2">
+                  <h5 className="text-sm font-medium text-gray-900 dark:text-white">Range Preview</h5>
+                  {priceRangeUpdated && (
+                    <span className="text-xs text-green-600 dark:text-green-400 font-medium">
+                      ✓ Values Applied to Marketplace
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
                   For a calculated price of <span className="font-mono">€100.00</span>, the dynamic range will be:
                 </p>
                 <div className="flex items-center space-x-4 mt-2">
                   <div className="text-xs">
-                    <span className="text-red-600 dark:text-red-400 font-mono">
+                    <span className={`font-mono ${
+                      priceRangeUpdated ? 'text-red-700 dark:text-red-300 font-bold' : 'text-red-600 dark:text-red-400'
+                    }`}>
                       €{(100 - (100 * priceSettings.price_range_min_percent / 100)).toFixed(2)}
                     </span>
                     <span className="text-gray-500 ml-1">(min)</span>
                   </div>
                   <div className="text-gray-400">to</div>
                   <div className="text-xs">
-                    <span className="text-green-600 dark:text-green-400 font-mono">
+                    <span className={`font-mono ${
+                      priceRangeUpdated ? 'text-green-700 dark:text-green-300 font-bold' : 'text-green-600 dark:text-green-400'
+                    }`}>
                       €{(100 + (100 * priceSettings.price_range_max_percent / 100)).toFixed(2)}
                     </span>
                     <span className="text-gray-500 ml-1">(max)</span>
                   </div>
                 </div>
+                {priceRangeUpdated && (
+                  <div className="mt-2 text-xs text-green-600 dark:text-green-400">
+                    Range: -{priceSettings.price_range_min_percent}% to +{priceSettings.price_range_max_percent}% applied successfully
+                  </div>
+                )}
               </div>
             </div>
             
