@@ -463,24 +463,6 @@ function ProductDetailPage() {
                 ) : null}
               </div>
             )}
-
-            {/* Condition and Availability */}
-            <div className="flex items-center space-x-6 text-sm">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-gray-600 dark:text-gray-400">Condition:</span>
-                <span className="font-medium text-gray-900 dark:text-white">
-                  {product.condition || 'New'}
-                </span>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Check className="w-4 h-4 text-green-500" />
-                <span className="font-medium text-green-700 dark:text-green-400">
-                  {product.inStock !== false ? 'In Stock' : 'Out of Stock'}
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Tender Submission Section */}
