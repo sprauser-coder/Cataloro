@@ -630,14 +630,14 @@ function ProductDetailPage() {
               <div className="flex space-x-3">
                 <input
                   type="number"
-                  min={product.highest_bid || product.price || 0}
+                  min={product.bid_info?.highest_bid || product.price || 0}
                   step="10"
                   value={tenderAmount}
                   onChange={(e) => setTenderAmount(e.target.value)}
                   placeholder={
                     product.time_info?.is_expired 
                       ? "Listing Expired" 
-                      : `Minimum: €${(product.highest_bid || product.price || 0).toFixed(2)}`
+                      : `Minimum: €${(product.bid_info?.highest_bid || product.price || 0).toFixed(2)}`
                   }
                   disabled={product.time_info?.is_expired}
                   className={`flex-1 px-4 py-3 border rounded-xl text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
