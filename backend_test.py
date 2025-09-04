@@ -427,13 +427,16 @@ class PriceRangeConfigTester:
         # Test 5: Database Storage Verification
         test5_success = self.test_database_storage_verification()
         
+        # Test 6: Default Values Reset
+        test6_success = self.test_default_values_reset()
+        
         # Summary
         print("=" * 80)
         print("TEST SUMMARY")
         print("=" * 80)
         
-        total_tests = 5
-        passed_tests = sum([test1_success, test2_success, test3_success, test4_success, test5_success])
+        total_tests = 6
+        passed_tests = sum([test1_success, test2_success, test3_success, test4_success, test5_success, test6_success])
         
         print(f"Total Tests: {total_tests}")
         print(f"Passed: {passed_tests}")
@@ -447,7 +450,8 @@ class PriceRangeConfigTester:
             ("Price Settings Retrieval", test2_success),
             ("Price Range Update", test3_success),
             ("Persistence Verification", test4_success),
-            ("Database Storage Verification", test5_success)
+            ("Database Storage Verification", test5_success),
+            ("Default Values Reset", test6_success)
         ]
         
         for test_name, success in tests:
@@ -466,6 +470,8 @@ class PriceRangeConfigTester:
             critical_failures.append("Price range update not working")
         if not test4_success and test3_success:
             critical_failures.append("Price range values not persisting")
+        if not test5_success:
+            critical_failures.append("Database storage verification failed")
         
         if critical_failures:
             print("CRITICAL ISSUES FOUND:")
