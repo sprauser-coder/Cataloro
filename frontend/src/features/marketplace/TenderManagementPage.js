@@ -666,10 +666,7 @@ function ListingsManagementTab({
 // My Listing Card Component (exact duplicate from MyListingsPage)
 function MyListingCard({ listing, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
-  
-  // Import icons for this component
-  const { Edit, Trash2, MoreHorizontal, Eye } = require('lucide-react');
-  const { Link } = require('react-router-dom');
+
 
   // Close menu when clicking outside
   useEffect(() => {
