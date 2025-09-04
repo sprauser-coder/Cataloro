@@ -53,8 +53,31 @@ function TenderManagementPage() {
   useEffect(() => {
     if (user) {
       fetchTendersOverview();
+      fetchMyListings();
     }
   }, [user]);
+
+  // Update URL parameters when activeFilter changes (for Listings Management)
+  useEffect(() => {
+    if (activeTab === 'listings') {
+      const currentParams = new URLSearchParams(window.location.search);
+      if (activeFilter !== 'all') {
+        currentParams.set('filter', activeFilter);
+      } else {
+        currentParams.delete('filter');
+      }
+      const newUrl = `${window.location.pathname}${currentParams.toString() ? '?' + currentParams.toString() : ''}`;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [activeFilter, activeTab]);
+
+  // Sync activeFilter with URL parameters (for Listings Management)
+  useEffect(() => {
+    const urlFilter = searchParams.get('filter');
+    if (urlFilter && urlFilter !== activeFilter) {
+      setActiveFilter(urlFilter);
+    }
+  }, [searchParams]);
 
   const fetchTendersOverview = async () => {
     if (!user) return;
