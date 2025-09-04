@@ -1011,26 +1011,6 @@ function CreateListingPage() {
                     </div>
                   </div>
 
-                  {/* Display Position Selection */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                      Countdown Display Position
-                    </label>
-                    <select
-                      name="time_display_position"
-                      value={formData.time_display_position}
-                      onChange={(e) => setFormData({...formData, time_display_position: e.target.value})}
-                      className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="top-right">Top Right Corner</option>
-                      <option value="top-left">Top Left Corner</option>
-                      <option value="bottom-right">Bottom Right Corner</option>
-                      <option value="bottom-left">Bottom Left Corner</option>
-                      <option value="center-top">Center Top</option>
-                      <option value="center-bottom">Center Bottom</option>
-                    </select>
-                  </div>
-
                   {/* Preview */}
                   <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                     <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview</h4>
@@ -1041,9 +1021,7 @@ function CreateListingPage() {
                          formData.time_limit_hours === 168 ? '1 week' : '1 month'}
                       </span> after publication.
                       <br />
-                      The countdown timer will appear in the <span className="font-medium">
-                        {formData.time_display_position.replace('-', ' ')}
-                      </span> of your listing tile.
+                      The countdown timer will appear as a <span className="font-medium">badge in the top-right corner</span> of your listing image.
                     </div>
                   </div>
 
