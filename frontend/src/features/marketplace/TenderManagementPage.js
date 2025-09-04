@@ -232,24 +232,14 @@ function TenderManagementPage() {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Please Login</h2>
-        <p className="text-gray-600 dark:text-gray-400">You need to be logged in to manage tenders.</p>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading tender overview...</p>
-        </div>
+        <p className="text-gray-600 dark:text-gray-400">You need to be logged in to manage tenders and listings.</p>
       </div>
     );
   }
 
   const totalTenders = tendersOverview.reduce((sum, item) => sum + item.tender_count, 0);
   const totalHighestBids = tendersOverview.reduce((sum, item) => sum + (item.highest_offer || 0), 0);
+  const filteredListings = getFilteredListings();
 
   return (
     <div className="space-y-8">
