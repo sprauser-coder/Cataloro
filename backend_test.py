@@ -57,17 +57,28 @@ class TenderManagementTester:
             if login_response.status_code == 200:
                 user_data = login_response.json()
                 self.test_user_id = user_data.get("user", {}).get("id")
-            
-            # Check if required fields are present
-            actual_min = data.get("price_range_min_percent")
-            actual_max = data.get("price_range_max_percent")
-            
-            if actual_min is not None and actual_max is not None:
+                
+                if self.test_user_id:
+                    self.log_test(
+                        "Test Data Setup - User Login",
+                        True,
+                        f"Successfully logged in test user with ID: {self.test_user_id}"
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Test Data Setup - User Login",
+                        False,
+                        "Failed to get user ID from login response"
+                    )
+                    return False
+            else:
                 self.log_test(
-                    "Price Range Settings GET Endpoint",
-                    True,
-                    f"Returns price range values: min={actual_min}%, max={actual_max}%"
+                    "Test Data Setup - User Login",
+                    False,
+                    f"Login failed with status {login_response.status_code}"
                 )
+                return False
                 return True
             else:
                 self.log_test(
