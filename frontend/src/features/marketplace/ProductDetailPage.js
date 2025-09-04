@@ -627,15 +627,37 @@ function ProductDetailPage() {
                   step="10"
                   value={tenderAmount}
                   onChange={(e) => setTenderAmount(e.target.value)}
-                  placeholder={`Minimum: €${(product.highest_bid || product.price || 0).toFixed(2)}`}
-                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                  placeholder={
+                    product.time_info?.is_expired 
+                      ? "Listing Expired" 
+                      : `Minimum: €${(product.highest_bid || product.price || 0).toFixed(2)}`
+                  }
+                  disabled={product.time_info?.is_expired}
+                  className={`flex-1 px-4 py-3 border rounded-xl text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    product.time_info?.is_expired
+                      ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 cursor-not-allowed'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                  }`}
                 />
                 <button
-                  onClick={handleSubmitTender}
-                  disabled={submittingTender || !tenderAmount}
-                  className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                  onClick={(e) => {
+                    if (product.time_info?.is_expired) {
+                      showToast('This listing has expired. No more bids can be placed.', 'error');
+                      return;
+                    }
+                    handleSubmitTender(e);
+                  }}
+                  disabled={submittingTender || !tenderAmount || product.time_info?.is_expired}
+                  className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2 ${
+                    product.time_info?.is_expired
+                      ? 'bg-red-400 text-red-100 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white'
+                  }`}
+                  title={product.time_info?.is_expired ? "Listing has expired" : "Submit tender offer"}
                 >
-                  {submittingTender ? (
+                  {product.time_info?.is_expired ? (
+                    <span>EXPIRED</span>
+                  ) : submittingTender ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Submitting...</span>
@@ -649,7 +671,10 @@ function ProductDetailPage() {
                 </button>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Enter your competitive offer. Minimum bid: €{(product.highest_bid || product.price || 0).toFixed(2)}
+                {product.time_info?.is_expired 
+                  ? "🚫 This listing has expired. The highest bidder has automatically won." 
+                  : `Enter your competitive offer. Minimum bid: €${(product.highest_bid || product.price || 0).toFixed(2)}`
+                }
               </p>
             </div>
           </div>
