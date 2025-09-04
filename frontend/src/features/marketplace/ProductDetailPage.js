@@ -613,7 +613,6 @@ function ProductDetailPage() {
               </div>
             )}
           </div>
-        </div>
       </div>
 
       {/* Product Details Tabs - Only Description and Seller Info */}
