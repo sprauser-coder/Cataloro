@@ -31,11 +31,24 @@ import { useNotifications } from '../../context/NotificationContext';
 function TenderManagementPage() {
   const { user } = useAuth();
   const { showToast } = useNotifications();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Tab management
+  const [activeTab, setActiveTab] = useState('tenders');
+
+  // Tender Management State
   const [tendersOverview, setTendersOverview] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [tendersLoading, setTendersLoading] = useState(true);
   const [selectedListing, setSelectedListing] = useState(null);
   const [acceptingTender, setAcceptingTender] = useState(null);
   const [rejectingTender, setRejectingTender] = useState(null);
+
+  // Listings Management State (exact duplicate of MyListingsPage)
+  const urlFilter = searchParams.get('filter');
+  const [listings, setListings] = useState([]);
+  const [listingsLoading, setListingsLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState(urlFilter || 'all');
 
   useEffect(() => {
     if (user) {
