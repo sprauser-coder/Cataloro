@@ -223,8 +223,17 @@ function ProductDetailPage() {
         }, 8000);
         
         // Update product with new highest bid if this is higher
-        if (offerAmount > (product.highest_bid || 0)) {
-          setProduct(prev => ({ ...prev, highest_bid: offerAmount }));
+        if (offerAmount > (product.bid_info?.highest_bid || product.highest_bid || 0)) {
+          setProduct(prev => ({ 
+            ...prev, 
+            highest_bid: offerAmount,
+            bid_info: {
+              ...prev.bid_info,
+              has_bids: true,
+              highest_bid: offerAmount,
+              total_bids: (prev.bid_info?.total_bids || 0) + 1
+            }
+          }));
         }
         
       } else if (response.status === 400) {
