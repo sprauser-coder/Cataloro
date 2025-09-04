@@ -1254,8 +1254,17 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
                 type="number"
                 min={item.bid_info?.highest_bid || item.price || 0}
                 step="10"
-                placeholder={`Min: €${(item.bid_info?.highest_bid || item.price || 0).toFixed(2)}`}
-                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder={
+                  item.time_info?.is_expired 
+                    ? "Listing Expired" 
+                    : `Min: €${(item.bid_info?.highest_bid || item.price || 0).toFixed(2)}`
+                }
+                disabled={item.time_info?.is_expired}
+                className={`w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  item.time_info?.is_expired
+                    ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 cursor-not-allowed'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                }`}
                 onClick={(e) => e.stopPropagation()}
                 onFocus={(e) => e.stopPropagation()}
                 onChange={(e) => {
@@ -1268,6 +1277,10 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                if (item.time_info?.is_expired) {
+                  alert('This listing has expired. No more bids can be placed.');
+                  return;
+                }
                 const input = e.target.parentElement.previousElementSibling?.querySelector('input') || 
                              e.target.parentElement.parentElement.querySelector('input');
                 const offerAmount = parseFloat(input?.value || 0);
@@ -1278,11 +1291,17 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
                   alert(`Please enter an amount of at least €${(item.highest_bid || item.price || 0).toFixed(2)}`);
                 }
               }}
-              disabled={isSubmittingTender}
-              className="px-6 py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
-              title="Submit tender offer"
+              disabled={isSubmittingTender || item.time_info?.is_expired}
+              className={`px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+                item.time_info?.is_expired
+                  ? 'bg-red-400 text-red-100 cursor-not-allowed'
+                  : 'bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white'
+              }`}
+              title={item.time_info?.is_expired ? "Listing has expired" : "Submit tender offer"}
             >
-              {isSubmittingTender ? (
+              {item.time_info?.is_expired ? (
+                <span>EXPIRED</span>
+              ) : isSubmittingTender ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span>Submitting...</span>
