@@ -927,7 +927,7 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
   return (
     <div 
       className={`group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer ${
-        isGridView ? 'hover:-translate-y-2' : 'flex space-x-4 p-4'
+        isGridView ? 'hover:-translate-y-1' : 'flex space-x-4 p-4'
       }`}
       // Removed unused hover handlers
       onClick={handleCardClick}
