@@ -350,17 +350,7 @@ function TenderManagementTab({
   totalTenders,
   totalHighestBids
 }) {
-  // Import icons for this component
-  const { 
-    DollarSign, 
-    Clock, 
-    Users, 
-    CheckCircle, 
-    XCircle,
-    MessageCircle,
-    Eye,
-    TrendingUp
-  } = require('lucide-react');
+
   if (tendersLoading) {
     return (
       <div className="flex items-center justify-center py-12">
