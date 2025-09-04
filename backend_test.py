@@ -79,22 +79,12 @@ class TenderManagementTester:
                     f"Login failed with status {login_response.status_code}"
                 )
                 return False
-                return True
-            else:
-                self.log_test(
-                    "Price Range Settings GET Endpoint",
-                    False,
-                    "Missing price range fields",
-                    "price_range_min_percent and price_range_max_percent fields",
-                    f"min={actual_min}, max={actual_max}"
-                )
-                return False
                 
         except Exception as e:
             self.log_test(
-                "Price Range Settings GET Endpoint",
+                "Test Data Setup - User Login",
                 False,
-                f"Exception: {str(e)}"
+                f"Exception during setup: {str(e)}"
             )
             return False
     
