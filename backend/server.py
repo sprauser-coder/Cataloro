@@ -95,6 +95,12 @@ class Listing(BaseModel):
     images: List[str] = []
     tags: List[str] = []
     features: List[str] = []
+    # Time limit functionality
+    has_time_limit: bool = False
+    time_limit_hours: Optional[int] = None  # Duration in hours (24, 48, 168, 720)
+    expires_at: Optional[str] = None        # ISO datetime string
+    is_expired: bool = False
+    winning_bidder_id: Optional[str] = None # Set when listing expires with bids
 
 class CatalystData(BaseModel):
     cat_id: str
