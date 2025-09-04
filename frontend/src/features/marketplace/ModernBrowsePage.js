@@ -810,6 +810,11 @@ function CountdownTimer({ timeInfo }) {
   const [isExpired, setIsExpired] = useState(false);
   
   useEffect(() => {
+    // Debug logging to help identify the issue
+    if (timeInfo?.has_time_limit) {
+      console.log('CountdownTimer received timeInfo:', timeInfo);
+    }
+    
     if (!timeInfo?.has_time_limit || timeInfo.time_remaining_seconds === undefined || timeInfo.time_remaining_seconds === null) {
       return;
     }
