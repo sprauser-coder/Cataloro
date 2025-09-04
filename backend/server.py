@@ -195,6 +195,35 @@ async def trigger_system_notifications(user_id: str, event_type: str):
         print(f"ERROR: Failed to trigger system notifications: {e}")
         # Don't raise the exception as this shouldn't break the login flow
 
+async def create_listing_expiration_notification(listing_id: str, seller_id: str, winning_bidder_id: str = None, winning_bid_amount: float = 0):
+    """Create notification for listing expiration"""
+    try:
+        if winning_bidder_id:
+            title = "Listing Expired - Winner Declared"
+            message = f"Your listing has expired and a winner has been declared. Winning bid: ${winning_bid_amount}"
+        else:
+            title = "Listing Expired"
+            message = "Your listing has expired with no bids received."
+        
+        notification = {
+            "user_id": seller_id,
+            "title": title,
+            "message": message,
+            "type": "listing_expiration",
+            "is_read": False,
+            "created_at": datetime.utcnow().isoformat(),
+            "id": str(uuid.uuid4()),
+            "listing_id": listing_id,
+            "winning_bidder_id": winning_bidder_id,
+            "winning_bid_amount": winning_bid_amount
+        }
+        
+        await db.user_notifications.insert_one(notification)
+        print(f"DEBUG: Created listing expiration notification for seller {seller_id}")
+        
+    except Exception as e:
+        print(f"ERROR: Failed to create listing expiration notification: {e}")
+
 # Health Check
 @app.get("/api/health")
 async def health_check():
