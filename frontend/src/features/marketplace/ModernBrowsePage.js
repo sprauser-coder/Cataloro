@@ -1022,8 +1022,305 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
         </div>
       </div>
 
-      {/* Content Section */}
+      {/* Content Section - Reorganized Structure: Picture, Title, Price, Market Range, Seller, Location, Time Left, Input Field, Date */}
       <div className={`${isGridView ? 'p-4' : 'flex-1 min-w-0'}`}>
+        
+        {/* 1. Title */}
+        <div className="mb-3">
+          <h3 className={`font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors ${
+            isGridView ? 'text-lg line-clamp-2' : 'text-xl'
+          }`}>
+            {item.title}
+          </h3>
+        </div>
+
+        {/* 2. Price */}
+        <div className="mb-3">
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">
+              €{((item.bid_info?.has_bids && item.bid_info?.highest_bid) ? item.bid_info.highest_bid : item.price).toFixed(2)}
+            </span>
+            {item.bid_info?.has_bids && (
+              <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
+                €{item.price.toFixed(2)} starting
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* 3. Market Range - Show for catalyst items */}
+        {item.category === 'Catalysts' && (
+          <div className="mb-3">
+            {loadingSuggestion ? (
+              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+                Loading market range...
+              </div>
+            ) : priceSuggestion ? (
+              <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 dark:from-indigo-900/40 dark:via-blue-900/40 dark:to-cyan-900/40 border border-indigo-100 dark:border-indigo-800/60 shadow-sm">
+                <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-indigo-200/20 to-transparent dark:from-indigo-600/10 rounded-bl-full"></div>
+                <div className="relative p-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="p-1.5 rounded-lg bg-gradient-to-r from-indigo-500 to-blue-500 shadow-sm">
+                      <Database className="w-3 h-3 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-medium text-indigo-700 dark:text-indigo-300 uppercase tracking-wide">
+                        Market Range
+                      </div>
+                      <div className="text-sm font-bold text-indigo-900 dark:text-indigo-100 leading-tight">
+                        €{(priceSuggestion * (100 - priceRangeSettings.price_range_min_percent) / 100).toFixed(0)} - €{(priceSuggestion * (100 + priceRangeSettings.price_range_max_percent) / 100).toFixed(0)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        )}
+
+        {/* 4. Seller */}
+        <div className="mb-3">
+          <div className="flex items-center space-x-2">
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold ${
+              item.seller?.is_business 
+                ? 'bg-gradient-to-r from-blue-500 to-indigo-600' 
+                : 'bg-gradient-to-r from-green-500 to-emerald-600'
+            }`}>
+              <span>
+                {(item.seller?.username || item.seller?.name || 'U').charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {item.seller?.username || item.seller?.name || 'Unknown User'}
+              </span>
+              {item.seller?.verified && (
+                <span className="text-blue-500 text-xs">✓ Verified</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 5. Location */}
+        <div className="mb-3">
+          <div className="flex items-center text-gray-500 dark:text-gray-400">
+            <MapPin className="w-4 h-4 mr-1" />
+            <span className="text-sm">
+              {(() => {
+                const city = item.address?.city || '';
+                const country = item.address?.country || '';
+                
+                // If we have address data, use city and country only
+                if (city || country) {
+                  const parts = [city, country].filter(Boolean);
+                  return parts.length > 0 ? parts.join(', ') : 'Location not specified';
+                }
+                
+                // Fallback to seller location if no structured address
+                if (item.seller?.location) {
+                  const locationParts = item.seller.location.split(',').map(part => part.trim());
+                  if (locationParts.length >= 2) {
+                    return locationParts.slice(-2).join(', ');
+                  } else {
+                    return locationParts[0];
+                  }
+                }
+                
+                return 'Location not specified';
+              })()}
+            </span>
+          </div>
+        </div>
+
+        {/* 6. Time Left */}
+        {item.time_info?.has_time_limit && (
+          <div className="mb-3">
+            <div className={`relative overflow-hidden rounded-xl border-2 ${
+              item.time_info.is_expired 
+                ? 'border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/30'
+                : item.time_info.time_remaining_seconds <= 3600
+                  ? 'border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/30'
+                  : item.time_info.time_remaining_seconds <= 21600
+                    ? 'border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/30'
+                    : item.time_info.time_remaining_seconds <= 86400
+                      ? 'border-yellow-200 dark:border-yellow-800 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/30'
+                      : 'border-green-200 dark:border-green-800 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/30'
+            }`}>
+              <div className={`absolute top-0 right-0 w-12 h-12 rounded-bl-full ${
+                item.time_info.is_expired || item.time_info.time_remaining_seconds <= 3600
+                  ? 'bg-gradient-to-bl from-red-200/20 to-transparent dark:from-red-600/10'
+                  : item.time_info.time_remaining_seconds <= 21600
+                    ? 'bg-gradient-to-bl from-orange-200/20 to-transparent dark:from-orange-600/10'
+                    : item.time_info.time_remaining_seconds <= 86400
+                      ? 'bg-gradient-to-bl from-yellow-200/20 to-transparent dark:from-yellow-600/10'
+                      : 'bg-gradient-to-bl from-green-200/20 to-transparent dark:from-green-600/10'
+              }`}></div>
+              <div className="relative p-3">
+                <div className="flex items-center space-x-2">
+                  <div className={`p-1.5 rounded-lg shadow-sm ${
+                    item.time_info.is_expired || item.time_info.time_remaining_seconds <= 3600
+                      ? 'bg-gradient-to-r from-red-500 to-red-600'
+                      : item.time_info.time_remaining_seconds <= 21600
+                        ? 'bg-gradient-to-r from-orange-500 to-orange-600'
+                        : item.time_info.time_remaining_seconds <= 86400
+                          ? 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+                          : 'bg-gradient-to-r from-green-500 to-green-600'
+                  }`}>
+                    <Clock className="w-3 h-3 text-white" />
+                  </div>
+                  <div>
+                    <div className={`text-xs font-medium uppercase tracking-wide ${
+                      item.time_info.is_expired || item.time_info.time_remaining_seconds <= 3600
+                        ? 'text-red-700 dark:text-red-300'
+                        : item.time_info.time_remaining_seconds <= 21600
+                          ? 'text-orange-700 dark:text-orange-300'
+                          : item.time_info.time_remaining_seconds <= 86400
+                            ? 'text-yellow-700 dark:text-yellow-300'
+                            : 'text-green-700 dark:text-green-300'
+                    }`}>
+                      {item.time_info.is_expired ? 'Expired' : 'Time Left'}
+                    </div>
+                    <div className={`text-sm font-bold leading-tight ${
+                      item.time_info.is_expired || item.time_info.time_remaining_seconds <= 3600
+                        ? 'text-red-900 dark:text-red-100'
+                        : item.time_info.time_remaining_seconds <= 21600
+                          ? 'text-orange-900 dark:text-orange-100'
+                          : item.time_info.time_remaining_seconds <= 86400
+                            ? 'text-yellow-900 dark:text-yellow-100'
+                            : 'text-green-900 dark:text-green-100'
+                    }`}>
+                      <CountdownTimer timeInfo={item.time_info} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 7. Input Field */}
+        <div className="mb-3">
+          <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
+            <div className="flex-1">
+              <input
+                type="number"
+                min={item.bid_info?.highest_bid || item.price || 0}
+                step="10"
+                placeholder={
+                  item.time_info?.is_expired 
+                    ? "Listing Expired" 
+                    : `Min: €${(item.bid_info?.highest_bid || item.price || 0).toFixed(2)}`
+                }
+                disabled={item.time_info?.is_expired}
+                className={`w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  item.time_info?.is_expired
+                    ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 cursor-not-allowed'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                }`}
+                onClick={(e) => e.stopPropagation()}
+                onFocus={(e) => e.stopPropagation()}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  const input = e.target;
+                  input.dataset.offerAmount = e.target.value;
+                }}
+              />
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (item.time_info?.is_expired) {
+                  alert('This listing has expired. No more bids can be placed.');
+                  return;
+                }
+                const input = e.target.parentElement.previousElementSibling?.querySelector('input') || 
+                             e.target.parentElement.parentElement.querySelector('input');
+                const offerAmount = parseFloat(input?.value || 0);
+                if (offerAmount && offerAmount >= (item.highest_bid || item.price || 0)) {
+                  onSubmitTender(item, offerAmount);
+                  input.value = ''; // Clear input after submission
+                } else {
+                  alert(`Please enter an amount of at least €${(item.highest_bid || item.price || 0).toFixed(2)}`);
+                }
+              }}
+              disabled={isSubmittingTender || item.time_info?.is_expired}
+              className={`px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+                item.time_info?.is_expired
+                  ? 'bg-red-400 text-red-100 cursor-not-allowed'
+                  : 'bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white'
+              }`}
+              title={item.time_info?.is_expired ? "Listing has expired" : "Submit tender offer"}
+            >
+              {item.time_info?.is_expired ? (
+                <span>EXPIRED</span>
+              ) : isSubmittingTender ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Submitting...</span>
+                </>
+              ) : (
+                <span>Offer</span>
+              )}
+            </button>
+          </div>
+          
+          {/* Tender Confirmation Message */}
+          {tenderConfirmation?.visible && (
+            <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 animate-pulse">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="text-green-800 dark:text-green-300 font-semibold text-sm">
+                    ✅ Tender Submitted Successfully!
+                  </p>
+                  <p className="text-green-700 dark:text-green-400 text-xs">
+                    Your offer of €{tenderConfirmation.amount.toFixed(2)} has been submitted to the seller
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Current Highest Bid Display */}
+          {item.highest_bid && (
+            <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-yellow-800 dark:text-yellow-300 font-medium">
+                  Current highest bid:
+                </span>
+                <span className="text-yellow-900 dark:text-yellow-200 font-bold">
+                  €{parseFloat(item.highest_bid).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 8. Date */}
+        <div className="flex items-center justify-end text-xs text-gray-500 dark:text-gray-400">
+          <span>
+            {item.created_at 
+              ? new Date(item.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })
+              : item.createdAt 
+                ? new Date(item.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })
+                : 'Date not available'
+            }
+          </span>
+        </div>
+      </div>
         <div className="flex items-start justify-between mb-2">
           <h3 className={`font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors ${
             isGridView ? 'text-lg line-clamp-2' : 'text-xl'
