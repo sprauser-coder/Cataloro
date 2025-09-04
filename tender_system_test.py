@@ -11,7 +11,7 @@ from datetime import datetime
 import time
 
 class TenderSystemTester:
-    def __init__(self, base_url="https://cataloro-admin-4.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-dash.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_user = None
         self.regular_user = None

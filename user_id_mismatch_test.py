@@ -8,7 +8,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://cataloro-admin-4.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-dash.preview.emergentagent.com/api"
 
 def test_user_id_mismatch():
     """Test and demonstrate the user ID mismatch issue"""

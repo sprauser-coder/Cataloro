@@ -9,7 +9,7 @@ import json
 
 def test_business_user_registration():
     """Test business user registration and profile retrieval"""
-    base_url = "https://cataloro-admin-4.preview.emergentagent.com"
+    base_url = "https://cataloro-dash.preview.emergentagent.com"
     
     print("🔧 TESTING BUSINESS USER REGISTRATION FIX")
     print("=" * 50)

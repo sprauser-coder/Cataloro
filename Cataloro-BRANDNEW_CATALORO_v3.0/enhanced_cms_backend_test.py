@@ -11,7 +11,7 @@ import json
 from datetime import datetime
 
 class EnhancedCMSAPITester:
-    def __init__(self, base_url="https://bid-manager-5.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-dash.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
@@ -201,7 +201,7 @@ class EnhancedCMSAPITester:
                 "description": "Testing the enhanced Content Management System with SEO optimization, version tracking, and advanced features for the Cataloro marketplace.",
                 "keywords": ["cataloro", "cms", "marketplace", "seo", "testing"],
                 "ogImage": "https://example.com/og-image.jpg",
-                "canonicalUrl": "https://bid-manager-5.preview.emergentagent.com"
+                "canonicalUrl": "https://cataloro-dash.preview.emergentagent.com"
             },
             "hero": {
                 "title": "Enhanced Cataloro CMS",

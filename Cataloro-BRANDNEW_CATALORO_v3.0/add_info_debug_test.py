@@ -12,7 +12,7 @@ import pandas as pd
 from datetime import datetime
 
 class AddInfoDebugTester:
-    def __init__(self, base_url="https://bid-manager-5.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-dash.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.user_token = None

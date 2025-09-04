@@ -12,7 +12,7 @@ import pandas as pd
 from datetime import datetime
 
 class CatDatabaseTester:
-    def __init__(self, base_url="https://cataloro-admin-4.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-dash.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.admin_user = None
