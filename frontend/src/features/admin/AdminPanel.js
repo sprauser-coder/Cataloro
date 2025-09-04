@@ -34,8 +34,9 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 
 function AdminPanel() {
-  // Core state management
-  const [activeSection, setActiveSection] = useState('dashboard');
+  // Core state management - RESTORE FULL ORIGINAL STRUCTURE
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeSubTab, setActiveSubTab] = useState('overview');
   const [dashboardData, setDashboardData] = useState(null);
   const [users, setUsers] = useState([]);
   const [settings, setSettings] = useState({});
@@ -52,7 +53,7 @@ function AdminPanel() {
   });
   const [creatingUser, setCreatingUser] = useState(false);
 
-  // Price settings states
+  // Price settings states - PRESERVE CAT DATABASE FUNCTIONALITY
   const [priceSettings, setPriceSettings] = useState({
     pt_price: 25.0,
     pd_price: 18.0,
