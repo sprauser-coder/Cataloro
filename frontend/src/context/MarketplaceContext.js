@@ -407,6 +407,9 @@ export function MarketplaceProvider({ children }) {
           },
           // Also add the address information for location display
           address: listing.address || {},
+          // CRITICAL: Preserve created_at for date display
+          created_at: listing.created_at,
+          updated_at: listing.updated_at,
           rating: 4.5, // Default rating for demo
           reviewCount: Math.floor(Math.random() * 100) + 10,
           isHotDeal: Math.random() > 0.7,
