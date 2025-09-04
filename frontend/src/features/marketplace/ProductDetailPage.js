@@ -424,8 +424,13 @@ function ProductDetailPage() {
           <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
             <div className="flex items-center space-x-4 mb-4">
               <div className="text-4xl font-bold text-gray-900 dark:text-white">
-                €{product.price.toLocaleString()}
+                €{((product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price).toLocaleString()}
               </div>
+              {product.bid_info?.has_bids && (
+                <div className="text-lg text-gray-500 dark:text-gray-400 line-through">
+                  Initial: €{product.price.toLocaleString()}
+                </div>
+              )}
             </div>
 
             {/* Market Price Suggestion for Catalyst Items */}
