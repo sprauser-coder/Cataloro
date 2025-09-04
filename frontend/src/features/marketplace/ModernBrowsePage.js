@@ -1341,19 +1341,6 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
               )}
             </button>
           </div>
-          
-          {/* Message Seller Button */}
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              onMessageSeller(item, e);
-            }}
-            className="w-full mt-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
-            title="Message seller"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span>Message Seller</span>
-          </button>
         </div>
 
         {/* Date Only - Remove Condition */}
