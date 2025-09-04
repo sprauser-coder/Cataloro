@@ -83,7 +83,7 @@ function TenderManagementPage() {
     if (!user) return;
     
     try {
-      setLoading(true);
+      setTendersLoading(true);
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/seller/${user.id}/overview`);
       
       if (response.ok) {
@@ -96,7 +96,61 @@ function TenderManagementPage() {
       console.error('Failed to fetch tenders overview:', error);
       showToast('Error loading tender data', 'error');
     } finally {
-      setLoading(false);
+      setTendersLoading(false);
+    }
+  };
+
+  // Listings Management Functions (exact duplicate from MyListingsPage)
+  const fetchMyListings = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setListingsLoading(true);
+      const data = await marketplaceService.getMyListings(user.id);
+      setListings(data);
+    } catch (error) {
+      showToast('Failed to load your listings', 'error');
+      console.error('Failed to fetch listings:', error);
+    } finally {
+      setListingsLoading(false);
+    }
+  };
+
+  const handleDeleteListing = async (listingId) => {
+    if (!window.confirm('Are you sure you want to delete this listing?')) {
+      return;
+    }
+
+    try {
+      await marketplaceService.deleteListing(listingId);
+      setListings(listings.filter(listing => listing.id !== listingId));
+      showToast('Listing deleted successfully', 'success');
+    } catch (error) {
+      showToast('Failed to delete listing', 'error');
+    }
+  };
+
+  // Handle tile clicks for filtering (for Listings Management)
+  const handleTileClick = (filter) => {
+    setActiveFilter(filter);
+  };
+
+  // Handle create new listing (for Listings Management)
+  const handleCreateListing = () => {
+    navigate('/create-listing');
+  };
+
+  // Filter listings based on active filter (for Listings Management)
+  const getFilteredListings = () => {
+    switch (activeFilter) {
+      case 'active':
+        return listings.filter(l => l.status === 'active');
+      case 'drafts':
+        return listings.filter(l => l.status === 'draft' || l.is_draft);
+      case 'closed':
+        return listings.filter(l => l.status === 'sold' || l.status === 'closed');
+      default:
+        return listings;
     }
   };
 
