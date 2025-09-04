@@ -810,7 +810,7 @@ function CountdownTimer({ timeInfo }) {
   const [isExpired, setIsExpired] = useState(false);
   
   useEffect(() => {
-    if (!timeInfo?.has_time_limit || !timeInfo.time_remaining_seconds) {
+    if (!timeInfo?.has_time_limit || timeInfo.time_remaining_seconds === undefined || timeInfo.time_remaining_seconds === null) {
       return;
     }
     
