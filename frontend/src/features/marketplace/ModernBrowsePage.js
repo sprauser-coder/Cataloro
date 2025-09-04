@@ -1340,7 +1340,7 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
         </div>
 
         {/* 8. Date */}
-        <div className="flex items-center justify-end text-xs text-gray-500 dark:text-gray-400">
+        <div className="mt-2 flex items-center justify-end text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-2">
           <span>
             {item.created_at 
               ? new Date(item.created_at).toLocaleDateString('en-US', {
@@ -1354,7 +1354,13 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
                     month: 'short',
                     day: 'numeric'
                   })
-                : 'Date not available'
+                : item.date 
+                  ? new Date(item.date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })
+                  : 'Date not available'
             }
           </span>
         </div>
