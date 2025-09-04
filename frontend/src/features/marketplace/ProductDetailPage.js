@@ -664,20 +664,19 @@ function ProductDetailPage() {
               <Shield className="w-5 h-5 text-purple-600" />
               <span>Buyer protection guarantee</span>
             </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Product Details Tabs */}
+      {/* Product Details Tabs - Remove Features and Reviews */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 dark:border-gray-700">
           {[
             { id: 'description', label: 'Description' },
-            { id: 'features', label: 'Features' },
-            { id: 'seller', label: 'Seller Info' },
-            { id: 'reviews', label: 'Reviews' }
+            { id: 'seller', label: 'Seller Info' }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -702,11 +701,6 @@ function ProductDetailPage() {
               </p>
             </div>
           )}
-
-          {selectedTab === 'features' && (
-            <div className="space-y-3">
-              {product.features && product.features.length > 0 ? (
-                product.features.map((feature, index) => (
                   <div key={index} className="flex items-center space-x-3">
                     <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <span className="text-gray-700 dark:text-gray-300">{feature}</span>
