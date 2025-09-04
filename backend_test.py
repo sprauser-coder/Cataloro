@@ -18,6 +18,8 @@ class TenderManagementTester:
         self.backend_url = BACKEND_URL
         self.test_results = []
         self.session = requests.Session()
+        self.test_user_id = None
+        self.test_listing_id = None
         
     def log_test(self, test_name, success, details="", expected="", actual=""):
         """Log test results"""
