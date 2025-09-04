@@ -245,18 +245,7 @@ function ProductDetailPage() {
     }
   };
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: product.title,
-        text: product.description,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      showNotification('Product link copied to clipboard!', 'success');
-    }
-  };
+
 
   const relatedProducts = allProducts
     .filter(p => p.id !== product.id && p.category === product.category)
