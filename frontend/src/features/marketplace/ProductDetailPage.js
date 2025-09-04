@@ -33,6 +33,59 @@ import {
   Info
 } from 'lucide-react';
 
+// Countdown Timer Component - Returns formatted time text
+function CountdownTimer({ timeInfo }) {
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  const [isExpired, setIsExpired] = useState(false);
+  
+  useEffect(() => {
+    if (!timeInfo?.has_time_limit || timeInfo.time_remaining_seconds === undefined || timeInfo.time_remaining_seconds === null) {
+      return;
+    }
+    
+    let initialSeconds = timeInfo.time_remaining_seconds;
+    setTimeRemaining(initialSeconds);
+    setIsExpired(initialSeconds <= 0);
+    
+    const interval = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          setIsExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [timeInfo]);
+  
+  const formatTime = (seconds) => {
+    if (seconds <= 0) return "EXPIRED";
+    
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (days > 0) {
+      return `${days}d ${hours}h ${minutes}m`;
+    } else if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    } else {
+      return `${secs}s`;
+    }
+  };
+  
+  if (!timeInfo?.has_time_limit) return null;
+  
+  return (
+    <span>{isExpired ? 'EXPIRED' : formatTime(timeRemaining)}</span>
+  );
+}
+
 function ProductDetailPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
