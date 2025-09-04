@@ -13,7 +13,6 @@ import {
   MapPin,
   Clock,
   ShoppingCart,
-  MessageCircle,
   SlidersHorizontal,
   X,
   Send,
