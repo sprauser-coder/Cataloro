@@ -563,6 +563,61 @@ async def browse_listings(
                     "highest_bidder_id": ''
                 }
         
+        # Add time limit information and check for expired listings
+        for listing in enriched_listings:
+            if listing.get('has_time_limit', False):
+                try:
+                    expires_at = datetime.fromisoformat(listing['expires_at'])
+                    current_time = datetime.utcnow()
+                    
+                    # Calculate time remaining
+                    time_remaining = expires_at - current_time
+                    total_seconds = int(time_remaining.total_seconds())
+                    
+                    if total_seconds <= 0:
+                        # Listing has expired
+                        listing['time_info'] = {
+                            "has_time_limit": True,
+                            "is_expired": True,
+                            "time_remaining_seconds": 0,
+                            "expires_at": listing['expires_at'],
+                            "status_text": "EXPIRED"
+                        }
+                        
+                        # Auto-expire if not already marked
+                        if not listing.get('is_expired', False):
+                            # Call expiration check endpoint internally
+                            await check_listing_expiration(listing['id'])
+                            listing['is_expired'] = True
+                    else:
+                        # Listing still active
+                        listing['time_info'] = {
+                            "has_time_limit": True,
+                            "is_expired": False,
+                            "time_remaining_seconds": total_seconds,
+                            "expires_at": listing['expires_at'],
+                            "status_text": format_time_remaining(total_seconds)
+                        }
+                except Exception as time_error:
+                    print(f"Error processing time info for listing {listing.get('id')}: {time_error}")
+                    # Fallback time info
+                    listing['time_info'] = {
+                        "has_time_limit": True,
+                        "is_expired": False,
+                        "time_remaining_seconds": 0,
+                        "expires_at": listing.get('expires_at', ''),
+                        "status_text": "Time limit error"
+                    }
+            else:
+                # No time limit
+                listing['time_info'] = {
+                    "has_time_limit": False,
+                    "is_expired": False,
+                    "time_remaining_seconds": None,
+                    "expires_at": None,
+                    "status_text": None
+                }
+        
         # Apply seller type filter after enrichment (since we need seller info)
         if type != "all":
             if type == "Private":
