@@ -30,7 +30,7 @@ import SimpleLoginPage from './features/auth/SimpleLoginPage';
 import RegisterPage from './features/auth/RegisterPage';
 import InfoPage from './features/info/InfoPage';
 import NotificationsCenterPage from './features/notifications/NotificationsCenterPage';
-import TendersPage from './features/marketplace/TendersPage';
+import TenderManagementPage from './features/marketplace/TenderManagementPage';
 
 // Import centralized configuration
 import { APP_ROUTES } from './config/directions';
