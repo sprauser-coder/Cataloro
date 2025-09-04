@@ -519,6 +519,10 @@ function CreateListingPage() {
         },
         images: imagePreviews, // Use the base64 previews for demo
         created_at: new Date().toISOString(),
+        // Time limit functionality
+        has_time_limit: formData.has_time_limit,
+        time_limit_hours: formData.has_time_limit ? formData.time_limit_hours : null,
+        time_display_position: formData.has_time_limit ? formData.time_display_position : null,
         // Include catalyst metadata if selected
         ...(selectedCatalyst && {
           catalyst_id: selectedCatalyst.cat_id,
