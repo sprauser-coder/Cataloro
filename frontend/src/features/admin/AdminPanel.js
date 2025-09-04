@@ -4617,6 +4617,7 @@ function CatDatabaseTab({ showToast }) {
   const [showOverrideModal, setShowOverrideModal] = useState(false);
   const [selectedCatalyst, setSelectedCatalyst] = useState(null);
   const [editingRow, setEditingRow] = useState(null);
+  const [priceRangeUpdated, setPriceRangeUpdated] = useState(false);
 
   const subTabs = [
     { id: 'data', label: 'Data', icon: Database },
