@@ -4731,7 +4731,16 @@ function CatDatabaseTab({ showToast }) {
       });
 
       if (response.ok) {
-        showToast('Price settings updated successfully', 'success');
+        // Show success toast with specific price range information
+        showToast(
+          `Price settings updated successfully! Range: ${priceSettings.price_range_min_percent}% to +${priceSettings.price_range_max_percent}%`, 
+          'success'
+        );
+        
+        // Show visual confirmation for price range update
+        setPriceRangeUpdated(true);
+        setTimeout(() => setPriceRangeUpdated(false), 3000);
+        
         await fetchCalculations();
       }
     } catch (error) {
