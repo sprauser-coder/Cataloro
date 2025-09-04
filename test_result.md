@@ -157,6 +157,44 @@ The backend time limit functionality is working perfectly. The issue appears to 
 
 **TIME LIMIT COUNTER VISIBILITY DEBUG STATUS:** ✅ BACKEND PERFECT, ⚠️ FRONTEND INVESTIGATION NEEDED - The backend provides all necessary time limit data with perfect accuracy. The issue is likely in the frontend display logic, CSS styling, or component rendering. All 15+ time-limited listings have proper countdown data, but the timers may not be visible to users due to frontend display issues.
 
+**Test Date:** 2025-01-04 15:47:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ❌ DATE DISPLAY AND REDUCED HOVER EFFECTS TESTING COMPLETED - CRITICAL ISSUES IDENTIFIED
+
+#### Date Display and Reduced Hover Effects Testing Results:
+**COMPREHENSIVE FRONTEND TESTING:** ❌ CRITICAL ISSUES FOUND - Testing of date display visibility and reduced hover effects on listing tiles completed with significant findings requiring main agent attention.
+
+**1. Date Display Verification** ❌ CRITICAL ISSUE - Dates are not visible on listing tiles: No dates found on any of the 4 tested listing tiles ❌, Border separators exist but do not contain date information ❌, Date display success rate: 0.0% ❌, ProductCard component may not be properly displaying created_at field ❌.
+
+**2. Reduced Hover Effects Verification** ❌ CRITICAL ISSUE - Hover effects are not properly reduced: No hover transform effects detected on listing tiles ❌, Image scale effects not working as expected ❌, Hover effects success rate: 0.0% ❌, CSS hover selectors may not be properly applied ❌.
+
+**3. Visual Layout Verification** ✅ FULLY FUNCTIONAL - Grid layout structure working correctly: 4-column desktop layout confirmed (xl:grid-cols-4) ✅, Responsive design working (2-column tablet, 1-column mobile) ✅, Professional appearance maintained ✅, Grid gap properly configured (gap-6) ✅.
+
+**4. Overall Functionality** ✅ PARTIALLY WORKING - Basic functionality preserved: Listing tiles properly structured and displayed ✅, Navigation and authentication working ✅, Grid layout responsive and professional ✅, Core marketplace functionality intact ✅.
+
+**TECHNICAL VERIFICATION:**
+- Browse page: Successfully loaded with 21 listings displayed in proper grid layout
+- Date display: 0/4 tiles show dates at bottom, no border separators contain date information
+- Hover effects: No transform effects detected on hover, CSS classes may not be properly applied
+- Grid structure: Perfect 4-column responsive layout with proper spacing and professional appearance
+- Authentication: Demo User Experience working correctly for testing access
+
+**CRITICAL ISSUES REQUIRING MAIN AGENT ATTENTION:**
+1. Date display is completely missing from listing tiles - need to verify ProductCard component implementation
+2. Hover effects are not working - CSS hover selectors may need updating or classes not properly applied
+3. created_at field may not be passed correctly to frontend components
+4. Hover transform CSS may not be targeting the correct elements
+
+**SUCCESSFUL IMPLEMENTATIONS:**
+1. Grid layout structure perfect with 4-column desktop responsive design
+2. Professional appearance and spacing maintained throughout
+3. Basic listing functionality and navigation working correctly
+4. Authentication and page loading working properly
+
+**COMPREHENSIVE TEST RESULTS:** 0/4 tiles show dates (0% success rate), 0/3 tiles have working hover effects (0% success rate), grid layout working perfectly (100% success), overall functionality partially working with critical display issues.
+
+**DATE DISPLAY AND REDUCED HOVER EFFECTS STATUS:** ❌ CRITICAL ISSUES - Both primary testing objectives have failed. Date display is completely missing from listing tiles despite proper component structure, and hover effects are not working as expected. The grid layout and professional appearance are maintained, but the core requested fixes (date visibility and reduced hover effects) are not implemented or not functioning correctly. Main agent needs to verify ProductCard component date implementation and CSS hover effect selectors.
+
 **Test Date:** 2025-09-04 15:32:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ HIGHEST BIDDER INDICATION AND BIDDING RESTRICTION FUNCTIONALITY COMPREHENSIVE TESTING COMPLETED - ALL REQUIREMENTS VERIFIED
