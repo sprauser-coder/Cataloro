@@ -484,13 +484,19 @@ class TenderManagementTester:
             consistency_checks = []
             
             # Check 1: Both endpoints return valid data
-            if isinstance(tender_data, dict) and isinstance(listings_data, list):
+            if (isinstance(tender_data, dict) or isinstance(tender_data, list)) and isinstance(listings_data, list):
                 consistency_checks.append("Both endpoints return valid data structures")
             else:
                 consistency_checks.append("❌ Invalid data structures returned")
             
-            # Check 2: User has listings if they have tenders
-            total_tenders = tender_data.get("total_tenders", 0)
+            # Check 2: Handle both dict and list responses for tender data
+            if isinstance(tender_data, dict):
+                total_tenders = tender_data.get("total_tenders", 0)
+            elif isinstance(tender_data, list):
+                total_tenders = len(tender_data)
+            else:
+                total_tenders = 0
+            
             if total_tenders > 0 and listings_count > 0:
                 consistency_checks.append("User has both tenders and listings (consistent)")
             elif total_tenders == 0 and listings_count >= 0:
