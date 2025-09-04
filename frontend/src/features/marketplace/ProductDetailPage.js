@@ -373,14 +373,20 @@ function ProductDetailPage() {
                 <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
                 <span>{isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}</span>
               </button>
-              
-              <button
-                onClick={handleShare}
-                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                <Share2 className="w-5 h-5" />
-                <span>Share</span>
-              </button>
+            </div>
+
+            {/* Price Display Section - Moved below favorites */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 mt-6">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="text-4xl font-bold text-gray-900 dark:text-white">
+                  €{((product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price).toLocaleString()}
+                </div>
+                {product.bid_info?.has_bids && (
+                  <div className="text-lg text-gray-500 dark:text-gray-400 line-through">
+                    Initial: €{product.price.toLocaleString()}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
