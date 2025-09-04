@@ -42,7 +42,7 @@ class TenderManagementTester:
             print(f"   Actual: {actual}")
         print()
         
-    def test_price_range_settings_get_endpoint(self):
+    def setup_test_data(self):
         """Test 1: Price Range Settings GET Endpoint"""
         try:
             response = self.session.get(f"{self.backend_url}/marketplace/price-range-settings")
