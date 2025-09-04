@@ -683,16 +683,6 @@ function ProductDetailPage() {
               </p>
             </div>
           )}
-                  <div key={index} className="flex items-center space-x-3">
-                    <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">{feature}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-600 dark:text-gray-400">No specific features listed for this product.</p>
-              )}
-            </div>
-          )}
 
           {selectedTab === 'seller' && (
             <div className="space-y-4">
