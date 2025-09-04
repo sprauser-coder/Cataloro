@@ -1357,6 +1357,144 @@ async def delete_listing(listing_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete listing: {str(e)}")
 
+@app.post("/api/listings/{listing_id}/extend-time")
+async def extend_listing_time(listing_id: str, extension_data: dict):
+    """Extend the time limit for a listing"""
+    try:
+        # Validate extension data
+        if "additional_hours" not in extension_data:
+            raise HTTPException(status_code=400, detail="Missing additional_hours field")
+        
+        additional_hours = int(extension_data["additional_hours"])
+        if additional_hours <= 0:
+            raise HTTPException(status_code=400, detail="additional_hours must be positive")
+        
+        # Find the listing
+        listing = await db.listings.find_one({"id": listing_id})
+        if not listing:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        
+        # Check if listing has time limit and is not expired
+        if not listing.get("has_time_limit", False):
+            raise HTTPException(status_code=400, detail="Listing does not have a time limit")
+        
+        if listing.get("is_expired", False):
+            raise HTTPException(status_code=400, detail="Cannot extend expired listing")
+        
+        # Calculate new expiration time
+        current_expires_at = datetime.fromisoformat(listing["expires_at"])
+        new_expires_at = current_expires_at + timedelta(hours=additional_hours)
+        
+        # Update the listing
+        result = await db.listings.update_one(
+            {"id": listing_id},
+            {
+                "$set": {
+                    "expires_at": new_expires_at.isoformat(),
+                    "updated_at": datetime.utcnow().isoformat()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Failed to update listing")
+        
+        return {
+            "message": f"Listing time extended by {additional_hours} hours",
+            "new_expires_at": new_expires_at.isoformat(),
+            "total_extension_hours": additional_hours
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to extend listing time: {str(e)}")
+
+@app.post("/api/listings/{listing_id}/check-expiration")
+async def check_listing_expiration(listing_id: str):
+    """Check and handle listing expiration, declare winner if applicable"""
+    try:
+        # Find the listing
+        listing = await db.listings.find_one({"id": listing_id})
+        if not listing:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        
+        # Check if listing has time limit
+        if not listing.get("has_time_limit", False):
+            return {"message": "Listing does not have time limit", "is_expired": False}
+        
+        # Check if already expired
+        if listing.get("is_expired", False):
+            return {
+                "message": "Listing already expired", 
+                "is_expired": True,
+                "winning_bidder_id": listing.get("winning_bidder_id")
+            }
+        
+        # Check if expired now
+        expires_at = datetime.fromisoformat(listing["expires_at"])
+        current_time = datetime.utcnow()
+        
+        if current_time >= expires_at:
+            # Listing has expired, find highest bidder
+            highest_bidder_id = None
+            highest_bid_amount = 0
+            
+            # Get all active tenders for this listing
+            tenders = await db.tenders.find({
+                "listing_id": listing_id, 
+                "status": "active"
+            }).to_list(length=None)
+            
+            # Find highest bidder
+            for tender in tenders:
+                if tender["amount"] > highest_bid_amount:
+                    highest_bid_amount = tender["amount"]
+                    highest_bidder_id = tender["buyer_id"]
+            
+            # Update listing as expired
+            update_data = {
+                "is_expired": True,
+                "status": "expired",
+                "updated_at": current_time.isoformat()
+            }
+            
+            if highest_bidder_id:
+                update_data["winning_bidder_id"] = highest_bidder_id
+                # Reject all other tenders
+                await db.tenders.update_many(
+                    {"listing_id": listing_id, "buyer_id": {"$ne": highest_bidder_id}},
+                    {"$set": {"status": "rejected", "updated_at": current_time.isoformat()}}
+                )
+                # Accept winning tender
+                await db.tenders.update_one(
+                    {"listing_id": listing_id, "buyer_id": highest_bidder_id},
+                    {"$set": {"status": "accepted", "updated_at": current_time.isoformat()}}
+                )
+            
+            await db.listings.update_one({"id": listing_id}, {"$set": update_data})
+            
+            # Create expiration notification for seller
+            await create_listing_expiration_notification(listing_id, listing["seller_id"], highest_bidder_id, highest_bid_amount)
+            
+            return {
+                "message": "Listing expired and winner declared",
+                "is_expired": True,
+                "winning_bidder_id": highest_bidder_id,
+                "winning_bid_amount": highest_bid_amount
+            }
+        
+        return {
+            "message": "Listing still active",
+            "is_expired": False,
+            "time_remaining_seconds": int((expires_at - current_time).total_seconds())
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to check expiration: {str(e)}")
+
 @app.get("/api/listings/{listing_id}")
 async def get_listing(listing_id: str):
     """Get a specific listing by ID"""
