@@ -973,10 +973,7 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
         />
         
         {/* Countdown Timer */}
-        <CountdownTimer 
-          timeInfo={item.time_info} 
-          position={item.time_display_position || 'top-right'} 
-        />
+        <CountdownTimer timeInfo={item.time_info} />
         
         {/* Image Indicators */}
         {item.images && item.images.length > 1 && (
