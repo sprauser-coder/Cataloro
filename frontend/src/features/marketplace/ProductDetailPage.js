@@ -534,9 +534,9 @@ function ProductDetailPage() {
                   onChange={(e) => setTenderAmount(e.target.value)}
                   placeholder={
                     product.time_info?.is_expired 
-                      ? "Listing Expired" 
+                      ? "Bid..." 
                       : product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids
-                        ? "You're the highest bidder"
+                        ? "Bid..."
                         : `Minimum: €${(product.bid_info?.highest_bid || product.price || 0).toFixed(2)}`
                   }
                   disabled={product.time_info?.is_expired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)}
