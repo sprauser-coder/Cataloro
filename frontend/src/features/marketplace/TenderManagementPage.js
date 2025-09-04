@@ -1,9 +1,11 @@
 /**
  * CATALORO - Tender Management Page
  * Allows sellers to view and manage tender offers for their listings
+ * Also includes Listings Management functionality (exact duplicate of My Listings)
  */
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   DollarSign, 
   Clock, 
@@ -13,8 +15,16 @@ import {
   MessageCircle,
   Eye,
   TrendingUp,
-  RefreshCw
+  RefreshCw,
+  Plus,
+  Edit,
+  Trash2,
+  MoreHorizontal,
+  FileText,
+  Settings
 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { marketplaceService } from '../../services/marketplaceService';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 
