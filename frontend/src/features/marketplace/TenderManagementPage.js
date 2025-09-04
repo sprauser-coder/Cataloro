@@ -305,6 +305,63 @@ function TenderManagementPage() {
         </nav>
       </div>
 
+      {/* Tab Content */}
+      {activeTab === 'tenders' && (
+        <TenderManagementTab
+          tendersOverview={tendersOverview}
+          tendersLoading={tendersLoading}
+          selectedListing={selectedListing}
+          setSelectedListing={setSelectedListing}
+          acceptingTender={acceptingTender}
+          rejectingTender={rejectingTender}
+          handleAcceptTender={handleAcceptTender}
+          handleRejectTender={handleRejectTender}
+          totalTenders={totalTenders}
+          totalHighestBids={totalHighestBids}
+        />
+      )}
+
+      {activeTab === 'listings' && (
+        <ListingsManagementTab
+          listings={filteredListings}
+          allListings={listings}
+          listingsLoading={listingsLoading}
+          activeFilter={activeFilter}
+          handleTileClick={handleTileClick}
+          handleCreateListing={handleCreateListing}
+          handleDeleteListing={handleDeleteListing}
+        />
+      )}
+    </div>
+  );
+}
+
+// Tender Management Tab Component
+function TenderManagementTab({
+  tendersOverview,
+  tendersLoading,
+  selectedListing,
+  setSelectedListing,
+  acceptingTender,
+  rejectingTender,
+  handleAcceptTender,
+  handleRejectTender,
+  totalTenders,
+  totalHighestBids
+}) {
+  if (tendersLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading tender overview...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
