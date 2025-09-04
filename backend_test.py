@@ -43,21 +43,20 @@ class TenderManagementTester:
         print()
         
     def setup_test_data(self):
-        """Test 1: Price Range Settings GET Endpoint"""
+        """Setup test user and listing for testing"""
         try:
-            response = self.session.get(f"{self.backend_url}/marketplace/price-range-settings")
+            # Create test user
+            test_user_data = {
+                "email": "tender_test_user@example.com",
+                "password": "testpass123",
+                "username": "tender_test_user"
+            }
             
-            if response.status_code != 200:
-                self.log_test(
-                    "Price Range Settings GET Endpoint",
-                    False,
-                    f"HTTP {response.status_code}: {response.text}",
-                    "200 OK",
-                    f"{response.status_code}"
-                )
-                return False
-                
-            data = response.json()
+            # Login to get user ID
+            login_response = self.session.post(f"{self.backend_url}/auth/login", json=test_user_data)
+            if login_response.status_code == 200:
+                user_data = login_response.json()
+                self.test_user_id = user_data.get("user", {}).get("id")
             
             # Check if required fields are present
             actual_min = data.get("price_range_min_percent")
