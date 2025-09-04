@@ -386,6 +386,14 @@ export function MarketplaceProvider({ children }) {
             highest_bid: parseFloat(listing.price) || 0,
             highest_bidder_id: ''
           },
+          // CRITICAL: Preserve time_info from API for countdown timer display
+          time_info: listing.time_info || {
+            has_time_limit: false,
+            is_expired: false,
+            time_remaining_seconds: null,
+            expires_at: null,
+            status_text: null
+          },
           // Preserve complete seller object with business information
           seller: {
             ...listing.seller,
