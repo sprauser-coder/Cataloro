@@ -392,26 +392,9 @@ function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Price and Bidding Section */}
+      {/* Bidding Section */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* Price Section - Updated to show initial price */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="text-4xl font-bold text-gray-900 dark:text-white">
-                €{((product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price).toLocaleString()}
-              </div>
-              {product.bid_info?.has_bids && (
-                <div className="text-lg text-gray-500 dark:text-gray-400 line-through">
-                  Initial: €{product.price.toLocaleString()}
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {/* Bidding Section */}
-          <div className="space-y-6">
+        <div className="space-y-6">
             
             {/* Time Limit Countdown Badge */}
             {product.time_info?.has_time_limit && (
