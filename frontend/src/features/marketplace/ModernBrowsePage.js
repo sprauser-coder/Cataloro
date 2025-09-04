@@ -805,7 +805,7 @@ function ModernBrowsePage() {
 }
 
 // Countdown Timer Component
-function CountdownTimer({ timeInfo, position = 'top-right' }) {
+function CountdownTimer({ timeInfo }) {
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [isExpired, setIsExpired] = useState(false);
   
@@ -858,22 +858,10 @@ function CountdownTimer({ timeInfo, position = 'top-right' }) {
     return 'bg-green-500 text-white border-green-500';
   };
   
-  const getPositionClass = () => {
-    switch (position) {
-      case 'top-left': return 'top-2 left-2';
-      case 'top-right': return 'top-2 right-2';
-      case 'bottom-left': return 'bottom-2 left-2';
-      case 'bottom-right': return 'bottom-2 right-2';
-      case 'center-top': return 'top-2 left-1/2 transform -translate-x-1/2';
-      case 'center-bottom': return 'bottom-2 left-1/2 transform -translate-x-1/2';
-      default: return 'top-2 right-2';
-    }
-  };
-  
   if (!timeInfo?.has_time_limit) return null;
   
   return (
-    <div className={`absolute ${getPositionClass()} z-10`}>
+    <div className="absolute top-2 right-2 z-10">
       <div className={`px-2 py-1 rounded-lg border-2 text-xs font-bold flex items-center space-x-1 shadow-lg ${getColorClass()}`}>
         <Clock className="w-3 h-3" />
         <span>{isExpired ? 'EXPIRED' : formatTime(timeRemaining)}</span>
