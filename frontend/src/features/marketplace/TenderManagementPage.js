@@ -126,6 +126,7 @@ function TenderManagementPage() {
       setListings(listings.filter(listing => listing.id !== listingId));
       showToast('Listing deleted successfully', 'success');
     } catch (error) {
+      console.error('Error deleting listing:', error);
       showToast('Failed to delete listing', 'error');
     }
   };
