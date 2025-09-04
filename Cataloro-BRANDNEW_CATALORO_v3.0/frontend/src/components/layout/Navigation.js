@@ -1,0 +1,215 @@
+/**
+ * CATALORO - Navigation Component  
+ * Ultra-modern sidebar navigation with role-based menu items
+ */
+
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { 
+  Search, 
+  Package, 
+  DollarSign, 
+  Shield, 
+  Heart, 
+  Bell, 
+  User, 
+  LogOut,
+  Clock,
+  MessageCircle
+} from 'lucide-react';
+import { APP_ROUTES, USER_ROLES } from '../../config/directions';
+
+function Navigation() {
+  const location = useLocation();
+  const [user, setUser] = useState(null);
+  const [messageUnreadCount, setMessageUnreadCount] = useState(0);
+
+  useEffect(() => {
+    // Get user from localStorage
+    const userData = localStorage.getItem('cataloro_user');
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+
+    // Get unread message count from localStorage
+    const unreadCount = localStorage.getItem('messageUnreadCount');
+    if (unreadCount) {
+      setMessageUnreadCount(parseInt(unreadCount, 10));
+    }
+
+    // Listen for unread count changes
+    const handleStorageChange = (e) => {
+      if (e.key === 'messageUnreadCount') {
+        setMessageUnreadCount(parseInt(e.newValue || '0', 10));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check periodically for updates
+    const interval = setInterval(() => {
+      const currentCount = localStorage.getItem('messageUnreadCount');
+      if (currentCount) {
+        setMessageUnreadCount(parseInt(currentCount, 10));
+      }
+    }, 5000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const isAdmin = () => user?.role === USER_ROLES.ADMIN;
+  
+  const logout = () => {
+    localStorage.removeItem('cataloro_token');
+    localStorage.removeItem('cataloro_user');
+    window.location.href = '/login';
+  };
+
+  const isActive = (path) => location.pathname === path;
+
+  const menuItems = [
+    {
+      label: 'Browse',
+      path: APP_ROUTES.BROWSE,
+      icon: Search,
+      roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR]
+    },
+    {
+      label: 'My Listings',
+      path: APP_ROUTES.MY_LISTINGS,
+      icon: Package,
+      roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR]
+    },
+    {
+      label: 'Pending Sales',
+      path: '/pending-sales',
+      icon: Clock,
+      roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR]
+    },
+    {
+      label: 'My Deals',
+      path: APP_ROUTES.MY_DEALS,
+      icon: DollarSign,
+      roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR]
+    },
+    {
+      label: '*Admin Panel',
+      path: APP_ROUTES.ADMIN_PANEL,
+      icon: Shield,
+      roles: [USER_ROLES.ADMIN],
+      isAdmin: true
+    },
+    {
+      label: 'Favorites',
+      path: APP_ROUTES.FAVORITES,
+      icon: Heart,
+      roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR]
+    },
+    {
+      label: 'Notifications',
+      path: APP_ROUTES.NOTIFICATIONS,
+      icon: Bell,
+      roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR]
+    },
+    {
+      label: 'Messages',
+      path: '/messages',
+      icon: MessageCircle,
+      roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR],
+      hasUnreadCount: true
+    },
+    {
+      label: 'Profile Page',
+      path: APP_ROUTES.PROFILE,
+      icon: User,
+      roles: [USER_ROLES.USER, USER_ROLES.ADMIN, USER_ROLES.MODERATOR]
+    }
+  ];
+
+  const filteredMenuItems = menuItems.filter(item => {
+    if (item.isAdmin && !isAdmin()) {
+      return false;
+    }
+    return item.roles.includes(user?.role);
+  });
+
+  return (
+    <nav className="fixed left-0 top-16 bottom-0 w-64 bg-white border-r border-gray-200 z-30">
+      <div className="flex flex-col h-full">
+        {/* Navigation Menu */}
+        <div className="flex-1 px-4 py-6 space-y-2">
+          {filteredMenuItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+            
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`
+                  nav-item
+                  ${active ? 'active' : ''}
+                  ${item.isAdmin ? 'nav-item-admin' : ''}
+                `}
+              >
+                <Icon className="w-5 h-5 mr-3" />
+                <span className="font-medium">{item.label}</span>
+                {item.hasUnreadCount && messageUnreadCount > 0 && (
+                  <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                    {messageUnreadCount > 99 ? '99+' : messageUnreadCount}
+                  </span>
+                )}
+                {item.isAdmin && (
+                  <span className="ml-auto text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">
+                    ADMIN
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* User Info & Logout */}
+        <div className="border-t border-gray-200 p-4">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-medium">
+                {user?.full_name?.charAt(0) || user?.username?.charAt(0) || 'U'}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {user?.full_name || user?.username || 'User'}
+              </p>
+              <p className="text-xs text-gray-500 truncate">
+                {user?.email}
+              </p>
+              {user?.role && (
+                <span className="inline-block text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full mt-1">
+                  {user.role.toUpperCase()}
+                </span>
+              )}
+            </div>
+          </div>
+          
+          <button
+            onClick={logout}
+            className="w-full flex items-center px-3 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200"
+          >
+            <LogOut className="w-4 h-4 mr-3" />
+            Logout
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+export default Navigation;
