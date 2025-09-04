@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class TenderVisibilityTester:
-    def __init__(self, base_url="https://cataloro-marketplace-2.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-admin-4.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
         self.tests_run = 0

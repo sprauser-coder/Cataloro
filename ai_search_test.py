@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-BACKEND_URL = "https://cataloro-marketplace-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-admin-4.preview.emergentagent.com/api"
 
 class AISearchTester:
     def __init__(self):

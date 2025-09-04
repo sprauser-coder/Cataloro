@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://cataloro-marketplace-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-admin-4.preview.emergentagent.com/api"
 
 class CatalystReviewTester:
     def __init__(self):

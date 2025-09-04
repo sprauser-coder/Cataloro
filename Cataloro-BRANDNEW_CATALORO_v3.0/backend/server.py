@@ -38,7 +38,7 @@ origins = [
     "https://217.154.0.82",
     "http://localhost:3000",  # Development
     "http://localhost:3001",  # Development alternative
-    "https://bid-manager-5.preview.emergentagent.com",  # Emergent preview domain
+    "https://cataloro-admin-4.preview.emergentagent.com",  # Emergent preview domain
     "*"  # Allow all origins temporarily for debugging
 ]
 

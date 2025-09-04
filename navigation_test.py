@@ -11,7 +11,7 @@ from datetime import datetime
 
 class NavigationTester:
     def __init__(self):
-        self.frontend_url = "https://cataloro-marketplace-2.preview.emergentagent.com"
+        self.frontend_url = "https://cataloro-admin-4.preview.emergentagent.com"
         self.test_results = []
         
     def log_result(self, test_name, status, details=""):

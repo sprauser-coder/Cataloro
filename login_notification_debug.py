@@ -7,7 +7,7 @@ import subprocess
 import json
 import time
 
-BACKEND_URL = "https://cataloro-marketplace-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-admin-4.preview.emergentagent.com/api"
 
 def run_curl(method, endpoint, data=None):
     """Run curl command and return response"""

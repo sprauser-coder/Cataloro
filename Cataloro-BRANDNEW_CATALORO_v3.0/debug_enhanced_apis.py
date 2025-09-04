@@ -8,7 +8,7 @@ import json
 
 def debug_favorites_api():
     """Debug favorites API issues"""
-    base_url = "https://bid-manager-5.preview.emergentagent.com"
+    base_url = "https://cataloro-admin-4.preview.emergentagent.com"
     
     # Login user
     login_response = requests.post(f"{base_url}/api/auth/login", 
@@ -48,7 +48,7 @@ def debug_favorites_api():
 
 def debug_cart_api():
     """Debug cart API issues"""
-    base_url = "https://bid-manager-5.preview.emergentagent.com"
+    base_url = "https://cataloro-admin-4.preview.emergentagent.com"
     
     # Login user
     login_response = requests.post(f"{base_url}/api/auth/login", 
