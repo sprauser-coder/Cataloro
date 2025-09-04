@@ -5121,9 +5121,19 @@ function CatDatabaseTab({ showToast }) {
             </div>
             
             {/* Price Range Configuration Section */}
-            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <div className="mb-6">
-                <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-2">Price Range Configuration</h4>
+            <div className={`mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 transition-all duration-500 ${
+              priceRangeUpdated ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 rounded-lg p-4' : ''
+            }`}>
+              <div className="mb-6 relative">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-2">Price Range Configuration</h4>
+                  {priceRangeUpdated && (
+                    <div className="flex items-center text-green-600 dark:text-green-400 text-sm font-medium">
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Updated Successfully!
+                    </div>
+                  )}
+                </div>
                 <p className="text-gray-600 dark:text-gray-400 text-sm">
                   Configure the percentage ranges for dynamic price calculations used in marketplace listings.
                 </p>
