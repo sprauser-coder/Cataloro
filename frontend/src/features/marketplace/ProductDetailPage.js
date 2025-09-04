@@ -499,6 +499,27 @@ function ProductDetailPage() {
               </div>
             )}
             
+            {/* User is Highest Bidder Indicator */}
+            {product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids && (
+              <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-blue-800 dark:text-blue-300 font-semibold text-lg">
+                      🎉 You're the highest bidder!
+                    </p>
+                    <p className="text-blue-700 dark:text-blue-400 text-sm">
+                      Your bid of €{product.bid_info.highest_bid.toFixed(2)} is currently winning. You cannot bid until someone places a higher offer.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {/* Tender Input Form */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -514,13 +535,17 @@ function ProductDetailPage() {
                   placeholder={
                     product.time_info?.is_expired 
                       ? "Listing Expired" 
-                      : `Minimum: €${(product.bid_info?.highest_bid || product.price || 0).toFixed(2)}`
+                      : product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids
+                        ? "You're the highest bidder"
+                        : `Minimum: €${(product.bid_info?.highest_bid || product.price || 0).toFixed(2)}`
                   }
-                  disabled={product.time_info?.is_expired}
+                  disabled={product.time_info?.is_expired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)}
                   className={`flex-1 px-4 py-3 border rounded-xl text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                     product.time_info?.is_expired
                       ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 cursor-not-allowed'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                      : product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids
+                        ? 'border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 cursor-not-allowed'
+                        : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
                   }`}
                 />
                 <button
@@ -529,18 +554,32 @@ function ProductDetailPage() {
                       showToast('This listing has expired. No more bids can be placed.', 'error');
                       return;
                     }
+                    if (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids) {
+                      showToast('You are already the highest bidder! Wait for others to place higher bids.', 'warning');
+                      return;
+                    }
                     handleSubmitTender(e);
                   }}
-                  disabled={submittingTender || !tenderAmount || product.time_info?.is_expired}
+                  disabled={submittingTender || !tenderAmount || product.time_info?.is_expired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)}
                   className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2 ${
                     product.time_info?.is_expired
                       ? 'bg-red-400 text-red-100 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white'
+                      : product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids
+                        ? 'bg-blue-400 text-blue-100 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 text-white'
                   }`}
-                  title={product.time_info?.is_expired ? "Listing has expired" : "Submit tender offer"}
+                  title={
+                    product.time_info?.is_expired 
+                      ? "Listing has expired" 
+                      : product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids
+                        ? "You are the highest bidder"
+                        : "Submit tender offer"
+                  }
                 >
                   {product.time_info?.is_expired ? (
                     <span>EXPIRED</span>
+                  ) : product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids ? (
+                    <span>WINNING BID</span>
                   ) : submittingTender ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
