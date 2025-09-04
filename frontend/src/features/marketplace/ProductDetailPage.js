@@ -273,57 +273,11 @@ function ProductDetailPage() {
         <span className="text-gray-900 dark:text-white">{product.title}</span>
       </div>
 
-      {/* Header Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              {product.title}
-            </h1>
-
-            {/* Views Counter - Rating Removed */}
-            <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 mb-4">
-              <Eye className="w-4 h-4" />
-              <span>{product.views || 0} views</span>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={handleAddToFavorites}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors ${
-                isFavorite
-                  ? 'bg-red-50 border-red-200 text-red-600 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
-                  : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-              }`}
-            >
-              <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
-              <span>{isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}</span>
-            </button>
-          </div>
-
-          {/* Price Display Section - Below favorites */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="text-4xl font-bold text-gray-900 dark:text-white">
-                €{((product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price).toLocaleString()}
-              </div>
-              {product.bid_info?.has_bids && (
-                <div className="text-lg text-gray-500 dark:text-gray-400 line-through">
-                  Initial: €{product.price.toLocaleString()}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Two-Column Layout: Pictures Left, Info Right */}
+      {/* Two-Column Layout: Pictures Left, ALL Info Right */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           
-          {/* Left Column: Pictures */}
+          {/* Left Column: Pictures Only */}
           <div className="space-y-4">
             {/* Main Image */}
             <div className="relative group">
@@ -378,45 +332,75 @@ function ProductDetailPage() {
             )}
           </div>
 
-          {/* Right Column: Product Info */}
+          {/* Right Column: ALL Product Information */}
           <div className="space-y-6">
+            {/* Title */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                Product Details
-              </h2>
-              
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                {product.title}
+              </h1>
+
               {/* Views Counter */}
               <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 mb-4">
                 <Eye className="w-4 h-4" />
                 <span>{product.views || 0} views</span>
               </div>
+            </div>
 
-              {/* Description */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Description</h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  {product.description}
-                </p>
-              </div>
+            {/* Favorites Button */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={handleAddToFavorites}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors ${
+                  isFavorite
+                    ? 'bg-red-50 border-red-200 text-red-600 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
+                    : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                }`}
+              >
+                <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+                <span>{isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}</span>
+              </button>
+            </div>
 
-              {/* Category */}
-              <div className="mb-4">
-                <span className="inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-sm px-3 py-1 rounded-full font-medium">
-                  {product.category}
-                </span>
+            {/* Price Display Section */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="text-4xl font-bold text-gray-900 dark:text-white">
+                  €{((product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price).toLocaleString()}
+                </div>
+                {product.bid_info?.has_bids && (
+                  <div className="text-lg text-gray-500 dark:text-gray-400 line-through">
+                    Initial: €{product.price.toLocaleString()}
+                  </div>
+                )}
               </div>
+            </div>
 
-              {/* Location */}
-              <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-4">
-                <MapPin className="w-4 h-4" />
-                <span>{product.location || 'Location not specified'}</span>
-              </div>
+            {/* Description */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Description</h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                {product.description}
+              </p>
+            </div>
 
-              {/* Created Date */}
-              <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 text-sm">
-                <Clock className="w-4 h-4" />
-                <span>Listed on {new Date(product.created_at).toLocaleDateString()}</span>
-              </div>
+            {/* Category */}
+            <div>
+              <span className="inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-sm px-3 py-1 rounded-full font-medium">
+                {product.category}
+              </span>
+            </div>
+
+            {/* Location */}
+            <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+              <MapPin className="w-4 h-4" />
+              <span>{product.location || 'Location not specified'}</span>
+            </div>
+
+            {/* Created Date */}
+            <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 text-sm">
+              <Clock className="w-4 h-4" />
+              <span>Listed on {new Date(product.created_at).toLocaleDateString()}</span>
             </div>
           </div>
         </div>
