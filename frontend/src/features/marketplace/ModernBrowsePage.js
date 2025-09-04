@@ -18,7 +18,8 @@ import {
   Send,
   User,
   Database,
-  RefreshCw
+  RefreshCw,
+  MessageCircle
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 // Removed unused import
