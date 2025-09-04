@@ -413,33 +413,10 @@ function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Rating and Reviews */}
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-5 h-5 ${
-                        i < Math.floor(product.rating || 0)
-                          ? 'text-yellow-400 fill-current'
-                          : 'text-gray-300 dark:text-gray-600'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="font-medium text-gray-900 dark:text-white">
-                  {product.rating || 4.5}
-                </span>
-                <span className="text-gray-600 dark:text-gray-400">
-                  ({product.reviewCount || product.reviews || 0} reviews)
-                </span>
-              </div>
-              
-              <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400">
-                <Eye className="w-4 h-4" />
-                <span>{product.views || 0} views</span>
-              </div>
+            {/* Views Counter - Remove Rating Section */}
+            <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 mb-4">
+              <Eye className="w-4 h-4" />
+              <span>{product.views || 0} views</span>
             </div>
           </div>
 
