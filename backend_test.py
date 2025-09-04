@@ -198,6 +198,76 @@ class PriceRangeConfigTester:
             )
             return False
     
+    def test_default_values_reset(self):
+        """Test 6: Reset to Default Values"""
+        try:
+            # Reset to default values
+            default_settings = {
+                "pt_price": 25.0,
+                "pd_price": 18.0,
+                "rh_price": 45.0,
+                "renumeration_pt": 0.95,
+                "renumeration_pd": 0.92,
+                "renumeration_rh": 0.88,
+                "price_range_min_percent": 10.0,  # Default -10%
+                "price_range_max_percent": 10.0   # Default +10%
+            }
+            
+            response = self.session.put(
+                f"{self.backend_url}/admin/catalyst/price-settings",
+                json=default_settings,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code not in [200, 201]:
+                self.log_test(
+                    "Default Values Reset",
+                    False,
+                    f"HTTP {response.status_code}: {response.text}",
+                    "200/201 OK",
+                    f"{response.status_code}"
+                )
+                return False
+                
+            # Verify reset worked
+            verify_response = self.session.get(f"{self.backend_url}/marketplace/price-range-settings")
+            if verify_response.status_code == 200:
+                verify_data = verify_response.json()
+                actual_min = verify_data.get("price_range_min_percent")
+                actual_max = verify_data.get("price_range_max_percent")
+                
+                if actual_min == 10.0 and actual_max == 10.0:
+                    self.log_test(
+                        "Default Values Reset",
+                        True,
+                        f"Successfully reset to default values: min={actual_min}%, max={actual_max}%"
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Default Values Reset",
+                        False,
+                        f"Reset values incorrect: min={actual_min}%, max={actual_max}%",
+                        "min=10.0%, max=10.0%",
+                        f"min={actual_min}%, max={actual_max}%"
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "Default Values Reset",
+                    False,
+                    f"Failed to verify reset: HTTP {verify_response.status_code}"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "Default Values Reset",
+                False,
+                f"Exception: {str(e)}"
+            )
+            return False
+    
     def test_persistence_verification(self, expected_settings):
         """Test 4: Persistence Verification"""
         try:
