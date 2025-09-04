@@ -380,6 +380,109 @@ function ProductDetailPage() {
         </div>
       </div>
 
+      {/* Two-Column Layout: Pictures Left, Info Right */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          {/* Left Column: Pictures */}
+          <div className="space-y-4">
+            {/* Main Image */}
+            <div className="relative group">
+              <img
+                src={images[selectedImageIndex]}
+                alt={product.title}
+                className="w-full h-96 object-cover rounded-xl"
+              />
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setSelectedImageIndex(prev => 
+                      prev === 0 ? images.length - 1 : prev - 1
+                    )}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setSelectedImageIndex(prev => 
+                      prev === images.length - 1 ? 0 : prev + 1
+                    )}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
+            </div>
+            
+            {/* Thumbnail Images */}
+            {images.length > 1 && (
+              <div className="flex space-x-2 overflow-x-auto">
+                {images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImageIndex(index)}
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
+                      selectedImageIndex === index
+                        ? 'border-blue-500'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.title} - ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Product Info */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                Product Details
+              </h2>
+              
+              {/* Views Counter */}
+              <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 mb-4">
+                <Eye className="w-4 h-4" />
+                <span>{product.views || 0} views</span>
+              </div>
+
+              {/* Description */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Description</h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {product.description}
+                </p>
+              </div>
+
+              {/* Category */}
+              <div className="mb-4">
+                <span className="inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-sm px-3 py-1 rounded-full font-medium">
+                  {product.category}
+                </span>
+              </div>
+
+              {/* Location */}
+              <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 mb-4">
+                <MapPin className="w-4 h-4" />
+                <span>{product.location || 'Location not specified'}</span>
+              </div>
+
+              {/* Created Date */}
+              <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 text-sm">
+                <Clock className="w-4 h-4" />
+                <span>Listed on {new Date(product.created_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Bidding Section */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <div className="space-y-6">
