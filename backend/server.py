@@ -1199,6 +1199,21 @@ async def create_listing(listing_data: dict):
         listing_data["views"] = 0
         listing_data["favorites_count"] = 0
         
+        # Handle time limit functionality
+        if listing_data.get("has_time_limit", False):
+            time_limit_hours = listing_data.get("time_limit_hours", 24)
+            # Calculate expiration time
+            expires_at = datetime.utcnow() + timedelta(hours=time_limit_hours)
+            listing_data["expires_at"] = expires_at.isoformat()
+            listing_data["is_expired"] = False
+            listing_data["winning_bidder_id"] = None
+        else:
+            listing_data["has_time_limit"] = False
+            listing_data["time_limit_hours"] = None
+            listing_data["expires_at"] = None
+            listing_data["is_expired"] = False
+            listing_data["winning_bidder_id"] = None
+        
         # Validate required fields
         required_fields = ['title', 'description', 'price', 'category', 'condition', 'seller_id']
         for field in required_fields:
@@ -1211,7 +1226,9 @@ async def create_listing(listing_data: dict):
         return {
             "message": "Listing created successfully",
             "listing_id": listing_data["id"],
-            "status": "active"
+            "status": "active",
+            "has_time_limit": listing_data.get("has_time_limit", False),
+            "expires_at": listing_data.get("expires_at")
         }
         
     except HTTPException:
