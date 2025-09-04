@@ -130,7 +130,9 @@
 ✅ **Fixed Position:** Timer badge always appears in top-right corner for consistency
 
 ### Final Outcome:
-✅ **TIME LIMIT FEATURE FULLY OPERATIONAL** - Sellers can now set optional time limits on their listings (24h, 48h, 1 week, 1 month). Real-time countdown timers appear as badges in the top-right corner of listing images with color coding. When time expires, the highest bidder automatically wins and bidding is disabled. Sellers can extend time limits, and the system handles all expiration logic automatically with proper notifications.
+✅ **TIME LIMIT FEATURE FULLY OPERATIONAL** - Sellers can now set optional time limits on their listings (24h, 48h, 1 week, 1 month). Real-time countdown timers appear as **separate badges below the market range** with color coding (green→yellow→orange→red). When time expires, the highest bidder automatically wins and bidding is disabled. Sellers can extend time limits, and the system handles all expiration logic automatically with proper notifications.
+
+**LATEST UPDATE:** Countdown timer position changed from image overlay to separate badge similar to market range badge but with different colors (green/yellow/orange/red vs blue/indigo for market range). All backend functionality remains fully operational after this UI change.
 
 ---
 
