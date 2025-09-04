@@ -5236,10 +5236,21 @@ function CatDatabaseTab({ showToast }) {
             <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={handleUpdatePriceSettings}
-                className="cataloro-button-primary"
+                className={`cataloro-button-primary transition-all duration-300 ${
+                  priceRangeUpdated ? 'bg-green-600 hover:bg-green-700 border-green-600' : ''
+                }`}
               >
-                <Save className="w-5 h-5 mr-2" />
-                Update Price Settings
+                {priceRangeUpdated ? (
+                  <>
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    Settings Updated Successfully!
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-5 h-5 mr-2" />
+                    Update Price Settings
+                  </>
+                )}
               </button>
             </div>
           </div>
