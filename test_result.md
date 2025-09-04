@@ -157,6 +157,35 @@ The backend time limit functionality is working perfectly. The issue appears to 
 
 **TIME LIMIT COUNTER VISIBILITY DEBUG STATUS:** ✅ BACKEND PERFECT, ⚠️ FRONTEND INVESTIGATION NEEDED - The backend provides all necessary time limit data with perfect accuracy. The issue is likely in the frontend display logic, CSS styling, or component rendering. All 15+ time-limited listings have proper countdown data, but the timers may not be visible to users due to frontend display issues.
 
+**Test Date:** 2025-09-04 12:21:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ✅ SHORT-TERM DEBUG LISTING CREATED - READY FOR FRONTEND DEBUGGING
+
+#### Short-Term Test Listing Creation Results:
+**IMMEDIATE DEBUG OBJECTIVES COMPLETED:** ✅ ALL REQUIREMENTS MET - Created short-term test listing with 1-hour time limit for easy visibility testing as requested in review. Backend functionality confirmed working perfectly.
+
+**1. Short-Term Test Listing Created** ✅ FULLY SUCCESSFUL - Created listing with 1-hour time limit for debugging: Test listing ID: 900f98aa-ab70-4eba-bbdf-672031c4b0bf ✅, Title: "TIME LIMIT TEST - SHOULD BE VISIBLE" ✅, Time limit: 1 hour (should show orange/red colors) ✅, Price: €99.99 with sample description ✅, Expires at: 2025-09-04T13:21:29.627087 ✅.
+
+**2. Creation Verification** ✅ CONFIRMED PROPERTIES - Listing created with proper time limit properties: has_time_limit=true ✅, time_limit_hours=1 ✅, expires_at set correctly ✅, is_expired=false ✅, status=active ✅, All required fields populated accurately ✅.
+
+**3. Browse Results Verification** ✅ COMPLETE TIME_INFO STRUCTURE - Listing appears in browse with proper time_info: Found in GET /api/marketplace/browse results ✅, Complete time_info structure present (has_time_limit, is_expired, time_remaining_seconds, expires_at, status_text) ✅, Time remaining: 59.8 minutes (should show ORANGE/RED color) ✅, Status text: "59m 48s" ✅, Real-time countdown calculations working properly ✅.
+
+**TECHNICAL VERIFICATION:**
+- Test Listing ID: 900f98aa-ab70-4eba-bbdf-672031c4b0bf
+- Browse endpoint: https://cataloro-admin-4.preview.emergentagent.com/api/marketplace/browse
+- Listing endpoint: https://cataloro-admin-4.preview.emergentagent.com/api/listings/900f98aa-ab70-4eba-bbdf-672031c4b0bf
+- Time remaining: < 1 hour (should trigger orange/red color coding)
+- Backend provides complete time_info structure for frontend consumption
+
+**FRONTEND DEBUGGING INFORMATION:**
+- The test listing is now live and visible in the browse endpoint
+- It has less than 1 hour remaining, so should display orange/red countdown timer
+- All required time_info data is provided by the backend API
+- If countdown timer is not visible, the issue is in frontend display logic
+- Check CountdownTimer component rendering and CSS styling
+
+**SHORT-TERM DEBUG LISTING STATUS:** ✅ READY FOR FRONTEND DEBUGGING - Created highly visible test case with 1-hour time limit that should show orange/red colors. Backend provides all necessary data with perfect accuracy. The test listing is now available for frontend debugging to identify why countdown timers are not showing up in the UI.
+
 ### User Requirements Met:
 ✅ **Duration Options:** 24 hours, 48 hours, 1 week, 1 month (as requested)
 ✅ **Optional Feature:** Time limits are optional when creating listings
