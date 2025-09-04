@@ -804,7 +804,7 @@ function ModernBrowsePage() {
   );
 }
 
-// Countdown Timer Component
+// Countdown Timer Component - Returns formatted time text
 function CountdownTimer({ timeInfo }) {
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [isExpired, setIsExpired] = useState(false);
@@ -850,28 +850,10 @@ function CountdownTimer({ timeInfo }) {
     }
   };
   
-  const getColorClass = () => {
-    if (isExpired) return 'bg-red-600 text-white border-red-600';
-    if (timeRemaining <= 3600) return 'bg-red-500 text-white border-red-500'; // < 1 hour
-    if (timeRemaining <= 21600) return 'bg-orange-500 text-white border-orange-500'; // < 6 hours
-    if (timeRemaining <= 86400) return 'bg-yellow-500 text-black border-yellow-500'; // < 1 day
-    return 'bg-green-500 text-white border-green-500';
-  };
-  
   if (!timeInfo?.has_time_limit) return null;
   
   return (
-    <div className="absolute top-2 right-2 z-10">
-      <div className={`px-2 py-1 rounded-lg border-2 text-xs font-bold flex items-center space-x-1 shadow-lg ${getColorClass()}`}>
-        <Clock className="w-3 h-3" />
-        <span>{isExpired ? 'EXPIRED' : formatTime(timeRemaining)}</span>
-      </div>
-      {isExpired && (
-        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold whitespace-nowrap">
-          NO BIDS ALLOWED
-        </div>
-      )}
-    </div>
+    <span>{isExpired ? 'EXPIRED' : formatTime(timeRemaining)}</span>
   );
 }
 
