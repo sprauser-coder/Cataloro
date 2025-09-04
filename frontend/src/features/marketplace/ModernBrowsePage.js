@@ -1094,6 +1094,72 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
               ) : null}
             </div>
           )}
+
+          {/* Time Limit Countdown Badge */}
+          {item.time_info?.has_time_limit && (
+            <div className="mb-3">
+              <div className={`relative overflow-hidden rounded-xl border-2 ${
+                item.time_info.is_expired 
+                  ? 'border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/30'
+                  : item.time_info.time_remaining_seconds <= 3600
+                    ? 'border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/30'
+                    : item.time_info.time_remaining_seconds <= 21600
+                      ? 'border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/30'
+                      : item.time_info.time_remaining_seconds <= 86400
+                        ? 'border-yellow-200 dark:border-yellow-800 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/30'
+                        : 'border-green-200 dark:border-green-800 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/30'
+              }`}>
+                <div className={`absolute top-0 right-0 w-12 h-12 rounded-bl-full ${
+                  item.time_info.is_expired || item.time_info.time_remaining_seconds <= 3600
+                    ? 'bg-gradient-to-bl from-red-200/20 to-transparent dark:from-red-600/10'
+                    : item.time_info.time_remaining_seconds <= 21600
+                      ? 'bg-gradient-to-bl from-orange-200/20 to-transparent dark:from-orange-600/10'
+                      : item.time_info.time_remaining_seconds <= 86400
+                        ? 'bg-gradient-to-bl from-yellow-200/20 to-transparent dark:from-yellow-600/10'
+                        : 'bg-gradient-to-bl from-green-200/20 to-transparent dark:from-green-600/10'
+                }`}></div>
+                <div className="relative p-3">
+                  <div className="flex items-center space-x-2">
+                    <div className={`p-1.5 rounded-lg shadow-sm ${
+                      item.time_info.is_expired || item.time_info.time_remaining_seconds <= 3600
+                        ? 'bg-gradient-to-r from-red-500 to-red-600'
+                        : item.time_info.time_remaining_seconds <= 21600
+                          ? 'bg-gradient-to-r from-orange-500 to-orange-600'
+                          : item.time_info.time_remaining_seconds <= 86400
+                            ? 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+                            : 'bg-gradient-to-r from-green-500 to-green-600'
+                    }`}>
+                      <Clock className="w-3 h-3 text-white" />
+                    </div>
+                    <div>
+                      <div className={`text-xs font-medium uppercase tracking-wide ${
+                        item.time_info.is_expired || item.time_info.time_remaining_seconds <= 3600
+                          ? 'text-red-700 dark:text-red-300'
+                          : item.time_info.time_remaining_seconds <= 21600
+                            ? 'text-orange-700 dark:text-orange-300'
+                            : item.time_info.time_remaining_seconds <= 86400
+                              ? 'text-yellow-700 dark:text-yellow-300'
+                              : 'text-green-700 dark:text-green-300'
+                      }`}>
+                        {item.time_info.is_expired ? 'Expired' : 'Time Left'}
+                      </div>
+                      <div className={`text-sm font-bold leading-tight ${
+                        item.time_info.is_expired || item.time_info.time_remaining_seconds <= 3600
+                          ? 'text-red-900 dark:text-red-100'
+                          : item.time_info.time_remaining_seconds <= 21600
+                            ? 'text-orange-900 dark:text-orange-100'
+                            : item.time_info.time_remaining_seconds <= 86400
+                              ? 'text-yellow-900 dark:text-yellow-100'
+                              : 'text-green-900 dark:text-green-100'
+                      }`}>
+                        <CountdownTimer timeInfo={item.time_info} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Seller Info - Use username, remove rating */}
