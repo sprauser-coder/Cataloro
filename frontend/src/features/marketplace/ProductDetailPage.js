@@ -12,25 +12,14 @@ import {
   Heart,
   Share2,
   DollarSign,
-  Star,
   MapPin,
-  Truck,
-  Shield,
   Clock,
   Eye,
-  MessageCircle,
-  Plus,
-  Minus,
   ArrowLeft,
-  Check,
-  AlertCircle,
   ChevronLeft,
   ChevronRight,
   Verified,
-  Award,
-  TrendingUp,
-  Database,
-  Info
+  Database
 } from 'lucide-react';
 
 // Countdown Timer Component - Returns formatted time text
@@ -182,7 +171,7 @@ function ProductDetailPage() {
     }
 
     const offerAmount = parseFloat(tenderAmount);
-    const minimumBid = product.highest_bid || product.price || 0;
+    const minimumBid = product.bid_info?.highest_bid || product.price || 0;
 
     if (!offerAmount || offerAmount < minimumBid) {
       showToast(`Please enter an amount of at least €${minimumBid.toFixed(2)}`, 'error');
@@ -293,143 +282,115 @@ function ProductDetailPage() {
           {product.category}
         </button>
         <span>›</span>
-        <span className="text-gray-900 dark:text-white font-medium">{product.title}</span>
+        <span className="text-gray-900 dark:text-white">{product.title}</span>
       </div>
 
-      {/* Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-      >
-        <ArrowLeft className="w-5 h-5" />
-        <span>Back</span>
-      </button>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        
-        {/* Product Images */}
-        <div className="space-y-4">
-          {/* Main Image */}
-          <div className="relative bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden aspect-square">
-            <img
-              src={images[selectedImageIndex]}
-              alt={product.title}
-              className="w-full h-full object-cover"
-            />
-            
-            {/* Navigation Arrows */}
-            {images.length > 1 && (
-              <>
-                <button
-                  onClick={() => setSelectedImageIndex(prev => (prev - 1 + images.length) % images.length)}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition-colors"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => setSelectedImageIndex(prev => (prev + 1) % images.length)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition-colors"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </>
-            )}
-
-            {/* Image Counter */}
-            {images.length > 1 && (
-              <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                {selectedImageIndex + 1} / {images.length}
-              </div>
-            )}
-          </div>
-
-          {/* Thumbnail Images */}
-          {images.length > 1 && (
-            <div className="flex space-x-2 overflow-x-auto pb-2">
-              {images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImageIndex(index)}
-                  className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                    selectedImageIndex === index
-                      ? 'border-blue-600'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                  }`}
-                >
-                  <img
-                    src={image}
-                    alt={`${product.title} ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Product Information */}
-        <div className="space-y-6">
+      {/* Main Product Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
           
-          {/* Title and Basic Info */}
-          <div>
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                  {product.title}
-                </h1>
-                
-                {/* Seller Info */}
-                <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                  <span>Sold by</span>
-                  <div className="flex items-center space-x-1">
-                    <span className="font-medium text-gray-900 dark:text-white">
-                      {product.seller?.name || product.seller || 'Verified Seller'}
-                    </span>
-                    {product.seller?.verified && (
-                      <Verified className="w-4 h-4 text-blue-600" />
+          {/* Product Images */}
+          <div className="space-y-4">
+            {/* Main Image */}
+            <div className="relative group">
+              <img
+                src={images[selectedImageIndex]}
+                alt={product.title}
+                className="w-full h-96 object-cover rounded-xl shadow-lg"
+              />
+              
+              {/* Navigation Arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setSelectedImageIndex(prev => 
+                      prev === 0 ? images.length - 1 : prev - 1
                     )}
-                  </div>
-                  {product.seller?.location && (
-                    <>
-                      <span>•</span>
-                      <div className="flex items-center space-x-1">
-                        <MapPin className="w-4 h-4" />
-                        <span>{product.seller.location}</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={handleAddToFavorites}
-                  className={`p-3 rounded-full border transition-colors ${
-                    isFavorite
-                      ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-600'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-red-500 hover:text-red-600'
-                  }`}
-                >
-                  <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
-                </button>
-                <button
-                  onClick={handleShare}
-                  className="p-3 rounded-full border border-gray-300 dark:border-gray-600 hover:border-blue-500 hover:text-blue-600 transition-colors"
-                >
-                  <Share2 className="w-5 h-5" />
-                </button>
-              </div>
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setSelectedImageIndex(prev => 
+                      prev === images.length - 1 ? 0 : prev + 1
+                    )}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
             </div>
-
-            {/* Views Counter - Remove Rating Section */}
-            <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 mb-4">
-              <Eye className="w-4 h-4" />
-              <span>{product.views || 0} views</span>
-            </div>
+            
+            {/* Thumbnail Images */}
+            {images.length > 1 && (
+              <div className="flex space-x-2 overflow-x-auto">
+                {images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImageIndex(index)}
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
+                      selectedImageIndex === index
+                        ? 'border-blue-500'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.title} - ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Price Section */}
+          {/* Product Info */}
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                {product.title}
+              </h1>
+
+              {/* Views Counter - Rating Removed */}
+              <div className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 mb-4">
+                <Eye className="w-4 h-4" />
+                <span>{product.views || 0} views</span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={handleAddToFavorites}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors ${
+                  isFavorite
+                    ? 'bg-red-50 border-red-200 text-red-600 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'
+                    : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                }`}
+              >
+                <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+                <span>{isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}</span>
+              </button>
+              
+              <button
+                onClick={handleShare}
+                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <Share2 className="w-5 h-5" />
+                <span>Share</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Price and Bidding Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          {/* Price Section - Updated to show initial price */}
           <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
             <div className="flex items-center space-x-4 mb-4">
               <div className="text-4xl font-bold text-gray-900 dark:text-white">
@@ -441,67 +402,10 @@ function ProductDetailPage() {
                 </div>
               )}
             </div>
-
-            {/* Market Price Suggestion for Catalyst Items */}
-            {product.category === 'Catalysts' && (
-              <div className="mb-4">
-                {loadingSuggestion ? (
-                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                    <div className="w-4 h-4 border border-gray-400 border-t-transparent rounded-full animate-spin mr-3"></div>
-                    Loading market range...
-                  </div>
-                ) : priceSuggestion ? (
-                  <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100 dark:border-blue-800/50">
-                    <div className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-800/50">
-                          <Database className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wide">
-                            Market Range
-                          </div>
-                          <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                            €{(priceSuggestion * 0.9).toFixed(2)} - €{(priceSuggestion * 1.1).toFixed(2)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="absolute top-0 right-0 w-24 h-full bg-gradient-to-l from-blue-200/20 to-transparent dark:from-blue-700/20"></div>
-                  </div>
-                ) : null}
-              </div>
-            )}
           </div>
-
-          {/* Tender Submission Section */}
-          <div className="space-y-4">
-            {/* Tender Confirmation Message */}
-            {tenderConfirmation?.visible && (
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border-2 border-green-300 dark:border-green-700 animate-pulse">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-green-800 dark:text-green-300 font-bold text-lg">
-                      🎉 Tender Offer Submitted Successfully!
-                    </h4>
-                    <p className="text-green-700 dark:text-green-400 text-sm mt-1">
-                      Your competitive offer of <strong>€{tenderConfirmation.amount.toFixed(2)}</strong> has been submitted to the seller.
-                    </p>
-                    <p className="text-green-600 dark:text-green-500 text-xs mt-2">
-                      📧 You will receive a notification when the seller responds to your offer.
-                    </p>
-                    <p className="text-green-600 dark:text-green-500 text-xs">
-                      📱 Track all your tenders in "My Tenders" section.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+          
+          {/* Bidding Section */}
+          <div className="space-y-6">
             
             {/* Time Limit Countdown Badge */}
             {product.time_info?.has_time_limit && (
@@ -657,10 +561,32 @@ function ProductDetailPage() {
                 }
               </p>
             </div>
+
+            {/* Tender Confirmation Message */}
+            {tenderConfirmation?.visible && (
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800 animate-pulse">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-green-800 dark:text-green-300 font-semibold">
+                      ✅ Tender Submitted Successfully!
+                    </p>
+                    <p className="text-green-700 dark:text-green-400 text-sm">
+                      Your offer of €{tenderConfirmation.amount.toFixed(2)} has been submitted to the seller
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Product Details Tabs - Remove Features and Reviews */}
+      {/* Product Details Tabs - Only Description and Seller Info */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         
         {/* Tab Navigation */}
@@ -707,20 +633,11 @@ function ProductDetailPage() {
                     )}
                   </h3>
                   <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
-                    <div className="flex items-center space-x-1">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span>{product.seller?.rating || 4.8} rating</span>
-                    </div>
-                    <span>•</span>
-                    <span>{product.seller?.reviews || 156} reviews</span>
                     {product.seller?.location && (
-                      <>
-                        <span>•</span>
-                        <div className="flex items-center space-x-1">
-                          <MapPin className="w-4 h-4" />
-                          <span>{product.seller.location}</span>
-                        </div>
-                      </>
+                      <div className="flex items-center space-x-1">
+                        <MapPin className="w-4 h-4" />
+                        <span>{product.seller.location}</span>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -733,40 +650,23 @@ function ProductDetailPage() {
       {/* Related Products */}
       {relatedProducts.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            More from {product.category}
-          </h2>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Related Products</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedProducts.map((relatedProduct) => (
-              <div
-                key={relatedProduct.id}
-                onClick={() => navigate(`/product/${relatedProduct.id}`)}
-                className="group cursor-pointer bg-gray-50 dark:bg-gray-700 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200"
-              >
-                <div className="aspect-square overflow-hidden">
+              <div key={relatedProduct.id} className="group cursor-pointer" onClick={() => navigate(`/product/${relatedProduct.id}`)}>
+                <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden mb-3">
                   <img
                     src={relatedProduct.images?.[0] || relatedProduct.image || 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300'}
                     alt={relatedProduct.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                   />
                 </div>
-                <div className="p-4">
-                  <h3 className="font-medium text-gray-900 dark:text-white mb-2 line-clamp-2">
-                    {relatedProduct.title}
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-blue-600">
-                      €{relatedProduct.price.toLocaleString()}
-                    </span>
-                    <div className="flex items-center space-x-1">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {relatedProduct.rating || 4.5}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors line-clamp-2">
+                  {relatedProduct.title}
+                </h3>
+                <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">
+                  €{relatedProduct.price.toFixed(2)}
+                </p>
               </div>
             ))}
           </div>
