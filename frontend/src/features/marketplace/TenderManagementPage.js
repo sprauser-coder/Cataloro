@@ -555,8 +555,7 @@ function ListingsManagementTab({
   handleCreateListing,
   handleDeleteListing
 }) {
-  // Import icons for this component
-  const { Plus } = require('lucide-react');
+
   if (listingsLoading) {
     return (
       <div className="flex items-center justify-center py-12">
