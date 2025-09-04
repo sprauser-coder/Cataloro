@@ -1020,7 +1020,7 @@ function CreateListingPage() {
                          formData.time_limit_hours === 168 ? '1 week' : '1 month'}
                       </span> after publication.
                       <br />
-                      The countdown timer will appear as a <span className="font-medium">badge in the top-right corner</span> of your listing image.
+                      The countdown timer will appear as a <span className="font-medium">separate badge below the market range</span> of your listing image.
                     </div>
                   </div>
 
