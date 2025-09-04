@@ -596,7 +596,9 @@ function ProductDetailPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {product.time_info?.is_expired 
                   ? "🚫 This listing has expired. The highest bidder has automatically won." 
-                  : `Enter your competitive offer. Minimum bid: €${(product.bid_info?.highest_bid || product.price || 0).toFixed(2)}`
+                  : product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids
+                    ? "🎉 You are currently the highest bidder! Bidding is disabled until someone places a higher offer."
+                    : `Enter your competitive offer. Minimum bid: €${(product.bid_info?.highest_bid || product.price || 0).toFixed(2)}`
                 }
               </p>
             </div>
