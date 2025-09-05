@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Heart, Trash2, ExternalLink, MessageCircle, Star, MapPin, Clock } from 'lucide-react';
+import { Heart, Trash2, ExternalLink, MessageCircle, Star, MapPin, Clock, Eye } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import { useAuth } from '../../context/AuthContext';
