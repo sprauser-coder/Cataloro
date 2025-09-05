@@ -59,9 +59,7 @@ function CategoriesPage() {
     showNotification(`Browsing ${categoryName} category`, 'info');
   };
 
-  const handleAddToCart = (product) => {
-    addToCart(product);
-  };
+
 
   const categories = [
     {
