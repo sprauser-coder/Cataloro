@@ -11,11 +11,16 @@ import { APP_ROUTES, UI_CONFIG } from '../../config/directions';
 
 function RegisterPage() {
   const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
     username: '',
     email: '',
-    full_name: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    is_business: false,
+    company_name: '',
+    country: '',
+    vat_number: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
