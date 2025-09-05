@@ -6248,6 +6248,53 @@ function UserEditModal({ user, onClose, onSave }) {
   const [usernameAvailable, setUsernameAvailable] = useState(null);
   const [checkingUsername, setCheckingUsername] = useState(false);
 
+  const checkUsernameAvailability = async (username) => {
+    if (user && user.username === username) {
+      // Don't check availability for current user's existing username
+      setUsernameAvailable(true);
+      return;
+    }
+    
+    setCheckingUsername(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/check-username/${username}`);
+      if (response.ok) {
+        const data = await response.json();
+        setUsernameAvailable(data.available);
+      } else {
+        setUsernameAvailable(null);
+      }
+    } catch (error) {
+      console.error('Error checking username:', error);
+      setUsernameAvailable(null);
+    } finally {
+      setCheckingUsername(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value
+    });
+    
+    // Clear error for this field
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
+    }
+    
+    // Check username availability when username changes
+    if (name === 'username' && value.length >= 3) {
+      checkUsernameAvailability(value);
+    } else if (name === 'username') {
+      setUsernameAvailable(null);
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
