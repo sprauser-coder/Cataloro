@@ -32,6 +32,90 @@ export const applySiteConfiguration = (config) => {
       }
       ` : ''}
       
+      /* Hero Section Control */
+      ${!config.heroSectionEnabled ? `
+      .hero-section {
+        display: none !important;
+      }
+      ` : ''}
+      
+      /* Featured Products Control */
+      ${!config.featuredProductsEnabled ? `
+      .featured-products-section {
+        display: none !important;
+      }
+      ` : ''}
+      
+      /* Categories Showcase Control */
+      ${!config.categoriesShowcase ? `
+      .categories-showcase {
+        display: none !important;
+      }
+      ` : ''}
+      
+      /* Newsletter Signup Control */
+      ${!config.newsletterSignup ? `
+      .newsletter-section {
+        display: none !important;
+      }
+      ` : ''}
+      
+      /* Wishlist/Favorites Control */
+      ${!config.wishlistEnabled ? `
+      .wishlist-button,
+      .favorites-button,
+      .add-to-favorites {
+        display: none !important;
+      }
+      ` : ''}
+      
+      /* Product Reviews Control */
+      ${!config.productReviews ? `
+      .reviews-section,
+      .product-reviews,
+      .review-button {
+        display: none !important;
+      }
+      ` : ''}
+      
+      /* Compare Feature Control */
+      ${!config.compareFeature ? `
+      .compare-button,
+      .product-compare {
+        display: none !important;
+      }
+      ` : ''}
+      
+      /* Advanced Filters Control */
+      ${!config.advancedFilters ? `
+      .advanced-filters,
+      .filter-panel {
+        display: none !important;
+      }
+      ` : ''}
+      
+      /* Search Bar Prominence */
+      ${config.searchBarProminent ? `
+      .search-bar-container {
+        transform: scale(1.1);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        border: 2px solid var(--primary-color);
+      }
+      ` : ''}
+      
+      /* Compact Mode */
+      ${config.compactMode ? `
+      .product-card {
+        padding: 0.5rem !important;
+      }
+      .hero-section {
+        min-height: 200px !important;
+      }
+      .page-padding {
+        padding: 1rem !important;
+      }
+      ` : ''}
+      
       /* Custom CSS */
       ${config.customCSS || ''}
     `;
@@ -73,7 +157,31 @@ export const applySiteConfiguration = (config) => {
       localStorage.removeItem('cataloro_footer_config');
     }
     
-    console.log('✅ Site configuration applied successfully');
+    // Store feature flags for application logic
+    const featureFlags = {
+      heroSectionEnabled: config.heroSectionEnabled !== false,
+      featuredProductsEnabled: config.featuredProductsEnabled !== false,
+      categoriesShowcase: config.categoriesShowcase !== false,
+      testimonialSection: config.testimonialSection !== false,
+      newsletterSignup: config.newsletterSignup !== false,
+      searchBarProminent: config.searchBarProminent || false,
+      userRegistration: config.userRegistration !== false,
+      guestBrowsing: config.guestBrowsing !== false,
+      productReviews: config.productReviews !== false,
+      wishlistEnabled: config.wishlistEnabled !== false,
+      compareFeature: config.compareFeature || false,
+      advancedFilters: config.advancedFilters !== false,
+      bulkOperations: config.bulkOperations || false,
+      productVariations: config.productVariations || false,
+      inventoryTracking: config.inventoryTracking || false,
+      compactMode: config.compactMode || false,
+      animationsEnabled: config.animationsEnabled !== false
+    };
+    
+    localStorage.setItem('cataloro_feature_flags', JSON.stringify(featureFlags));
+    window.dispatchEvent(new CustomEvent('featureFlagsUpdated', { detail: featureFlags }));
+    
+    console.log('✅ Site configuration applied successfully', featureFlags);
     return true;
   } catch (error) {
     console.error('❌ Error applying site configuration:', error);
