@@ -398,9 +398,61 @@ function ProductDetailPage() {
             </div>
 
             {/* Created Date */}
-            <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 text-sm">
+            <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 text-sm mb-6">
               <Clock className="w-4 h-4" />
               <span>Listed on {new Date(product.created_at).toLocaleDateString()}</span>
+            </div>
+
+            {/* Bid Information Section */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 space-y-3">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Bidding Information</h4>
+              
+              {/* Current Highest Bid */}
+              {product.bid_info?.has_bids && (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Current Highest Bid:</span>
+                  <span className="font-bold text-green-600 dark:text-green-400">
+                    €{product.bid_info.highest_bid.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              {/* Your Tender Offer */}
+              {product.bid_info?.user_bid && (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Your Current Bid:</span>
+                  <span className="font-bold text-blue-600 dark:text-blue-400">
+                    €{product.bid_info.user_bid.toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              {/* Time Remaining */}
+              {product.time_info?.has_time_limit && (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Time Remaining:</span>
+                  <span className={`font-bold ${
+                    product.time_info.is_expired 
+                      ? 'text-red-600 dark:text-red-400' 
+                      : product.time_info.time_remaining_seconds <= 3600
+                        ? 'text-red-600 dark:text-red-400'
+                        : product.time_info.time_remaining_seconds <= 86400
+                          ? 'text-orange-600 dark:text-orange-400'
+                          : 'text-green-600 dark:text-green-400'
+                  }`}>
+                    {product.time_info.is_expired 
+                      ? 'EXPIRED' 
+                      : product.time_info.time_remaining_display || 'Active'}
+                  </span>
+                </div>
+              )}
+
+              {/* Bidding Status */}
+              {!product.bid_info?.has_bids && (
+                <div className="text-center text-gray-500 dark:text-gray-400 italic">
+                  No bids yet - be the first to bid!
+                </div>
+              )}
             </div>
           </div>
         </div>
