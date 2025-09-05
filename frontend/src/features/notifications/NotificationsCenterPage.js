@@ -32,7 +32,7 @@ import { useNotifications } from '../../context/NotificationContext';
 function NotificationsCenterPage() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // 'all', 'unread', 'read', 'system', 'archived'
+  const [filter, setFilter] = useState('all'); // 'all', 'unread', 'read', 'archived'
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedNotifications, setSelectedNotifications] = useState([]);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
