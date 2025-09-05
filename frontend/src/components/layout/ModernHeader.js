@@ -19,7 +19,6 @@ import {
   X,
   Store,
   BarChart3,
-  Package,
   DollarSign,
   Shield,
   Filter,
