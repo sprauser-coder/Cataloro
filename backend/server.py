@@ -4088,11 +4088,14 @@ async def create_system_notification(notification_data: dict):
             "title": notification_data.get("title", "System Notification"),
             "message": notification_data.get("message", ""),
             "type": notification_data.get("type", "info"),  # success, info, warning, error
+            "event_trigger": notification_data.get("event_trigger", "manual"),  # event trigger type
             "target_users": notification_data.get("target_users", "all"),  # all, new_users, specific_ids
             "user_ids": notification_data.get("user_ids", []),  # specific user IDs if target_users is specific_ids
             "show_duration": notification_data.get("show_duration", 5000),  # milliseconds
+            "delay_before_show": notification_data.get("delay_before_show", 0),  # delay in milliseconds
             "is_active": notification_data.get("is_active", True),
             "created_at": datetime.utcnow().isoformat(),
+            "created_by": notification_data.get("created_by"),  # admin user who created it
             "expires_at": notification_data.get("expires_at"),  # optional expiration
             "auto_dismiss": notification_data.get("auto_dismiss", True),
             "display_count": 0,
