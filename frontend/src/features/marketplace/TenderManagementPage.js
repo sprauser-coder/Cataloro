@@ -280,21 +280,21 @@ function TenderManagementPage() {
         </div>
         
         <div className="mt-4 lg:mt-0 flex items-center space-x-3">
-          {activeTab === 'tenders' ? (
+          {activeTab === 'sell' ? (
             <button
-              onClick={fetchTendersOverview}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-            >
-              <RefreshCw className="w-4 h-4" />
-              <span>Refresh</span>
-            </button>
-          ) : (
-            <button 
               onClick={handleCreateListing}
               className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               <span>Create New Listing</span>
+            </button>
+          ) : (
+            <button
+              onClick={fetchMyTenders}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Refresh</span>
             </button>
           )}
         </div>
