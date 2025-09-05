@@ -911,7 +911,7 @@ async def get_admin_dashboard():
                 "total_users": total_users,
                 "total_listings": total_listings,
                 "active_listings": active_listings,
-                "total_deals": total_deals + accepted_tenders,  # Include accepted tenders
+                "total_deals": total_deals,  # Actual deals count from real transactions
                 "revenue": round(total_revenue, 2),
                 "growth_rate": round(growth_rate, 1)
             },
