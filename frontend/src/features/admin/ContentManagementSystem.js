@@ -518,6 +518,7 @@ function ContentManagementSystem() {
     { id: 'hero', name: 'Hero Section', icon: Layout },
     { id: 'stats', name: 'Statistics', icon: BarChart3 },
     { id: 'about', name: 'About Section', icon: Award },
+    { id: 'about-html', name: 'About Page HTML', icon: FileText },
     { id: 'features', name: 'Features', icon: Settings },
     { id: 'testimonials', name: 'Testimonials', icon: Users },
     { id: 'cta', name: 'Call to Action', icon: Target },
