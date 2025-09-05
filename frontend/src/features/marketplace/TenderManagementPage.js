@@ -62,9 +62,9 @@ function TenderManagementPage() {
     }
   }, [user]);
 
-  // Update URL parameters when activeFilter changes (for Listings Management)
+  // Update URL parameters when activeFilter changes (for Sell Tab)
   useEffect(() => {
-    if (activeTab === 'listings') {
+    if (activeTab === 'sell') {
       const currentParams = new URLSearchParams(window.location.search);
       if (activeFilter !== 'all') {
         currentParams.set('filter', activeFilter);
