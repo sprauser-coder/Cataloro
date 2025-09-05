@@ -747,34 +747,7 @@ async def get_notifications(user_id: str):
     async for notification in notifications_cursor:
         notifications.append(serialize_doc(notification))
     
-    # Add dummy notifications if empty
-    if not notifications:
-        dummy_notifications = [
-            {
-                "id": generate_id(),
-                "user_id": user_id,
-                "title": "New message",
-                "message": "You have a new message about your MacBook listing",
-                "type": "message",
-                "is_read": False,
-                "created_at": datetime.utcnow()
-            },
-            {
-                "id": generate_id(),
-                "user_id": user_id,
-                "title": "Listing viewed",
-                "message": "Your vintage guitar listing has been viewed 5 times today",
-                "type": "info",
-                "is_read": False,
-                "created_at": datetime.utcnow()
-            }
-        ]
-        
-        for notification in dummy_notifications:
-            await db.notifications.insert_one(notification)
-        
-        # Return serialized dummy data
-        return [serialize_doc(notification) for notification in dummy_notifications]
+    # Return empty list if no notifications (no fake data fallback)
     
     return notifications
 
