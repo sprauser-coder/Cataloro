@@ -78,15 +78,7 @@ function RecommendationsPanel({ className = "", limit = 6 }) {
     }
   };
 
-  const handleAddToCart = async (product) => {
-    try {
-      await actions.addToCart(product, user?.id);
-      showToast(`Added ${product.title} to cart!`, 'success');
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      showToast('Failed to add item to cart', 'error');
-    }
-  };
+
 
   const handleAddToFavorites = async (product) => {
     try {
