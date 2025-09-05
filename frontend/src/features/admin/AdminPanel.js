@@ -14,6 +14,7 @@ import {
   Edit,
   Trash2,
   Ban,
+  Building,
   CheckCircle,
   BarChart3,
   PieChart,
