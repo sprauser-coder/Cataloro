@@ -6389,21 +6389,41 @@ function UserEditModal({ user, onClose, onSave }) {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Full Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              value={formData.full_name}
-              onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-              className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-                errors.full_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-              }`}
-              placeholder="Enter full name"
-            />
-            {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name}</p>}
+          {/* First Name and Last Name */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                First Name *
+              </label>
+              <input
+                type="text"
+                value={formData.first_name}
+                onChange={handleInputChange}
+                name="first_name"
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                  errors.first_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                }`}
+                placeholder="Enter first name"
+              />
+              {errors.first_name && <p className="text-red-500 text-xs mt-1">{errors.first_name}</p>}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Last Name *
+              </label>
+              <input
+                type="text"
+                value={formData.last_name}
+                onChange={handleInputChange}
+                name="last_name"
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                  errors.last_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                }`}
+                placeholder="Enter last name"
+              />
+              {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name}</p>}
+            </div>
           </div>
 
           {/* Username */}
