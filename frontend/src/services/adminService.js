@@ -9,7 +9,8 @@ import { API_ENDPOINTS } from '../config/directions';
 class AdminService {
   async getDashboard() {
     try {
-      const response = await axios.get(API_ENDPOINTS.ADMIN.DASHBOARD);
+      // Add cache-busting parameter to force fresh data
+      const response = await axios.get(`${API_ENDPOINTS.ADMIN.DASHBOARD}?_t=${Date.now()}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.detail || 'Failed to fetch dashboard data');
