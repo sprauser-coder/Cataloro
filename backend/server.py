@@ -783,14 +783,24 @@ async def get_notifications(user_id: str):
 async def get_admin_dashboard():
     """Get real-time admin dashboard with accurate KPIs"""
     try:
+        print("DEBUG: Starting dashboard calculation...")
+        
         # Get accurate KPIs from database
         total_users = await db.users.count_documents({})
+        print(f"DEBUG: Total users: {total_users}")
+        
         total_listings = await db.listings.count_documents({})
+        print(f"DEBUG: Total listings: {total_listings}")
+        
         active_listings = await db.listings.count_documents({"status": "active"})
+        print(f"DEBUG: Active listings: {active_listings}")
+        
         total_deals = await db.deals.count_documents({})
+        print(f"DEBUG: Total deals: {total_deals}")
         
         # Count accepted tenders as additional deals
         accepted_tenders = await db.tenders.count_documents({"status": "accepted"})
+        print(f"DEBUG: Accepted tenders: {accepted_tenders}")
         
         # Calculate revenue from completed deals and accepted tenders
         completed_deals = await db.deals.find({"status": "completed"}).to_list(length=None)
@@ -803,7 +813,10 @@ async def get_admin_dashboard():
         for tender in accepted_tender_list:
             total_revenue += tender.get("offer_amount", 0)
         
+        print(f"DEBUG: Total revenue: {total_revenue}")
+        
         # Calculate growth rate based on recent users (last 30 days)
+        print("DEBUG: Starting growth rate calculation...")
         last_month = datetime.utcnow() - timedelta(days=30)
         
         # Fix datetime comparison - handle both datetime and string formats properly
@@ -824,18 +837,21 @@ async def get_admin_dashboard():
                     if user_date >= last_month:
                         recent_users_count += 1
                 except Exception as e:
-                    # Skip users with invalid date formats
+                    print(f"DEBUG: Error processing user date {user_created_at}: {e}")
                     continue
         
         recent_users = recent_users_count
+        print(f"DEBUG: Recent users: {recent_users}")
         
         growth_rate = (recent_users / max(total_users - recent_users, 1)) * 100 if total_users > recent_users else 0
+        print(f"DEBUG: Growth rate: {growth_rate}")
         
         # Get recent activity
         recent_activity = []
         
         # Get recent users (last 3) - handle mixed datetime formats
         try:
+            print("DEBUG: Getting recent users for activity...")
             recent_users_list = await db.users.find({}).limit(10).to_list(length=10)
             # Sort in Python to handle mixed datetime formats
             sorted_users = []
@@ -848,8 +864,8 @@ async def get_admin_dashboard():
                         else:
                             sort_date = created_at
                         sorted_users.append((user, sort_date))
-                    except:
-                        # Skip users with invalid dates
+                    except Exception as e:
+                        print(f"DEBUG: Error processing user activity date {created_at}: {e}")
                         continue
             
             # Sort by date and take last 3
@@ -860,10 +876,11 @@ async def get_admin_dashboard():
                     "timestamp": user.get("created_at", datetime.utcnow().isoformat())
                 })
         except Exception as e:
-            print(f"Error getting recent users: {e}")
+            print(f"DEBUG: Error getting recent users: {e}")
         
         # Get recent listings (last 2) - handle mixed datetime formats
         try:
+            print("DEBUG: Getting recent listings for activity...")
             recent_listings_list = await db.listings.find({}).limit(10).to_list(length=10)
             # Sort in Python to handle mixed datetime formats
             sorted_listings = []
@@ -876,8 +893,8 @@ async def get_admin_dashboard():
                         else:
                             sort_date = created_at
                         sorted_listings.append((listing, sort_date))
-                    except:
-                        # Skip listings with invalid dates
+                    except Exception as e:
+                        print(f"DEBUG: Error processing listing activity date {created_at}: {e}")
                         continue
             
             # Sort by date and take last 2
@@ -888,11 +905,30 @@ async def get_admin_dashboard():
                     "timestamp": listing.get("created_at", datetime.utcnow().isoformat())
                 })
         except Exception as e:
-            print(f"Error getting recent listings: {e}")
+            print(f"DEBUG: Error getting recent listings: {e}")
         
-        # Sort by timestamp
-        recent_activity.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
-        recent_activity = recent_activity[:5]  # Keep only last 5 activities
+        # Sort by timestamp - this might be causing the issue!
+        print("DEBUG: Sorting recent activity...")
+        try:
+            # Sort activity by timestamp safely
+            def safe_timestamp_sort(activity_item):
+                timestamp = activity_item.get("timestamp", "")
+                if isinstance(timestamp, str):
+                    try:
+                        return datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+                    except:
+                        return datetime.min
+                elif hasattr(timestamp, 'isoformat'):
+                    return timestamp
+                else:
+                    return datetime.min
+            
+            recent_activity.sort(key=safe_timestamp_sort, reverse=True)
+            recent_activity = recent_activity[:5]  # Keep only last 5 activities
+        except Exception as e:
+            print(f"DEBUG: Error sorting activity: {e}")
+        
+        print("DEBUG: Dashboard calculation completed successfully")
         
         return {
             "kpis": {
@@ -908,6 +944,8 @@ async def get_admin_dashboard():
         
     except Exception as e:
         print(f"Error getting admin dashboard: {e}")
+        import traceback
+        traceback.print_exc()
         # Return minimal fallback data on error
         return {
             "kpis": {
