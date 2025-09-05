@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Heart, ShoppingCart, TrendingUp, User, Eye, Star } from 'lucide-react';
+import { Sparkles, Heart, TrendingUp, User, Eye, Star } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import { useNotifications } from '../../context/NotificationContext';
