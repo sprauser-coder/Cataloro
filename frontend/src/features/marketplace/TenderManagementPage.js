@@ -35,7 +35,7 @@ function TenderManagementPage() {
   const [searchParams] = useSearchParams();
 
   // Tab management
-  const [activeTab, setActiveTab] = useState('tenders');
+  const [activeTab, setActiveTab] = useState('sell');
 
   // Tender Management State
   const [tendersOverview, setTendersOverview] = useState([]);
@@ -49,6 +49,10 @@ function TenderManagementPage() {
   const [listings, setListings] = useState([]);
   const [listingsLoading, setListingsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState(urlFilter || 'all');
+
+  // Buy Tab State (My Tenders)
+  const [myTenders, setMyTenders] = useState([]);
+  const [myTendersLoading, setMyTendersLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
