@@ -616,7 +616,6 @@ function ModernBrowsePage() {
               key={item.id}
               item={item}
               viewMode={viewMode}
-              onAddToCart={handleAddToCart}
               onSubmitTender={handleSubmitTender}
               onFavoriteToggle={handleFavoriteToggle}
               onMessageSeller={handleMessageSeller}
