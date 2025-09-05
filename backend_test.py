@@ -1,52 +1,87 @@
 #!/usr/bin/env python3
 """
-SYSTEM NOTIFICATIONS CLEANUP EXECUTION AND VERIFICATION
-Backend API Testing for Cataloro Marketplace
-
-This test focuses on:
-1. Execute cleanup endpoint - call /api/admin/cleanup-system-notifications POST
-2. Verify cleanup results - check how many notifications were removed
-3. Test clean separation after cleanup - ensure regular notifications are clean
-4. Verify system notifications still work for toast display
-5. Test multiple users to ensure cleanup worked across all users
-6. Complete separation verification between system and regular notifications
+CRITICAL: Admin Dashboard Listings Count Discrepancy Bug Investigation
+Testing the discrepancy between KPI showing "4 TOTAL LISTINGS" vs Listings management showing "0 results"
 """
 
 import requests
 import json
-import time
-import uuid
-from datetime import datetime
 import sys
+from datetime import datetime
 
-# Configuration
-BASE_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
-TEST_USER_EMAIL = "system_test_user@example.com"
-TEST_USER_PASSWORD = "testpass123"
-ADMIN_EMAIL = "admin@cataloro.com"
-ADMIN_PASSWORD = "admin123"
+# Get backend URL from environment
+BACKEND_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
 
-class SystemNotificationsTest:
-    def __init__(self):
-        self.session = requests.Session()
-        self.test_user_id = None
-        self.admin_user_id = None
-        self.test_results = []
+def test_admin_dashboard_kpi():
+    """Test /api/admin/dashboard endpoint and examine how total_listings is calculated"""
+    print("=" * 80)
+    print("1. TESTING ADMIN DASHBOARD KPI CALCULATION")
+    print("=" * 80)
+    
+    try:
+        response = requests.get(f"{BACKEND_URL}/admin/dashboard")
+        print(f"Status Code: {response.status_code}")
         
-    def log_result(self, test_name, success, message, details=None):
-        """Log test result"""
-        status = "✅ PASS" if success else "❌ FAIL"
-        result = {
-            "test": test_name,
-            "status": status,
-            "message": message,
-            "details": details or {},
-            "timestamp": datetime.now().isoformat()
-        }
-        self.test_results.append(result)
-        print(f"{status}: {test_name} - {message}")
-        if details and not success:
-            print(f"   Details: {details}")
+        if response.status_code == 200:
+            data = response.json()
+            kpis = data.get('kpis', {})
+            total_listings = kpis.get('total_listings', 0)
+            
+            print(f"✅ Dashboard KPI - Total Listings: {total_listings}")
+            print(f"📊 All KPIs: {json.dumps(kpis, indent=2)}")
+            
+            return total_listings, data
+        else:
+            print(f"❌ Failed to get dashboard data: {response.text}")
+            return 0, None
+            
+    except Exception as e:
+        print(f"❌ Error testing dashboard: {e}")
+        return 0, None
+
+def test_listings_endpoint():
+    """Test /api/listings endpoint to see what listings actually exist"""
+    print("\n" + "=" * 80)
+    print("2. TESTING LISTINGS ENDPOINT - ACTUAL LISTINGS DATA")
+    print("=" * 80)
+    
+    try:
+        response = requests.get(f"{BACKEND_URL}/listings")
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            listings = data.get('listings', [])
+            total = data.get('total', 0)
+            
+            print(f"✅ Listings Endpoint - Total Count: {total}")
+            print(f"📋 Actual Listings Returned: {len(listings)}")
+            
+            # Analyze listing statuses
+            status_counts = {}
+            for listing in listings:
+                status = listing.get('status', 'unknown')
+                status_counts[status] = status_counts.get(status, 0) + 1
+            
+            print(f"📊 Listings by Status: {json.dumps(status_counts, indent=2)}")
+            
+            # Show first few listings for analysis
+            print(f"\n📝 Sample Listings (first 3):")
+            for i, listing in enumerate(listings[:3]):
+                print(f"  {i+1}. ID: {listing.get('id', 'N/A')}")
+                print(f"     Title: {listing.get('title', 'N/A')}")
+                print(f"     Status: {listing.get('status', 'N/A')}")
+                print(f"     Created: {listing.get('created_at', 'N/A')}")
+                print()
+            
+            return total, listings, status_counts
+        else:
+            print(f"❌ Failed to get listings: {response.text}")
+            return 0, [], {}
+            
+    except Exception as e:
+        print(f"❌ Error testing listings: {e}")
+        return 0, [], {}
     
     def setup_test_user(self):
         """Create or login test user"""
