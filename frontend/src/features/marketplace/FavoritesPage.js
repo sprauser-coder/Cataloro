@@ -95,7 +95,7 @@ function FavoritesPage() {
 }
 
 // Enhanced Favorite Card Component
-function FavoriteCard({ item, onRemove, onAddToCart, onNavigate }) {
+function FavoriteCard({ item, onRemove, onNavigate }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
