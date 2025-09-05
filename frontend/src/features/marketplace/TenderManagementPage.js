@@ -564,13 +564,6 @@ function SellTab({
                                   </>
                                 )}
                               </button>
-                              
-                              <button
-                                className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
-                                title="Message bidder"
-                              >
-                                <MessageCircle className="w-4 h-4" />
-                              </button>
                             </div>
                           </div>
                         ))}
