@@ -9,11 +9,11 @@ import json
 def test_frontend_delete_endpoints():
     """Test the endpoints that frontend is configured to call"""
     
-    base_url = "https://market-refactor.preview.emergentagent.com"
+    base_url = "https://cataloro-upgrade.preview.emergentagent.com"
     
     # From the frontend config, API_ENDPOINTS.MARKETPLACE.LISTINGS resolves to:
     # `${CURRENT_ENV.BACKEND_URL}/api/listings`
-    # Which should be: https://market-refactor.preview.emergentagent.com/api/listings
+    # Which should be: https://cataloro-upgrade.preview.emergentagent.com/api/listings
     
     print("🔍 Testing Frontend Delete Endpoint Configuration")
     print("=" * 60)
@@ -96,7 +96,7 @@ def test_frontend_delete_endpoints():
 def test_bulk_delete_simulation():
     """Simulate exactly what the frontend bulk delete would do"""
     
-    base_url = "https://market-refactor.preview.emergentagent.com"
+    base_url = "https://cataloro-upgrade.preview.emergentagent.com"
     
     print("\n3️⃣ Simulating Frontend Bulk Delete Process...")
     print("=" * 60)

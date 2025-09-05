@@ -10,7 +10,7 @@ import time
 
 def test_business_badge_fix():
     """Test complete business badge functionality after fix"""
-    base_url = "https://market-refactor.preview.emergentagent.com"
+    base_url = "https://cataloro-upgrade.preview.emergentagent.com"
     
     print("🎯 FINAL BUSINESS BADGE TEST")
     print("=" * 50)

@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://market-refactor.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
 
 class SystemNotificationsTester:
     def __init__(self):

@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://market-refactor.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
 
 def check_all_possible_endpoints():
     """Check all possible endpoints that might show user-related counts"""

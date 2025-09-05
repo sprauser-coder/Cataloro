@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://market-refactor.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
 
 def test_system_notifications_event_trigger():
     """Test the exact structure of system notifications and event_trigger field"""

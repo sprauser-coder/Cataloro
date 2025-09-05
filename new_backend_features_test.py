@@ -15,7 +15,7 @@ from datetime import datetime
 import time
 
 class NewBackendFeaturesTest:
-    def __init__(self, base_url="https://market-refactor.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-upgrade.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.user_token = None
