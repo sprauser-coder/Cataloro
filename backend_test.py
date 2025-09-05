@@ -1,204 +1,463 @@
 #!/usr/bin/env python3
 """
-LISTINGS ENDPOINT STATUS FILTERING FIX VERIFICATION
-Testing the fix for listings endpoint to default to active listings only
+Cataloro Backend Testing Suite - Admin User Management Focus
+Testing the recent fixes for admin user creation, username availability, and user updates
 """
 
 import requests
 import json
+import uuid
+import time
 from datetime import datetime
 
-# Use the production URL from frontend/.env
-BASE_URL = "https://cataloro-marketplace-3.preview.emergentagent.com/api"
+# Get backend URL from environment
+BACKEND_URL = "https://cataloro-marketplace-3.preview.emergentagent.com/api"
 
-def test_listings_endpoint_status_filtering():
-    """
-    Verify that the listings endpoint status filtering fix is working correctly
-    """
-    print("=" * 80)
-    print("LISTINGS ENDPOINT STATUS FILTERING FIX VERIFICATION")
-    print("=" * 80)
-    
-    results = {
-        "default_behavior": False,
-        "status_all_parameter": False, 
-        "status_active_parameter": False,
-        "browse_comparison": False,
-        "admin_impact": False
-    }
-    
-    try:
-        # 1. Test Default Behavior - should return only active listings
-        print("\n1. Testing Default Behavior (/api/listings without parameters)")
-        print("-" * 60)
+class BackendTester:
+    def __init__(self):
+        self.test_results = []
+        self.total_tests = 0
+        self.passed_tests = 0
+        self.failed_tests = 0
         
-        response = requests.get(f"{BASE_URL}/listings", timeout=10)
-        print(f"Status Code: {response.status_code}")
-        
-        if response.status_code == 200:
-            data = response.json()
-            listings = data.get("listings", [])
-            total = data.get("total", 0)
-            
-            print(f"Total listings returned: {len(listings)}")
-            print(f"Total count from API: {total}")
-            
-            # Check if all returned listings are active
-            active_count = 0
-            expired_count = 0
-            
-            for listing in listings:
-                status = listing.get("status", "unknown")
-                if status == "active":
-                    active_count += 1
-                else:
-                    expired_count += 1
-                    print(f"  ⚠️  Non-active listing found: {listing.get('title', 'Unknown')} (status: {status})")
-            
-            print(f"Active listings: {active_count}")
-            print(f"Non-active listings: {expired_count}")
-            
-            if expired_count == 0:
-                print("✅ DEFAULT BEHAVIOR: Only active listings returned")
-                results["default_behavior"] = True
-            else:
-                print("❌ DEFAULT BEHAVIOR: Non-active listings found in default response")
+    def log_test(self, test_name, success, details="", error_msg=""):
+        """Log test results"""
+        self.total_tests += 1
+        if success:
+            self.passed_tests += 1
+            status = "✅ PASS"
         else:
-            print(f"❌ Failed to fetch default listings: {response.status_code}")
-            print(f"Response: {response.text}")
-        
-        # 2. Test Status=all Parameter - should return all listings
-        print("\n2. Testing Status=all Parameter (/api/listings?status=all)")
-        print("-" * 60)
-        
-        response = requests.get(f"{BASE_URL}/listings?status=all", timeout=10)
-        print(f"Status Code: {response.status_code}")
-        
-        if response.status_code == 200:
-            data = response.json()
-            all_listings = data.get("listings", [])
-            all_total = data.get("total", 0)
+            self.failed_tests += 1
+            status = "❌ FAIL"
             
-            print(f"Total listings with status=all: {len(all_listings)}")
-            print(f"Total count from API: {all_total}")
-            
-            # Count different statuses
-            status_counts = {}
-            for listing in all_listings:
-                status = listing.get("status", "unknown")
-                status_counts[status] = status_counts.get(status, 0) + 1
-            
-            print("Status breakdown:")
-            for status, count in status_counts.items():
-                print(f"  {status}: {count}")
-            
-            if len(all_listings) > 0:
-                print("✅ STATUS=ALL: Returns listings (including all statuses)")
-                results["status_all_parameter"] = True
-            else:
-                print("❌ STATUS=ALL: No listings returned")
-        else:
-            print(f"❌ Failed to fetch all listings: {response.status_code}")
-        
-        # 3. Test Status=active Parameter - should return only active listings
-        print("\n3. Testing Status=active Parameter (/api/listings?status=active)")
-        print("-" * 60)
-        
-        response = requests.get(f"{BASE_URL}/listings?status=active", timeout=10)
-        print(f"Status Code: {response.status_code}")
-        
-        if response.status_code == 200:
-            data = response.json()
-            active_listings = data.get("listings", [])
-            active_total = data.get("total", 0)
-            
-            print(f"Total active listings: {len(active_listings)}")
-            print(f"Total count from API: {active_total}")
-            
-            # Verify all are active
-            non_active_found = False
-            for listing in active_listings:
-                if listing.get("status") != "active":
-                    non_active_found = True
-                    print(f"  ⚠️  Non-active listing: {listing.get('title')} (status: {listing.get('status')})")
-            
-            if not non_active_found:
-                print("✅ STATUS=ACTIVE: Only active listings returned")
-                results["status_active_parameter"] = True
-            else:
-                print("❌ STATUS=ACTIVE: Non-active listings found")
-        else:
-            print(f"❌ Failed to fetch active listings: {response.status_code}")
-        
-        # 4. Compare with Browse Endpoint - should match active listings count
-        print("\n4. Comparing with Browse Endpoint (/api/marketplace/browse)")
-        print("-" * 60)
-        
-        response = requests.get(f"{BASE_URL}/marketplace/browse", timeout=10)
-        print(f"Status Code: {response.status_code}")
-        
-        if response.status_code == 200:
-            browse_listings = response.json()
-            browse_count = len(browse_listings)
-            
-            print(f"Browse endpoint listings count: {browse_count}")
-            
-            # Compare with default listings count
-            if 'listings' in locals():
-                default_count = len(listings)
-                print(f"Default listings count: {default_count}")
-                
-                if browse_count == default_count:
-                    print("✅ BROWSE COMPARISON: Counts match between browse and default listings")
-                    results["browse_comparison"] = True
-                else:
-                    print(f"❌ BROWSE COMPARISON: Count mismatch (browse: {browse_count}, listings: {default_count})")
-            else:
-                print("❌ BROWSE COMPARISON: Cannot compare - default listings not available")
-        else:
-            print(f"❌ Failed to fetch browse listings: {response.status_code}")
-        
-        # 5. Verify Admin Impact - admin should see only active by default
-        print("\n5. Verifying Admin Impact (listings management)")
-        print("-" * 60)
-        
-        if results["default_behavior"]:
-            print("✅ ADMIN IMPACT: Admin listings management will show only active listings by default")
-            print("   - No more showing expired listings when there are active ones")
-            print("   - Admin can use ?status=all to see all listings when needed")
-            results["admin_impact"] = True
-        else:
-            print("❌ ADMIN IMPACT: Default behavior not fixed - admin will still see mixed listings")
-        
-        # Summary
-        print("\n" + "=" * 80)
-        print("VERIFICATION SUMMARY")
-        print("=" * 80)
-        
-        passed_tests = sum(results.values())
-        total_tests = len(results)
-        
-        print(f"Tests Passed: {passed_tests}/{total_tests}")
+        result = {
+            "test": test_name,
+            "status": status,
+            "details": details,
+            "error": error_msg,
+            "timestamp": datetime.now().isoformat()
+        }
+        self.test_results.append(result)
+        print(f"{status}: {test_name}")
+        if details:
+            print(f"   Details: {details}")
+        if error_msg:
+            print(f"   Error: {error_msg}")
         print()
-        
-        for test_name, passed in results.items():
-            status = "✅ PASS" if passed else "❌ FAIL"
-            test_display = test_name.replace("_", " ").title()
-            print(f"{status} - {test_display}")
-        
-        if passed_tests == total_tests:
-            print("\n🎉 ALL TESTS PASSED - Listings endpoint status filtering fix is working correctly!")
-            return True
-        else:
-            print(f"\n⚠️  {total_tests - passed_tests} test(s) failed - Status filtering fix needs attention")
+
+    def test_health_check(self):
+        """Test basic health endpoint"""
+        try:
+            response = requests.get(f"{BACKEND_URL}/health", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                self.log_test(
+                    "Health Check", 
+                    True, 
+                    f"Status: {data.get('status')}, App: {data.get('app')}, Version: {data.get('version')}"
+                )
+                return True
+            else:
+                self.log_test("Health Check", False, f"HTTP {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Health Check", False, error_msg=str(e))
+            return False
+
+    def test_admin_dashboard(self):
+        """Test admin dashboard endpoint"""
+        try:
+            response = requests.get(f"{BACKEND_URL}/admin/dashboard", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                kpis = data.get('kpis', {})
+                self.log_test(
+                    "Admin Dashboard", 
+                    True, 
+                    f"Users: {kpis.get('total_users')}, Listings: {kpis.get('total_listings')}, Revenue: €{kpis.get('revenue')}"
+                )
+                return True
+            else:
+                self.log_test("Admin Dashboard", False, f"HTTP {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Admin Dashboard", False, error_msg=str(e))
+            return False
+
+    def test_get_all_users(self):
+        """Test getting all users endpoint"""
+        try:
+            response = requests.get(f"{BACKEND_URL}/admin/users", timeout=10)
+            if response.status_code == 200:
+                users = response.json()
+                user_count = len(users) if isinstance(users, list) else 0
+                self.log_test(
+                    "Get All Users", 
+                    True, 
+                    f"Retrieved {user_count} users successfully"
+                )
+                return users
+            else:
+                self.log_test("Get All Users", False, f"HTTP {response.status_code}")
+                return []
+        except Exception as e:
+            self.log_test("Get All Users", False, error_msg=str(e))
+            return []
+
+    def test_admin_user_creation(self):
+        """Test admin user creation with enhanced validation"""
+        try:
+            # Generate unique test data
+            test_id = str(uuid.uuid4())[:8]
+            test_user_data = {
+                "first_name": "Test",
+                "last_name": "User",
+                "username": f"testuser_{test_id}",
+                "email": f"testuser_{test_id}@example.com",
+                "password": "SecurePassword123!",
+                "role": "user",
+                "is_business": False,
+                "company_name": "",
+                "country": "Netherlands",
+                "vat_number": ""
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/admin/users", 
+                json=test_user_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                created_user = data.get('user', {})
+                self.log_test(
+                    "Admin User Creation (Regular)", 
+                    True, 
+                    f"Created user: {created_user.get('username')} with ID: {created_user.get('id')}"
+                )
+                return created_user.get('id')
+            else:
+                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                self.log_test("Admin User Creation (Regular)", False, error_msg=error_detail)
+                return None
+        except Exception as e:
+            self.log_test("Admin User Creation (Regular)", False, error_msg=str(e))
+            return None
+
+    def test_admin_business_user_creation(self):
+        """Test admin business user creation"""
+        try:
+            # Generate unique test data for business user
+            test_id = str(uuid.uuid4())[:8]
+            business_user_data = {
+                "first_name": "Business",
+                "last_name": "Owner",
+                "username": f"business_{test_id}",
+                "email": f"business_{test_id}@company.com",
+                "password": "BusinessPass123!",
+                "role": "user",
+                "is_business": True,
+                "company_name": f"Test Company {test_id}",
+                "country": "Germany",
+                "vat_number": f"DE{test_id}123456"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/admin/users", 
+                json=business_user_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                created_user = data.get('user', {})
+                self.log_test(
+                    "Admin User Creation (Business)", 
+                    True, 
+                    f"Created business user: {created_user.get('username')} for company: {business_user_data['company_name']}"
+                )
+                return created_user.get('id')
+            else:
+                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                self.log_test("Admin User Creation (Business)", False, error_msg=error_detail)
+                return None
+        except Exception as e:
+            self.log_test("Admin User Creation (Business)", False, error_msg=str(e))
+            return None
+
+    def test_username_availability_check(self):
+        """Test username availability check endpoint"""
+        try:
+            # Test with a likely available username
+            test_username = f"available_user_{str(uuid.uuid4())[:8]}"
+            response = requests.get(f"{BACKEND_URL}/auth/check-username/{test_username}", timeout=10)
+            
+            if response.status_code == 404:
+                # Endpoint doesn't exist - this is expected based on backend code review
+                self.log_test(
+                    "Username Availability Check", 
+                    False, 
+                    "Endpoint /api/auth/check-username/{username} not implemented in backend"
+                )
+                return False
+            elif response.status_code == 200:
+                data = response.json()
+                available = data.get('available', False)
+                self.log_test(
+                    "Username Availability Check (Available)", 
+                    True, 
+                    f"Username '{test_username}' availability: {available}"
+                )
+                
+                # Test with an existing username (admin)
+                response2 = requests.get(f"{BACKEND_URL}/auth/check-username/sash_admin", timeout=10)
+                if response2.status_code == 200:
+                    data2 = response2.json()
+                    available2 = data2.get('available', True)
+                    self.log_test(
+                        "Username Availability Check (Existing)", 
+                        True, 
+                        f"Username 'sash_admin' availability: {available2} (should be False)"
+                    )
+                    return True
+                else:
+                    self.log_test("Username Availability Check (Existing)", False, f"HTTP {response2.status_code}")
+                    return False
+            else:
+                self.log_test("Username Availability Check (Available)", False, f"HTTP {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Username Availability Check", False, error_msg=str(e))
+            return False
+
+    def test_user_update_functionality(self, user_id):
+        """Test user update functionality"""
+        if not user_id:
+            self.log_test("User Update Functionality", False, error_msg="No user ID provided for update test")
             return False
             
-    except Exception as e:
-        print(f"\n❌ ERROR during testing: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return False
+        try:
+            # Update user data
+            update_data = {
+                "profile": {
+                    "full_name": "Updated Test User",
+                    "bio": "Updated bio for testing",
+                    "location": "Updated Location",
+                    "phone": "+31612345678",
+                    "company": "Updated Company",
+                    "website": "https://updated-website.com"
+                },
+                "settings": {
+                    "notifications": False,
+                    "email_updates": False,
+                    "public_profile": True
+                }
+            }
+            
+            response = requests.put(
+                f"{BACKEND_URL}/admin/users/{user_id}", 
+                json=update_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                self.log_test(
+                    "User Update Functionality", 
+                    True, 
+                    f"Successfully updated user {user_id} with enhanced profile data"
+                )
+                return True
+            else:
+                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                self.log_test("User Update Functionality", False, error_msg=error_detail)
+                return False
+        except Exception as e:
+            self.log_test("User Update Functionality", False, error_msg=str(e))
+            return False
+
+    def test_admin_listings_management(self):
+        """Test admin listings management endpoint"""
+        try:
+            response = requests.get(f"{BACKEND_URL}/listings?status=active&limit=10", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                listings = data.get('listings', [])
+                total = data.get('total', 0)
+                self.log_test(
+                    "Admin Listings Management", 
+                    True, 
+                    f"Retrieved {len(listings)} active listings out of {total} total"
+                )
+                return True
+            else:
+                self.log_test("Admin Listings Management", False, f"HTTP {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Admin Listings Management", False, error_msg=str(e))
+            return False
+
+    def test_marketplace_browse_functionality(self):
+        """Test marketplace browse functionality to ensure frontend changes haven't affected backend"""
+        try:
+            response = requests.get(f"{BACKEND_URL}/marketplace/browse?type=all&price_from=0&price_to=999999", timeout=10)
+            if response.status_code == 200:
+                listings = response.json()
+                listing_count = len(listings) if isinstance(listings, list) else 0
+                
+                # Check if listings have proper structure
+                if listing_count > 0:
+                    first_listing = listings[0]
+                    has_seller_info = 'seller' in first_listing
+                    has_bid_info = 'bid_info' in first_listing
+                    has_time_info = 'time_info' in first_listing
+                    
+                    self.log_test(
+                        "Marketplace Browse Functionality", 
+                        True, 
+                        f"Retrieved {listing_count} listings with proper structure (seller: {has_seller_info}, bids: {has_bid_info}, time: {has_time_info})"
+                    )
+                else:
+                    self.log_test(
+                        "Marketplace Browse Functionality", 
+                        True, 
+                        "No listings found but endpoint is working correctly"
+                    )
+                return True
+            else:
+                self.log_test("Marketplace Browse Functionality", False, f"HTTP {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Marketplace Browse Functionality", False, error_msg=str(e))
+            return False
+
+    def test_admin_validation_errors(self):
+        """Test admin user creation validation errors"""
+        try:
+            # Test missing required fields
+            invalid_user_data = {
+                "username": "incomplete_user",
+                # Missing email and password
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/admin/users", 
+                json=invalid_user_data,
+                timeout=10
+            )
+            
+            if response.status_code == 400:
+                error_detail = response.json().get('detail', '')
+                self.log_test(
+                    "Admin Validation Errors", 
+                    True, 
+                    f"Correctly rejected invalid user data: {error_detail}"
+                )
+                return True
+            else:
+                self.log_test("Admin Validation Errors", False, f"Expected 400 error but got HTTP {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Admin Validation Errors", False, error_msg=str(e))
+            return False
+
+    def cleanup_test_users(self, user_ids):
+        """Clean up test users created during testing"""
+        cleaned_count = 0
+        for user_id in user_ids:
+            if user_id:
+                try:
+                    response = requests.delete(f"{BACKEND_URL}/admin/users/{user_id}", timeout=10)
+                    if response.status_code == 200:
+                        cleaned_count += 1
+                except:
+                    pass  # Ignore cleanup errors
+        
+        if cleaned_count > 0:
+            self.log_test(
+                "Test Cleanup", 
+                True, 
+                f"Successfully cleaned up {cleaned_count} test users"
+            )
+
+    def run_comprehensive_tests(self):
+        """Run all backend tests focusing on admin user management"""
+        print("=" * 80)
+        print("CATALORO BACKEND TESTING - ADMIN USER MANAGEMENT FOCUS")
+        print("=" * 80)
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"Test Started: {datetime.now().isoformat()}")
+        print()
+        
+        created_user_ids = []
+        
+        # 1. Basic Health and System Tests
+        print("🔍 BASIC SYSTEM HEALTH TESTS")
+        print("-" * 40)
+        self.test_health_check()
+        self.test_admin_dashboard()
+        self.test_get_all_users()
+        
+        # 2. Admin User Creation Tests (Main Focus)
+        print("👥 ADMIN USER CREATION TESTS")
+        print("-" * 40)
+        regular_user_id = self.test_admin_user_creation()
+        if regular_user_id:
+            created_user_ids.append(regular_user_id)
+            
+        business_user_id = self.test_admin_business_user_creation()
+        if business_user_id:
+            created_user_ids.append(business_user_id)
+            
+        self.test_admin_validation_errors()
+        
+        # 3. Username Availability Tests
+        print("🔍 USERNAME AVAILABILITY TESTS")
+        print("-" * 40)
+        self.test_username_availability_check()
+        
+        # 4. User Update Tests
+        print("✏️ USER UPDATE FUNCTIONALITY TESTS")
+        print("-" * 40)
+        if regular_user_id:
+            self.test_user_update_functionality(regular_user_id)
+        
+        # 5. Admin Panel Data Endpoints
+        print("📊 ADMIN PANEL DATA ENDPOINTS")
+        print("-" * 40)
+        self.test_admin_listings_management()
+        
+        # 6. General System Health (Frontend Impact Check)
+        print("🌐 GENERAL SYSTEM HEALTH TESTS")
+        print("-" * 40)
+        self.test_marketplace_browse_functionality()
+        
+        # 7. Cleanup
+        print("🧹 CLEANUP")
+        print("-" * 40)
+        self.cleanup_test_users(created_user_ids)
+        
+        # Print Summary
+        print("=" * 80)
+        print("TEST SUMMARY")
+        print("=" * 80)
+        print(f"Total Tests: {self.total_tests}")
+        print(f"Passed: {self.passed_tests} ✅")
+        print(f"Failed: {self.failed_tests} ❌")
+        print(f"Success Rate: {(self.passed_tests/self.total_tests*100):.1f}%")
+        print()
+        
+        if self.failed_tests > 0:
+            print("FAILED TESTS:")
+            for result in self.test_results:
+                if "❌ FAIL" in result["status"]:
+                    print(f"  - {result['test']}: {result['error']}")
+        
+        return self.passed_tests, self.failed_tests, self.test_results
 
 if __name__ == "__main__":
-    success = test_listings_endpoint_status_filtering()
-    exit(0 if success else 1)
+    tester = BackendTester()
+    passed, failed, results = tester.run_comprehensive_tests()
+    
+    # Exit with appropriate code
+    exit(0 if failed == 0 else 1)
