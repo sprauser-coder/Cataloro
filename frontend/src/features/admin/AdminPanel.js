@@ -607,12 +607,12 @@ function DashboardTab({ dashboardData, loading }) {
 
   const { kpis, recent_activity } = dashboardData;
 
-  // Advanced KPI calculations
+  // Advanced KPI calculations using correct backend field names
   const growthMetrics = {
     userGrowth: ((kpis.total_users || 0) / Math.max(1, (kpis.total_users || 1) - 10)) * 100 - 100,
     revenueGrowth: kpis.growth_rate || 0,
     conversionRate: ((kpis.total_deals || 0) / Math.max(1, kpis.total_users || 1)) * 100,
-    avgOrderValue: (kpis.total_revenue || 0) / Math.max(1, kpis.total_deals || 1)
+    avgOrderValue: (kpis.revenue || 0) / Math.max(1, kpis.total_deals || 1)
   };
 
   return (
