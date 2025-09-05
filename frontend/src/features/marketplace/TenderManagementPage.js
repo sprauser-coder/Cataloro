@@ -105,6 +105,27 @@ function TenderManagementPage() {
     }
   };
 
+  const fetchMyTenders = async () => {
+    if (!user) return;
+    
+    try {
+      setMyTendersLoading(true);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/buyer/${user.id}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setMyTenders(data);
+      } else {
+        showToast('Failed to load your tenders', 'error');
+      }
+    } catch (error) {
+      console.error('Failed to fetch my tenders:', error);
+      showToast('Error loading tender data', 'error');
+    } finally {
+      setMyTendersLoading(false);
+    }
+  };
+
   // Listings Management Functions (exact duplicate from MyListingsPage)
   const fetchMyListings = async () => {
     if (!user?.id) return;
