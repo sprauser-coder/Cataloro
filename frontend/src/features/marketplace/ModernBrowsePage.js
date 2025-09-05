@@ -630,6 +630,7 @@ function ModernBrowsePage() {
           ))}
         </div>
       )}
+      </div>
 
       {/* Load More Button */}
       {filteredListings.length > 0 && (
