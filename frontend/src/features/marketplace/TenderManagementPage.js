@@ -386,6 +386,18 @@ function TenderManagementPage() {
           fetchMyTenders={fetchMyTenders}
         />
       )}
+
+      {activeTab === 'listings' && (
+        <ListingsTab
+          listings={filteredListings}
+          allListings={listings}
+          listingsLoading={listingsLoading}
+          activeFilter={activeFilter}
+          handleTileClick={handleTileClick}
+          handleCreateListing={handleCreateListing}
+          handleDeleteListing={handleDeleteListing}
+        />
+      )}
     </div>
   );
 }
