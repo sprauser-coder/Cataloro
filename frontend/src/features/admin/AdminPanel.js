@@ -6298,21 +6298,33 @@ function UserEditModal({ user, onClose, onSave }) {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.full_name.trim()) {
-      newErrors.full_name = 'Full name is required';
+    // First Name and Last Name validation (matching registration page)
+    if (!formData.first_name.trim()) {
+      newErrors.first_name = 'First name is required';
+    }
+    if (!formData.last_name.trim()) {
+      newErrors.last_name = 'Last name is required';
     }
 
+    // Username validation (matching registration page)
     if (!formData.username.trim()) {
       newErrors.username = 'Username is required';
     }
+    if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
+    }
+    if (usernameAvailable === false) {
+      newErrors.username = 'Username is not available';
+    }
 
+    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
 
-    // Password validation only for new users or if password is being changed
+    // Password validation - required for new users or if password is being changed
     if (!user && !formData.password) {
       newErrors.password = 'Password is required for new users';
     }
@@ -6321,8 +6333,18 @@ function UserEditModal({ user, onClose, onSave }) {
       newErrors.password = 'Password must be at least 6 characters';
     }
 
-    if (formData.password && formData.password !== formData.confirm_password) {
-      newErrors.confirm_password = 'Passwords do not match';
+    if (formData.password && formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    // Business validation (matching registration page)
+    if (formData.is_business) {
+      if (!formData.company_name.trim()) {
+        newErrors.company_name = 'Company name is required for business accounts';
+      }
+      if (!formData.country.trim()) {
+        newErrors.country = 'Country is required for business accounts';
+      }
     }
 
     setErrors(newErrors);
