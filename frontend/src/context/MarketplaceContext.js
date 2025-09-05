@@ -596,15 +596,7 @@ export function MarketplaceProvider({ children }) {
       }
     },
     
-    loadUserCart: async (userId) => {
-      try {
-        const cartItems = await liveService.getUserCart(userId);
-        dispatch({ type: ACTIONS.SET_CART, payload: cartItems });
-      } catch (error) {
-        console.error('Error loading user cart:', error);
-      }
-    },
-    
+
     // Search and filter actions
     setSearchQuery: async (query) => {
       dispatch({ type: ACTIONS.SET_SEARCH_QUERY, payload: query });
