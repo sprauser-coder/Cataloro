@@ -52,8 +52,8 @@ function NotificationsPage() {
     
     setLoading(true);
     try {
-      // Fetch real notifications from backend
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/notifications/${user.id}`);
+      // Use the CORRECT endpoint that returns real notifications
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`);
       if (response.ok) {
         const realNotifications = await response.json();
         console.log('Fetched real notifications:', realNotifications);
