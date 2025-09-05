@@ -44,7 +44,7 @@ import { useMarketplace } from '../../context/MarketplaceContext';
 function ProfilePage() {
   const { user, updateUser } = useAuth();
   const { showToast } = useNotifications();
-  const { allProducts, cartItems, favorites, orderHistory, refreshListings } = useMarketplace();
+  const { allProducts, favorites, orderHistory, refreshListings } = useMarketplace();
   
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
