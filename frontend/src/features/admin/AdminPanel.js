@@ -867,7 +867,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
         showToast('User updated successfully', 'success');
         setShowEditModal(false);
         setSelectedUser(null);
-        fetchUsers(); // Refresh users list
+        onUpdateUser(); // Refresh users list
       } else {
         showToast('Failed to update user', 'error');
       }
