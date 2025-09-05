@@ -333,8 +333,8 @@ function TenderManagementPage() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'tenders' && (
-        <TenderManagementTab
+      {activeTab === 'sell' && (
+        <SellTab
           tendersOverview={tendersOverview}
           tendersLoading={tendersLoading}
           selectedListing={selectedListing}
@@ -345,11 +345,6 @@ function TenderManagementPage() {
           handleRejectTender={handleRejectTender}
           totalTenders={totalTenders}
           totalHighestBids={totalHighestBids}
-        />
-      )}
-
-      {activeTab === 'listings' && (
-        <ListingsManagementTab
           listings={filteredListings}
           allListings={listings}
           listingsLoading={listingsLoading}
@@ -360,10 +355,11 @@ function TenderManagementPage() {
         />
       )}
 
-      {activeTab === 'sold' && (
-        <SoldBoughtTab
-          listings={listings.filter(l => l.status === 'sold' || l.status === 'closed')}
-          listingsLoading={listingsLoading}
+      {activeTab === 'buy' && (
+        <BuyTab
+          myTenders={myTenders}
+          myTendersLoading={myTendersLoading}
+          fetchMyTenders={fetchMyTenders}
         />
       )}
     </div>
