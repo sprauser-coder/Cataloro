@@ -1816,6 +1816,92 @@ function ContentManagementSystem() {
               </div>
             )}
 
+            {/* About Page HTML Editor Section */}
+            {activeSection === 'about-html' && (
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <FileText className="w-6 h-6 text-blue-600" />
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">About Page HTML Editor</h3>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* HTML Content Editor */}
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        HTML Content
+                      </label>
+                      <textarea
+                        value={contentSections['about-html'].htmlContent}
+                        onChange={(e) => updateAboutHtmlContent('htmlContent', e.target.value)}
+                        className="cataloro-input font-mono text-sm h-64 resize-none"
+                        placeholder="Enter your HTML content here..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        CSS Styles
+                      </label>
+                      <textarea
+                        value={contentSections['about-html'].cssStyles}
+                        onChange={(e) => updateAboutHtmlContent('cssStyles', e.target.value)}
+                        className="cataloro-input font-mono text-sm h-32 resize-none"
+                        placeholder="Enter your CSS styles here..."
+                      />
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={contentSections['about-html'].enabled}
+                          onChange={(e) => updateAboutHtmlContent('enabled', e.target.checked)}
+                          className="rounded"
+                        />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                          Enable HTML About Page
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Live Preview */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Live Preview</h4>
+                      <button
+                        onClick={() => window.open('/about', '_blank')}
+                        className="flex items-center space-x-2 px-3 py-2 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>View Full Page</span>
+                      </button>
+                    </div>
+                    
+                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                      <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Preview</span>
+                      </div>
+                      <div className="p-4 bg-white dark:bg-gray-900 min-h-[300px]">
+                        <style dangerouslySetInnerHTML={{ __html: contentSections['about-html'].cssStyles }} />
+                        <div 
+                          dangerouslySetInnerHTML={{ __html: contentSections['about-html'].htmlContent }}
+                          className="prose dark:prose-invert max-w-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                      <p>• HTML and CSS will be applied to the About page</p>
+                      <p>• Changes are saved automatically every 30 seconds</p>
+                      <p>• Use the "View Full Page" button to see the complete rendered page</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Enhanced Footer Section Editor */}
             {activeSection === 'footer' && (
               <div className="space-y-6">
