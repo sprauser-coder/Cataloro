@@ -1854,7 +1854,6 @@ function HeroSelectionTab({ showToast }) {
               </div>
             </div>
           )}
-          </div>
         </div>
       </div>
 
