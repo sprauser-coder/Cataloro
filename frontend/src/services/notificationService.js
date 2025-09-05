@@ -16,9 +16,9 @@ class NotificationService {
     }
   }
 
-  async markAsRead(notificationId) {
+  async markAsRead(userId, notificationId) {
     try {
-      await axios.put(`${API_ENDPOINTS.USER.NOTIFICATIONS}/${notificationId}/read`);
+      await axios.put(`${API_ENDPOINTS.USER.NOTIFICATIONS.replace('{user_id}', userId)}/${notificationId}/read`);
     } catch (error) {
       throw new Error(error.response?.data?.detail || 'Failed to mark notification as read');
     }
