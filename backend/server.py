@@ -192,22 +192,43 @@ async def trigger_system_notifications(user_id: str, event_type: str):
         # Get active system notifications that should be triggered for this event
         system_notifications = await db.system_notifications.find({
             "is_active": True,
-            "event_type": event_type  # Only trigger notifications for this specific event
+            "event_trigger": event_type  # Match the event_trigger field
         }).to_list(length=None)
         
+        print(f"DEBUG: Found {len(system_notifications)} system notifications for event {event_type}")
+        
         for sys_notif in system_notifications:
+            # Check if user has already received this notification recently (prevent spam)
+            existing = await db.user_notifications.find_one({
+                "user_id": user_id,
+                "system_notification_id": sys_notif.get("id"),
+                "created_at": {"$gte": (datetime.utcnow() - timedelta(hours=24)).isoformat()}
+            })
+            
+            if existing and event_type in ['daily', 'weekly']:
+                # Skip daily/weekly notifications if already sent
+                continue
+                
             notification = {
                 "user_id": user_id,
                 "title": sys_notif.get("title", "System Notification"),
                 "message": sys_notif.get("message", "You have a new system notification."),
-                "type": "system",
+                "type": sys_notif.get("type", "info"),  # Use the notification type from system notification
                 "is_read": False,
                 "created_at": datetime.utcnow().isoformat(),
                 "id": str(uuid.uuid4()),
-                "system_notification_id": sys_notif.get("id")
+                "system_notification_id": sys_notif.get("id"),
+                "event_trigger": event_type
             }
             print(f"DEBUG: Created system notification: {notification}")
             result = await db.user_notifications.insert_one(notification)
+            
+            # Update display count
+            await db.system_notifications.update_one(
+                {"id": sys_notif.get("id")},
+                {"$inc": {"display_count": 1}}
+            )
+            
             print(f"DEBUG: System notification created successfully for user {user_id}")
             
     except Exception as e:
