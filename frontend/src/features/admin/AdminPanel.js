@@ -2534,6 +2534,17 @@ function SiteAdministrationTab({ showToast }) {
         setSettingsSaved(true);
         setTimeout(() => setSettingsSaved(false), 3000);
         
+        // Show footer-specific confirmation if we're on footer section
+        if (activeSection === 'footer') {
+          const footerSuccessElement = document.getElementById('footer-save-success');
+          if (footerSuccessElement) {
+            footerSuccessElement.classList.remove('hidden');
+            setTimeout(() => {
+              footerSuccessElement.classList.add('hidden');
+            }, 5000);
+          }
+        }
+        
         // Flash the page briefly to show changes took effect
         document.body.style.transition = 'opacity 0.3s ease';
         document.body.style.opacity = '0.95';
