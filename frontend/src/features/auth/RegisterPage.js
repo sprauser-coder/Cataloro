@@ -40,11 +40,37 @@ function RegisterPage() {
   }, [clearError]);
 
   const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? checked : value
     });
     clearError();
+    
+    // Check username availability when username changes
+    if (name === 'username' && value.length >= 3) {
+      checkUsernameAvailability(value);
+    } else if (name === 'username') {
+      setUsernameAvailable(null);
+    }
+  };
+
+  const checkUsernameAvailability = async (username) => {
+    setCheckingUsername(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/check-username/${username}`);
+      if (response.ok) {
+        const data = await response.json();
+        setUsernameAvailable(data.available);
+      } else {
+        setUsernameAvailable(null);
+      }
+    } catch (error) {
+      console.error('Error checking username:', error);
+      setUsernameAvailable(null);
+    } finally {
+      setCheckingUsername(false);
+    }
   };
 
   const validateForm = () => {
