@@ -1331,19 +1331,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
         </div>
       </div>
 
-      {/* Add Create User Button */}
-      <div className="mt-6 flex justify-end">
-        <button
-          onClick={() => {
-            setSelectedUser(null);
-            setShowEditModal(true);
-          }}
-          className="cataloro-button-primary flex items-center space-x-2"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create New User</span>
-        </button>
-      </div>
+
 
       {/* User Edit/Create Modal */}
       {showEditModal && (
