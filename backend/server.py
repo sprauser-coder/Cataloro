@@ -787,21 +787,31 @@ async def get_admin_dashboard():
         total_users = await db.users.count_documents({})
         total_listings = await db.listings.count_documents({})
         active_listings = await db.listings.count_documents({"status": "active"})
-        total_deals = await db.deals.count_documents({})
-        
-        # Count accepted tenders as additional deals
-        accepted_tenders = await db.tenders.count_documents({"status": "accepted"})
-        
-        # Calculate revenue from completed deals and accepted tenders
-        completed_deals = await db.deals.find({"status": "completed"}).to_list(length=None)
-        accepted_tender_list = await db.tenders.find({"status": "accepted"}).to_list(length=None)
+        # Calculate ACTUAL revenue from real marketplace transactions only
+        # Don't use deals collection (may contain test data)
+        # Use actual accepted tenders and sold listings instead
         
         total_revenue = 0.0
-        for deal in completed_deals:
-            total_revenue += deal.get("final_price", deal.get("price", 0))
+        actual_deals_count = 0
         
+        # Revenue from accepted tenders (real marketplace transactions)
+        accepted_tender_list = await db.tenders.find({"status": "accepted"}).to_list(length=None)
         for tender in accepted_tender_list:
-            total_revenue += tender.get("offer_amount", 0)
+            tender_amount = tender.get("offer_amount", 0)
+            if tender_amount > 0:  # Only count real amounts
+                total_revenue += tender_amount
+                actual_deals_count += 1
+        
+        # Revenue from sold listings (if any direct sales exist)
+        sold_listings = await db.listings.find({"status": "sold"}).to_list(length=None)
+        for listing in sold_listings:
+            sale_price = listing.get("final_price", listing.get("price", 0))
+            if sale_price > 0:  # Only count real amounts
+                total_revenue += sale_price
+                actual_deals_count += 1
+        
+        # Use actual deals count instead of potentially inflated deals collection
+        total_deals = actual_deals_count
         
         # Calculate growth rate based on recent users (last 30 days)
         # Fixed datetime comparison to handle both datetime objects and ISO strings
