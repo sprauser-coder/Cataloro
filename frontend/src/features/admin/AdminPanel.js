@@ -2545,6 +2545,17 @@ function SiteAdministrationTab({ showToast }) {
           }
         }
         
+        // Show features-specific confirmation if we're on features section
+        if (activeSection === 'features') {
+          const featuresSuccessElement = document.getElementById('features-save-success');
+          if (featuresSuccessElement) {
+            featuresSuccessElement.classList.remove('hidden');
+            setTimeout(() => {
+              featuresSuccessElement.classList.add('hidden');
+            }, 5000);
+          }
+        }
+        
         // Flash the page briefly to show changes took effect
         document.body.style.transition = 'opacity 0.3s ease';
         document.body.style.opacity = '0.95';
