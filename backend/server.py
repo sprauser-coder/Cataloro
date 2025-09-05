@@ -293,6 +293,10 @@ async def register_user(user_data: dict):
         raise HTTPException(status_code=400, detail="Email already registered")
     
     await db.users.insert_one(user)
+    
+    # Trigger system notifications for first login event
+    await trigger_system_notifications(user_id, "first_login")
+    
     return {"message": "User registered successfully", "user_id": user_id}
 
 @app.post("/api/auth/login")
