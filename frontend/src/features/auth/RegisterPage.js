@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Building, Globe, Check, X, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { APP_ROUTES, UI_CONFIG } from '../../config/directions';
 
