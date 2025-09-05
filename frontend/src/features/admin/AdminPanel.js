@@ -2152,6 +2152,7 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
 function SiteAdministrationTab({ showToast }) {
   const [activeSection, setActiveSection] = React.useState('appearance');
   const [isSaving, setIsSaving] = React.useState(false);
+  const [settingsSaved, setSettingsSaved] = React.useState(false);
   const [siteConfig, setSiteConfig] = React.useState({
     // Appearance & Themes
     primaryColor: '#3B82F6',
