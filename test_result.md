@@ -456,6 +456,43 @@ const getEventTriggerDisplay = (notification) => {
 
 **CORRECTED ADMIN DASHBOARD DATA ACCURACY STATUS:** ❌ CRITICAL REVENUE BUG NOT FIXED - The dashboard data accuracy issue has NOT been resolved. While user counts, listing counts, and deals counts are accurate, the revenue calculation continues to show €5,870 instead of the realistic €1,170 from actual marketplace activity. The backend revenue calculation logic in /api/admin/dashboard endpoint still includes €4,700 from test/dummy data or incorrect transaction sources. The reported "fix" has not addressed the core issue of filtering out non-marketplace revenue data.
 
+#### System Notifications Separation Verification Results:
+**COMPREHENSIVE SYSTEM NOTIFICATIONS SEPARATION TESTING:** ❌ CRITICAL SEPARATION FAILURE CONFIRMED - Executed comprehensive testing of system notifications separation as requested in review. The system is NOT properly separating system notifications from regular notifications, with multiple critical issues identified.
+
+**1. System Notification Toast Verification** ❌ TOAST SYSTEM NOT WORKING - System notifications are NOT appearing as toast popups: Toast container not found on any page ✅, No system notification toasts detected during login or page navigation ❌, NotificationToast component appears to not be loading properly ❌, System notifications API returns empty array (0 notifications) ✅.
+
+**2. Notifications Dropdown/Center Verification** ❌ SYSTEM NOTIFICATIONS INCORRECTLY APPEARING - System notifications are appearing in the notifications center/dropdown: Found 10 system notifications in the notifications center/page ❌, System notifications include "Welcome back!" messages and system test notifications ❌, These should appear as toasts only, not in the persistent notifications center ❌, Regular notifications (16) are correctly appearing in the center ✅.
+
+**3. API Endpoint Analysis** ✅ BACKEND SEPARATION WORKING - Backend API endpoints are correctly separated: System notifications endpoint: `/api/user/{user_id}/system-notifications` returns 0 notifications ✅, Regular notifications endpoint: `/api/user/{user_id}/notifications` returns 26 notifications ✅, Backend is correctly filtering system vs regular notifications ✅.
+
+**4. Frontend Component Issues** ❌ MULTIPLE FRONTEND PROBLEMS IDENTIFIED - Frontend components not working as designed: NotificationToast component not loading (Toast component loaded: False) ❌, Notifications bell button not accessible in header ❌, Header component exists but bell icons count is 0 ❌, System notifications being stored in regular notifications instead of triggering toasts ❌.
+
+**5. Separation Logic Failure** ❌ CRITICAL DESIGN FLAW - System notifications are being stored as regular notifications: 10 system notifications found in regular notifications database ❌, These include "Welcome back!", "Endpoint Test", and system-related messages ❌, System notifications should trigger toast popups and NOT be stored persistently ❌, Current implementation stores system notifications permanently in regular notifications ❌.
+
+**TECHNICAL VERIFICATION:**
+- Toast System: NotificationToast component not loading, no toast containers found on any page
+- Notifications Center: 26 total notifications with 10 system notifications incorrectly stored
+- API Separation: Backend correctly separates endpoints but frontend stores system notifications wrong
+- Bell Button: Not accessible, 0 bell icons found in header despite header component existing
+- System Notifications: "Welcome back!", "Endpoint Test 3", and other system messages in persistent storage
+
+**ROOT CAUSE ANALYSIS:**
+❌ System notifications are being stored in the regular notifications database instead of triggering toast popups
+❌ NotificationToast component is not loading or functioning properly
+❌ Frontend logic is not properly routing system notifications to toast system
+❌ Notifications bell button is not accessible in the header
+❌ System notifications should be temporary toast popups, not persistent notifications
+
+**CRITICAL ISSUES IDENTIFIED:**
+1. **System notifications appearing in notifications center** - 10 system notifications found in persistent storage
+2. **Toast system not working** - No toast notifications found, component not loading
+3. **Notifications bell not accessible** - Cannot access notifications dropdown from header
+4. **Incorrect data flow** - System notifications stored as regular notifications instead of triggering toasts
+
+**COMPREHENSIVE TEST RESULTS:** 3/6 separation requirements failed (50% failure rate), system notifications incorrectly appearing in notifications center, toast system not functioning, notifications bell not accessible, backend separation working correctly, frontend implementation critically flawed.
+
+**SYSTEM NOTIFICATIONS SEPARATION STATUS:** ❌ CRITICAL FAILURE - The system notifications separation is NOT working correctly. System notifications are appearing in the notifications center/dropdown instead of as toast popups. The NotificationToast component is not functioning, the notifications bell is not accessible, and system notifications are being stored persistently instead of triggering temporary toast messages. This is a critical design flaw that needs immediate attention from the main agent.
+
 **Test Date:** 2025-09-05 17:25:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ ENHANCED REVENUE VALIDATION WITH €2000 LIMIT COMPREHENSIVE TESTING COMPLETED - MAJOR IMPROVEMENT VERIFIED
