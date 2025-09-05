@@ -4028,7 +4028,8 @@ function ListingsTab({ showToast }) {
       setLoading(true);
       console.log('🔄 Fetching listings from backend...');
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings`);
+      // For admin panel, we want to see ALL listings including sold ones
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings?status=all`);
       if (response.ok) {
         const backendData = await response.json();
         console.log('📊 Backend listings response:', backendData);
