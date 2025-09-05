@@ -23,38 +23,34 @@ import time
 BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://cataloro-upgrade.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
-def test_admin_dashboard_final_verification():
-    """Test the COMPLETELY FIXED Admin Dashboard Data Accuracy"""
-    print("🎯 FINAL ADMIN DASHBOARD DATA ACCURACY VERIFICATION")
-    print("=" * 60)
+class NotificationsTester:
+    def __init__(self):
+        self.session = requests.Session()
+        self.test_user_id = None
+        self.test_results = {
+            "total_tests": 0,
+            "passed_tests": 0,
+            "failed_tests": 0,
+            "test_details": []
+        }
     
-    test_results = {
-        "total_tests": 0,
-        "passed_tests": 0,
-        "failed_tests": 0,
-        "test_details": []
-    }
-    
-    def run_test(test_name, test_func):
-        """Helper function to run individual tests"""
-        test_results["total_tests"] += 1
-        try:
-            result = test_func()
-            if result:
-                test_results["passed_tests"] += 1
-                status = "✅ PASSED"
-            else:
-                test_results["failed_tests"] += 1
-                status = "❌ FAILED"
-            test_results["test_details"].append(f"{status} - {test_name}")
-            print(f"{status} - {test_name}")
-            return result
-        except Exception as e:
-            test_results["failed_tests"] += 1
-            status = f"❌ ERROR - {str(e)}"
-            test_results["test_details"].append(f"{status} - {test_name}")
-            print(f"{status} - {test_name}")
-            return False
+    def log_test(self, test_name, success, details, expected=None, actual=None):
+        """Log test results"""
+        self.test_results["total_tests"] += 1
+        if success:
+            self.test_results["passed_tests"] += 1
+            status = "✅ PASSED"
+        else:
+            self.test_results["failed_tests"] += 1
+            status = "❌ FAILED"
+        
+        self.test_results["test_details"].append(f"{status} - {test_name}")
+        print(f"{status} - {test_name}")
+        print(f"   Details: {details}")
+        if expected and actual:
+            print(f"   Expected: {expected}")
+            print(f"   Actual: {actual}")
+        print()
     
     # Test 1: GET /api/admin/dashboard endpoint accessibility
     def test_dashboard_endpoint():
