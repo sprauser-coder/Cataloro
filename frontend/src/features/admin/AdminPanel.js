@@ -2634,12 +2634,6 @@ function SiteAdministrationTab({ showToast }) {
       description: 'Enable/disable marketplace features and functionality'
     },
     { 
-      id: 'security', 
-      label: 'Security & Privacy', 
-      icon: Lock,
-      description: 'Configure security settings and privacy controls'
-    },
-    { 
       id: 'performance', 
       label: 'Performance & SEO', 
       icon: TrendingUp,
