@@ -532,6 +532,13 @@ function ContentManagementSystem() {
     }));
   };
 
+  const updateAboutHtmlContent = (field, value) => {
+    setContentSections(prev => ({
+      ...prev,
+      'about-html': { ...prev['about-html'], [field]: value }
+    }));
+  };
+
   // Image upload handler
   const handleImageUpload = async (file, section, field) => {
     setUploadingImage(true);
