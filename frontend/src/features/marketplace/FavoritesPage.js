@@ -33,6 +33,7 @@ function FavoritesPage() {
   const { user } = useAuth();
   const { showToast } = useNotifications();
   const navigate = useNavigate();
+  const adsConfig = useAdsConfig();
   
   // Use MarketplaceContext for favorites management
   const {
