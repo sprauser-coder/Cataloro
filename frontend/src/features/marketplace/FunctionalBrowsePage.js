@@ -88,9 +88,7 @@ function FunctionalBrowsePage() {
     showNotification(`Viewing ${product.title}`, 'info');
   };
 
-  const handleAddToCart = (product) => {
-    addToCart(product);
-  };
+
 
   const handleToggleFavorite = (product) => {
     const isFavorite = favorites.some(fav => fav.id === product.id);
