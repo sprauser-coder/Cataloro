@@ -52,8 +52,14 @@ function LoginPage() {
     
     setIsAnimating(true);
     try {
-      await login(demoCredentials.email, demoCredentials.password);
-      navigate(APP_ROUTES.BROWSE);
+      const response = await login(demoCredentials.email, demoCredentials.password);
+      
+      // Check if user is admin and redirect accordingly
+      if (response?.user?.role === 'admin' || response?.user?.email === 'admin@cataloro.com') {
+        navigate(APP_ROUTES.ADMIN_PANEL);
+      } else {
+        navigate(APP_ROUTES.BROWSE);
+      }
     } catch (error) {
       console.error('Demo login failed:', error);
       setIsAnimating(false);
