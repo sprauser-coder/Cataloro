@@ -45,13 +45,13 @@ class AdminDashboardTester:
         print()
         
     def test_admin_dashboard_endpoint(self):
-        """Test 1: Admin Dashboard Endpoint Accessibility"""
+        """Test 1: GET /api/admin/dashboard endpoint accessibility"""
         try:
             response = self.session.get(f"{self.backend_url}/admin/dashboard")
             
             if response.status_code != 200:
                 self.log_test(
-                    "Admin Dashboard Endpoint Accessibility",
+                    "Admin Dashboard Endpoint Access",
                     False,
                     f"HTTP {response.status_code}: {response.text}",
                     "200 OK",
