@@ -346,6 +346,13 @@ function TenderManagementPage() {
           handleDeleteListing={handleDeleteListing}
         />
       )}
+
+      {activeTab === 'sold' && (
+        <SoldBoughtTab
+          listings={listings.filter(l => l.status === 'sold' || l.status === 'closed')}
+          listingsLoading={listingsLoading}
+        />
+      )}
     </div>
   );
 }
