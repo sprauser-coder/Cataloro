@@ -526,7 +526,7 @@ function MessagesPage() {
         {/* Main Layout - No Visible Containers */}
         <div className="flex flex-1 min-h-0">
           {/* Conversations List */}
-          <div className="w-1/3 border-r border-gray-200/30 dark:border-gray-700/30">
+          <div className={`${adsConfig?.messengerAd?.active ? 'w-1/4' : 'w-1/3'} border-r border-gray-200/30 dark:border-gray-700/30`}>
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
