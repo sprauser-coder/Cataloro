@@ -738,16 +738,17 @@ function ProfilePage() {
                       </span>
                     </h4>
                     
-                    {/* Business Account Toggle */}
-                    <label className="flex items-center space-x-3 cursor-pointer">
+                    {/* Business Account Toggle - Using same pattern as preferences toggles for better visibility */}
+                    <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
                         checked={profileData.is_business}
                         onChange={(e) => handleBusinessToggle(e.target.checked)}
                         disabled={!isEditing}
-                        className="w-4 h-4 text-blue-600 bg-white dark:bg-gray-700 border-2 border-gray-500 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-2 disabled:cursor-not-allowed"
+                        className="sr-only peer"
                       />
-                      <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center">
+                      <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}></div>
+                      <span className="ml-3 text-sm text-gray-700 dark:text-gray-300 flex items-center">
                         <User className="w-3 h-3 mr-1" />
                         {profileData.is_business ? 'Switch to Private Account' : 'Switch to Business Account'}
                       </span>
