@@ -622,6 +622,11 @@ export function MarketplaceProvider({ children }) {
     ];
 
     dispatch({ type: ACTIONS.SET_PRODUCTS, payload: products });
+    
+    // Apply initial sort after loading demo products
+    setTimeout(() => {
+      applyFiltersAndSearch('', state.activeFilters, state.sortBy);
+    }, 0);
   };
 
   // Action creators
