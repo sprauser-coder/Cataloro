@@ -459,7 +459,7 @@ function AdminPanel() {
         />
       )}
       
-      {activeTab === 'site-admin' && (
+      {activeTab === 'administration' && (
         <SiteAdministrationTab 
           showToast={showToast}
         />
