@@ -627,10 +627,10 @@ def main():
     success = tester.run_all_tests()
     
     if success:
-        print("\n🎉 SYSTEM NOTIFICATIONS SEPARATION TESTING COMPLETED SUCCESSFULLY")
+        print("\n🎉 SYSTEM NOTIFICATIONS CLEANUP EXECUTION COMPLETED SUCCESSFULLY")
         sys.exit(0)
     else:
-        print("\n⚠️  SYSTEM NOTIFICATIONS SEPARATION TESTING COMPLETED WITH ISSUES")
+        print("\n⚠️  SYSTEM NOTIFICATIONS CLEANUP EXECUTION COMPLETED WITH ISSUES")
         sys.exit(1)
 
 if __name__ == "__main__":
