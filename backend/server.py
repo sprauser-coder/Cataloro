@@ -4124,7 +4124,7 @@ async def create_system_notification(notification_data: dict):
             "title": notification_data.get("title", "System Notification"),
             "message": notification_data.get("message", ""),
             "type": notification_data.get("type", "info"),  # success, info, warning, error
-            "event_trigger": notification_data.get("event_trigger", "manual"),  # event trigger type
+            "event_trigger": notification_data.get("event_trigger", "manual"),  # default to manual if not provided
             "target_users": notification_data.get("target_users", "all"),  # all, new_users, specific_ids
             "user_ids": notification_data.get("user_ids", []),  # specific user IDs if target_users is specific_ids
             "show_duration": notification_data.get("show_duration", 5000),  # milliseconds
