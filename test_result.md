@@ -521,6 +521,34 @@ const getEventTriggerDisplay = (notification) => {
 **Test Agent:** main  
 **Test Status:** ✅ COMPREHENSIVE FIXES IMPLEMENTATION COMPLETED - ALL USER REPORTED ISSUES RESOLVED
 
+**Test Date:** 2025-09-05 23:20:00 UTC  
+**Test Agent:** main  
+**Test Status:** ✅ LISTINGS COUNT DISCREPANCY FIXED - EXPIRED TAB ADDED SUCCESSFULLY
+
+#### Final Listings Count Discrepancy Resolution:
+**LISTINGS COUNT MYSTERY COMPLETELY SOLVED:** ✅ ROOT CAUSE IDENTIFIED AND FIXED - Successfully resolved the user-reported discrepancy where 6 total listings showed but only 2 appeared in tabs. The missing 4 listings were expired time-limited listings that lacked proper tab coverage.
+
+**1. Root Cause Analysis** ✅ MYSTERY SOLVED - Backend investigation revealed exact cause of discrepancy: 4 missing listings all had "expired" status from time-limited listing functionality ✅, Admin panel tabs only covered Active, Pending, Inactive, and Sold statuses ✅, Expired listings were legitimate but had no tab to display them ✅, Backend data was completely correct - this was purely a frontend admin panel design gap ✅.
+
+**2. Missing Listings Identified** ✅ ALL 4 FOUND - Backend testing located all missing expired listings: "TIME LIMIT TEST - SHOULD BE VISIBLE" (€99.99) ✅, "Test Listing - 24h Time Limit" (€324.00) ✅, "Short Expiration Test Catalyst" (€500.00) ✅, "Test Listing - Short Time Limit" (€200.00) ✅, All listings were time-limited and expired after their time constraints ran out ✅.
+
+**3. Admin Panel Enhancement** ✅ EXPIRED TAB ADDED - Added new "Expired" tab to admin listings management: New red "Expired" tab added to tab navigation ✅, Tab shows count of 4 expired listings ✅, Filtering logic updated to handle "expired" status properly ✅, Visual styling matches other tabs with red color scheme ✅, Tab ordering: Active → Pending → Inactive → Expired → Sold ✅.
+
+**4. Count Verification** ✅ PERFECT MATCH ACHIEVED - Tab counts now add up correctly to total listings: Before: Active(1) + Sold(1) = 2 total shown (4 missing) ❌, After: Active(1) + Pending(0) + Inactive(0) + Expired(4) + Sold(1) = 6 total ✅, Perfect match: 6 total listings = 6 listings in tabs ✅, No more discrepancy - all listings are now properly categorized and visible ✅.
+
+**5. User Interface Testing** ✅ FULLY FUNCTIONAL - Visual confirmation of fix working correctly: Screenshots show "Expired 4" tab prominently displayed ✅, Clicking expired tab shows "Showing expired listings (4 items)" ✅, All 4 expired listings properly displayed in expired tab ✅, Professional red styling and proper tab functionality confirmed ✅.
+
+**TECHNICAL IMPLEMENTATION:**
+- Frontend Fix: Added "Expired" tab configuration to admin panel tabs array
+- Status Filter: Added case 'expired': statusMatch = listing.status === 'expired'
+- Visual Design: Red color scheme for expired tab matching other status colors
+- Count Logic: Updated tab count filtering to include expired status properly
+- No Backend Changes: Backend was working correctly, issue was frontend-only
+
+**COMPREHENSIVE RESOLUTION RESULTS:** Listings count discrepancy completely eliminated, all 6 listings now visible in appropriate tabs, expired time-limited listings properly categorized, admin panel functionality enhanced, user experience improved with complete listing visibility.
+
+**LISTINGS COUNT DISCREPANCY STATUS:** ✅ COMPLETELY RESOLVED - The mystery of 6 total listings with only 2 showing in tabs has been completely solved and fixed. The 4 missing listings were expired time-limited listings that needed their own "Expired" tab. Now all listings are properly categorized and visible: Active(1) + Pending(0) + Inactive(0) + Expired(4) + Sold(1) = 6 total listings. Perfect match achieved with no more discrepancies.
+
 #### Comprehensive Fixes Implementation Results:
 **COMPREHENSIVE MARKETPLACE FIXES TESTING:** ✅ ALL USER REPORTED ISSUES SUCCESSFULLY RESOLVED - Implemented and thoroughly tested all critical fixes requested by the user. Every issue has been addressed with 100% backend test success rate and verified functionality.
 
