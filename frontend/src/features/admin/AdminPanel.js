@@ -797,7 +797,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
       if (response.ok) {
         showToast('User suspended successfully', 'success');
-        fetchUsers(); // Refresh users list
+        onUpdateUser(); // Refresh users list
       } else {
         showToast('Failed to suspend user', 'error');
       }
