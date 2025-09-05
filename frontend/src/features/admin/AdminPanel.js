@@ -3038,7 +3038,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
         <AdConfigPanel
           title="Browse Page Advertisement"
           description="Display advertisement on the right side of browse page (3 listings per row layout)"
-          adConfig={siteConfig.adsManager.browsePageAd}
+          adConfig={siteConfig.adsManager?.browsePageAd || { active: false, image: null, description: '', runtime: '1 month', width: '300px', height: '600px' }}
           adType="browsePageAd"
           handleAdConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
