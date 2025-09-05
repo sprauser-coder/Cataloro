@@ -834,21 +834,61 @@ async def get_admin_dashboard():
         # Get recent activity
         recent_activity = []
         
-        # Get recent users (last 5)
-        recent_users_list = await db.users.find({}).sort("created_at", -1).limit(3).to_list(length=3)
-        for user in recent_users_list:
-            recent_activity.append({
-                "action": f"New user registered: {user.get('username', 'Unknown')}",
-                "timestamp": user.get("created_at", datetime.utcnow().isoformat())
-            })
+        # Get recent users (last 3) - handle mixed datetime formats
+        try:
+            recent_users_list = await db.users.find({}).limit(10).to_list(length=10)
+            # Sort in Python to handle mixed datetime formats
+            sorted_users = []
+            for user in recent_users_list:
+                created_at = user.get('created_at')
+                if created_at:
+                    try:
+                        if isinstance(created_at, str):
+                            sort_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                        else:
+                            sort_date = created_at
+                        sorted_users.append((user, sort_date))
+                    except:
+                        # Skip users with invalid dates
+                        continue
+            
+            # Sort by date and take last 3
+            sorted_users.sort(key=lambda x: x[1], reverse=True)
+            for user, _ in sorted_users[:3]:
+                recent_activity.append({
+                    "action": f"New user registered: {user.get('username', 'Unknown')}",
+                    "timestamp": user.get("created_at", datetime.utcnow().isoformat())
+                })
+        except Exception as e:
+            print(f"Error getting recent users: {e}")
         
-        # Get recent listings (last 2) 
-        recent_listings = await db.listings.find({}).sort("created_at", -1).limit(2).to_list(length=2)
-        for listing in recent_listings:
-            recent_activity.append({
-                "action": f"New listing: {listing.get('title', 'Unknown')}",
-                "timestamp": listing.get("created_at", datetime.utcnow().isoformat())
-            })
+        # Get recent listings (last 2) - handle mixed datetime formats
+        try:
+            recent_listings_list = await db.listings.find({}).limit(10).to_list(length=10)
+            # Sort in Python to handle mixed datetime formats
+            sorted_listings = []
+            for listing in recent_listings_list:
+                created_at = listing.get('created_at')
+                if created_at:
+                    try:
+                        if isinstance(created_at, str):
+                            sort_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                        else:
+                            sort_date = created_at
+                        sorted_listings.append((listing, sort_date))
+                    except:
+                        # Skip listings with invalid dates
+                        continue
+            
+            # Sort by date and take last 2
+            sorted_listings.sort(key=lambda x: x[1], reverse=True)
+            for listing, _ in sorted_listings[:2]:
+                recent_activity.append({
+                    "action": f"New listing: {listing.get('title', 'Unknown')}",
+                    "timestamp": listing.get("created_at", datetime.utcnow().isoformat())
+                })
+        except Exception as e:
+            print(f"Error getting recent listings: {e}")
         
         # Sort by timestamp
         recent_activity.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
