@@ -3053,7 +3053,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
         <AdConfigPanel
           title="Favorites Page Advertisement"
           description="Display advertisement at the top of favorites page below 'My Favorites' header"
-          adConfig={siteConfig.adsManager.favoriteAd}
+          adConfig={siteConfig.adsManager?.favoriteAd || { active: false, image: null, description: '', runtime: '1 month' }}
           adType="favoriteAd"
           handleAdConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
@@ -3067,7 +3067,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
         <AdConfigPanel
           title="Messenger Advertisement"
           description="Display advertisement on the right side of messenger page aligned with conversation"
-          adConfig={siteConfig.adsManager.messengerAd}
+          adConfig={siteConfig.adsManager?.messengerAd || { active: false, image: null, description: '', runtime: '1 month' }}
           adType="messengerAd"
           handleAdConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
@@ -3079,7 +3079,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
       {/* Footer Ad Tab */}
       {activeAdTab === 'footer' && (
         <FooterAdConfigPanel
-          adConfig={siteConfig.adsManager.footerAd}
+          adConfig={siteConfig.adsManager?.footerAd || { active: false, logo: null, companyName: '', runtime: '1 month' }}
           adType="footerAd"
           handleAdConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
