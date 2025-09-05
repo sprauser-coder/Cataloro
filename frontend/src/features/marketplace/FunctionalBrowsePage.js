@@ -380,7 +380,6 @@ function FunctionalBrowsePage() {
               product={product}
               viewMode={viewMode}
               isFavorite={favorites.some(fav => fav.id === product.id)}
-              onAddToCart={() => handleAddToCart(product)}
               onToggleFavorite={() => handleToggleFavorite(product)}
               onShare={() => handleShare(product)}
               onContactSeller={() => handleContactSeller(product)}
