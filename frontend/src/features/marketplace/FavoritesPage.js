@@ -85,7 +85,6 @@ function FavoritesPage() {
               key={item.id}
               item={item}
               onRemove={handleRemoveFromFavorites}
-              onAddToCart={handleAddToCart}
               onNavigate={navigate}
             />
           ))}
