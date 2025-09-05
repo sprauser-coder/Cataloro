@@ -2503,12 +2503,21 @@ function SiteAdministrationTab({ showToast }) {
               <button
                 onClick={saveSiteConfiguration}
                 disabled={isSaving}
-                className="bg-white/20 hover:bg-white/30 disabled:bg-white/10 backdrop-blur-sm text-white px-4 py-2.5 rounded-lg font-semibold flex items-center space-x-2 text-sm disabled:cursor-not-allowed"
+                className={`backdrop-blur-sm text-white px-4 py-2.5 rounded-lg font-semibold flex items-center space-x-2 text-sm disabled:cursor-not-allowed transition-all duration-200 ${
+                  settingsSaved 
+                    ? 'bg-green-500/30 hover:bg-green-500/40' 
+                    : 'bg-white/20 hover:bg-white/30 disabled:bg-white/10'
+                }`}
               >
                 {isSaving ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     <span>Saving...</span>
+                  </>
+                ) : settingsSaved ? (
+                  <>
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Changes Saved!</span>
                   </>
                 ) : (
                   <>
