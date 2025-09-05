@@ -451,7 +451,7 @@ function AdminPanel() {
         />
       )}
       
-      {activeTab === 'settings' && (
+      {activeTab === 'site-settings' && (
         <SettingsTab 
           settings={settings}
           onUpdateSettings={fetchSettings}
