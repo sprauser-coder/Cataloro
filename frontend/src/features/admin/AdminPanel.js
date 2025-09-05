@@ -6509,14 +6509,14 @@ function UserEditModal({ user, onClose, onSave }) {
               </label>
               <input
                 type="password"
-                value={formData.confirm_password}
-                onChange={(e) => setFormData({...formData, confirm_password: e.target.value})}
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
                 className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-                  errors.confirm_password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="Confirm password"
               />
-              {errors.confirm_password && <p className="text-red-500 text-xs mt-1">{errors.confirm_password}</p>}
+              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
             </div>
           )}
 
