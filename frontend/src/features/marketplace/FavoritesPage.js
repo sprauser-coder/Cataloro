@@ -34,7 +34,7 @@ function FavoritesPage() {
     try {
       await removeFromFavorites(listingId, user.id);
       showToast('Removed from favorites', 'success');
-    } catch (error) {
+    } catch {
       showToast('Failed to remove from favorites', 'error');
     }
   };
