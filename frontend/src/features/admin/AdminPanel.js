@@ -1360,6 +1360,7 @@ function HeroSelectionTab({ showToast }) {
   const [heroImageFile, setHeroImageFile] = useState(null);
   const [heroImagePreview, setHeroImagePreview] = useState('');
   const [previewMode, setPreviewMode] = useState(false);
+  const [heroSaved, setHeroSaved] = useState(false);
 
   // Load hero content on mount
   useEffect(() => {
