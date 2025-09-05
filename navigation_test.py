@@ -11,7 +11,7 @@ from datetime import datetime
 
 class NavigationTester:
     def __init__(self):
-        self.frontend_url = "https://market-evolution-1.preview.emergentagent.com"
+        self.frontend_url = "https://market-refactor.preview.emergentagent.com"
         self.test_results = []
         
     def log_result(self, test_name, status, details=""):

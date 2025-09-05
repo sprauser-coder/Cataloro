@@ -10,7 +10,7 @@ import time
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://market-evolution-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-refactor.preview.emergentagent.com/api"
 
 def test_enhanced_hero_image_cms():
     """Test enhanced hero image functionality for CMS"""

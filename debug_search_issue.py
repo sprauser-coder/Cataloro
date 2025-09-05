@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_search():
-    base_url = "https://market-evolution-1.preview.emergentagent.com"
+    base_url = "https://market-refactor.preview.emergentagent.com"
     
     # Create a test user
     user_data = {

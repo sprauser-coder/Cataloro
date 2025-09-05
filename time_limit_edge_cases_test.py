@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import uuid
 
 # Get backend URL from environment
-BACKEND_URL = "https://market-evolution-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-refactor.preview.emergentagent.com/api"
 
 class TimeLimitEdgeCasesTester:
     def __init__(self):
