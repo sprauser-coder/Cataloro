@@ -484,13 +484,7 @@ function MessagesPage() {
                 <option value="sent">Sent</option>
               </select>
               
-              <button
-                onClick={() => setShowCompose(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                New Message
-              </button>
+              {/* New Message button removed - only buyer and seller connections allowed */}
             </div>
           </div>
         </div>
