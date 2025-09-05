@@ -1713,10 +1713,23 @@ function HeroSelectionTab({ showToast }) {
             </button>
             <button
               onClick={handleSave}
-              className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-8 py-3 rounded-xl font-bold border border-white/20"
+              className={`flex items-center space-x-2 backdrop-blur-sm text-white px-8 py-3 rounded-xl font-bold border transition-all duration-200 ${
+                heroSaved 
+                  ? 'bg-green-500/30 hover:bg-green-500/40 border-green-400/30' 
+                  : 'bg-white/20 hover:bg-white/30 border-white/20'
+              }`}
             >
-              <Save className="w-5 h-5" />
-              <span>Save & Apply</span>
+              {heroSaved ? (
+                <>
+                  <CheckCircle className="w-5 h-5" />
+                  <span>Settings Saved!</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  <span>Save & Apply</span>
+                </>
+              )}
             </button>
           </div>
         </div>
