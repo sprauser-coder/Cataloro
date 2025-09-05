@@ -1,0 +1,110 @@
+{
+  "summary": {
+    "total_tests": 7,
+    "passed": 7,
+    "failed": 0,
+    "success_rate": 100.0,
+    "test_date": "2025-09-05T14:36:24.824318",
+    "focus": "System Notifications Manager CRUD and Event Triggering"
+  },
+  "results": [
+    {
+      "test": "1. GET System Notifications List",
+      "status": "\u2705 PASS",
+      "message": "Successfully retrieved 5 notifications",
+      "details": "Response structure valid with 'notifications' array",
+      "timestamp": "2025-09-05T14:36:21.712731"
+    },
+    {
+      "test": "1a. Event Trigger Field Present",
+      "status": "\u2705 PASS",
+      "message": "Event trigger field present: True",
+      "details": "Sample notification fields: ['_id', 'id', 'title', 'message', 'type', 'event_trigger', 'target_users', 'user_ids', 'show_duration', 'delay_before_show', 'is_active', 'created_at', 'created_by', 'expires_at', 'auto_dismiss', 'display_count', 'click_count']",
+      "timestamp": "2025-09-05T14:36:21.712784"
+    },
+    {
+      "test": "2. POST Create System Notification",
+      "status": "\u2705 PASS",
+      "message": "Successfully created notification with ID: 3d9fa776-23ab-4d9c-bf5b-70a17866f701",
+      "details": "Event trigger set to: login",
+      "timestamp": "2025-09-05T14:36:21.771096"
+    },
+    {
+      "test": "3. PUT Update System Notification",
+      "status": "\u2705 PASS",
+      "message": "Successfully updated notification 3d9fa776-23ab-4d9c-bf5b-70a17866f701",
+      "details": "Event trigger changed from 'login' to 'profile_update'",
+      "timestamp": "2025-09-05T14:36:21.831637"
+    },
+    {
+      "test": "4. Verify Event Trigger Persistence",
+      "status": "\u2705 PASS",
+      "message": "Event trigger correctly persisted: profile_update",
+      "details": "All notification fields: ['_id', 'id', 'title', 'message', 'type', 'event_trigger', 'target_users', 'user_ids', 'show_duration', 'delay_before_show', 'is_active', 'created_at', 'created_by', 'expires_at', 'auto_dismiss', 'display_count', 'click_count', 'updated_at']",
+      "timestamp": "2025-09-05T14:36:21.892722"
+    },
+    {
+      "test": "5.1 Create login Event Notification",
+      "status": "\u2705 PASS",
+      "message": "Created notification for login events",
+      "details": "Notification ID: b6553da5-33b4-4f04-b5e0-7b87b5a3819e",
+      "timestamp": "2025-09-05T14:36:21.953869"
+    },
+    {
+      "test": "5.2 Create profile_update Event Notification",
+      "status": "\u2705 PASS",
+      "message": "Created notification for profile_update events",
+      "details": "Notification ID: 01d602f0-ddf7-4999-be52-24ccb107e445",
+      "timestamp": "2025-09-05T14:36:22.018578"
+    },
+    {
+      "test": "5.3 Create listing_published Event Notification",
+      "status": "\u2705 PASS",
+      "message": "Created notification for listing_published events",
+      "details": "Notification ID: 2f323a53-984b-43ee-8b63-52181da1f158",
+      "timestamp": "2025-09-05T14:36:22.072300"
+    },
+    {
+      "test": "5.4 Create purchase_complete Event Notification",
+      "status": "\u2705 PASS",
+      "message": "Created notification for purchase_complete events",
+      "details": "Notification ID: ed42dd3b-a6e1-4dcc-814b-b838d231c8ef",
+      "timestamp": "2025-09-05T14:36:22.131866"
+    },
+    {
+      "test": "5.5 Create manual Event Notification",
+      "status": "\u2705 PASS",
+      "message": "Created notification for manual events",
+      "details": "Notification ID: 48d09d09-613f-41e5-b1ba-18d2ed0ae938",
+      "timestamp": "2025-09-05T14:36:22.188455"
+    },
+    {
+      "test": "5. Different Event Triggers Test",
+      "status": "\u2705 PASS",
+      "message": "Successfully created and cleaned up 5 notifications",
+      "details": "Event triggers tested: ['login', 'profile_update', 'listing_published', 'purchase_complete', 'manual']",
+      "timestamp": "2025-09-05T14:36:22.473839"
+    },
+    {
+      "test": "6. Test Login Event Trigger",
+      "status": "\u2705 PASS",
+      "message": "Login event trigger worked",
+      "details": "User notifications count: 2, Login notification found: True",
+      "timestamp": "2025-09-05T14:36:24.647538"
+    },
+    {
+      "test": "7. DELETE System Notification",
+      "status": "\u2705 PASS",
+      "message": "Successfully deleted notification 3d9fa776-23ab-4d9c-bf5b-70a17866f701",
+      "details": null,
+      "timestamp": "2025-09-05T14:36:24.766473"
+    },
+    {
+      "test": "7a. Verify Notification Deletion",
+      "status": "\u2705 PASS",
+      "message": "Notification successfully removed from database",
+      "details": null,
+      "timestamp": "2025-09-05T14:36:24.820833"
+    }
+  ]
+}
