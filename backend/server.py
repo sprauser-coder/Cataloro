@@ -438,8 +438,8 @@ async def browse_listings(
             if price_to < 999999:
                 query["price"]["$lte"] = price_to
         
-        # Get filtered listings
-        listings = await db.listings.find(query).to_list(length=None)
+        # Get filtered listings sorted by newest first
+        listings = await db.listings.find(query).sort("created_at", -1).to_list(length=None)
         
         # Enrich listings with seller information
         enriched_listings = []
