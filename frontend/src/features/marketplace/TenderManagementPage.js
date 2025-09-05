@@ -685,7 +685,9 @@ function MyListingCard({ listing, onDelete }) {
       case 'active':
         return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
       case 'sold':
-        return 'bg-gray-100 dark:bg-gray-700/50 text-gray-800 dark:text-gray-300';
+        return 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 border-2 border-purple-200 dark:border-purple-700';
+      case 'closed':
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-2 border-blue-200 dark:border-blue-700';
       case 'draft':
         return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300';
       case 'expired':
