@@ -6524,6 +6524,86 @@ function UserEditModal({ user, onClose, onSave }) {
             </div>
           </div>
 
+          {/* Business Registration Section */}
+          <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+            <div className="flex items-center space-x-3 mb-4">
+              <input
+                type="checkbox"
+                id="is_business"
+                name="is_business"
+                checked={formData.is_business}
+                onChange={handleInputChange}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label htmlFor="is_business" className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                <User className="w-4 h-4 mr-2 text-blue-600" />
+                Business Account
+              </label>
+            </div>
+            
+            {/* Conditional Business Fields */}
+            {formData.is_business && (
+              <div className="space-y-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 flex items-center">
+                  <User className="w-4 h-4 mr-2" />
+                  Business Information
+                </h4>
+                
+                {/* Company Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Company Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="company_name"
+                    value={formData.company_name}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                      errors.company_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    }`}
+                    placeholder="Enter company name"
+                  />
+                  {errors.company_name && <p className="text-red-500 text-xs mt-1">{errors.company_name}</p>}
+                </div>
+
+                {/* Country */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Country *
+                  </label>
+                  <input
+                    type="text"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                      errors.country ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    }`}
+                    placeholder="Enter country"
+                  />
+                  {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
+                </div>
+
+                {/* VAT Number */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    VAT Number
+                    <span className="text-xs text-gray-500 ml-1">(Optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="vat_number"
+                    value={formData.vat_number}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="Enter VAT number (if applicable)"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
