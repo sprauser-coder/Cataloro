@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 """
-TenderManagementPage Backend Testing
-Testing both Tender Management and Listings Management functionality
+Enhanced Admin Dashboard Backend Testing
+Testing the complete enhanced admin dashboard with all improvements
 """
 
 import requests
 import json
 import sys
-import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
-# Get backend URL from environment
+# Configuration
 BACKEND_URL = "https://market-refactor.preview.emergentagent.com/api"
 
-class TenderManagementTester:
+class AdminDashboardTester:
     def __init__(self):
         self.backend_url = BACKEND_URL
         self.test_results = []
