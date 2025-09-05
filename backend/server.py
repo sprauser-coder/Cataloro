@@ -426,6 +426,9 @@ async def update_profile(user_id: str, profile_data: dict):
         # Get updated user data
         updated_user = await db.users.find_one({"id": user_id})
         if updated_user:
+            # Trigger system notifications for profile update event
+            await trigger_system_notifications(user_id, "profile_update")
+            
             return {
                 "message": "Profile updated successfully",
                 "user": serialize_doc(updated_user)
