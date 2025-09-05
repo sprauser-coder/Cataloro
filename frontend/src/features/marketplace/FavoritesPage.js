@@ -15,15 +15,33 @@ function useAdsConfig() {
   const [adsConfig, setAdsConfig] = useState(null);
   
   useEffect(() => {
-    try {
-      const savedConfig = localStorage.getItem('cataloro_site_config');
-      if (savedConfig) {
-        const config = JSON.parse(savedConfig);
-        setAdsConfig(config.adsManager || null);
+    const loadAdsConfig = () => {
+      try {
+        const savedConfig = localStorage.getItem('cataloro_site_config');
+        if (savedConfig) {
+          const config = JSON.parse(savedConfig);
+          setAdsConfig(config.adsManager || null);
+        }
+      } catch (error) {
+        console.warn('Could not load ads configuration');
       }
-    } catch (error) {
-      console.warn('Could not load ads configuration');
-    }
+    };
+
+    // Load initially
+    loadAdsConfig();
+
+    // Listen for ads config updates
+    const handleAdsConfigUpdate = () => {
+      loadAdsConfig();
+    };
+
+    window.addEventListener('adsConfigUpdated', handleAdsConfigUpdate);
+    window.addEventListener('storage', handleAdsConfigUpdate);
+
+    return () => {
+      window.removeEventListener('adsConfigUpdated', handleAdsConfigUpdate);
+      window.removeEventListener('storage', handleAdsConfigUpdate);
+    };
   }, []);
   
   return adsConfig;
