@@ -53,7 +53,7 @@ export const API_ENDPOINTS = {
   USER: {
     MY_LISTINGS: `${CURRENT_ENV.BACKEND_URL}/api/user/my-listings/{user_id}`,
     MY_DEALS: `${CURRENT_ENV.BACKEND_URL}/api/user/my-deals/{user_id}`,
-    NOTIFICATIONS: `${CURRENT_ENV.BACKEND_URL}/api/user/notifications/{user_id}`,
+    NOTIFICATIONS: `${CURRENT_ENV.BACKEND_URL}/api/user/{user_id}/notifications`,
     PROFILE: `${CURRENT_ENV.BACKEND_URL}/api/user/profile`
   },
   
