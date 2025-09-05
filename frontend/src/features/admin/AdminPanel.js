@@ -1753,6 +1753,41 @@ function HeroSelectionTab({ showToast }) {
     }
   };
 
+  const handleBackgroundImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showToast('Please select an image file (PNG, JPG, etc.)', 'error');
+        return;
+      }
+
+      // Validate file size (5MB limit for background images)
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('File size must be less than 5MB', 'error');
+        return;
+      }
+
+      setBackgroundImageFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target.result;
+        setBackgroundImagePreview(result);
+        
+        // Update heroContent with the preview URL
+        setHeroContent(prev => ({
+          ...prev,
+          background_image: result
+        }));
+      };
+      reader.readAsDataURL(file);
+      
+      showToast('Background image ready - click Save & Apply to update the Browse page', 'info');
+    }
+  };
+
   const handleRemoveImage = () => {
     setHeroImageFile(null);
     setHeroImagePreview('');
