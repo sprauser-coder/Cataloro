@@ -64,6 +64,7 @@ import {
   ArrowRight,
   ArrowDown,
   UserPlus,
+  Plus,
   ShoppingBag,
   MessageCircle,
   CreditCard,
