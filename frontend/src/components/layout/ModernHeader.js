@@ -856,7 +856,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                               {notification.type === 'message' ? <MessageCircle className="w-3.5 h-3.5" /> :
                                notification.type === 'favorite' ? <Heart className="w-3.5 h-3.5" /> :
                                notification.type === 'payment' ? <DollarSign className="w-3.5 h-3.5" /> :
-                               notification.type === 'buy_request' ? <ShoppingCart className="w-3.5 h-3.5" /> :
+                               notification.type === 'buy_request' ? <Package className="w-3.5 h-3.5" /> :
                                notification.type === 'buy_approved' ? <Check className="w-3.5 h-3.5" /> :
                                notification.type === 'buy_rejected' ? <X className="w-3.5 h-3.5" /> :
                                <Bell className="w-3.5 h-3.5" />}
