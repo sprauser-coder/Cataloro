@@ -242,9 +242,7 @@ function ModernBrowsePage() {
     fetchUserActiveBids();
   }, [user?.id]);
 
-  const handleAddToCart = (item) => {
-    addToCart(item);
-  };
+
 
   const handleSubmitTender = async (item, offerAmount) => {
     if (!user) {
