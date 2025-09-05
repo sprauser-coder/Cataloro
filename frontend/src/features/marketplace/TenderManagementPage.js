@@ -1051,4 +1051,132 @@ function MyListingCard({ listing, onDelete }) {
   );
 }
 
+// Listings Tab Component (previously part of SellTab)
+function ListingsTab({
+  listings,
+  allListings,
+  listingsLoading,
+  activeFilter,
+  handleTileClick,
+  handleCreateListing,
+  handleDeleteListing
+}) {
+
+  if (listingsLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading your listings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">My Listings</h2>
+        <div className="text-sm text-gray-500 dark:text-gray-400">
+          Manage your product listings and track their performance
+        </div>
+      </div>
+      
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <button
+          onClick={() => handleTileClick('all')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'all' ? 'ring-2 ring-blue-500 bg-blue-50/20 dark:bg-blue-900/20' : ''
+          }`}
+        >
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{allListings.length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Total Listings</div>
+          </div>
+        </button>
+        <button
+          onClick={() => handleTileClick('active')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'active' ? 'ring-2 ring-green-500 bg-green-50/20 dark:bg-green-900/20' : ''
+          }`}
+        >
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{allListings.filter(l => l.status === 'active').length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Active</div>
+          </div>
+        </button>
+        <button
+          onClick={() => handleTileClick('closed')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'closed' ? 'ring-2 ring-red-500 bg-red-50/20 dark:bg-red-900/20' : ''
+          }`}
+        >
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">{allListings.filter(l => l.status === 'sold' || l.status === 'closed').length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Closed</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Sold & completed</div>
+          </div>
+        </button>
+        <button
+          onClick={() => handleTileClick('drafts')}
+          className={`cataloro-card-glass text-left transition-all duration-200 hover:scale-105 ${
+            activeFilter === 'drafts' ? 'ring-2 ring-orange-500 bg-orange-50/20 dark:bg-orange-900/20' : ''
+          }`}
+        >
+          <div className="p-6 text-center">
+            <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent">{allListings.filter(l => l.status === 'draft' || l.is_draft).length}</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">Drafts</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Finish & publish later</div>
+          </div>
+        </button>
+      </div>
+
+      {/* Filter Indicator */}
+      {activeFilter !== 'all' && (
+        <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+          <span className="text-blue-800 dark:text-blue-300 font-medium">
+            Showing {activeFilter} listings ({listings.length} items)
+          </span>
+          <button 
+            onClick={() => handleTileClick('all')}
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+          >
+            Show All
+          </button>
+        </div>
+      )}
+
+      {/* Listings Grid */}
+      {listings.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="cataloro-card-glass p-12">
+            <div className="w-24 h-24 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Plus className="w-12 h-12 text-gray-600 dark:text-gray-300" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">No listings yet</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto">Create your first listing to start selling on our modern marketplace</p>
+            <button 
+              onClick={handleCreateListing}
+              className="cataloro-button-primary"
+            >
+              Create Your First Listing
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {listings.map((listing) => (
+            <MyListingCard 
+              key={listing.id} 
+              listing={listing} 
+              onDelete={handleDeleteListing}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default TenderManagementPage;
