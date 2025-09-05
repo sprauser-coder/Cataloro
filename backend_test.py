@@ -52,19 +52,49 @@ class NotificationsTester:
             print(f"   Actual: {actual}")
         print()
     
-    # Test 1: GET /api/admin/dashboard endpoint accessibility
-    def test_dashboard_endpoint():
-        """Test that the admin dashboard endpoint is accessible"""
+    def setup_test_user(self):
+        """Setup test user for notifications testing"""
         try:
-            response = requests.get(f"{API_BASE}/admin/dashboard", timeout=10)
-            if response.status_code == 200:
-                print(f"   Dashboard endpoint accessible: HTTP {response.status_code}")
-                return True
+            # Login as demo user to get user ID
+            test_user_data = {
+                "email": "demo@cataloro.com",
+                "password": "demo123",
+                "username": "notifications_test_user"
+            }
+            
+            login_response = self.session.post(f"{API_BASE}/auth/login", json=test_user_data)
+            if login_response.status_code == 200:
+                user_data = login_response.json()
+                self.test_user_id = user_data.get("user", {}).get("id")
+                
+                if self.test_user_id:
+                    self.log_test(
+                        "Test User Setup",
+                        True,
+                        f"Successfully logged in test user with ID: {self.test_user_id}"
+                    )
+                    return True
+                else:
+                    self.log_test(
+                        "Test User Setup",
+                        False,
+                        "Failed to get user ID from login response"
+                    )
+                    return False
             else:
-                print(f"   Dashboard endpoint failed: HTTP {response.status_code}")
+                self.log_test(
+                    "Test User Setup",
+                    False,
+                    f"Login failed with status {login_response.status_code}"
+                )
                 return False
+                
         except Exception as e:
-            print(f"   Dashboard endpoint error: {e}")
+            self.log_test(
+                "Test User Setup",
+                False,
+                f"Exception during setup: {str(e)}"
+            )
             return False
     
     # Test 2: Verify KPI structure and field names
