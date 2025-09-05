@@ -1355,7 +1355,13 @@ function HeroSelectionTab({ showToast }) {
     description: 'From electronics to fashion, find everything you need in one place',
     height: 400,
     image_url: '',
-    search_placeholder: 'Search for anything you need...'
+    search_placeholder: 'Search for anything you need...',
+    display_mode: 'boxed', // boxed, full_width
+    background_type: 'gradient', // gradient, solid, image
+    background_color: '#3B82F6',
+    background_gradient_from: '#3B82F6',
+    background_gradient_to: '#EC4899',
+    background_image: ''
   });
   const [heroImageFile, setHeroImageFile] = useState(null);
   const [heroImagePreview, setHeroImagePreview] = useState('');
