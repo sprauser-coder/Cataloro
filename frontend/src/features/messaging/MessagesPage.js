@@ -195,7 +195,16 @@ function MessagesPage() {
       
       // Group messages into conversations
       const conversationsMap = new Map();
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      
       userMessages.forEach(msg => {
+        const messageDate = new Date(msg.created_at);
+        
+        // Skip messages older than 7 days (auto-delete feature)
+        if (messageDate < sevenDaysAgo) {
+          return;
+        }
+        
         const otherUserId = msg.sender_id === user.id ? msg.recipient_id : msg.sender_id;
         const otherUserName = msg.sender_id === user.id ? msg.recipient_name : msg.sender_name;
         
@@ -229,6 +238,11 @@ function MessagesPage() {
         if (!b.lastMessage) return -1;
         return new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at);
       });
+      
+      // Show notification if chats were auto-deleted
+      if (userMessages.length > conversationsList.reduce((total, conv) => total + conv.messages.length, 0)) {
+        showToast('⚠️ Some conversations older than 7 days have been automatically removed', 'info');
+      }
       
       setConversations(conversationsList);
     } catch (error) {
