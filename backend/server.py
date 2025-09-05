@@ -372,6 +372,31 @@ async def get_profile(user_id: str):
         raise HTTPException(status_code=404, detail="User not found")
     return serialize_doc(user)
 
+@app.get("/api/auth/check-username/{username}")
+async def check_username_availability(username: str):
+    """Check if username is available for registration"""
+    try:
+        # Validate username format (basic validation)
+        if not username or len(username) < 3 or len(username) > 50:
+            return {"available": False, "reason": "Username must be between 3 and 50 characters"}
+        
+        # Check if username contains only allowed characters
+        import re
+        if not re.match("^[a-zA-Z0-9_.-]+$", username):
+            return {"available": False, "reason": "Username can only contain letters, numbers, underscores, dots, and hyphens"}
+        
+        # Check if username already exists (case-insensitive)
+        existing_user = await db.users.find_one({"username": {"$regex": f"^{username}$", "$options": "i"}})
+        
+        if existing_user:
+            return {"available": False, "reason": "Username is already taken"}
+        
+        return {"available": True}
+        
+    except Exception as e:
+        logger.error(f"Error checking username availability: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error checking username availability")
+
 @app.put("/api/auth/profile/{user_id}")
 async def update_profile(user_id: str, profile_data: dict):
     """Update user profile with persistent data"""
