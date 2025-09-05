@@ -232,29 +232,6 @@ function AdminPanel() {
   const { allProducts, cartItems, favorites, notifications } = useMarketplace();
   const { showToast } = useNotifications();
 
-  // Calculate real KPIs from marketplace data
-  const calculateRealKPIs = () => {
-    const totalProducts = allProducts.length;
-    const totalCartItems = cartItems.length;
-    const totalFavorites = favorites.length;
-    const totalViews = allProducts.reduce((sum, product) => sum + (product.views || 0), 0);
-    const totalRevenue = allProducts.reduce((sum, product) => sum + (product.price || 0), 0);
-    const averageRating = allProducts.reduce((sum, product) => sum + (product.rating || 0), 0) / totalProducts;
-
-    return {
-      total_users: 156, // From backend
-      total_products: totalProducts,
-      active_products: allProducts.filter(p => p.inStock !== false).length,
-      total_views: totalViews,
-      cart_items: totalCartItems,
-      favorites_count: totalFavorites,
-      total_revenue: totalRevenue,
-      average_rating: averageRating || 0,
-      growth_rate: 12.5,
-      notifications_count: notifications.length
-    };
-  };
-
   useEffect(() => {
     if (isAdmin()) {
       fetchDashboardData();
