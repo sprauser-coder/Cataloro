@@ -951,28 +951,40 @@ function DashboardTab({ dashboardData, loading }) {
       <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-8">
         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Quick Management Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <button className="flex flex-col items-center space-y-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-500">
+          <button 
+            onClick={handleExportData}
+            className="flex flex-col items-center space-y-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-500"
+          >
             <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
               <Download className="w-6 h-6 text-purple-600" />
             </div>
             <span className="font-medium text-gray-900 dark:text-white">Export Data</span>
           </button>
           
-          <button className="flex flex-col items-center space-y-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-500">
+          <button 
+            onClick={handleRefreshStats}
+            className="flex flex-col items-center space-y-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-500"
+          >
             <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
               <RefreshCw className="w-6 h-6 text-green-600" />
             </div>
             <span className="font-medium text-gray-900 dark:text-white">Refresh Stats</span>
           </button>
           
-          <button className="flex flex-col items-center space-y-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500">
+          <button 
+            onClick={handleSystemBackup}
+            className="flex flex-col items-center space-y-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500"
+          >
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
               <Shield className="w-6 h-6 text-blue-600" />
             </div>
             <span className="font-medium text-gray-900 dark:text-white">System Backup</span>
           </button>
           
-          <button className="flex flex-col items-center space-y-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-500">
+          <button 
+            onClick={handleViewReports}
+            className="flex flex-col items-center space-y-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-500"
+          >
             <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl">
               <BarChart3 className="w-6 h-6 text-orange-600" />
             </div>
