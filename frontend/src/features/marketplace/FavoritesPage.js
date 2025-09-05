@@ -10,6 +10,25 @@ import { useMarketplace } from '../../context/MarketplaceContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 
+// Hook to get ads configuration
+function useAdsConfig() {
+  const [adsConfig, setAdsConfig] = useState(null);
+  
+  useEffect(() => {
+    try {
+      const savedConfig = localStorage.getItem('cataloro_site_config');
+      if (savedConfig) {
+        const config = JSON.parse(savedConfig);
+        setAdsConfig(config.adsManager || null);
+      }
+    } catch (error) {
+      console.warn('Could not load ads configuration');
+    }
+  }, []);
+  
+  return adsConfig;
+}
+
 function FavoritesPage() {
   const { user } = useAuth();
   const { showToast } = useNotifications();
