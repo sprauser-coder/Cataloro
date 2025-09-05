@@ -5599,4 +5599,240 @@ function PriceOverrideModal({ catalyst, onSave, onClose }) {
   );
 }
 
+// User Edit/Create Modal Component
+function UserEditModal({ user, onClose, onSave }) {
+  const [formData, setFormData] = useState({
+    full_name: user?.full_name || '',
+    username: user?.username || '',
+    email: user?.email || '',
+    role: user?.role || 'user',
+    is_active: user?.is_active !== undefined ? user.is_active : true,
+    password: '',
+    confirm_password: ''
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.full_name.trim()) {
+      newErrors.full_name = 'Full name is required';
+    }
+
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+
+    // Password validation only for new users or if password is being changed
+    if (!user && !formData.password) {
+      newErrors.password = 'Password is required for new users';
+    }
+    
+    if (formData.password && formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (formData.password && formData.password !== formData.confirm_password) {
+      newErrors.confirm_password = 'Passwords do not match';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    const submitData = { ...formData };
+    
+    // If editing existing user, include ID
+    if (user) {
+      submitData.id = user.id;
+    }
+
+    // Remove password fields if they're empty (for updates)
+    if (!submitData.password) {
+      delete submitData.password;
+      delete submitData.confirm_password;
+    } else {
+      delete submitData.confirm_password; // Don't send confirm_password to backend
+    }
+
+    onSave(submitData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {user ? 'Edit User' : 'Create New User'}
+          </h3>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Full Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Full Name
+            </label>
+            <input
+              type="text"
+              value={formData.full_name}
+              onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+              className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                errors.full_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              }`}
+              placeholder="Enter full name"
+            />
+            {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name}</p>}
+          </div>
+
+          {/* Username */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Username
+            </label>
+            <input
+              type="text"
+              value={formData.username}
+              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                errors.username ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              }`}
+              placeholder="Enter username"
+            />
+            {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              }`}
+              placeholder="Enter email"
+            />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+          </div>
+
+          {/* Role */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Role
+            </label>
+            <select
+              value={formData.role}
+              onChange={(e) => setFormData({...formData, role: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
+          {/* Status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Status
+            </label>
+            <div className="flex items-center space-x-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="is_active"
+                  checked={formData.is_active === true}
+                  onChange={() => setFormData({...formData, is_active: true})}
+                  className="mr-2"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Active</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="is_active"
+                  checked={formData.is_active === false}
+                  onChange={() => setFormData({...formData, is_active: false})}
+                  className="mr-2"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Suspended</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Password {user && <span className="text-xs text-gray-500">(leave blank to keep current)</span>}
+            </label>
+            <input
+              type="password"
+              value={formData.password}
+              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              }`}
+              placeholder={user ? "Enter new password (optional)" : "Enter password"}
+            />
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+          </div>
+
+          {/* Confirm Password */}
+          {formData.password && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                value={formData.confirm_password}
+                onChange={(e) => setFormData({...formData, confirm_password: e.target.value})}
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                  errors.confirm_password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                }`}
+                placeholder="Confirm password"
+              />
+              {errors.confirm_password && <p className="text-red-500 text-xs mt-1">{errors.confirm_password}</p>}
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            >
+              {user ? 'Update User' : 'Create User'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default AdminPanel;
