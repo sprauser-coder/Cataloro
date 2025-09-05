@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 """
-Admin Dashboard Backend Testing
-Testing comprehensive dashboard data with KPIs, metrics, and real marketplace data
+Admin Dashboard Data Accuracy Test
+Testing the FIXED Admin Dashboard Data Display to verify:
+1. Backend returns correct data (74 users, €2,970 revenue)
+2. No hardcoded frontend values overriding backend data
+3. No inflated numbers (156 users or €7,829 revenue)
+4. All KPIs reflect accurate backend data
+5. Revenue shows corrected €2,970 from real transactions
 """
 
 import requests
 import json
 import sys
-import time
 from datetime import datetime
 
-# Get backend URL from environment
+# Configuration
 BACKEND_URL = "https://market-refactor.preview.emergentagent.com/api"
 
 class AdminDashboardTester:
