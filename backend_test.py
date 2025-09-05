@@ -1,27 +1,30 @@
 #!/usr/bin/env python3
 """
-USER NOTIFICATIONS SYSTEM COMPREHENSIVE TESTING
-Testing the user notifications system to identify why NotificationsCenterPage 
-is showing fake/demo notifications instead of real ones.
+SYSTEM NOTIFICATIONS SEPARATION TESTING AND CLEANUP
+Backend API Testing for Cataloro Marketplace
 
-This test verifies:
-1. `/api/user/{user_id}/notifications` endpoint returns real notifications
-2. Notifications are created when users perform actions
-3. Notification structure matches frontend expectations
-4. Demo data issues are identified
-5. Marking notifications as read functionality
+This test focuses on:
+1. Database cleanup - removing system notifications from user_notifications collection
+2. System notifications endpoint test - verify /api/user/{user_id}/system-notifications
+3. Regular notifications endpoint test - verify /api/user/{user_id}/notifications  
+4. Separation verification - confirm system and regular notifications are separate
+5. System notification triggering - test they're triggered but NOT stored in user_notifications
+6. Database collections verification
 """
 
 import requests
 import json
-import sys
-import os
-from datetime import datetime
 import time
+import uuid
+from datetime import datetime
+import sys
 
-# Get backend URL from environment
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://cataloro-upgrade.preview.emergentagent.com')
-API_BASE = f"{BACKEND_URL}/api"
+# Configuration
+BASE_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
+TEST_USER_EMAIL = "system_test_user@example.com"
+TEST_USER_PASSWORD = "testpass123"
+ADMIN_EMAIL = "admin@cataloro.com"
+ADMIN_PASSWORD = "admin123"
 
 class NotificationsTester:
     def __init__(self):
