@@ -6245,6 +6245,8 @@ function UserEditModal({ user, onClose, onSave }) {
   });
 
   const [errors, setErrors] = useState({});
+  const [usernameAvailable, setUsernameAvailable] = useState(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
