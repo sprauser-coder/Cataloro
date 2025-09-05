@@ -71,6 +71,10 @@ async def add_cors_headers(request: Request, call_next):
     
     return response
 
+# Static Files - Serve uploaded images
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 # MongoDB Connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
