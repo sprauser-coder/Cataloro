@@ -3380,6 +3380,46 @@ function SiteAdministrationTab({ showToast }) {
                 ))}
               </div>
             </div>
+
+            {/* Feature Management Save Button */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Apply Feature Changes</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Make selected features active on the website</p>
+                </div>
+                <button
+                  onClick={saveSiteConfiguration}
+                  disabled={isSaving}
+                  className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                    isSaving 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl'
+                  } text-white`}
+                >
+                  {isSaving ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Applying...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Apply Features</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              
+              {/* Visual Confirmation */}
+              <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg hidden" id="features-save-success">
+                <div className="flex items-center space-x-2 text-green-800 dark:text-green-200">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="font-medium">Feature configuration applied successfully!</span>
+                </div>
+                <p className="text-sm text-green-700 dark:text-green-300 mt-1">Your selected features are now active on the website.</p>
+              </div>
+            </div>
           </div>
         )}
 
