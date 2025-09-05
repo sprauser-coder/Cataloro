@@ -12,6 +12,7 @@ import {
   MessageCircle,
   Settings,
   LogOut,
+  Package,
   Moon,
   Sun,
   Menu,
