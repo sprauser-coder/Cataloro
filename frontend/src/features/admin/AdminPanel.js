@@ -240,7 +240,7 @@ function AdminPanel() {
       fetchDashboardData();
       if (activeTab === 'users') {
         fetchUsers();
-      } else if (activeTab === 'settings') {
+      } else if (activeTab === 'site-settings') {
         fetchSettings();
       }
     }
