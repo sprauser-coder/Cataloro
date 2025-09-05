@@ -432,6 +432,12 @@ export function MarketplaceProvider({ children }) {
       
       // Use real listings even if empty (don't fall back to demo data)
       dispatch({ type: ACTIONS.SET_PRODUCTS, payload: transformedListings });
+      
+      // Apply initial sort after loading products
+      setTimeout(() => {
+        applyFiltersAndSearch('', state.activeFilters, state.sortBy);
+      }, 0);
+      
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       console.log('🎉 Successfully loaded', transformedListings.length, 'real listings from API');
       return;
