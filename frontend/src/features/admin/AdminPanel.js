@@ -2859,6 +2859,389 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
 }
 
 // Comprehensive Site Administration Tab Component
+// Ad's Manager Component
+function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
+  const [activeAdTab, setActiveAdTab] = React.useState('browse');
+  
+  const handleAdConfigChange = (adType, field, value) => {
+    handleConfigChange('adsManager', {
+      ...siteConfig.adsManager,
+      [adType]: {
+        ...siteConfig.adsManager[adType],
+        [field]: value
+      }
+    });
+  };
+
+  const handleImageUpload = async (adType, file, field = 'image') => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('section', `ads_${adType}`);
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload-image`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        handleAdConfigChange(adType, field, result.url);
+        showToast(`${field === 'logo' ? 'Logo' : 'Image'} uploaded successfully!`, 'success');
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      console.error('Image upload error:', error);
+      showToast('Failed to upload image. Please try again.', 'error');
+    }
+  };
+
+  const adTabs = [
+    { id: 'browse', label: "Browse Page Ad's", icon: Package },
+    { id: 'favorite', label: "Favorite Ad's", icon: Heart },
+    { id: 'messenger', label: "Messenger Ad's", icon: MessageCircle },
+    { id: 'footer', label: "Footer Ad's", icon: Layout }
+  ];
+
+  const runtimeOptions = [
+    { value: '1 month', label: '1 Month' },
+    { value: '3 months', label: '3 Months' },
+    { value: '1 year', label: '1 Year' }
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-6 text-white">
+        <h3 className="text-xl font-bold mb-2">Ad's Manager</h3>
+        <p className="text-purple-100">Manage advertisements across your marketplace</p>
+      </div>
+
+      {/* Tabs Navigation */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center space-x-1 bg-gray-100/50 dark:bg-gray-800/50 rounded-lg p-1 overflow-x-auto">
+          {adTabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveAdTab(tab.id)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                  activeAdTab === tab.id
+                    ? 'bg-purple-600 text-white shadow-lg'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700/50'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Browse Page Ad Tab */}
+      {activeAdTab === 'browse' && (
+        <AdConfigPanel
+          title="Browse Page Advertisement"
+          description="Display advertisement on the right side of browse page (3 listings per row layout)"
+          adConfig={siteConfig.adsManager.browsePageAd}
+          adType="browsePageAd"
+          handleAdConfigChange={handleAdConfigChange}
+          handleImageUpload={handleImageUpload}
+          runtimeOptions={runtimeOptions}
+          showDimensions={true}
+          dimensionsLabel="Ad Dimensions (Vertical Banner)"
+        />
+      )}
+
+      {/* Favorite Ad Tab */}
+      {activeAdTab === 'favorite' && (
+        <AdConfigPanel
+          title="Favorites Page Advertisement"
+          description="Display advertisement at the top of favorites page below 'My Favorites' header"
+          adConfig={siteConfig.adsManager.favoriteAd}
+          adType="favoriteAd"
+          handleAdConfigChange={handleAdConfigChange}
+          handleImageUpload={handleImageUpload}
+          runtimeOptions={runtimeOptions}
+          showDimensions={false}
+        />
+      )}
+
+      {/* Messenger Ad Tab */}
+      {activeAdTab === 'messenger' && (
+        <AdConfigPanel
+          title="Messenger Advertisement"
+          description="Display advertisement on the right side of messenger page aligned with conversation"
+          adConfig={siteConfig.adsManager.messengerAd}
+          adType="messengerAd"
+          handleAdConfigChange={handleAdConfigChange}
+          handleImageUpload={handleImageUpload}
+          runtimeOptions={runtimeOptions}
+          showDimensions={false}
+        />
+      )}
+
+      {/* Footer Ad Tab */}
+      {activeAdTab === 'footer' && (
+        <FooterAdConfigPanel
+          adConfig={siteConfig.adsManager.footerAd}
+          adType="footerAd"
+          handleAdConfigChange={handleAdConfigChange}
+          handleImageUpload={handleImageUpload}
+          runtimeOptions={runtimeOptions}
+        />
+      )}
+    </div>
+  );
+}
+
+// Generic Ad Config Panel Component
+function AdConfigPanel({ 
+  title, 
+  description, 
+  adConfig, 
+  adType, 
+  handleAdConfigChange, 
+  handleImageUpload, 
+  runtimeOptions,
+  showDimensions = false,
+  dimensionsLabel = "Ad Dimensions"
+}) {
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{title}</h4>
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">{description}</p>
+
+      {/* Active Toggle */}
+      <div className="space-y-6">
+        <label className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+          <button
+            onClick={() => handleAdConfigChange(adType, 'active', !adConfig.active)}
+            className="mt-1"
+          >
+            {adConfig.active ? (
+              <ToggleRight className="w-6 h-6 text-green-600" />
+            ) : (
+              <ToggleLeft className="w-6 h-6 text-gray-400" />
+            )}
+          </button>
+          <div>
+            <div className="font-medium text-gray-900 dark:text-white">Active</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Enable this advertisement section</div>
+          </div>
+        </label>
+
+        {adConfig.active && (
+          <>
+            {/* Image Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Advertisement Image
+              </label>
+              <div className="space-y-3">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) handleImageUpload(adType, file);
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+                {adConfig.image && (
+                  <div className="mt-2">
+                    <img 
+                      src={adConfig.image} 
+                      alt="Advertisement preview" 
+                      className="w-32 h-32 object-cover rounded-lg border"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Description/Alt Text
+              </label>
+              <textarea
+                value={adConfig.description}
+                onChange={(e) => handleAdConfigChange(adType, 'description', e.target.value)}
+                placeholder="Enter advertisement description..."
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+
+            {/* Runtime */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Runtime
+              </label>
+              <select
+                value={adConfig.runtime}
+                onChange={(e) => handleAdConfigChange(adType, 'runtime', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                {runtimeOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Dimensions (for browse page ad) */}
+            {showDimensions && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {dimensionsLabel}
+                </label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Width</label>
+                    <input
+                      type="text"
+                      value={adConfig.width}
+                      onChange={(e) => handleAdConfigChange(adType, 'width', e.target.value)}
+                      placeholder="300px"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Height</label>
+                    <input
+                      type="text"
+                      value={adConfig.height}
+                      onChange={(e) => handleAdConfigChange(adType, 'height', e.target.value)}
+                      placeholder="600px"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Footer Ad Config Panel Component
+function FooterAdConfigPanel({ adConfig, adType, handleAdConfigChange, handleImageUpload, runtimeOptions }) {
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Footer Advertisement</h4>
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+        Display a small logo in the footer with "In cooperation with [Company]" text
+      </p>
+
+      {/* Active Toggle */}
+      <div className="space-y-6">
+        <label className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+          <button
+            onClick={() => handleAdConfigChange(adType, 'active', !adConfig.active)}
+            className="mt-1"
+          >
+            {adConfig.active ? (
+              <ToggleRight className="w-6 h-6 text-green-600" />
+            ) : (
+              <ToggleLeft className="w-6 h-6 text-gray-400" />
+            )}
+          </button>
+          <div>
+            <div className="font-medium text-gray-900 dark:text-white">Active</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Enable footer cooperation section</div>
+          </div>
+        </label>
+
+        {adConfig.active && (
+          <>
+            {/* Logo Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Company Logo
+              </label>
+              <div className="space-y-3">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) handleImageUpload(adType, file, 'logo');
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                />
+                {adConfig.logo && (
+                  <div className="mt-2">
+                    <img 
+                      src={adConfig.logo} 
+                      alt="Company logo preview" 
+                      className="w-16 h-16 object-contain rounded-lg border bg-white"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Company Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Company Name
+              </label>
+              <input
+                type="text"
+                value={adConfig.companyName}
+                onChange={(e) => handleAdConfigChange(adType, 'companyName', e.target.value)}
+                placeholder="Enter company name..."
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Will display as: "In cooperation with [Company Name]"
+              </p>
+            </div>
+
+            {/* Runtime */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Runtime
+              </label>
+              <select
+                value={adConfig.runtime}
+                onChange={(e) => handleAdConfigChange(adType, 'runtime', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                {runtimeOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Preview */}
+            {adConfig.logo && adConfig.companyName && (
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview:</h5>
+                <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                  <span>In cooperation with</span>
+                  <img src={adConfig.logo} alt="logo" className="w-6 h-6 object-contain" />
+                  <span className="font-medium">{adConfig.companyName}</span>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Site Administration Tab Component
 function SiteAdministrationTab({ showToast }) {
   const [activeSection, setActiveSection] = React.useState('appearance');
   const [isSaving, setIsSaving] = React.useState(false);
