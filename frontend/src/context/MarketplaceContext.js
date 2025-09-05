@@ -877,7 +877,7 @@ export function MarketplaceProvider({ children }) {
           return (b.views || 0) - (a.views || 0);
         case 'newest':
         default:
-          return new Date(b.createdAt) - new Date(a.createdAt);
+          return new Date(b.created_at) - new Date(a.created_at);
       }
     });
 
