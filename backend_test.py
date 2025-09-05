@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 """
-FINAL ADMIN DASHBOARD DATA ACCURACY VERIFICATION TEST
-Testing the COMPLETELY FIXED Admin Dashboard Data Accuracy as requested in review.
+USER NOTIFICATIONS SYSTEM COMPREHENSIVE TESTING
+Testing the user notifications system to identify why NotificationsCenterPage 
+is showing fake/demo notifications instead of real ones.
 
 This test verifies:
-1. GET /api/admin/dashboard endpoint functionality
-2. Frontend field name mappings match backend response fields
-3. Dashboard displays accurate data:
-   - Revenue: €2,970 (using kpis.revenue field)
-   - Active Listings: 22 (using kpis.active_listings field) 
-   - Total Listings: 29 (using kpis.total_listings field)
-   - Conversion Rate: calculated from real data
-4. Chart data generation uses real backend values
-5. All KPIs display accurate marketplace data
+1. `/api/user/{user_id}/notifications` endpoint returns real notifications
+2. Notifications are created when users perform actions
+3. Notification structure matches frontend expectations
+4. Demo data issues are identified
+5. Marking notifications as read functionality
 """
 
 import requests
@@ -20,6 +17,7 @@ import json
 import sys
 import os
 from datetime import datetime
+import time
 
 # Get backend URL from environment
 BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://cataloro-upgrade.preview.emergentagent.com')
