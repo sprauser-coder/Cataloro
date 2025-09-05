@@ -780,6 +780,24 @@ function MessagesPage() {
               </div>
             )}
           </div>
+
+          {/* Messenger Advertisement */}
+          {adsConfig?.messengerAd?.active && adsConfig.messengerAd.image && (
+            <div className="w-64 border-l border-gray-200/30 dark:border-gray-700/30 p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow h-fit">
+                <img
+                  src={adsConfig.messengerAd.image}
+                  alt={adsConfig.messengerAd.description || 'Advertisement'}
+                  className="w-full h-64 object-cover"
+                />
+                {adsConfig.messengerAd.description && (
+                  <div className="p-3">
+                    <p className="text-gray-700 dark:text-gray-300 text-sm">{adsConfig.messengerAd.description}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Compose modal removed - only buyer-seller connections allowed */}
