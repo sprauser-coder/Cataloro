@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Enhanced Admin Dashboard Backend Testing
-Testing the complete enhanced admin dashboard with all improvements
+User Count Discrepancy Investigation Test
+Testing dashboard vs actual user count to identify inflated numbers
 """
 
 import requests
