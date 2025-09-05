@@ -261,7 +261,6 @@ function AdminPanel() {
         total_products: allProducts.length,
         active_products: allProducts.filter(p => p.inStock !== false).length,
         total_views: 0,
-        cart_items: cartItems.length,
         favorites_count: favorites.length,
         total_revenue: 0, // Don't calculate from listing prices
         average_rating: 0,
