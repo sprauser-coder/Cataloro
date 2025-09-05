@@ -445,7 +445,7 @@ function AdminPanel() {
         />
       )}
       
-      {activeTab === 'cat-database' && (
+      {activeTab === 'cats' && (
         <CatDatabaseTab 
           showToast={showToast}
         />
