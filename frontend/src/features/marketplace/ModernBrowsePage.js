@@ -376,7 +376,7 @@ function ModernBrowsePage() {
     <div className={heroContent.display_mode === 'full_width' ? '' : 'space-y-8'}>
       {/* Hero Section with Dynamic Content and Search */}
       <div 
-        className={`relative text-white overflow-hidden ${
+        className={`hero-section relative text-white overflow-hidden ${
           heroContent.display_mode === 'full_width' 
             ? 'w-screen -ml-[50vw] left-1/2 -mt-8' 
             : 'w-full rounded-2xl'
