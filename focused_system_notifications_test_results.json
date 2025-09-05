@@ -4,107 +4,107 @@
     "passed": 7,
     "failed": 0,
     "success_rate": 100.0,
-    "test_date": "2025-09-05T14:36:24.824318",
+    "test_date": "2025-09-05T18:39:12.630856",
     "focus": "System Notifications Manager CRUD and Event Triggering"
   },
   "results": [
     {
       "test": "1. GET System Notifications List",
       "status": "\u2705 PASS",
-      "message": "Successfully retrieved 5 notifications",
+      "message": "Successfully retrieved 11 notifications",
       "details": "Response structure valid with 'notifications' array",
-      "timestamp": "2025-09-05T14:36:21.712731"
+      "timestamp": "2025-09-05T18:39:09.569961"
     },
     {
       "test": "1a. Event Trigger Field Present",
       "status": "\u2705 PASS",
       "message": "Event trigger field present: True",
       "details": "Sample notification fields: ['_id', 'id', 'title', 'message', 'type', 'event_trigger', 'target_users', 'user_ids', 'show_duration', 'delay_before_show', 'is_active', 'created_at', 'created_by', 'expires_at', 'auto_dismiss', 'display_count', 'click_count']",
-      "timestamp": "2025-09-05T14:36:21.712784"
+      "timestamp": "2025-09-05T18:39:09.570009"
     },
     {
       "test": "2. POST Create System Notification",
       "status": "\u2705 PASS",
-      "message": "Successfully created notification with ID: 3d9fa776-23ab-4d9c-bf5b-70a17866f701",
+      "message": "Successfully created notification with ID: 190b6205-8cf1-4041-931e-4c655a06936f",
       "details": "Event trigger set to: login",
-      "timestamp": "2025-09-05T14:36:21.771096"
+      "timestamp": "2025-09-05T18:39:09.626164"
     },
     {
       "test": "3. PUT Update System Notification",
       "status": "\u2705 PASS",
-      "message": "Successfully updated notification 3d9fa776-23ab-4d9c-bf5b-70a17866f701",
+      "message": "Successfully updated notification 190b6205-8cf1-4041-931e-4c655a06936f",
       "details": "Event trigger changed from 'login' to 'profile_update'",
-      "timestamp": "2025-09-05T14:36:21.831637"
+      "timestamp": "2025-09-05T18:39:09.681609"
     },
     {
       "test": "4. Verify Event Trigger Persistence",
       "status": "\u2705 PASS",
       "message": "Event trigger correctly persisted: profile_update",
       "details": "All notification fields: ['_id', 'id', 'title', 'message', 'type', 'event_trigger', 'target_users', 'user_ids', 'show_duration', 'delay_before_show', 'is_active', 'created_at', 'created_by', 'expires_at', 'auto_dismiss', 'display_count', 'click_count', 'updated_at']",
-      "timestamp": "2025-09-05T14:36:21.892722"
+      "timestamp": "2025-09-05T18:39:09.740801"
     },
     {
       "test": "5.1 Create login Event Notification",
       "status": "\u2705 PASS",
       "message": "Created notification for login events",
-      "details": "Notification ID: b6553da5-33b4-4f04-b5e0-7b87b5a3819e",
-      "timestamp": "2025-09-05T14:36:21.953869"
+      "details": "Notification ID: 0baf3b4d-9d98-4c7e-8fd0-40654ce5f8ca",
+      "timestamp": "2025-09-05T18:39:09.799355"
     },
     {
       "test": "5.2 Create profile_update Event Notification",
       "status": "\u2705 PASS",
       "message": "Created notification for profile_update events",
-      "details": "Notification ID: 01d602f0-ddf7-4999-be52-24ccb107e445",
-      "timestamp": "2025-09-05T14:36:22.018578"
+      "details": "Notification ID: 795eace1-19ab-4b16-af70-801b1c47d00c",
+      "timestamp": "2025-09-05T18:39:09.855183"
     },
     {
       "test": "5.3 Create listing_published Event Notification",
       "status": "\u2705 PASS",
       "message": "Created notification for listing_published events",
-      "details": "Notification ID: 2f323a53-984b-43ee-8b63-52181da1f158",
-      "timestamp": "2025-09-05T14:36:22.072300"
+      "details": "Notification ID: 86820cce-c07f-4321-9b5b-a5815136839d",
+      "timestamp": "2025-09-05T18:39:09.910634"
     },
     {
       "test": "5.4 Create purchase_complete Event Notification",
       "status": "\u2705 PASS",
       "message": "Created notification for purchase_complete events",
-      "details": "Notification ID: ed42dd3b-a6e1-4dcc-814b-b838d231c8ef",
-      "timestamp": "2025-09-05T14:36:22.131866"
+      "details": "Notification ID: 58da18e4-c0d5-4f5e-ade6-b1147b0c6e08",
+      "timestamp": "2025-09-05T18:39:09.964459"
     },
     {
       "test": "5.5 Create manual Event Notification",
       "status": "\u2705 PASS",
       "message": "Created notification for manual events",
-      "details": "Notification ID: 48d09d09-613f-41e5-b1ba-18d2ed0ae938",
-      "timestamp": "2025-09-05T14:36:22.188455"
+      "details": "Notification ID: 5ae095d9-1000-42d3-87af-b2e377cfc8de",
+      "timestamp": "2025-09-05T18:39:10.022794"
     },
     {
       "test": "5. Different Event Triggers Test",
       "status": "\u2705 PASS",
       "message": "Successfully created and cleaned up 5 notifications",
       "details": "Event triggers tested: ['login', 'profile_update', 'listing_published', 'purchase_complete', 'manual']",
-      "timestamp": "2025-09-05T14:36:22.473839"
+      "timestamp": "2025-09-05T18:39:10.292898"
     },
     {
       "test": "6. Test Login Event Trigger",
       "status": "\u2705 PASS",
       "message": "Login event trigger worked",
       "details": "User notifications count: 2, Login notification found: True",
-      "timestamp": "2025-09-05T14:36:24.647538"
+      "timestamp": "2025-09-05T18:39:12.458776"
     },
     {
       "test": "7. DELETE System Notification",
       "status": "\u2705 PASS",
-      "message": "Successfully deleted notification 3d9fa776-23ab-4d9c-bf5b-70a17866f701",
+      "message": "Successfully deleted notification 190b6205-8cf1-4041-931e-4c655a06936f",
       "details": null,
-      "timestamp": "2025-09-05T14:36:24.766473"
+      "timestamp": "2025-09-05T18:39:12.570019"
     },
     {
       "test": "7a. Verify Notification Deletion",
       "status": "\u2705 PASS",
       "message": "Notification successfully removed from database",
       "details": null,
-      "timestamp": "2025-09-05T14:36:24.820833"
+      "timestamp": "2025-09-05T18:39:12.627502"
     }
   ]
 }
