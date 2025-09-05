@@ -2864,6 +2864,36 @@ function SiteAdministrationTab({ showToast }) {
   const [isSaving, setIsSaving] = React.useState(false);
   const [settingsSaved, setSettingsSaved] = React.useState(false);
   const [siteConfig, setSiteConfig] = React.useState({
+    // Ads Manager Configuration
+    adsManager: {
+      browsePageAd: {
+        active: false,
+        image: null,
+        description: '',
+        runtime: '1 month',
+        width: '300px',
+        height: '600px'
+      },
+      favoriteAd: {
+        active: false,
+        image: null,
+        description: '',
+        runtime: '1 month'
+      },
+      messengerAd: {
+        active: false,
+        image: null,
+        description: '',
+        runtime: '1 month'
+      },
+      footerAd: {
+        active: false,
+        logo: null,
+        companyName: '',
+        runtime: '1 month'
+      }
+    },
+    
     // Appearance & Themes
     primaryColor: '#3B82F6',
     secondaryColor: '#8B5CF6',
