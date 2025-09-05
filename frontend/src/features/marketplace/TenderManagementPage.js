@@ -58,6 +58,7 @@ function TenderManagementPage() {
     if (user) {
       fetchTendersOverview();
       fetchMyListings();
+      fetchMyTenders();
     }
   }, [user]);
 
