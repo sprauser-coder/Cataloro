@@ -1356,9 +1356,13 @@ async def get_all_listings(
     limit: int = 20,
     offset: int = 0
 ):
-    """Get all listings with optional filtering"""
+    """Get all listings with optional filtering - defaults to active listings only"""
     try:
         query = {}
+        
+        # Status filtering - default to active only for admin listings management
+        if status and status != 'all':
+            query['status'] = status
         
         if category and category != 'all':
             query['category'] = category
