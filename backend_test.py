@@ -568,8 +568,8 @@ class SystemNotificationsTest:
             return False
     
     def run_all_tests(self):
-        """Run all system notifications separation tests"""
-        print("🔔 SYSTEM NOTIFICATIONS SEPARATION TESTING AND CLEANUP")
+        """Run all system notifications cleanup execution tests"""
+        print("🧹 SYSTEM NOTIFICATIONS CLEANUP EXECUTION AND VERIFICATION")
         print("=" * 60)
         
         # Setup
