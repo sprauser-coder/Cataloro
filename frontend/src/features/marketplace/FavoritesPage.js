@@ -39,14 +39,7 @@ function FavoritesPage() {
     }
   };
 
-  const handleAddToCart = async (item) => {
-    try {
-      await addToCart(item, user.id);
-      showToast(`Added ${item.title} to cart!`, 'success');
-    } catch (error) {
-      showToast('Failed to add to cart', 'error');
-    }
-  };
+
 
   if (isLoading) {
     return (
