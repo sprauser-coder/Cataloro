@@ -1634,6 +1634,226 @@ function HeroSelectionTab({ showToast }) {
               Adjust the height of the hero section (300px = compact, 400px = standard, 600px+ = prominent)
             </p>
           </div>
+
+          {/* Display Mode Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Display Mode
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => handleInputChange('display_mode', 'boxed')}
+                className={`p-4 border-2 rounded-lg transition-colors ${
+                  heroContent.display_mode === 'boxed'
+                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="w-full h-8 bg-gray-200 dark:bg-gray-600 rounded mb-2 mx-auto max-w-32"></div>
+                  <span className="text-sm font-medium">Boxed</span>
+                  <p className="text-xs text-gray-500 mt-1">Contained within margins</p>
+                </div>
+              </button>
+              <button
+                onClick={() => handleInputChange('display_mode', 'full_width')}
+                className={`p-4 border-2 rounded-lg transition-colors ${
+                  heroContent.display_mode === 'full_width'
+                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="w-full h-8 bg-gray-200 dark:bg-gray-600 rounded mb-2"></div>
+                  <span className="text-sm font-medium">Full Width</span>
+                  <p className="text-xs text-gray-500 mt-1">Edge to edge display</p>
+                </div>
+              </button>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Choose how the hero section spans across the page
+            </p>
+          </div>
+
+          {/* Background Type Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Background Style
+            </label>
+            <div className="grid grid-cols-3 gap-4">
+              <button
+                onClick={() => handleInputChange('background_type', 'solid')}
+                className={`p-4 border-2 rounded-lg transition-colors ${
+                  heroContent.background_type === 'solid'
+                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="w-12 h-8 bg-blue-500 rounded mb-2 mx-auto"></div>
+                  <span className="text-sm font-medium">Solid Color</span>
+                </div>
+              </button>
+              <button
+                onClick={() => handleInputChange('background_type', 'gradient')}
+                className={`p-4 border-2 rounded-lg transition-colors ${
+                  heroContent.background_type === 'gradient'
+                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="w-12 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded mb-2 mx-auto"></div>
+                  <span className="text-sm font-medium">Gradient</span>
+                </div>
+              </button>
+              <button
+                onClick={() => handleInputChange('background_type', 'image')}
+                className={`p-4 border-2 rounded-lg transition-colors ${
+                  heroContent.background_type === 'image'
+                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="w-12 h-8 bg-gray-300 dark:bg-gray-600 rounded mb-2 mx-auto flex items-center justify-center">
+                    <Camera className="w-3 h-3" />
+                  </div>
+                  <span className="text-sm font-medium">Image</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Background Color (for solid) */}
+          {heroContent.background_type === 'solid' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                Background Color
+              </label>
+              <div className="flex items-center space-x-4">
+                <input
+                  type="color"
+                  value={heroContent.background_color}
+                  onChange={(e) => handleInputChange('background_color', e.target.value)}
+                  className="w-16 h-10 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={heroContent.background_color}
+                  onChange={(e) => handleInputChange('background_color', e.target.value)}
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="#3B82F6"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Background Gradient (for gradient) */}
+          {heroContent.background_type === 'gradient' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  Gradient From Color
+                </label>
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="color"
+                    value={heroContent.background_gradient_from}
+                    onChange={(e) => handleInputChange('background_gradient_from', e.target.value)}
+                    className="w-16 h-10 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={heroContent.background_gradient_from}
+                    onChange={(e) => handleInputChange('background_gradient_from', e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="#3B82F6"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  Gradient To Color
+                </label>
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="color"
+                    value={heroContent.background_gradient_to}
+                    onChange={(e) => handleInputChange('background_gradient_to', e.target.value)}
+                    className="w-16 h-10 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={heroContent.background_gradient_to}
+                    onChange={(e) => handleInputChange('background_gradient_to', e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="#EC4899"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Background Image (for image) */}
+          {heroContent.background_type === 'image' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                Background Image
+              </label>
+              <div className="space-y-4">
+                <input
+                  type="url"
+                  value={heroContent.background_image}
+                  onChange={(e) => handleInputChange('background_image', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&h=800"
+                />
+                {heroContent.background_image && (
+                  <div className="relative">
+                    <img
+                      src={heroContent.background_image}
+                      alt="Background Preview"
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                    <button
+                      onClick={() => handleInputChange('background_image', '')}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">Quick Select Stock Images:</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&h=800&fit=crop&crop=center',
+                      'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1920&h=800&fit=crop&crop=center',
+                      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&h=800&fit=crop&crop=center',
+                      'https://images.unsplash.com/photo-1551434678-e076c223a692?w=1920&h=800&fit=crop&crop=center'
+                    ].map((url, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleInputChange('background_image', url)}
+                        className="relative group"
+                      >
+                        <img
+                          src={url}
+                          alt={`Stock ${index + 1}`}
+                          className="w-full h-16 object-cover rounded-lg group-hover:opacity-75 transition-opacity"
+                        />
+                        <div className="absolute inset-0 bg-purple-600/0 group-hover:bg-purple-600/20 rounded-lg transition-colors flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          </div>
         </div>
       </div>
 
