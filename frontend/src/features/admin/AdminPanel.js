@@ -246,7 +246,9 @@ function AdminPanel() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
+      // Force cache refresh by adding timestamp
       const data = await adminService.getDashboard();
+      console.log('DEBUG: Dashboard data received:', data);
       
       // Use ONLY the backend data - don't override with local calculations
       setDashboardData({
