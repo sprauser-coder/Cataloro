@@ -803,15 +803,18 @@ async def get_admin_dashboard():
         for tender in accepted_tender_list:
             total_revenue += tender.get("offer_amount", 0)
         
-        # Calculate growth rate based on recent activity
-        from datetime import datetime, timedelta
+        # Calculate growth rate based on recent users (last 30 days)
         last_month = datetime.utcnow() - timedelta(days=30)
         
+        # Fix datetime comparison - handle both datetime and string formats
         recent_users = await db.users.count_documents({
-            "created_at": {"$gte": last_month.isoformat()}
+            "$or": [
+                {"created_at": {"$gte": last_month}},  # For datetime objects
+                {"created_at": {"$gte": last_month.isoformat()}}  # For ISO string objects
+            ]
         })
         
-        growth_rate = (recent_users / max(total_users, 1)) * 100 if total_users > 0 else 0
+        growth_rate = (recent_users / max(total_users - recent_users, 1)) * 100 if total_users > recent_users else 0
         
         # Get recent activity
         recent_activity = []
