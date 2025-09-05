@@ -3683,8 +3683,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "System Notifications Separation and Cleanup"
-  stuck_tasks: []
+    - "Admin User Creation Testing"
+    - "User Update Functionality" 
+    - "Admin Panel Data Endpoints"
+    - "General System Health"
+  stuck_tasks:
+    - "Username Availability Check"
   test_all: false
   test_priority: "high_first"
 
