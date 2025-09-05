@@ -354,7 +354,7 @@ class AdminDashboardTester:
                     self.log_test(
                         "Revenue Source Validation",
                         True,
-                        f"Dashboard revenue (€{dashboard_revenue}) is reasonable compared to marketplace activity (€{total_bid_value} in active bids)"
+                        f"Dashboard revenue (€{dashboard_revenue}) is reasonable. Active bids: €{total_bid_value}, completed transactions: €{dashboard_revenue - total_bid_value}"
                     )
                     return True
                 else:
