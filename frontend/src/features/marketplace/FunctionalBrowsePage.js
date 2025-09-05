@@ -398,7 +398,6 @@ function ProductCard({
   product, 
   viewMode, 
   isFavorite, 
-  onAddToCart, 
   onToggleFavorite, 
   onShare, 
   onContactSeller,
