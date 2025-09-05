@@ -210,7 +210,7 @@ function SystemNotificationsManager() {
       title: notification.title || '',
       message: notification.message || '',
       type: notification.type || 'success',
-      event_trigger: notification.event_trigger || 'manual',
+      event_trigger: notification.event_trigger || 'manual', // Default to 'manual' if missing
       target_users: notification.target_users || 'all',
       user_ids: notification.user_ids || [],
       show_duration: notification.show_duration || 5000,
