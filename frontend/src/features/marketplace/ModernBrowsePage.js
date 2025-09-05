@@ -444,7 +444,12 @@ function ModernBrowsePage() {
       </div>
 
       {/* Results Count and Filter Controls - INLINE */}
-      <div id="search-results" className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+      <div 
+        id="search-results" 
+        className={`flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between ${
+          heroContent.display_mode === 'full_width' ? 'mt-8' : ''
+        }`}
+      >
         <div className="flex items-center gap-4 text-gray-600 dark:text-gray-300">
           <span className="text-lg font-semibold">
             {filteredListings.length} Result{filteredListings.length !== 1 ? 's' : ''}
