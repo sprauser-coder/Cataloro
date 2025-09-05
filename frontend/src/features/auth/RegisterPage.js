@@ -194,10 +194,10 @@ function RegisterPage() {
               </div>
             </div>
 
-            {/* Username Field */}
+            {/* Username Field with Availability Check */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Username
+                Username *
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -207,10 +207,26 @@ function RegisterPage() {
                   required
                   value={formData.username}
                   onChange={handleInputChange}
-                  className="cataloro-input pl-10"
+                  className="cataloro-input pl-10 pr-10"
                   placeholder="Choose a username"
                 />
+                {formData.username.length >= 3 && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    {checkingUsername ? (
+                      <AlertCircle className="w-5 h-5 text-gray-400 animate-spin" />
+                    ) : usernameAvailable === true ? (
+                      <Check className="w-5 h-5 text-green-500" />
+                    ) : usernameAvailable === false ? (
+                      <X className="w-5 h-5 text-red-500" />
+                    ) : null}
+                  </div>
+                )}
               </div>
+              {formData.username.length >= 3 && usernameAvailable !== null && (
+                <div className={`mt-1 text-sm ${usernameAvailable ? 'text-green-600' : 'text-red-600'}`}>
+                  {usernameAvailable ? 'Username is available' : 'Username is not available'}
+                </div>
+              )}
             </div>
 
             {/* Email Field */}
