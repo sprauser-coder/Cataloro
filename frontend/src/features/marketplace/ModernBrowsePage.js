@@ -378,7 +378,7 @@ function ModernBrowsePage() {
       <div 
         className={`relative text-white overflow-hidden w-full ${
           heroContent.display_mode === 'full_width' 
-            ? '-mx-8 sm:-mx-12 lg:-mx-16' 
+            ? '-mx-4 sm:-mx-6 lg:-mx-8' 
             : 'rounded-2xl'
         }`}
         style={{ 
