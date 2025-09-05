@@ -1,6 +1,6 @@
 /**
  * CATALORO - Live Functionality Service
- * API service for favorites, cart, messaging, and notifications
+ * API service for favorites, messaging, and notifications
  */
 
 import { ENV_CONFIG } from '../config/directions';
