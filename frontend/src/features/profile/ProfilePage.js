@@ -24,7 +24,7 @@ import {
   DollarSign,
   Star,
   Heart,
-  ShoppingCart,
+
   Calendar,
   Award,
   TrendingUp,
