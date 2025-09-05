@@ -613,6 +613,67 @@ const getEventTriggerDisplay = (notification) => {
 
 **COMPREHENSIVE USER COUNT INVESTIGATION STATUS:** ✅ MYSTERY COMPLETELY SOLVED - The reported 156 user count discrepancy has been fully investigated and resolved. The number 156 appears in the system as a catalyst calculated price (€156.36 for BMW75364089 Rechts catalyst), not as a user count. The user likely confused this price display with a user count. The actual user count is consistently and accurately reported as 74 users across all endpoints. Additionally, the historical peak theory (74 current users + 82 deleted test users = 156) provides a mathematical explanation for where 156 might have appeared historically. No dashboard bugs, data corruption, or user count inflation exists. The system is working correctly.
 
+#### Dashboard Field Name Mismatches Investigation Results:
+**COMPREHENSIVE DASHBOARD FIELD MAPPING ANALYSIS:** ❌ CRITICAL FIELD NAME MISMATCHES IDENTIFIED - Executed comprehensive investigation of dashboard data display issues as requested in review. Root cause identified: Frontend expects different field names than what backend provides, causing revenue, listings, and conversion rate to display incorrectly.
+
+**1. Backend Dashboard Structure Analysis** ✅ BACKEND WORKING CORRECTLY - GET /api/admin/dashboard endpoint functioning properly: Successfully retrieved dashboard data with proper JSON structure ✅, Backend provides 6 KPI fields: total_users, total_listings, active_listings, total_deals, revenue, growth_rate ✅, All values are accurate and realistic (74 users, 29 total listings, 22 active listings, €2970 revenue) ✅, Backend calculations working correctly with no inflation ✅.
+
+**2. Critical Field Name Mismatches Identified** ❌ FRONTEND-BACKEND MAPPING ERRORS - Found 4 critical field name mismatches: 
+- Frontend expects 'total_revenue' but backend provides 'revenue' (€2970.0) ❌
+- Frontend expects 'active_products' but backend provides 'active_listings' (22) ❌  
+- Frontend expects 'total_products' but backend provides 'total_listings' (29) ❌
+- Frontend expects 'conversion_rate' but backend provides 'growth_rate' (0%) ❌
+
+**3. Revenue Display Issue Root Cause** ❌ FIELD NAME MISMATCH - Revenue showing wrong data due to field mapping: Frontend AdminPanel.js looks for 'kpis.total_revenue' ❌, Backend provides 'kpis.revenue' = €2970.0 ✅, This causes revenue to display as 0 or undefined in frontend ❌, Actual revenue value is €2970.0 and accurate ✅.
+
+**4. Listings Count Issue Root Cause** ❌ FIELD NAME MISMATCH - Active listings showing wrong data: Frontend looks for 'kpis.active_products' ❌, Backend provides 'kpis.active_listings' = 22 ✅, This causes active listings count to display incorrectly ❌, Actual active listings count is 22 and matches browse endpoint ✅.
+
+**5. Total Listings Issue Root Cause** ❌ FIELD NAME MISMATCH - Total listings affecting calculations: Frontend looks for 'kpis.total_products' ❌, Backend provides 'kpis.total_listings' = 29 ✅, This affects inactive listings calculation (total - active) ❌, Actual total listings count is 29 and accurate ✅.
+
+**6. Conversion Rate Missing Calculation** ❌ MISSING FIELD - Conversion rate not provided by backend: Frontend expects 'kpis.conversion_rate' for calculations ❌, Backend provides 'kpis.growth_rate' = 0% instead ✅, Frontend tries to calculate conversion from total_deals/total_users ❌, Calculated conversion rate should be 16.2% (12 deals / 74 users) ✅.
+
+**7. Browse Endpoint Consistency Check** ✅ DATA CONSISTENCY VERIFIED - Dashboard data matches marketplace data: Dashboard active_listings (22) matches browse endpoint count (22) ✅, Dashboard revenue (€2970) vs browse bid value (€1170) shows completed vs active transactions ✅, €1800 difference explained by completed deals vs active bids ✅, Data consistency confirmed across endpoints ✅.
+
+**TECHNICAL VERIFICATION:**
+- Backend Dashboard: GET /api/admin/dashboard returns correct field names and accurate values
+- Field Mapping Issues: 4 critical mismatches between frontend expectations and backend reality
+- Revenue Issue: Frontend uses 'total_revenue', backend provides 'revenue' = €2970.0
+- Listings Issue: Frontend uses 'active_products'/'total_products', backend provides 'active_listings'/'total_listings'
+- Conversion Rate: Frontend expects calculation that backend doesn't provide
+- Data Accuracy: All backend values are correct, issue is purely field name mapping
+
+**ROOT CAUSE ANALYSIS:**
+✅ Backend dashboard endpoint working correctly with accurate data
+✅ All KPI values are realistic and properly calculated
+❌ Frontend AdminPanel.js uses incorrect field names to access backend data
+❌ Field name mismatches cause revenue, listings, and conversion rate to display wrong values
+❌ Frontend expects 'total_revenue', 'active_products', 'total_products', 'conversion_rate'
+❌ Backend provides 'revenue', 'active_listings', 'total_listings', 'growth_rate'
+
+**RECOMMENDED FIXES:**
+**OPTION 1 (Recommended): Fix Frontend Field Names**
+- Change AdminPanel.js: Replace 'kpis.total_revenue' with 'kpis.revenue'
+- Change AdminPanel.js: Replace 'kpis.active_products' with 'kpis.active_listings'  
+- Change AdminPanel.js: Replace 'kpis.total_products' with 'kpis.total_listings'
+- Use 'kpis.growth_rate' or calculate conversion rate from existing fields
+
+**OPTION 2: Add Backend Field Aliases**
+- Add 'total_revenue': revenue to backend response
+- Add 'active_products': active_listings to backend response
+- Add 'total_products': total_listings to backend response
+- Calculate and add 'conversion_rate' field
+
+**VERIFICATION TEST RESULTS:**
+If frontend used correct field names, dashboard would show:
+- Revenue: €2970.0 (currently shows 0 due to field mismatch)
+- Active listings: 22 (currently shows incorrect due to field mismatch)  
+- Total listings: 29 (currently shows incorrect due to field mismatch)
+- Conversion rate: 16.2% (currently missing due to field mismatch)
+
+**COMPREHENSIVE FIELD MAPPING RESULTS:** 7/7 investigation areas completed, backend dashboard working correctly with accurate data, 4 critical field name mismatches identified, revenue/listings/conversion rate issues all caused by frontend using wrong field names, backend provides correct data with different field names, simple frontend field name changes will fix all display issues.
+
+**DASHBOARD FIELD NAME MISMATCHES STATUS:** ❌ CRITICAL FRONTEND MAPPING ISSUE - The dashboard data display issues are caused by field name mismatches between frontend and backend. Backend provides accurate data (€2970 revenue, 22 active listings, 29 total listings) but frontend looks for different field names ('total_revenue', 'active_products', 'total_products', 'conversion_rate'). Backend actually provides 'revenue', 'active_listings', 'total_listings', 'growth_rate'. This is a simple field mapping issue that can be fixed by updating frontend AdminPanel.js to use the correct field names that backend actually provides.
+
 **Test Date:** 2025-01-30 18:30:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ ADMIN DASHBOARD DATETIME BUG FIX VERIFICATION COMPLETED - ALL REQUIREMENTS MET
