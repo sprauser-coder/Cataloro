@@ -122,8 +122,14 @@ function RegisterPage() {
       await register({
         username: formData.username,
         email: formData.email,
-        full_name: formData.full_name,
-        password: formData.password
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        full_name: `${formData.first_name} ${formData.last_name}`.trim(),
+        password: formData.password,
+        is_business: formData.is_business,
+        company_name: formData.is_business ? formData.company_name : '',
+        country: formData.is_business ? formData.country : '',
+        vat_number: formData.is_business ? formData.vat_number : ''
       });
       navigate(APP_ROUTES.BROWSE);
     } catch (error) {
