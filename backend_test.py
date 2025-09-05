@@ -113,40 +113,83 @@ class SystemNotificationsTest:
             self.log_result("Admin Setup", False, f"Exception during admin setup: {str(e)}")
             return False
     
-    def test_database_cleanup(self):
-        """Test 1: Database cleanup - remove system notifications from user_notifications collection"""
+    def test_cleanup_endpoint_execution(self):
+        """Test 1: Execute cleanup endpoint - call /api/admin/cleanup-system-notifications POST"""
         try:
-            # First, check if there are any system notifications in user_notifications
+            # First, check current state of notifications before cleanup
             response = self.session.get(f"{BASE_URL}/user/{self.test_user_id}/notifications")
             
             if response.status_code == 200:
-                notifications = response.json()
-                system_notifications_found = []
+                notifications_before = response.json()
+                system_notifications_before = []
                 
-                for notification in notifications:
-                    if "system_notification_id" in notification:
-                        system_notifications_found.append(notification)
+                for notification in notifications_before:
+                    # Check for system notification indicators
+                    if ("system_notification_id" in notification or 
+                        "Welcome back!" in notification.get("message", "") or
+                        "Endpoint Test" in notification.get("title", "") or
+                        notification.get("type") == "system"):
+                        system_notifications_before.append(notification)
                 
-                if system_notifications_found:
-                    self.log_result("Database Cleanup Check", False, 
-                                  f"Found {len(system_notifications_found)} system notifications in user_notifications collection",
-                                  {"system_notifications": system_notifications_found})
+                self.log_result("Pre-Cleanup Check", True, 
+                              f"Found {len(system_notifications_before)} system notifications before cleanup",
+                              {"total_notifications": len(notifications_before), 
+                               "system_notifications": len(system_notifications_before)})
+                
+                # Execute the cleanup endpoint
+                cleanup_response = self.session.post(f"{BASE_URL}/admin/cleanup-system-notifications")
+                
+                if cleanup_response.status_code == 200:
+                    cleanup_result = cleanup_response.json()
+                    removed_count = cleanup_result.get("removed_count", 0)
                     
-                    # Note: In a real scenario, we would need a cleanup endpoint or direct database access
-                    # For testing purposes, we'll document this as an issue
-                    return False
+                    self.log_result("Cleanup Endpoint Execution", True, 
+                                  f"Cleanup endpoint executed successfully - removed {removed_count} notifications",
+                                  {"cleanup_result": cleanup_result})
+                    
+                    # Verify cleanup results
+                    post_cleanup_response = self.session.get(f"{BASE_URL}/user/{self.test_user_id}/notifications")
+                    
+                    if post_cleanup_response.status_code == 200:
+                        notifications_after = post_cleanup_response.json()
+                        system_notifications_after = []
+                        
+                        for notification in notifications_after:
+                            if ("system_notification_id" in notification or 
+                                "Welcome back!" in notification.get("message", "") or
+                                "Endpoint Test" in notification.get("title", "") or
+                                notification.get("type") == "system"):
+                                system_notifications_after.append(notification)
+                        
+                        if len(system_notifications_after) == 0:
+                            self.log_result("Cleanup Verification", True, 
+                                          f"Cleanup successful - no system notifications remain in regular notifications",
+                                          {"notifications_before": len(notifications_before),
+                                           "notifications_after": len(notifications_after),
+                                           "system_notifications_removed": len(system_notifications_before)})
+                            return True
+                        else:
+                            self.log_result("Cleanup Verification", False, 
+                                          f"Cleanup incomplete - {len(system_notifications_after)} system notifications still remain",
+                                          {"remaining_system_notifications": system_notifications_after})
+                            return False
+                    else:
+                        self.log_result("Cleanup Verification", False, 
+                                      "Failed to retrieve notifications after cleanup")
+                        return False
                 else:
-                    self.log_result("Database Cleanup Check", True, 
-                                  "No system notifications found in user_notifications collection - cleanup not needed")
-                    return True
+                    self.log_result("Cleanup Endpoint Execution", False, 
+                                  f"Cleanup endpoint failed with status {cleanup_response.status_code}",
+                                  {"response": cleanup_response.text})
+                    return False
             else:
-                self.log_result("Database Cleanup Check", False, 
-                              "Failed to retrieve user notifications", 
+                self.log_result("Pre-Cleanup Check", False, 
+                              "Failed to retrieve user notifications before cleanup", 
                               {"status_code": response.status_code, "response": response.text})
                 return False
                 
         except Exception as e:
-            self.log_result("Database Cleanup Check", False, f"Exception during database cleanup check: {str(e)}")
+            self.log_result("Cleanup Endpoint Execution", False, f"Exception during cleanup execution: {str(e)}")
             return False
     
     def test_system_notifications_endpoint(self):
