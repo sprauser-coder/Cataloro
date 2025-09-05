@@ -435,7 +435,6 @@ function NotificationsCenterPage() {
     const matchesFilter = filter === 'all' || 
       (filter === 'unread' && !notification.read && !notification.archived) ||
       (filter === 'read' && notification.read && !notification.archived) ||
-      (filter === 'system' && notification.type === 'system' && !notification.archived) ||
       (filter === 'archived' && notification.archived);
     
     const matchesSearch = !searchTerm || 
