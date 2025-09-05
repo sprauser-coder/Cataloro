@@ -1866,10 +1866,23 @@ function HeroSelectionTab({ showToast }) {
 
         {/* Hero Preview - DYNAMIC HEIGHT WITH ROUNDED CORNERS */}
         <div 
-          className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white overflow-hidden w-full rounded-2xl"
+          className={`relative text-white overflow-hidden w-full ${
+            heroContent.display_mode === 'full_width' 
+              ? 'rounded-none -mx-8' 
+              : 'rounded-2xl'
+          }`}
           style={{ 
             height: `${heroContent.height || 400}px`,
-            minHeight: '300px'
+            minHeight: '300px',
+            background: heroContent.background_type === 'solid' 
+              ? heroContent.background_color
+              : heroContent.background_type === 'gradient'
+                ? `linear-gradient(to right, ${heroContent.background_gradient_from}, ${heroContent.background_gradient_to})`
+                : heroContent.background_type === 'image' && heroContent.background_image
+                  ? `url(${heroContent.background_image})`
+                  : 'linear-gradient(to right, #3B82F6, #EC4899)',
+            backgroundSize: heroContent.background_type === 'image' ? 'cover' : 'auto',
+            backgroundPosition: heroContent.background_type === 'image' ? 'center' : 'auto'
           }}
         >
           <div className="absolute inset-0 bg-black/20"></div>
