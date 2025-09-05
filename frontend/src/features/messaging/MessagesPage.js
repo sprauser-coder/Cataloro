@@ -58,6 +58,7 @@ function useAdsConfig() {
 function MessagesPage() {
   const { user } = useAuth();
   const { showToast } = useNotifications();
+  const adsConfig = useAdsConfig();
   
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
