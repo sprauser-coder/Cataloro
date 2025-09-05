@@ -115,13 +115,50 @@ function NotificationToast() {
     }
   };
 
-  // Expose addToast function globally for manual use (backward compatibility)
+  // Function to check for event-triggered system notifications
+  const checkEventTriggeredNotifications = async (eventType) => {
+    if (!isAuthenticated || !user?.id) return;
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/system-notifications`);
+      if (response.ok) {
+        const data = await response.json();
+        const notifications = data.notifications || [];
+        
+        // Filter notifications that match the event trigger
+        const eventNotifications = notifications.filter(notification => 
+          notification.event_trigger === eventType
+        );
+        
+        // Show each matching system notification as a toast
+        eventNotifications.forEach((notification, index) => {
+          setTimeout(() => {
+            addToast(
+              notification.message, 
+              notification.type || 'info', 
+              notification.show_duration || 5000,
+              notification.id
+            );
+            
+            // Mark as viewed after displaying
+            markNotificationViewed(notification.id);
+          }, index * 1000); // Stagger multiple notifications
+        });
+      }
+    } catch (error) {
+      console.error('Error loading event-triggered system notifications:', error);
+    }
+  };
+
+  // Expose functions globally for manual use (backward compatibility)
   useEffect(() => {
     window.showToast = addToast;
+    window.triggerSystemNotifications = checkEventTriggeredNotifications;
     return () => {
       delete window.showToast;
+      delete window.triggerSystemNotifications;
     };
-  }, []);
+  }, [isAuthenticated, user?.id]);
 
   if (toasts.length === 0) return null;
 
