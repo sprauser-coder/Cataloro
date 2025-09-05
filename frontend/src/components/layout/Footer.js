@@ -39,6 +39,7 @@ function useAdsConfig() {
 
 function Footer() {
   const [siteBranding, setSiteBranding] = useState({});
+  const adsConfig = useAdsConfig();
 
   useEffect(() => {
     // Load site branding data to get the dark mode logo
