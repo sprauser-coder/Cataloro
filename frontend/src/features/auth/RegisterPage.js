@@ -74,11 +74,37 @@ function RegisterPage() {
   };
 
   const validateForm = () => {
+    if (!formData.first_name.trim()) {
+      return 'First name is required';
+    }
+    if (!formData.last_name.trim()) {
+      return 'Last name is required';
+    }
+    if (!formData.username.trim()) {
+      return 'Username is required';
+    }
+    if (formData.username.length < 3) {
+      return 'Username must be at least 3 characters';
+    }
+    if (usernameAvailable === false) {
+      return 'Username is not available';
+    }
+    if (!formData.email.trim()) {
+      return 'Email is required';
+    }
     if (formData.password !== formData.confirmPassword) {
       return 'Passwords do not match';
     }
     if (formData.password.length < 6) {
       return 'Password must be at least 6 characters';
+    }
+    if (formData.is_business) {
+      if (!formData.company_name.trim()) {
+        return 'Company name is required for business accounts';
+      }
+      if (!formData.country.trim()) {
+        return 'Country is required for business accounts';
+      }
     }
     return null;
   };
