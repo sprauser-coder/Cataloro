@@ -364,12 +364,12 @@ function AdminPanel() {
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', shortLabel: 'Dashboard', icon: BarChart3 },
-    { id: 'users', label: 'User Management', shortLabel: 'Users', icon: Users },
-    { id: 'listings', label: 'Listings Management', shortLabel: 'Listings', icon: Package },
-    { id: 'business', label: 'Business', shortLabel: 'Business', icon: Store },
-    { id: 'cat-database', label: 'Cat Database', shortLabel: 'Cats', icon: Database },
-    { id: 'settings', label: 'Site Settings', shortLabel: 'Settings', icon: Settings },
-    { id: 'site-admin', label: 'Site Administration', shortLabel: 'Admin', icon: Shield }
+    { id: 'users', label: 'Users', shortLabel: 'Users', icon: Users },
+    { id: 'listings', label: 'Listings', shortLabel: 'Listings', icon: Package },
+    { id: 'business', label: 'Business', shortLabel: 'Business', icon: Building },
+    { id: 'cats', label: "Cat's", shortLabel: "Cat's", icon: Database },
+    { id: 'site-settings', label: 'Site Settings', shortLabel: 'Settings', icon: Settings },
+    { id: 'administration', label: 'Administration', shortLabel: 'Admin', icon: Shield }
   ];
 
   return (
