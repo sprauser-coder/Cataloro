@@ -6358,22 +6358,25 @@ function UserEditModal({ user, onClose, onSave }) {
       return;
     }
 
-    const submitData = { ...formData };
+    const userData = { 
+      ...formData,
+      full_name: `${formData.first_name} ${formData.last_name}`.trim() // Compose full name for backend compatibility
+    };
     
     // If editing existing user, include ID
     if (user) {
-      submitData.id = user.id;
+      userData.id = user.id;
     }
 
     // Remove password fields if they're empty (for updates)
-    if (!submitData.password) {
-      delete submitData.password;
-      delete submitData.confirm_password;
+    if (!userData.password) {
+      delete userData.password;
+      delete userData.confirmPassword;
     } else {
-      delete submitData.confirm_password; // Don't send confirm_password to backend
+      delete userData.confirmPassword; // Don't send confirmPassword to backend
     }
 
-    onSave(submitData);
+    onSave(userData);
   };
 
   return (
