@@ -271,18 +271,29 @@ function AdminPanel() {
       setLoading(true);
       const data = await adminService.getDashboard();
       
-      // Merge with real marketplace data
-      const realKPIs = calculateRealKPIs();
+      // Use ONLY the backend data - don't override with local calculations
       setDashboardData({
-        kpis: { ...data?.kpis, ...realKPIs },
+        kpis: data?.kpis || {},
         recent_activity: data?.recent_activity || generateRecentActivity()
       });
     } catch (error) {
-      showToast('Failed to load dashboard data, showing local data', 'warning');
-      // Use real marketplace data as fallback
-      const realKPIs = calculateRealKPIs();
+      showToast('Failed to load dashboard data', 'error');
+      // Only use fallback KPIs if backend completely fails
+      const fallbackKPIs = {
+        total_users: 0,
+        total_products: allProducts.length,
+        active_products: allProducts.filter(p => p.inStock !== false).length,
+        total_views: 0,
+        cart_items: cartItems.length,
+        favorites_count: favorites.length,
+        total_revenue: 0, // Don't calculate from listing prices
+        average_rating: 0,
+        growth_rate: 0,
+        notifications_count: notifications.length,
+        total_deals: 0
+      };
       setDashboardData({
-        kpis: realKPIs,
+        kpis: fallbackKPIs,
         recent_activity: generateRecentActivity()
       });
     } finally {
