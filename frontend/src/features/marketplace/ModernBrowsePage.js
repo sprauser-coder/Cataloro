@@ -629,26 +629,59 @@ function ModernBrowsePage() {
           </Link>
         </div>
       ) : (
-        <div className={viewMode === 'grid' 
-          ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
-          : 'space-y-4'
-        }>
-          {filteredListings.map((item) => (
-            <ProductCard
-              key={item.id}
-              item={item}
-              viewMode={viewMode}
-              onSubmitTender={handleSubmitTender}
-              onFavoriteToggle={handleFavoriteToggle}
-              onMessageSeller={handleMessageSeller}
-              isInFavorites={isInFavorites}
-              isSubmittingTender={submittingTenders[item.id] || false}
-              tenderConfirmation={tenderConfirmations[item.id]}
-              priceRangeSettings={priceRangeSettings}
-              userActiveBids={userActiveBids}
-              user={user}
-            />
-          ))}
+        <div className="flex gap-6">
+          {/* Products Grid */}
+          <div className={`${
+            adsConfig?.browsePageAd?.active ? 'flex-1' : 'w-full'
+          }`}>
+            <div className={viewMode === 'grid' 
+              ? (adsConfig?.browsePageAd?.active 
+                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6' 
+                : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6')
+              : 'space-y-4'
+            }>
+              {filteredListings.map((item) => (
+                <ProductCard
+                  key={item.id}
+                  item={item}
+                  viewMode={viewMode}
+                  onSubmitTender={handleSubmitTender}
+                  onFavoriteToggle={handleFavoriteToggle}
+                  onMessageSeller={handleMessageSeller}
+                  isInFavorites={isInFavorites}
+                  isSubmittingTender={submittingTenders[item.id] || false}
+                  tenderConfirmation={tenderConfirmations[item.id]}
+                  priceRangeSettings={priceRangeSettings}
+                  userActiveBids={userActiveBids}
+                  user={user}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Browse Page Advertisement */}
+          {adsConfig?.browsePageAd?.active && adsConfig.browsePageAd.image && (
+            <div className="flex-shrink-0">
+              <div 
+                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                style={{
+                  width: adsConfig.browsePageAd.width || '300px',
+                  height: adsConfig.browsePageAd.height || '600px'
+                }}
+              >
+                <img
+                  src={adsConfig.browsePageAd.image}
+                  alt={adsConfig.browsePageAd.description || 'Advertisement'}
+                  className="w-full h-full object-cover"
+                />
+                {adsConfig.browsePageAd.description && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                    <p className="text-white text-sm">{adsConfig.browsePageAd.description}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
       </div>
