@@ -1347,6 +1347,11 @@ async def create_listing(listing_data: dict):
         # Insert into database
         result = await db.listings.insert_one(listing_data)
         
+        # Trigger system notifications for listing published event
+        seller_id = listing_data.get("seller_id")
+        if seller_id:
+            await trigger_system_notifications(seller_id, "listing_published")
+        
         return {
             "message": "Listing created successfully",
             "listing_id": listing_data["id"],
