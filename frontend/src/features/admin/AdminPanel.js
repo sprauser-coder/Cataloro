@@ -1302,6 +1302,13 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                           <CheckCircle className="w-4 h-4" />
                         </button>
                       )}
+                      <button
+                        onClick={() => handleDeleteUser(user.id)}
+                        className="p-2 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                        title="Delete User"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -1309,6 +1316,20 @@ function UsersTab({ users, onUpdateUser, showToast }) {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Add Create User Button */}
+      <div className="mt-6 flex justify-end">
+        <button
+          onClick={() => {
+            setSelectedUser(null);
+            setShowEditModal(true);
+          }}
+          className="cataloro-button-primary flex items-center space-x-2"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Create New User</span>
+        </button>
       </div>
     </div>
   );
