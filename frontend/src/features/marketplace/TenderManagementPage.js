@@ -330,6 +330,19 @@ function TenderManagementPage() {
               <span>Buy</span>
             </div>
           </button>
+          <button
+            onClick={() => setActiveTab('listings')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'listings'
+                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            }`}
+          >
+            <div className="flex items-center space-x-2">
+              <List className="w-4 h-4" />
+              <span>Listings</span>
+            </div>
+          </button>
         </nav>
       </div>
 
