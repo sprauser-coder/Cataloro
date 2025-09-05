@@ -14,7 +14,15 @@ function NotificationToast() {
   // Load system notifications from backend instead of hardcoded demo
   useEffect(() => {
     if (isAuthenticated && user?.id) {
+      // Load system notifications when user first logs in
       loadSystemNotifications();
+      
+      // Also set up periodic checking for new system notifications every 30 seconds
+      const interval = setInterval(() => {
+        loadSystemNotifications();
+      }, 30000);
+      
+      return () => clearInterval(interval);
     }
   }, [isAuthenticated, user?.id]);
 
