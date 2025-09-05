@@ -114,8 +114,12 @@ function SimpleLoginPage() {
       localStorage.setItem('cataloro_token', data.token);
       localStorage.setItem('cataloro_user', JSON.stringify(data.user));
       
-      // Force page reload to ensure proper authentication state
-      window.location.href = '/browse';
+      // Check if user is admin and redirect accordingly
+      if (data?.user?.role === 'admin' || data?.user?.email === 'admin@cataloro.com') {
+        window.location.href = '/admin';
+      } else {
+        window.location.href = '/browse';
+      }
       
     } catch (error) {
       setError(`Demo login failed: ${error.message}`);
