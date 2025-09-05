@@ -1352,6 +1352,7 @@ async def get_all_listings(
     max_price: float = None,
     condition: str = None,
     search: str = None,
+    status: str = "active",  # Default to active listings only
     limit: int = 20,
     offset: int = 0
 ):
