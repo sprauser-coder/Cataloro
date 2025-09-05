@@ -435,8 +435,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
           
         case 'buy_approved':
         case 'purchase_approved':
-          // Navigate to shopping cart
-          navigate('/cart');
+          // Navigate to deals page instead of cart
+          navigate('/deals');
           break;
           
         case 'buy_rejected':
