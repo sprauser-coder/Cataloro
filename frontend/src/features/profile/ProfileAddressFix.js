@@ -311,7 +311,7 @@ const ProfileAddressFix = () => {
                   type="checkbox"
                   checked={profileData.settings.notifications}
                   onChange={(e) => handleInputChange('settings', 'notifications', e.target.checked)}
-                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  className="h-4 w-4 rounded border-2 border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-purple-500 focus:ring-2 bg-white dark:bg-gray-700 checked:bg-purple-600 checked:border-purple-600"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Enable notifications</span>
               </label>
@@ -321,7 +321,7 @@ const ProfileAddressFix = () => {
                   type="checkbox"
                   checked={profileData.settings.email_updates}
                   onChange={(e) => handleInputChange('settings', 'email_updates', e.target.checked)}
-                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  className="h-4 w-4 rounded border-2 border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-purple-500 focus:ring-2 bg-white dark:bg-gray-700 checked:bg-purple-600 checked:border-purple-600"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Receive email updates</span>
               </label>
@@ -331,7 +331,7 @@ const ProfileAddressFix = () => {
                   type="checkbox"
                   checked={profileData.settings.public_profile}
                   onChange={(e) => handleInputChange('settings', 'public_profile', e.target.checked)}
-                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  className="h-4 w-4 rounded border-2 border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-purple-500 focus:ring-2 bg-white dark:bg-gray-700 checked:bg-purple-600 checked:border-purple-600"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Make profile public</span>
               </label>
