@@ -710,11 +710,11 @@ function DashboardTab({ dashboardData, loading }) {
           </div>
           <div>
             <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-              {(kpis.active_products || 0).toLocaleString()}
+              {(kpis.active_listings || 0).toLocaleString()}
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Active Listings</div>
             <div className="text-xs text-orange-600 dark:text-orange-400 mb-3">
-              {(kpis.total_products || 0) - (kpis.active_products || 0)} inactive
+              {(kpis.total_listings || 0) - (kpis.active_listings || 0)} inactive
             </div>
             <div className="mt-3 grid grid-cols-3 gap-1">
               <div className="bg-green-400 h-2 rounded" title="Active"></div>
