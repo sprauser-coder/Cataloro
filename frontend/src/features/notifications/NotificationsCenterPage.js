@@ -175,11 +175,10 @@ function NotificationsCenterPage() {
         const notification = notifications.find(n => n.id === id);
         const notificationType = notification?.type || 'unknown';
         
-        // Try multiple deletion endpoints for better compatibility
+        // Try multiple deletion endpoints for regular notifications only (system notifications are handled separately as toasts)
         const endpoints = [
           `api/user/${user.id}/notifications/${id}`,
-          `api/notifications/${id}?user_id=${user.id}`,
-          `api/user/${user.id}/system-notifications/${id}`
+          `api/notifications/${id}?user_id=${user.id}`
         ];
         
         let deleteSuccess = false;
