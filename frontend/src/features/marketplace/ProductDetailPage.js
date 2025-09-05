@@ -562,6 +562,18 @@ function ProductDetailPage() {
         </div>
       </div>
 
+      {/* Catalyst Reviews Section - Show for catalyst/chemical listings */}
+      {product && (product.category?.toLowerCase().includes('catalyst') || 
+                   product.category?.toLowerCase().includes('chemical') ||
+                   product.title?.toLowerCase().includes('catalyst') ||
+                   product.description?.toLowerCase().includes('catalyst')) && (
+        <CatalystReviewsSection 
+          listingId={product.id} 
+          sellerId={product.seller_id || product.seller?.id} 
+          className="mb-8" 
+        />
+      )}
+
       {/* Related Products */}
       {relatedProducts.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
