@@ -369,13 +369,6 @@ function TenderManagementPage() {
           handleRejectTender={handleRejectTender}
           totalTenders={totalTenders}
           totalHighestBids={totalHighestBids}
-          listings={filteredListings}
-          allListings={listings}
-          listingsLoading={listingsLoading}
-          activeFilter={activeFilter}
-          handleTileClick={handleTileClick}
-          handleCreateListing={handleCreateListing}
-          handleDeleteListing={handleDeleteListing}
         />
       )}
 
