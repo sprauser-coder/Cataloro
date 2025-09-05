@@ -678,23 +678,42 @@ function ModernBrowsePage() {
           </div>
 
           {/* Browse Page Advertisement */}
-          {adsConfig?.browsePageAd?.active && adsConfig.browsePageAd.image && (
+          {adsConfig?.browsePageAd?.active && (
             <div className="flex-shrink-0">
               <div 
-                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center"
                 style={{
                   width: adsConfig.browsePageAd.width || '300px',
                   height: adsConfig.browsePageAd.height || '600px'
                 }}
               >
-                <img
-                  src={adsConfig.browsePageAd.image}
-                  alt={adsConfig.browsePageAd.description || 'Advertisement'}
-                  className="w-full h-full object-cover"
-                />
-                {adsConfig.browsePageAd.description && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white text-sm">{adsConfig.browsePageAd.description}</p>
+                {adsConfig.browsePageAd.image ? (
+                  <>
+                    <img
+                      src={adsConfig.browsePageAd.image}
+                      alt={adsConfig.browsePageAd.description || 'Advertisement'}
+                      className="w-full h-full object-cover"
+                    />
+                    {adsConfig.browsePageAd.description && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                        <p className="text-white text-sm">{adsConfig.browsePageAd.description}</p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="p-6 text-center">
+                    <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Monitor className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Advertisement Space</h3>
+                    {adsConfig.browsePageAd.description ? (
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">{adsConfig.browsePageAd.description}</p>
+                    ) : (
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">Your ad will appear here</p>
+                    )}
+                    <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                      Runtime: {adsConfig.browsePageAd.runtime || '1 month'}
+                    </div>
                   </div>
                 )}
               </div>
