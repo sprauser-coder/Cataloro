@@ -1198,11 +1198,23 @@ function UsersTab({ users, onUpdateUser, showToast }) {
         </div>
       )}
 
+      {/* Create User Button - Moved to Top */}
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">User Management</h3>
+        <button
+          onClick={() => {
+            setSelectedUser(null);
+            setShowEditModal(true);
+          }}
+          className="cataloro-button-primary flex items-center space-x-2"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Create New User</span>
+        </button>
+      </div>
+
       {/* Users Table - STANDARDIZED SPACING */}
       <div className="cataloro-card-glass overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/10 dark:border-white/10">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">User Management</h3>
-        </div>
         
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
