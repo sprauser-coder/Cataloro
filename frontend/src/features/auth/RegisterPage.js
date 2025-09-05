@@ -24,6 +24,8 @@ function RegisterPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
   const { register, isAuthenticated, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
 
