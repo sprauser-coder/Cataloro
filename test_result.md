@@ -619,6 +619,50 @@ const getEventTriggerDisplay = (notification) => {
 **COMPREHENSIVE TEST RESULTS:** 6/6 cleanup verification tests passed (100% success rate), cleanup endpoint executed successfully, clean separation verified across all users, system notifications still work for toast display, multiple users verification completed, database collections properly separated.
 
 **SYSTEM NOTIFICATIONS CLEANUP EXECUTION STATUS:** ✅ SUCCESSFULLY COMPLETED - The system notifications cleanup has been executed successfully and all separation requirements are met. The cleanup endpoint removed all system notifications from the user_notifications collection (0 found - already clean), regular notifications now contain only legitimate user activities, system notifications are properly separated for toast-only display, and the functionality works correctly across all 76 users in the system. Complete separation between system (toast) and regular (persistent) notifications has been achieved.
+
+**Test Date:** 2025-01-30 23:45:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ❌ ADMIN DASHBOARD LISTINGS COUNT DISCREPANCY BUG CONFIRMED - ROOT CAUSE IDENTIFIED
+
+#### Admin Dashboard Listings Count Discrepancy Investigation Results:
+**CRITICAL ADMIN DASHBOARD BUG INVESTIGATION:** ❌ DISCREPANCY CONFIRMED - Executed comprehensive investigation of the admin dashboard listings count discrepancy as requested in review. The exact bug described has been confirmed and root cause identified with 100% accuracy.
+
+**1. Dashboard KPI Calculation Analysis** ✅ CONFIRMED ISSUE - Dashboard shows 4 total listings as reported: GET /api/admin/dashboard endpoint returns total_listings: 4 ✅, KPI calculation uses db.listings.count_documents({}) which counts ALL listings regardless of status ✅, Dashboard correctly shows 4 listings matching the reported issue ✅, KPI calculation working as designed but includes non-active listings ✅.
+
+**2. Listings Display Analysis** ✅ CONFIRMED ISSUE - Browse endpoint shows 0 listings as reported: GET /api/marketplace/browse endpoint returns 0 listings ✅, Browse endpoint uses db.listings.find({"status": "active"}) which only shows active listings ✅, No active listings found in database, only expired listings ✅, Listings management section would show 0 results because no active listings exist ✅.
+
+**3. Database Query Comparison** ❌ CRITICAL MISMATCH IDENTIFIED - Different queries cause the discrepancy: Dashboard query: db.listings.count_documents({}) returns 4 (ALL listings) ✅, Browse query: db.listings.find({"status": "active"}) returns 0 (ACTIVE only) ✅, Root cause: Dashboard counts all statuses, browse only shows active status ✅, All 4 listings have status "expired" - none are active ✅.
+
+**4. Data Source Verification** ✅ SAME DATABASE, DIFFERENT FILTERS - Both endpoints query same collection with different criteria: Both use db.listings collection ✅, Dashboard: No status filtering (counts all) ✅, Browse: Filters by status="active" only ✅, Field names and database structure identical ✅.
+
+**5. Listing Status Investigation** ✅ ROOT CAUSE CONFIRMED - All listings are expired, none active: Found exactly 4 listings in database ✅, All 4 listings have status "expired" (TIME LIMIT TEST listings) ✅, 0 listings have status "active" ✅, Listings were created as time-limited tests and have expired ✅.
+
+**6. Admin Listings Management Endpoints** ❌ MISSING ENDPOINTS CONFIRMED - No admin listings management endpoints exist: Tested /admin/listings, /admin/listings/active, /admin/listings/pending, /admin/listings/inactive, /admin/listings/sold ✅, All return 404 Not Found ✅, No admin listings management functionality implemented ✅, This explains why listings management section shows "0 results" ✅.
+
+**TECHNICAL VERIFICATION:**
+- Dashboard KPI: 4 total listings (counts ALL statuses including expired)
+- Browse Endpoint: 0 active listings (filters by status="active" only)  
+- Listings Status: All 4 listings have status="expired" (time limit test listings)
+- Admin Endpoints: No /admin/listings endpoints exist (all return 404)
+- Database Queries: Dashboard uses count_documents({}), Browse uses find({"status": "active"})
+- Root Cause: KPI counts all listings, management section needs active listings only
+
+**ROOT CAUSE ANALYSIS:**
+✅ Dashboard KPI calculation is working correctly (counts all listings)
+✅ Browse endpoint is working correctly (shows only active listings)  
+❌ **CORE ISSUE**: All 4 listings are expired time-limit test listings with no active listings
+❌ **SECONDARY ISSUE**: No admin listings management endpoints exist to show listings by status
+❌ **DESIGN FLAW**: KPI shows total count but management section expects active listings only
+
+**CRITICAL ISSUES IDENTIFIED:**
+1. **Status Mismatch**: Dashboard counts ALL listings (4 expired), management expects ACTIVE listings (0 exist)
+2. **Missing Admin Endpoints**: No /admin/listings endpoints implemented for listings management
+3. **Expired Test Data**: All listings are expired time-limit tests, no real active listings
+4. **Inconsistent Filtering**: KPI uses no filter, management section needs status-based filtering
+
+**COMPREHENSIVE INVESTIGATION RESULTS:** Root cause confirmed (6/6 investigation areas completed), dashboard shows 4 expired listings, browse shows 0 active listings, no admin listings management endpoints exist, all listings are expired time-limit tests.
+
+**ADMIN DASHBOARD LISTINGS COUNT DISCREPANCY STATUS:** ❌ BUG CONFIRMED - The exact discrepancy described in the review request has been confirmed. Dashboard KPI shows "4 TOTAL LISTINGS" because it counts all listings including expired ones, while listings management shows "0 results" because it looks for active listings and none exist. All 4 listings are expired time-limit test listings. Additionally, no admin listings management endpoints exist (/admin/listings returns 404), which explains why the listings management section cannot display any listings. The fix requires either creating admin endpoints or ensuring the KPI and management section use consistent filtering criteria.
 **Test Date:** 2025-01-30 22:45:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ❌ SYSTEM NOTIFICATIONS DATABASE CLEANUP REQUIRED - CRITICAL SEPARATION ISSUE CONFIRMED
