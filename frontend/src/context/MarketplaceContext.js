@@ -251,10 +251,7 @@ export function MarketplaceProvider({ children }) {
     loadInitialProducts();
   }, []);
 
-  // Save to localStorage when cart or favorites change
-  useEffect(() => {
-    localStorage.setItem('cataloro_cart', JSON.stringify(state.cartItems));
-  }, [state.cartItems]);
+
 
   useEffect(() => {
     localStorage.setItem('cataloro_favorites', JSON.stringify(state.favorites));
