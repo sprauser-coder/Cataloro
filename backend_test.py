@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-SYSTEM NOTIFICATIONS SEPARATION TESTING AND CLEANUP
+SYSTEM NOTIFICATIONS CLEANUP EXECUTION AND VERIFICATION
 Backend API Testing for Cataloro Marketplace
 
 This test focuses on:
-1. Database cleanup - removing system notifications from user_notifications collection
-2. System notifications endpoint test - verify /api/user/{user_id}/system-notifications
-3. Regular notifications endpoint test - verify /api/user/{user_id}/notifications  
-4. Separation verification - confirm system and regular notifications are separate
-5. System notification triggering - test they're triggered but NOT stored in user_notifications
-6. Database collections verification
+1. Execute cleanup endpoint - call /api/admin/cleanup-system-notifications POST
+2. Verify cleanup results - check how many notifications were removed
+3. Test clean separation after cleanup - ensure regular notifications are clean
+4. Verify system notifications still work for toast display
+5. Test multiple users to ensure cleanup worked across all users
+6. Complete separation verification between system and regular notifications
 """
 
 import requests
