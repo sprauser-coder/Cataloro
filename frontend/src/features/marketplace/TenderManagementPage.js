@@ -22,7 +22,8 @@ import {
   Trash2,
   MoreHorizontal,
   FileText,
-  Settings
+  Settings,
+  List
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
