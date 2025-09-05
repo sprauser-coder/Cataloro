@@ -3082,6 +3082,12 @@ function SiteAdministrationTab({ showToast }) {
       description: 'Manage info page content with rich text editing capabilities'
     },
     { 
+      id: 'ads-manager', 
+      label: "Ad's Manager", 
+      icon: Monitor,
+      description: 'Manage advertisements across browse page, favorites, messenger, and footer'
+    },
+    { 
       id: 'system-notifications', 
       label: 'System Notifications Manager', 
       icon: Bell,
