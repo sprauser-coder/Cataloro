@@ -741,12 +741,7 @@ function MessagesPage() {
                   <MessageCircle className="w-20 h-20 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Select a conversation</h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-6">Choose a conversation from the list to start messaging</p>
-                  <button
-                    onClick={() => setShowCompose(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors"
-                  >
-                    Start New Conversation
-                  </button>
+                  {/* Start new conversation button removed - only buyer-seller connections */}
                 </div>
               </div>
             )}
