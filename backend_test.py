@@ -380,6 +380,221 @@ class BackendTester:
                 f"Successfully cleaned up {cleaned_count} test users"
             )
 
+    def test_create_sample_listings_for_grid_layout(self):
+        """Create 6-8 test listings for grid layout testing"""
+        created_listing_ids = []
+        
+        # Sample listings with variety in titles, prices, categories, and status
+        sample_listings = [
+            {
+                "title": "Premium Wireless Headphones",
+                "description": "High-quality wireless headphones with noise cancellation and premium sound quality. Perfect for music lovers and professionals.",
+                "price": 150.00,
+                "category": "Electronics",
+                "condition": "New",
+                "seller_id": "demo_seller_1",
+                "status": "active",
+                "images": ["https://example.com/headphones.jpg"],
+                "tags": ["wireless", "premium", "audio"]
+            },
+            {
+                "title": "Vintage Leather Jacket",
+                "description": "Authentic vintage leather jacket from the 1980s. Excellent condition with unique character and style.",
+                "price": 250.00,
+                "category": "Fashion",
+                "condition": "Used - Excellent",
+                "seller_id": "demo_seller_2", 
+                "status": "active",
+                "images": ["https://example.com/jacket.jpg"],
+                "tags": ["vintage", "leather", "fashion"]
+            },
+            {
+                "title": "Professional Camera Lens",
+                "description": "Canon 50mm f/1.8 lens in perfect condition. Ideal for portrait photography and low-light situations.",
+                "price": 320.00,
+                "category": "Electronics",
+                "condition": "Used - Good",
+                "seller_id": "demo_seller_3",
+                "status": "active", 
+                "images": ["https://example.com/lens.jpg"],
+                "tags": ["camera", "photography", "canon"]
+            },
+            {
+                "title": "Handcrafted Wooden Table",
+                "description": "Beautiful handcrafted dining table made from solid oak wood. Perfect for family gatherings and dinner parties.",
+                "price": 450.00,
+                "category": "Furniture",
+                "condition": "New",
+                "seller_id": "demo_seller_4",
+                "status": "active",
+                "images": ["https://example.com/table.jpg"],
+                "tags": ["handcrafted", "wood", "furniture"]
+            },
+            {
+                "title": "Gaming Mechanical Keyboard",
+                "description": "RGB mechanical gaming keyboard with Cherry MX switches. Perfect for gaming and typing enthusiasts.",
+                "price": 89.99,
+                "category": "Electronics",
+                "condition": "New",
+                "seller_id": "demo_seller_5",
+                "status": "active",
+                "images": ["https://example.com/keyboard.jpg"],
+                "tags": ["gaming", "mechanical", "rgb"]
+            },
+            {
+                "title": "Designer Handbag Collection",
+                "description": "Authentic designer handbag in excellent condition. Comes with original packaging and authenticity certificate.",
+                "price": 680.00,
+                "category": "Fashion",
+                "condition": "Used - Excellent",
+                "seller_id": "demo_seller_6",
+                "status": "active",
+                "images": ["https://example.com/handbag.jpg"],
+                "tags": ["designer", "luxury", "authentic"]
+            },
+            {
+                "title": "Fitness Equipment Set",
+                "description": "Complete home fitness set including dumbbells, resistance bands, and yoga mat. Perfect for home workouts.",
+                "price": 125.00,
+                "category": "Sports",
+                "condition": "Used - Good",
+                "seller_id": "demo_seller_7",
+                "status": "active",
+                "images": ["https://example.com/fitness.jpg"],
+                "tags": ["fitness", "home", "workout"]
+            },
+            {
+                "title": "Artisan Coffee Beans",
+                "description": "Premium single-origin coffee beans roasted to perfection. Direct from small farms with fair trade certification.",
+                "price": 35.00,
+                "category": "Food & Beverages",
+                "condition": "New",
+                "seller_id": "demo_seller_8",
+                "status": "active",
+                "images": ["https://example.com/coffee.jpg"],
+                "tags": ["coffee", "artisan", "fair-trade"]
+            }
+        ]
+        
+        try:
+            for i, listing_data in enumerate(sample_listings):
+                response = requests.post(
+                    f"{BACKEND_URL}/listings",
+                    json=listing_data,
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    listing_id = data.get('listing_id')
+                    created_listing_ids.append(listing_id)
+                    self.log_test(
+                        f"Create Sample Listing {i+1}",
+                        True,
+                        f"Created '{listing_data['title']}' - €{listing_data['price']} ({listing_data['category']})"
+                    )
+                else:
+                    error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                    self.log_test(f"Create Sample Listing {i+1}", False, error_msg=error_detail)
+            
+            # Summary of created listings
+            if created_listing_ids:
+                self.log_test(
+                    "Sample Listings Creation Summary",
+                    True,
+                    f"Successfully created {len(created_listing_ids)} test listings for grid layout testing"
+                )
+            
+            return created_listing_ids
+            
+        except Exception as e:
+            self.log_test("Create Sample Listings", False, error_msg=str(e))
+            return []
+
+    def test_verify_created_listings(self):
+        """Verify all listings created by fetching with status=all"""
+        try:
+            response = requests.get(f"{BACKEND_URL}/listings?status=all", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                listings = data.get('listings', [])
+                total = data.get('total', 0)
+                
+                # Count listings by category for verification
+                category_counts = {}
+                for listing in listings:
+                    category = listing.get('category', 'Unknown')
+                    category_counts[category] = category_counts.get(category, 0) + 1
+                
+                category_summary = ", ".join([f"{cat}: {count}" for cat, count in category_counts.items()])
+                
+                self.log_test(
+                    "Verify Created Listings",
+                    True,
+                    f"Retrieved {len(listings)} listings (total: {total}). Categories: {category_summary}"
+                )
+                return listings
+            else:
+                self.log_test("Verify Created Listings", False, f"HTTP {response.status_code}")
+                return []
+        except Exception as e:
+            self.log_test("Verify Created Listings", False, error_msg=str(e))
+            return []
+
+    def run_grid_layout_testing(self):
+        """Run grid layout testing by creating sample listings"""
+        print("=" * 80)
+        print("CATALORO GRID LAYOUT TESTING - SAMPLE LISTINGS CREATION")
+        print("=" * 80)
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"Test Started: {datetime.now().isoformat()}")
+        print()
+        
+        # 1. Basic Health Check
+        print("🔍 BASIC HEALTH CHECK")
+        print("-" * 40)
+        if not self.test_health_check():
+            print("❌ Health check failed. Aborting grid layout testing.")
+            return
+        
+        # 2. Create Sample Listings for Grid Layout Testing
+        print("📝 CREATING SAMPLE LISTINGS FOR GRID LAYOUT")
+        print("-" * 40)
+        created_listing_ids = self.test_create_sample_listings_for_grid_layout()
+        
+        # 3. Verify Listings Created
+        print("✅ VERIFYING CREATED LISTINGS")
+        print("-" * 40)
+        all_listings = self.test_verify_created_listings()
+        
+        # 4. Test Browse Endpoint for Grid Layout
+        print("🌐 TESTING BROWSE ENDPOINT FOR GRID LAYOUT")
+        print("-" * 40)
+        self.test_marketplace_browse_functionality()
+        
+        # Print Summary
+        print("=" * 80)
+        print("GRID LAYOUT TEST SUMMARY")
+        print("=" * 80)
+        print(f"Total Tests: {self.total_tests}")
+        print(f"Passed: {self.passed_tests} ✅")
+        print(f"Failed: {self.failed_tests} ❌")
+        print(f"Success Rate: {(self.passed_tests/self.total_tests*100):.1f}%")
+        print(f"Sample Listings Created: {len(created_listing_ids)}")
+        print()
+        
+        if self.failed_tests > 0:
+            print("FAILED TESTS:")
+            for result in self.test_results:
+                if "❌ FAIL" in result["status"]:
+                    print(f"  - {result['test']}: {result['error']}")
+        
+        print("\n🎯 GRID LAYOUT TESTING COMPLETE")
+        print("The sample listings are now available for testing the browse page grid layout.")
+        print("You can verify the 4-column layout (without ads) and 3-column layout (with ads) functionality.")
+        
+        return self.passed_tests, self.failed_tests, self.test_results
+
     def run_comprehensive_tests(self):
         """Run all backend tests focusing on admin user management"""
         print("=" * 80)
