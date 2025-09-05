@@ -891,7 +891,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
         showToast('User created successfully', 'success');
         setShowEditModal(false);
         setSelectedUser(null);
-        fetchUsers(); // Refresh users list
+        onUpdateUser(); // Refresh users list
       } else {
         const error = await response.json();
         showToast(error.detail || 'Failed to create user', 'error');
