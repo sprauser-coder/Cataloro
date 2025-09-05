@@ -155,22 +155,42 @@ function RegisterPage() {
               </div>
             )}
 
-            {/* Full Name Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  name="full_name"
-                  required
-                  value={formData.full_name}
-                  onChange={handleInputChange}
-                  className="cataloro-input pl-10"
-                  placeholder="Enter your full name"
-                />
+            {/* First Name and Last Name Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  First Name *
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    name="first_name"
+                    required
+                    value={formData.first_name}
+                    onChange={handleInputChange}
+                    className="cataloro-input pl-10"
+                    placeholder="Enter your first name"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Last Name *
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    name="last_name"
+                    required
+                    value={formData.last_name}
+                    onChange={handleInputChange}
+                    className="cataloro-input pl-10"
+                    placeholder="Enter your last name"
+                  />
+                </div>
               </div>
             </div>
 
