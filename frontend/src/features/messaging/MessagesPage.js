@@ -517,12 +517,7 @@ function MessagesPage() {
                   <MessageCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No conversations</h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-4">Start a conversation with buyers and sellers</p>
-                  <button
-                    onClick={() => setShowCompose(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                  >
-                    Send First Message
-                  </button>
+                  {/* Start new conversation button removed - only buyer-seller connections */}
                 </div>
               ) : (
                 filteredConversations.map((conversation) => (
