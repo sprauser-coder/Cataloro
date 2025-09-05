@@ -818,7 +818,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
       if (response.ok) {
         showToast('User activated successfully', 'success');
-        fetchUsers(); // Refresh users list
+        onUpdateUser(); // Refresh users list
       } else {
         showToast('Failed to activate user', 'error');
       }
