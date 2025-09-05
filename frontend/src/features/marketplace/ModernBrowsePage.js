@@ -417,7 +417,7 @@ function ModernBrowsePage() {
           
           {/* Hero Search Bar - FULL WIDTH */}
           <div className="w-full">
-            <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-2 border border-white/20 max-w-4xl mx-auto">
+            <div className="search-bar-container relative bg-white/10 backdrop-blur-sm rounded-2xl p-2 border border-white/20 max-w-4xl mx-auto">
               <div className="flex items-center">
                 <Search className="absolute left-6 text-white/70 w-6 h-6" />
                 <input
