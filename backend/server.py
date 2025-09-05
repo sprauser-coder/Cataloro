@@ -209,19 +209,10 @@ async def trigger_system_notifications(user_id: str, event_type: str):
                 # Skip daily/weekly notifications if already sent
                 continue
                 
-            notification = {
-                "user_id": user_id,
-                "title": sys_notif.get("title", "System Notification"),
-                "message": sys_notif.get("message", "You have a new system notification."),
-                "type": sys_notif.get("type", "info"),  # Use the notification type from system notification
-                "is_read": False,
-                "created_at": datetime.utcnow().isoformat(),
-                "id": str(uuid.uuid4()),
-                "system_notification_id": sys_notif.get("id"),
-                "event_trigger": event_type
-            }
-            print(f"DEBUG: Created system notification: {notification}")
-            result = await db.user_notifications.insert_one(notification)
+            # System notifications should NOT be stored in user_notifications collection
+            # They should only be displayed as toast messages via the system-notifications endpoint
+            print(f"DEBUG: System notification triggered for user {user_id}: {sys_notif.get('title')} - {sys_notif.get('message')}")
+            # No database insertion - system notifications are fetched directly from system_notifications collection
             
             # Update display count
             await db.system_notifications.update_one(
