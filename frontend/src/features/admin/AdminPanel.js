@@ -6630,8 +6630,9 @@ function UserEditModal({ user, onClose, onSave }) {
               </label>
               <input
                 type="password"
+                name="confirmPassword"
                 value={formData.confirmPassword}
-                onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                onChange={handleInputChange}
                 className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
                   errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
