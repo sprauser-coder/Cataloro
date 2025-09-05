@@ -51,6 +51,8 @@ function ModernBrowsePage() {
   const { user } = useAuth();
   const { showToast } = useNotifications();
   const navigate = useNavigate();
+  const adsConfig = useAdsConfig();
+  
   // Use marketplace context
   const {
     filteredProducts,
