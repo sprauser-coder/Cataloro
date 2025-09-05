@@ -2292,6 +2292,10 @@ function SiteAdministrationTab({ showToast }) {
           enabledFeatures: enabledFeatures
         });
         
+        // Show visual confirmation
+        setSettingsSaved(true);
+        setTimeout(() => setSettingsSaved(false), 3000);
+        
         // Flash the page briefly to show changes took effect
         document.body.style.transition = 'opacity 0.3s ease';
         document.body.style.opacity = '0.95';
