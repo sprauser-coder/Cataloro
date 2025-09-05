@@ -192,6 +192,57 @@ function ContentManagementSystem() {
         'Global Reach'
       ]
     },
+    'about-html': {
+      enabled: true,
+      title: 'About Page HTML Editor',
+      htmlContent: `<div class="about-page">
+        <h1>Welcome to Cataloro</h1>
+        <p>This is the about page content. You can edit this HTML directly.</p>
+        <div class="features">
+          <h2>Our Features</h2>
+          <ul>
+            <li>Real-time messaging</li>
+            <li>Advanced search</li>
+            <li>Secure payments</li>
+          </ul>
+        </div>
+      </div>`,
+      cssStyles: `/* About Page Styles */
+.about-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.about-page h1 {
+  color: #1f2937;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.about-page p {
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.features h2 {
+  color: #374151;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.features ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.features li {
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}`
+    },
     team: {
       enabled: true,
       title: 'Meet Our Team',
