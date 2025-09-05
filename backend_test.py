@@ -270,8 +270,99 @@ class SystemNotificationsTest:
             self.log_result("Regular Notifications Endpoint", False, f"Exception: {str(e)}")
             return False
     
-    def test_system_notification_creation_and_triggering(self):
-        """Test 4: Create system notification and verify it's triggered correctly but NOT stored in user_notifications"""
+    def test_multiple_users_cleanup_verification(self):
+        """Test 4: Test multiple users to ensure cleanup worked across all users"""
+        try:
+            # Create a second test user
+            test_user_2_email = "system_test_user_2@example.com"
+            register_data = {
+                "username": f"system_test_user_2_{int(time.time())}",
+                "email": test_user_2_email,
+                "full_name": "System Test User 2",
+                "password": TEST_USER_PASSWORD
+            }
+            
+            register_response = self.session.post(f"{BASE_URL}/auth/register", json=register_data)
+            
+            if register_response.status_code == 200:
+                # Login the second user
+                login_data = {
+                    "email": test_user_2_email,
+                    "password": TEST_USER_PASSWORD
+                }
+                
+                login_response = self.session.post(f"{BASE_URL}/auth/login", json=login_data)
+                
+                if login_response.status_code == 200:
+                    user_2_data = login_response.json()
+                    user_2_id = user_2_data["user"]["id"]
+                    
+                    # Check notifications for user 2
+                    user_2_notifications_response = self.session.get(f"{BASE_URL}/user/{user_2_id}/notifications")
+                    
+                    if user_2_notifications_response.status_code == 200:
+                        user_2_notifications = user_2_notifications_response.json()
+                        system_notifications_user_2 = []
+                        
+                        for notification in user_2_notifications:
+                            if ("system_notification_id" in notification or 
+                                "Welcome back!" in notification.get("message", "") or
+                                "Endpoint Test" in notification.get("title", "") or
+                                notification.get("type") == "system"):
+                                system_notifications_user_2.append(notification)
+                        
+                        # Also check admin user notifications
+                        admin_notifications_response = self.session.get(f"{BASE_URL}/user/{self.admin_user_id}/notifications")
+                        
+                        if admin_notifications_response.status_code == 200:
+                            admin_notifications = admin_notifications_response.json()
+                            system_notifications_admin = []
+                            
+                            for notification in admin_notifications:
+                                if ("system_notification_id" in notification or 
+                                    "Welcome back!" in notification.get("message", "") or
+                                    "Endpoint Test" in notification.get("title", "") or
+                                    notification.get("type") == "system"):
+                                    system_notifications_admin.append(notification)
+                            
+                            if len(system_notifications_user_2) == 0 and len(system_notifications_admin) == 0:
+                                self.log_result("Multiple Users Cleanup Verification", True, 
+                                              f"Cleanup successful across all users - no system notifications found",
+                                              {"user_1_id": self.test_user_id,
+                                               "user_2_id": user_2_id,
+                                               "admin_id": self.admin_user_id,
+                                               "user_2_notifications": len(user_2_notifications),
+                                               "admin_notifications": len(admin_notifications)})
+                                return True
+                            else:
+                                self.log_result("Multiple Users Cleanup Verification", False, 
+                                              f"System notifications still found in some users",
+                                              {"user_2_system_notifications": len(system_notifications_user_2),
+                                               "admin_system_notifications": len(system_notifications_admin)})
+                                return False
+                        else:
+                            self.log_result("Multiple Users Cleanup Verification", False, 
+                                          "Failed to retrieve admin notifications")
+                            return False
+                    else:
+                        self.log_result("Multiple Users Cleanup Verification", False, 
+                                      "Failed to retrieve user 2 notifications")
+                        return False
+                else:
+                    self.log_result("Multiple Users Cleanup Verification", False, 
+                                  "Failed to login second test user")
+                    return False
+            else:
+                self.log_result("Multiple Users Cleanup Verification", False, 
+                              "Failed to create second test user")
+                return False
+                
+        except Exception as e:
+            self.log_result("Multiple Users Cleanup Verification", False, f"Exception: {str(e)}")
+            return False
+
+    def test_system_notification_toast_functionality(self):
+        """Test 5: Verify system notifications still work for toast display"""
         try:
             # First, create a system notification via admin endpoint
             system_notification_data = {
