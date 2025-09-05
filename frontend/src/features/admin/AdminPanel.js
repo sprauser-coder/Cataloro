@@ -4120,6 +4120,9 @@ function ListingsTab({ showToast }) {
       case 'inactive':
         statusMatch = listing.status === 'inactive' || listing.status === 'deactivated' || listing.status === 'paused';
         break;
+      case 'expired':
+        statusMatch = listing.status === 'expired';
+        break;
       case 'sold':
         statusMatch = listing.status === 'sold' || listing.status === 'completed' || listing.status === 'finished';
         break;
