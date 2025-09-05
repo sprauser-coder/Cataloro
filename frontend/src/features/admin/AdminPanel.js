@@ -6230,13 +6230,18 @@ function PriceOverrideModal({ catalyst, onSave, onClose }) {
 // User Edit/Create Modal Component
 function UserEditModal({ user, onClose, onSave }) {
   const [formData, setFormData] = useState({
-    full_name: user?.full_name || '',
+    first_name: user?.first_name || (user?.full_name ? user.full_name.split(' ')[0] : ''),
+    last_name: user?.last_name || (user?.full_name ? user.full_name.split(' ').slice(1).join(' ') : ''),
     username: user?.username || '',
     email: user?.email || '',
     role: user?.role || 'user',
     is_active: user?.is_active !== undefined ? user.is_active : true,
     password: '',
-    confirm_password: ''
+    confirmPassword: '',
+    is_business: user?.is_business || false,
+    company_name: user?.company_name || '',
+    country: user?.country || '',
+    vat_number: user?.vat_number || ''
   });
 
   const [errors, setErrors] = useState({});
