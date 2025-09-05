@@ -32,9 +32,9 @@ class NotificationService {
     }
   }
 
-  async deleteNotification(notificationId) {
+  async deleteNotification(userId, notificationId) {
     try {
-      await axios.delete(`${API_ENDPOINTS.USER.NOTIFICATIONS}/${notificationId}`);
+      await axios.delete(`${API_ENDPOINTS.USER.NOTIFICATIONS.replace('{user_id}', userId)}/${notificationId}`);
     } catch (error) {
       throw new Error(error.response?.data?.detail || 'Failed to delete notification');
     }
