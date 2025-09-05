@@ -83,6 +83,22 @@ function FavoritesPage() {
         )}
       </div>
 
+      {/* Favorites Page Advertisement */}
+      {adsConfig?.favoriteAd?.active && adsConfig.favoriteAd.image && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+          <img
+            src={adsConfig.favoriteAd.image}
+            alt={adsConfig.favoriteAd.description || 'Advertisement'}
+            className="w-full h-32 object-cover"
+          />
+          {adsConfig.favoriteAd.description && (
+            <div className="p-4">
+              <p className="text-gray-700 dark:text-gray-300 text-sm">{adsConfig.favoriteAd.description}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Favorites Content */}
       {favorites.length === 0 ? (
         <div className="text-center py-16">
