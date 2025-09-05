@@ -1436,6 +1436,11 @@ function HeroSelectionTab({ showToast }) {
       }));
       
       showToast('✅ Hero content saved successfully! Changes are live on the Browse page.', 'success');
+      
+      // Show visual confirmation
+      setHeroSaved(true);
+      setTimeout(() => setHeroSaved(false), 3000);
+      
     } catch (error) {
       showToast('❌ Failed to save hero content', 'error');
     }
