@@ -407,20 +407,24 @@ function ProductDetailPage() {
             </div>
 
             {/* Bid Information Section */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 space-y-3">
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Bidding Information</h4>
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 space-y-4">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white">Bidding Information</h4>
               
               {/* Current Highest Bid */}
-              {product.bid_info?.has_bids && (
+              {product.bid_info?.has_bids ? (
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600 dark:text-gray-300">Current Highest Bid:</span>
                   <span className="font-bold text-green-600 dark:text-green-400">
                     €{product.bid_info.highest_bid.toFixed(2)}
                   </span>
                 </div>
+              ) : (
+                <div className="text-center text-gray-500 dark:text-gray-400 italic">
+                  No bids yet - be the first to bid!
+                </div>
               )}
 
-              {/* Your Tender Offer */}
+              {/* Your Current Bid */}
               {product.bid_info?.user_bid && (
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600 dark:text-gray-300">Your Current Bid:</span>
@@ -429,6 +433,46 @@ function ProductDetailPage() {
                   </span>
                 </div>
               )}
+
+              {/* Your Tender Offer Input */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Your Tender Offer:
+                </label>
+                <div className="flex space-x-2">
+                  <input
+                    type="number"
+                    step="0.01"
+                    min={product.bid_info?.highest_bid || product.price}
+                    value={tenderAmount}
+                    onChange={(e) => setTenderAmount(e.target.value)}
+                    disabled={isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)}
+                    className={`flex-1 px-3 py-2 border rounded-lg text-sm ${
+                      isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)
+                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                        : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500'
+                    }`}
+                    placeholder={
+                      product.time_info?.is_expired 
+                        ? "Bid..." 
+                        : product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids
+                          ? "Bid..."
+                          : `Minimum: €${(product.bid_info?.highest_bid || product.price || 0).toFixed(2)}`
+                    }
+                  />
+                  <button
+                    onClick={handleSubmitTender}
+                    disabled={submittingTender || isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
+                      submittingTender || isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)
+                        ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed'
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    {submittingTender ? 'Submitting...' : 'Submit Bid'}
+                  </button>
+                </div>
+              </div>
 
               {/* Time Remaining */}
               {product.time_info?.has_time_limit && (
@@ -447,13 +491,6 @@ function ProductDetailPage() {
                       ? 'EXPIRED' 
                       : product.time_info.time_remaining_display || 'Active'}
                   </span>
-                </div>
-              )}
-
-              {/* Bidding Status */}
-              {!product.bid_info?.has_bids && (
-                <div className="text-center text-gray-500 dark:text-gray-400 italic">
-                  No bids yet - be the first to bid!
                 </div>
               )}
             </div>
