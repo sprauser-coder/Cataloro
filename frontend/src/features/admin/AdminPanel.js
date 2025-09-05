@@ -788,21 +788,117 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
   const handleSuspendUser = async (userId) => {
     try {
-      await adminService.suspendUser(userId);
-      onUpdateUser();
-      showToast('User suspended successfully', 'success');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}/suspend`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        showToast('User suspended successfully', 'success');
+        fetchUsers(); // Refresh users list
+      } else {
+        showToast('Failed to suspend user', 'error');
+      }
     } catch (error) {
-      showToast('Failed to suspend user', 'error');
+      showToast('Error suspending user', 'error');
+      console.error('Suspend user error:', error);
     }
   };
 
   const handleActivateUser = async (userId) => {
     try {
-      await adminService.activateUser(userId);
-      onUpdateUser();
-      showToast('User activated successfully', 'success');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}/activate`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        showToast('User activated successfully', 'success');
+        fetchUsers(); // Refresh users list
+      } else {
+        showToast('Failed to activate user', 'error');
+      }
     } catch (error) {
-      showToast('Failed to activate user', 'error');
+      showToast('Error activating user', 'error');
+      console.error('Activate user error:', error);
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        showToast('User deleted successfully', 'success');
+        fetchUsers(); // Refresh users list
+      } else {
+        showToast('Failed to delete user', 'error');
+      }
+    } catch (error) {
+      showToast('Error deleting user', 'error');
+      console.error('Delete user error:', error);
+    }
+  };
+
+  const handleUpdateUser = async (userData) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userData.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      });
+
+      if (response.ok) {
+        showToast('User updated successfully', 'success');
+        setShowEditModal(false);
+        setSelectedUser(null);
+        fetchUsers(); // Refresh users list
+      } else {
+        showToast('Failed to update user', 'error');
+      }
+    } catch (error) {
+      showToast('Error updating user', 'error');
+      console.error('Update user error:', error);
+    }
+  };
+
+  const handleCreateUser = async (userData) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      });
+
+      if (response.ok) {
+        showToast('User created successfully', 'success');
+        setShowEditModal(false);
+        setSelectedUser(null);
+        fetchUsers(); // Refresh users list
+      } else {
+        const error = await response.json();
+        showToast(error.detail || 'Failed to create user', 'error');
+      }
+    } catch (error) {
+      showToast('Error creating user', 'error');
+      console.error('Create user error:', error);
     }
   };
 
