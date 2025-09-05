@@ -86,73 +86,6 @@ const ACTIONS = {
 // Reducer
 function marketplaceReducer(state, action) {
   switch (action.type) {
-    case ACTIONS.ADD_TO_CART: {
-      const existingItem = state.cartItems.find(item => item.id === action.payload.id);
-      let newCartItems;
-      
-      if (existingItem) {
-        // For marketplace listings, don't increase quantity - just show notification
-        return state;
-      } else {
-        // Always add with quantity 1 - one product per listing
-        newCartItems = [...state.cartItems, { ...action.payload, quantity: 1 }];
-      }
-      
-      const cartCount = newCartItems.reduce((sum, item) => sum + item.quantity, 0);
-      const cartTotal = newCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      
-      return {
-        ...state,
-        cartItems: newCartItems,
-        cartCount,
-        cartTotal
-      };
-    }
-    
-    case ACTIONS.REMOVE_FROM_CART: {
-      const newCartItems = state.cartItems.filter(item => item.id !== action.payload);
-      const cartCount = newCartItems.reduce((sum, item) => sum + item.quantity, 0);
-      const cartTotal = newCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      
-      return {
-        ...state,
-        cartItems: newCartItems,
-        cartCount,
-        cartTotal
-      };
-    }
-    
-    case ACTIONS.UPDATE_QUANTITY: {
-      const { id, quantity } = action.payload;
-      
-      if (quantity <= 0) {
-        return marketplaceReducer(state, { type: ACTIONS.REMOVE_FROM_CART, payload: id });
-      }
-      
-      const newCartItems = state.cartItems.map(item =>
-        item.id === id ? { ...item, quantity } : item
-      );
-      
-      const cartCount = newCartItems.reduce((sum, item) => sum + item.quantity, 0);
-      const cartTotal = newCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      
-      return {
-        ...state,
-        cartItems: newCartItems,
-        cartCount,
-        cartTotal
-      };
-    }
-    
-    case ACTIONS.CLEAR_CART:
-      return {
-        ...state,
-        cartItems: [],
-        cartCount: 0,
-        cartTotal: 0,
-        appliedPromo: null
-      };
-    
     case ACTIONS.ADD_TO_FAVORITES: {
       if (state.favorites.some(item => item.id === action.payload.id)) {
         return state; // Already in favorites
@@ -178,14 +111,6 @@ function marketplaceReducer(state, action) {
         ...state,
         favorites: action.payload,
         favoriteCount: action.payload.length
-      };
-    
-    case ACTIONS.SET_CART:
-      return {
-        ...state,
-        cartItems: action.payload,
-        cartCount: action.payload.length,
-        cartTotal: action.payload.reduce((total, item) => total + (item.price * item.quantity), 0)
       };
     
     case ACTIONS.SET_PRODUCTS: {
