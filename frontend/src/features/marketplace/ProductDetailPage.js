@@ -97,6 +97,9 @@ function ProductDetailPage() {
   const [tenderConfirmation, setTenderConfirmation] = useState(null);
   const [priceSuggestion, setPriceSuggestion] = useState(null);
   const [loadingSuggestion, setLoadingSuggestion] = useState(false);
+  
+  // Calculate if the listing is expired
+  const isExpired = product?.time_info?.is_expired || false;
 
   useEffect(() => {
     const foundProduct = allProducts.find(p => p.id === productId);
