@@ -283,14 +283,15 @@ function TenderManagementPage() {
         
         <div className="mt-4 lg:mt-0 flex items-center space-x-3">
           {activeTab === 'sell' ? (
+            // Only tenders-related actions in Sell tab now
             <button
-              onClick={handleCreateListing}
+              onClick={fetchTendersOverview}
               className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             >
-              <Plus className="w-4 h-4" />
-              <span>Create New Listing</span>
+              <RefreshCw className="w-4 h-4" />
+              <span>Refresh Tenders</span>
             </button>
-          ) : (
+          ) : activeTab === 'buy' ? (
             <button
               onClick={fetchMyTenders}
               className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
@@ -298,7 +299,15 @@ function TenderManagementPage() {
               <RefreshCw className="w-4 h-4" />
               <span>Refresh</span>
             </button>
-          )}
+          ) : activeTab === 'listings' ? (
+            <button
+              onClick={handleCreateListing}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Create New Listing</span>
+            </button>
+          ) : null}
         </div>
       </div>
 
