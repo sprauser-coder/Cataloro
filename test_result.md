@@ -691,6 +691,42 @@ The get_all_listings function in server.py (lines 1348-1388) builds query filter
 **Test Agent:** testing  
 **Test Status:** ✅ ADMIN DASHBOARD LISTINGS COUNT FIX VERIFICATION COMPLETED - ALL REQUIREMENTS VERIFIED WORKING
 
+**Test Date:** 2025-01-31 11:00:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ✅ LISTINGS ENDPOINT STATUS FILTERING FIX VERIFICATION COMPLETED - ALL REQUIREMENTS VERIFIED WORKING
+
+#### Listings Endpoint Status Filtering Fix Verification Results:
+**COMPREHENSIVE LISTINGS ENDPOINT STATUS FILTERING FIX TESTING:** ✅ ALL REQUIREMENTS MET - Executed comprehensive verification of the listings endpoint status filtering fix as requested in review. The fix has been successfully implemented and is working perfectly with all expected behaviors confirmed (5/5 tests passed, 100% success rate).
+
+**1. Default Behavior Verification** ✅ FULLY FUNCTIONAL - /api/listings without parameters now returns only active listings: Successfully accessed /api/listings endpoint with HTTP 200 status ✅, Returns 1 active listing (not 5 total listings) ✅, No expired/inactive listings included in default response ✅, Default status filtering working correctly ✅.
+
+**2. Status=all Parameter Verification** ✅ COMPREHENSIVE ACCESS - /api/listings?status=all returns all listings including expired ones: Successfully accessed endpoint with status=all parameter ✅, Returns 5 total listings (1 active + 4 expired) ✅, Status breakdown shows proper distribution: active: 1, expired: 4 ✅, Admin can access all listings when needed ✅.
+
+**3. Status=active Parameter Verification** ✅ EXPLICIT FILTERING - /api/listings?status=active returns only active listings: Successfully accessed endpoint with status=active parameter ✅, Returns 1 active listing only ✅, No non-active listings found in response ✅, Explicit active filtering working correctly ✅.
+
+**4. Browse Endpoint Comparison** ✅ PERFECT CONSISTENCY - /api/listings default behavior matches /api/marketplace/browse: Browse endpoint returns 1 listing ✅, Default listings endpoint returns 1 listing ✅, Perfect count match between endpoints ✅, Consistent active-only filtering across both endpoints ✅.
+
+**5. Admin Impact Verification** ✅ COMPLETE RESOLUTION - Admin listings management will now show only active listings by default: Admin interface will show 1 active listing (not 4-5 mixed listings) ✅, No more showing expired listings when there are active ones ✅, Admin can use ?status=all parameter to see all listings when needed ✅, Listings management discrepancy completely resolved ✅.
+
+**TECHNICAL VERIFICATION:**
+- Default Endpoint: /api/listings returns 1 active listing (previously returned 5 mixed listings)
+- Status Parameter: ?status=all returns 5 listings, ?status=active returns 1 listing
+- Browse Consistency: Perfect match between /api/listings and /api/marketplace/browse (both return 1)
+- Backend Implementation: Status filtering now properly implemented with default="active"
+- Admin Interface: Will show only active listings by default, resolving management discrepancy
+- Parameter Support: Full support for status filtering with backward compatibility
+
+**EXPECTED RESULTS ACHIEVED:**
+✅ **Default behavior**: /api/listings returns 1 active listing (not 4-5 mixed)
+✅ **Status=all parameter**: Returns 5 total listings including expired ones
+✅ **Status=active parameter**: Returns 1 active listing matching default
+✅ **Browse comparison**: Perfect match between listings and browse endpoints
+✅ **Admin impact**: Resolves listings management showing expired listings
+
+**COMPREHENSIVE FIX VERIFICATION RESULTS:** 5/5 verification tests passed (100% success rate), default behavior now filters to active listings only, status parameter working correctly for all scenarios, perfect consistency with browse endpoint achieved, admin listings management discrepancy completely resolved.
+
+**LISTINGS ENDPOINT STATUS FILTERING FIX STATUS:** ✅ PERFECTLY IMPLEMENTED - The listings endpoint status filtering fix is working flawlessly. The /api/listings endpoint now defaults to returning only active listings (1 listing) instead of all listings (5 mixed). The status parameter works correctly: ?status=all returns all listings, ?status=active returns active only. Perfect consistency achieved with /api/marketplace/browse endpoint. Admin listings management will now show only active listings by default, completely resolving the discrepancy where admin saw 4-5 expired listings when there was only 1 active listing. All requirements from the review request have been successfully verified and the status filtering fix is working correctly.
+
 #### System Notifications Cleanup Execution Results:
 **COMPREHENSIVE SYSTEM NOTIFICATIONS CLEANUP TESTING:** ✅ ALL REQUIREMENTS MET - Executed comprehensive testing of the system notifications cleanup as requested in review. All primary testing objectives successfully verified with perfect implementation confirmed (6/6 tests passed, 100% success rate).
 
