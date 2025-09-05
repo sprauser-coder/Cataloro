@@ -2321,6 +2321,9 @@ async def accept_tender(tender_id: str, acceptance_data: dict):
             
             await db.user_notifications.insert_one(losing_notification)
         
+        # Trigger system notifications for purchase complete event
+        await trigger_system_notifications(tender["buyer_id"], "purchase_complete")
+        
         return {"message": "Tender accepted successfully"}
         
     except HTTPException:
