@@ -25,6 +25,8 @@ import {
   Camera,
   Save,
   X,
+  Check,
+  User,
   RefreshCw,
   Download,
   AlertTriangle,
