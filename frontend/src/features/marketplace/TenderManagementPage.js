@@ -402,7 +402,7 @@ function TenderManagementPage() {
   );
 }
 
-// Sell Tab Component (combines Tender Management and Listings Management)
+// Sell Tab Component (now only handles Tender Management)
 function SellTab({
   tendersOverview,
   tendersLoading,
@@ -413,14 +413,7 @@ function SellTab({
   handleAcceptTender,
   handleRejectTender,
   totalTenders,
-  totalHighestBids,
-  listings,
-  allListings,
-  listingsLoading,
-  activeFilter,
-  handleTileClick,
-  handleCreateListing,
-  handleDeleteListing
+  totalHighestBids
 }) {
 
   if (tendersLoading || listingsLoading) {
