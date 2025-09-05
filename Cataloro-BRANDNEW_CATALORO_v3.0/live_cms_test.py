@@ -10,7 +10,7 @@ import sys
 
 def test_live_cms_integration():
     """Test the live CMS integration as requested in the review"""
-    base_url = "https://cataloro-dash.preview.emergentagent.com"
+    base_url = "https://market-evolution-1.preview.emergentagent.com"
     
     print("🎯 LIVE CMS INTEGRATION TEST - REVIEW REQUIREMENTS")
     print("=" * 70)
@@ -25,7 +25,7 @@ def test_live_cms_integration():
             "description": "Discover Cataloro, the cutting-edge marketplace platform featuring real-time messaging, intelligent notifications, and seamless transactions.",
             "keywords": ["marketplace", "e-commerce", "cataloro", "trading platform", "online commerce"],
             "ogImage": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&h=630",
-            "canonicalUrl": "https://cataloro-dash.preview.emergentagent.com/info"
+            "canonicalUrl": "https://market-evolution-1.preview.emergentagent.com/info"
         },
         "hero": {
             "title": "Cataloro Marketplace",

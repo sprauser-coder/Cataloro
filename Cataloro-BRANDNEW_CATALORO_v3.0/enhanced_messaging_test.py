@@ -12,7 +12,7 @@ import uuid
 from datetime import datetime
 
 class EnhancedMessagingTester:
-    def __init__(self, base_url="https://cataloro-dash.preview.emergentagent.com"):
+    def __init__(self, base_url="https://market-evolution-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
         self.tests_run = 0

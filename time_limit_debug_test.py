@@ -11,7 +11,7 @@ import time
 from datetime import datetime, timedelta
 
 # Get backend URL from environment
-BACKEND_URL = "https://cataloro-dash.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-evolution-1.preview.emergentagent.com/api"
 
 class TimeLimitDebugTester:
     def __init__(self):

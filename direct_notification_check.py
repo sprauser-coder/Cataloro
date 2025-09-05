@@ -8,7 +8,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://cataloro-dash.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-evolution-1.preview.emergentagent.com/api"
 
 def check_all_notifications():
     """Check notifications for all known users"""

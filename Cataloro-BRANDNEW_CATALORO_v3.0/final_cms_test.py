@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 class FinalCMSAPITester:
-    def __init__(self, base_url="https://cataloro-dash.preview.emergentagent.com"):
+    def __init__(self, base_url="https://market-evolution-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
@@ -125,7 +125,7 @@ class FinalCMSAPITester:
                 "description": "Testing enhanced CMS with SEO optimization, version tracking, and advanced content management features for Cataloro marketplace.",
                 "keywords": ["cataloro", "cms", "marketplace", "seo", "testing"],
                 "ogImage": "https://example.com/og-image.jpg",
-                "canonicalUrl": "https://cataloro-dash.preview.emergentagent.com"
+                "canonicalUrl": "https://market-evolution-1.preview.emergentagent.com"
             },
             "hero": {
                 "title": "Enhanced Cataloro CMS",

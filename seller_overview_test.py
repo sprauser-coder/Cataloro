@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class SellerOverviewTester:
-    def __init__(self, base_url="https://cataloro-dash.preview.emergentagent.com"):
+    def __init__(self, base_url="https://market-evolution-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_user = None
         self.regular_user = None
