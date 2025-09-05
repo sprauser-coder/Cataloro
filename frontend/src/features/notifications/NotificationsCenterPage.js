@@ -92,7 +92,7 @@ function NotificationsCenterPage() {
     try {
       setLoading(true);
       
-      // Load notifications from backend
+      // Load notifications from backend using the corrected endpoint
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`);
       
       if (response.ok) {
