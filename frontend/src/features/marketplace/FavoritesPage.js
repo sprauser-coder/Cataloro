@@ -19,7 +19,6 @@ function FavoritesPage() {
   const {
     favorites,
     removeFromFavorites,
-    addToCart,
     loadUserFavorites,
     isLoading
   } = useMarketplace();
