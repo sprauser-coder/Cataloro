@@ -94,194 +94,165 @@ function FavoritesPage() {
   );
 }
 
-// Enhanced Favorite Card Component
+// Enhanced Favorite Card Component - Matches Browse Page ProductCard exactly
 function FavoriteCard({ item, onRemove, onNavigate }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleNextImage = (e) => {
-    e.stopPropagation();
-    if (item.images && item.images.length > 1) {
-      setCurrentImageIndex((prev) => (prev + 1) % item.images.length);
-    }
-  };
 
   const handleCardClick = () => {
     onNavigate(`/product/${item.id}`);
   };
 
-  const handleQuickAction = (e, action) => {
+  const handleFavoriteToggle = (e) => {
     e.stopPropagation();
-    action();
+    onRemove(item.id); // Remove from favorites
   };
 
   return (
     <div 
-      className="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer hover:-translate-y-2"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="product-card group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer hover:-translate-y-1"
       onClick={handleCardClick}
     >
-      {/* Image Section */}
+      {/* Image Section - Matches Browse Page exactly */}
       <div className="relative">
+        {/* Clickable overlay for image navigation */}
+        <div 
+          className="absolute inset-0 cursor-pointer z-10"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCardClick();
+          }}
+          title="View product details"
+        />
+        
         <img
           src={item.images?.[currentImageIndex] || item.images?.[0] || '/api/placeholder/400/300'}
           alt={item.title}
-          className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-          onClick={handleNextImage}
+          className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-[1.02]"
         />
         
         {/* Image Indicators */}
         {item.images && item.images.length > 1 && (
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1 z-20">
             {item.images.map((_, index) => (
               <div
                 key={index}
-                className={`w-2 h-2 rounded-full ${
+                className={`w-2 h-2 rounded-full cursor-pointer ${
                   index === currentImageIndex ? 'bg-white' : 'bg-white/50'
                 }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentImageIndex(index);
+                }}
               />
             ))}
           </div>
         )}
 
-        {/* Favorite Badge */}
-        <div className="absolute top-2 left-2">
-          <span className="inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-            ❤️ Favorite
-          </span>
+        {/* Tags and Badges - Matches Browse Page */}
+        <div className="absolute top-2 left-2 space-y-1 z-20">
+          {item.tags?.map((tag) => (
+            <span
+              key={tag}
+              className="inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium"
+            >
+              {tag}
+            </span>
+          ))}
+          
+          {/* Business/Private Badge */}
+          <div>
+            <span
+              className={`inline-block text-white text-xs px-2 py-1 rounded-full font-medium ${
+                item.seller?.is_business 
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600' 
+                  : 'bg-gradient-to-r from-green-600 to-emerald-600'
+              }`}
+            >
+              {item.seller?.is_business ? 'Business' : 'Private'}
+            </span>
+          </div>
         </div>
 
-        {/* Remove from Favorites Button */}
-        <div className={`absolute top-2 right-2 transition-opacity duration-200 ${
-          isHovered ? 'opacity-100' : 'opacity-0'
-        }`}>
+        {/* Favorite Button - Shows as filled heart since it's in favorites */}
+        <div className="absolute top-2 right-2 z-20">
           <button
-            onClick={(e) => handleQuickAction(e, () => onRemove(item.id))}
-            className="p-2 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-sm transition-all duration-200 text-red-500 hover:text-red-600"
+            onClick={handleFavoriteToggle}
+            className="favorites-button wishlist-button add-to-favorites p-3 bg-red-500/90 text-white backdrop-blur-lg rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 shadow-red-500/25"
+            title="Remove from favorites"
           >
-            <Heart className="w-5 h-5 fill-current" />
+            <Heart className="w-4 h-4 fill-current" />
           </button>
         </div>
-
-        {/* Favorited Date */}
-        {item.favorited_at && (
-          <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
-            Added {new Date(item.favorited_at).toLocaleDateString()}
-          </div>
-        )}
       </div>
 
-      {/* Content Section */}
+      {/* Product Info Section - Matches Browse Page exactly */}
       <div className="p-4">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="font-semibold text-lg text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors line-clamp-2">
+          <h3 className="font-bold text-gray-900 dark:text-white text-lg line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-1 mr-2">
             {item.title}
           </h3>
         </div>
-
-        {/* Price Section */}
-        <div className="flex items-center space-x-2 mb-3">
-          <span className="text-2xl font-bold text-gray-900 dark:text-white">
-            €{(() => {
-              const price = parseFloat(item.price) || 0;
-              return price.toFixed(2);
-            })()}
+        
+        {/* Price and Condition */}
+        <div className="flex items-center justify-between mb-3">
+          <span className="price-display text-2xl font-bold text-blue-600 dark:text-blue-400">
+            €{typeof item.price === 'number' ? item.price.toLocaleString() : item.price}
+          </span>
+          <span className="text-sm text-gray-500 dark:text-gray-400 capitalize bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
+            {item.condition || 'New'}
           </span>
         </div>
 
-        {/* Rating and Reviews - Only show if rating exists */}
-        {item.rating && (
-          <div className="flex items-center space-x-2 mb-3">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-4 h-4 ${
-                    i < Math.floor(parseFloat(item.rating) || 0)
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              {parseFloat(item.rating).toFixed(1)} ({item.reviews || item.review_count || '0'} reviews)
-            </span>
-          </div>
-        )}
-
-        {/* Seller Info */}
-        <div className="flex items-center space-x-2 mb-3">
-          <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-            <span className="text-white text-xs font-bold">
-              {(() => {
-                // Handle different seller data structures
-                if (typeof item.seller === 'string' && item.seller.length > 0) {
-                  return item.seller.charAt(0).toUpperCase();
-                } else if (typeof item.seller === 'object' && item.seller?.name) {
-                  return item.seller.name.charAt(0).toUpperCase();
-                } else if (item.seller_id) {
-                  return item.seller_id.charAt(0).toUpperCase();
-                } else {
-                  return 'S';
-                }
-              })()}
-            </span>
-          </div>
-          <span className="text-sm text-gray-600 dark:text-gray-400">
-            {(() => {
-              // Handle different seller data structures
-              if (typeof item.seller === 'string') {
-                return item.seller;
-              } else if (typeof item.seller === 'object' && item.seller?.name) {
-                return item.seller.name;
-              } else if (item.seller_id) {
-                return item.seller_id;
-              } else {
-                return 'Unknown Seller';
-              }
-            })()}
-          </span>
-          {((typeof item.seller === 'object' && item.seller?.verified) || item.verified) && (
-            <span className="text-blue-500 text-xs">✓ Verified</span>
-          )}
+        {/* Location */}
+        <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-2">
+          <MapPin className="w-4 h-4" />
+          <span>{item.location || 'Location not specified'}</span>
         </div>
 
-        {/* Location and Category */}
-        <div className="text-sm text-gray-500 dark:text-gray-400 mb-4 space-y-1">
-          {item.location && (
-            <div className="flex items-center">
-              <MapPin className="w-4 h-4 mr-1" />
-              {item.location}
+        {/* Date and Views */}
+        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+          <div className="flex items-center space-x-1">
+            <Clock className="w-4 h-4" />
+            <span>{new Date(item.created_at || Date.now()).toLocaleDateString()}</span>
+          </div>
+          {item.views && (
+            <div className="flex items-center space-x-1">
+              <Eye className="w-4 h-4" />
+              <span>{item.views} views</span>
             </div>
           )}
-          <div className="flex items-center justify-between">
-            <span className="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded-full">
-              {item.category}
-            </span>
-            <span className="text-xs">
-              Condition: {item.condition}
-            </span>
+        </div>
+
+        {/* Seller Info - Matches Browse Page */}
+        <div className="flex items-center space-x-3 mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+            {(item.seller?.name || item.seller?.username || 'U').charAt(0).toUpperCase()}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+              {item.seller?.name || item.seller?.username || 'Unknown Seller'}
+            </p>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {item.seller?.location && (
+                  <span className="flex items-center">
+                    <MapPin className="w-3 h-3 mr-1" />
+                    {item.seller.location}
+                  </span>
+                )}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex space-x-2">
-
-          <button 
-            onClick={(e) => handleQuickAction(e, () => {})}
-            className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            <MessageCircle className="w-4 h-4" />
-          </button>
-          <button
-            onClick={(e) => handleQuickAction(e, () => onRemove(item.id))}
-            className="px-4 py-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
+        {/* Action Button */}
+        <button
+          onClick={handleCardClick}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center space-x-2 group-hover:bg-blue-700"
+        >
+          <Eye className="w-4 h-4" />
+          <span>View Details</span>
+        </button>
       </div>
     </div>
   );
