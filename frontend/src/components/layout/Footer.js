@@ -18,6 +18,25 @@ import {
   Store
 } from 'lucide-react';
 
+// Hook to get ads configuration
+function useAdsConfig() {
+  const [adsConfig, setAdsConfig] = useState(null);
+  
+  useEffect(() => {
+    try {
+      const savedConfig = localStorage.getItem('cataloro_site_config');
+      if (savedConfig) {
+        const config = JSON.parse(savedConfig);
+        setAdsConfig(config.adsManager || null);
+      }
+    } catch (error) {
+      console.warn('Could not load ads configuration');
+    }
+  }, []);
+  
+  return adsConfig;
+}
+
 function Footer() {
   const [siteBranding, setSiteBranding] = useState({});
 
