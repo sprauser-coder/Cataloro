@@ -9,11 +9,6 @@ import { liveService } from '../services/liveService';
 
 // Initial state
 const initialState = {
-  // Shopping Cart
-  cartItems: [],
-  cartCount: 0,
-  cartTotal: 0,
-  
   // Favorites/Wishlist
   favorites: [],
   favoriteCount: 0,
