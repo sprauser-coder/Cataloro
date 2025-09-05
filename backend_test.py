@@ -672,7 +672,13 @@ class BackendTester:
 
 if __name__ == "__main__":
     tester = BackendTester()
-    passed, failed, results = tester.run_comprehensive_tests()
+    
+    # Run grid layout testing as requested in the review
+    print("🎯 RUNNING GRID LAYOUT TESTING AS REQUESTED")
+    print("Creating sample listings for browse page grid layout testing...")
+    print()
+    
+    passed, failed, results = tester.run_grid_layout_testing()
     
     # Exit with appropriate code
     exit(0 if failed == 0 else 1)
