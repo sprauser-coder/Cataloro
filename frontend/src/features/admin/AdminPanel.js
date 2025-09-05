@@ -280,10 +280,9 @@ function AdminPanel() {
   const generateRecentActivity = () => {
     const activities = [
       { action: `${allProducts.length} products currently active`, timestamp: new Date() },
-      { action: `${cartItems.length} items in shopping carts`, timestamp: new Date(Date.now() - 300000) },
-      { action: `${favorites.length} items in wishlists`, timestamp: new Date(Date.now() - 600000) },
-      { action: `${notifications.length} notifications sent today`, timestamp: new Date(Date.now() - 900000) },
-      { action: "System performance: Excellent", timestamp: new Date(Date.now() - 1200000) }
+      { action: `${favorites.length} items in wishlists`, timestamp: new Date(Date.now() - 300000) },
+      { action: `${notifications.length} notifications sent today`, timestamp: new Date(Date.now() - 600000) },
+      { action: "System performance: Excellent", timestamp: new Date(Date.now() - 900000) }
     ];
     return activities;
   };
