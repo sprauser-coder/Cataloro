@@ -229,7 +229,7 @@ function AdminPanel() {
   const [logoPreview, setLogoPreview] = useState('');
   
   const { isAdmin } = useAuth();
-  const { allProducts, cartItems, favorites, notifications } = useMarketplace();
+  const { allProducts, favorites, notifications } = useMarketplace();
   const { showToast } = useNotifications();
 
   useEffect(() => {
