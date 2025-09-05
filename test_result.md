@@ -3530,3 +3530,39 @@ agent_communication:
       message: "CRITICAL DATABASE CLEANUP REQUIRED: Comprehensive system notifications database cleanup testing revealed major contamination issue. Found 46 system notifications incorrectly stored in user_notifications collection across 8 users, causing them to appear in notifications center instead of toast popups. Database operations required: DELETE FROM user_notifications WHERE system_notification_id IS NOT NULL; DELETE FROM user_notifications WHERE type = 'system'; DELETE FROM user_notifications WHERE title LIKE '%Welcome back%' OR message LIKE '%Welcome back%'; DELETE FROM user_notifications WHERE title LIKE '%Endpoint Test%' OR title LIKE '%System%'. Affected users: demo_user (39 notifications), dashboard_user1 (1), dashboard_user2 (1), dashboard_test_user (3), test_user (1), testuser1756909191 (1). While new system notification creation is working correctly and toast display endpoint is ready, existing contaminated data must be cleaned up before proper separation can be achieved. Frontend will continue showing system notifications in notifications center until cleanup is executed."
 ```
 **SYSTEM NOTIFICATIONS MANAGER STATUS:** ✅ PERFECTLY IMPLEMENTED - The System Notifications Manager backend functionality is working flawlessly with all requested features. The complete system notification flow from creation to user display is operational, event triggers are properly handled for different user actions, target user filtering works correctly for both "all" users and "specific_ids", and JSON serialization uses UUIDs correctly without ObjectId issues. The system notification toast system can properly consume this data and all backend endpoints are ready for frontend integration. All requirements from the review request have been successfully verified and are working perfectly.
+
+---
+
+## YAML Structure for Test Management
+
+```yaml
+frontend:
+  - task: "Admin Panel Hero Background Image Upload Functionality"
+    implemented: true
+    working: false
+    file: "AdminPanel.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ ADMIN PANEL ACCESS ISSUE BLOCKING TESTING: Unable to test Hero Selection image upload functionality due to authentication access issues. Demo Admin Panel button redirects to /browse instead of admin panel, direct navigation shows login screen, user dropdown not accessible. Authentication system appears to have session timeout or broken access flow. Cannot verify Background Style Image option, upload interface components (dashed border, camera icon, Choose File button), or Live Preview functionality without admin panel access. RECOMMENDATION: Fix authentication system and Demo Admin Panel access before retesting Hero Selection image upload functionality."
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "Admin Panel Hero Background Image Upload Functionality"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "testing"
+      message: "❌ ADMIN PANEL HERO BACKGROUND IMAGE UPLOAD TESTING BLOCKED BY AUTHENTICATION ISSUE: Comprehensive testing attempted but failed due to critical admin panel access problems. Multiple access methods tried (Demo Admin Panel button, direct navigation, user dropdown) all failed due to authentication state issues. The Demo Admin Panel button incorrectly redirects to /browse instead of admin panel, direct navigation shows login screen, and user session appears expired. Cannot verify any Hero Selection image upload components without resolving admin panel access first. The upload functionality implementation cannot be tested until authentication system is fixed. CRITICAL BLOCKER: Authentication system needs immediate attention before Hero Selection testing can proceed."
+```
