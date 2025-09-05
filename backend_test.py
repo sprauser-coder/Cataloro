@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Use the production URL from frontend/.env
-BASE_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
+BASE_URL = "https://cataloro-marketplace-3.preview.emergentagent.com/api"
 
 def test_listings_endpoint_status_filtering():
     """

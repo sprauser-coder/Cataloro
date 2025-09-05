@@ -12,7 +12,7 @@ from datetime import datetime
 
 class FinalDatabaseAnalysis:
     def __init__(self):
-        self.backend_url = "https://cataloro-upgrade.preview.emergentagent.com/api"
+        self.backend_url = "https://cataloro-marketplace-3.preview.emergentagent.com/api"
         self.mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
         self.client = None
         self.db = None

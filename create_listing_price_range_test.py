@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 
 class CreateListingPriceRangeAPITester:
-    def __init__(self, base_url="https://cataloro-upgrade.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-marketplace-3.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.user_token = None

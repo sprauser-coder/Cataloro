@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-3.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "test_user@cataloro.com"
 TEST_ADMIN_EMAIL = "admin@cataloro.com"
 

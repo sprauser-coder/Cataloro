@@ -10,7 +10,7 @@ import time
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-3.preview.emergentagent.com/api"
 
 def test_admin_panel_endpoints():
     """Test all admin panel endpoints as requested in review"""

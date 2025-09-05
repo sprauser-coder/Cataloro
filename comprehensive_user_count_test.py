@@ -10,7 +10,7 @@ import sys
 from datetime import datetime, timedelta
 
 # Configuration
-BACKEND_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-3.preview.emergentagent.com/api"
 
 class UserCountInvestigator:
     def __init__(self):
