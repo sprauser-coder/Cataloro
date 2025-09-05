@@ -233,8 +233,10 @@ function SystemNotificationsManager() {
   };
 
   const getEventTriggerLabel = (trigger) => {
-    const eventConfig = eventTriggers.find(e => e.value === trigger);
-    return eventConfig?.label || trigger;
+    // Handle missing or null event_trigger field by defaulting to 'manual'
+    const eventTrigger = trigger || 'manual';
+    const eventConfig = eventTriggers.find(e => e.value === eventTrigger);
+    return eventConfig?.label || 'Manual Trigger';
   };
 
   if (loading) {
