@@ -683,6 +683,147 @@ function ListingsManagementTab({
   );
 }
 
+// Sold & Bought Tab Component
+function SoldBoughtTab({ listings, listingsLoading }) {
+  if (listingsLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fade-in">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="cataloro-card-glass text-center p-6">
+          <div className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            {listings.filter(l => l.status === 'sold').length}
+          </div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+            💰 Items Sold
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Successfully completed sales</div>
+        </div>
+        
+        <div className="cataloro-card-glass text-center p-6">
+          <div className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+            {listings.filter(l => l.status === 'closed').length}
+          </div>
+          <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+            ✅ Items Closed
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Completed transactions</div>
+        </div>
+      </div>
+
+      {/* Listings Grid */}
+      {listings.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="cataloro-card-glass p-12">
+            <div className="w-24 h-24 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-12 h-12 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">No completed transactions yet</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto">
+              Your sold and completed items will appear here once transactions are finalized
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="listings-grid">
+          {listings.map((listing) => (
+            <SoldListingCard
+              key={listing.id}
+              listing={listing}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Sold Listing Card Component (read-only version)
+function SoldListingCard({ listing }) {
+  const getStatusDetails = (status) => {
+    switch (status) {
+      case 'sold':
+        return {
+          color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300',
+          icon: '💰',
+          label: 'SOLD'
+        };
+      case 'closed':
+        return {
+          color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
+          icon: '✅',
+          label: 'CLOSED'
+        };
+      default:
+        return {
+          color: 'bg-gray-100 dark:bg-gray-700/50 text-gray-800 dark:text-gray-300',
+          icon: '📋',
+          label: 'COMPLETED'
+        };
+    }
+  };
+
+  const statusDetails = getStatusDetails(listing.status);
+
+  return (
+    <div className="listing-tile opacity-90 hover:opacity-100 transition-opacity">
+      {/* Image */}
+      <div className="relative">
+        <img
+          src={listing.images?.[0] || '/api/placeholder/400/300'}
+          alt={listing.title}
+          className="listing-image"
+        />
+        
+        {/* Status Badge - Enhanced for Sold/Closed */}
+        <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-medium border-2 ${statusDetails.color}`}>
+          {statusDetails.icon} {statusDetails.label}
+        </span>
+        
+        {/* Completion Badge */}
+        <div className="absolute top-3 right-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+          ✓ COMPLETED
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="listing-content">
+        <h3 className="listing-title text-gray-900 dark:text-white">{listing.title}</h3>
+        <p className="listing-price">€{listing.price.toFixed(2)}</p>
+        <p className="listing-description text-gray-600 dark:text-gray-300">{listing.description}</p>
+        
+        <div className="flex items-center justify-between mt-4">
+          <span className={`inline-block text-xs px-3 py-1 rounded-full font-medium backdrop-blur-md ${statusDetails.color}`}>
+            {listing.category}
+          </span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            {new Date(listing.created_at).toLocaleDateString()}
+          </span>
+        </div>
+
+        {/* Transaction Summary */}
+        <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+          <div className="text-center">
+            <div className="text-green-800 dark:text-green-300 font-semibold text-sm">
+              🎉 Transaction Complete
+            </div>
+            <div className="text-green-600 dark:text-green-400 text-xs mt-1">
+              {listing.status === 'sold' ? 'Successfully sold' : 'Successfully closed'}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // My Listing Card Component (exact duplicate from MyListingsPage)
 function MyListingCard({ listing, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
