@@ -843,7 +843,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
       if (response.ok) {
         showToast('User deleted successfully', 'success');
-        fetchUsers(); // Refresh users list
+        onUpdateUser(); // Refresh users list
       } else {
         showToast('Failed to delete user', 'error');
       }
