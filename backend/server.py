@@ -749,8 +749,8 @@ async def get_admin_dashboard():
     try:
         # Get accurate KPIs from database
         total_users = await db.users.count_documents({})
-        # Count only active/published listings to match what users see in listings management
-        total_listings = await db.listings.count_documents({"status": {"$in": ["active", "published"]}})
+        # Count only active listings to match what users see in listings management and browse pages
+        total_listings = await db.listings.count_documents({"status": "active"})
         active_listings = await db.listings.count_documents({"status": "active"})
         # Calculate ACTUAL revenue from VERIFIED real marketplace transactions only
         # Apply strict filtering to exclude any test/dummy data
