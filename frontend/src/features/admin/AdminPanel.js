@@ -683,11 +683,11 @@ function DashboardTab({ dashboardData, loading }) {
           </div>
           <div>
             <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-              €{(kpis.total_revenue || 0).toLocaleString()}
+              €{(kpis.revenue || 0).toLocaleString()}
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Total Revenue</div>
             <div className="text-xs text-emerald-600 dark:text-emerald-400 mb-3">
-              €{Math.floor((kpis.total_revenue || 0) / Math.max(1, kpis.total_deals || 1)).toLocaleString()} avg/deal
+              €{Math.floor((kpis.revenue || 0) / Math.max(1, kpis.total_deals || 1)).toLocaleString()} avg/deal
             </div>
             <div className="mt-3 flex items-center space-x-1">
               {[...Array(8)].map((_, i) => (
