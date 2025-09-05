@@ -806,13 +806,28 @@ async def get_admin_dashboard():
         # Calculate growth rate based on recent users (last 30 days)
         last_month = datetime.utcnow() - timedelta(days=30)
         
-        # Fix datetime comparison - handle both datetime and string formats
-        recent_users = await db.users.count_documents({
-            "$or": [
-                {"created_at": {"$gte": last_month}},  # For datetime objects
-                {"created_at": {"$gte": last_month.isoformat()}}  # For ISO string objects
-            ]
-        })
+        # Fix datetime comparison - handle both datetime and string formats properly
+        # Get all users and filter in Python to handle mixed datetime formats
+        all_users_cursor = db.users.find({})
+        recent_users_count = 0
+        
+        async for user in all_users_cursor:
+            user_created_at = user.get('created_at')
+            if user_created_at:
+                try:
+                    # Handle both datetime objects and ISO strings
+                    if isinstance(user_created_at, str):
+                        user_date = datetime.fromisoformat(user_created_at.replace('Z', '+00:00'))
+                    else:
+                        user_date = user_created_at
+                    
+                    if user_date >= last_month:
+                        recent_users_count += 1
+                except Exception as e:
+                    # Skip users with invalid date formats
+                    continue
+        
+        recent_users = recent_users_count
         
         growth_rate = (recent_users / max(total_users - recent_users, 1)) * 100 if total_users > recent_users else 0
         
