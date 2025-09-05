@@ -956,6 +956,16 @@ function MyListingCard({ listing, onDelete }) {
                 {(listing.status || (listing.is_draft ? 'DRAFT' : 'ACTIVE')).toUpperCase()}
               </span>
               
+              {/* Add prominent Edit button */}
+              <button
+                onClick={() => window.location.href = `/edit-listing/${listing.id}`}
+                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-medium transition-colors flex items-center space-x-1"
+                title="Edit Listing"
+              >
+                <Edit className="w-4 h-4" />
+                <span>Edit</span>
+              </button>
+              
               <div className="relative">
                 <button 
                   onClick={() => setShowMenu(!showMenu)}
