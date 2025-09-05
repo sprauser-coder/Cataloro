@@ -658,6 +658,47 @@ function CreateListingPage() {
                         <span className="ml-2 text-xs text-gray-500">Click to auto-fill</span>
                       </p>
                     </div>
+                    
+                    {/* Option for Catalyst not in Database */}
+                    <div
+                      onClick={() => {
+                        setSelectedCatalyst(null);
+                        setShowSuggestions(false);
+                        // Clear any auto-filled data and enable free input
+                        setFormData(prev => ({
+                          ...prev,
+                          // Keep the title as is
+                          description: '',
+                          price: '',
+                          category: 'General'
+                        }));
+                      }}
+                      className="p-4 hover:bg-orange-50 dark:hover:bg-orange-900/20 cursor-pointer border-b border-gray-100 dark:border-gray-700 transition-all duration-200 group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <span className="font-semibold text-orange-600 dark:text-orange-400 group-hover:text-orange-700 dark:group-hover:text-orange-300 transition-colors">
+                              🆓 Catalyst not in Database
+                            </span>
+                            <Plus className="w-4 h-4 text-orange-500" title="Create free listing" />
+                          </div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                            Create a free listing with custom price and description
+                          </div>
+                        </div>
+                        <div className="ml-4 text-right">
+                          <div className="text-sm font-bold text-orange-600 dark:text-orange-400">
+                            Free Pricing
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                            <Plus className="w-3 h-3 mr-1" />
+                            Custom Input
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
                     {filteredSuggestions.map((catalyst) => {
                       const priceRange = getCalculatedPriceRange(catalyst.cat_id);
                       return (
@@ -696,6 +737,29 @@ function CreateListingPage() {
                         </div>
                       );
                     })}
+                    
+                    {/* Show the "Catalyst not in Database" option if no matches found */}
+                    {filteredSuggestions.length === 0 && formData.title.length > 2 && (
+                      <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                        <p className="mb-3">No catalysts found matching "{formData.title}"</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedCatalyst(null);
+                            setShowSuggestions(false);
+                            // Enable free input mode
+                            setFormData(prev => ({
+                              ...prev,
+                              category: 'General'
+                            }));
+                          }}
+                          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors flex items-center space-x-2 mx-auto"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>Create Free Listing</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
