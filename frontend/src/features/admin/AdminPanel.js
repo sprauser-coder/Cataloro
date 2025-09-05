@@ -722,7 +722,7 @@ function DashboardTab({ dashboardData, loading }) {
               <div className="bg-gray-400 h-2 rounded" title="Inactive"></div>
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              {Math.round(((kpis.active_products || 0) / Math.max(1, kpis.total_products || 1)) * 100)}% active rate
+              {Math.round(((kpis.active_listings || 0) / Math.max(1, kpis.total_listings || 1)) * 100)}% active rate
             </div>
           </div>
         </div>
