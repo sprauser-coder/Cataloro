@@ -361,8 +361,8 @@ class AdminDashboardTester:
                     self.log_test(
                         "Revenue Source Validation",
                         False,
-                        f"Dashboard revenue (€{dashboard_revenue}) seems high compared to marketplace activity (€{total_bid_value} in active bids)",
-                        f"Revenue ≤ €{total_bid_value * 1.5}",
+                        f"Dashboard revenue (€{dashboard_revenue}) seems unreasonably high (possible inflation)",
+                        f"Revenue ≤ €10,000",
                         f"Revenue: €{dashboard_revenue}"
                     )
                     return False
