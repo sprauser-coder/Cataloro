@@ -583,12 +583,12 @@ class SystemNotificationsTest:
         
         # Run tests
         tests = [
-            self.test_database_cleanup,
+            self.test_cleanup_endpoint_execution,
             self.test_system_notifications_endpoint,
             self.test_regular_notifications_endpoint,
-            self.test_system_notification_creation_and_triggering,
-            self.test_database_collections_verification,
-            self.test_notification_view_tracking
+            self.test_multiple_users_cleanup_verification,
+            self.test_system_notification_toast_functionality,
+            self.test_database_collections_verification
         ]
         
         passed_tests = 0
