@@ -1331,6 +1331,18 @@ function UsersTab({ users, onUpdateUser, showToast }) {
           <span>Create New User</span>
         </button>
       </div>
+
+      {/* User Edit/Create Modal */}
+      {showEditModal && (
+        <UserEditModal
+          user={selectedUser}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedUser(null);
+          }}
+          onSave={selectedUser ? handleUpdateUser : handleCreateUser}
+        />
+      )}
     </div>
   );
 }
