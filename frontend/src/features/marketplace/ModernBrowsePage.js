@@ -377,7 +377,9 @@ function ModernBrowsePage() {
       {/* Hero Section with Dynamic Content and Search */}
       <div 
         className={`relative text-white overflow-hidden w-full ${
-          heroContent.display_mode === 'full_width' ? '' : 'rounded-2xl'
+          heroContent.display_mode === 'full_width' 
+            ? '-mx-8 sm:-mx-12 lg:-mx-16' 
+            : 'rounded-2xl'
         }`}
         style={{ 
           height: heroContent.height ? `${heroContent.height}px` : '400px',
