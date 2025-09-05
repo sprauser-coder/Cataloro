@@ -669,29 +669,57 @@ function DashboardTab({ dashboardData, loading }) {
       </div>
 
       {/* Advanced Analytics Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {/* Revenue Analytics Chart */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">Revenue Analytics</h3>
             <div className="flex items-center space-x-2">
               <BarChart3 className="w-5 h-5 text-purple-500" />
-              <span className="text-sm text-gray-500">Interactive Chart</span>
+              <span className="text-sm text-gray-500">€{chartData.revenueData ? Math.max(...chartData.revenueData).toLocaleString() : 0} max</span>
             </div>
           </div>
-          <div className="h-64 flex items-end justify-between space-x-2 px-2">
+          <div className="h-64 flex items-end justify-between space-x-1 px-2 overflow-hidden">
             {chartData.revenueData?.map((value, index) => (
-              <div key={index} className="flex flex-col items-center space-y-2">
+              <div key={index} className="flex flex-col items-center space-y-2 flex-1 max-w-12">
                 <div 
-                  className="bg-gradient-to-t from-purple-500 to-blue-500 rounded-t-lg w-8 transition-all duration-500 hover:from-purple-600 hover:to-blue-600 cursor-pointer"
-                  style={{ height: `${(value / Math.max(...(chartData.revenueData || [1]))) * 200}px` }}
+                  className="bg-gradient-to-t from-purple-500 to-blue-500 rounded-t-lg transition-all duration-500 hover:from-purple-600 hover:to-blue-600 cursor-pointer relative group"
+                  style={{ 
+                    height: `${Math.min((value / Math.max(...(chartData.revenueData || [1]))) * 220, 220)}px`,
+                    width: '100%',
+                    minHeight: '4px'
+                  }}
                   title={`€${value}`}
-                ></div>
-                <div className="text-xs text-gray-500 transform -rotate-45">
-                  {chartData.labels?.[index]}
+                >
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    €{value}
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 transform -rotate-45 truncate w-8">
+                  {chartData.labels?.[index]?.split(' ')[1] || index}
                 </div>
               </div>
             ))}
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+            <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg">
+              <div className="text-sm text-purple-600 dark:text-purple-400">Total Period</div>
+              <div className="text-lg font-bold text-purple-700 dark:text-purple-300">
+                €{chartData.revenueData ? chartData.revenueData.reduce((a, b) => a + b, 0).toLocaleString() : 0}
+              </div>
+            </div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+              <div className="text-sm text-blue-600 dark:text-blue-400">Daily Average</div>
+              <div className="text-lg font-bold text-blue-700 dark:text-blue-300">
+                €{chartData.revenueData ? Math.round(chartData.revenueData.reduce((a, b) => a + b, 0) / chartData.revenueData.length).toLocaleString() : 0}
+              </div>
+            </div>
+            <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+              <div className="text-sm text-green-600 dark:text-green-400">Peak Day</div>
+              <div className="text-lg font-bold text-green-700 dark:text-green-300">
+                €{chartData.revenueData ? Math.max(...chartData.revenueData).toLocaleString() : 0}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -701,22 +729,50 @@ function DashboardTab({ dashboardData, loading }) {
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">User Growth</h3>
             <div className="flex items-center space-x-2">
               <Users className="w-5 h-5 text-blue-500" />
-              <span className="text-sm text-gray-500">Trending Up</span>
+              <span className="text-sm text-gray-500">+{chartData.userData ? Math.max(...chartData.userData) - Math.min(...chartData.userData) : 0} users</span>
             </div>
           </div>
-          <div className="h-64 flex items-end justify-between space-x-1 px-2">
+          <div className="h-64 flex items-end justify-between space-x-1 px-2 overflow-hidden">
             {chartData.userData?.map((value, index) => (
-              <div key={index} className="flex flex-col items-center space-y-2">
+              <div key={index} className="flex flex-col items-center space-y-2 flex-1 max-w-6">
                 <div 
-                  className="bg-gradient-to-t from-blue-400 to-emerald-400 rounded-full w-3 transition-all duration-500 hover:from-blue-500 hover:to-emerald-500 cursor-pointer"
-                  style={{ height: `${(value / Math.max(...(chartData.userData || [1]))) * 200}px` }}
+                  className="bg-gradient-to-t from-blue-400 to-emerald-400 rounded-full transition-all duration-500 hover:from-blue-500 hover:to-emerald-500 cursor-pointer relative group"
+                  style={{ 
+                    height: `${Math.min((value / Math.max(...(chartData.userData || [1]))) * 220, 220)}px`,
+                    width: '8px',
+                    minHeight: '4px'
+                  }}
                   title={`${value} users`}
-                ></div>
+                >
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    {value} users
+                  </div>
+                </div>
                 <div className="text-xs text-gray-500">
-                  {index % 3 === 0 ? chartData.labels?.[index]?.split(' ')[1] : ''}
+                  {index % Math.ceil((chartData.labels?.length || 1) / 8) === 0 ? chartData.labels?.[index]?.split(' ')[1] : ''}
                 </div>
               </div>
             ))}
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+              <div className="text-sm text-blue-600 dark:text-blue-400">Growth Rate</div>
+              <div className="text-lg font-bold text-blue-700 dark:text-blue-300">
+                {chartData.userData ? (((Math.max(...chartData.userData) - Math.min(...chartData.userData)) / Math.min(...chartData.userData)) * 100).toFixed(1) : 0}%
+              </div>
+            </div>
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-lg">
+              <div className="text-sm text-emerald-600 dark:text-emerald-400">Active Users</div>
+              <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+                {chartData.userData ? Math.max(...chartData.userData) : 0}
+              </div>
+            </div>
+            <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg">
+              <div className="text-sm text-purple-600 dark:text-purple-400">New Today</div>
+              <div className="text-lg font-bold text-purple-700 dark:text-purple-300">
+                {chartData.userData ? chartData.userData[chartData.userData.length - 1] : 0}
+              </div>
+            </div>
           </div>
         </div>
       </div>
