@@ -198,12 +198,30 @@ function marketplaceReducer(state, action) {
         cartTotal: action.payload.reduce((total, item) => total + (item.price * item.quantity), 0)
       };
     
-    case ACTIONS.SET_PRODUCTS:
+    case ACTIONS.SET_PRODUCTS: {
+      // Apply current sort when setting products
+      const sortedProducts = [...action.payload].sort((a, b) => {
+        switch (state.sortBy) {
+          case 'price_low':
+            return a.price - b.price;
+          case 'price_high':
+            return b.price - a.price;
+          case 'rating':
+            return (b.rating || 0) - (a.rating || 0);
+          case 'popular':
+            return (b.views || 0) - (a.views || 0);
+          case 'newest':
+          default:
+            return new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt);
+        }
+      });
+      
       return {
         ...state,
         allProducts: action.payload,
-        filteredProducts: action.payload
+        filteredProducts: sortedProducts
       };
+    }
     
     case ACTIONS.SET_FILTERED_PRODUCTS:
       return {
