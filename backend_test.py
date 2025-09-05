@@ -610,9 +610,9 @@ class SystemNotificationsTest:
         print(f"Tests Passed: {passed_tests}/{total_tests} ({success_rate:.1f}%)")
         
         if passed_tests == total_tests:
-            print("✅ ALL TESTS PASSED - System notifications separation is working correctly")
+            print("✅ ALL TESTS PASSED - System notifications cleanup executed successfully")
         else:
-            print("❌ SOME TESTS FAILED - System notifications separation needs attention")
+            print("❌ SOME TESTS FAILED - System notifications cleanup needs attention")
         
         # Detailed results
         print("\n📋 DETAILED RESULTS:")
