@@ -65,66 +65,9 @@ function NotificationsPage() {
     } catch (error) {
       console.error('Failed to load real notifications:', error);
       
-      // Enhanced demo notifications as fallback
-      const enhancedDemoNotifications = [
-        {
-          id: '1',
-          title: 'New Message from Sarah',
-          message: 'Hi! Is your MacBook Pro still available? I\'m very interested.',
-          type: 'message',
-          is_read: false,
-          priority: 'high',
-          user_avatar: '/api/placeholder/40/40',
-          created_at: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-          action_url: '/messages',
-          metadata: { sender_id: 'user123', conversation_id: 'conv1' }
-        },
-        {
-          id: '2', 
-          title: 'Buy Request Approved',
-          message: 'Your purchase request for iPhone 14 Pro has been approved by the seller.',
-          type: 'buy_approved',
-          is_read: false,
-          priority: 'high',
-          created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-          action_url: '/my-deals',
-          metadata: { amount: 899, item: 'iPhone 14 Pro' }
-        },
-        {
-          id: '3',
-          title: 'Listing Favorited',
-          message: 'Someone added your "Gaming Setup" to their favorites.',
-          type: 'favorite',
-          is_read: false,
-          priority: 'medium',
-          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          metadata: { listing_id: 'listing123' }
-        },
-        {
-          id: '4',
-          title: 'New Buy Request',
-          message: 'Mike wants to buy your "Vintage Guitar" for $1,200.',
-          type: 'buy_request',
-          is_read: true,
-          priority: 'high',
-          created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          action_url: '/pending-sales',
-          metadata: { buyer: 'Mike', amount: 1200, item: 'Vintage Guitar' }
-        },
-        {
-          id: '5',
-          title: 'Payment Received',
-          message: 'You received $459 for the sale of "Canon Camera Lens".',
-          type: 'payment',
-          is_read: true,
-          priority: 'high',
-          created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-          metadata: { amount: 459, item: 'Canon Camera Lens' }
-        }
-      ];
-      
-      setNotifications(enhancedDemoNotifications);
-      setUnreadCount(enhancedDemoNotifications.filter(n => !n.is_read).length);
+      // Use empty array as fallback instead of fake data
+      setNotifications([]);
+      setUnreadCount(0);
     } finally {
       setLoading(false);
     }
