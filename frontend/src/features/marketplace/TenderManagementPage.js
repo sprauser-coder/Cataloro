@@ -879,13 +879,6 @@ function BuyTab({ myTenders, myTendersLoading, fetchMyTenders }) {
                           <p className="text-sm text-green-600 dark:text-green-400 font-medium">Congratulations!</p>
                           <p className="text-xs text-gray-600 dark:text-gray-400">Your tender was accepted</p>
                         </div>
-                        <button
-                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
-                          title="Message seller"
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                          <span>Contact Seller</span>
-                        </button>
                       </div>
                     )}
                     
