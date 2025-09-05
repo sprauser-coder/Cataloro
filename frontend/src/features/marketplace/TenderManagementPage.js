@@ -707,15 +707,22 @@ function MyListingCard({ listing, onDelete }) {
           className="listing-image"
         />
         
-        {/* Status Badge - Enhanced for Drafts */}
+        {/* Status Badge - Enhanced for all statuses */}
         <span className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(listing.status || (listing.is_draft ? 'draft' : 'active'))}`}>
           {(listing.status || (listing.is_draft ? 'DRAFT' : 'ACTIVE')).toUpperCase()}
         </span>
         
-        {/* Draft Indicator */}
+        {/* Special Indicators */}
         {(listing.is_draft || listing.status === 'draft') && (
           <div className="absolute top-3 right-16 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
             DRAFT
+          </div>
+        )}
+        
+        {/* Sold/Bought Indicator - More Visible */}
+        {(listing.status === 'sold' || listing.status === 'closed') && (
+          <div className="absolute top-3 right-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+            {listing.status === 'sold' ? '💰 SOLD' : '✅ CLOSED'}
           </div>
         )}
 
