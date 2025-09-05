@@ -419,6 +419,39 @@ const getEventTriggerDisplay = (notification) => {
 
 **DASHBOARD DATA ACCURACY STATUS:** ❌ CRITICAL ISSUE CONFIRMED - The dashboard shows inflated numbers that don't match reality as reported by the user. The main issue is revenue calculation showing €5445.0 when actual verified marketplace revenue is only €780.0. The dashboard is reading from correct collections (users, listings, deals, tenders) but the calculation logic appears to include test/dummy data or incorrect transaction records. Users count has minor discrepancy (72 vs 71). All other metrics (listings, active listings) are accurate. The revenue calculation in /api/admin/dashboard endpoint needs immediate review to exclude non-marketplace transactions and ensure only real completed deals and accepted tenders are included.
 
+#### CORRECTED Admin Dashboard Data Accuracy Re-Testing Results:
+**COMPREHENSIVE DASHBOARD ACCURACY RE-TESTING:** ❌ REVENUE CALCULATION STILL INFLATED - Executed comprehensive re-testing of the CORRECTED Admin Dashboard Data Accuracy after the reported fix. The revenue calculation bug is NOT FIXED and continues to show inflated figures instead of real marketplace data.
+
+**1. Dashboard Endpoint Accessibility** ✅ FULLY FUNCTIONAL - GET /api/admin/dashboard endpoint accessible with HTTP 200: Dashboard endpoint returns proper JSON structure with kpis and recent_activity ✅, All required KPI fields present (total_users, total_listings, active_listings, total_deals, revenue, growth_rate) ✅, Response structure correct and complete ✅.
+
+**2. Revenue Calculation Critical Issue** ❌ STILL INFLATED - Dashboard shows €5,870 instead of realistic marketplace revenue: Dashboard reports €5,870 total revenue ❌, Actual verified marketplace revenue sources total only €1,170 (from active bids) ✅, Unexplained revenue amount: €4,700 (80% of reported revenue) ❌, Revenue calculation includes inflated/test data that should be excluded ❌.
+
+**3. User Count Accuracy** ✅ ACCURATE - User count matches actual database: Dashboard shows 73 users ✅, Actual users in database: 73 users ✅, Perfect match with no discrepancy ✅, User count calculation working correctly ✅.
+
+**4. Deals Count Assessment** ✅ REALISTIC - Total deals shows reasonable number: Dashboard shows 13 total deals ✅, Deals count appears realistic for actual marketplace activity ✅, No obvious inflation in deals count ✅, Deals calculation appears to be working correctly ✅.
+
+**5. Active Listings Accuracy** ✅ PERFECT MATCH - Active listings count matches browse endpoint: Dashboard shows 22 active listings ✅, Browse endpoint shows 22 active listings ✅, Perfect synchronization between dashboard and marketplace data ✅, Active listings calculation working correctly ✅.
+
+**6. Revenue Source Investigation** ❌ MAJOR DISCREPANCY IDENTIFIED - Detailed investigation reveals source of inflation: Found €1,170 in legitimate marketplace activity (active bids on 6 listings) ✅, Dashboard includes €4,700 from unknown/inaccessible sources ❌, Likely sources: test/dummy tenders in database, inflated tender amounts, incorrect calculation logic ❌, Backend calculation logic needs review to exclude non-marketplace data ❌.
+
+**TECHNICAL VERIFICATION:**
+- Dashboard KPIs: All 6 required metrics present and accessible
+- Revenue Investigation: €5,870 dashboard vs €1,170 verified marketplace activity
+- User/Listings Accuracy: Perfect match between dashboard and actual database counts
+- Revenue Sources: €4,700 unexplained amount suggests test/dummy data inclusion
+- Backend Logic: Revenue calculation in /api/admin/dashboard needs filtering for real transactions only
+
+**ROOT CAUSE ANALYSIS:**
+✅ Dashboard endpoint structure and accessibility working correctly
+✅ User count, listings count, and deals count calculations accurate
+❌ Revenue calculation includes €4,700 from test/dummy data or incorrect sources
+❌ Backend logic fails to filter out non-marketplace transactions
+❌ The "fix" mentioned in the review request has NOT resolved the revenue inflation issue
+
+**COMPREHENSIVE RE-TEST RESULTS:** 4/6 dashboard accuracy tests passed (66.7% success rate), revenue calculation remains critically flawed with €4,700 unexplained inflation, user and listing counts accurate, active listings count perfect, deals count realistic, revenue source investigation confirms major discrepancy.
+
+**CORRECTED ADMIN DASHBOARD DATA ACCURACY STATUS:** ❌ CRITICAL REVENUE BUG NOT FIXED - The dashboard data accuracy issue has NOT been resolved. While user counts, listing counts, and deals counts are accurate, the revenue calculation continues to show €5,870 instead of the realistic €1,170 from actual marketplace activity. The backend revenue calculation logic in /api/admin/dashboard endpoint still includes €4,700 from test/dummy data or incorrect transaction sources. The reported "fix" has not addressed the core issue of filtering out non-marketplace revenue data.
+
 **Test Date:** 2025-01-30 18:30:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ ADMIN DASHBOARD DATETIME BUG FIX VERIFICATION COMPLETED - ALL REQUIREMENTS MET
