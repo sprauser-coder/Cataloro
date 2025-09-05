@@ -4732,6 +4732,14 @@ function ListingsTab({ showToast }) {
                 color: 'gray' 
               },
               { 
+                id: 'expired', 
+                label: 'Expired', 
+                count: listings.filter(l => 
+                  l.status === 'expired'
+                ).length, 
+                color: 'red' 
+              },
+              { 
                 id: 'sold', 
                 label: 'Sold', 
                 count: listings.filter(l => 
@@ -4753,6 +4761,7 @@ function ListingsTab({ showToast }) {
                     ? `${tab.color === 'green' ? 'bg-green-600 text-white' :
                         tab.color === 'yellow' ? 'bg-yellow-600 text-white' :
                         tab.color === 'gray' ? 'bg-gray-600 text-white' :
+                        tab.color === 'red' ? 'bg-red-600 text-white' :
                         'bg-blue-600 text-white'} shadow-lg`
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700/50'
                 }`}
@@ -4764,6 +4773,7 @@ function ListingsTab({ showToast }) {
                     : `${tab.color === 'green' ? 'bg-green-100 text-green-800' :
                         tab.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :  
                         tab.color === 'gray' ? 'bg-gray-100 text-gray-800' :
+                        tab.color === 'red' ? 'bg-red-100 text-red-800' :
                         'bg-blue-100 text-blue-800'} dark:bg-opacity-20`
                 }`}>
                   {tab.count}
