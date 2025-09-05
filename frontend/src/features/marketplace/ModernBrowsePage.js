@@ -1017,7 +1017,7 @@ function ProductCard({ item, viewMode, onAddToCart, onSubmitTender, onFavoriteTo
         <div className="absolute top-2 right-2 z-20">
           <button
             onClick={(e) => onFavoriteToggle(item, e)}
-            className={`p-3 backdrop-blur-lg rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 ${
+            className={`favorites-button wishlist-button add-to-favorites p-3 backdrop-blur-lg rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 ${
               isInFavorites(item.id) 
                 ? 'bg-red-500/90 text-white shadow-red-500/25' 
                 : 'bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'
