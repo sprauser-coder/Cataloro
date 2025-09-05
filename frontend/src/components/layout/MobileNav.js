@@ -20,7 +20,6 @@ import {
   User,
   Bell,
   Search,
-  Zap,
   TrendingUp,
   Award,
   Globe
