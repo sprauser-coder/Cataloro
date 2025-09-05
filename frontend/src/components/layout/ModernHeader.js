@@ -235,36 +235,10 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       setLastNotificationCheck(Date.now());
     } catch (error) {
       console.error('Failed to load notifications:', error);
-      // Use demo data as fallback
-      const demoNotifications = [
-        {
-          id: '1',
-          title: 'New message from John',
-          message: 'About MacBook Pro listing',
-          type: 'message',
-          is_read: false,
-          created_at: new Date(Date.now() - 2 * 60 * 1000).toISOString()
-        },
-        {
-          id: '2',
-          title: 'Your listing was favorited',
-          message: 'iPhone 14 Pro Max - Space Black',
-          type: 'favorite',
-          is_read: false,
-          created_at: new Date(Date.now() - 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: '3',
-          title: 'Payment received',
-          message: '$899 for Gaming Laptop sale',
-          type: 'payment',
-          is_read: true,
-          created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString()
-        }
-      ];
-      setNotifications(demoNotifications);
-      setUnreadNotifications(demoNotifications.filter(n => !n.is_read).length);
-      setUnreadMessages(2); // Demo fallback
+      // Use empty array as fallback instead of fake data
+      setNotifications([]);
+      setUnreadNotifications(0);
+      setUnreadMessages(0);
     }
   };
 
