@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """
-CRITICAL: Admin Dashboard Listings Count Discrepancy Bug Investigation
-Testing the discrepancy between KPI showing "4 TOTAL LISTINGS" vs Listings management showing "0 results"
+LISTINGS ENDPOINT STATUS FILTERING FIX VERIFICATION
+Testing the fix for listings endpoint to default to active listings only
 """
 
 import requests
 import json
-import sys
 from datetime import datetime
 
-# Get backend URL from environment
-BACKEND_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
+# Use the production URL from frontend/.env
+BASE_URL = "https://cataloro-upgrade.preview.emergentagent.com/api"
 
 def test_admin_dashboard_kpi():
     """Test /api/admin/dashboard endpoint and examine how total_listings is calculated"""
