@@ -3556,61 +3556,6 @@ function SiteAdministrationTab({ showToast }) {
           </div>
         )}
 
-        {/* Notification Center Section */}
-        {activeSection === 'notifications' && (
-          <div className="space-y-6">
-            
-            {/* System Notifications */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                <Bell className="w-5 h-5 mr-2" />
-                Active System Notifications
-              </h4>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Real notifications currently active in the system. These are the actual notifications shown to users.
-              </p>
-              
-              {/* Real System Notifications Display */}
-              <div className="space-y-4">
-                <SystemNotificationsList />
-              </div>
-            </div>
-
-            {/* Notification Settings */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                <Settings className="w-5 h-5 mr-2" />
-                Notification Settings
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[
-                  { key: 'notificationAutoHide', label: 'Auto-hide Notifications', desc: 'Automatically hide notifications after 5 seconds' },
-                  { key: 'notificationSound', label: 'Notification Sounds', desc: 'Play sound for new notifications' },
-                  { key: 'notificationPersist', label: 'Persistent Notifications', desc: 'Keep important notifications until dismissed' },
-                  { key: 'notificationBadge', label: 'Notification Badge', desc: 'Show notification count badge' }
-                ].map((setting) => (
-                  <label key={setting.key} className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                    <button
-                      onClick={() => handleConfigChange(setting.key, !siteConfig[setting.key])}
-                      className="mt-1"
-                    >
-                      {siteConfig[setting.key] ? (
-                        <ToggleRight className="w-6 h-6 text-green-600" />
-                      ) : (
-                        <ToggleLeft className="w-6 h-6 text-gray-400" />
-                      )}
-                    </button>
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-white">{setting.label}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">{setting.desc}</div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* System & Maintenance Section */}
         {activeSection === 'system' && (
           <div className="space-y-6">
