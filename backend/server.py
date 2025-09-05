@@ -4255,12 +4255,43 @@ async def delete_system_notification(notification_id: str):
         result = await db.system_notifications.delete_one({"id": notification_id})
         
         if result.deleted_count == 0:
-            raise HTTPException(status_code=404, detail="Notification not found")
+            raise HTTPException(status_code=404, detail="System notification not found")
         
         return {"message": "System notification deleted successfully"}
-        
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete system notification: {str(e)}")
+
+@app.post("/api/admin/cleanup-system-notifications")
+async def cleanup_system_notifications_from_user_notifications():
+    """Clean up system notifications that were incorrectly stored in user_notifications collection"""
+    try:
+        # Find all notifications in user_notifications that have system_notification_id field
+        cleanup_count = 0
+        
+        # Delete notifications with system_notification_id field
+        result1 = await db.user_notifications.delete_many({"system_notification_id": {"$exists": True}})
+        cleanup_count += result1.deleted_count
+        
+        # Delete notifications with system-related content
+        system_keywords = ["Welcome back", "Endpoint Test", "System", "Login notification"]
+        for keyword in system_keywords:
+            result = await db.user_notifications.delete_many({
+                "$or": [
+                    {"title": {"$regex": keyword, "$options": "i"}},
+                    {"message": {"$regex": keyword, "$options": "i"}}
+                ]
+            })
+            cleanup_count += result.deleted_count
+        
+        return {
+            "message": f"Cleanup completed successfully",
+            "notifications_removed": cleanup_count,
+            "details": "Removed system notifications from user_notifications collection"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to cleanup system notifications: {str(e)}")
 
 @app.get("/api/user/{user_id}/system-notifications")
 async def get_user_system_notifications(user_id: str):
