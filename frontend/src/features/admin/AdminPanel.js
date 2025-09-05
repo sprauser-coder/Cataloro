@@ -1694,6 +1694,8 @@ function HeroSelectionTab({ showToast }) {
   });
   const [heroImageFile, setHeroImageFile] = useState(null);
   const [heroImagePreview, setHeroImagePreview] = useState('');
+  const [backgroundImageFile, setBackgroundImageFile] = useState(null);
+  const [backgroundImagePreview, setBackgroundImagePreview] = useState('');
   const [previewMode, setPreviewMode] = useState(false);
   const [heroSaved, setHeroSaved] = useState(false);
 
