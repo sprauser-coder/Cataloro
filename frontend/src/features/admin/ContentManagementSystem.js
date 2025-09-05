@@ -558,11 +558,42 @@ function ContentManagementSystem() {
 
       if (response.ok) {
         const data = await response.json();
+        const imageUrl = `${process.env.REACT_APP_BACKEND_URL}${data.imageUrl}`;
+        
         // Update the appropriate field with the image URL
         if (section === 'seo') {
-          updateSEOContent(field, data.imageUrl);
+          updateSEOContent(field, imageUrl);
+        } else if (section === 'hero') {
+          setContentSections(prev => ({
+            ...prev,
+            hero: {
+              ...prev.hero,
+              [field]: imageUrl
+            }
+          }));
+        } else if (section === 'about') {
+          setContentSections(prev => ({
+            ...prev,
+            about: {
+              ...prev.about,
+              [field]: imageUrl
+            }
+          }));
+        } else if (section === 'features') {
+          setContentSections(prev => ({
+            ...prev,
+            features: {
+              ...prev.features,
+              [field]: imageUrl
+            }
+          }));
         }
-        // Add more sections as needed
+        
+        // Show success notification
+        setSaveStatus('upload-success');
+        setTimeout(() => setSaveStatus(null), 3000);
+      } else {
+        throw new Error('Upload failed');
       }
     } catch (error) {
       console.error('Image upload error:', error);
