@@ -238,12 +238,7 @@ function RecommendationsPanel({ className = "", limit = 6 }) {
                       >
                         <Heart className="h-4 w-4 text-gray-600" />
                       </button>
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        className="p-2 bg-blue-600 rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-200"
-                      >
-                        <ShoppingCart className="h-4 w-4 text-white" />
-                      </button>
+
                     </div>
                   </div>
 
