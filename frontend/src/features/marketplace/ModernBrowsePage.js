@@ -35,7 +35,6 @@ function ModernBrowsePage() {
   // Use marketplace context
   const {
     filteredProducts,
-    addToCart,
     addToFavorites,
     removeFromFavorites,
     favorites,
