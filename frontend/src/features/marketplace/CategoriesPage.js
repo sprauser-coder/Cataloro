@@ -35,7 +35,6 @@ function CategoriesPage() {
   const {
     allProducts,
     setFilters,
-    addToCart,
     showNotification
   } = useMarketplace();
 
