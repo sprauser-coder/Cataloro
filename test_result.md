@@ -621,6 +621,46 @@ const getEventTriggerDisplay = (notification) => {
 
 **Test Date:** 2025-01-30 23:15:00 UTC  
 **Test Agent:** testing  
+**Test Status:** ❌ LISTINGS MANAGEMENT DATA SOURCE INVESTIGATION COMPLETED - ROOT CAUSE IDENTIFIED
+
+#### Listings Management Data Source Investigation Results:
+**COMPREHENSIVE LISTINGS DATA SOURCE INVESTIGATION:** ❌ CRITICAL BACKEND FILTERING BUG CONFIRMED - Executed comprehensive investigation of listings management data source as requested in review. Root cause identified: /api/listings endpoint returns ALL listings regardless of status, causing admin interface to show expired listings.
+
+**1. /api/listings Endpoint Analysis** ❌ NO STATUS FILTERING - /api/listings returns all listings including expired ones: Successfully accessed /api/listings endpoint with HTTP 200 status ✅, Returns 5 total listings (1 active + 4 expired) ❌, No status filtering implemented in backend code ❌, Query parameters for status filtering not working (all filters return same 5 listings) ❌.
+
+**2. /api/marketplace/browse Endpoint Comparison** ✅ CORRECT FILTERING - Browse endpoint properly filters for active listings only: Successfully accessed /api/marketplace/browse endpoint with HTTP 200 status ✅, Returns only 1 active listing ✅, Correctly filters with query = {"status": "active"} in backend code ✅, Proper implementation for public marketplace browsing ✅.
+
+**3. /api/admin/listings Endpoint Check** ❌ DOES NOT EXIST - No dedicated admin listings endpoint found: GET /api/admin/listings returns HTTP 404 ❌, No specialized admin endpoint for listings management ❌, Admin interface forced to use general /api/listings endpoint ❌, Missing proper admin-specific filtering ❌.
+
+**4. Status Filtering Analysis** ❌ BACKEND BUG CONFIRMED - /api/listings endpoint ignores all status filter parameters: Tested multiple filter parameters (status=active, status=expired, active_only=true) ❌, All filters return identical 5 listings regardless of parameter ❌, Backend code missing status filtering logic in get_all_listings function ❌, Query building only handles category, price, condition - NOT status ❌.
+
+**5. Listing Status Breakdown** ✅ DATA STRUCTURE CONFIRMED - Found clear status distribution in database: 1 Active listing (VW074131701G) ✅, 4 Expired listings (TIME LIMIT TEST, Test Listing - 24h Time Limit, etc.) ✅, 0 Inactive listings ✅, Total 5 listings in database ✅.
+
+**6. Root Cause Identification** ❌ BACKEND FILTERING BUG - Admin listings management uses unfiltered endpoint: Admin interface calls /api/listings which returns ALL 5 listings ❌, Backend get_all_listings function missing status filtering (lines 1348-1388) ❌, Browse endpoint correctly filters with {"status": "active"} but listings endpoint doesn't ❌, Admin shows 4-5 listings when should show 0-1 active listings ❌.
+
+**TECHNICAL VERIFICATION:**
+- /api/listings Endpoint: Returns 5 listings (1 active + 4 expired) without status filtering
+- /api/marketplace/browse Endpoint: Returns 1 listing (active only) with proper filtering
+- Backend Code Analysis: get_all_listings function missing status parameter and filtering logic
+- Filter Testing: All status filters ignored, same 5 listings returned regardless of parameters
+- Database State: 1 active listing, 4 expired listings confirmed via API responses
+
+**ROOT CAUSE ANALYSIS:**
+❌ /api/listings endpoint has no status filtering in backend code (server.py lines 1348-1388)
+❌ Admin listings management uses /api/listings instead of filtered endpoint
+❌ Query building in get_all_listings only handles category, price, condition - NOT status
+❌ No /api/admin/listings endpoint exists for proper admin filtering
+✅ /api/marketplace/browse correctly filters with {"status": "active"} for public use
+
+**BACKEND CODE ISSUE:**
+The get_all_listings function in server.py (lines 1348-1388) builds query filters for category, min_price, max_price, condition, but completely ignores status filtering. The query starts as empty {} and never adds status filtering, so it returns ALL listings regardless of their status.
+
+**COMPREHENSIVE INVESTIGATION RESULTS:** 6/6 investigation areas completed, root cause definitively identified, backend filtering bug confirmed in /api/listings endpoint, admin interface using wrong data source, proper solution identified.
+
+**LISTINGS MANAGEMENT DATA SOURCE INVESTIGATION STATUS:** ❌ CRITICAL BACKEND BUG CONFIRMED - The listings management shows 4-5 listings instead of 0-1 because it uses /api/listings endpoint which has a backend filtering bug. The endpoint returns ALL listings (active + expired + inactive) instead of filtering by status. The admin interface should either use /api/marketplace/browse for active listings only, or the /api/listings endpoint needs status filtering implemented in the backend code. This is a backend development issue requiring code changes to add status parameter and filtering logic to the get_all_listings function.
+
+**Test Date:** 2025-01-30 23:15:00 UTC  
+**Test Agent:** testing  
 **Test Status:** ✅ SYSTEM NOTIFICATIONS CLEANUP EXECUTION COMPLETED SUCCESSFULLY - ALL REQUIREMENTS VERIFIED
 #### Admin Dashboard Listings Count Fix Verification Results:
 **COMPREHENSIVE ADMIN DASHBOARD LISTINGS COUNT FIX TESTING:** ✅ ALL REQUIREMENTS MET - Executed comprehensive verification of the Admin Dashboard listings count fix as requested in review. The fix has been successfully implemented and is working perfectly with complete consistency achieved between dashboard KPIs and listings management (5/5 tests passed, 100% success rate).
