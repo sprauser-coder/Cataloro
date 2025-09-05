@@ -6426,20 +6426,39 @@ function UserEditModal({ user, onClose, onSave }) {
             </div>
           </div>
 
-          {/* Username */}
+          {/* Username with Availability Check */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Username
+              Username *
             </label>
-            <input
-              type="text"
-              value={formData.username}
-              onChange={(e) => setFormData({...formData, username: e.target.value})}
-              className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-                errors.username ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-              }`}
-              placeholder="Enter username"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 pr-10 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                  errors.username ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                }`}
+                placeholder="Enter username"
+              />
+              {formData.username.length >= 3 && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  {checkingUsername ? (
+                    <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                  ) : usernameAvailable === true ? (
+                    <Check className="w-5 h-5 text-green-500" />
+                  ) : usernameAvailable === false ? (
+                    <X className="w-5 h-5 text-red-500" />
+                  ) : null}
+                </div>
+              )}
+            </div>
+            {formData.username.length >= 3 && usernameAvailable !== null && (
+              <div className={`mt-1 text-sm ${usernameAvailable ? 'text-green-600' : 'text-red-600'}`}>
+                {usernameAvailable ? 'Username is available' : 'Username is not available'}
+              </div>
+            )}
             {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
           </div>
 
