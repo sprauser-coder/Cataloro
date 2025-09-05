@@ -1798,13 +1798,65 @@ function HeroSelectionTab({ showToast }) {
     showToast('Hero image removed', 'info');
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
-      localStorage.setItem('cataloro_hero_content', JSON.stringify(heroContent));
+      let updatedHeroContent = { ...heroContent };
+      
+      // Upload hero image if a file was selected
+      if (heroImageFile) {
+        showToast('Uploading hero image...', 'info');
+        const formData = new FormData();
+        formData.append('image', heroImageFile);
+        formData.append('section', 'hero');
+        formData.append('field', 'image');
+        
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload-image`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          updatedHeroContent.image_url = `${process.env.REACT_APP_BACKEND_URL}${result.imageUrl}`;
+        } else {
+          throw new Error('Failed to upload hero image');
+        }
+      }
+      
+      // Upload background image if a file was selected
+      if (backgroundImageFile) {
+        showToast('Uploading background image...', 'info');
+        const formData = new FormData();
+        formData.append('image', backgroundImageFile);
+        formData.append('section', 'hero');
+        formData.append('field', 'background');
+        
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload-image`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          updatedHeroContent.background_image = `${process.env.REACT_APP_BACKEND_URL}${result.imageUrl}`;
+        } else {
+          throw new Error('Failed to upload background image');
+        }
+      }
+      
+      // Save updated content to localStorage
+      localStorage.setItem('cataloro_hero_content', JSON.stringify(updatedHeroContent));
+      setHeroContent(updatedHeroContent);
+      
+      // Clear file states after successful upload
+      setHeroImageFile(null);
+      setBackgroundImageFile(null);
+      setHeroImagePreview('');
+      setBackgroundImagePreview('');
       
       // Trigger a custom event to notify the browse page to update
       window.dispatchEvent(new CustomEvent('heroContentUpdated', { 
-        detail: heroContent 
+        detail: updatedHeroContent 
       }));
       
       showToast('✅ Hero content saved successfully! Changes are live on the Browse page.', 'success');
@@ -1814,7 +1866,8 @@ function HeroSelectionTab({ showToast }) {
       setTimeout(() => setHeroSaved(false), 3000);
       
     } catch (error) {
-      showToast('❌ Failed to save hero content', 'error');
+      console.error('Save error:', error);
+      showToast('❌ Failed to save hero content: ' + error.message, 'error');
     }
   };
 
