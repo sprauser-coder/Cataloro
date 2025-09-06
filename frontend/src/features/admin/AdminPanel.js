@@ -3808,7 +3808,7 @@ function AdConfigPanel({
                     runtime: runtime
                   });
                   
-                  // Update with new activation dates
+                  // Update with new activation dates (single call to prevent duplicate re-renders)
                   handleAdConfigChange(adType, 'active', true);
                   handleAdConfigChange(adType, 'startDate', now);
                   handleAdConfigChange(adType, 'expirationDate', newExpiration);
