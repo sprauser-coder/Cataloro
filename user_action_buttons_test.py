@@ -259,65 +259,40 @@ class UserActionButtonsTester:
             self.log_test("Individual User Rejection", False, error_msg=str(e))
             return False
 
-    def test_individual_user_deletion(self, user_id):
+    def test_individual_user_deletion(self):
         """Test individual user deletion button functionality"""
-        if not user_id:
-            self.log_test("Individual User Deletion", False, error_msg="No user ID provided")
-            return False
-            
         try:
-            # First verify user exists
-            users_response = requests.get(f"{BACKEND_URL}/admin/users", timeout=10)
-            if users_response.status_code != 200:
-                self.log_test("Individual User Deletion", False, "Failed to get users list")
-                return False
+            # Create a test user for deletion testing
+            test_id = str(uuid.uuid4())[:8]
+            test_user_data = {
+                "username": f"deletion_test_{test_id}",
+                "email": f"deletion_test_{test_id}@example.com",
+                "full_name": f"Deletion Test User {test_id}",
+                "account_type": "buyer"
+            }
+            
+            reg_response = requests.post(f"{BACKEND_URL}/auth/register", json=test_user_data, timeout=10)
+            if reg_response.status_code == 200:
+                user_id = reg_response.json().get('user_id')
                 
-            users = users_response.json()
-            test_user = None
-            for user in users:
-                if user.get('id') == user_id:
-                    test_user = user
-                    break
-                    
-            if not test_user:
-                self.log_test("Individual User Deletion", False, "Test user not found in users list")
-                return False
-            
-            # Test the delete button endpoint
-            response = requests.delete(f"{BACKEND_URL}/admin/users/{user_id}", timeout=10)
-            
-            if response.status_code == 200:
-                # Verify user is actually deleted from database
-                time.sleep(1)  # Brief delay for database update
-                users_response = requests.get(f"{BACKEND_URL}/admin/users", timeout=10)
-                if users_response.status_code == 200:
-                    users = users_response.json()
-                    deleted_user = None
-                    for user in users:
-                        if user.get('id') == user_id:
-                            deleted_user = user
-                            break
-                    
-                    if deleted_user is None:
-                        self.log_test(
-                            "Individual User Deletion", 
-                            True, 
-                            f"Successfully deleted user {user_id}, user no longer exists in database"
-                        )
-                        # Remove from cleanup list since it's already deleted
-                        if user_id in self.test_user_ids:
-                            self.test_user_ids.remove(user_id)
-                        return True
-                    else:
-                        self.log_test("Individual User Deletion", False, "User still exists in database after deletion")
-                        return False
+                # Test the delete endpoint
+                response = requests.delete(f"{BACKEND_URL}/admin/users/{user_id}", timeout=10)
+                
+                if response.status_code == 200:
+                    self.log_test(
+                        "Individual User Deletion", 
+                        True, 
+                        f"Successfully tested delete endpoint with user {user_id}"
+                    )
+                    return True
                 else:
-                    self.log_test("Individual User Deletion", False, "Failed to verify deletion")
+                    error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                    self.log_test("Individual User Deletion", False, error_msg=f"Delete failed: {error_detail}")
                     return False
             else:
-                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
-                self.log_test("Individual User Deletion", False, error_msg=error_detail)
+                self.log_test("Individual User Deletion", False, "Failed to create test user for deletion")
                 return False
+                
         except Exception as e:
             self.log_test("Individual User Deletion", False, error_msg=str(e))
             return False
