@@ -528,17 +528,35 @@ async def reject_user(user_id: str, rejection_data: dict = None):
     try:
         reason = rejection_data.get("reason", "No reason provided") if rejection_data else "No reason provided"
         
-        # Update user status to rejected
+        # Update user status to rejected - try UUID id field first, then ObjectId
         result = await db.users.update_one(
             {"id": user_id},
             {"$set": {"registration_status": "Rejected"}}
         )
         
+        # If not found, try by ObjectId (for API compatibility)
+        if result.matched_count == 0:
+            try:
+                from bson import ObjectId
+                result = await db.users.update_one(
+                    {"_id": ObjectId(user_id)},
+                    {"$set": {"registration_status": "Rejected"}}
+                )
+            except:
+                pass
+        
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="User not found")
         
-        # Get user data for notification
+        # Get user data for notification - try both ID formats
         user = await db.users.find_one({"id": user_id})
+        if not user:
+            try:
+                from bson import ObjectId
+                user = await db.users.find_one({"_id": ObjectId(user_id)})
+            except:
+                pass
+        
         if user:
             # Send rejection notification to user
             rejection_notification = {
