@@ -2989,8 +2989,9 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
       console.log(`🔧 Starting image upload for ${adType}.${field}`);
       
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('image', file);  // FIXED: Backend expects 'image', not 'file'
       formData.append('section', `ads_${adType}`);
+      formData.append('field', field); // FIXED: Added missing 'field' parameter
 
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload-image`, {
         method: 'POST',
