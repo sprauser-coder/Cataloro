@@ -3186,18 +3186,85 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
 function AdCountdownTimer({ adType, expirationDate, onExpired }) {
   const [timeLeft, setTimeLeft] = React.useState(null);
   const [isExpired, setIsExpired] = React.useState(false);
+  const [hasExecutedExpiration, setHasExecutedExpiration] = React.useState(false);
 
   React.useEffect(() => {
     const updateCountdown = () => {
       const remaining = getTimeRemaining(expirationDate);
       
-      if (remaining?.expired) {
+      if (remaining?.expired && !hasExecutedExpiration) {
         setIsExpired(true);
         setTimeLeft(null);
+        setHasExecutedExpiration(true);
+        
+        // Execute expiration events immediately
+        console.log(`🕒 Ad ${adType} expired - executing configured events`);
         onExpired?.();
-      } else {
+        
+        // Get current config to execute events
+        try {
+          const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+          const adConfig = currentConfig.adsManager?.[adType];
+          
+          if (adConfig && adConfig.expirationEvents) {
+            console.log(`🔔 Executing expiration events for ${adType}:`, adConfig.expirationEvents);
+            
+            // Execute each configured event
+            adConfig.expirationEvents.forEach(event => {
+              switch (event) {
+                case 'notify':
+                  console.log(`📧 Sending admin notification for expired ad: ${adType}`);
+                  window.dispatchEvent(new CustomEvent('adExpiredNotification', {
+                    detail: { adType, adConfig, message: `Advertisement "${adType}" has expired and been processed according to your settings` }
+                  }));
+                  break;
+                  
+                case 'deactivate':
+                  console.log(`❌ Auto-deactivating expired ad: ${adType}`);
+                  // Update the config to deactivate
+                  currentConfig.adsManager[adType].active = false;
+                  localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
+                  
+                  // Dispatch update event
+                  window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
+                    detail: currentConfig.adsManager 
+                  }));
+                  break;
+                  
+                case 'reset':
+                  console.log(`🔄 Auto-resetting duration for ad: ${adType}`);
+                  const now = new Date().toISOString();
+                  const originalRuntime = currentConfig.adsManager[adType].runtime;
+                  const newExpirationDate = calculateExpirationDate(now, originalRuntime);
+                  
+                  currentConfig.adsManager[adType].startDate = now;
+                  currentConfig.adsManager[adType].expirationDate = newExpirationDate;
+                  currentConfig.adsManager[adType].active = true;
+                  
+                  localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
+                  
+                  // Dispatch update event
+                  window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
+                    detail: currentConfig.adsManager 
+                  }));
+                  
+                  // Reset the timer state so it can run again
+                  setHasExecutedExpiration(false);
+                  setIsExpired(false);
+                  break;
+              }
+            });
+          }
+        } catch (error) {
+          console.error('Error executing expiration events:', error);
+        }
+      } else if (!remaining?.expired) {
         setTimeLeft(remaining);
         setIsExpired(false);
+        // Reset execution flag if timer is running again
+        if (hasExecutedExpiration) {
+          setHasExecutedExpiration(false);
+        }
       }
     };
 
@@ -3208,7 +3275,7 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
     const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
-  }, [expirationDate, onExpired]);
+  }, [expirationDate, onExpired, hasExecutedExpiration, adType]);
 
   if (isExpired) {
     return (
@@ -3222,7 +3289,7 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
               ⏰ Advertisement Expired
             </div>
             <div className="text-sm text-red-700 dark:text-red-300">
-              This ad has been automatically deactivated
+              Configured expiration events have been executed
             </div>
           </div>
         </div>
