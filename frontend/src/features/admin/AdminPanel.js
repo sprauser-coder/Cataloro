@@ -3599,25 +3599,33 @@ function SiteAdministrationTab({ showToast }) {
         description: 'Test Browse Page Advertisement',
         runtime: '1 month',
         width: '300px',
-        height: '600px'
+        height: '600px',
+        url: '',
+        clicks: 0
       },
       favoriteAd: {
         active: false,
         image: null,
         description: '',
-        runtime: '1 month'
+        runtime: '1 month',
+        url: '',
+        clicks: 0
       },
       messengerAd: {
         active: false,
         image: null,
         description: '',
-        runtime: '1 month'
+        runtime: '1 month',
+        url: '',
+        clicks: 0
       },
       footerAd: {
         active: false,
         logo: null,
         companyName: '',
-        runtime: '1 month'
+        runtime: '1 month',
+        url: '',
+        clicks: 0
       }
     },
     
