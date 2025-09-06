@@ -951,7 +951,8 @@ function ModernBrowsePage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 
