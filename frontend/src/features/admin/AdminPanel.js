@@ -239,7 +239,7 @@ function AdminPanel() {
   const { permissions, isAdmin: isFullAdmin, isAdminManager } = usePermissions();
 
   useEffect(() => {
-    if (isAdmin()) {
+    if (permissions.adminPanel.canAccess) {
       fetchDashboardData();
       if (activeTab === 'users') {
         fetchUsers();
@@ -247,7 +247,7 @@ function AdminPanel() {
         fetchSettings();
       }
     }
-  }, [activeTab, isAdmin]);
+  }, [activeTab, permissions.adminPanel.canAccess]);
 
   const fetchDashboardData = async () => {
     try {
