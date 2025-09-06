@@ -3699,6 +3699,11 @@ function SiteAdministrationTab({ showToast }) {
   const [isSaving, setIsSaving] = React.useState(false);
   const [settingsSaved, setSettingsSaved] = React.useState(false);
   
+  // Debug current active section
+  React.useEffect(() => {
+    console.log(`🔧 AdminPanel: Current activeSection: ${activeSection}`);
+  }, [activeSection]);
+  
   // Initialize siteConfig from localStorage if available
   const [siteConfig, setSiteConfig] = React.useState(() => {
     try {
