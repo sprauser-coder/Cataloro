@@ -1335,7 +1335,7 @@ async def upload_image(
         # Return URL (adjust based on your static file serving setup)
         image_url = f"/uploads/cms/{unique_filename}"
         
-        return {"imageUrl": image_url, "filename": unique_filename}
+        return {"url": image_url, "imageUrl": image_url, "filename": unique_filename}
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
