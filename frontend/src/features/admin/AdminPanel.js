@@ -51,7 +51,7 @@ import {
   Sliders,
   Layout,
   Type,
-  Image,
+  Image as ImageIcon,
   Play,
   Pause,
   Power,
