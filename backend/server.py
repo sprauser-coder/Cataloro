@@ -246,7 +246,7 @@ async def create_listing_expiration_notification(listing_id: str, seller_id: str
             "title": title,
             "message": message,
             "type": "listing_expiration",
-            "is_read": False,
+            "read": False,
             "created_at": datetime.utcnow().isoformat(),
             "id": str(uuid.uuid4()),
             "listing_id": listing_id,
