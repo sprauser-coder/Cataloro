@@ -397,25 +397,30 @@ class BasketInvestigationTester:
         print("-" * 40)
         picki_basket = self.check_picki_basket_exists()
         
-        # 3. Create 'picki' basket if it doesn't exist
+        # 3. Check available bought items
+        print("📦 CHECK AVAILABLE BOUGHT ITEMS")
+        print("-" * 40)
+        bought_items = self.check_available_bought_items()
+        
+        # 4. Create 'picki' basket if it doesn't exist
         if not picki_basket:
             print("🛠️ CREATE 'PICKI' BASKET")
             print("-" * 40)
             picki_basket = self.create_picki_basket_if_missing()
         
-        # 4. Test basket assignment with correct ID
+        # 5. Test basket assignment with correct ID
         if picki_basket:
             print("🎯 TEST BASKET ASSIGNMENT WITH CORRECT ID")
             print("-" * 40)
             basket_id = picki_basket.get('id')
             self.test_basket_assignment_with_correct_id(basket_id)
             
-            # 5. Check ID format consistency
+            # 6. Check ID format consistency
             print("🔧 CHECK ID FORMAT CONSISTENCY")
             print("-" * 40)
             self.check_id_format_consistency(picki_basket)
         
-        # 6. Debug basket endpoints
+        # 7. Debug basket endpoints
         print("🐛 DEBUG BASKET ENDPOINTS")
         print("-" * 40)
         self.debug_basket_endpoints()
