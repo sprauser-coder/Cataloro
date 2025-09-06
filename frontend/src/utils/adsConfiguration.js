@@ -58,7 +58,9 @@ export const DEFAULT_ADS_CONFIG = {
       clicks: 0,
       startDate: null,
       expirationDate: null,
-      expirationEvents: ['deactivate']
+      expirationEvents: ['deactivate'],
+      notificationMethods: ['notificationCenter'],
+      notificationUsers: []
     }
   },
   // Ensure hero section is always enabled
