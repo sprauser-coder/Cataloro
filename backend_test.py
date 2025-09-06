@@ -155,8 +155,8 @@ class BackendTester:
             
             # Test endpoints that Buy Management features should access
             buy_management_endpoints = [
-                ("User Bought Items", f"{BACKEND_URL}/user/{user_id}/bought-items"),
-                ("User Baskets", f"{BACKEND_URL}/user/{user_id}/baskets"),
+                ("User Bought Items", f"{BACKEND_URL}/user/bought-items/{user_id}"),
+                ("User Baskets", f"{BACKEND_URL}/user/baskets/{user_id}"),
                 ("User Profile", f"{BACKEND_URL}/auth/profile/{user_id}"),
                 ("Marketplace Browse", f"{BACKEND_URL}/marketplace/browse"),
             ]
@@ -177,6 +177,12 @@ class BackendTester:
                             bought_items = response.json()
                             item_count = len(bought_items) if isinstance(bought_items, list) else 0
                             endpoint_results[-1] += f" ({item_count} items)"
+                            
+                        # Special handling for baskets endpoint
+                        if "baskets" in endpoint_url:
+                            baskets = response.json()
+                            basket_count = len(baskets) if isinstance(baskets, list) else 0
+                            endpoint_results[-1] += f" ({basket_count} baskets)"
                             
                     elif response.status_code == 404:
                         # Some endpoints might not exist yet, that's okay
