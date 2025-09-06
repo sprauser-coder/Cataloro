@@ -3571,7 +3571,11 @@ function AdConfigPanel({
               </label>
               <select
                 value={adConfig.runtime || '1 month'}
-                onChange={(e) => handleAdConfigChange(adType, 'runtime', e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  handleAdConfigChange(adType, 'runtime', value);
+                  setShowCustomRuntime(value === 'custom');
+                }}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 {runtimeOptions.map(option => (
@@ -3581,6 +3585,105 @@ function AdConfigPanel({
                 ))}
               </select>
             </div>
+
+            {/* Custom Runtime Input */}
+            {(showCustomRuntime || adConfig.runtime === 'custom') && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center mb-3">
+                  <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" />
+                  <h4 className="font-medium text-blue-900 dark:text-blue-100">
+                    ⏱️ Set Custom Duration
+                  </h4>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  {/* Days */}
+                  <div>
+                    <label className="block text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">
+                      Days
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="365"
+                      value={customRuntime.days}
+                      onChange={(e) => setCustomRuntime(prev => ({ ...prev, days: parseInt(e.target.value) || 0 }))}
+                      className="w-full px-3 py-2 border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-center font-mono"
+                      placeholder="0"
+                    />
+                  </div>
+                  
+                  {/* Hours */}
+                  <div>
+                    <label className="block text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">
+                      Hours
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="23"
+                      value={customRuntime.hours}
+                      onChange={(e) => setCustomRuntime(prev => ({ ...prev, hours: parseInt(e.target.value) || 0 }))}
+                      className="w-full px-3 py-2 border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-center font-mono"
+                      placeholder="0"
+                    />
+                  </div>
+                  
+                  {/* Minutes */}
+                  <div>
+                    <label className="block text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">
+                      Minutes
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={customRuntime.minutes}
+                      onChange={(e) => setCustomRuntime(prev => ({ ...prev, minutes: parseInt(e.target.value) || 0 }))}
+                      className="w-full px-3 py-2 border border-blue-300 dark:border-blue-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-center font-mono"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+                
+                {/* Duration Preview */}
+                <div className="mb-4 p-3 bg-blue-100 dark:bg-blue-800/30 rounded-md">
+                  <div className="text-sm text-blue-800 dark:text-blue-200">
+                    <strong>Total Duration:</strong> {' '}
+                    {customRuntime.days > 0 && `${customRuntime.days} day${customRuntime.days !== 1 ? 's' : ''} `}
+                    {customRuntime.hours > 0 && `${customRuntime.hours} hour${customRuntime.hours !== 1 ? 's' : ''} `}
+                    {customRuntime.minutes > 0 && `${customRuntime.minutes} minute${customRuntime.minutes !== 1 ? 's' : ''}`}
+                    {customRuntime.days === 0 && customRuntime.hours === 0 && customRuntime.minutes === 0 && 'No duration set'}
+                  </div>
+                </div>
+                
+                {/* Save Custom Runtime Button */}
+                <button
+                  onClick={() => {
+                    const totalMinutes = (customRuntime.days * 24 * 60) + (customRuntime.hours * 60) + customRuntime.minutes;
+                    
+                    if (totalMinutes === 0) {
+                      showToast('Please set at least 1 minute duration', 'error');
+                      return;
+                    }
+                    
+                    // Create custom runtime string
+                    const customRuntimeString = `custom_${customRuntime.days}d_${customRuntime.hours}h_${customRuntime.minutes}m`;
+                    
+                    // Save the custom runtime
+                    handleAdConfigChange(adType, 'runtime', customRuntimeString);
+                    handleAdConfigChange(adType, 'customDuration', customRuntime);
+                    
+                    showToast(`Custom duration saved: ${customRuntime.days}d ${customRuntime.hours}h ${customRuntime.minutes}m`, 'success');
+                    console.log(`🕒 Custom runtime set for ${adType}:`, customRuntime);
+                  }}
+                  className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition-colors flex items-center justify-center space-x-2"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Save Custom Duration</span>
+                </button>
+              </div>
+            )}
 
             {/* Dimensions (for browse page ad) */}
             {showDimensions && (
