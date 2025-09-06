@@ -353,11 +353,11 @@ class CatalystBackendTester:
                     renumeration_pd = item.get('renumeration_pd')
                     renumeration_rh = item.get('renumeration_rh')
                     
-                    # Expected values from our test listing
-                    expected_weight = 139.7
-                    expected_pt_ppm = 1394.0
-                    expected_pd_ppm = 959.0
-                    expected_rh_ppm = 0.0
+                    # Expected values from our test listing (updated in the tender test)
+                    expected_weight = 100.0
+                    expected_pt_ppm = 1000.0
+                    expected_pd_ppm = 500.0
+                    expected_rh_ppm = 100.0
                     
                     # Calculate expected results (weight * ppm / 1000000 * renumeration)
                     expected_pt_result = (expected_weight * expected_pt_ppm / 1000000) * renumeration_pt
