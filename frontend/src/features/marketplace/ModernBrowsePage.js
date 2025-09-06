@@ -33,6 +33,7 @@ import { trackAdClick } from '../../utils/adsConfiguration';
 // Hook to get ads configuration
 function useAdsConfig() {
   const [adsConfig, setAdsConfig] = useState(null);
+  const [configVersion, setConfigVersion] = useState(0);
   
   useEffect(() => {
     const loadAdsConfig = () => {
@@ -48,6 +49,11 @@ function useAdsConfig() {
           if (config.adsManager) {
             console.log('🔍 ModernBrowsePage - Setting ads config:', config.adsManager);
             setAdsConfig(config.adsManager);
+            
+            // Log specific image URLs for debugging
+            if (config.adsManager.browsePageAd) {
+              console.log('🔍 ModernBrowsePage - Browse page ad image URL:', config.adsManager.browsePageAd.image);
+            }
           } else {
             console.log('⚠️ ModernBrowsePage - No adsManager in config, using defaults');
             // Set default configuration for browse page ad
@@ -58,7 +64,9 @@ function useAdsConfig() {
                 description: 'Advertisement Space',
                 runtime: '1 month',
                 width: '300px',
-                height: '600px'
+                height: '600px',
+                url: '',
+                clicks: 0
               }
             };
             setAdsConfig(defaultAdsConfig);
@@ -73,7 +81,9 @@ function useAdsConfig() {
               description: 'Advertisement Space',
               runtime: '1 month',
               width: '300px',
-              height: '600px'
+              height: '600px',
+              url: '',
+              clicks: 0
             }
           };
           setAdsConfig(defaultAdsConfig);
@@ -88,7 +98,9 @@ function useAdsConfig() {
             description: 'Advertisement Space',
             runtime: '1 month',
             width: '300px',
-            height: '600px'
+            height: '600px',
+            url: '',
+            clicks: 0
           }
         };
         setAdsConfig(defaultAdsConfig);
@@ -99,25 +111,35 @@ function useAdsConfig() {
     loadAdsConfig();
 
     // Listen for ads config updates
-    const handleAdsConfigUpdate = () => {
-      console.log('🔍 ModernBrowsePage - Ads config update event received');
-      loadAdsConfig();
+    const handleAdsConfigUpdate = (event) => {
+      console.log('🔍 ModernBrowsePage - Ads config update event received:', event.detail);
+      setConfigVersion(prev => prev + 1); // Force re-render
+      setTimeout(loadAdsConfig, 100); // Small delay to ensure localStorage is updated
+    };
+
+    const handleStorageChange = (event) => {
+      if (event.key === 'cataloro_site_config') {
+        console.log('🔍 ModernBrowsePage - Storage change detected');
+        setConfigVersion(prev => prev + 1); // Force re-render
+        setTimeout(loadAdsConfig, 100);
+      }
     };
 
     window.addEventListener('adsConfigUpdated', handleAdsConfigUpdate);
-    window.addEventListener('storage', handleAdsConfigUpdate);
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
       window.removeEventListener('adsConfigUpdated', handleAdsConfigUpdate);
-      window.removeEventListener('storage', handleAdsConfigUpdate);
+      window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
+  }, [configVersion]); // Add configVersion as dependency to force reloads
   
   // Debug log current state
   useEffect(() => {
     console.log('🔍 ModernBrowsePage - Current adsConfig state:', adsConfig);
     if (adsConfig?.browsePageAd) {
       console.log('🔍 ModernBrowsePage - Browse page ad config:', adsConfig.browsePageAd);
+      console.log('🔍 ModernBrowsePage - Browse page ad image URL:', adsConfig.browsePageAd.image);
     }
   }, [adsConfig]);
   
