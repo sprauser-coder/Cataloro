@@ -212,23 +212,39 @@ export const calculateExpirationDate = (startDate, runtime) => {
   const start = new Date(startDate);
   const expiration = new Date(start);
   
-  // Handle custom runtime format: custom_XdYhZm
-  if (runtime && runtime.startsWith('custom_')) {
-    const customPattern = /custom_(\d+)d_(\d+)h_(\d+)m/;
-    const match = runtime.match(customPattern);
-    
-    if (match) {
-      const days = parseInt(match[1]) || 0;
-      const hours = parseInt(match[2]) || 0;
-      const minutes = parseInt(match[3]) || 0;
+  // Check if it's a custom runtime format (e.g., "custom_0d_0h_2m" or "3 days 2 hours 30 minutes")
+  if (runtime.startsWith('custom_')) {
+    // Parse new custom format: custom_0d_0h_2m
+    const customMatch = runtime.match(/custom_(\d+)d_(\d+)h_(\d+)m/);
+    if (customMatch) {
+      const days = parseInt(customMatch[1]) || 0;
+      const hours = parseInt(customMatch[2]) || 0;
+      const minutes = parseInt(customMatch[3]) || 0;
       
       expiration.setDate(expiration.getDate() + days);
       expiration.setHours(expiration.getHours() + hours);
       expiration.setMinutes(expiration.getMinutes() + minutes);
       
-      console.log(`🕒 Custom runtime calculated: ${days}d ${hours}h ${minutes}m`);
       return expiration.toISOString();
     }
+  }
+  
+  // Check if it's a legacy custom runtime format (e.g., "3 days 2 hours 30 minutes")
+  if (runtime.includes('days') || runtime.includes('hours') || runtime.includes('minutes')) {
+    // Parse legacy custom runtime format
+    const dayMatch = runtime.match(/(\d+)\s*days?/);
+    const hourMatch = runtime.match(/(\d+)\s*hours?/);
+    const minuteMatch = runtime.match(/(\d+)\s*minutes?/);
+    
+    const days = dayMatch ? parseInt(dayMatch[1]) : 0;
+    const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+    const minutes = minuteMatch ? parseInt(minuteMatch[1]) : 0;
+    
+    expiration.setDate(expiration.getDate() + days);
+    expiration.setHours(expiration.getHours() + hours);
+    expiration.setMinutes(expiration.getMinutes() + minutes);
+    
+    return expiration.toISOString();
   }
   
   // Handle predefined runtime options
