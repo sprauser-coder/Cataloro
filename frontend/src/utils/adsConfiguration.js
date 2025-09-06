@@ -198,6 +198,26 @@ export const calculateExpirationDate = (startDate, runtime) => {
   const start = new Date(startDate);
   const expiration = new Date(start);
   
+  // Handle custom runtime format: custom_XdYhZm
+  if (runtime && runtime.startsWith('custom_')) {
+    const customPattern = /custom_(\d+)d_(\d+)h_(\d+)m/;
+    const match = runtime.match(customPattern);
+    
+    if (match) {
+      const days = parseInt(match[1]) || 0;
+      const hours = parseInt(match[2]) || 0;
+      const minutes = parseInt(match[3]) || 0;
+      
+      expiration.setDate(expiration.getDate() + days);
+      expiration.setHours(expiration.getHours() + hours);
+      expiration.setMinutes(expiration.getMinutes() + minutes);
+      
+      console.log(`🕒 Custom runtime calculated: ${days}d ${hours}h ${minutes}m`);
+      return expiration.toISOString();
+    }
+  }
+  
+  // Handle predefined runtime options
   switch (runtime) {
     case '1 month':
       expiration.setMonth(expiration.getMonth() + 1);
@@ -206,6 +226,7 @@ export const calculateExpirationDate = (startDate, runtime) => {
       expiration.setMonth(expiration.getMonth() + 3);
       break;
     case '12 months':
+    case '1 year':
       expiration.setFullYear(expiration.getFullYear() + 1);
       break;
     default:
