@@ -476,17 +476,35 @@ async def check_username_availability(username: str):
 async def approve_user(user_id: str):
     """Approve user registration"""
     try:
-        # Update user status to approved
+        # Update user status to approved - try UUID id field first, then ObjectId
         result = await db.users.update_one(
             {"id": user_id},
             {"$set": {"registration_status": "Approved"}}
         )
         
+        # If not found, try by ObjectId (for API compatibility)
+        if result.matched_count == 0:
+            try:
+                from bson import ObjectId
+                result = await db.users.update_one(
+                    {"_id": ObjectId(user_id)},
+                    {"$set": {"registration_status": "Approved"}}
+                )
+            except:
+                pass
+        
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="User not found")
         
-        # Get user data for notification
+        # Get user data for notification - try both ID formats
         user = await db.users.find_one({"id": user_id})
+        if not user:
+            try:
+                from bson import ObjectId
+                user = await db.users.find_one({"_id": ObjectId(user_id)})
+            except:
+                pass
+        
         if user:
             # Send approval notification to user
             approval_notification = {
