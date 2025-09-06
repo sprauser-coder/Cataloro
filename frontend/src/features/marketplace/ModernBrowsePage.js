@@ -29,6 +29,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { liveService } from '../../services/liveService';
 import { trackAdClick } from '../../utils/adsConfiguration';
+import usePermissions from '../../hooks/usePermissions';
 
 // Hook to get ads configuration
 function useAdsConfig() {
