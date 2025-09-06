@@ -5193,22 +5193,32 @@ async def update_basket(basket_id: str, basket_data: dict):
 async def delete_basket(basket_id: str):
     """Delete a basket and unassign all items"""
     try:
-        # First unassign all items from this basket (placeholder - would update bought items)
-        # await db.bought_items.update_many(
-        #     {"basket_id": basket_id},
-        #     {"$unset": {"basket_id": ""}}
-        # )
+        logger.info(f"Attempting to delete basket: {basket_id}")
+        
+        # First unassign all items from this basket
+        unassign_result = await db.item_assignments.delete_many({"basket_id": basket_id})
+        logger.info(f"Unassigned {unassign_result.deleted_count} items from basket {basket_id}")
         
         # Delete the basket
         result = await db.baskets.delete_one({"id": basket_id})
+        logger.info(f"Delete basket result: deleted_count = {result.deleted_count}")
         
         if result.deleted_count == 0:
+            logger.error(f"Basket not found: {basket_id}")
             raise HTTPException(status_code=404, detail="Basket not found")
         
+        logger.info(f"Successfully deleted basket: {basket_id}")
         return {"message": "Basket deleted successfully"}
         
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
     except Exception as e:
-        logger.error(f"Error deleting basket {basket_id}: {e}")
+        logger.error(f"Unexpected error deleting basket {basket_id}: {str(e)}")
+        logger.error(f"Error type: {type(e)}")
+        logger.error(f"Error args: {e.args}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to delete basket: {str(e)}")
 
 @app.put("/api/user/bought-items/{item_id}/assign")
