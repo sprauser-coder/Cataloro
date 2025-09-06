@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useMarketplace } from '../../context/MarketplaceContext';
+import usePermissions from '../../hooks/usePermissions';
 
 function PublicProfilePage() {
   const { userId } = useParams();
