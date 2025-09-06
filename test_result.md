@@ -719,6 +719,40 @@ const getEventTriggerDisplay = (notification) => {
 
 **BUY MANAGEMENT COMPREHENSIVE TESTING STATUS:** ✅ ALL SUCCESS CRITERIA MET - The Buy Management functionality is working flawlessly with all requested features fully operational. Login with Demo User Experience works perfectly, Buy Management page is accessible with proper permissions, both "Bought Items" and "Baskets" tabs are visible and functional, assignment functionality works correctly with proper ASSIGNED badges, filter system operates as expected, basket management (create, edit, delete) is fully functional, and the assignment dropdown shows basket options correctly. All requirements from the comprehensive review request have been successfully verified and are working perfectly without any critical issues.
 
+**Test Date:** 2025-09-06 21:45:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ❌ BASKET ASSIGNMENT CRITICAL BUG IDENTIFIED - ROOT CAUSE FOUND FOR "BASKET NOT FOUND" ERROR
+
+#### Basket Assignment "Picki" Investigation Results:
+**CRITICAL BASKET ASSIGNMENT BUG IDENTIFIED:** ❌ ROOT CAUSE CONFIRMED - Executed comprehensive investigation of the "Basket not found" error for the "picki" basket as requested in review. Found critical ID format mismatch between basket storage and assignment lookup causing all basket assignments to fail.
+
+**1. Picki Basket Existence Verification** ✅ BASKET EXISTS - Picki basket confirmed in database: Successfully found 'picki' basket in user's basket collection ✅, Basket has proper name, description, and user association ✅, Basket is accessible through GET /api/user/baskets/{user_id} endpoint ✅, No issues with basket creation or storage ✅.
+
+**2. ID Format Analysis** ❌ CRITICAL ID MISMATCH IDENTIFIED - Found fundamental ID format inconsistency: Baskets stored with MongoDB ObjectId format (24-character hex, no hyphens) ✅, Assignment endpoint expects UUID format (36-character with hyphens) ❌, serialize_doc() function overwrites original UUID with ObjectId ❌, All basket assignments fail due to ID format mismatch ❌.
+
+**3. Assignment Endpoint Testing** ❌ ALL ASSIGNMENTS FAIL - Assignment functionality broken for all baskets: Tested assignment with correct picki basket ID: FAILED ❌, Tested assignment with all existing basket IDs: ALL FAILED ❌, Error message "Basket not found" occurs for valid basket IDs ❌, Issue affects all baskets, not just "picki" ❌.
+
+**4. Database Consistency Check** ✅ DATABASE STRUCTURE CORRECT - No database corruption or consistency issues: All baskets have proper structure and fields ✅, No duplicate names or invalid IDs ✅, User associations correct ✅, Database queries return expected results ✅.
+
+**5. Backend Code Analysis** ❌ SERIALIZE_DOC FUNCTION CAUSING ISSUE - Root cause identified in basket retrieval: Basket creation uses generate_id() returning proper UUID ✅, Basket retrieval calls serialize_doc() which overwrites UUID with ObjectId ❌, Assignment lookup searches for UUID but finds ObjectId ❌, Line 5133 in get_user_baskets() causes the ID format conversion ❌.
+
+**ROOT CAUSE ANALYSIS:**
+❌ **serialize_doc() function** in get_user_baskets() endpoint (line 5133) overwrites the original UUID 'id' field with MongoDB's ObjectId
+❌ **Assignment endpoint** expects to find baskets by UUID format but receives ObjectId format
+❌ **ID format mismatch** causes db.baskets.find_one({"id": basket_id}) to fail for all assignments
+❌ **All basket assignments fail** regardless of basket name or user, not specific to "picki"
+
+**TECHNICAL VERIFICATION:**
+- Basket Storage: Baskets created with proper UUID format using generate_id()
+- Basket Retrieval: serialize_doc() converts MongoDB _id (ObjectId) to id field, overwriting UUID
+- Assignment Logic: Searches for baskets using UUID format but finds ObjectId format
+- Database Query: db.baskets.find_one({"id": basket_id}) fails due to format mismatch
+- Impact: ALL basket assignments fail, not just "picki" to "ford" scenario
+
+**COMPREHENSIVE INVESTIGATION RESULTS:** 5/5 investigation areas completed, picki basket exists and is accessible, critical ID format mismatch identified, all basket assignments fail due to serialize_doc() function, database structure is correct, backend code analysis reveals exact root cause.
+
+**BASKET ASSIGNMENT INVESTIGATION STATUS:** ❌ CRITICAL BUG CONFIRMED - The "Basket not found" error is caused by a critical ID format mismatch in the backend code. The serialize_doc() function in the get_user_baskets() endpoint (line 5133) overwrites the original UUID with MongoDB's ObjectId, causing all basket assignment attempts to fail. This affects ALL baskets, not just "picki". The fix requires modifying the basket retrieval logic to preserve the original UUID format or updating the assignment logic to handle ObjectId format. This is a high-priority backend bug that prevents any basket assignments from working.
+
 
 **Test Date:** 2025-09-06 21:03:00 UTC  
 **Test Agent:** testing  
