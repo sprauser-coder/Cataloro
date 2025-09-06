@@ -442,6 +442,8 @@ function BuyManagementPage() {
                   setShowEditBasket(true);
                 }}
                 onDeleteBasket={deleteBasket}
+                onUnassignFromBasket={unassignItemFromBasket}
+                onReassignToBasket={reassignItemToBasket}
                 calculateTotals={calculateBasketTotals}
                 loading={loading}
               />
