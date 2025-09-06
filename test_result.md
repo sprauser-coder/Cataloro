@@ -4359,6 +4359,18 @@ backend:
           agent: "testing"
           comment: "✅ GENERAL SYSTEM HEALTH TESTING COMPLETED - Recent frontend changes have not affected backend functionality. GET /api/health endpoint working (Status: healthy, App: Cataloro Marketplace, Version: 1.0.0). GET /api/marketplace/browse endpoint working correctly with proper structure validation. All core backend functionality remains intact."
 
+  - task: "Bulk User Management Operations"
+    implemented: true
+    working: false
+    file: "server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ BULK USER MANAGEMENT CRITICAL ISSUE IDENTIFIED - The bulk user management endpoint /api/admin/users/bulk-action is implemented and working at the API level with all required operations (delete, activate, suspend, approve, reject) returning correct response format. However, there is a CRITICAL backend bug where bulk operations cannot find users even though they exist in the database. All operations return 'User not found' errors despite users being visible via GET /api/admin/users. This affects both individual user deletion and bulk operations. The issue appears to be in the user ID query logic in the backend implementation. API structure is correct but user resolution is broken."
+
   - task: "System Notifications Separation and Cleanup"
     implemented: true
     working: true
