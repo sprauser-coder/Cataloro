@@ -3225,8 +3225,10 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
                         console.log(`🔔 Sending notification center alerts to ${selectedUsers.length} users`);
                         
                         // Send notification to each selected user via backend API
-                        selectedUsers.forEach(async (user) => {
+                        // Send notifications properly with Promise.all to avoid timing issues
+                        const notificationPromises = selectedUsers.map(async (user) => {
                           try {
+                            const adDescription = adConfig.description || adType;
                             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
                               method: 'POST',
                               headers: {
@@ -3234,20 +3236,32 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
                               },
                               body: JSON.stringify({
                                 title: '⏰ Advertisement Expired',
-                                message: `Advertisement "${adType}" has expired and been processed according to your settings`,
+                                message: `Advertisement "${adDescription}" has expired and been processed according to your settings`,
                                 type: 'warning'
                               })
                             });
                             
                             if (response.ok) {
-                              console.log(`✅ Notification sent to user ${user.email} (${user.id})`);
+                              console.log(`✅ Expiration notification sent to user ${user.email} (${user.id})`);
+                              return { success: true, user: user.email };
                             } else {
-                              console.error(`❌ Failed to send notification to user ${user.email}`);
+                              console.error(`❌ Failed to send expiration notification to user ${user.email}`);
+                              return { success: false, user: user.email, error: 'HTTP Error' };
                             }
                           } catch (error) {
-                            console.error(`❌ Error sending notification to user ${user.email}:`, error);
+                            console.error(`❌ Error sending expiration notification to user ${user.email}:`, error);
+                            return { success: false, user: user.email, error: error.message };
                           }
                         });
+                        
+                        // Wait for all notifications to complete
+                        try {
+                          const results = await Promise.all(notificationPromises);
+                          const successCount = results.filter(r => r.success).length;
+                          console.log(`📊 Expiration notifications: ${successCount}/${selectedUsers.length} sent successfully`);
+                        } catch (error) {
+                          console.error('❌ Error in batch notification sending:', error);
+                        }
                         
                         // Also dispatch the old event for any remaining toast handlers
                         window.dispatchEvent(new CustomEvent('adExpiredNotification', {
