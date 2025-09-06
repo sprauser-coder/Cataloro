@@ -435,41 +435,24 @@ function ModernBrowsePage() {
 
   return (
     <div className="space-y-8">
-      {/* Hero Section with Dynamic Content and Search */}
+      {/* Hero Section with Dynamic Content and Search - ALWAYS VISIBLE */}
       <div 
         className="hero-section relative text-white overflow-hidden w-full rounded-2xl"
         style={{ 
-          height: heroContent.height ? `${heroContent.height}px` : '400px',
+          height: '400px',
           minHeight: '300px',
-          background: heroContent.background_type === 'solid' 
-            ? (heroContent.background_color || '#3B82F6')
-            : heroContent.background_type === 'gradient'
-              ? `linear-gradient(to right, ${heroContent.background_gradient_from || '#3B82F6'}, ${heroContent.background_gradient_to || '#EC4899'})`
-              : heroContent.background_type === 'image' && heroContent.background_image
-                ? `url(${heroContent.background_image})`
-                : 'linear-gradient(to right, #3f6ec7, #a855f7, #ec4899)',
-          backgroundSize: heroContent.background_type === 'image' ? 'cover' : 'auto',
-          backgroundPosition: heroContent.background_type === 'image' ? 'center' : 'auto'
+          background: 'linear-gradient(to right, #3f6ec7, #a855f7, #ec4899)',
+          backgroundSize: 'auto',
+          backgroundPosition: 'auto'
         }}
       >
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative z-10 text-center flex flex-col justify-center h-full px-8">
-          {/* Hero Image */}
-          {heroContent.image_url && (
-            <div className="mb-6 flex justify-center">
-              <img 
-                src={heroContent.image_url} 
-                alt="Hero" 
-                className="max-h-24 max-w-48 object-contain" 
-              />
-            </div>
-          )}
-          
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            {heroContent.title}
+            Discover Amazing Products
           </h1>
           <p className="text-xl mb-8 opacity-90 max-w-3xl mx-auto">
-            {heroContent.description}
+            From electronics to fashion, find everything you need in one place
           </p>
           
           {/* Hero Search Bar - FULL WIDTH */}
@@ -479,7 +462,7 @@ function ModernBrowsePage() {
                 <Search className="absolute left-6 text-white/70 w-6 h-6" />
                 <input
                   type="text"
-                  placeholder={heroContent.search_placeholder || 'Search for anything you need...'}
+                  placeholder="Search for anything you need..."
                   value={searchQuery}
                   onChange={(e) => updateSearchQuery(e.target.value)}
                   className="w-full pl-16 pr-4 py-4 bg-transparent text-white placeholder-white/70 text-lg focus:outline-none"
