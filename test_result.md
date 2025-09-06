@@ -601,6 +601,58 @@ The backend time limit functionality is working perfectly. The issue appears to 
 
 **BUY MANAGEMENT CALCULATION FIX STATUS:** ✅ PERFECTLY IMPLEMENTED - The Buy Management calculation fix is working flawlessly. The main agent successfully implemented all three changes mentioned in the review request: (1) Modified get_bought_items endpoint to get price settings for renumeration values at start, (2) Changed bought item creation to copy catalyst fields directly from listings (weight, pt_ppm, pd_ppm, rh_ppm), (3) Set renumeration values from price settings instead of None. The calculations now produce proper non-zero values when catalyst data exists, eliminating the (0,0,0) issue. All requirements from the review request have been successfully verified and are working perfectly.
 
+**Test Date:** 2025-01-29 23:45:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ❌ SELLER NAME "UNKNOWN" ISSUE CONFIRMED - ROOT CAUSE IDENTIFIED AND SOLUTION PROVIDED
+
+#### Seller Name "Unknown" Debug Results:
+**COMPREHENSIVE SELLER NAME DEBUG TESTING:** ❌ CRITICAL ISSUE CONFIRMED - Executed comprehensive debugging of seller name showing as "Unknown" in bought items as requested in review. Root cause successfully identified with detailed technical analysis and solution provided (4/4 tests passed, 100% success rate).
+
+**1. GET /api/user/bought-items/{user_id} Endpoint Analysis** ✅ ENDPOINT WORKING - Bought items endpoint accessible and returning data: Successfully retrieved 3 bought items for demo user ✅, All 3 items show seller_name='Unknown' (confirming the reported issue) ✅, All items have valid seller_id='68b191ec38e6062fee10bd27' ✅, Endpoint structure and response format correct ✅.
+
+**2. Seller User Records Validation** ✅ SELLERS EXIST - Seller users DO exist with valid username data: Found seller user with ID 68b191ec38e6062fee10bd27 ✅, Seller has valid username='sash_admin' and email='admin@cataloro.com' ✅, Seller user record is complete and accessible via /api/auth/profile/{seller_id} ✅, Issue is NOT missing seller users ✅.
+
+**3. Users Collection Username Data Verification** ✅ USERNAME DATA COMPLETE - All users have proper username fields populated: Total users: 10, all have valid usernames ✅, No users missing username field ✅, Username data quality is excellent across all user records ✅, Issue is NOT missing username data in users collection ✅.
+
+**4. Root Cause Investigation** ❌ CRITICAL ISSUE IDENTIFIED - Listings referenced in bought items no longer exist in active listings: All 3 bought item listing IDs are MISSING from active listings ✅, Listing IDs: f45f21ec-e0a7-4010-b968-a9a969d5128f, 6b08eee3-d8d8-4547-b1e6-a22cbe9e6d05, 5dba72f1-40e7-4508-873f-521e61afeb6b ❌, Backend tries to find listing first, then seller - when listing not found, seller lookup fails ❌, Backend logic: listing = None → seller lookup skipped → seller_name = "Unknown" ❌.
+
+**ROOT CAUSE ANALYSIS:**
+❌ **CRITICAL ISSUE**: Backend seller lookup depends on finding the listing first, but listings are missing
+❌ **DATA FLOW PROBLEM**: Backend logic: get listing → get seller_id from listing → lookup seller → get username
+❌ **MISSING LISTINGS**: All bought item listings are not in active listings (deleted/inactive after purchase)
+❌ **LOGIC FAILURE**: When listing lookup fails, seller lookup never happens, defaults to "Unknown"
+
+**TECHNICAL VERIFICATION:**
+- Bought Items Endpoint: ✅ Working correctly, returns 3 items with seller_id but seller_name="Unknown"
+- Seller Users: ✅ DO exist with valid usernames (sash_admin, admin@cataloro.com)
+- Username Data: ✅ Complete across all users in collection
+- Listing Lookup: ❌ FAILS - listings referenced in bought items not found in active listings
+- Backend Logic: ❌ FLAWED - depends on listing lookup which fails for inactive/deleted listings
+
+**BACKEND CODE ANALYSIS:**
+```python
+# Current problematic logic in get_bought_items():
+listing = await db.listings.find_one({"id": tender.get("listing_id")})
+if listing:  # ← This fails when listing is deleted/inactive
+    seller = await db.users.find_one({"id": listing.get("seller_id")})
+    seller_name = seller.get("username", "Unknown") if seller else "Unknown"
+# When listing not found, seller_name defaults to "Unknown"
+```
+
+**SOLUTION PROVIDED:**
+The backend should use the seller_id directly from the bought items instead of looking it up through the listing:
+```python
+# Recommended fix:
+seller_id = item.get("seller_id")  # Already available in bought items
+if seller_id:
+    seller = await db.users.find_one({"id": seller_id})
+    seller_name = seller.get("username", "Unknown") if seller else "Unknown"
+```
+
+**COMPREHENSIVE TEST RESULTS:** 4/4 individual tests passed (100% success rate), seller name issue confirmed and diagnosed, root cause identified as missing listings breaking seller lookup chain, seller users exist with valid data, solution provided for immediate fix.
+
+**SELLER NAME "UNKNOWN" DEBUG STATUS:** ❌ CRITICAL ISSUE CONFIRMED - The seller names show as "Unknown" because the backend tries to look up seller info through listings that no longer exist in the active listings collection. The bought items reference listing IDs that have been deleted or made inactive after purchase. Since the listing lookup fails, the seller lookup never happens and defaults to "Unknown". The seller users DO exist with valid usernames, but the backend logic is flawed. The fix is to use the seller_id directly from bought items instead of going through the listing lookup. All requirements from the review request have been successfully investigated and the root cause with solution has been provided.
+
 **Test Date:** 2025-01-29 22:45:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ FORD LISTING BASKET CALCULATION DEBUG COMPLETED - ROOT CAUSE IDENTIFIED AND RESOLVED
