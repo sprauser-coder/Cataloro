@@ -3809,6 +3809,43 @@ function AdConfigPanel({
                 } else {
                   // Ad is not expired, just toggle normally
                   handleAdConfigChange(adType, 'active', true);
+                  
+                  // Send ad start notifications for regular activation
+                  try {
+                    const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+                    const selectedUsers = currentConfig.adsManager?.[adType]?.notificationUsers || [];
+                    const notificationMethods = currentConfig.adsManager?.[adType]?.notificationMethods || [];
+                    
+                    if (notificationMethods.includes('notificationCenter') && selectedUsers.length > 0) {
+                      console.log(`🚀 Sending ad start notifications to ${selectedUsers.length} users (regular activation)`);
+                      
+                      selectedUsers.forEach(async (user) => {
+                        try {
+                          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                              title: '🚀 Advertisement Started',
+                              message: `Advertisement "${adType}" has been activated and is now running`,
+                              type: 'success'
+                            })
+                          });
+                          
+                          if (response.ok) {
+                            console.log(`✅ Ad start notification sent to user ${user.email} (${user.id})`);
+                          } else {
+                            console.error(`❌ Failed to send ad start notification to user ${user.email}`);
+                          }
+                        } catch (error) {
+                          console.error(`❌ Error sending ad start notification to user ${user.email}:`, error);
+                        }
+                      });
+                    }
+                  } catch (error) {
+                    console.error('Error sending ad start notifications:', error);
+                  }
                 }
               } else {
                 // Admin is manually deactivating the ad
