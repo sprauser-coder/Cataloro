@@ -103,11 +103,18 @@ function FavoritesPage() {
 
       {/* Favorites Page Advertisement */}
       {adsConfig?.favoriteAd?.active && adsConfig.favoriteAd.image && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div 
+          className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+          style={{ 
+            width: adsConfig.favoriteAd.width || '100%',
+            maxWidth: '100%'
+          }}
+        >
           <img
             src={adsConfig.favoriteAd.image}
             alt={adsConfig.favoriteAd.description || 'Advertisement'}
-            className="w-full h-32 object-cover"
+            className="w-full object-cover"
+            style={{ height: adsConfig.favoriteAd.height || '200px' }}
           />
           {adsConfig.favoriteAd.description && (
             <div className="p-4">
