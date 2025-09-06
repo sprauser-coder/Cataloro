@@ -2047,7 +2047,7 @@ async def create_notification(user_id: str, notification_data: dict):
             "message": notification_data.get("message"),
             "type": notification_data.get("type", "info"),
             "read": False,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "id": str(uuid.uuid4())
         }
         
