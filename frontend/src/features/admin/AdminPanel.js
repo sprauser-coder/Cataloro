@@ -3600,148 +3600,110 @@ function AdConfigPanel({
                 const isExpired = adConfig.expirationDate && isAdExpired(adConfig);
                 const hasNoExpiration = !adConfig.expirationDate;
                 
+                // Consolidate activation logic to prevent duplicate notifications
+                const now = new Date().toISOString();
+                const runtime = adConfig.runtime || '1 month';
+                let finalExpiration = adConfig.expirationDate;
+                let activationType = 'regular';
+                
+                // Determine if we need to set new expiration date
                 if (isExpired || hasNoExpiration) {
-                  const now = new Date().toISOString();
-                  const runtime = adConfig.runtime || '1 month';
-                  const newExpiration = calculateExpirationDate(now, runtime);
+                  finalExpiration = calculateExpirationDate(now, runtime);
+                  activationType = 'reactivation';
                   
                   console.log(`🔧 Setting new activation dates for ${adType}:`, {
                     startDate: now,
-                    expirationDate: newExpiration,
+                    expirationDate: finalExpiration,
                     runtime: runtime
                   });
                   
-                  // Update with new activation dates (single call to prevent duplicate re-renders)
-                  handleAdConfigChange(adType, 'active', true);
+                  // Update with new activation dates
                   handleAdConfigChange(adType, 'startDate', now);
-                  handleAdConfigChange(adType, 'expirationDate', newExpiration);
+                  handleAdConfigChange(adType, 'expirationDate', finalExpiration);
+                }
+                
+                // Always update active state
+                handleAdConfigChange(adType, 'active', true);
+                
+                // Send single start notification (consolidated logic)
+                try {
+                  const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+                  if (!currentConfig.adsManager) currentConfig.adsManager = {};
+                  if (!currentConfig.adsManager[adType]) currentConfig.adsManager[adType] = {};
                   
-                  // Update localStorage immediately
-                  try {
-                    const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
-                    if (!currentConfig.adsManager) currentConfig.adsManager = {};
-                    if (!currentConfig.adsManager[adType]) currentConfig.adsManager[adType] = {};
-                    
-                    currentConfig.adsManager[adType].active = true;
+                  // Update localStorage with all changes
+                  currentConfig.adsManager[adType].active = true;
+                  if (activationType === 'reactivation') {
                     currentConfig.adsManager[adType].startDate = now;
-                    currentConfig.adsManager[adType].expirationDate = newExpiration;
-                    
-                    localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
-                    
-                    // Send ad start notifications
-                    const selectedUsers = currentConfig.adsManager[adType].notificationUsers || [];
-                    const notificationMethods = currentConfig.adsManager[adType].notificationMethods || [];
-                    
-                    if (notificationMethods.includes('notificationCenter') && selectedUsers.length > 0) {
-                      console.log(`🚀 Sending ad start notifications to ${selectedUsers.length} users`);
-                      
-                      // Send ad start notifications properly with Promise.all
-                      const startNotificationPromises = selectedUsers.map(async (user) => {
-                        try {
-                          const adDescription = currentConfig.adsManager[adType].description || adType;
-                          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                              title: '🚀 Advertisement Started',
-                              message: `Advertisement "${adDescription}" has been activated and is now running until ${new Date(newExpiration).toLocaleString()}`,
-                              type: 'success'
-                            })
-                          });
-                          
-                          if (response.ok) {
-                            console.log(`✅ Ad start notification sent to user ${user.email} (${user.id})`);
-                            return { success: true, user: user.email };
-                          } else {
-                            console.error(`❌ Failed to send ad start notification to user ${user.email}`);
-                            return { success: false, user: user.email, error: 'HTTP Error' };
-                          }
-                        } catch (error) {
-                          console.error(`❌ Error sending ad start notification to user ${user.email}:`, error);
-                          return { success: false, user: user.email, error: error.message };
-                        }
-                      });
-                      
-                      // Wait for all start notifications to complete
-                      (async () => {
-                        try {
-                          const results = await Promise.all(startNotificationPromises);
-                          const successCount = results.filter(r => r.success).length;
-                          console.log(`📊 Ad start notifications: ${successCount}/${selectedUsers.length} sent successfully`);
-                        } catch (error) {
-                          console.error('❌ Error in batch start notification sending:', error);
-                        }
-                      })();
-                    }
-                    
-                    // Dispatch event
-                    window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
-                      detail: currentConfig.adsManager 
-                    }));
-                    
-                  } catch (error) {
-                    console.error('Error updating localStorage on manual activation:', error);
+                    currentConfig.adsManager[adType].expirationDate = finalExpiration;
                   }
                   
-                  showToast(`Ad reactivated with new ${runtime} duration!`, 'success');
-                } else {
-                  // Ad is not expired, just toggle normally
-                  handleAdConfigChange(adType, 'active', true);
+                  localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
                   
-                  // Send ad start notifications for regular activation
-                  try {
-                    const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
-                    const selectedUsers = currentConfig.adsManager?.[adType]?.notificationUsers || [];
-                    const notificationMethods = currentConfig.adsManager?.[adType]?.notificationMethods || [];
+                  // Send SINGLE start notification (no matter activation type)
+                  const selectedUsers = currentConfig.adsManager[adType].notificationUsers || [];
+                  const notificationMethods = currentConfig.adsManager[adType].notificationMethods || [];
+                  
+                  if (notificationMethods.includes('notificationCenter') && selectedUsers.length > 0) {
+                    console.log(`🚀 Sending ad start notifications to ${selectedUsers.length} users (${activationType})`);
                     
-                    if (notificationMethods.includes('notificationCenter') && selectedUsers.length > 0) {
-                      console.log(`🚀 Sending ad start notifications to ${selectedUsers.length} users (regular activation)`);
-                      
-                      // Send regular activation notifications properly with Promise.all
-                      const activationPromises = selectedUsers.map(async (user) => {
-                        try {
-                          const adDescription = currentConfig.adsManager?.[adType]?.description || adType;
-                          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                              title: '🚀 Advertisement Started',
-                              message: `Advertisement "${adDescription}" has been activated and is now running`,
-                              type: 'success'
-                            })
-                          });
+                    const startNotificationPromises = selectedUsers.map(async (user) => {
+                      try {
+                        const adDescription = currentConfig.adsManager[adType].description || adType;
+                        const message = activationType === 'reactivation' 
+                          ? `Advertisement "${adDescription}" has been activated and is now running until ${new Date(finalExpiration).toLocaleString()}`
+                          : `Advertisement "${adDescription}" has been activated and is now running`;
                           
-                          if (response.ok) {
-                            console.log(`✅ Regular activation notification sent to user ${user.email} (${user.id})`);
-                            return { success: true, user: user.email };
-                          } else {
-                            console.error(`❌ Failed to send regular activation notification to user ${user.email}`);
-                            return { success: false, user: user.email, error: 'HTTP Error' };
-                          }
-                        } catch (error) {
-                          console.error(`❌ Error sending regular activation notification to user ${user.email}:`, error);
-                          return { success: false, user: user.email, error: error.message };
+                        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json'
+                          },
+                          body: JSON.stringify({
+                            title: '🚀 Advertisement Started',
+                            message: message,
+                            type: 'success'
+                          })
+                        });
+                        
+                        if (response.ok) {
+                          console.log(`✅ Ad start notification sent to user ${user.email} (${user.id}) - ${activationType}`);
+                          return { success: true, user: user.email };
+                        } else {
+                          console.error(`❌ Failed to send ad start notification to user ${user.email}`);
+                          return { success: false, user: user.email, error: 'HTTP Error' };
                         }
-                      });
-                      
-                      // Wait for all activation notifications to complete
-                      (async () => {
-                        try {
-                          const results = await Promise.all(activationPromises);
-                          const successCount = results.filter(r => r.success).length;
-                          console.log(`📊 Regular activation notifications: ${successCount}/${selectedUsers.length} sent successfully`);
-                        } catch (error) {
-                          console.error('❌ Error in batch activation notification sending:', error);
-                        }
-                      })();
-                    }
-                  } catch (error) {
-                    console.error('Error sending ad start notifications:', error);
+                      } catch (error) {
+                        console.error(`❌ Error sending ad start notification to user ${user.email}:`, error);
+                        return { success: false, user: user.email, error: error.message };
+                      }
+                    });
+                    
+                    // Wait for all start notifications to complete
+                    (async () => {
+                      try {
+                        const results = await Promise.all(startNotificationPromises);
+                        const successCount = results.filter(r => r.success).length;
+                        console.log(`📊 SINGLE Ad start notifications: ${successCount}/${selectedUsers.length} sent successfully`);
+                      } catch (error) {
+                        console.error('❌ Error in batch start notification sending:', error);
+                      }
+                    })();
                   }
+                  
+                  // Dispatch event
+                  window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
+                    detail: currentConfig.adsManager 
+                  }));
+                  
+                  // Show appropriate toast message
+                  const toastMessage = activationType === 'reactivation' 
+                    ? `Ad reactivated with new ${runtime} duration!`
+                    : `Ad activated successfully!`;
+                  showToast(toastMessage, 'success');
+                  
+                } catch (error) {
+                  console.error('Error during ad activation:', error);
                 }
               } else {
                 // Admin is manually deactivating the ad
