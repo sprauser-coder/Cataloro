@@ -328,6 +328,19 @@ class AdsExpirationService {
     // For now, we keep it simple
     console.log('🧹 Cleaning up old expiration records');
   }
+
+  /**
+   * Get user-friendly page location name for ad type
+   */
+  getPageLocationName(adType) {
+    const pageNames = {
+      browsePageAd: 'Browse Page',
+      favoriteAd: 'Favorites Page', 
+      messengerAd: 'Messages Page',
+      footerAd: 'Footer'
+    };
+    return pageNames[adType] || adType;
+  }
 }
 
 // Create singleton instance
