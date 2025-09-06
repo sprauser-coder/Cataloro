@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Image Preview Issue</title>
+</head>
+<body>
+    <h1>Debug Image Preview - Instructions</h1>
+    
+    <h2>ISSUE: Details save but image disappears</h2>
+    
+    <h3>Step 1: Upload an Image</h3>
+    <ol>
+        <li>Go to Admin Panel → Administration → Ad's Manager</li>
+        <li>Upload any image</li>
+        <li>Add description and URL</li>
+        <li>You should see the image preview</li>
+    </ol>
+    
+    <h3>Step 2: Test Persistence</h3>
+    <ol>
+        <li>Navigate away (click Appearance & Themes)</li>
+        <li>Come back (Administration → Ad's Manager)</li>
+        <li><strong>Check browser console (F12)</strong> for debug messages</li>
+    </ol>
+    
+    <h3>Step 3: Debug Messages to Look For</h3>
+    <p>You should see console messages like:</p>
+    <ul>
+        <li><code>🔧 AdConfigPanel (browsePageAd): Loading image from localStorage: /uploads/cms/...</code></li>
+        <li><code>🔧 AdConfigPanel (browsePageAd): Converted to full URL: https://...</code></li>
+        <li><code>🔧 AdConfigPanel (browsePageAd): Image loaded successfully: https://...</code></li>
+        <li><strong>OR</strong></li>
+        <li><code>🔧 AdConfigPanel (browsePageAd): Image failed to load: https://...</code></li>
+    </ul>
+    
+    <h3>Step 4: Manual Test</h3>
+    <p>In browser console, run this command to check localStorage:</p>
+    <pre><code>
+const config = JSON.parse(localStorage.getItem('cataloro_site_config'));
+console.log('Image URL in localStorage:', config.adsManager?.browsePageAd?.image);
+    </code></pre>
+    
+    <h2>Expected Results</h2>
+    <p><strong>If fix works:</strong> Image should persist when navigating back to Ad's Manager</p>
+    <p><strong>If still broken:</strong> Console will show error messages about image loading failure</p>
+    
+    <p><strong>Please run this test and tell me what console messages you see!</strong></p>
+</body>
+</html>
