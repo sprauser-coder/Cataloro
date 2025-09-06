@@ -126,7 +126,7 @@ function LoginPage() {
           </div>
 
           {/* Premium Login Form */}
-          <div className="cataloro-card-glass p-8 backdrop-blur-2xl border-white/30">
+          <div className="cataloro-card-glass p-8 border-white/30">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Enhanced Error Display */}
               {error && (
