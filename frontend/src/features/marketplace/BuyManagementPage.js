@@ -203,10 +203,7 @@ function BuyManagementPage() {
 
   // Assign item to basket
   const assignItemToBasket = async (itemId, basketId) => {
-    console.log('assignItemToBasket function called with:', { itemId, basketId });
-    
     try {
-      console.log('Making assignment API call...');
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/bought-items/${itemId}/assign`,
         {
@@ -216,11 +213,7 @@ function BuyManagementPage() {
         }
       );
       
-      console.log('Assignment response status:', response.status);
-      
       if (response.ok) {
-        const responseData = await response.json();
-        console.log('Assignment successful:', responseData);
         showToast('Item assigned to basket successfully', 'success');
         
         // Update the local state immediately for better UX
