@@ -1359,61 +1359,57 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
   const handleUserBulkAction = async (action = null) => {
     const actionToPerform = action || bulkAction;
-    if (!actionToPerform || selectedUsers.length === 0) return;
+    if (!actionToPerform || selectedUsers.length === 0) {
+      showToast('No action selected or no users selected', 'warning');
+      return;
+    }
+
+    // Show confirmation for destructive actions
+    if (['delete', 'suspend', 'reject'].includes(actionToPerform)) {
+      const actionText = actionToPerform === 'delete' ? 'delete' : 
+                        actionToPerform === 'suspend' ? 'suspend' : 'reject';
+      if (!window.confirm(`Are you sure you want to ${actionText} ${selectedUsers.length} users? This action cannot be undone.`)) {
+        return;
+      }
+    }
 
     try {
-      let successCount = 0;
-      
-      switch (actionToPerform) {
-        case 'activate':
-          for (const userId of selectedUsers) {
-            await handleActivateUser(userId);
-            successCount++;
-          }
-          showToast(`${successCount} users activated`, 'success');
-          break;
-        case 'suspend':
-          for (const userId of selectedUsers) {
-            await handleSuspendUser(userId);
-            successCount++;
-          }
-          showToast(`${successCount} users suspended`, 'success');
-          break;
-        case 'promote':
-          // Promote to admin (would need backend implementation)
-          showToast(`${selectedUsers.length} users promoted to admin`, 'success');
-          break;
-        case 'demote':
-          // Demote from admin (would need backend implementation)
-          showToast(`${selectedUsers.length} users demoted to user role`, 'success');
-          break;
-        case 'delete':
-          // Delete users (with confirmation)
-          if (window.confirm(`Are you sure you want to delete ${selectedUsers.length} users? This action cannot be undone.`)) {
-            showToast(`${selectedUsers.length} users deleted`, 'success');
-          }
-          break;
-        case 'message':
-          // Send message to users (would need backend implementation)
-          showToast(`Message sent to ${selectedUsers.length} users`, 'success');
-          break;
-        case 'export':
-          // Export selected users (would need backend implementation)
-          showToast(`${selectedUsers.length} users exported`, 'success');
-          break;
-        case 'reset-password':
-          // Reset passwords for selected users (would need backend implementation)
-          if (window.confirm(`Are you sure you want to reset passwords for ${selectedUsers.length} users?`)) {
-            showToast(`Password reset emails sent to ${selectedUsers.length} users`, 'success');
-          }
-          break;
+      // Use the new bulk endpoint for all operations
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/bulk-action`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: actionToPerform,
+          user_ids: selectedUsers
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        const { results } = result;
+        
+        if (results.success_count > 0) {
+          showToast(`Successfully ${actionToPerform}d ${results.success_count} user${results.success_count !== 1 ? 's' : ''}`, 'success');
+        }
+        
+        if (results.failed_count > 0) {
+          showToast(`Failed to ${actionToPerform} ${results.failed_count} user${results.failed_count !== 1 ? 's' : ''}`, 'warning');
+          console.warn('Bulk action errors:', results.errors);
+        }
+        
+        // Clear selections and refresh
+        setSelectedUsers([]);
+        setBulkAction('');
+        onUpdateUser(); // Refresh user list
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        showToast(`Failed to perform bulk ${actionToPerform}: ${errorData.detail || 'Unknown error'}`, 'error');
       }
-      
-      setSelectedUsers([]);
-      setBulkAction('');
-      onUpdateUser(); // Refresh user list
     } catch (error) {
-      showToast('Error performing bulk action', 'error');
+      console.error('Bulk action error:', error);
+      showToast(`Error performing bulk ${actionToPerform}`, 'error');
     }
   };
 
