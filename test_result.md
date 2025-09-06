@@ -5570,3 +5570,33 @@ agent_communication:
 **COMPREHENSIVE DEBUG RESULTS:** 12/12 individual tests passed (100% success rate), Ford listing catalyst fields verified present, demo user permissions identified as User-Buyer (not admin), basket calculations showing 0 due to missing catalyst data in assigned items, assignment flow not preserving catalyst data from listings, calculation logic and price settings working correctly.
 
 **FORD LISTING CATALYST FIELDS AND BASKET CALCULATION DEBUG STATUS:** ✅ ROOT CAUSES IDENTIFIED - The debugging is complete with all issues clearly identified. Ford listing DOES have catalyst fields, so that's not the problem. Demo user has User-Buyer role (not Admin), explaining admin panel access issues. The core issue is that basket calculations show €0.00 because the assignment flow is NOT preserving catalyst data from listings to bought items. When items are assigned to baskets, they lose their catalyst fields (weight, pt_ppm, pd_ppm, rh_ppm) and renumeration values, resulting in €0.00 calculations. The calculation logic itself is working correctly. The assignment/purchase process needs to be fixed to preserve catalyst data from listings.
+**Test Date:** 2025-01-29 22:30:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ✅ DEMO USER ROLE UPDATE TO ADMIN COMPLETED - ALL REQUIREMENTS VERIFIED
+
+#### Demo User Role Update to Admin Testing Results:
+**COMPREHENSIVE DEMO USER ROLE UPDATE TESTING:** ✅ ALL REQUIREMENTS MET - Executed comprehensive testing of demo user role update from User-Buyer to Admin for catalyst fields visibility as requested in review. All primary testing objectives successfully verified with perfect implementation confirmed (7/7 tests passed, 100% success rate).
+
+**1. Demo User Identification** ✅ FULLY FUNCTIONAL - Successfully found demo user by email demo@cataloro.com: Demo user located with ID: 68bc8c60a32ad3ee1c931151 ✅, Initial role confirmed as User-Buyer ✅, User data accessible and ready for role update ✅, Email matching working correctly ✅.
+
+**2. Role Update Execution** ✅ PERFECTLY IMPLEMENTED - Successfully updated demo user role to Admin: Role update API call successful ✅, user_role changed from User-Buyer to Admin ✅, badge updated from Buyer to Admin ✅, Legacy role field updated from user to admin ✅, All role fields properly synchronized ✅.
+
+**3. Role Update Verification** ✅ FULLY CONFIRMED - Verified demo user role has been updated correctly: Profile endpoint confirms user_role=Admin ✅, Badge field confirms badge=Admin ✅, Legacy role field confirms role=admin ✅, All role fields consistent and properly updated ✅, Role update persistence verified ✅.
+
+**4. Login Verification** ✅ WORKING PERFECTLY - Demo user login with Admin role successful: Login endpoint accessible with demo@cataloro.com ✅, Authentication successful with Admin credentials ✅, Login response shows user_role=Admin and badge=Admin ✅, Admin role properly reflected in login session ✅.
+
+**5. Admin Permissions Access** ✅ FULLY OPERATIONAL - Demo user can access admin-only endpoints: Admin dashboard endpoint accessible ✅, Dashboard returns proper data (Users: 9, Listings: 21) ✅, Admin-level permissions working correctly ✅, No access restrictions for Admin role ✅.
+
+**6. Catalyst Fields Visibility Readiness** ✅ EXCELLENT PREPARATION - Admin role enables catalyst fields visibility in ProductDetailPage: Found 9 listings with catalyst fields available ✅, Sample catalyst data accessible (ceramic_weight: 1.48, pt_ppm: 0, pd_ppm: 4981, rh_ppm: 469) ✅, Admin role has access to catalyst field data ✅, Frontend ProductDetailPage ready to display catalyst fields for Admin users ✅.
+
+**TECHNICAL VERIFICATION:**
+- Demo User Update: Successfully updated demo@cataloro.com from User-Buyer to Admin role
+- Role Synchronization: All role fields (user_role, badge, role) properly updated and consistent
+- Login Authentication: Admin login working correctly with proper role reflection
+- Admin Permissions: Full access to admin endpoints and dashboard functionality
+- Catalyst Fields: 9 listings with catalyst data available for Admin role visibility
+- Backend API: All role update and verification endpoints working correctly
+
+**COMPREHENSIVE TEST RESULTS:** 7/7 individual tests passed (100% success rate), demo user role update completed successfully, role verification confirmed, login with Admin role working, admin permissions accessible, catalyst fields visibility ready.
+
+**DEMO USER ROLE UPDATE STATUS:** ✅ PERFECTLY IMPLEMENTED - The demo user role update from User-Buyer to Admin has been completed successfully. The demo user (demo@cataloro.com) now has Admin role with full admin permissions and access to catalyst fields data. Login authentication works correctly with the new Admin role, admin dashboard is accessible, and the system is ready for catalyst fields visibility in ProductDetailPage. All requirements from the review request have been successfully verified and are working perfectly.
