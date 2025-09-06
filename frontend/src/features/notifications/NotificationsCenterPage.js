@@ -825,7 +825,7 @@ function NotificationsCenterPage() {
                       </div>
                       
                       <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                        <span>{new Date(notification.created_at || notification.timestamp).toLocaleString()}</span>
+                        <span>{new Date(notification.created_at || notification.timestamp).toLocaleString('de-DE', { timeZone: 'Europe/Berlin' })}</span>
                       </div>
                     </div>
 
