@@ -50,6 +50,47 @@ function PublicProfilePage() {
     totalInteractions: 0
   });
 
+  // Helper function to get user badge info (mock implementation for demo)
+  const getUserBadgeInfo = (user) => {
+    // If it's the current user, get from permissions
+    if (user?.id === currentUser?.id) {
+      const currentUserDisplay = getUserDisplay();
+      return {
+        badge: currentUserDisplay?.badge || 'Buyer',
+        role: currentUserDisplay?.role || 'User-Buyer'
+      };
+    }
+    
+    // Mock badge assignment based on user data patterns for demo
+    const email = user?.email || '';
+    const name = user?.full_name || user?.username || '';
+    
+    if (email.includes('admin') || user?.role === 'admin') {
+      return { badge: 'Admin', role: 'Admin' };
+    } else if (name.toLowerCase().includes('seller') || user?.user_role === 'User-Seller') {
+      return { badge: 'Seller', role: 'User-Seller' };
+    } else if (user?.user_role === 'Admin-Manager') {
+      return { badge: 'Manager', role: 'Admin-Manager' };
+    } else {
+      return { badge: 'Buyer', role: 'User-Buyer' };
+    }
+  };
+
+  // Helper function to get badge styling
+  const getBadgeStyle = (badge) => {
+    switch (badge) {
+      case 'Admin':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800';
+      case 'Manager':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800';
+      case 'Seller':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border border-green-200 dark:border-green-800';
+      case 'Buyer':
+      default:
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800';
+    }
+  };
+
   // Load real interactions (messages and deals) with this user
   const loadUserInteractions = async (targetUserId) => {
     try {
