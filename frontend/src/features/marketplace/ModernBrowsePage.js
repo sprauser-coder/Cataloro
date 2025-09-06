@@ -726,39 +726,69 @@ function ModernBrowsePage() {
           {adsConfig?.browsePageAd?.active && (
             <div className="flex-shrink-0">
               <div 
-                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center"
+                className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 ${
+                  adsConfig.browsePageAd.url ? 'cursor-pointer hover:scale-[1.02]' : ''
+                }`}
                 style={{
                   width: adsConfig.browsePageAd.width || '300px',
                   height: adsConfig.browsePageAd.height || '600px'
                 }}
+                onClick={() => {
+                  if (adsConfig.browsePageAd.url) {
+                    trackAdClick('browsePageAd');
+                    window.open(adsConfig.browsePageAd.url, '_blank', 'noopener,noreferrer');
+                  }
+                }}
               >
                 {adsConfig.browsePageAd.image ? (
-                  <>
+                  <div className="relative w-full h-full">
                     <img
                       src={adsConfig.browsePageAd.image}
                       alt={adsConfig.browsePageAd.description || 'Advertisement'}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.error('Ad image failed to load:', adsConfig.browsePageAd.image);
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
                     />
+                    {/* Fallback placeholder if image fails */}
+                    <div className="absolute inset-0 flex-col items-center justify-center p-6 text-center hidden">
+                      <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Monitor className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Advertisement Space</h3>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">{adsConfig.browsePageAd.description}</p>
+                    </div>
+                    {/* Description overlay */}
                     {adsConfig.browsePageAd.description && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                        <p className="text-white text-sm">{adsConfig.browsePageAd.description}</p>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                        <p className="text-white text-sm font-medium">{adsConfig.browsePageAd.description}</p>
+                        {adsConfig.browsePageAd.url && (
+                          <p className="text-white/80 text-xs mt-1">Click to visit</p>
+                        )}
                       </div>
                     )}
-                  </>
+                  </div>
                 ) : (
-                  <div className="p-6 text-center">
+                  <div className="flex flex-col items-center justify-center p-6 text-center h-full">
                     <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Monitor className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Advertisement Space</h3>
                     {adsConfig.browsePageAd.description ? (
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">{adsConfig.browsePageAd.description}</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{adsConfig.browsePageAd.description}</p>
                     ) : (
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">Your ad will appear here</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">Your ad will appear here</p>
                     )}
                     <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
                       Runtime: {adsConfig.browsePageAd.runtime || '1 month'}
                     </div>
+                    {adsConfig.browsePageAd.clicks > 0 && (
+                      <div className="mt-2 text-xs text-blue-600 dark:text-blue-400">
+                        {adsConfig.browsePageAd.clicks} clicks
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
