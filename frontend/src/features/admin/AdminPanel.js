@@ -3204,8 +3204,8 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
     // Update immediately
     updateCountdown();
 
-    // Update every minute
-    const interval = setInterval(updateCountdown, 60000);
+    // Update every second for real-time countdown
+    const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
   }, [expirationDate, onExpired]);
@@ -3245,12 +3245,14 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
           <div className="text-lg font-mono text-green-700 dark:text-green-300">
             {timeLeft.days > 0 && <span className="font-bold">{timeLeft.days}d </span>}
             {timeLeft.hours > 0 && <span className="font-bold">{timeLeft.hours}h </span>}
-            <span className="font-bold">{timeLeft.minutes}m</span>
+            <span className="font-bold">{timeLeft.minutes}m </span>
+            <span className="font-bold text-green-600 dark:text-green-400">{timeLeft.seconds}s</span>
           </div>
           <div className="text-xs text-green-600 dark:text-green-400 mt-1">
             {timeLeft.days > 0 ? 'Long-term campaign' : 
              timeLeft.hours > 12 ? 'Medium-term campaign' : 
-             'Short-term campaign'}
+             timeLeft.minutes > 5 ? 'Short-term campaign' :
+             'Final countdown!'}
           </div>
         </div>
       </div>
