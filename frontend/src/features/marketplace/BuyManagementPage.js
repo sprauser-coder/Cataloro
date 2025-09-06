@@ -46,14 +46,6 @@ function BuyManagementPage() {
   const [showEditBasket, setShowEditBasket] = useState(false);
   const [basketForm, setBasketForm] = useState({ name: '', description: '' });
 
-  // Debug logging
-  console.log('BuyManagementPage render:', { 
-    user, 
-    permissions, 
-    boughtItemsCount: boughtItems.length,
-    basketsCount: baskets.length 
-  });
-
   // Load bought items
   const loadBoughtItems = async () => {
     if (!user?.id) {
