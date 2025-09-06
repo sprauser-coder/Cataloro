@@ -3928,13 +3928,15 @@ function AdConfigPanel({
                       });
                       
                       // Wait for all activation notifications to complete
-                      try {
-                        const results = await Promise.all(activationPromises);
-                        const successCount = results.filter(r => r.success).length;
-                        console.log(`📊 Regular activation notifications: ${successCount}/${selectedUsers.length} sent successfully`);
-                      } catch (error) {
-                        console.error('❌ Error in batch activation notification sending:', error);
-                      }
+                      (async () => {
+                        try {
+                          const results = await Promise.all(activationPromises);
+                          const successCount = results.filter(r => r.success).length;
+                          console.log(`📊 Regular activation notifications: ${successCount}/${selectedUsers.length} sent successfully`);
+                        } catch (error) {
+                          console.error('❌ Error in batch activation notification sending:', error);
+                        }
+                      })();
                     }
                   } catch (error) {
                     console.error('Error sending ad start notifications:', error);
