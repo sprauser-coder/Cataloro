@@ -2882,26 +2882,65 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
     try {
       setIsSavingAds(true);
       
-      console.log('🔍 Saving ads configuration. Current siteConfig.adsManager:', siteConfig.adsManager);
+      console.log('🔍 Starting ads configuration save...');
+      console.log('🔍 Current siteConfig.adsManager:', siteConfig.adsManager);
       
       // Simulate API call delay for better UX feedback
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Save ads configuration to localStorage
-      const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
-      const updatedConfig = {
-        ...currentConfig,
-        adsManager: siteConfig.adsManager
+      // Ensure we have a complete ads configuration
+      const adsManagerConfig = {
+        browsePageAd: {
+          active: siteConfig.adsManager?.browsePageAd?.active || false,
+          image: siteConfig.adsManager?.browsePageAd?.image || null,
+          description: siteConfig.adsManager?.browsePageAd?.description || '',
+          runtime: siteConfig.adsManager?.browsePageAd?.runtime || '1 month',
+          width: siteConfig.adsManager?.browsePageAd?.width || '300px',
+          height: siteConfig.adsManager?.browsePageAd?.height || '600px'
+        },
+        favoriteAd: {
+          active: siteConfig.adsManager?.favoriteAd?.active || false,
+          image: siteConfig.adsManager?.favoriteAd?.image || null,
+          description: siteConfig.adsManager?.favoriteAd?.description || '',
+          runtime: siteConfig.adsManager?.favoriteAd?.runtime || '1 month'
+        },
+        messengerAd: {
+          active: siteConfig.adsManager?.messengerAd?.active || false,
+          image: siteConfig.adsManager?.messengerAd?.image || null,
+          description: siteConfig.adsManager?.messengerAd?.description || '',
+          runtime: siteConfig.adsManager?.messengerAd?.runtime || '1 month'
+        },
+        footerAd: {
+          active: siteConfig.adsManager?.footerAd?.active || false,
+          logo: siteConfig.adsManager?.footerAd?.logo || null,
+          companyName: siteConfig.adsManager?.footerAd?.companyName || '',
+          runtime: siteConfig.adsManager?.footerAd?.runtime || '1 month'
+        }
       };
       
-      console.log('🔍 Saving to localStorage:', updatedConfig.adsManager);
+      console.log('🔍 Complete ads config to save:', adsManagerConfig);
+      
+      // Save ads configuration to localStorage
+      const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+      console.log('🔍 Current localStorage config:', currentConfig);
+      
+      const updatedConfig = {
+        ...currentConfig,
+        adsManager: adsManagerConfig
+      };
+      
+      console.log('🔍 Final config to save:', updatedConfig);
       localStorage.setItem('cataloro_site_config', JSON.stringify(updatedConfig));
       
+      // Verify it was saved
+      const verifyConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+      console.log('🔍 Verification - config after save:', verifyConfig);
+      
       // Count active ads for user feedback
-      const activeAds = Object.entries(siteConfig.adsManager || {})
+      const activeAds = Object.entries(adsManagerConfig)
         .filter(([key, value]) => value.active).length;
       
-      const totalConfiguredAds = Object.entries(siteConfig.adsManager || {})
+      const totalConfiguredAds = Object.entries(adsManagerConfig)
         .filter(([key, value]) => value.image || value.logo).length;
       
       showToast(
@@ -2913,7 +2952,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
       
       // Log detailed ads configuration for debugging
       console.log('🎉 COMPLETE Ad\'s Manager Configuration Applied:', {
-        ...siteConfig.adsManager,
+        ...adsManagerConfig,
         appliedAt: new Date().toISOString(),
         activeAds: activeAds,
         totalConfigured: totalConfiguredAds
@@ -2925,7 +2964,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
       
       // Trigger a custom event to notify other components that ads config has changed
       window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
-        detail: siteConfig.adsManager 
+        detail: adsManagerConfig 
       }));
       
     } catch (error) {
