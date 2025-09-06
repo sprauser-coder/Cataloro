@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Cataloro Backend Testing Suite - Admin User Management Focus
-Testing the recent fixes for admin user creation, username availability, and user updates
+Cataloro Backend Testing Suite - Manager Panel Access Testing
+Testing Admin-Manager user creation and Manager Panel access functionality
 """
 
 import requests
