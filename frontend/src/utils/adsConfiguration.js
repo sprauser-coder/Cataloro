@@ -156,3 +156,29 @@ export const loadAndApplyAdsConfiguration = () => {
     return initializeAdsConfiguration();
   }
 };
+
+// Track ad click
+export const trackAdClick = (adType) => {
+  try {
+    const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+    
+    if (currentConfig.adsManager && currentConfig.adsManager[adType]) {
+      // Increment click count
+      currentConfig.adsManager[adType].clicks = (currentConfig.adsManager[adType].clicks || 0) + 1;
+      
+      // Save updated configuration
+      localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
+      
+      // Dispatch event to notify components
+      window.dispatchEvent(new CustomEvent('adClicked', { 
+        detail: { adType, clicks: currentConfig.adsManager[adType].clicks }
+      }));
+      
+      console.log(`🔗 Ad click tracked: ${adType} (Total clicks: ${currentConfig.adsManager[adType].clicks})`);
+      return currentConfig.adsManager[adType].clicks;
+    }
+  } catch (error) {
+    console.error('❌ Failed to track ad click:', error);
+  }
+  return 0;
+};
