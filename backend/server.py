@@ -1295,6 +1295,130 @@ async def delete_user_by_admin(user_id: str):
         print(f"Error deleting user: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to delete user: {str(e)}")
 
+@app.post("/api/admin/users/bulk-action")
+async def bulk_user_action(action_data: dict):
+    """Bulk operations on users"""
+    try:
+        action = action_data.get("action")
+        user_ids = action_data.get("user_ids", [])
+        
+        if not action or not user_ids:
+            raise HTTPException(status_code=400, detail="Action and user_ids are required")
+        
+        results = {
+            "success_count": 0,
+            "failed_count": 0,
+            "errors": []
+        }
+        
+        for user_id in user_ids:
+            try:
+                if action == "delete":
+                    # Delete user
+                    result = await db.users.delete_one({"id": user_id})
+                    if result.deleted_count > 0:
+                        # Clean up user-related data
+                        await db.user_notifications.delete_many({"user_id": user_id})
+                        await db.user_favorites.delete_many({"user_id": user_id})
+                        await db.listings.update_many(
+                            {"seller_id": user_id}, 
+                            {"$set": {"status": "inactive", "seller_id": f"deleted_user_{user_id[:8]}"}}
+                        )
+                        results["success_count"] += 1
+                    else:
+                        results["failed_count"] += 1
+                        results["errors"].append(f"User {user_id} not found")
+                        
+                elif action == "activate":
+                    # Activate user
+                    result = await db.users.update_one(
+                        {"id": user_id},
+                        {"$set": {"is_active": True}}
+                    )
+                    if result.matched_count > 0:
+                        results["success_count"] += 1
+                    else:
+                        results["failed_count"] += 1
+                        results["errors"].append(f"User {user_id} not found")
+                        
+                elif action == "suspend":
+                    # Suspend user
+                    result = await db.users.update_one(
+                        {"id": user_id},
+                        {"$set": {"is_active": False}}
+                    )
+                    if result.matched_count > 0:
+                        results["success_count"] += 1
+                    else:
+                        results["failed_count"] += 1
+                        results["errors"].append(f"User {user_id} not found")
+                        
+                elif action == "approve":
+                    # Approve user registration
+                    result = await db.users.update_one(
+                        {"id": user_id},
+                        {"$set": {"registration_status": "Approved"}}
+                    )
+                    if result.matched_count > 0:
+                        # Send approval notification
+                        user = await db.users.find_one({"id": user_id})
+                        if user:
+                            approval_notification = {
+                                "user_id": user_id,
+                                "title": "Registration Approved",
+                                "message": f"Your {user.get('badge', 'user')} account has been approved! You can now access the marketplace.",
+                                "type": "registration_approved",
+                                "read": False,
+                                "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+                                "id": str(uuid.uuid4())
+                            }
+                            await db.user_notifications.insert_one(approval_notification)
+                        results["success_count"] += 1
+                    else:
+                        results["failed_count"] += 1
+                        results["errors"].append(f"User {user_id} not found")
+                        
+                elif action == "reject":
+                    # Reject user registration
+                    result = await db.users.update_one(
+                        {"id": user_id},
+                        {"$set": {"registration_status": "Rejected"}}
+                    )
+                    if result.matched_count > 0:
+                        # Send rejection notification
+                        user = await db.users.find_one({"id": user_id})
+                        if user:
+                            rejection_notification = {
+                                "user_id": user_id,
+                                "title": "Registration Rejected",
+                                "message": "Your registration has been rejected. Please contact support for more information.",
+                                "type": "registration_rejected",
+                                "read": False,
+                                "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+                                "id": str(uuid.uuid4())
+                            }
+                            await db.user_notifications.insert_one(rejection_notification)
+                        results["success_count"] += 1
+                    else:
+                        results["failed_count"] += 1
+                        results["errors"].append(f"User {user_id} not found")
+                        
+                else:
+                    results["failed_count"] += 1
+                    results["errors"].append(f"Unknown action: {action}")
+                    
+            except Exception as e:
+                results["failed_count"] += 1
+                results["errors"].append(f"Error processing user {user_id}: {str(e)}")
+        
+        return {
+            "message": f"Bulk {action} completed",
+            "results": results
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Bulk action failed: {str(e)}")
+
 # Site Branding and Settings Endpoints
 @app.get("/api/admin/settings")
 async def get_site_settings():
