@@ -5166,7 +5166,15 @@ async def get_user_baskets(user_id: str):
                                 "seller_name": seller_name,
                                 "image": listing.get("images", [""])[0] if listing.get("images") else None,
                                 "purchased_at": tender.get("accepted_at", tender.get("created_at")),
-                                "assigned_at": assignment.get("assigned_at")
+                                "assigned_at": assignment.get("assigned_at"),
+                                # Cat database fields for calculations (get from listing or use defaults)
+                                "weight": listing.get("ceramic_weight", 100.0),  # Default weight if not set
+                                "pt_ppm": listing.get("pt_ppm", 1000),  # Default Pt ppm
+                                "pd_ppm": listing.get("pd_ppm", 500),   # Default Pd ppm  
+                                "rh_ppm": listing.get("rh_ppm", 200),   # Default Rh ppm
+                                "renumeration_pt": 50.0,  # Default renumeration values
+                                "renumeration_pd": 30.0,
+                                "renumeration_rh": 80.0
                             }
                             assigned_items.append(assigned_item)
                 
