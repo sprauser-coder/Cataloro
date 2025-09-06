@@ -7712,6 +7712,14 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
     return true;
   });
 
+  // Ensure active sub-tab is accessible for current user
+  useEffect(() => {
+    if (activeSubTab === 'data' && !permissions.adminPanel.canDeleteDatabase) {
+      // If Admin-Manager tries to access data tab, redirect to calculations
+      setActiveSubTab('calculations');
+    }
+  }, [activeSubTab, permissions.adminPanel.canDeleteDatabase]);
+
   useEffect(() => {
     fetchCatalystData();
     fetchPriceSettings();
