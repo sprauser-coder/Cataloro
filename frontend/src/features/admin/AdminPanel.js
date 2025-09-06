@@ -2935,8 +2935,8 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
       // Save merged configuration to localStorage
       localStorage.setItem('cataloro_site_config', JSON.stringify(mergedConfig));
       
-      // Update component state
-      setSiteConfig(prev => ({ ...prev, adsManager: updatedAdsManagerConfig }));
+      // Update the ads manager configuration through the parent handler
+      handleConfigChange('adsManager', updatedAdsManagerConfig);
       
       // Count active ads for display
       const activeAdsCount = Object.entries(updatedAdsManagerConfig)
