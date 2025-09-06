@@ -130,7 +130,7 @@ function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Enhanced Error Display */}
               {error && (
-                <div className="bg-red-500/10 border border-red-300/30 text-red-700 dark:text-red-300 px-5 py-4 rounded-2xl backdrop-blur-sm animate-pulse">
+                <div className="bg-red-500/10 border border-red-300/30 text-red-700 dark:text-red-300 px-5 py-4 rounded-2xl">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                     <span className="font-medium">{error}</span>
