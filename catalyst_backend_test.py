@@ -263,7 +263,7 @@ class CatalystBackendTester:
             tender_data = {
                 "listing_id": target_listing_id,
                 "buyer_id": self.test_user_id,
-                "offer_amount": 150.0,
+                "offer_amount": max(target_listing.get('price', 100) + 50, 250.0),  # Bid higher than listing price
                 "message": "Test tender for catalyst calculation"
             }
             
