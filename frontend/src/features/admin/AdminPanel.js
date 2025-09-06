@@ -3655,44 +3655,165 @@ function SiteAdministrationTab({ showToast }) {
   const [activeSection, setActiveSection] = React.useState('appearance');
   const [isSaving, setIsSaving] = React.useState(false);
   const [settingsSaved, setSettingsSaved] = React.useState(false);
-  const [siteConfig, setSiteConfig] = React.useState({
-    // Ads Manager Configuration
-    adsManager: {
-      browsePageAd: {
-        active: true,  // Set to true by default for testing
-        image: null,
-        description: 'Test Browse Page Advertisement',
-        runtime: '1 month',
-        width: '300px',
-        height: '600px',
-        url: '',
-        clicks: 0
-      },
-      favoriteAd: {
-        active: false,
-        image: null,
-        description: '',
-        runtime: '1 month',
-        url: '',
-        clicks: 0
-      },
-      messengerAd: {
-        active: false,
-        image: null,
-        description: '',
-        runtime: '1 month',
-        url: '',
-        clicks: 0
-      },
-      footerAd: {
-        active: false,
-        logo: null,
-        companyName: '',
-        runtime: '1 month',
-        url: '',
-        clicks: 0
+  
+  // Initialize siteConfig from localStorage if available
+  const [siteConfig, setSiteConfig] = React.useState(() => {
+    try {
+      const savedConfig = localStorage.getItem('cataloro_site_config');
+      if (savedConfig) {
+        const parsedConfig = JSON.parse(savedConfig);
+        console.log('🔧 AdminPanel: Initializing from localStorage:', parsedConfig);
+        
+        // Merge with defaults to ensure all required fields exist
+        const defaultConfig = {
+          // Ads Manager Configuration
+          adsManager: {
+            browsePageAd: {
+              active: true,
+              image: null,
+              description: 'Test Browse Page Advertisement',
+              runtime: '1 month',
+              width: '300px',
+              height: '600px',
+              url: '',
+              clicks: 0
+            },
+            favoriteAd: {
+              active: false,
+              image: null,
+              description: '',
+              runtime: '1 month',
+              url: '',
+              clicks: 0
+            },
+            messengerAd: {
+              active: false,
+              image: null,
+              description: '',
+              runtime: '1 month',
+              url: '',
+              clicks: 0
+            },
+            footerAd: {
+              active: false,
+              logo: null,
+              companyName: '',
+              runtime: '1 month',
+              url: '',
+              clicks: 0
+            }
+          },
+          // Site Appearance Configuration
+          siteName: 'Cataloro',
+          logoUrl: '',
+          primaryColor: '#3B82F6',
+          secondaryColor: '#8B5CF6',
+          backgroundColor: '#FFFFFF',
+          textColor: '#1F2937',
+          headerStyle: 'modern',
+          fontFamily: 'Inter',
+          borderRadius: 'rounded',
+          compactMode: false,
+          darkModeEnabled: true,
+          customCSS: '',
+          faviconUrl: '',
+          heroSectionEnabled: true,
+          featuredProductsEnabled: true,
+          categoriesShowcase: true,
+          testimonialSection: false,
+          newsletterSignup: false,
+          socialMediaLinks: {},
+          searchBarProminent: false,
+          userRegistration: true,
+          guestBrowsing: true,
+          productReviews: true,
+          wishlistEnabled: true,
+          compareFeature: false,
+          advancedFilters: true,
+          bulkOperations: false,
+          productVariations: false,
+          inventoryTracking: false,
+          animationsEnabled: true,
+          footerText: 'Powered by Cataloro',
+          footerLinkColor: '#60a5fa',
+          footerTextColor: '#ffffff',
+          // Security Configuration
+          twoFactorAuth: false,
+          sessionTimeout: '24h',
+          passwordMinLength: 8,
+          enableCaptcha: true,
+          ipWhitelist: [],
+          rateLimiting: true,
+          // Performance Configuration
+          cachingEnabled: true,
+          compressionEnabled: true,
+          lazyLoading: true,
+          cdnEnabled: false,
+          imageCaching: true,
+          // Monitoring Configuration
+          analyticsEnabled: true,
+          errorReporting: true,
+          performanceMetrics: true,
+          userBehaviorTracking: false,
+          // Maintenance Configuration
+          maintenanceMode: false,
+          logLevel: 'info',
+          backupEnabled: true,
+          autoUpdates: false
+        };
+        
+        return {
+          ...defaultConfig,
+          ...parsedConfig,
+          adsManager: {
+            ...defaultConfig.adsManager,
+            ...(parsedConfig.adsManager || {})
+          }
+        };
       }
-    },
+    } catch (error) {
+      console.error('🔧 AdminPanel: Error loading from localStorage:', error);
+    }
+    
+    // Return default configuration if localStorage is empty or invalid
+    return {
+      // Ads Manager Configuration - Default values
+      adsManager: {
+        browsePageAd: {
+          active: true,
+          image: null,
+          description: 'Test Browse Page Advertisement',
+          runtime: '1 month',
+          width: '300px',
+          height: '600px',
+          url: '',
+          clicks: 0
+        },
+        favoriteAd: {
+          active: false,
+          image: null,
+          description: '',
+          runtime: '1 month',
+          url: '',
+          clicks: 0
+        },
+        messengerAd: {
+          active: false,
+          image: null,
+          description: '',
+          runtime: '1 month',
+          url: '',
+          clicks: 0
+        },
+        footerAd: {
+          active: false,
+          logo: null,
+          companyName: '',
+          runtime: '1 month',
+          url: '',
+          clicks: 0
+        }
+      },
     
     // Appearance & Themes
     primaryColor: '#3B82F6',
