@@ -5066,7 +5066,15 @@ async def get_bought_items(user_id: str):
             
             seller_name = "Unknown"
             if seller_id:
+                # Try to find user by id field first, then by _id (same as profile endpoint)
                 seller = await db.users.find_one({"id": seller_id})
+                if not seller:
+                    # Try with _id in case it's stored differently
+                    try:
+                        from bson import ObjectId
+                        seller = await db.users.find_one({"_id": ObjectId(seller_id)})
+                    except:
+                        pass
                 print(f"DEBUG: Seller lookup result: {seller}")
                 seller_name = seller.get("username", "Unknown") if seller else "Unknown"
                 print(f"DEBUG: Final seller_name: {seller_name}")
