@@ -304,7 +304,7 @@ function NotificationsCenterPage() {
           n.type || 'info',
           n.read ? 'Yes' : 'No',
           n.archived ? 'Yes' : 'No',
-          new Date(n.created_at || n.timestamp).toLocaleString()
+          new Date(n.created_at || n.timestamp).toLocaleString('de-DE', { timeZone: 'Europe/Berlin' })
         ].join(','))
       ].join('\n');
       
