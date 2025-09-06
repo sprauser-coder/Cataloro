@@ -3771,7 +3771,7 @@ function SiteAdministrationTab({ showToast }) {
           autoUpdates: false
         };
         
-        return {
+        const mergedResult = {
           ...defaultConfig,
           ...parsedConfig,
           adsManager: {
@@ -3798,6 +3798,12 @@ function SiteAdministrationTab({ showToast }) {
             }
           }
         };
+        
+        // Log final merged result for debugging
+        console.log('🔧 AdminPanel: Final merged adsManager:', mergedResult.adsManager);
+        console.log('🔧 AdminPanel: Final browse page ad image:', mergedResult.adsManager.browsePageAd.image);
+        
+        return mergedResult;
       }
     } catch (error) {
       console.error('🔧 AdminPanel: Error loading from localStorage:', error);
