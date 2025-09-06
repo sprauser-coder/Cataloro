@@ -1186,27 +1186,6 @@ function UsersTab({ users, onUpdateUser, showToast }) {
     }
   };
 
-  const handleUpdateUserRole = async (userId, newRole) => {
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}/role`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ user_role: newRole })
-      });
-
-      if (response.ok) {
-        showToast('User role updated successfully', 'success');
-        onUpdateUser(); // Refresh users list
-      } else {
-        showToast('Failed to update user role', 'error');
-      }
-    } catch (error) {
-      showToast('Error updating user role', 'error');
-      console.error('Update user role error:', error);
-    }
-  };
 
   const handleSuspendUser = async (userId) => {
     try {
