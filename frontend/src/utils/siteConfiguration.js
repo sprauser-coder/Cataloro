@@ -160,7 +160,7 @@ export const applySiteConfiguration = (config) => {
     
     // Store feature flags for application logic
     const featureFlags = {
-      heroSectionEnabled: config.heroSectionEnabled !== false,
+      heroSectionEnabled: true, // Always enable hero section
       featuredProductsEnabled: config.featuredProductsEnabled !== false,
       categoriesShowcase: config.categoriesShowcase !== false,
       testimonialSection: config.testimonialSection !== false,
