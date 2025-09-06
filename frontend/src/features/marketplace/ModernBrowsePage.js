@@ -410,14 +410,10 @@ function ModernBrowsePage() {
   }
 
   return (
-    <div className={heroContent.display_mode === 'full_width' ? '' : 'space-y-8'}>
+    <div className="space-y-8">
       {/* Hero Section with Dynamic Content and Search */}
       <div 
-        className={`hero-section relative text-white overflow-hidden ${
-          heroContent.display_mode === 'full_width' 
-            ? 'w-screen -ml-[50vw] left-1/2 -mt-8' 
-            : 'w-full rounded-2xl'
-        }`}
+        className="hero-section relative text-white overflow-hidden w-full rounded-2xl"
         style={{ 
           height: heroContent.height ? `${heroContent.height}px` : '400px',
           minHeight: '300px',
