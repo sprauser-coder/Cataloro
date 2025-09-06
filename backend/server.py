@@ -5139,8 +5139,60 @@ async def get_user_baskets(user_id: str):
             if original_id:
                 processed_basket["id"] = original_id
             
-            # Get items assigned to this basket (placeholder - would be actual assignments)
-            processed_basket["items"] = []  # This would be populated with actual bought items
+            # Get items assigned to this basket
+            basket_assignments = await db.item_assignments.find({"basket_id": original_id}).to_list(length=None)
+            assigned_items = []
+            
+            for assignment in basket_assignments:
+                item_id = assignment.get("item_id")
+                
+                # Reconstruct the bought item details for the basket
+                # Since bought items are generated dynamically, we need to recreate them
+                if item_id.startswith("tender_"):
+                    # This is from a tender
+                    tender_id = item_id.replace("tender_", "")
+                    tender = await db.tenders.find_one({"id": tender_id})
+                    if tender:
+                        listing = await db.listings.find_one({"id": tender.get("listing_id")})
+                        if listing:
+                            seller = await db.users.find_one({"id": listing.get("seller_id")})
+                            seller_name = seller.get("username", "Unknown") if seller else "Unknown"
+                            
+                            assigned_item = {
+                                "id": item_id,
+                                "listing_id": tender.get("listing_id"),
+                                "title": listing.get("title", "Unknown Item"),
+                                "price": tender.get("offer_amount", 0),
+                                "seller_name": seller_name,
+                                "image": listing.get("images", [""])[0] if listing.get("images") else None,
+                                "purchased_at": tender.get("accepted_at", tender.get("created_at")),
+                                "assigned_at": assignment.get("assigned_at")
+                            }
+                            assigned_items.append(assigned_item)
+                
+                elif item_id.startswith("order_"):
+                    # This is from an order
+                    order_id = item_id.replace("order_", "")
+                    order = await db.orders.find_one({"id": order_id})
+                    if order:
+                        listing = await db.listings.find_one({"id": order.get("listing_id")})
+                        if listing:
+                            seller = await db.users.find_one({"id": order.get("seller_id")})
+                            seller_name = seller.get("username", "Unknown") if seller else "Unknown"
+                            
+                            assigned_item = {
+                                "id": item_id,
+                                "listing_id": order.get("listing_id"),
+                                "title": listing.get("title", "Unknown Item"),
+                                "price": listing.get("price", 0),
+                                "seller_name": seller_name,
+                                "image": listing.get("images", [""])[0] if listing.get("images") else None,
+                                "purchased_at": order.get("approved_at", order.get("created_at")),
+                                "assigned_at": assignment.get("assigned_at")
+                            }
+                            assigned_items.append(assigned_item)
+            
+            processed_basket["items"] = assigned_items
             processed_baskets.append(processed_basket)
         
         return processed_baskets
