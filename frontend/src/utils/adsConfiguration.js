@@ -27,7 +27,8 @@ export const DEFAULT_ADS_CONFIG = {
       url: '',
       clicks: 0,
       startDate: null,
-      expirationDate: null
+      expirationDate: null,
+      expirationEvents: ['deactivate']
     },
     messengerAd: {
       active: false,
