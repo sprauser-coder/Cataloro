@@ -755,10 +755,19 @@ function ModernBrowsePage() {
                   width: adsConfig.browsePageAd.width || '300px',
                   height: adsConfig.browsePageAd.height || '600px'
                 }}
-                onClick={() => {
+                onClick={(e) => {
+                  console.log('🔗 Ad clicked!');
+                  console.log('🔗 Ad URL:', adsConfig.browsePageAd.url);
+                  
                   if (adsConfig.browsePageAd.url) {
+                    e.preventDefault(); // Prevent any default behavior
+                    e.stopPropagation(); // Stop event from bubbling up
+                    
+                    console.log('🔗 Opening URL:', adsConfig.browsePageAd.url);
                     trackAdClick('browsePageAd');
                     window.open(adsConfig.browsePageAd.url, '_blank', 'noopener,noreferrer');
+                  } else {
+                    console.log('🔗 No URL configured for ad');
                   }
                 }}
               >
