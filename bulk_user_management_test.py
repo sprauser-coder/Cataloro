@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
 """
-Cataloro Backend Testing Suite - Bulk User Management Focus
-Testing the newly implemented bulk user management functionality
+Cataloro Backend Testing Suite - BULK USER MANAGEMENT BUG FIX VERIFICATION
+Testing the FIXED bulk user management functionality to verify the bug is resolved.
+
+CRITICAL BUG FIX VERIFICATION:
+The user reported: "The bulk options for user management do not execute. when trying to delete users from checkboxes it does not run through"
+
+Root Cause Found & Fixed: User ID resolution inconsistency - bulk operations were only trying UUID `id` field 
+but needed to also try MongoDB `_id` ObjectId for backward compatibility.
+
+Fixed Files:
+- `/api/admin/users/bulk-action` endpoint - Now tries both `{"id": user_id}` and `{"_id": ObjectId(user_id)}`
+- `/api/admin/users/{user_id}` DELETE endpoint - Now tries both ID formats
 """
 
 import requests
