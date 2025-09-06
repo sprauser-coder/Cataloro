@@ -415,7 +415,7 @@ class BasketAssignmentTester:
         
         if not admin_id or not demo_id:
             print("❌ Failed to get required user IDs. Aborting tests.")
-            return
+            return 0, 1, []
         
         # 3. Create Additional Test Data
         print("📦 CREATE ADDITIONAL TEST DATA")
