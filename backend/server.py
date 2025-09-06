@@ -5181,7 +5181,7 @@ async def get_user_baskets(user_id: str):
                                 # Cat database fields directly from listing
                                 "weight": listing.get("ceramic_weight", 0.0),
                                 "pt_ppm": listing.get("pt_ppm", 0.0),
-                                "pd_pmp": listing.get("pd_ppm", 0.0),
+                                "pd_ppm": listing.get("pd_ppm", 0.0),
                                 "rh_ppm": listing.get("rh_ppm", 0.0),
                                 "renumeration_pt": renumeration_pt,  # From price settings
                                 "renumeration_pd": renumeration_pd,
