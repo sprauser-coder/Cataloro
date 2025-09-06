@@ -972,7 +972,85 @@ class BackendTester:
             self.log_test("Verify Created Listings", False, error_msg=str(e))
             return []
 
-    def run_manager_panel_testing(self):
+    def run_demo_user_role_testing(self):
+        """Run Demo User Role and Buy Management testing as requested in review"""
+        print("=" * 80)
+        print("CATALORO DEMO USER ROLE & BUY MANAGEMENT TESTING")
+        print("=" * 80)
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"Test Started: {datetime.now().isoformat()}")
+        print()
+        
+        demo_user = None
+        has_buy_management_role = False
+        
+        # 1. Basic Health Check
+        print("🔍 BASIC HEALTH CHECK")
+        print("-" * 40)
+        if not self.test_health_check():
+            print("❌ Health check failed. Aborting Demo User testing.")
+            return
+        
+        # 2. Demo User Login and Role Check
+        print("👤 DEMO USER LOGIN AND ROLE CHECK")
+        print("-" * 40)
+        demo_user, has_buy_management_role = self.test_demo_user_login_and_role_check()
+        
+        if not demo_user:
+            print("❌ Failed to login as demo user. Aborting tests.")
+            return
+        
+        # 3. Test Buy Management Access
+        print("🛒 TEST BUY MANAGEMENT ACCESS")
+        print("-" * 40)
+        buy_management_accessible = self.test_buy_management_access(demo_user)
+        
+        # 4. Update Demo User Role if Needed
+        print("🔧 UPDATE DEMO USER ROLE IF NEEDED")
+        print("-" * 40)
+        if not has_buy_management_role:
+            print("⚠️  Demo user doesn't have User-Buyer role. Updating...")
+            role_updated = self.test_update_demo_user_role_if_needed(demo_user)
+            
+            if role_updated:
+                # 5. Verify Updated Access
+                print("✅ VERIFY UPDATED DEMO USER ACCESS")
+                print("-" * 40)
+                self.test_verify_updated_demo_user_access()
+        else:
+            print("✅ Demo user already has correct role for Buy Management features.")
+        
+        # 6. Test Frontend Permission Logic
+        print("🎨 TEST FRONTEND BUY MANAGEMENT PERMISSIONS")
+        print("-" * 40)
+        self.test_frontend_buy_management_permissions(demo_user)
+        
+        # Print Summary
+        print("=" * 80)
+        print("DEMO USER ROLE TEST SUMMARY")
+        print("=" * 80)
+        print(f"Total Tests: {self.total_tests}")
+        print(f"Passed: {self.passed_tests} ✅")
+        print(f"Failed: {self.failed_tests} ❌")
+        print(f"Success Rate: {(self.passed_tests/self.total_tests*100):.1f}%")
+        print()
+        
+        if self.failed_tests > 0:
+            print("FAILED TESTS:")
+            for result in self.test_results:
+                if "❌ FAIL" in result["status"]:
+                    print(f"  - {result['test']}: {result['error']}")
+        
+        print("\n🎯 DEMO USER ROLE TESTING COMPLETE")
+        print("Expected Results:")
+        print("  ✅ Demo user should have 'User-Buyer', 'Admin', or 'Admin-Manager' role")
+        print("  ✅ Demo user should be able to access Buy Management features")
+        print("  ✅ Frontend showBuyingFeatures should be true for demo user")
+        print("  ✅ Buy Management endpoints should be accessible")
+        
+        return self.passed_tests, self.failed_tests, self.test_results
+
+    def create_admin_manager_user(self):
         """Run Manager Panel access testing as requested in review"""
         print("=" * 80)
         print("CATALORO MANAGER PANEL ACCESS TESTING")
