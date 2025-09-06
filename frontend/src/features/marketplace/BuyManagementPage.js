@@ -214,15 +214,28 @@ function BuyManagementPage() {
       );
       
       if (response.ok) {
-        showToast('Item assigned to basket', 'success');
+        showToast('Item assigned to basket successfully', 'success');
+        
+        // Update the local state immediately for better UX
+        setBoughtItems(prevItems => 
+          prevItems.map(item => 
+            item.id === itemId 
+              ? { ...item, basket_id: basketId }
+              : item
+          )
+        );
+        
+        // Reload data to ensure consistency
         loadBoughtItems();
         loadBaskets();
       } else {
-        showToast('Failed to assign item', 'error');
+        const errorText = await response.text();
+        console.error('Assignment failed:', errorText);
+        showToast('Failed to assign item to basket', 'error');
       }
     } catch (error) {
       console.error('Error assigning item:', error);
-      showToast('Error assigning item', 'error');
+      showToast('Error assigning item to basket', 'error');
     }
   };
 
