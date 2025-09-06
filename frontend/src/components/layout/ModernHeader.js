@@ -493,7 +493,6 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   };
 
   const isActive = (path) => location.pathname === path;
-  const isAdmin = user?.role === 'admin';
 
   const navigationItems = [
     { label: 'About', path: '/info', icon: Globe },
