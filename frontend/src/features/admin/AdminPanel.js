@@ -3698,7 +3698,7 @@ function AdConfigPanel({
                         const adDescription = currentConfig.adsManager[adType].description || adType;
                         const pageLocation = getPageLocationName(adType);
                         const message = activationType === 'reactivation' 
-                          ? `"${adDescription}" on ${pageLocation} has been activated and is now running until ${new Date(finalExpiration).toLocaleString()}`
+                          ? `"${adDescription}" on ${pageLocation} has been activated and is now running until ${new Date(finalExpiration).toLocaleString('de-DE', { timeZone: 'Europe/Berlin' })}`
                           : `"${adDescription}" on ${pageLocation} has been activated and is now running`;
                           
                         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
