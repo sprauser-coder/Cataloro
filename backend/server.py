@@ -2045,7 +2045,7 @@ async def create_notification(user_id: str, notification_data: dict):
             "title": notification_data.get("title"),
             "message": notification_data.get("message"),
             "type": notification_data.get("type", "info"),
-            "is_read": False,
+            "read": False,
             "created_at": datetime.utcnow().isoformat(),
             "id": str(uuid.uuid4())
         }
