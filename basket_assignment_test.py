@@ -462,7 +462,7 @@ class BasketAssignmentTester:
         if unassigned_items:
             item_id = unassigned_items[0].get('id')
             if item_id:
-                self.test_assignment_endpoint(demo_id, item_id, basket_id)
+                self.test_assignment_endpoint(item_id, basket_id)
         
         # 5. Test Fixed Delete Basket Endpoint
         print("🗑️  TEST FIXED DELETE BASKET ENDPOINT")
