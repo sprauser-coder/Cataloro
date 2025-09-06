@@ -248,7 +248,7 @@ async def create_listing_expiration_notification(listing_id: str, seller_id: str
             "message": message,
             "type": "listing_expiration",
             "read": False,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "id": str(uuid.uuid4()),
             "listing_id": listing_id,
             "winning_bidder_id": winning_bidder_id,
