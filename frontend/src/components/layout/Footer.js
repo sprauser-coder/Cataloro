@@ -287,7 +287,16 @@ function Footer() {
                 
                 {/* Footer Advertisement - Right below address */}
                 {adsConfig?.footerAd?.active && adsConfig.footerAd.logo && adsConfig.footerAd.companyName && (
-                  <div className="flex items-center space-x-3 text-sm text-gray-400 mt-4 pt-4 border-t border-gray-700">
+                  <div 
+                    className={`flex items-center space-x-3 text-sm text-gray-400 mt-4 pt-4 border-t border-gray-700 ${adsConfig.footerAd.url ? 'cursor-pointer hover:text-gray-300 transition-colors' : ''}`}
+                    onClick={() => {
+                      if (adsConfig.footerAd.url) {
+                        // Track footer ad click
+                        console.log('Footer ad clicked:', adsConfig.footerAd.url);
+                        window.open(adsConfig.footerAd.url, '_blank');
+                      }
+                    }}
+                  >
                     <span>In cooperation with</span>
                     <img 
                       src={adsConfig.footerAd.logo} 
