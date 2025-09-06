@@ -5030,6 +5030,12 @@ async def get_user_sold_items(user_id: str):
 async def get_bought_items(user_id: str):
     """Get all bought items for a user"""
     try:
+        # Get price settings for renumeration values
+        price_settings = await db.price_settings.find_one({}) or {}
+        renumeration_pt = price_settings.get("renumeration_pt", 0.98)
+        renumeration_pd = price_settings.get("renumeration_pd", 0.98)
+        renumeration_rh = price_settings.get("renumeration_rh", 0.9)
+        
         # Get bought items from accepted tenders and completed orders
         bought_items = []
         
