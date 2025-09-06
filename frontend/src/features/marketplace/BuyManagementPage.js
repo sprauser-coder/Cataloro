@@ -324,7 +324,7 @@ function BuyManagementPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
                 <ShoppingCart className="w-8 h-8 mr-3 text-blue-600" />
-                Buy Management
+                Inventory
               </h1>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 Manage your purchased items and organize them into baskets
