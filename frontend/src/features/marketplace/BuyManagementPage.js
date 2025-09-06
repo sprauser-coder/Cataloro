@@ -584,11 +584,23 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
             {new Date(item.purchased_at).toLocaleDateString()}
           </div>
 
-          {/* Basket Assignment Info */}
+          {/* Basket Assignment Info with Unassign Option */}
           {item.basket_id && (
-            <div className="flex items-center text-xs text-green-600 dark:text-green-400">
-              <Archive className="w-3 h-3 mr-1" />
-              Assigned to basket
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center text-green-600 dark:text-green-400">
+                <Archive className="w-3 h-3 mr-1" />
+                Assigned to basket
+              </div>
+              <button
+                onClick={() => {
+                  if (window.confirm('Unassign this item from the basket? This will allow you to reassign it with updated catalyst values.')) {
+                    onUnassignFromBasket(item.id);
+                  }
+                }}
+                className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 underline"
+              >
+                Unassign
+              </button>
             </div>
           )}
         </div>
