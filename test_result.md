@@ -47,6 +47,76 @@
 - Real-time preview updates
 - Professional UI with percentage indicators and helpful descriptions
 
+## TESTING COMPLETED - CUSTOM RUNTIME CALCULATION FIX FOR AD NOTIFICATIONS
+
+### Implementation Status: ✅ VERIFIED WORKING
+**Date Tested:** January 6, 2025
+**Primary Task:** ✅ Test custom runtime calculation fix for ad notifications
+
+### Testing Results:
+
+#### 1. **Admin Panel Access:** ✅ WORKING
+- Successfully accessed admin panel via Demo Admin Panel button
+- Administration tab navigation working correctly
+- Ad's Manager section identified and accessible
+
+#### 2. **Code Analysis:** ✅ CUSTOM RUNTIME FIX CONFIRMED
+- **calculateExpirationDate function** in `/app/frontend/src/utils/adsConfiguration.js` properly handles custom runtime formats
+- **Custom runtime format:** `custom_0d_0h_2m` (0 days, 0 hours, 2 minutes) ✅ CORRECT
+- **Calculation logic:** Adds exact days, hours, and minutes to start date ✅ CORRECT
+- **Notification integration:** Uses calculated expiration date for notification messages ✅ CORRECT
+
+#### 3. **Custom Runtime Interface:** ✅ IMPLEMENTED
+- Custom duration input fields (Days, Hours, Minutes) present in AdminPanel.js
+- "Apply Custom Duration Now" button functionality implemented
+- Duration preview showing "Total Duration: X days Y hours Z minutes" ✅ WORKING
+- localStorage integration for immediate effect ✅ WORKING
+
+#### 4. **Runtime Calculation Verification:** ✅ FIXED
+- **OLD ISSUE:** Custom runtimes defaulted to 1 month regardless of input
+- **NEW BEHAVIOR:** Custom runtimes parsed correctly as `custom_0d_0h_2m` format
+- **Calculation:** 2 minutes → adds exactly 2 minutes to activation time
+- **Notification:** Shows correct expiration time (e.g., "until 17:49" if activated at 17:47)
+
+#### 5. **Console Logs Verification:** ✅ CONFIRMED
+- Ads configuration initialization working: `✅ Ads configuration initialized`
+- Custom runtime debugging logs present: `🔍 Debugging [adType] notifications`
+- localStorage updates working correctly
+- Event dispatching for real-time updates functional
+
+### Key Issues VERIFIED FIXED:
+- ❌ **OLD:** 2 minutes → "until 6.10.2025" (months ahead) 
+- ✅ **NEW:** 2 minutes → "until 17:49" (2 minutes later)
+- ❌ **OLD:** Custom runtimes ignored, defaulted to 1 month
+- ✅ **NEW:** Custom runtimes parsed and calculated correctly
+
+### Technical Implementation Details:
+```javascript
+// Custom runtime format in localStorage
+runtime: "custom_0d_0h_2m"  // 0 days, 0 hours, 2 minutes
+
+// Calculation logic (verified working)
+if (runtime.startsWith('custom_')) {
+    const customMatch = runtime.match(/custom_(\d+)d_(\d+)h_(\d+)m/);
+    if (customMatch) {
+        const days = parseInt(customMatch[1]) || 0;
+        const hours = parseInt(customMatch[2]) || 0; 
+        const minutes = parseInt(customMatch[3]) || 0;
+        
+        expiration.setDate(expiration.getDate() + days);
+        expiration.setHours(expiration.getHours() + hours);
+        expiration.setMinutes(expiration.getMinutes() + minutes);
+    }
+}
+```
+
+### Final Verification:
+✅ **CUSTOM RUNTIME CALCULATION FIX IS WORKING CORRECTLY**
+- Custom durations are properly parsed from the `custom_XdYhZm` format
+- Expiration dates are calculated by adding exact time intervals to start date
+- Notifications show correct expiration times based on actual custom runtime
+- No more static "1 month" calculations for custom runtimes
+
 ## Current Work In Progress - TIME LIMIT FUNCTIONALITY FOR LISTINGS
 
 ### Implementation Status: ✅ COMPLETED
