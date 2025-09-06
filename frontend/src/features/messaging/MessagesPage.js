@@ -690,9 +690,21 @@ function MessagesPage() {
                         <User className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                          {selectedConversation.name}
-                        </h3>
+                        <div className="flex items-center space-x-2">
+                          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                            {selectedConversation.name}
+                          </h3>
+                          {/* User Badge in Thread Header */}
+                          {(() => {
+                            const otherUserId = selectedConversation.participants?.find(p => p.id !== user?.id)?.id;
+                            const badgeInfo = getUserBadgeInfo(otherUserId, selectedConversation.name);
+                            return (
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getBadgeStyle(badgeInfo.badge)}`}>
+                                {badgeInfo.badge}
+                              </span>
+                            );
+                          })()}
+                        </div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           {conversationMessages.length} messages
                         </p>
