@@ -652,42 +652,57 @@ class FordCatalystTester:
         else:
             print("✅ Ford catalyst values are already correct!")
         
-        # 7. Create Ford Tender (to simulate purchase)
-        print("🛒 CREATE FORD TENDER")
+        # 7. Create Buyer User (since demo user owns Ford listing)
+        print("👤 CREATE BUYER USER")
         print("-" * 40)
-        tender_created, tender_id = self.create_ford_tender()
+        buyer_created, buyer_user = self.create_buyer_user()
         
-        if tender_created and tender_id:
-            # 8. Accept Ford Tender (to create bought item)
-            print("✅ ACCEPT FORD TENDER")
+        if buyer_created and buyer_user:
+            # 8. Create Ford Tender as Buyer
+            print("🛒 CREATE FORD TENDER AS BUYER")
             print("-" * 40)
-            tender_accepted = self.accept_ford_tender(tender_id)
+            tender_created, tender_id = self.create_ford_tender_as_buyer(buyer_user)
             
-            if tender_accepted:
-                # 9. Create Test Basket
-                print("🗂️ CREATE TEST BASKET")
+            if tender_created and tender_id:
+                # 9. Accept Ford Tender (as demo user who owns the listing)
+                print("✅ ACCEPT FORD TENDER")
                 print("-" * 40)
-                basket_created, basket_id = self.create_test_basket()
+                tender_accepted = self.accept_ford_tender(tender_id)
                 
-                if basket_created and basket_id:
-                    # 10. Assign Ford Item to Basket
-                    print("📦 ASSIGN FORD TO BASKET")
+                if tender_accepted:
+                    # 10. Create Test Basket (for buyer user who will get the item)
+                    print("🗂️ CREATE TEST BASKET FOR BUYER")
                     print("-" * 40)
-                    assignment_success = self.assign_ford_to_basket(basket_id)
+                    # Switch context to buyer user for basket operations
+                    original_demo_user = self.demo_user
+                    self.demo_user = buyer_user
                     
-                    if assignment_success:
-                        # 11. Test Basket Calculation
-                        print("🧮 TEST BASKET CALCULATION WITH FORD")
+                    basket_created, basket_id = self.create_test_basket()
+                    
+                    if basket_created and basket_id:
+                        # 11. Assign Ford Item to Basket
+                        print("📦 ASSIGN FORD TO BASKET")
                         print("-" * 40)
-                        self.test_basket_calculation_with_ford(basket_id)
+                        assignment_success = self.assign_ford_to_basket(basket_id)
+                        
+                        if assignment_success:
+                            # 12. Test Basket Calculation
+                            print("🧮 TEST BASKET CALCULATION WITH FORD")
+                            print("-" * 40)
+                            self.test_basket_calculation_with_ford(basket_id)
+                        else:
+                            print("❌ Failed to assign Ford item to basket. Skipping calculation test.")
                     else:
-                        print("❌ Failed to assign Ford item to basket. Skipping calculation test.")
+                        print("❌ Failed to create test basket. Skipping assignment and calculation tests.")
+                    
+                    # Restore original demo user context
+                    self.demo_user = original_demo_user
                 else:
-                    print("❌ Failed to create test basket. Skipping assignment and calculation tests.")
+                    print("❌ Failed to accept Ford tender. Skipping basket tests.")
             else:
-                print("❌ Failed to accept Ford tender. Skipping basket tests.")
+                print("❌ Failed to create Ford tender as buyer. Skipping purchase flow tests.")
         else:
-            print("❌ Failed to create Ford tender. Skipping purchase flow tests.")
+            print("❌ Failed to create buyer user. Skipping purchase flow tests.")
         
         # Print Summary
         print("=" * 80)
