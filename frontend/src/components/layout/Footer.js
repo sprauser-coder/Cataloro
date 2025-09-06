@@ -311,12 +311,12 @@ function Footer() {
                     </div>
                     
                     {/* Second line: Logo (width matching first line text) */}
-                    <div className="mb-2 flex justify-start">
+                    <div className="mb-2">
                       <img 
                         src={adsConfig.footerAd.logo} 
                         alt={adsConfig.footerAd.companyName}
-                        className="h-8 object-contain"
-                        style={{ width: '140px' }} // Approximate width of "In cooperation with:" text
+                        className="h-8 object-contain object-left"
+                        style={{ width: '140px', display: 'block' }} // Approximate width of "In cooperation with:" text
                       />
                     </div>
                     
