@@ -133,26 +133,47 @@ class BasketInvestigationTester:
         try:
             user_id = self.demo_user.get('id')
             
-            # Create 'picki' basket
+            # Create 'picki' basket - correct endpoint is /api/user/baskets (POST)
             basket_data = {
+                "user_id": user_id,
                 "name": "picki",
                 "description": "Test basket for investigating assignment issue"
             }
             
             response = requests.post(
-                f"{BACKEND_URL}/user/baskets/{user_id}", 
+                f"{BACKEND_URL}/user/baskets", 
                 json=basket_data,
                 timeout=10
             )
             
             if response.status_code == 200:
-                created_basket = response.json()
+                created_basket_response = response.json()
+                basket_id = created_basket_response.get('basket_id')
+                
+                # Get the created basket details
+                baskets_response = requests.get(f"{BACKEND_URL}/user/baskets/{user_id}", timeout=10)
+                if baskets_response.status_code == 200:
+                    baskets = baskets_response.json()
+                    created_basket = None
+                    for basket in baskets:
+                        if basket.get('id') == basket_id:
+                            created_basket = basket
+                            break
+                    
+                    if created_basket:
+                        self.log_test(
+                            "Create Picki Basket", 
+                            True, 
+                            f"Successfully created 'picki' basket with ID: {basket_id}"
+                        )
+                        return created_basket
+                
                 self.log_test(
                     "Create Picki Basket", 
                     True, 
-                    f"Successfully created 'picki' basket with ID: {created_basket.get('id')}"
+                    f"Basket created but couldn't retrieve details. ID: {basket_id}"
                 )
-                return created_basket
+                return {"id": basket_id, "name": "picki"}
             else:
                 error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
                 self.log_test("Create Picki Basket", False, error_msg=f"Failed to create basket: {error_detail}")
