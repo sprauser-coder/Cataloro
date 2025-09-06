@@ -443,11 +443,16 @@ function CreateListingPage() {
         created_at: new Date().toISOString(),
         status: 'draft', // Mark as draft
         is_draft: true,
+        // Include catalyst fields directly in listing (Admin/Admin-Manager only)
         ...(selectedCatalyst && {
           catalyst_id: selectedCatalyst.cat_id,
           catalyst_name: selectedCatalyst.name,
           is_catalyst_listing: true,
           calculated_price: getCalculatedPrice(selectedCatalyst.cat_id),
+          ceramic_weight: selectedCatalyst.ceramic_weight,
+          pt_ppm: selectedCatalyst.pt_ppm,
+          pd_ppm: selectedCatalyst.pd_ppm,
+          rh_ppm: selectedCatalyst.rh_ppm,
           catalyst_specs: {
             ceramic_weight: selectedCatalyst.ceramic_weight,
             pt_ppm: selectedCatalyst.pt_ppm,
