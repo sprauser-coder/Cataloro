@@ -397,6 +397,17 @@ function PublicProfilePage() {
                 </h1>
                 
                 <div className="flex items-center justify-center lg:justify-start space-x-2 mt-2 lg:mt-0">
+                  {/* User Role Badge */}
+                  {(() => {
+                    const badgeInfo = getUserBadgeInfo(profileUser);
+                    return (
+                      <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getBadgeStyle(badgeInfo.badge)}`}>
+                        <Shield className="w-4 h-4 mr-1" />
+                        {badgeInfo.badge}
+                      </span>
+                    );
+                  })()}
+                  
                   {profileUser.verified && (
                     <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
                       <CheckCircle className="w-4 h-4 mr-1" />
