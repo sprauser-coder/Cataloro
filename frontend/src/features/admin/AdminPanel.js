@@ -3005,8 +3005,35 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
         const imageUrl = result.url || result.imageUrl;
         if (imageUrl) {
           handleAdConfigChange(adType, field, imageUrl);
-          showToast(`${field === 'logo' ? 'Logo' : 'Image'} uploaded successfully!`, 'success');
-          console.log(`🔧 Image URL set for ${adType}.${field}:`, imageUrl);
+          
+          // IMMEDIATELY save to localStorage for instant display on browse page
+          const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+          if (!currentConfig.adsManager) currentConfig.adsManager = {};
+          if (!currentConfig.adsManager[adType]) currentConfig.adsManager[adType] = {};
+          
+          currentConfig.adsManager[adType][field] = imageUrl;
+          
+          // Ensure other required fields exist
+          currentConfig.adsManager[adType].active = currentConfig.adsManager[adType].active !== false;
+          currentConfig.adsManager[adType].description = currentConfig.adsManager[adType].description || 'Advertisement';
+          currentConfig.adsManager[adType].runtime = currentConfig.adsManager[adType].runtime || '1 month';
+          if (adType === 'browsePageAd') {
+            currentConfig.adsManager[adType].width = currentConfig.adsManager[adType].width || '300px';
+            currentConfig.adsManager[adType].height = currentConfig.adsManager[adType].height || '600px';
+          }
+          currentConfig.adsManager[adType].url = currentConfig.adsManager[adType].url || '';
+          currentConfig.adsManager[adType].clicks = currentConfig.adsManager[adType].clicks || 0;
+          
+          localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
+          
+          // Dispatch event to notify browse page
+          window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
+            detail: currentConfig.adsManager 
+          }));
+          
+          showToast(`${field === 'logo' ? 'Logo' : 'Image'} uploaded and activated successfully!`, 'success');
+          console.log(`🔧 Image URL set and saved for ${adType}.${field}:`, imageUrl);
+          console.log('🔧 Updated localStorage config:', currentConfig);
         } else {
           throw new Error('No image URL in response');
         }
