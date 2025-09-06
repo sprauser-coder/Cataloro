@@ -4283,6 +4283,7 @@ test_plan:
     - "Admin Panel Data Endpoints"
     - "General System Health"
     - "Image Upload Functionality for Ad's Manager"
+    - "Backend Notification Timezone Fix for German Time"
   stuck_tasks:
     - "Username Availability Check"
   test_all: false
