@@ -906,12 +906,12 @@ class BackendTester:
 if __name__ == "__main__":
     tester = BackendTester()
     
-    # Run grid layout testing as requested in the review
-    print("🎯 RUNNING GRID LAYOUT TESTING AS REQUESTED")
-    print("Creating sample listings for browse page grid layout testing...")
+    # Run Manager Panel testing as requested in the review
+    print("🎯 RUNNING MANAGER PANEL ACCESS TESTING AS REQUESTED")
+    print("Creating Admin-Manager test user and testing Manager Panel access...")
     print()
     
-    passed, failed, results = tester.run_grid_layout_testing()
+    passed, failed, results = tester.run_manager_panel_testing()
     
     # Exit with appropriate code
     exit(0 if failed == 0 else 1)
