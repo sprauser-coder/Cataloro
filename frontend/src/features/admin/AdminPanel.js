@@ -3255,13 +3255,15 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
                         });
                         
                         // Wait for all notifications to complete
-                        try {
-                          const results = await Promise.all(notificationPromises);
-                          const successCount = results.filter(r => r.success).length;
-                          console.log(`📊 Expiration notifications: ${successCount}/${selectedUsers.length} sent successfully`);
-                        } catch (error) {
-                          console.error('❌ Error in batch notification sending:', error);
-                        }
+                        (async () => {
+                          try {
+                            const results = await Promise.all(notificationPromises);
+                            const successCount = results.filter(r => r.success).length;
+                            console.log(`📊 Expiration notifications: ${successCount}/${selectedUsers.length} sent successfully`);
+                          } catch (error) {
+                            console.error('❌ Error in batch notification sending:', error);
+                          }
+                        })();
                         
                         // Also dispatch the old event for any remaining toast handlers
                         window.dispatchEvent(new CustomEvent('adExpiredNotification', {
