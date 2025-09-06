@@ -275,6 +275,8 @@ function BuyManagementPage() {
       showToast('Error reassigning item to basket', 'error');
     }
   };
+
+  const assignItemToBasket = async (itemId, basketId) => {
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/bought-items/${itemId}/assign`,
