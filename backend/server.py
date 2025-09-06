@@ -147,7 +147,7 @@ class Notification(BaseModel):
     title: str
     message: str
     type: str
-    is_read: bool = False
+    read: bool = False
     created_at: datetime = None
 
 class Order(BaseModel):
