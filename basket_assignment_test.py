@@ -405,7 +405,7 @@ class BasketAssignmentTester:
         print("-" * 40)
         if not self.test_health_check():
             print("❌ Health check failed. Aborting tests.")
-            return
+            return 0, 1, []
         
         # 2. Get User IDs
         print("👤 GET USER IDS")
