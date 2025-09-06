@@ -2081,7 +2081,7 @@ async def update_notification(user_id: str, notification_id: str, update_data: d
         update_fields = {}
         
         if "read" in update_data:
-            update_fields["is_read"] = update_data["read"]
+            update_fields["read"] = update_data["read"]
             if update_data["read"]:
                 update_fields["read_at"] = datetime.utcnow().isoformat()
         
