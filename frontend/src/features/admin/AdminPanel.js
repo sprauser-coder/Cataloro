@@ -8385,6 +8385,165 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
             </div>
           </div>
         )}
+
+        {/* Content Calculation Tab */}
+        {activeSubTab === 'content-calculations' && (
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Content Calculation</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+              Calculate Pt g, Pd g, and Rh g values based on weight and ppm values from the catalyst database.
+            </p>
+
+            {/* Content Calculation Table */}
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Cat ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Weight (g)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Pt ppm
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Pd ppm
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Rh ppm
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Pt g
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Pd g
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Rh g
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                  {catalystData.map((catalyst, index) => {
+                    // Calculate content values
+                    const weight = catalyst.ceramic_weight || 0;
+                    const ptPpm = catalyst.pt_ppm || 0;
+                    const pdPpm = catalyst.pd_ppm || 0;
+                    const rhPpm = catalyst.rh_ppm || 0;
+                    
+                    // Get renumeration values from price settings
+                    const remunerationPt = priceSettings.renumeration_pt || 0;
+                    const remunerationPd = priceSettings.renumeration_pd || 0;
+                    const remunerationRh = priceSettings.renumeration_rh || 0;
+                    
+                    // Content calculations: Weight * ppm / 1000 * Renumeration
+                    const ptG = (weight * ptPpm / 1000) * remunerationPt;
+                    const pdG = (weight * pdPpm / 1000) * remunerationPd;
+                    const rhG = (weight * rhPpm / 1000) * remunerationRh;
+                    
+                    return (
+                      <tr key={index} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                          {catalyst.cat_id || 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                          {catalyst.name || 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                          {weight.toFixed(2)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                          {ptPpm.toFixed(0)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                          {pdPpm.toFixed(0)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                          {rhPpm.toFixed(0)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-blue-600 dark:text-blue-400">
+                          {ptG.toFixed(4)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600 dark:text-green-400">
+                          {pdG.toFixed(4)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-purple-600 dark:text-purple-400">
+                          {rhG.toFixed(4)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Calculation Formula Information */}
+            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
+                <Calculator className="w-4 h-4 inline mr-2" />
+                Calculation Formulas
+              </h4>
+              <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                <div>
+                  <strong>Pt g:</strong> Weight × Pt ppm ÷ 1000 × Renumeration Pt ({priceSettings.renumeration_pt || 0})
+                </div>
+                <div>
+                  <strong>Pd g:</strong> Weight × Pd ppm ÷ 1000 × Renumeration Pd ({priceSettings.renumeration_pd || 0})
+                </div>
+                <div>
+                  <strong>Rh g:</strong> Weight × Rh ppm ÷ 1000 × Renumeration Rh ({priceSettings.renumeration_rh || 0})
+                </div>
+              </div>
+              <div className="mt-3 text-xs text-blue-600 dark:text-blue-300">
+                <strong>Note:</strong> Renumeration values are taken from the Basis tab configuration.
+              </div>
+            </div>
+
+            {/* Summary Statistics */}
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="text-sm text-blue-600 dark:text-blue-400 mb-1">Total Pt g</div>
+                <div className="text-xl font-bold text-blue-900 dark:text-blue-100">
+                  {catalystData.reduce((sum, catalyst) => {
+                    const weight = catalyst.ceramic_weight || 0;
+                    const ptPpm = catalyst.pt_ppm || 0;
+                    const remunerationPt = priceSettings.renumeration_pt || 0;
+                    return sum + ((weight * ptPpm / 1000) * remunerationPt);
+                  }, 0).toFixed(4)}
+                </div>
+              </div>
+              
+              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                <div className="text-sm text-green-600 dark:text-green-400 mb-1">Total Pd g</div>
+                <div className="text-xl font-bold text-green-900 dark:text-green-100">
+                  {catalystData.reduce((sum, catalyst) => {
+                    const weight = catalyst.ceramic_weight || 0;
+                    const pdPpm = catalyst.pd_ppm || 0;
+                    const remunerationPd = priceSettings.renumeration_pd || 0;
+                    return sum + ((weight * pdPpm / 1000) * remunerationPd);
+                  }, 0).toFixed(4)}
+                </div>
+              </div>
+              
+              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+                <div className="text-sm text-purple-600 dark:text-purple-400 mb-1">Total Rh g</div>
+                <div className="text-xl font-bold text-purple-900 dark:text-purple-100">
+                  {catalystData.reduce((sum, catalyst) => {
+                    const weight = catalyst.ceramic_weight || 0;
+                    const rhPpm = catalyst.rh_ppm || 0;
+                    const remunerationRh = priceSettings.renumeration_rh || 0;
+                    return sum + ((weight * rhPpm / 1000) * remunerationRh);
+                  }, 0).toFixed(4)}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Price Override Modal */}
