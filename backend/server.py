@@ -110,6 +110,11 @@ class Listing(BaseModel):
     expires_at: Optional[str] = None        # ISO datetime string
     is_expired: bool = False
     winning_bidder_id: Optional[str] = None # Set when listing expires with bids
+    # Catalyst database fields (Admin/Admin-Manager only)
+    ceramic_weight: Optional[float] = None
+    pt_ppm: Optional[float] = None
+    pd_ppm: Optional[float] = None
+    rh_ppm: Optional[float] = None
 
 class CatalystData(BaseModel):
     cat_id: str
