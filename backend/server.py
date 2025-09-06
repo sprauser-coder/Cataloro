@@ -5372,6 +5372,32 @@ async def assign_item_to_basket(item_id: str, assignment_data: dict):
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to assign item: {str(e)}")
 
+@app.put("/api/user/bought-items/{item_id}/unassign")
+async def unassign_item_from_basket(item_id: str):
+    """Unassign a bought item from its current basket"""
+    try:
+        logger.info(f"Attempting to unassign item {item_id}")
+        
+        # Remove the assignment
+        result = await db.item_assignments.delete_one({"item_id": item_id})
+        
+        if result.deleted_count == 0:
+            logger.warning(f"No assignment found for item {item_id}")
+            # Don't raise an error - this might be a valid state
+        else:
+            logger.info(f"Successfully unassigned item {item_id}")
+        
+        return {"message": "Item unassigned from basket successfully"}
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error unassigning item {item_id}: {str(e)}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to unassign item: {str(e)}")
+
 # ============================================================================
 # STARTUP EVENT
 # ============================================================================
