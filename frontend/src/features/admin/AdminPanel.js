@@ -3963,29 +3963,40 @@ function AdConfigPanel({
                       
                       {/* Notification Recipients - shown when notify is checked */}
                       {adConfig.expirationEvents?.includes('notify') && (
-                        <div className="ml-6 mt-2 space-y-2">
+                        <div className="ml-6 mt-2 space-y-3">
                           <label className="block text-xs font-medium text-orange-700 dark:text-orange-300">
                             Notification Recipients:
                           </label>
                           
-                          {/* Admin Toast Notification */}
-                          <label className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              checked={adConfig.notificationMethods?.includes('toast') !== false}
-                              onChange={(e) => {
-                                const currentMethods = adConfig.notificationMethods || ['toast'];
-                                const newMethods = e.target.checked 
-                                  ? [...currentMethods.filter(m => m !== 'toast'), 'toast']
-                                  : currentMethods.filter(m => m !== 'toast');
-                                handleAdConfigChange(adType, 'notificationMethods', newMethods);
-                              }}
-                              className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
-                            />
-                            <span className="text-xs text-orange-700 dark:text-orange-300">
-                              🔔 Admin Panel Toast (immediate notification)
-                            </span>
-                          </label>
+                          {/* User Selection for Notification Center */}
+                          <div className="border border-orange-300 dark:border-orange-600 rounded-md p-3 bg-white dark:bg-gray-800">
+                            <label className="flex items-center space-x-2 mb-2">
+                              <input
+                                type="checkbox"
+                                checked={adConfig.notificationMethods?.includes('notificationCenter') !== false}
+                                onChange={(e) => {
+                                  const currentMethods = adConfig.notificationMethods || ['notificationCenter'];
+                                  const newMethods = e.target.checked 
+                                    ? [...currentMethods.filter(m => m !== 'notificationCenter'), 'notificationCenter']
+                                    : currentMethods.filter(m => m !== 'notificationCenter');
+                                  handleAdConfigChange(adType, 'notificationMethods', newMethods);
+                                }}
+                                className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                              />
+                              <span className="text-xs font-medium text-orange-700 dark:text-orange-300">
+                                🔔 Send to Notification Center
+                              </span>
+                            </label>
+                            
+                            {/* User Selection Component */}
+                            {adConfig.notificationMethods?.includes('notificationCenter') !== false && (
+                              <UserNotificationSelector 
+                                adType={adType}
+                                selectedUsers={adConfig.notificationUsers || []}
+                                onUsersChange={(users) => handleAdConfigChange(adType, 'notificationUsers', users)}
+                              />
+                            )}
+                          </div>
                           
                           {/* Email Notification */}
                           <label className="flex items-center space-x-2">
