@@ -3475,8 +3475,7 @@ function UserNotificationSelector({ adType, selectedUsers, onUsersChange }) {
   const filteredUsers = availableUsers.filter(user => {
     const searchLower = searchTerm.toLowerCase();
     return (
-      user.firstName?.toLowerCase().includes(searchLower) ||
-      user.lastName?.toLowerCase().includes(searchLower) ||
+      user.full_name?.toLowerCase().includes(searchLower) ||
       user.email?.toLowerCase().includes(searchLower) ||
       user.username?.toLowerCase().includes(searchLower)
     );
