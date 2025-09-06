@@ -39,6 +39,9 @@ import './App.css';
 
 function App() {
   useEffect(() => {
+    // Initialize ads configuration on app startup
+    loadAndApplyAdsConfiguration();
+    
     // Hide loading screen once React is mounted
     const loader = document.getElementById('app-loader');
     if (loader) {
