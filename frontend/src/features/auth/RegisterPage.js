@@ -349,7 +349,7 @@ function RegisterPage() {
 
                   {/* Seller Account */}
                   <div 
-                    className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                    className={`relative p-4 border-2 rounded-lg cursor-pointer ${
                       formData.account_type === 'seller' 
                         ? 'border-green-500 bg-green-50 ring-2 ring-green-200' 
                         : 'border-gray-200 hover:border-gray-300'
