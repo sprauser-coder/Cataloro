@@ -15,7 +15,9 @@ export const usePermissions = () => {
   };
 
   const userRole = getUserRole();
-  const badge = user?.badge || (user?.role === 'admin' ? 'Admin' : 'Buyer');
+  // Fix badge display for Admin-Manager to consistently show "Manager"
+  const badge = userRole === 'Admin-Manager' ? 'Manager' : 
+                (user?.badge || (user?.role === 'admin' ? 'Admin' : 'Buyer'));
 
   // Permission categories
   const permissions = {
