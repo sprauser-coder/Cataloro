@@ -596,7 +596,13 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
         {/* Assignment Dropdown - Using simple relative positioning */}
         <div className="relative z-50">
           <button
-            onClick={() => setShowAssignMenu(!showAssignMenu)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Assignment button clicked for item:', item.id);
+              console.log('Current showAssignMenu state:', showAssignMenu);
+              setShowAssignMenu(!showAssignMenu);
+            }}
             disabled={!!item.basket_id}
             className={`w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${
               item.basket_id
@@ -616,7 +622,10 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
                   baskets.map((basket) => (
                     <button
                       key={basket.id}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Assigning item to basket:', item.id, basket.id);
                         onAssignToBasket(item.id, basket.id);
                         setShowAssignMenu(false);
                       }}
@@ -637,7 +646,10 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
                 )}
                 
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Creating new basket from dropdown');
                     onCreateBasket();
                     setShowAssignMenu(false);
                   }}
