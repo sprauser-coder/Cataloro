@@ -1250,6 +1250,25 @@ async def create_user_by_admin(user_data: dict):
         
         # Only admin can create other admins
         user_role = user_data.get("role", "user")
+        rbac_user_role = user_data.get("user_role", "User-Buyer")
+        registration_status = user_data.get("registration_status", "Approved")
+        is_active = user_data.get("is_active", True)
+        
+        # Map RBAC role to badge
+        role_badge_map = {
+            "User-Seller": "Seller",
+            "User-Buyer": "Buyer", 
+            "Admin": "Admin",
+            "Admin-Manager": "Manager"
+        }
+        badge = role_badge_map.get(rbac_user_role, "Buyer")
+        
+        # Set legacy role for backward compatibility
+        if rbac_user_role in ["Admin", "Admin-Manager"]:
+            user_role = "admin"
+        else:
+            user_role = "user"
+        
         if user_role == "admin":
             # This check should be done in middleware, but for now we'll assume the calling user is admin
             # since this endpoint should only be accessible to admins
@@ -1265,7 +1284,11 @@ async def create_user_by_admin(user_data: dict):
             "username": user_data["username"],
             "email": user_data["email"],
             "password": password_hash,  # In production, use proper password hashing
-            "role": user_role,
+            "role": user_role,  # Legacy role field
+            "user_role": rbac_user_role,  # New RBAC role field
+            "registration_status": registration_status,  # Registration approval status
+            "badge": badge,  # Display badge
+            "is_active": is_active,  # Account active status
             "profile": {
                 "full_name": user_data.get("full_name", ""),
                 "bio": user_data.get("bio", ""),
