@@ -190,3 +190,118 @@ export const trackAdClick = (adType) => {
   }
   return 0;
 };
+
+// Calculate expiration date based on runtime
+export const calculateExpirationDate = (startDate, runtime) => {
+  if (!startDate) return null;
+  
+  const start = new Date(startDate);
+  const expiration = new Date(start);
+  
+  switch (runtime) {
+    case '1 month':
+      expiration.setMonth(expiration.getMonth() + 1);
+      break;
+    case '3 months':
+      expiration.setMonth(expiration.getMonth() + 3);
+      break;
+    case '12 months':
+      expiration.setFullYear(expiration.getFullYear() + 1);
+      break;
+    default:
+      expiration.setMonth(expiration.getMonth() + 1); // Default to 1 month
+  }
+  
+  return expiration.toISOString();
+};
+
+// Check if ad is expired
+export const isAdExpired = (adConfig) => {
+  if (!adConfig.expirationDate) return false;
+  return new Date() > new Date(adConfig.expirationDate);
+};
+
+// Get time remaining for ad
+export const getTimeRemaining = (expirationDate) => {
+  if (!expirationDate) return null;
+  
+  const now = new Date();
+  const expiration = new Date(expirationDate);
+  const diff = expiration - now;
+  
+  if (diff <= 0) return { expired: true };
+  
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+  return { days, hours, minutes, expired: false };
+};
+
+// Activate ad with start date and expiration
+export const activateAd = (adType, adConfig) => {
+  try {
+    const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+    
+    if (!currentConfig.adsManager) currentConfig.adsManager = {};
+    if (!currentConfig.adsManager[adType]) currentConfig.adsManager[adType] = {};
+    
+    const now = new Date().toISOString();
+    const expirationDate = calculateExpirationDate(now, adConfig.runtime || '1 month');
+    
+    currentConfig.adsManager[adType] = {
+      ...currentConfig.adsManager[adType],
+      ...adConfig,
+      active: true,
+      startDate: now,
+      expirationDate: expirationDate
+    };
+    
+    localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
+    
+    // Dispatch event to notify components
+    window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
+      detail: currentConfig.adsManager 
+    }));
+    
+    console.log(`🕒 Ad activated: ${adType} (Expires: ${expirationDate})`);
+    return true;
+  } catch (error) {
+    console.error('❌ Failed to activate ad:', error);
+    return false;
+  }
+};
+
+// Deactivate expired ads (to be called periodically)
+export const deactivateExpiredAds = () => {
+  try {
+    const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+    
+    if (!currentConfig.adsManager) return;
+    
+    let hasChanges = false;
+    
+    Object.keys(currentConfig.adsManager).forEach(adType => {
+      const adConfig = currentConfig.adsManager[adType];
+      if (adConfig.active && isAdExpired(adConfig)) {
+        currentConfig.adsManager[adType].active = false;
+        hasChanges = true;
+        console.log(`🕒 Ad expired and deactivated: ${adType}`);
+      }
+    });
+    
+    if (hasChanges) {
+      localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
+      
+      // Dispatch event to notify components
+      window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
+        detail: currentConfig.adsManager 
+      }));
+    }
+    
+    return hasChanges;
+  } catch (error) {
+    console.error('❌ Failed to deactivate expired ads:', error);
+    return false;
+  }
+};
