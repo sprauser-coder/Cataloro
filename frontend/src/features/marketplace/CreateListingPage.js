@@ -526,12 +526,16 @@ function CreateListingPage() {
         // Time limit functionality
         has_time_limit: formData.has_time_limit,
         time_limit_hours: formData.has_time_limit ? formData.time_limit_hours : null,
-        // Include catalyst metadata if selected
+        // Include catalyst fields directly in listing (Admin/Admin-Manager only)
         ...(selectedCatalyst && {
           catalyst_id: selectedCatalyst.cat_id,
           catalyst_name: selectedCatalyst.name,
           is_catalyst_listing: true,
           calculated_price: getCalculatedPrice(selectedCatalyst.cat_id),
+          ceramic_weight: selectedCatalyst.ceramic_weight,
+          pt_ppm: selectedCatalyst.pt_ppm,
+          pd_ppm: selectedCatalyst.pd_ppm,
+          rh_ppm: selectedCatalyst.rh_ppm,
           catalyst_specs: {
             ceramic_weight: selectedCatalyst.ceramic_weight,
             pt_ppm: selectedCatalyst.pt_ppm,
