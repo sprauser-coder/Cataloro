@@ -1304,8 +1304,7 @@ async def create_user_by_admin(user_data: dict):
             },
             "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "updated_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
-            "last_login": None,
-            "status": "active"
+            "last_login": None
         }
         
         # Insert user into database
