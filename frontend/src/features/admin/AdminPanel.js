@@ -3186,6 +3186,77 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
   );
 }
 
+// Ad Countdown Timer Component
+function AdCountdownTimer({ adType, expirationDate, onExpired }) {
+  const [timeLeft, setTimeLeft] = React.useState(null);
+  const [isExpired, setIsExpired] = React.useState(false);
+
+  React.useEffect(() => {
+    const updateCountdown = () => {
+      const remaining = getTimeRemaining(expirationDate);
+      
+      if (remaining?.expired) {
+        setIsExpired(true);
+        setTimeLeft(null);
+        onExpired?.();
+      } else {
+        setTimeLeft(remaining);
+        setIsExpired(false);
+      }
+    };
+
+    // Update immediately
+    updateCountdown();
+
+    // Update every minute
+    const interval = setInterval(updateCountdown, 60000);
+
+    return () => clearInterval(interval);
+  }, [expirationDate, onExpired]);
+
+  if (isExpired) {
+    return (
+      <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 border border-red-200 dark:border-red-800">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center">
+            <Clock className="w-4 h-4 text-red-600 dark:text-red-400" />
+          </div>
+          <div>
+            <div className="font-medium text-red-900 dark:text-red-100">
+              ⏰ Advertisement Expired
+            </div>
+            <div className="text-sm text-red-700 dark:text-red-300">
+              This ad has been automatically deactivated
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!timeLeft) return null;
+
+  return (
+    <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+      <div className="flex items-center space-x-2">
+        <div className="w-8 h-8 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center">
+          <Clock className="w-4 h-4 text-green-600 dark:text-green-400" />
+        </div>
+        <div>
+          <div className="font-medium text-green-900 dark:text-green-100">
+            ⏰ Time Remaining
+          </div>
+          <div className="text-sm text-green-700 dark:text-green-300">
+            {timeLeft.days > 0 && `${timeLeft.days}d `}
+            {timeLeft.hours > 0 && `${timeLeft.hours}h `}
+            {timeLeft.minutes}m remaining
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Generic Ad Config Panel Component
 function AdConfigPanel({ 
   title, 
