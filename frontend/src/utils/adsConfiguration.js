@@ -16,7 +16,8 @@ export const DEFAULT_ADS_CONFIG = {
       url: '', // Link URL for the ad
       clicks: 0, // Click counter
       startDate: null, // When the ad was activated
-      expirationDate: null // When the ad expires
+      expirationDate: null, // When the ad expires
+      expirationEvents: ['deactivate'] // Default: just deactivate when expired
     },
     favoriteAd: {
       active: false,
