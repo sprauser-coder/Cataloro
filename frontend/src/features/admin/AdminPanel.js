@@ -3555,7 +3555,7 @@ function UserNotificationSelector({ adType, selectedUsers, onUsersChange }) {
                   <div className="flex items-center space-x-2">
                     <div className="w-6 h-6 bg-orange-100 dark:bg-orange-900/50 rounded-full flex items-center justify-center">
                       <span className="text-xs font-semibold text-orange-600 dark:text-orange-400">
-                        {(user.firstName?.[0] || user.username?.[0] || user.email?.[0])?.toUpperCase()}
+                        {(user.full_name?.[0] || user.username?.[0] || user.email?.[0])?.toUpperCase()}
                       </span>
                     </div>
                     <div>
