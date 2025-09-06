@@ -5215,15 +5215,23 @@ async def delete_basket(basket_id: str):
 async def assign_item_to_basket(item_id: str, assignment_data: dict):
     """Assign a bought item to a basket"""
     try:
+        logger.info(f"Attempting to assign item {item_id} with data: {assignment_data}")
+        
         basket_id = assignment_data.get("basket_id")
         
         if not basket_id:
+            logger.error("No basket_id provided in assignment data")
             raise HTTPException(status_code=400, detail="basket_id is required")
+        
+        logger.info(f"Looking for basket with ID: {basket_id}")
         
         # Verify basket exists and belongs to the user
         basket = await db.baskets.find_one({"id": basket_id})
         if not basket:
+            logger.error(f"Basket not found with ID: {basket_id}")
             raise HTTPException(status_code=404, detail="Basket not found")
+        
+        logger.info(f"Found basket: {basket.get('name', 'Unknown')} for user: {basket.get('user_id')}")
         
         # For now, we'll store the assignment in a separate collection since bought_items are generated dynamically
         # In a real implementation, you might want to store assignments in the baskets collection
@@ -5235,22 +5243,36 @@ async def assign_item_to_basket(item_id: str, assignment_data: dict):
             "user_id": basket.get("user_id")
         }
         
+        logger.info(f"Creating assignment record: {assignment}")
+        
         # Check if assignment already exists
         existing_assignment = await db.item_assignments.find_one({"item_id": item_id})
         if existing_assignment:
+            logger.info(f"Updating existing assignment for item {item_id}")
             # Update existing assignment
-            await db.item_assignments.update_one(
+            result = await db.item_assignments.update_one(
                 {"item_id": item_id},
                 {"$set": {"basket_id": basket_id, "assigned_at": assignment["assigned_at"]}}
             )
+            logger.info(f"Update result: matched={result.matched_count}, modified={result.modified_count}")
         else:
+            logger.info(f"Creating new assignment for item {item_id}")
             # Create new assignment
-            await db.item_assignments.insert_one(assignment)
+            result = await db.item_assignments.insert_one(assignment)
+            logger.info(f"Insert result: inserted_id={result.inserted_id}")
         
+        logger.info(f"Successfully assigned item {item_id} to basket {basket_id}")
         return {"message": "Item assigned to basket successfully"}
         
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
     except Exception as e:
-        logger.error(f"Error assigning item {item_id} to basket: {e}")
+        logger.error(f"Unexpected error assigning item {item_id} to basket: {str(e)}")
+        logger.error(f"Error type: {type(e)}")
+        logger.error(f"Error args: {e.args}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to assign item: {str(e)}")
 
 # ============================================================================
