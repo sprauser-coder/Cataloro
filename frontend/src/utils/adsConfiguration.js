@@ -12,25 +12,33 @@ export const DEFAULT_ADS_CONFIG = {
       description: 'Browse Page Advertisement Space',
       runtime: '1 month',
       width: '300px',
-      height: '600px'
+      height: '600px',
+      url: '', // Link URL for the ad
+      clicks: 0 // Click counter
     },
     favoriteAd: {
       active: false,
       image: null,
       description: '',
-      runtime: '1 month'
+      runtime: '1 month',
+      url: '',
+      clicks: 0
     },
     messengerAd: {
       active: false,
       image: null,
       description: '',
-      runtime: '1 month'
+      runtime: '1 month',
+      url: '',
+      clicks: 0
     },
     footerAd: {
       active: false,
       logo: null,
       companyName: '',
-      runtime: '1 month'
+      runtime: '1 month',
+      url: '',
+      clicks: 0
     }
   },
   // Ensure hero section is always enabled
