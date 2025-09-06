@@ -741,6 +741,7 @@ function ModernBrowsePage() {
                   priceRangeSettings={priceRangeSettings}
                   userActiveBids={userActiveBids}
                   user={user}
+                  permissions={permissions}
                 />
               ))}
             </div>
