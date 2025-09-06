@@ -499,54 +499,82 @@ function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, cal
 // Bought Item Card Component
 function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
   const [showAssignMenu, setShowAssignMenu] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const buttonRef = React.useRef(null);
+
+  const handleToggleMenu = () => {
+    if (!showAssignMenu && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.right - 224 + window.scrollX // 224px is w-56 width
+      });
+    }
+    setShowAssignMenu(!showAssignMenu);
+  };
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (buttonRef.current && !buttonRef.current.contains(event.target)) {
+        setShowAssignMenu(false);
+      }
+    };
+
+    if (showAssignMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showAssignMenu]);
 
   return (
-    <div className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600">
-      {/* Item Image */}
-      {item.image && (
-        <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-t-lg">
-          <img
-            src={item.image}
-            alt={item.title}
-            className="w-full h-48 object-cover"
-          />
-        </div>
-      )}
-      
-      <div className="p-4">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
-            {item.title}
-          </h3>
-          {item.basket_id && (
-            <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-              <Archive className="w-3 h-3 mr-1" />
-              Assigned
-            </span>
-          )}
-        </div>
+    <>
+      <div className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600">
+        {/* Item Image */}
+        {item.image && (
+          <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-t-lg">
+            <img
+              src={item.image}
+              alt={item.title}
+              className="w-full h-48 object-cover"
+            />
+          </div>
+        )}
         
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-            <DollarSign className="w-3 h-3 mr-1" />
-            €{item.price?.toFixed(2) || '0.00'}
+        <div className="p-4">
+          <div className="flex items-start justify-between mb-2">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+              {item.title}
+            </h3>
+            {item.basket_id && (
+              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                <Archive className="w-3 h-3 mr-1" />
+                Assigned
+              </span>
+            )}
           </div>
           
-          <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-            <User className="w-3 h-3 mr-1" />
-            {item.seller_name || 'Unknown Seller'}
+          <div className="space-y-2 mb-4">
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <DollarSign className="w-3 h-3 mr-1" />
+              €{item.price?.toFixed(2) || '0.00'}
+            </div>
+            
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <User className="w-3 h-3 mr-1" />
+              {item.seller_name || 'Unknown Seller'}
+            </div>
+            
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <Calendar className="w-3 h-3 mr-1" />
+              {new Date(item.purchased_at).toLocaleDateString()}
+            </div>
           </div>
-          
-          <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-            <Calendar className="w-3 h-3 mr-1" />
-            {new Date(item.purchased_at).toLocaleDateString()}
-          </div>
-        </div>
 
-        {/* Assignment Dropdown */}
-        <div className="relative">
+          {/* Assignment Button */}
           <button
-            onClick={() => setShowAssignMenu(!showAssignMenu)}
+            ref={buttonRef}
+            onClick={handleToggleMenu}
             disabled={!!item.basket_id}
             className={`w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 ${
               item.basket_id
@@ -557,49 +585,56 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
             {item.basket_id ? 'Already Assigned' : 'Assign to Basket'}
             <MoreHorizontal className="w-4 h-4 ml-2" />
           </button>
-
-          {showAssignMenu && !item.basket_id && (
-            <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-[9999]">
-              <div className="py-1">
-                {baskets.length > 0 ? (
-                  baskets.map((basket) => (
-                    <button
-                      key={basket.id}
-                      onClick={() => {
-                        onAssignToBasket(item.id, basket.id);
-                        setShowAssignMenu(false);
-                      }}
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                    >
-                      {basket.name}
-                    </button>
-                  ))
-                ) : (
-                  <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
-                    No baskets available
-                  </div>
-                )}
-                
-                {baskets.length > 0 && (
-                  <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
-                )}
-                
-                <button
-                  onClick={() => {
-                    onCreateBasket();
-                    setShowAssignMenu(false);
-                  }}
-                  className="block px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                >
-                  <Plus className="w-4 h-4 inline mr-2" />
-                  Create New Basket
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
-    </div>
+
+      {/* Fixed Position Dropdown Portal */}
+      {showAssignMenu && !item.basket_id && (
+        <div 
+          className="fixed w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-[9999]"
+          style={{
+            top: `${dropdownPosition.top}px`,
+            left: `${dropdownPosition.left}px`,
+          }}
+        >
+          <div className="py-1">
+            {baskets.length > 0 ? (
+              baskets.map((basket) => (
+                <button
+                  key={basket.id}
+                  onClick={() => {
+                    onAssignToBasket(item.id, basket.id);
+                    setShowAssignMenu(false);
+                  }}
+                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                >
+                  {basket.name}
+                </button>
+              ))
+            ) : (
+              <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+                No baskets available
+              </div>
+            )}
+            
+            {baskets.length > 0 && (
+              <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
+            )}
+            
+            <button
+              onClick={() => {
+                onCreateBasket();
+                setShowAssignMenu(false);
+              }}
+              className="block px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+            >
+              <Plus className="w-4 h-4 inline mr-2" />
+              Create New Basket
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
