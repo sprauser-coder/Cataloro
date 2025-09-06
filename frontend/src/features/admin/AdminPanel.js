@@ -3862,13 +3862,15 @@ function AdConfigPanel({
                       });
                       
                       // Wait for all start notifications to complete
-                      try {
-                        const results = await Promise.all(startNotificationPromises);
-                        const successCount = results.filter(r => r.success).length;
-                        console.log(`📊 Ad start notifications: ${successCount}/${selectedUsers.length} sent successfully`);
-                      } catch (error) {
-                        console.error('❌ Error in batch start notification sending:', error);
-                      }
+                      (async () => {
+                        try {
+                          const results = await Promise.all(startNotificationPromises);
+                          const successCount = results.filter(r => r.success).length;
+                          console.log(`📊 Ad start notifications: ${successCount}/${selectedUsers.length} sent successfully`);
+                        } catch (error) {
+                          console.error('❌ Error in batch start notification sending:', error);
+                        }
+                      })();
                     }
                     
                     // Dispatch event
