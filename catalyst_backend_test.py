@@ -525,12 +525,11 @@ class CatalystBackendTester:
                     if accept_response.status_code == 200:
                         # Assign to picki basket
                         assignment_data = {
-                            "item_id": f"tender_{tender_id}",
                             "basket_id": picki_basket_id
                         }
                         
-                        assign_response = requests.post(
-                            f"{BACKEND_URL}/user/assign-item",
+                        assign_response = requests.put(
+                            f"{BACKEND_URL}/user/bought-items/tender_{tender_id}/assign",
                             json=assignment_data,
                             timeout=10
                         )
