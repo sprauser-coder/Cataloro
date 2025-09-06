@@ -7951,8 +7951,15 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
       <div className="cataloro-card-glass p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Cat Database</h2>
-            <p className="text-gray-600 dark:text-gray-300">Catalyst database management and price calculations</p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              {isAdminManager() ? 'DAT Database - Manager Access' : 'Cat Database'}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300">
+              {isAdminManager() 
+                ? 'Basis and price calculations access (data modification restricted)'
+                : 'Catalyst database management and price calculations'
+              }
+            </p>
           </div>
           <div className="flex items-center space-x-4">
             {/* Delete Database - Only for full admin */}
