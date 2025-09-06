@@ -3196,7 +3196,21 @@ function AdConfigPanel({
   showDimensions = false,
   dimensionsLabel = "Ad Dimensions"
 }) {
-  const [imagePreview, setImagePreview] = React.useState(adConfig.image || null);
+  // CRITICAL FIX: Initialize imagePreview from localStorage directly, not just from props
+  const [imagePreview, setImagePreview] = React.useState(() => {
+    try {
+      const savedConfig = localStorage.getItem('cataloro_site_config');
+      if (savedConfig) {
+        const parsed = JSON.parse(savedConfig);
+        const savedImageUrl = parsed.adsManager?.[adType]?.image || parsed.adsManager?.[adType]?.logo;
+        console.log(`🔧 AdConfigPanel (${adType}): Loading image from localStorage:`, savedImageUrl);
+        return savedImageUrl || adConfig.image || null;
+      }
+    } catch (error) {
+      console.error(`🔧 AdConfigPanel (${adType}): Error loading from localStorage:`, error);
+    }
+    return adConfig.image || null;
+  });
   const [isUploading, setIsUploading] = React.useState(false);
   
   const handleLocalImageUpload = async (e) => {
