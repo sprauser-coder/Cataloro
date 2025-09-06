@@ -164,6 +164,35 @@ class Order(BaseModel):
     expires_at: datetime = None
     approved_at: datetime = None
 
+class BoughtItem(BaseModel):
+    id: str = None
+    user_id: str  # buyer_id
+    listing_id: str
+    title: str
+    price: float
+    seller_name: str
+    seller_id: str
+    image: Optional[str] = None
+    purchased_at: datetime = None
+    basket_id: Optional[str] = None
+    # Cat database fields for calculations
+    weight: Optional[float] = None
+    pt_ppm: Optional[float] = None
+    pd_ppm: Optional[float] = None
+    rh_ppm: Optional[float] = None
+    renumeration_pt: Optional[float] = None
+    renumeration_pd: Optional[float] = None
+    renumeration_rh: Optional[float] = None
+
+class Basket(BaseModel):
+    id: str = None
+    user_id: str
+    name: str
+    description: Optional[str] = None
+    created_at: datetime = None
+    updated_at: datetime = None
+    items: List[Dict[str, Any]] = []
+
 # Utility Functions
 def generate_id():
     return str(uuid.uuid4())
