@@ -3039,7 +3039,7 @@ async def reject_buy_request(order_id: str, rejection_data: dict):
             "message": f"Your buy request for '{listing.get('title', 'Unknown item')}' has been declined.",
             "type": "buy_rejected",
             "read": False,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "id": str(uuid.uuid4()),
             "order_id": order_id,
             "listing_id": order["listing_id"]
