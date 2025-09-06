@@ -3814,98 +3814,64 @@ function SiteAdministrationTab({ showToast }) {
           clicks: 0
         }
       },
-    
-    // Appearance & Themes
-    primaryColor: '#3B82F6',
-    secondaryColor: '#8B5CF6',
-    accentColor: '#10B981',
-    fontFamily: 'inter',
-    fontSize: '16',
-    borderRadius: '8',
-    enableDarkMode: true,
-    defaultTheme: 'light',
-    customCSS: '',
-    
-    // Layout & UI
-    headerStyle: 'modern',
-    sidebarEnabled: false,
-    breadcrumbsEnabled: true,
-    footerEnabled: true,
-    compactMode: false,
-    animationsEnabled: true,
-    
-    // Footer Configuration
-    footerCompanyName: 'Cataloro',
-    footerTagline: 'Modern Marketplace for Everyone',
-    footerDescription: 'Discover, buy, and sell amazing products in our trusted marketplace. Connect with sellers worldwide and find exactly what you\'re looking for.',
-    footerEmail: 'hello@cataloro.com',
-    footerPhone: '+1 (555) 123-4567',
-    footerAddress: '123 Marketplace St, Commerce City, CC 12345',
-    footerFacebook: 'https://facebook.com/cataloro',
-    footerTwitter: 'https://twitter.com/cataloro',
-    footerInstagram: 'https://instagram.com/cataloro',
-    footerLinkedin: 'https://linkedin.com/company/cataloro',
-    footerYoutube: 'https://youtube.com/cataloro',
-    footerBackgroundColor: '#1f2937',
-    footerTextColor: '#ffffff',
-    footerLinkColor: '#60a5fa',
-    
-    // Homepage Configuration
-    heroSectionEnabled: true,
-    featuredProductsEnabled: true,
-    categoriesShowcase: true,
-    testimonialSection: false,
-    newsletterSignup: true,
-    searchBarProminent: false,
-    
-    // Marketplace Features
-    userRegistration: true,
-    guestBrowsing: true,
-    productReviews: true,
-    wishlistEnabled: true,
-    compareFeature: false,
-    advancedFilters: true,
-    bulkOperations: false,
-    productVariations: true,
-    inventoryTracking: true,
-    
-    // Security & Privacy
-    twoFactorAuth: false,
-    emailVerification: true,
-    passwordPolicy: 'medium',
-    sessionTimeout: 60,
-    ipWhitelist: '',
-    contentModeration: true,
-    autoSpamDetection: true,
-    
-    // Performance & SEO
-    cacheEnabled: true,
-    compressionEnabled: true,
-    lazyLoading: true,
-    seoOptimization: true,
-    sitemapGeneration: true,
-    robotsTxt: true,
-    
-    // Communications
-    emailNotifications: true,
-    pushNotifications: false,
-    smsNotifications: false,
-    inAppMessaging: true,
-    newsletterSystem: true,
-    
-    // Analytics & Tracking
-    googleAnalytics: '',
-    facebookPixel: '',
-    customTracking: '',
-    userBehaviorTracking: true,
-    performanceMonitoring: true,
-    
-    // Maintenance & System
-    maintenanceMode: false,
-    debugMode: false,
-    logLevel: 'info',
-    backupEnabled: true,
-    autoUpdates: false
+      // Site Appearance Configuration
+      siteName: 'Cataloro',
+      logoUrl: '',
+      primaryColor: '#3B82F6',
+      secondaryColor: '#8B5CF6',
+      backgroundColor: '#FFFFFF',
+      textColor: '#1F2937',
+      headerStyle: 'modern',
+      fontFamily: 'Inter',
+      borderRadius: 'rounded',
+      compactMode: false,
+      darkModeEnabled: true,
+      customCSS: '',
+      faviconUrl: '',
+      heroSectionEnabled: true,
+      featuredProductsEnabled: true,
+      categoriesShowcase: true,
+      testimonialSection: false,
+      newsletterSignup: false,
+      socialMediaLinks: {},
+      searchBarProminent: false,
+      userRegistration: true,
+      guestBrowsing: true,
+      productReviews: true,
+      wishlistEnabled: true,
+      compareFeature: false,
+      advancedFilters: true,
+      bulkOperations: false,
+      productVariations: false,
+      inventoryTracking: false,
+      animationsEnabled: true,
+      footerText: 'Powered by Cataloro',
+      footerLinkColor: '#60a5fa',
+      footerTextColor: '#ffffff',
+      // Security Configuration
+      twoFactorAuth: false,
+      sessionTimeout: '24h',
+      passwordMinLength: 8,
+      enableCaptcha: true,
+      ipWhitelist: [],
+      rateLimiting: true,
+      // Performance Configuration
+      cachingEnabled: true,
+      compressionEnabled: true,
+      lazyLoading: true,
+      cdnEnabled: false,
+      imageCaching: true,
+      // Monitoring Configuration
+      analyticsEnabled: true,
+      errorReporting: true,
+      performanceMetrics: true,
+      userBehaviorTracking: false,
+      // Maintenance Configuration
+      maintenanceMode: false,
+      logLevel: 'info',
+      backupEnabled: true,
+      autoUpdates: false
+    };
   });
 
   const handleConfigChange = (key, value) => {
