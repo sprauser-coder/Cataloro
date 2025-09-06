@@ -5042,8 +5042,11 @@ async def get_bought_items(user_id: str):
                 seller = await db.users.find_one({"id": listing.get("seller_id")})
                 seller_name = seller.get("username", "Unknown") if seller else "Unknown"
                 
+                # Generate unique item ID based on tender and listing
+                item_id = f"tender_{tender.get('id', '')}"
+                
                 bought_item = {
-                    "id": generate_id(),
+                    "id": item_id,
                     "listing_id": tender.get("listing_id"),
                     "title": listing.get("title", "Unknown Item"),
                     "price": tender.get("offer_amount", 0),
@@ -5051,7 +5054,7 @@ async def get_bought_items(user_id: str):
                     "seller_id": listing.get("seller_id"),
                     "image": listing.get("images", [""])[0] if listing.get("images") else None,
                     "purchased_at": tender.get("accepted_at", tender.get("created_at")),
-                    "basket_id": None,  # Will be set when assigned to basket
+                    "basket_id": None,  # Will be set based on assignment
                     # Cat database fields (placeholder - would come from actual cat database)
                     "weight": None,
                     "pt_ppm": None,
@@ -5080,8 +5083,11 @@ async def get_bought_items(user_id: str):
                     seller = await db.users.find_one({"id": order.get("seller_id")})
                     seller_name = seller.get("username", "Unknown") if seller else "Unknown"
                     
+                    # Generate unique item ID based on order and listing
+                    item_id = f"order_{order.get('id', '')}"
+                    
                     bought_item = {
-                        "id": generate_id(),
+                        "id": item_id,
                         "listing_id": listing_id,
                         "title": listing.get("title", "Unknown Item"),
                         "price": listing.get("price", 0),
@@ -5100,6 +5106,12 @@ async def get_bought_items(user_id: str):
                         "renumeration_rh": None
                     }
                     bought_items.append(bought_item)
+        
+        # Get assignments for all items
+        for item in bought_items:
+            assignment = await db.item_assignments.find_one({"item_id": item["id"]})
+            if assignment:
+                item["basket_id"] = assignment.get("basket_id")
         
         # Sort by purchase date (newest first)
         bought_items.sort(key=lambda x: x.get("purchased_at", ""), reverse=True)
