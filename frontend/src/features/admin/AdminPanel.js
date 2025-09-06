@@ -3011,10 +3011,19 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
           currentConfig.adsManager[adType].active = currentConfig.adsManager[adType].active !== false;
           currentConfig.adsManager[adType].description = currentConfig.adsManager[adType].description || 'Advertisement';
           currentConfig.adsManager[adType].runtime = currentConfig.adsManager[adType].runtime || '1 month';
+          
+          // Set default dimensions based on ad type
           if (adType === 'browsePageAd') {
             currentConfig.adsManager[adType].width = currentConfig.adsManager[adType].width || '300px';
             currentConfig.adsManager[adType].height = currentConfig.adsManager[adType].height || '600px';
+          } else if (adType === 'favoriteAd') {
+            currentConfig.adsManager[adType].width = currentConfig.adsManager[adType].width || '100%';
+            currentConfig.adsManager[adType].height = currentConfig.adsManager[adType].height || '200px';
+          } else if (adType === 'messengerAd') {
+            currentConfig.adsManager[adType].width = currentConfig.adsManager[adType].width || '250px';
+            currentConfig.adsManager[adType].height = currentConfig.adsManager[adType].height || '400px';
           }
+          
           currentConfig.adsManager[adType].url = currentConfig.adsManager[adType].url || '';
           currentConfig.adsManager[adType].clicks = currentConfig.adsManager[adType].clicks || 0;
           
