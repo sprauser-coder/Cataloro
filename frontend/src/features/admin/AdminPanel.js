@@ -3324,6 +3324,38 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
                   
                   localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
                   
+                  // Send ad restart notifications (since this is an auto-reset after expiration)
+                  const resetUsers = currentConfig.adsManager[adType].notificationUsers || [];
+                  const resetMethods = currentConfig.adsManager[adType].notificationMethods || [];
+                  
+                  if (resetMethods.includes('notificationCenter') && resetUsers.length > 0) {
+                    console.log(`🔄 Sending ad restart notifications to ${resetUsers.length} users (auto-reset)`);
+                    
+                    resetUsers.forEach(async (user) => {
+                      try {
+                        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json'
+                          },
+                          body: JSON.stringify({
+                            title: '🔄 Advertisement Restarted',
+                            message: `Advertisement "${adType}" has automatically restarted with a new ${originalRuntime} duration until ${new Date(newExpirationDate).toLocaleString()}`,
+                            type: 'info'
+                          })
+                        });
+                        
+                        if (response.ok) {
+                          console.log(`✅ Ad restart notification sent to user ${user.email} (${user.id})`);
+                        } else {
+                          console.error(`❌ Failed to send ad restart notification to user ${user.email}`);
+                        }
+                      } catch (error) {
+                        console.error(`❌ Error sending ad restart notification to user ${user.email}:`, error);
+                      }
+                    });
+                  }
+                  
                   // Dispatch update event
                   window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
                     detail: currentConfig.adsManager 
