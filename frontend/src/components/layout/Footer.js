@@ -291,7 +291,15 @@ function Footer() {
                     className={`flex items-center space-x-3 text-sm text-gray-400 mt-4 pt-4 border-t border-gray-700 ${adsConfig.footerAd.url ? 'cursor-pointer hover:text-gray-300 transition-colors' : ''}`}
                     onClick={() => {
                       if (adsConfig.footerAd.url) {
-                        // Track footer ad click
+                        // Track footer ad click using utility function
+                        try {
+                          // Import the tracking function dynamically
+                          import('../../utils/adsConfiguration').then(({ trackAdClick }) => {
+                            trackAdClick('footerAd');
+                          });
+                        } catch (error) {
+                          console.warn('Could not track ad click:', error);
+                        }
                         console.log('Footer ad clicked:', adsConfig.footerAd.url);
                         window.open(adsConfig.footerAd.url, '_blank');
                       }
