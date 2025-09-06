@@ -3564,15 +3564,51 @@ function AdConfigPanel({
             )}
 
             {/* Countdown Timer Display */}
-            {adConfig.active && adConfig.expirationDate && (
+            {adConfig.active && adConfig.expirationDate && !isAdExpired(adConfig) && (
               <AdCountdownTimer 
                 adType={adType}
                 expirationDate={adConfig.expirationDate} 
                 onExpired={() => {
-                  console.log(`🕒 Ad expired: ${adType}`);
-                  handleAdConfigChange(adType, 'active', false);
+                  console.log(`🕒 Ad expired: ${adType} - but admin can still reactivate manually`);
+                  // Don't automatically deactivate here - let the admin decide
+                  // The expiration logic will handle automatic deactivation based on configured events
                 }}
               />
+            )}
+
+            {/* Expired Ad Warning (but still allow reactivation) */}
+            {adConfig.active && adConfig.expirationDate && isAdExpired(adConfig) && (
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/50 rounded-full flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium text-yellow-900 dark:text-yellow-100">
+                      ⚠️ Advertisement Expired
+                    </div>
+                    <div className="text-sm text-yellow-700 dark:text-yellow-300">
+                      This ad has expired but is still active. Set a new duration or deactivate manually.
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      // Quick action to set new 1-month duration
+                      const now = new Date().toISOString();
+                      const newExpiration = calculateExpirationDate(now, '1 month');
+                      
+                      handleAdConfigChange(adType, 'startDate', now);
+                      handleAdConfigChange(adType, 'expirationDate', newExpiration);
+                      handleAdConfigChange(adType, 'runtime', '1 month');
+                      
+                      showToast('Ad duration reset to 1 month from now', 'success');
+                    }}
+                    className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-sm rounded-md transition-colors"
+                  >
+                    Reset +1 Month
+                  </button>
+                </div>
+              </div>
             )}
 
             {/* Runtime */}
