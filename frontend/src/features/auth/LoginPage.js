@@ -224,7 +224,7 @@ function LoginPage() {
                 >
                   <User className="w-5 h-5 text-blue-500" />
                   <span>Demo User Experience</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  <ArrowRight className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => handleDemoLogin('admin')}
