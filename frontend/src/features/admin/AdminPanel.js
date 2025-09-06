@@ -3295,6 +3295,14 @@ function AdConfigPanel({
   });
   const [isUploading, setIsUploading] = React.useState(false);
   
+  // Custom runtime state
+  const [customRuntime, setCustomRuntime] = React.useState({
+    days: 0,
+    hours: 0,
+    minutes: 0
+  });
+  const [showCustomRuntime, setShowCustomRuntime] = React.useState(false);
+  
   const handleLocalImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
