@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Ad's Manager</title>
+</head>
+<body>
+    <h1>Ad's Manager Debug Test</h1>
+    <p>This is a simple test to verify the Ad's Manager workflow:</p>
+    
+    <ol>
+        <li><strong>Login to Admin Panel</strong>: Go to http://localhost:3000/login → Click "Demo Admin Panel"</li>
+        <li><strong>Navigate to Administration</strong>: Click "Administration" tab</li>
+        <li><strong>Click Ad's Manager</strong>: Click on the "Ad's Manager" card</li>
+        <li><strong>Expected Result</strong>: Should see interface with:
+            <ul>
+                <li>Browse Page Ad's tab</li>
+                <li>Active toggle switch</li>
+                <li>Image upload area</li>
+                <li>Description textarea</li>
+                <li>URL input field</li>
+                <li>Save & Activate Ads button</li>
+            </ul>
+        </li>
+        <li><strong>Test Upload</strong>: Upload image → Add description → Add URL → Click Save</li>
+        <li><strong>Test Browse Page</strong>: Go to browse page → Should see uploaded image in ad space</li>
+        <li><strong>Test Persistence</strong>: Go back to Ad's Manager → Should still show uploaded image</li>
+    </ol>
+    
+    <p><strong>Current Issue</strong>: User reports that uploaded images reset to nothing when exiting Ad's Manager</p>
+    
+    <script>
+        console.log('Debug: Check localStorage for ads configuration');
+        console.log('Command: JSON.parse(localStorage.getItem("cataloro_site_config"))');
+    </script>
+</body>
+</html>
