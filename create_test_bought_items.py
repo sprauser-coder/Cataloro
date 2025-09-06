@@ -146,7 +146,11 @@ class TestDataCreator:
     def accept_tender(self, tender_id):
         """Accept the tender to create a bought item"""
         try:
-            response = self.session.put(f"{BASE_URL}/tenders/{tender_id}/accept")
+            acceptance_data = {
+                "seller_id": self.seller_user_id
+            }
+            
+            response = self.session.put(f"{BASE_URL}/tenders/{tender_id}/accept", json=acceptance_data)
             if response.status_code == 200:
                 result = response.json()
                 self.log(f"✅ Accepted tender: {tender_id}")
