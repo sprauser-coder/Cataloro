@@ -5164,6 +5164,37 @@ async def get_user_baskets(user_id: str):
                             seller = await db.users.find_one({"id": listing.get("seller_id")})
                             seller_name = seller.get("username", "Unknown") if seller else "Unknown"
                             
+                            # Get actual cat database values for this listing
+                            cat_data = None
+                            listing_title = listing.get("title", "").lower()
+                            
+                            # Try to find matching catalyst data by title or other identifiers
+                            if listing_title:
+                                # Look for catalyst data that matches the listing
+                                potential_cats = await db.catalyst_data.find({}).to_list(length=None)
+                                for cat in potential_cats:
+                                    cat_name = cat.get("name", "").lower()
+                                    if listing_title in cat_name or cat_name in listing_title:
+                                        cat_data = cat
+                                        break
+                            
+                            # If no specific match found, use the first available cat data as fallback
+                            if not cat_data:
+                                cat_data = await db.catalyst_data.find_one({})
+                            
+                            # Extract cat database values or use defaults
+                            if cat_data:
+                                weight = cat_data.get("ceramic_weight", 100.0)
+                                pt_ppm = cat_data.get("pt_ppm", 0)
+                                pd_ppm = cat_data.get("pd_ppm", 0)
+                                rh_ppm = cat_data.get("rh_ppm", 0)
+                            else:
+                                # Fallback to defaults if no cat data found
+                                weight = 100.0
+                                pt_ppm = 0
+                                pd_ppm = 0
+                                rh_ppm = 0
+                            
                             assigned_item = {
                                 "id": item_id,
                                 "listing_id": tender.get("listing_id"),
@@ -5173,11 +5204,11 @@ async def get_user_baskets(user_id: str):
                                 "image": listing.get("images", [""])[0] if listing.get("images") else None,
                                 "purchased_at": tender.get("accepted_at", tender.get("created_at")),
                                 "assigned_at": assignment.get("assigned_at"),
-                                # Cat database fields for calculations (get from listing or use defaults)
-                                "weight": listing.get("ceramic_weight", 100.0),  # Default weight if not set
-                                "pt_ppm": listing.get("pt_ppm", 1000),  # Default Pt ppm
-                                "pd_ppm": listing.get("pd_ppm", 500),   # Default Pd ppm  
-                                "rh_ppm": listing.get("rh_ppm", 200),   # Default Rh ppm
+                                # Cat database fields for calculations (actual values from cat database)
+                                "weight": weight,
+                                "pt_ppm": pt_ppm,
+                                "pd_ppm": pd_ppm,
+                                "rh_ppm": rh_ppm,
                                 "renumeration_pt": renumeration_pt,  # From price settings
                                 "renumeration_pd": renumeration_pd,
                                 "renumeration_rh": renumeration_rh
