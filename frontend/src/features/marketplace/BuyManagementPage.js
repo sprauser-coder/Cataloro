@@ -500,19 +500,6 @@ function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, cal
 function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
   const [showAssignMenu, setShowAssignMenu] = useState(false);
 
-  // Debug logging
-  console.log('BoughtItemCard render:', { 
-    itemId: item.id, 
-    basketsCount: baskets.length, 
-    showAssignMenu,
-    basketId: item.basket_id 
-  });
-
-  const handleToggleMenu = () => {
-    console.log('Toggle menu clicked, current state:', showAssignMenu);
-    setShowAssignMenu(!showAssignMenu);
-  };
-
   return (
     <div className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600 overflow-hidden">
       {/* Item Image */}
@@ -559,7 +546,7 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
         {/* Assignment Dropdown */}
         <div className="relative">
           <button
-            onClick={handleToggleMenu}
+            onClick={() => setShowAssignMenu(!showAssignMenu)}
             disabled={!!item.basket_id}
             className={`w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 ${
               item.basket_id
@@ -579,7 +566,6 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
                     <button
                       key={basket.id}
                       onClick={() => {
-                        console.log('Assigning item to basket:', item.id, basket.id);
                         onAssignToBasket(item.id, basket.id);
                         setShowAssignMenu(false);
                       }}
@@ -600,7 +586,6 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
                 
                 <button
                   onClick={() => {
-                    console.log('Creating new basket');
                     onCreateBasket();
                     setShowAssignMenu(false);
                   }}
