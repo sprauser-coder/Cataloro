@@ -32,8 +32,9 @@ export const applySiteConfiguration = (config) => {
       }
       ` : ''}
       
-      /* Hero Section Control */
-      ${!config.heroSectionEnabled ? `
+      /* Hero Section Control - ALWAYS ENABLED */
+      /* Hero section is essential for the marketplace experience */
+      ${false ? `
       .hero-section {
         display: none !important;
       }
