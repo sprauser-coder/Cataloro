@@ -1099,18 +1099,21 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                       <span className="font-medium">View Public Profile</span>
                     </Link>
                     
-                    {user?.role === 'admin' && (
+                    {/* Admin Panel - Role-based access */}
+                    {permissions.ui.showAdminPanelLink && (
                       <Link
                         to="/admin"
                         className="flex items-center px-6 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
                         onClick={() => setShowUserMenu(false)}
                       >
                         <div className="p-2 rounded-lg mr-3 group-hover:bg-white/10 transition-all duration-300" style={{
-                          background: 'linear-gradient(135deg, rgba(250, 112, 154, 0.2), rgba(254, 225, 64, 0.1))'
+                          background: isAdmin()
+                            ? 'linear-gradient(135deg, rgba(250, 112, 154, 0.2), rgba(254, 225, 64, 0.1))'
+                            : 'linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(79, 70, 229, 0.1))'
                         }}>
                           <Shield className="w-4 h-4" />
                         </div>
-                        <span className="font-medium">Admin Panel</span>
+                        <span className="font-medium">{isAdmin() ? 'Admin Panel' : 'Manager Panel'}</span>
                       </Link>
                     )}
                   </div>
