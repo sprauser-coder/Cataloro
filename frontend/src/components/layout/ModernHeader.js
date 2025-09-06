@@ -37,7 +37,8 @@ import {
   VolumeX,
   BellOff,
   Globe,
-  Plus
+  Plus,
+  ShoppingCart
 } from 'lucide-react';
 import { APP_ROUTES } from '../../config/directions';
 import { useAuth } from '../../context/AuthContext';
