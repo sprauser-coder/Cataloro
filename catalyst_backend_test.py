@@ -533,11 +533,46 @@ class CatalystBackendTester:
                 data = response.json()
                 picki_basket_id = data.get('basket_id')
                 
-                # Create a tender for the Ford listing
+                # Find a different listing from another seller to use for testing
+                browse_response = requests.get(f"{BACKEND_URL}/marketplace/browse", timeout=10)
+                if browse_response.status_code != 200:
+                    self.log_test("Create Picki Basket and Assign Ford", False, error_msg="Could not fetch listings")
+                    return False
+                
+                listings = browse_response.json()
+                target_listing = None
+                
+                # Find a listing from a different seller
+                for listing in listings:
+                    if listing.get('seller_id') != self.test_user_id:
+                        target_listing = listing
+                        break
+                
+                if not target_listing:
+                    self.log_test("Create Picki Basket and Assign Ford", False, error_msg="No listings from other sellers found")
+                    return False
+                
+                target_listing_id = target_listing.get('id')
+                
+                # Update this listing with Ford catalyst values for testing
+                update_data = {
+                    "ceramic_weight": 139.7,
+                    "pt_ppm": 1394.0,
+                    "pd_ppm": 959.0,
+                    "rh_ppm": 0.0
+                }
+                
+                update_response = requests.put(
+                    f"{BACKEND_URL}/listings/{target_listing_id}",
+                    json=update_data,
+                    timeout=10
+                )
+                
+                # Create a tender for the listing
                 tender_data = {
-                    "listing_id": self.ford_listing_id,
+                    "listing_id": target_listing_id,
                     "buyer_id": self.test_user_id,
-                    "offer_amount": 200.0,
+                    "offer_amount": max(target_listing.get('price', 100) + 50, 250.0),
                     "message": "Test tender for Ford catalyst verification"
                 }
                 
@@ -573,7 +608,7 @@ class CatalystBackendTester:
                             self.log_test(
                                 "Create Picki Basket and Assign Ford", 
                                 True, 
-                                f"Picki basket created ({picki_basket_id}) and Ford listing assigned via tender {tender_id}"
+                                f"Picki basket created ({picki_basket_id}) and listing {target_listing_id} assigned via tender {tender_id}"
                             )
                             
                             # Store picki basket ID for verification
