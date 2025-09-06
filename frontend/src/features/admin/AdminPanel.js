@@ -4515,6 +4515,72 @@ function FooterAdConfigPanel({ adConfig, adType, handleAdConfigChange, handleIma
               </select>
             </div>
 
+            {/* Custom Runtime */}
+            {adConfig.runtime === 'custom' && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                <label className="block text-sm font-medium text-blue-700 dark:text-blue-300 mb-3">
+                  Custom Runtime Settings
+                </label>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div>
+                    <label className="block text-xs text-blue-600 dark:text-blue-400 mb-1">Days</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="365"
+                      value={adConfig.customDays || 0}
+                      onChange={(e) => handleAdConfigChange(adType, 'customDays', parseInt(e.target.value) || 0)}
+                      className="w-full px-2 py-1 text-sm border border-blue-300 dark:border-blue-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-blue-600 dark:text-blue-400 mb-1">Hours</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="23"
+                      value={adConfig.customHours || 0}
+                      onChange={(e) => handleAdConfigChange(adType, 'customHours', parseInt(e.target.value) || 0)}
+                      className="w-full px-2 py-1 text-sm border border-blue-300 dark:border-blue-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-blue-600 dark:text-blue-400 mb-1">Minutes</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={adConfig.customMinutes || 0}
+                      onChange={(e) => handleAdConfigChange(adType, 'customMinutes', parseInt(e.target.value) || 0)}
+                      className="w-full px-2 py-1 text-sm border border-blue-300 dark:border-blue-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    const days = adConfig.customDays || 0;
+                    const hours = adConfig.customHours || 0;
+                    const minutes = adConfig.customMinutes || 0;
+                    
+                    if (days === 0 && hours === 0 && minutes === 0) {
+                      alert('Please set at least one time value (days, hours, or minutes)');
+                      return;
+                    }
+                    
+                    const customRuntime = `${days} days ${hours} hours ${minutes} minutes`.trim();
+                    handleAdConfigChange(adType, 'runtime', customRuntime);
+                    console.log('🔧 Custom runtime saved:', customRuntime);
+                  }}
+                  className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  💾 Save Custom Duration
+                </button>
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                  Current: {(adConfig.customDays || 0)} days, {(adConfig.customHours || 0)} hours, {(adConfig.customMinutes || 0)} minutes
+                </p>
+              </div>
+            )}
+
             {/* Preview */}
             {logoPreview && adConfig.companyName && (
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
