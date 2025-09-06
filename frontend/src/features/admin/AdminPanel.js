@@ -1584,46 +1584,78 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                 <span className="hidden sm:inline">Delete</span>
               </button>
 
-              {/* Promote to Admin */}
+              {/* Approve Users */}
               <button
-                onClick={() => handleUserBulkAction('promote')}
-                className="flex items-center justify-center space-x-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
-                title="Promote to admin"
+                onClick={() => handleUserBulkAction('approve')}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Approve pending users"
               >
-                <Shield className="w-4 h-4" />
-                <span className="hidden sm:inline">Promote</span>
+                <CheckCircle className="w-4 h-4" />
+                <span className="hidden sm:inline">Approve</span>
               </button>
 
-              {/* Send Message */}
+              {/* Reject Users */}
               <button
-                onClick={() => handleUserBulkAction('message')}
-                className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
-                title="Send message to selected users"
+                onClick={() => handleUserBulkAction('reject')}
+                className="flex items-center justify-center space-x-2 px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 shadow-lg"
+                title="Reject pending users"
               >
-                <Mail className="w-4 h-4" />
-                <span className="hidden sm:inline">Message</span>
+                <X className="w-4 h-4" />
+                <span className="hidden sm:inline">Reject</span>
               </button>
             </div>
           </div>
           
-          {/* Additional Bulk Actions Row */}
+          {/* Second Row with Additional Actions */}
           <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+              {/* Export Users */}
               <button
-                onClick={() => handleUserBulkAction('export')}
-                className="flex items-center space-x-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+                onClick={() => {
+                  // Simple CSV export functionality
+                  const selectedUserData = users.filter(u => selectedUsers.includes(u.id));
+                  const csvContent = [
+                    ['ID', 'Name', 'Email', 'Role', 'Status', 'Registration Status'].join(','),
+                    ...selectedUserData.map(u => [
+                      u.id,
+                      u.full_name || u.username,
+                      u.email,
+                      u.user_role || u.role,
+                      u.is_active ? 'Active' : 'Suspended',
+                      u.registration_status || 'Approved'
+                    ].join(','))
+                  ].join('\n');
+                  
+                  const blob = new Blob([csvContent], { type: 'text/csv' });
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `selected_users_${new Date().toISOString().split('T')[0]}.csv`;
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                  
+                  showToast(`Exported ${selectedUsers.length} users to CSV`, 'success');
+                }}
+                className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+                title="Export selected users to CSV"
               >
                 <Download className="w-4 h-4" />
-                <span>Export Selected</span>
+                <span>Export CSV</span>
               </button>
-              
+
+              {/* Clear Selection */}
               <button
-                onClick={() => handleUserBulkAction('reset-password')}
-                className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+                onClick={() => {
+                  setSelectedUsers([]);
+                  setBulkAction('');
+                }}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                title="Clear selection"
               >
-                <Lock className="w-4 h-4" />
-                <span>Reset Passwords</span>
+                <X className="w-4 h-4" />
+                <span>Clear Selection</span>
               </button>
+            </div>
               
               <button
                 onClick={() => setSelectedUsers([])}
