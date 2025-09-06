@@ -4431,6 +4431,7 @@ test_plan:
     - "User Update Functionality" 
     - "Admin Panel Data Endpoints"
     - "General System Health"
+    - "Bulk User Management Operations"
     - "Image Upload Functionality for Ad's Manager"
     - "Backend Notification Timezone Fix for German Time"
   stuck_tasks:
