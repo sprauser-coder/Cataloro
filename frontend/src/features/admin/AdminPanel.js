@@ -8606,6 +8606,8 @@ function UserEditModal({ user, onClose, onSave }) {
     username: user?.username || '',
     email: user?.email || '',
     role: user?.role || 'user',
+    user_role: user?.user_role || 'User-Buyer', // Add RBAC role field
+    registration_status: user?.registration_status || 'Approved', // Add registration status field
     is_active: user?.is_active !== undefined ? user.is_active : true,
     password: '',
     confirmPassword: '',
