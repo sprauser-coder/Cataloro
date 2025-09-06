@@ -1655,16 +1655,6 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                 <X className="w-4 h-4" />
                 <span>Clear Selection</span>
               </button>
-            </div>
-              
-              <button
-                onClick={() => setSelectedUsers([])}
-                className="flex items-center space-x-2 px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg font-medium transition-colors"
-              >
-                <X className="w-4 h-4" />
-                <span>Clear Selection</span>
-              </button>
-            </div>
           </div>
         </div>
       )}
