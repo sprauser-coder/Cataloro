@@ -644,7 +644,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   } : {}}
                 >
                   <ShoppingCart className="w-4 h-4" />
-                  <span className="font-medium">Buy Management</span>
+                  <span className="font-medium">Inventory</span>
                 </Link>
               )}
               
