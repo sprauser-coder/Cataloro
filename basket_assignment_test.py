@@ -164,7 +164,7 @@ class BasketAssignmentTester:
             tender_data = {
                 "listing_id": listing_id,
                 "buyer_id": demo_id,
-                "offer_amount": 175.00,
+                "offer_amount": 225.00,
                 "message": "Test tender for assignment functionality"
             }
             
