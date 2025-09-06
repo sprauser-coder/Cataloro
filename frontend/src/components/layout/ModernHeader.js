@@ -1070,18 +1070,21 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                       <span className="font-medium">Profile Settings</span>
                     </Link>
                     
-                    <Link
-                      to="/my-listings"
-                      className="flex items-center px-6 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <div className="p-2 rounded-lg mr-3 group-hover:bg-white/10 transition-all duration-300" style={{
-                        background: 'linear-gradient(135deg, rgba(240, 147, 251, 0.2), rgba(245, 87, 108, 0.1))'
-                      }}>
-                        <Package className="w-4 h-4" />
-                      </div>
-                      <span className="font-medium">My Listings</span>
-                    </Link>
+                    {/* My Listings - Only for sellers and admins */}
+                    {permissions.selling.canManageListings && (
+                      <Link
+                        to="/my-listings"
+                        className="flex items-center px-6 py-3 text-sm text-gray-700 dark:text-white/90 hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <div className="p-2 rounded-lg mr-3 group-hover:bg-white/10 transition-all duration-300" style={{
+                          background: 'linear-gradient(135deg, rgba(240, 147, 251, 0.2), rgba(245, 87, 108, 0.1))'
+                        }}>
+                          <Package className="w-4 h-4" />
+                        </div>
+                        <span className="font-medium">My Listings</span>
+                      </Link>
+                    )}
                     
                     <Link
                       to={`/profile/${user?.id}`}
