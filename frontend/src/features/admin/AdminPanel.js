@@ -3224,26 +3224,29 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
                         const selectedUsers = adConfig.notificationUsers || [];
                         console.log(`🔔 Sending notification center alerts to ${selectedUsers.length} users`);
                         
-                        // Send notification to each selected user
-                        selectedUsers.forEach(user => {
-                          window.dispatchEvent(new CustomEvent('addNotification', {
-                            detail: {
-                              id: `ad-expired-${adType}-${Date.now()}-${user.id}`,
-                              userId: user.id,
-                              type: 'warning',
-                              title: '⏰ Advertisement Expired',
-                              message: `Advertisement "${adType}" has expired and been processed according to your settings`,
-                              timestamp: new Date().toISOString(),
-                              read: false,
-                              actions: [
-                                {
-                                  label: 'View Ad Manager',
-                                  action: 'navigate',
-                                  target: '/admin'
-                                }
-                              ]
+                        // Send notification to each selected user via backend API
+                        selectedUsers.forEach(async (user) => {
+                          try {
+                            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify({
+                                title: '⏰ Advertisement Expired',
+                                message: `Advertisement "${adType}" has expired and been processed according to your settings`,
+                                type: 'warning'
+                              })
+                            });
+                            
+                            if (response.ok) {
+                              console.log(`✅ Notification sent to user ${user.email} (${user.id})`);
+                            } else {
+                              console.error(`❌ Failed to send notification to user ${user.email}`);
                             }
-                          }));
+                          } catch (error) {
+                            console.error(`❌ Error sending notification to user ${user.email}:`, error);
+                          }
                         });
                         
                         // Also dispatch the old event for any remaining toast handlers
