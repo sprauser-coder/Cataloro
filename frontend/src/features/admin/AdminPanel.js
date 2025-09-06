@@ -3679,17 +3679,52 @@ function AdConfigPanel({
                     // Create custom runtime string
                     const customRuntimeString = `custom_${customRuntime.days}d_${customRuntime.hours}h_${customRuntime.minutes}m`;
                     
-                    // Save the custom runtime
+                    // Calculate new expiration date from now
+                    const now = new Date();
+                    const newExpiration = new Date(now);
+                    newExpiration.setDate(newExpiration.getDate() + customRuntime.days);
+                    newExpiration.setHours(newExpiration.getHours() + customRuntime.hours);
+                    newExpiration.setMinutes(newExpiration.getMinutes() + customRuntime.minutes);
+                    
+                    // Save the custom runtime and update expiration immediately
                     handleAdConfigChange(adType, 'runtime', customRuntimeString);
                     handleAdConfigChange(adType, 'customDuration', customRuntime);
+                    handleAdConfigChange(adType, 'startDate', now.toISOString());
+                    handleAdConfigChange(adType, 'expirationDate', newExpiration.toISOString());
                     
-                    showToast(`Custom duration saved: ${customRuntime.days}d ${customRuntime.hours}h ${customRuntime.minutes}m`, 'success');
-                    console.log(`🕒 Custom runtime set for ${adType}:`, customRuntime);
+                    // Update localStorage immediately for real-time effect
+                    try {
+                      const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+                      if (!currentConfig.adsManager) currentConfig.adsManager = {};
+                      if (!currentConfig.adsManager[adType]) currentConfig.adsManager[adType] = {};
+                      
+                      currentConfig.adsManager[adType].runtime = customRuntimeString;
+                      currentConfig.adsManager[adType].customDuration = customRuntime;
+                      currentConfig.adsManager[adType].startDate = now.toISOString();
+                      currentConfig.adsManager[adType].expirationDate = newExpiration.toISOString();
+                      
+                      localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
+                      
+                      // Dispatch event to update countdown timer immediately
+                      window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
+                        detail: currentConfig.adsManager 
+                      }));
+                      
+                      console.log(`🕒 Custom runtime applied immediately for ${adType}:`, {
+                        runtime: customRuntimeString,
+                        startDate: now.toISOString(),
+                        expirationDate: newExpiration.toISOString()
+                      });
+                    } catch (error) {
+                      console.error('Error updating localStorage:', error);
+                    }
+                    
+                    showToast(`Custom duration applied: ${customRuntime.days}d ${customRuntime.hours}h ${customRuntime.minutes}m - Timer updated!`, 'success');
                   }}
                   className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition-colors flex items-center justify-center space-x-2"
                 >
                   <Save className="w-4 h-4" />
-                  <span>Save Custom Duration</span>
+                  <span>Apply Custom Duration Now</span>
                 </button>
               </div>
             )}
