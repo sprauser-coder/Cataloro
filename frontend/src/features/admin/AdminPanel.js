@@ -3347,8 +3347,10 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
                   if (resetMethods.includes('notificationCenter') && resetUsers.length > 0) {
                     console.log(`🔄 Sending ad restart notifications to ${resetUsers.length} users (auto-reset)`);
                     
-                    resetUsers.forEach(async (user) => {
+                    // Send restart notifications properly with Promise.all
+                    const restartPromises = resetUsers.map(async (user) => {
                       try {
+                        const adDescription = currentConfig.adsManager[adType].description || adType;
                         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
                           method: 'POST',
                           headers: {
@@ -3356,20 +3358,32 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
                           },
                           body: JSON.stringify({
                             title: '🔄 Advertisement Restarted',
-                            message: `Advertisement "${adType}" has automatically restarted with a new ${originalRuntime} duration until ${new Date(newExpirationDate).toLocaleString()}`,
+                            message: `Advertisement "${adDescription}" has automatically restarted with a new ${originalRuntime} duration until ${new Date(newExpirationDate).toLocaleString()}`,
                             type: 'info'
                           })
                         });
                         
                         if (response.ok) {
                           console.log(`✅ Ad restart notification sent to user ${user.email} (${user.id})`);
+                          return { success: true, user: user.email };
                         } else {
                           console.error(`❌ Failed to send ad restart notification to user ${user.email}`);
+                          return { success: false, user: user.email, error: 'HTTP Error' };
                         }
                       } catch (error) {
                         console.error(`❌ Error sending ad restart notification to user ${user.email}:`, error);
+                        return { success: false, user: user.email, error: error.message };
                       }
                     });
+                    
+                    // Wait for all restart notifications to complete
+                    try {
+                      const results = await Promise.all(restartPromises);
+                      const successCount = results.filter(r => r.success).length;
+                      console.log(`📊 Ad restart notifications: ${successCount}/${resetUsers.length} sent successfully`);
+                    } catch (error) {
+                      console.error('❌ Error in batch restart notification sending:', error);
+                    }
                   }
                   
                   // Dispatch update event
