@@ -467,25 +467,29 @@ function ModernBrowsePage() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Hero Section with Dynamic Content and Search - ALWAYS VISIBLE */}
+    <>
+      {/* Full-Width Hero Section - Breaks out of container */}
       <div 
-        className="hero-section relative text-white overflow-hidden w-full rounded-2xl"
+        className="hero-section relative text-white overflow-hidden w-screen"
         style={{ 
           height: '400px',
           minHeight: '300px',
           background: 'linear-gradient(to right, #3f6ec7, #a855f7, #ec4899)',
-          backgroundSize: 'auto',
-          backgroundPosition: 'auto'
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          marginLeft: 'calc(-50vw + 50%)',
+          marginRight: 'calc(-50vw + 50%)',
+          marginTop: '-2rem', // Offset the container padding
+          marginBottom: '2rem'
         }}
       >
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative z-10 text-center flex flex-col justify-center h-full px-8">
+        <div className="relative z-10 text-center flex flex-col justify-center h-full px-8 max-w-7xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Discover Amazing Products
+            {heroContent.title || 'Discover Amazing Products'}
           </h1>
           <p className="text-xl mb-8 opacity-90 max-w-3xl mx-auto">
-            From electronics to fashion, find everything you need in one place
+            {heroContent.description || 'From electronics to fashion, find everything you need in one place'}
           </p>
           
           {/* Hero Search Bar - FULL WIDTH */}
@@ -495,7 +499,7 @@ function ModernBrowsePage() {
                 <Search className="absolute left-6 text-white/70 w-6 h-6" />
                 <input
                   type="text"
-                  placeholder="Search for anything you need..."
+                  placeholder={heroContent.search_placeholder || "Search for anything you need..."}
                   value={searchQuery}
                   onChange={(e) => updateSearchQuery(e.target.value)}
                   className="w-full pl-16 pr-4 py-4 bg-transparent text-white placeholder-white/70 text-lg focus:outline-none"
@@ -515,6 +519,9 @@ function ModernBrowsePage() {
           </div>
         </div>
       </div>
+
+      {/* Main Content Container */}
+      <div className="space-y-8">
 
       {/* Results Count and Filter Controls - INLINE */}
       <div 
