@@ -439,18 +439,7 @@ function Footer() {
               <span>for amazing marketplace experiences.</span>
             </div>
 
-            {/* Footer Advertisement */}
-            {adsConfig?.footerAd?.active && adsConfig.footerAd.logo && adsConfig.footerAd.companyName && (
-              <div className="flex items-center space-x-2 text-sm text-gray-400">
-                <span>In cooperation with</span>
-                <img 
-                  src={adsConfig.footerAd.logo} 
-                  alt={adsConfig.footerAd.companyName}
-                  className="w-6 h-6 object-contain"
-                />
-                <span className="font-medium text-gray-300">{adsConfig.footerAd.companyName}</span>
-              </div>
-            )}
+
           </div>
         </div>
       </div>
