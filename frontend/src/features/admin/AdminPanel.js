@@ -2942,21 +2942,21 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
       const activeAdsCount = Object.entries(updatedAdsManagerConfig)
         .filter(([key, value]) => value.active).length;
       
-      const totalConfiguredAds = Object.entries(adsManagerConfig)
+      const totalConfiguredAds = Object.entries(updatedAdsManagerConfig)
         .filter(([key, value]) => value.image || value.logo).length;
       
       showToast(
         `🎯 Ad's Manager configuration saved successfully! 
-        ${activeAds} active ads, ${totalConfiguredAds} configured ads. 
+        ${activeAdsCount} active ads, ${totalConfiguredAds} configured ads. 
         All advertisement functionalities are now live across the marketplace!`, 
         'success'
       );
       
       // Log detailed ads configuration for debugging
       console.log('🎉 COMPLETE Ad\'s Manager Configuration Applied:', {
-        ...adsManagerConfig,
+        ...updatedAdsManagerConfig,
         appliedAt: new Date().toISOString(),
-        activeAds: activeAds,
+        activeAds: activeAdsCount,
         totalConfigured: totalConfiguredAds
       });
       
@@ -2966,7 +2966,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
       
       // Trigger a custom event to notify other components that ads config has changed
       window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
-        detail: adsManagerConfig 
+        detail: updatedAdsManagerConfig 
       }));
       
     } catch (error) {
