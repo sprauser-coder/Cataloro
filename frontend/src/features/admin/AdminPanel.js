@@ -3349,9 +3349,9 @@ function SiteAdministrationTab({ showToast }) {
     // Ads Manager Configuration
     adsManager: {
       browsePageAd: {
-        active: false,
+        active: true,  // Set to true by default for testing
         image: null,
-        description: '',
+        description: 'Test Browse Page Advertisement',
         runtime: '1 month',
         width: '300px',
         height: '600px'
