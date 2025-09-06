@@ -5049,20 +5049,13 @@ async def get_bought_items(user_id: str):
             # Get listing details
             listing = await db.listings.find_one({"id": tender.get("listing_id")})
             
-            # Debug logging
-            print(f"DEBUG: Processing tender {tender.get('id')}")
-            print(f"DEBUG: Tender data: {tender}")
-            print(f"DEBUG: Listing found: {listing is not None}")
-            
             # Get seller info - try from listing first, then directly from tender
             seller_id = None
             if listing:
                 seller_id = listing.get("seller_id")
-                print(f"DEBUG: Got seller_id from listing: {seller_id}")
             else:
                 # If listing not found, try to get seller_id from tender directly
                 seller_id = tender.get("seller_id")
-                print(f"DEBUG: Got seller_id from tender: {seller_id}")
             
             seller_name = "Unknown"
             if seller_id:
@@ -5075,11 +5068,7 @@ async def get_bought_items(user_id: str):
                         seller = await db.users.find_one({"_id": ObjectId(seller_id)})
                     except:
                         pass
-                print(f"DEBUG: Seller lookup result: {seller}")
                 seller_name = seller.get("username", "Unknown") if seller else "Unknown"
-                print(f"DEBUG: Final seller_name: {seller_name}")
-            else:
-                print(f"DEBUG: No seller_id found")
             
             # Generate unique item ID based on tender and listing
             item_id = f"tender_{tender.get('id', '')}"
