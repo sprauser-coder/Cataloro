@@ -740,46 +740,76 @@ class BackendTester:
             self.log_test("Verify Created Listings", False, error_msg=str(e))
             return []
 
-    def run_grid_layout_testing(self):
-        """Run grid layout testing by creating sample listings"""
+    def run_manager_panel_testing(self):
+        """Run Manager Panel access testing as requested in review"""
         print("=" * 80)
-        print("CATALORO GRID LAYOUT TESTING - SAMPLE LISTINGS CREATION")
+        print("CATALORO MANAGER PANEL ACCESS TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
         print(f"Test Started: {datetime.now().isoformat()}")
         print()
         
+        created_user_id = None
+        user_credentials = None
+        logged_in_user = None
+        
         # 1. Basic Health Check
         print("🔍 BASIC HEALTH CHECK")
         print("-" * 40)
         if not self.test_health_check():
-            print("❌ Health check failed. Aborting grid layout testing.")
+            print("❌ Health check failed. Aborting Manager Panel testing.")
             return
         
-        # 2. Create Sample Listings for Grid Layout Testing
-        print("📝 CREATING SAMPLE LISTINGS FOR GRID LAYOUT")
+        # 2. Create Admin-Manager Test User
+        print("👤 CREATE ADMIN-MANAGER TEST USER")
         print("-" * 40)
-        created_listing_ids = self.test_create_sample_listings_for_grid_layout()
+        created_user_id, user_credentials = self.test_create_admin_manager_user()
         
-        # 3. Verify Listings Created
-        print("✅ VERIFYING CREATED LISTINGS")
-        print("-" * 40)
-        all_listings = self.test_verify_created_listings()
+        if not created_user_id or not user_credentials:
+            print("❌ Failed to create Admin-Manager test user. Aborting tests.")
+            return
         
-        # 4. Test Browse Endpoint for Grid Layout
-        print("🌐 TESTING BROWSE ENDPOINT FOR GRID LAYOUT")
+        # 3. Test Manager Login
+        print("🔐 TEST MANAGER LOGIN")
         print("-" * 40)
-        self.test_marketplace_browse_functionality()
+        logged_in_user = self.test_manager_login(user_credentials)
+        
+        if not logged_in_user:
+            print("❌ Failed to login as Admin-Manager. Aborting further tests.")
+            return
+        
+        # 4. Test RBAC Permissions
+        print("🛡️ TEST RBAC PERMISSIONS")
+        print("-" * 40)
+        self.test_manager_rbac_permissions(logged_in_user)
+        
+        # 5. Test Manager Panel Access Endpoints
+        print("🌐 TEST MANAGER PANEL ACCESS ENDPOINTS")
+        print("-" * 40)
+        self.test_manager_panel_access_endpoints(logged_in_user)
+        
+        # 6. Test Restricted Access
+        print("🚫 TEST RESTRICTED ACCESS")
+        print("-" * 40)
+        self.test_manager_restricted_access(logged_in_user)
+        
+        # 7. Cleanup (Optional - keep test user for frontend testing)
+        print("🧹 CLEANUP")
+        print("-" * 40)
+        print("ℹ️  Keeping test user 'test_manager' for frontend Manager Panel testing")
+        print(f"   Username: {user_credentials['username']}")
+        print(f"   Email: {user_credentials['email']}")
+        print(f"   Password: {user_credentials['password']}")
+        print(f"   Role: Admin-Manager")
         
         # Print Summary
         print("=" * 80)
-        print("GRID LAYOUT TEST SUMMARY")
+        print("MANAGER PANEL TEST SUMMARY")
         print("=" * 80)
         print(f"Total Tests: {self.total_tests}")
         print(f"Passed: {self.passed_tests} ✅")
         print(f"Failed: {self.failed_tests} ❌")
         print(f"Success Rate: {(self.passed_tests/self.total_tests*100):.1f}%")
-        print(f"Sample Listings Created: {len(created_listing_ids)}")
         print()
         
         if self.failed_tests > 0:
@@ -788,9 +818,13 @@ class BackendTester:
                 if "❌ FAIL" in result["status"]:
                     print(f"  - {result['test']}: {result['error']}")
         
-        print("\n🎯 GRID LAYOUT TESTING COMPLETE")
-        print("The sample listings are now available for testing the browse page grid layout.")
-        print("You can verify the 4-column layout (without ads) and 3-column layout (with ads) functionality.")
+        print("\n🎯 MANAGER PANEL TESTING COMPLETE")
+        print("Test user 'test_manager' is ready for frontend Manager Panel access testing.")
+        print("Expected Results:")
+        print("  ✅ Admin-Manager user can successfully access the Manager Panel")
+        print("  ✅ No 'Access Denied' error for Admin-Manager users")
+        print("  ✅ Proper Manager Panel branding and restrictions")
+        print("  ✅ Tab filtering working correctly for Admin-Manager role")
         
         return self.passed_tests, self.failed_tests, self.test_results
 
