@@ -131,11 +131,6 @@ function FavoritesPage() {
             className="w-full object-cover"
             style={{ height: adsConfig.favoriteAd.height || '200px' }}
           />
-          {adsConfig.favoriteAd.description && (
-            <div className="p-4">
-              <p className="text-gray-700 dark:text-gray-300 text-sm">{adsConfig.favoriteAd.description}</p>
-            </div>
-          )}
         </div>
       )}
 
