@@ -3916,11 +3916,26 @@ function SiteAdministrationTab({ showToast }) {
       // Simulate API call delay for better UX feedback
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Save to localStorage for persistence
-      localStorage.setItem('cataloro_site_config', JSON.stringify(siteConfig));
+      // CRITICAL FIX: Preserve ads configuration from localStorage
+      const currentLocalStorage = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+      
+      // Merge site config with existing localStorage, preserving ads configuration
+      const mergedConfig = {
+        ...siteConfig,
+        ...currentLocalStorage,
+        // Preserve ads configuration from localStorage (has priority over admin panel state)
+        adsManager: currentLocalStorage.adsManager || siteConfig.adsManager,
+        // Always ensure hero section is enabled
+        heroSectionEnabled: true
+      };
+      
+      console.log('🔧 AdminPanel: Saving merged config to localStorage:', mergedConfig);
+      
+      // Save merged configuration to localStorage
+      localStorage.setItem('cataloro_site_config', JSON.stringify(mergedConfig));
       
       // APPLY ALL CONFIGURATION CHANGES TO THE SITE IMMEDIATELY
-      const success = applySiteConfiguration(siteConfig);
+      const success = applySiteConfiguration(mergedConfig);
       
       if (success) {
         // Count applied features for user feedback
