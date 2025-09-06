@@ -832,11 +832,6 @@ function MessagesPage() {
                   className="w-full object-cover"
                   style={{ height: adsConfig.messengerAd.height || '400px' }}
                 />
-                {adsConfig.messengerAd.description && (
-                  <div className="p-3">
-                    <p className="text-gray-700 dark:text-gray-300 text-sm">{adsConfig.messengerAd.description}</p>
-                  </div>
-                )}
               </div>
             </div>
           )}
