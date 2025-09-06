@@ -7692,7 +7692,7 @@ function ListingModal({ listing, onSave, onClose }) {
 }
 
 // Cat Database Tab Component
-function CatDatabaseTab({ showToast }) {
+function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
   const [activeSubTab, setActiveSubTab] = useState('data');
   const [catalystData, setCatalystData] = useState([]);
   const [priceSettings, setPriceSettings] = useState({
