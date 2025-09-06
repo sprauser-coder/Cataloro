@@ -3238,14 +3238,19 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
         <div className="w-8 h-8 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center">
           <Clock className="w-4 h-4 text-green-600 dark:text-green-400" />
         </div>
-        <div>
+        <div className="flex-1">
           <div className="font-medium text-green-900 dark:text-green-100">
             ⏰ Time Remaining
           </div>
-          <div className="text-sm text-green-700 dark:text-green-300">
-            {timeLeft.days > 0 && `${timeLeft.days}d `}
-            {timeLeft.hours > 0 && `${timeLeft.hours}h `}
-            {timeLeft.minutes}m remaining
+          <div className="text-lg font-mono text-green-700 dark:text-green-300">
+            {timeLeft.days > 0 && <span className="font-bold">{timeLeft.days}d </span>}
+            {timeLeft.hours > 0 && <span className="font-bold">{timeLeft.hours}h </span>}
+            <span className="font-bold">{timeLeft.minutes}m</span>
+          </div>
+          <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+            {timeLeft.days > 0 ? 'Long-term campaign' : 
+             timeLeft.hours > 12 ? 'Medium-term campaign' : 
+             'Short-term campaign'}
           </div>
         </div>
       </div>
