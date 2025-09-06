@@ -644,17 +644,26 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket,
 
         {/* Assignment Dropdown - Using simple relative positioning */}
         <div className="relative z-50">
-          <button
-            onClick={() => {
-              if (window.confirm('Unassign this item from the basket? This will allow you to reassign it with updated catalyst values.')) {
-                onUnassignFromBasket(item.id);
-              }
-            }}
-            className={`w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${
-              'border-red-300 text-red-700 bg-red-50 hover:bg-red-100 focus:ring-red-500 dark:border-red-600 dark:text-red-400 dark:bg-red-900 dark:hover:bg-red-800'
-            }`}
-          >
-            Unassign
+          {item.basket_id ? (
+            <button
+              onClick={() => {
+                if (window.confirm('Unassign this item from the basket? This will allow you to reassign it with updated catalyst values.')) {
+                  onUnassignFromBasket(item.id);
+                }
+              }}
+              className="w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all border-red-300 text-red-700 bg-red-50 hover:bg-red-100 focus:ring-red-500 dark:border-red-600 dark:text-red-400 dark:bg-red-900 dark:hover:bg-red-800"
+            >
+              Unassign
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowAssignMenu(!showAssignMenu)}
+              className="w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100 focus:ring-blue-500 dark:border-blue-600 dark:text-blue-400 dark:bg-blue-900 dark:hover:bg-blue-800"
+            >
+              Assign to Basket
+              <MoreHorizontal className="w-4 h-4 ml-2" />
+            </button>
+          )}
             <MoreHorizontal className="w-4 h-4 ml-2" />
           </button>
 
