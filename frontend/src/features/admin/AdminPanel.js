@@ -7714,6 +7714,7 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
   const allSubTabs = [
     { id: 'data', label: 'Data', icon: Database, adminOnly: true }, // Only full admin can see data tab
     { id: 'calculations', label: 'Price Calculations', icon: DollarSign },
+    { id: 'content-calculations', label: 'Content Calculation', icon: Calculator },
     { id: 'basis', label: 'Basis', icon: Settings }
   ];
 
