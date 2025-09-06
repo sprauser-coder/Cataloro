@@ -271,20 +271,65 @@ class FordCatalystTester:
             self.log_test("Verify Ford Catalyst Fix", False, error_msg=str(e))
             return False
 
-    def create_ford_tender(self):
-        """Create a tender for Ford listing to simulate purchase"""
-        if not self.demo_user or not self.ford_listing:
-            self.log_test("Create Ford Tender", False, error_msg="Missing demo user or Ford listing")
+    def create_buyer_user(self):
+        """Create a buyer user to make tender on Ford listing"""
+        try:
+            # Create a new buyer user
+            buyer_data = {
+                "email": f"ford_buyer_{int(time.time())}@test.com",
+                "password": "test123",
+                "username": f"ford_buyer_{int(time.time())}",
+                "full_name": "Ford Buyer Test User",
+                "account_type": "buyer"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/auth/register",
+                json=buyer_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                # Login as the new buyer
+                login_response = requests.post(
+                    f"{BACKEND_URL}/auth/login",
+                    json={"email": buyer_data["email"], "password": buyer_data["password"]},
+                    timeout=10
+                )
+                
+                if login_response.status_code == 200:
+                    buyer_user = login_response.json().get('user', {})
+                    self.log_test(
+                        "Create Buyer User", 
+                        True, 
+                        f"Created and logged in buyer user: {buyer_user.get('username')} (ID: {buyer_user.get('id')})"
+                    )
+                    return True, buyer_user
+                else:
+                    self.log_test("Create Buyer User", False, "Failed to login as new buyer")
+                    return False, None
+            else:
+                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                self.log_test("Create Buyer User", False, error_msg=error_detail)
+                return False, None
+        except Exception as e:
+            self.log_test("Create Buyer User", False, error_msg=str(e))
+            return False, None
+
+    def create_ford_tender_as_buyer(self, buyer_user):
+        """Create a tender for Ford listing as buyer user"""
+        if not buyer_user or not self.ford_listing:
+            self.log_test("Create Ford Tender as Buyer", False, error_msg="Missing buyer user or Ford listing")
             return False, None
             
         try:
-            user_id = self.demo_user.get('id')
+            buyer_id = buyer_user.get('id')
             listing_id = self.ford_listing.get('id')
             
             # Create tender data
             tender_data = {
                 "listing_id": listing_id,
-                "buyer_id": user_id,
+                "buyer_id": buyer_id,
                 "offer_amount": 250.0,  # Reasonable offer amount
                 "message": "Test tender for Ford catalyst calculation verification"
             }
@@ -299,17 +344,17 @@ class FordCatalystTester:
                 tender = response.json()
                 tender_id = tender.get('id')
                 self.log_test(
-                    "Create Ford Tender", 
+                    "Create Ford Tender as Buyer", 
                     True, 
                     f"Created tender for Ford listing: {tender_id}"
                 )
                 return True, tender_id
             else:
                 error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
-                self.log_test("Create Ford Tender", False, error_msg=error_detail)
+                self.log_test("Create Ford Tender as Buyer", False, error_msg=error_detail)
                 return False, None
         except Exception as e:
-            self.log_test("Create Ford Tender", False, error_msg=str(e))
+            self.log_test("Create Ford Tender as Buyer", False, error_msg=str(e))
             return False, None
 
     def accept_ford_tender(self, tender_id):
