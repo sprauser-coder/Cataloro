@@ -3070,6 +3070,11 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
   ];
 
   const runtimeOptions = [
+    { value: '1 minute', label: '1 Minute (Testing)' },
+    { value: '5 minutes', label: '5 Minutes (Testing)' },
+    { value: '1 hour', label: '1 Hour' },
+    { value: '1 day', label: '1 Day' },
+    { value: '1 week', label: '1 Week' },
     { value: '1 month', label: '1 Month' },
     { value: '3 months', label: '3 Months' },
     { value: '1 year', label: '1 Year' },
