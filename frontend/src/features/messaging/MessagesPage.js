@@ -108,6 +108,43 @@ function MessagesPage() {
   const textareaRef = useRef(null);
   const messageRefs = useRef({}); // New ref for individual messages
 
+  // Helper function to get user badge info (mocked for demo)
+  const getUserBadgeInfo = (userId, userName) => {
+    // In a real app, this would fetch from user data
+    // For demo purposes, we'll determine based on patterns in the name or use current user data
+    if (userId === user?.id) {
+      const currentUserDisplay = getUserDisplay();
+      return {
+        badge: currentUserDisplay?.badge || 'Buyer',
+        role: currentUserDisplay?.role || 'User-Buyer'
+      };
+    }
+    
+    // Mock badge assignment based on name patterns for demo
+    if (userName?.toLowerCase().includes('seller') || userName?.toLowerCase().includes('john')) {
+      return { badge: 'Seller', role: 'User-Seller' };
+    } else if (userName?.toLowerCase().includes('admin')) {
+      return { badge: 'Admin', role: 'Admin' };
+    } else {
+      return { badge: 'Buyer', role: 'User-Buyer' };
+    }
+  };
+
+  // Helper function to get badge styling
+  const getBadgeStyle = (badge) => {
+    switch (badge) {
+      case 'Admin':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+      case 'Manager':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300';
+      case 'Seller':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+      case 'Buyer':
+      default:
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+    }
+  };
+
   // Enhanced scroll to message function
   const scrollToMessage = (messageId) => {
     const messageElement = messageRefs.current[messageId];
