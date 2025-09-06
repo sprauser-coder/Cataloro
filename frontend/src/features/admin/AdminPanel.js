@@ -3202,9 +3202,26 @@ function AdConfigPanel({
       const savedConfig = localStorage.getItem('cataloro_site_config');
       if (savedConfig) {
         const parsed = JSON.parse(savedConfig);
-        const savedImageUrl = parsed.adsManager?.[adType]?.image || parsed.adsManager?.[adType]?.logo;
+        let savedImageUrl = parsed.adsManager?.[adType]?.image;
+        
+        // Handle footer ad logo field
+        if (adType === 'footerAd' && !savedImageUrl) {
+          savedImageUrl = parsed.adsManager?.[adType]?.logo;
+        }
+        
         console.log(`🔧 AdConfigPanel (${adType}): Loading image from localStorage:`, savedImageUrl);
-        return savedImageUrl || adConfig.image || null;
+        
+        if (savedImageUrl) {
+          // Convert relative URLs to full URLs for proper loading
+          let fullImageUrl = savedImageUrl;
+          if (savedImageUrl.startsWith('/uploads/')) {
+            fullImageUrl = `${process.env.REACT_APP_BACKEND_URL || window.location.origin}${savedImageUrl}`;
+            console.log(`🔧 AdConfigPanel (${adType}): Converted to full URL:`, fullImageUrl);
+          }
+          return fullImageUrl;
+        }
+        
+        return adConfig.image || null;
       }
     } catch (error) {
       console.error(`🔧 AdConfigPanel (${adType}): Error loading from localStorage:`, error);
