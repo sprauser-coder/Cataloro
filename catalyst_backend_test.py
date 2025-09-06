@@ -218,28 +218,63 @@ class CatalystBackendTester:
             return False
 
     def test_create_tender_and_assign_to_basket(self):
-        """Test creating a tender for the listing and assigning it to basket"""
+        """Test creating a tender for an existing listing and assigning it to basket"""
         try:
-            if not self.test_listing_id or not self.test_basket_id or not self.test_user_id:
+            if not self.test_basket_id or not self.test_user_id:
                 self.log_test("Create Tender and Assign to Basket", False, error_msg="Missing test prerequisites")
                 return False
 
+            # Find an existing listing from a different seller
+            response = requests.get(f"{BACKEND_URL}/marketplace/browse", timeout=10)
+            if response.status_code != 200:
+                self.log_test("Create Tender and Assign to Basket", False, error_msg="Could not fetch listings")
+                return False
+            
+            listings = response.json()
+            target_listing = None
+            
+            # Find a listing from a different seller
+            for listing in listings:
+                if listing.get('seller_id') != self.test_user_id:
+                    target_listing = listing
+                    break
+            
+            if not target_listing:
+                self.log_test("Create Tender and Assign to Basket", False, error_msg="No listings from other sellers found")
+                return False
+            
+            target_listing_id = target_listing.get('id')
+            
+            # First, update this listing with catalyst fields for testing
+            update_data = {
+                "ceramic_weight": 100.0,
+                "pt_ppm": 1000.0,
+                "pd_ppm": 500.0,
+                "rh_ppm": 100.0
+            }
+            
+            update_response = requests.put(
+                f"{BACKEND_URL}/listings/{target_listing_id}",
+                json=update_data,
+                timeout=10
+            )
+            
             # Create a tender for the listing
             tender_data = {
-                "listing_id": self.test_listing_id,
+                "listing_id": target_listing_id,
                 "buyer_id": self.test_user_id,
-                "offer_amount": 200.0,
+                "offer_amount": 150.0,
                 "message": "Test tender for catalyst calculation"
             }
             
-            response = requests.post(
+            tender_response = requests.post(
                 f"{BACKEND_URL}/tenders/submit", 
                 json=tender_data,
                 timeout=10
             )
             
-            if response.status_code == 200:
-                data = response.json()
+            if tender_response.status_code == 200:
+                data = tender_response.json()
                 tender_id = data.get('tender_id')
                 
                 # Accept the tender to make it a bought item
@@ -264,7 +299,7 @@ class CatalystBackendTester:
                         self.log_test(
                             "Create Tender and Assign to Basket", 
                             True, 
-                            f"Tender {tender_id} created, accepted, and assigned to basket {self.test_basket_id}"
+                            f"Tender {tender_id} created for listing {target_listing_id}, accepted, and assigned to basket {self.test_basket_id}"
                         )
                         return True
                     else:
@@ -276,7 +311,7 @@ class CatalystBackendTester:
                     self.log_test("Create Tender and Assign to Basket", False, error_msg=f"Tender acceptance failed: {error_detail}")
                     return False
             else:
-                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                error_detail = tender_response.json().get('detail', 'Unknown error') if tender_response.content else f"HTTP {tender_response.status_code}"
                 self.log_test("Create Tender and Assign to Basket", False, error_msg=f"Tender creation failed: {error_detail}")
                 return False
         except Exception as e:
