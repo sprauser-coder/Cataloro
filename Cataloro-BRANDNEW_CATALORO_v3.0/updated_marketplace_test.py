@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class UpdatedMarketplaceTester:
-    def __init__(self, base_url="https://cataloro-ads.preview.emergentagent.com"):
+    def __init__(self, base_url="https://admanager-cataloro.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.user_token = None

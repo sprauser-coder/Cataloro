@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_search():
-    base_url = "https://cataloro-ads.preview.emergentagent.com"
+    base_url = "https://admanager-cataloro.preview.emergentagent.com"
     
     # Create a test user
     user_data = {

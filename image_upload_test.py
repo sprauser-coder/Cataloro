@@ -14,7 +14,7 @@ from datetime import datetime
 from PIL import Image
 
 # Get backend URL from environment
-BACKEND_URL = "https://cataloro-ads.preview.emergentagent.com/api"
+BACKEND_URL = "https://admanager-cataloro.preview.emergentagent.com/api"
 
 class ImageUploadTester:
     def __init__(self):
@@ -145,7 +145,7 @@ class ImageUploadTester:
         try:
             # Construct full URL for image access
             if image_url.startswith('/uploads/'):
-                full_image_url = f"https://cataloro-ads.preview.emergentagent.com{image_url}"
+                full_image_url = f"https://admanager-cataloro.preview.emergentagent.com{image_url}"
             else:
                 full_image_url = image_url
             
