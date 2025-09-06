@@ -458,7 +458,7 @@ class BasketAssignmentTester:
         basket_id = self.create_test_basket(demo_id)
         if not basket_id:
             print("❌ Failed to create test basket. Aborting assignment tests.")
-            return
+            return 0, 1, []
         
         # Test assignment if we have unassigned items
         if unassigned_items:
