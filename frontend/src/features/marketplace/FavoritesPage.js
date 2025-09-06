@@ -111,7 +111,15 @@ function FavoritesPage() {
           }}
           onClick={() => {
             if (adsConfig.favoriteAd.url) {
-              // Track ad click
+              // Track ad click using utility function
+              try {
+                // Import the tracking function dynamically
+                import('../../utils/adsConfiguration').then(({ trackAdClick }) => {
+                  trackAdClick('favoriteAd');
+                });
+              } catch (error) {
+                console.warn('Could not track ad click:', error);
+              }
               console.log('Favorites ad clicked:', adsConfig.favoriteAd.url);
               window.open(adsConfig.favoriteAd.url, '_blank');
             }
