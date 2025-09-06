@@ -8848,9 +8848,67 @@ function UserEditModal({ user, onClose, onSave }) {
               className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
                 errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
               }`}
-              placeholder="Enter email"
+              placeholder="Enter email address"
             />
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+          </div>
+
+          {/* User Role Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              User Role *
+            </label>
+            <select
+              name="user_role"
+              value={formData.user_role}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="User-Buyer">User-Buyer</option>
+              <option value="User-Seller">User-Seller</option>
+              <option value="Admin-Manager">Admin-Manager</option>
+              <option value="Admin">Admin</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Determines user permissions and access level
+            </p>
+          </div>
+
+          {/* Registration Status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Registration Status *
+            </label>
+            <select
+              name="registration_status"
+              value={formData.registration_status}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Controls user login access and approval status
+            </p>
+          </div>
+
+          {/* Account Status */}
+          <div className="flex items-center space-x-3">
+            <input
+              type="checkbox"
+              name="is_active"
+              checked={formData.is_active}
+              onChange={handleInputChange}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Account Active
+            </label>
+            <span className="text-xs text-gray-500">
+              {formData.is_active ? 'User can access the platform' : 'User account is suspended'}
+            </span>
           </div>
 
           {/* Role */}
