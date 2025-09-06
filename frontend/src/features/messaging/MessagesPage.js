@@ -812,7 +812,15 @@ function MessagesPage() {
                 className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow h-fit ${adsConfig.messengerAd.url ? 'cursor-pointer' : ''}`}
                 onClick={() => {
                   if (adsConfig.messengerAd.url) {
-                    // Track ad click
+                    // Track ad click using utility function
+                    try {
+                      // Import the tracking function dynamically
+                      import('../../utils/adsConfiguration').then(({ trackAdClick }) => {
+                        trackAdClick('messengerAd');
+                      });
+                    } catch (error) {
+                      console.warn('Could not track ad click:', error);
+                    }
                     console.log('Messenger ad clicked:', adsConfig.messengerAd.url);
                     window.open(adsConfig.messengerAd.url, '_blank');
                   }
