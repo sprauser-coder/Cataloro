@@ -425,7 +425,7 @@ class BasketAssignmentTester:
         listing_id = self.create_test_listing(admin_id)
         if not listing_id:
             print("❌ Failed to create test listing. Aborting tests.")
-            return
+            return 0, 1, []
         
         # Create tender from demo user
         tender_id = self.create_test_tender(demo_id, listing_id)
