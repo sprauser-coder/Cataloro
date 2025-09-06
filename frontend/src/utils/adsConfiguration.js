@@ -14,7 +14,9 @@ export const DEFAULT_ADS_CONFIG = {
       width: '300px',
       height: '600px',
       url: '', // Link URL for the ad
-      clicks: 0 // Click counter
+      clicks: 0, // Click counter
+      startDate: null, // When the ad was activated
+      expirationDate: null // When the ad expires
     },
     favoriteAd: {
       active: false,
@@ -22,7 +24,9 @@ export const DEFAULT_ADS_CONFIG = {
       description: '',
       runtime: '1 month',
       url: '',
-      clicks: 0
+      clicks: 0,
+      startDate: null,
+      expirationDate: null
     },
     messengerAd: {
       active: false,
@@ -30,7 +34,9 @@ export const DEFAULT_ADS_CONFIG = {
       description: '',
       runtime: '1 month',
       url: '',
-      clicks: 0
+      clicks: 0,
+      startDate: null,
+      expirationDate: null
     },
     footerAd: {
       active: false,
@@ -38,7 +44,9 @@ export const DEFAULT_ADS_CONFIG = {
       companyName: '',
       runtime: '1 month',
       url: '',
-      clicks: 0
+      clicks: 0,
+      startDate: null,
+      expirationDate: null
     }
   },
   // Ensure hero section is always enabled
