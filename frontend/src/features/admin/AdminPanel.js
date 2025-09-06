@@ -2882,6 +2882,8 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
     try {
       setIsSavingAds(true);
       
+      console.log('🔍 Saving ads configuration. Current siteConfig.adsManager:', siteConfig.adsManager);
+      
       // Simulate API call delay for better UX feedback
       await new Promise(resolve => setTimeout(resolve, 1500));
       
@@ -2892,6 +2894,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
         adsManager: siteConfig.adsManager
       };
       
+      console.log('🔍 Saving to localStorage:', updatedConfig.adsManager);
       localStorage.setItem('cataloro_site_config', JSON.stringify(updatedConfig));
       
       // Count active ads for user feedback
