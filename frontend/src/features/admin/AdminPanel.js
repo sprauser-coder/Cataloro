@@ -3875,10 +3875,38 @@ function SiteAdministrationTab({ showToast }) {
   });
 
   const handleConfigChange = (key, value) => {
-    setSiteConfig(prev => ({
-      ...prev,
-      [key]: value
-    }));
+    console.log(`🔧 AdminPanel: Config change - ${key}:`, value);
+    
+    setSiteConfig(prev => {
+      const updated = {
+        ...prev,
+        [key]: value
+      };
+      
+      // If this is an ads configuration change, immediately sync to localStorage
+      if (key === 'adsManager') {
+        try {
+          const currentLocalStorage = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+          const updatedLocalStorage = {
+            ...currentLocalStorage,
+            adsManager: value,
+            heroSectionEnabled: true // Always ensure hero section is enabled
+          };
+          
+          localStorage.setItem('cataloro_site_config', JSON.stringify(updatedLocalStorage));
+          console.log('🔧 AdminPanel: Synced ads config to localStorage:', updatedLocalStorage);
+          
+          // Dispatch event to notify browse page
+          window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
+            detail: value 
+          }));
+        } catch (error) {
+          console.error('🔧 AdminPanel: Error syncing to localStorage:', error);
+        }
+      }
+      
+      return updated;
+    });
   };
 
   const saveSiteConfiguration = async () => {
