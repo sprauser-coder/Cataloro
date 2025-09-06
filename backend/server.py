@@ -5112,9 +5112,9 @@ async def get_bought_items(user_id: str):
                         "pt_ppm": listing.get("pt_ppm", 0.0),
                         "pd_ppm": listing.get("pd_ppm", 0.0),
                         "rh_ppm": listing.get("rh_ppm", 0.0),
-                        "renumeration_pt": None,  # Will be set from price settings
-                        "renumeration_pd": None,
-                        "renumeration_rh": None
+                        "renumeration_pt": renumeration_pt,  # From price settings
+                        "renumeration_pd": renumeration_pd,
+                        "renumeration_rh": renumeration_rh
                     }
                     bought_items.append(bought_item)
         
