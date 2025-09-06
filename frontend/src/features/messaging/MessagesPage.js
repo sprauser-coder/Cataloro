@@ -625,9 +625,23 @@ function MessagesPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
-                          <p className={`text-sm font-medium ${conversation.unreadCount > 0 ? 'text-gray-900 dark:text-white font-bold' : 'text-gray-700 dark:text-gray-300'}`}>
-                            {conversation.name}
-                          </p>
+                          <div className="flex items-center space-x-2 min-w-0">
+                            <p className={`text-sm font-medium ${conversation.unreadCount > 0 ? 'text-gray-900 dark:text-white font-bold' : 'text-gray-700 dark:text-gray-300'} truncate`}>
+                              {conversation.name}
+                            </p>
+                            {/* User Badge */}
+                            {(() => {
+                              const otherUserId = conversation.messages?.[0]?.sender_id === user?.id 
+                                ? conversation.messages?.[0]?.recipient_id 
+                                : conversation.messages?.[0]?.sender_id;
+                              const badgeInfo = getUserBadgeInfo(otherUserId, conversation.name);
+                              return (
+                                <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full flex-shrink-0 ${getBadgeStyle(badgeInfo.badge)}`}>
+                                  {badgeInfo.badge}
+                                </span>
+                              );
+                            })()}
+                          </div>
                           <div className="flex items-center space-x-2">
                             {conversation.unreadCount > 0 && (
                               <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
