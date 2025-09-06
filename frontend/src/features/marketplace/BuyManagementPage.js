@@ -634,6 +634,7 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
                       key={basket.id}
                       onClick={() => {
                         console.log('Basket option clicked!', basket.name, basket.id);
+                        console.log('Full basket object:', basket);
                         console.log('Assigning item:', item.id, 'to basket:', basket.id);
                         onAssignToBasket(item.id, basket.id);
                         setShowAssignMenu(false);
