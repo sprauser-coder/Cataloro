@@ -97,6 +97,7 @@ import ContentManagementSystem from './ContentManagementSystem';
 import SystemNotificationsManager from './SystemNotificationsManager';
 import { useNotifications } from '../../context/NotificationContext';
 import { applySiteConfiguration } from '../../utils/siteConfiguration';
+import { getTimeRemaining, isAdExpired, activateAd, deactivateExpiredAds } from '../../utils/adsConfiguration';
 import BusinessTab from './BusinessTab';
 
 // System Notifications List Component
