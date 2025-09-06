@@ -187,10 +187,14 @@ class BasketAssignmentTester:
             self.log_test("Create Test Tender", False, error_msg=str(e))
             return None
 
-    def accept_tender(self, tender_id):
+    def accept_tender(self, tender_id, seller_id):
         """Accept the tender to create a bought item"""
         try:
-            response = requests.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", timeout=10)
+            acceptance_data = {
+                "seller_id": seller_id
+            }
+            
+            response = requests.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", json=acceptance_data, timeout=10)
             if response.status_code == 200:
                 data = response.json()
                 self.log_test(
