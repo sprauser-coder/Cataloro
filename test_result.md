@@ -683,6 +683,48 @@ const getEventTriggerDisplay = (notification) => {
 **Test Agent:** testing  
 **Test Status:** ✅ BUY MANAGEMENT ASSIGNMENT ENDPOINT COMPREHENSIVE TESTING COMPLETED - ALL REQUIREMENTS VERIFIED
 
+**Test Date:** 2025-01-30 20:25:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ❌ BUY MANAGEMENT ASSIGNMENT ISSUE CONFIRMED - CRITICAL DATA DISCREPANCY IDENTIFIED
+
+#### Buy Management Assignment Issue Investigation Results:
+**COMPREHENSIVE ASSIGNMENT FUNCTIONALITY TESTING:** ❌ CRITICAL ISSUE CONFIRMED - Executed detailed investigation of the specific assignment issue reported by user: "it lets me create a new basket on the Link, but it does not allow me to assign the listing to a basket". Root cause identified: Frontend-Backend data synchronization problem.
+
+**1. Current State Analysis** ✅ SYSTEM ACCESSIBLE - Successfully accessed Buy Management page and analyzed current state: Demo user successfully logged in and navigated to Buy Management page ✅, Found 1 bought item (Artisan Coffee Beans) with "ASSIGNED" status and green badge ✅, Item shows "Already Assigned" button (disabled) and "Assigned to basket" indicator ✅, Filter shows "1 items found" for all filters ✅.
+
+**2. Assignment Filter Testing** ❌ CRITICAL DISCREPANCY IDENTIFIED - Filter behavior reveals data synchronization issue: "All Items" filter: Shows 1 item (Artisan Coffee Beans) ✅, "Assigned" filter: Shows 1 item (same item) ✅, "Not Assigned" filter: Shows 0 items with "No bought items" message ❌, This indicates all items are marked as assigned, preventing any assignment testing ❌.
+
+**3. Baskets Tab Verification** ✅ BASKET CREATION WORKING - Basket functionality confirmed working correctly: Found 2 existing baskets: "Dropdown Test Basket" and "Test Basket" ✅, Both baskets show "0 items" indicating no items are actually assigned to them ❌, "Create Basket" button functional and accessible ✅, Basket creation modal opens and works correctly ✅.
+
+**4. Frontend-Backend Data Mismatch** ❌ CRITICAL SYNCHRONIZATION ISSUE - Major discrepancy between frontend display and backend data: Frontend shows: 1 bought item marked as "ASSIGNED" with disabled assignment button ❌, Backend API returns: Empty array (0 bought items) for demo_user ❌, Baskets API returns: Empty array (0 baskets) for demo_user ❌, Frontend displays 2 baskets but backend returns 0 baskets ❌.
+
+**5. Assignment Dropdown Testing** ❌ CANNOT TEST - No unassigned items available for testing: All visible items show "Already Assigned" status preventing dropdown testing ❌, "Not Assigned" filter shows 0 items, confirming no items available for assignment ❌, Cannot verify dropdown behavior, basket selection, or "Create New Basket" functionality ❌, User report of assignment failure cannot be reproduced due to data state ❌.
+
+**ROOT CAUSE ANALYSIS:**
+❌ Frontend displays cached/stale data showing 1 assigned item and 2 baskets
+❌ Backend APIs return empty arrays for both bought items and baskets
+❌ Data synchronization between frontend and backend is broken
+❌ Assignment functionality cannot be tested due to no unassigned items
+❌ User's reported issue likely stems from this frontend-backend data mismatch
+
+**TECHNICAL VERIFICATION:**
+- Buy Management Page: Accessible and functional UI components working correctly
+- Frontend Display: Shows 1 bought item (Artisan Coffee Beans) marked as assigned
+- Backend API Response: GET /api/user/bought-items/demo_user returns empty array (status 200)
+- Baskets API Response: GET /api/user/baskets/demo_user returns empty array (status 200)
+- Filter Functionality: Working correctly but shows no unassigned items for testing
+- Assignment Buttons: All show "Already Assigned" (disabled) preventing dropdown testing
+
+**CRITICAL ISSUES IDENTIFIED:**
+1. **Frontend-Backend Data Mismatch** - Frontend shows data that backend doesn't return
+2. **No Unassigned Items** - Cannot test assignment functionality as reported by user
+3. **API Synchronization Problem** - Backend returns empty data while frontend displays items
+4. **Assignment Testing Impossible** - All items marked as assigned, preventing dropdown testing
+
+**COMPREHENSIVE TEST RESULTS:** 3/6 testing objectives failed (50% failure rate), assignment functionality cannot be tested due to data issues, frontend-backend synchronization broken, user's reported assignment issue cannot be reproduced, critical data mismatch requires immediate attention.
+
+**BUY MANAGEMENT ASSIGNMENT ISSUE STATUS:** ❌ CRITICAL DATA SYNCHRONIZATION PROBLEM - The user's reported assignment issue cannot be properly investigated due to a critical frontend-backend data synchronization problem. The frontend displays 1 bought item and 2 baskets, but the backend APIs return empty arrays for both. This data mismatch prevents testing the assignment dropdown functionality and reproducing the user's reported issue. The assignment functionality appears to be working in the frontend code, but the underlying data synchronization issue needs to be resolved before proper testing can be conducted.
+
 **Test Date:** 2025-01-30 20:15:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ BUY MANAGEMENT ASSIGNMENT FUNCTIONALITY COMPREHENSIVE TESTING COMPLETED - ALL REQUIREMENTS VERIFIED
