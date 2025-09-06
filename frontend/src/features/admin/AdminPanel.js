@@ -1699,11 +1699,76 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      user.role === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
-                    }`}>
-                      {user.role?.toUpperCase()}
-                    </span>
+                    <div className="space-y-1">
+                      {/* User Role */}
+                      <div className="flex items-center space-x-2">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          user.user_role === 'Admin' || user.user_role === 'Admin-Manager' || user.role === 'admin'
+                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' 
+                            : user.user_role === 'User-Seller'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                        }`}>
+                          {user.user_role || user.role?.toUpperCase() || 'USER'}
+                        </span>
+                        {/* Role Update Dropdown */}
+                        <select
+                          value={user.user_role || user.role || 'user'}
+                          onChange={(e) => handleUpdateUserRole(user.id, e.target.value)}
+                          className="text-xs border border-gray-300 rounded px-1 py-0.5 bg-white dark:bg-gray-700 dark:border-gray-600"
+                          title="Change user role"
+                        >
+                          <option value="User-Buyer">User-Buyer</option>
+                          <option value="User-Seller">User-Seller</option>
+                          <option value="Admin-Manager">Admin-Manager</option>
+                          <option value="Admin">Admin</option>
+                        </select>
+                      </div>
+                      {/* Badge */}
+                      <div>
+                        <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
+                          user.badge === 'Admin' || user.badge === 'Manager'
+                            ? 'bg-purple-200 text-purple-900 dark:bg-purple-800/30 dark:text-purple-200'
+                            : user.badge === 'Seller'
+                            ? 'bg-green-200 text-green-900 dark:bg-green-800/30 dark:text-green-200'
+                            : 'bg-blue-200 text-blue-900 dark:bg-blue-800/30 dark:text-blue-200'
+                        }`}>
+                          {user.badge || (user.role === 'admin' ? 'Admin' : 'Buyer')}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center space-x-2">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        user.registration_status === 'Approved' || !user.registration_status
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                          : user.registration_status === 'Pending'
+                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                          : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                      }`}>
+                        {user.registration_status || 'APPROVED'}
+                      </span>
+                      {/* Approval Actions */}
+                      {user.registration_status === 'Pending' && (
+                        <div className="flex space-x-1">
+                          <button
+                            onClick={() => handleApproveUser(user.id)}
+                            className="p-1 text-green-600 hover:text-green-900 hover:bg-green-50 rounded transition-colors"
+                            title="Approve User"
+                          >
+                            <CheckCircle className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={() => handleRejectUser(user.id)}
+                            className="p-1 text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors"
+                            title="Reject User"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
