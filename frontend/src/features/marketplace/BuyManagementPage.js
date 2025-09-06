@@ -645,15 +645,16 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket,
         {/* Assignment Dropdown - Using simple relative positioning */}
         <div className="relative z-50">
           <button
-            onClick={() => setShowAssignMenu(!showAssignMenu)}
-            disabled={!!item.basket_id}
+            onClick={() => {
+              if (window.confirm('Unassign this item from the basket? This will allow you to reassign it with updated catalyst values.')) {
+                onUnassignFromBasket(item.id);
+              }
+            }}
             className={`w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all ${
-              item.basket_id
-                ? 'border-gray-300 text-gray-500 bg-gray-100 cursor-not-allowed dark:border-gray-600 dark:text-gray-500 dark:bg-gray-800 opacity-60'
-                : 'border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100 focus:ring-blue-500 dark:border-blue-600 dark:text-blue-400 dark:bg-blue-900 dark:hover:bg-blue-800'
+              'border-red-300 text-red-700 bg-red-50 hover:bg-red-100 focus:ring-red-500 dark:border-red-600 dark:text-red-400 dark:bg-red-900 dark:hover:bg-red-800'
             }`}
           >
-            {item.basket_id ? 'Already Assigned' : 'Assign to Basket'}
+            Unassign
             <MoreHorizontal className="w-4 h-4 ml-2" />
           </button>
 
