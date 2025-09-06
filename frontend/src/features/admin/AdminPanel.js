@@ -3513,7 +3513,7 @@ function UserNotificationSelector({ adType, selectedUsers, onUsersChange }) {
               key={user.id}
               className="inline-flex items-center px-2 py-1 bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 text-xs rounded-md"
             >
-              👤 {user.firstName || user.username} ({user.email})
+              👤 {user.full_name || user.username} ({user.email})
               <button
                 onClick={() => removeUser(user.id)}
                 className="ml-1 text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-200"
