@@ -3163,7 +3163,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
         <AdConfigPanel
           title="Favorites Page Advertisement"
           description="Display advertisement at the top of favorites page below 'My Favorites' header"
-          adConfig={siteConfig.adsManager?.favoriteAd || { active: false, image: null, description: '', runtime: '1 month', width: '100%', height: '200px', url: '', clicks: 0 }}
+          adConfig={siteConfig.adsManager?.favoriteAd || { active: false, image: null, description: '', runtime: '1 month', width: '100%', height: '200px', url: '', clicks: 0, notificationMethods: ['notificationCenter'], notificationUsers: [] }}
           adType="favoriteAd"
           handleAdConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
