@@ -3276,7 +3276,7 @@ async def upload_catalyst_excel(file: UploadFile = File(...)):
                     "pd_ppm": safe_float(row.get('pd_ppm'), 'pd_ppm', row_num),
                     "rh_ppm": safe_float(row.get('rh_ppm'), 'rh_ppm', row_num),
                     "add_info": str(row.get('add_info', '')).strip(),
-                    "created_at": datetime.utcnow().isoformat(),
+                    "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
                     "updated_at": datetime.utcnow().isoformat(),
                     "id": str(uuid.uuid4())
                 }
