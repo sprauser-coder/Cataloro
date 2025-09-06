@@ -607,8 +607,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 );
               })}
               
-              {/* Tenders Link */}
-              {user && (
+              {/* Tenders Link - Role-based visibility */}
+              {permissions.ui.showTenderManagementLink || permissions.ui.showMyTendersLink ? (
                 <Link
                   to={APP_ROUTES.TENDERS}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
@@ -625,24 +625,34 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   <DollarSign className="w-4 h-4" />
                   <span className="font-medium">Tenders</span>
                 </Link>
-              )}
+              ) : null}
               
-              {/* Admin Link - Always highlighted with yellow/orange background */}
-              {isAdmin && (
+              {/* Admin Link - Admin and Admin-Manager access */}
+              {permissions.ui.showAdminPanelLink && (
                 <Link
                   to="/admin"
-                  className="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm text-gray-900 dark:text-gray-900 shadow-lg backdrop-blur-md"
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm shadow-lg backdrop-blur-md ${
+                    isAdminLevel() ? 'text-gray-900 dark:text-gray-900' : 'text-gray-700 dark:text-white/80'
+                  }`}
                   style={{
                     background: location.pathname === '/admin' 
-                      ? 'linear-gradient(135deg, rgba(255, 193, 7, 0.9) 0%, rgba(255, 152, 0, 0.8) 100%)'
-                      : 'linear-gradient(135deg, rgba(255, 193, 7, 0.7) 0%, rgba(255, 152, 0, 0.6) 100%)',
+                      ? (isAdmin() 
+                          ? 'linear-gradient(135deg, rgba(255, 193, 7, 0.9) 0%, rgba(255, 152, 0, 0.8) 100%)'
+                          : 'linear-gradient(135deg, rgba(147, 51, 234, 0.8) 0%, rgba(79, 70, 229, 0.7) 100%)')
+                      : (isAdmin()
+                          ? 'linear-gradient(135deg, rgba(255, 193, 7, 0.7) 0%, rgba(255, 152, 0, 0.6) 100%)'
+                          : 'linear-gradient(135deg, rgba(147, 51, 234, 0.6) 0%, rgba(79, 70, 229, 0.5) 100%)'),
                     backdropFilter: 'blur(20px)',
-                    boxShadow: '0 4px 15px rgba(255, 193, 7, 0.3)',
-                    border: '1px solid rgba(255, 193, 7, 0.4)'
+                    boxShadow: isAdmin() 
+                      ? '0 4px 15px rgba(255, 193, 7, 0.3)'
+                      : '0 4px 15px rgba(147, 51, 234, 0.3)',
+                    border: isAdmin() 
+                      ? '1px solid rgba(255, 193, 7, 0.4)'
+                      : '1px solid rgba(147, 51, 234, 0.4)'
                   }}
                 >
                   <Shield className="w-4 h-4" />
-                  <span className="font-medium">Admin</span>
+                  <span className="font-medium">{isAdmin() ? 'Admin' : 'Manager'}</span>
                 </Link>
               )}
             </nav>
