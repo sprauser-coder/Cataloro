@@ -3117,17 +3117,26 @@ function AdConfigPanel({
       <div className="space-y-6">
         <label className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
           <button
-            onClick={() => handleAdConfigChange(adType, 'active', !adConfig.active)}
-            className="mt-1"
+            onClick={() => {
+              console.log(`🔧 Toggle clicked: ${adType}.active from ${adConfig.active} to ${!adConfig.active}`);
+              handleAdConfigChange(adType, 'active', !adConfig.active);
+            }}
+            className="mt-1 flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200"
+            style={{
+              backgroundColor: adConfig.active ? '#10B981' : '#6B7280',
+              color: 'white'
+            }}
           >
             {adConfig.active ? (
-              <ToggleRight className="w-6 h-6 text-green-600" />
+              <CheckCircle className="w-5 h-5" />
             ) : (
-              <ToggleLeft className="w-6 h-6 text-gray-400" />
+              <X className="w-5 h-5" />
             )}
           </button>
           <div>
-            <div className="font-medium text-gray-900 dark:text-white">Active</div>
+            <div className="font-medium text-gray-900 dark:text-white">
+              Active {adConfig.active ? '✓ ON' : '✗ OFF'}
+            </div>
             <div className="text-sm text-gray-600 dark:text-gray-400">Enable this advertisement section</div>
           </div>
         </label>
