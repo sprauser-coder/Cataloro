@@ -3328,6 +3328,58 @@ function AdConfigPanel({
 
 // Footer Ad Config Panel Component
 function FooterAdConfigPanel({ adConfig, adType, handleAdConfigChange, handleImageUpload, runtimeOptions }) {
+  const [logoPreview, setLogoPreview] = React.useState(adConfig.logo || null);
+  const [isUploading, setIsUploading] = React.useState(false);
+  
+  const handleLocalLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select only image files');
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      
+      // Create preview immediately
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setLogoPreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+      
+      // Upload to server
+      await handleImageUpload(adType, file, 'logo');
+      
+    } catch (error) {
+      console.error('Upload error:', error);
+      setLogoPreview(null);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeLogo = () => {
+    setLogoPreview(null);
+    handleAdConfigChange(adType, 'logo', null);
+  };
+  
+  // Update preview when adConfig changes
+  React.useEffect(() => {
+    if (adConfig.logo && adConfig.logo !== logoPreview) {
+      setLogoPreview(adConfig.logo);
+    }
+  }, [adConfig.logo]);
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Footer Advertisement</h4>
@@ -3340,46 +3392,83 @@ function FooterAdConfigPanel({ adConfig, adType, handleAdConfigChange, handleIma
         <label className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
           <button
             onClick={() => handleAdConfigChange(adType, 'active', !adConfig.active)}
-            className="mt-1"
+            className="mt-1 flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200"
+            style={{
+              backgroundColor: adConfig.active ? '#10B981' : '#6B7280',
+              color: 'white'
+            }}
           >
             {adConfig.active ? (
-              <ToggleRight className="w-6 h-6 text-green-600" />
+              <CheckCircle className="w-5 h-5" />
             ) : (
-              <ToggleLeft className="w-6 h-6 text-gray-400" />
+              <X className="w-5 h-5" />
             )}
           </button>
           <div>
-            <div className="font-medium text-gray-900 dark:text-white">Active</div>
+            <div className="font-medium text-gray-900 dark:text-white">
+              Active {adConfig.active ? '✓ ON' : '✗ OFF'}
+            </div>
             <div className="text-sm text-gray-600 dark:text-gray-400">Enable footer cooperation section</div>
           </div>
         </label>
 
         {adConfig.active && (
           <>
-            {/* Logo Upload */}
+            {/* Logo Upload with Preview */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+                <ImageIcon className="w-5 h-5 inline mr-2" />
                 Company Logo
               </label>
-              <div className="space-y-3">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) handleImageUpload(adType, file, 'logo');
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-                {adConfig.logo && (
-                  <div className="mt-2">
+              
+              <div className="space-y-4">
+                {/* Logo Preview */}
+                {logoPreview ? (
+                  <div className="relative group max-w-32">
                     <img 
-                      src={adConfig.logo} 
-                      alt="Company logo preview" 
-                      className="w-16 h-16 object-contain rounded-lg border bg-white"
+                      src={logoPreview} 
+                      alt="Company logo preview"
+                      className="w-24 h-24 object-contain rounded-lg border-2 border-gray-200 dark:border-gray-600 bg-white p-2"
                     />
+                    <button
+                      type="button"
+                      onClick={removeLogo}
+                      className="absolute -top-2 -right-2 p-1 bg-red-500 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                    <div className="absolute bottom-1 left-1 bg-black/70 text-white px-1 py-0.5 rounded text-xs">
+                      Logo
+                    </div>
                   </div>
+                ) : (
+                  <label className="w-32 h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
+                    {isUploading ? (
+                      <div className="flex flex-col items-center">
+                        <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-1"></div>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Uploading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                        <span className="text-xs text-gray-700 dark:text-gray-300 text-center">
+                          Upload Logo
+                        </span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLocalLogoUpload}
+                      disabled={isUploading}
+                      className="hidden"
+                    />
+                  </label>
                 )}
+                
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Upload a company logo. Recommended: square format, max 5MB.
+                </p>
               </div>
             </div>
 
@@ -3390,7 +3479,7 @@ function FooterAdConfigPanel({ adConfig, adType, handleAdConfigChange, handleIma
               </label>
               <input
                 type="text"
-                value={adConfig.companyName}
+                value={adConfig.companyName || ''}
                 onChange={(e) => handleAdConfigChange(adType, 'companyName', e.target.value)}
                 placeholder="Enter company name..."
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -3406,7 +3495,7 @@ function FooterAdConfigPanel({ adConfig, adType, handleAdConfigChange, handleIma
                 Runtime
               </label>
               <select
-                value={adConfig.runtime}
+                value={adConfig.runtime || '1 month'}
                 onChange={(e) => handleAdConfigChange(adType, 'runtime', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
@@ -3419,12 +3508,12 @@ function FooterAdConfigPanel({ adConfig, adType, handleAdConfigChange, handleIma
             </div>
 
             {/* Preview */}
-            {adConfig.logo && adConfig.companyName && (
+            {logoPreview && adConfig.companyName && (
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview:</h5>
+                <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Footer Preview:</h5>
                 <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                   <span>In cooperation with</span>
-                  <img src={adConfig.logo} alt="logo" className="w-6 h-6 object-contain" />
+                  <img src={logoPreview} alt="logo" className="w-6 h-6 object-contain" />
                   <span className="font-medium">{adConfig.companyName}</span>
                 </div>
               </div>
