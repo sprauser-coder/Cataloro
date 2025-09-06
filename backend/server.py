@@ -5128,14 +5128,22 @@ async def get_user_baskets(user_id: str):
     try:
         baskets = await db.baskets.find({"user_id": user_id}).sort("created_at", -1).to_list(length=None)
         
-        # Process baskets and add items
+        # Process baskets and add items (preserve original UUID)
+        processed_baskets = []
         for basket in baskets:
-            basket = serialize_doc(basket)
+            # Keep the original UUID from the document
+            original_id = basket.get("id")
+            processed_basket = serialize_doc(basket)
+            
+            # Restore the original UUID (serialize_doc overwrites it with ObjectId)
+            if original_id:
+                processed_basket["id"] = original_id
             
             # Get items assigned to this basket (placeholder - would be actual assignments)
-            basket["items"] = []  # This would be populated with actual bought items
+            processed_basket["items"] = []  # This would be populated with actual bought items
+            processed_baskets.append(processed_basket)
         
-        return baskets
+        return processed_baskets
         
     except Exception as e:
         logger.error(f"Error fetching baskets for user {user_id}: {e}")
