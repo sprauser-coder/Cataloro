@@ -5209,10 +5209,10 @@ async def get_user_baskets(user_id: str):
                                 "purchased_at": order.get("approved_at", order.get("created_at")),
                                 "assigned_at": assignment.get("assigned_at"),
                                 # Cat database fields directly from listing
-                                "weight": listing.get("ceramic_weight", 0.0),
-                                "pt_ppm": listing.get("pt_ppm", 0.0),
-                                "pd_ppm": listing.get("pd_ppm", 0.0),
-                                "rh_ppm": listing.get("rh_ppm", 0.0),
+                                "weight": listing.get("ceramic_weight") or 0.0,
+                                "pt_ppm": listing.get("pt_ppm") or 0.0,
+                                "pd_ppm": listing.get("pd_ppm") or 0.0,
+                                "rh_ppm": listing.get("rh_ppm") or 0.0,
                                 "renumeration_pt": renumeration_pt,  # From price settings
                                 "renumeration_pd": renumeration_pd,
                                 "renumeration_rh": renumeration_rh
