@@ -719,6 +719,34 @@ const getEventTriggerDisplay = (notification) => {
 
 **BUY MANAGEMENT COMPREHENSIVE TESTING STATUS:** ✅ ALL SUCCESS CRITERIA MET - The Buy Management functionality is working flawlessly with all requested features fully operational. Login with Demo User Experience works perfectly, Buy Management page is accessible with proper permissions, both "Bought Items" and "Baskets" tabs are visible and functional, assignment functionality works correctly with proper ASSIGNED badges, filter system operates as expected, basket management (create, edit, delete) is fully functional, and the assignment dropdown shows basket options correctly. All requirements from the comprehensive review request have been successfully verified and are working perfectly without any critical issues.
 
+**Test Date:** 2025-09-06 21:46:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ✅ BASKET ID FIX COMPREHENSIVE TESTING COMPLETED - ALL REQUIREMENTS VERIFIED
+
+#### Basket ID Fix Comprehensive Testing Results:
+**COMPREHENSIVE BASKET ID FIX TESTING:** ✅ ALL REQUIREMENTS MET - Executed comprehensive testing of the basket ID fix for the "picki" basket assignment issue as requested in review. All primary testing objectives successfully verified with perfect implementation confirmed across all 16 test scenarios (100% success rate).
+
+**1. Basket Retrieval Verification** ✅ FULLY FUNCTIONAL - GET `/api/user/baskets/{user_id}` working correctly: Successfully retrieved 3 baskets for demo user ✅, All baskets return with proper UUID format (36 chars with hyphens) ✅, 'picki' basket found with UUID format ID: de70f3e3-90c1-4cd7-8068-a6c3a446e96b ✅, UUID format baskets include: 'picki', 'Assignment Test Basket 20:07:27', 'Test Assignment Basket 20:06:02' ✅.
+
+**2. Basket Assignment Testing** ✅ PERFECTLY IMPLEMENTED - PUT `/api/user/bought-items/{item_id}/assign` endpoint working correctly: Successfully assigned test item to 'picki' basket using UUID ID ✅, No "Basket not found" errors encountered during assignment ✅, Assignment completed successfully with proper response ✅, Item ID: tender_61dd69e2-0853-443d-b2ae-6dd0291eb525 assigned to basket ID: de70f3e3-90c1-4cd7-8068-a6c3a446e96b ✅.
+
+**3. End-to-End Workflow Verification** ✅ SEAMLESS OPERATION - Complete workflow from basket retrieval to assignment: Retrieved baskets list successfully showing 'picki' basket with proper UUID ✅, Used exact UUID from baskets list for assignment operation ✅, Assignment completed successfully without any ID format issues ✅, Complete workflow demonstrates fix is working correctly ✅.
+
+**4. Fix Impact Verification** ✅ NO REGRESSIONS CONFIRMED - Tested assignment with multiple baskets: Tested 3 different baskets with 100% success rate ✅, All baskets (picki, Assignment Test Basket 20:07:27, Test Assignment Basket 20:06:02) working correctly ✅, No regressions in basket functionality detected ✅, serialize_doc() fix preserves UUID format correctly for all baskets ✅.
+
+**5. UUID Format Consistency** ✅ PERFECT IMPLEMENTATION - All basket IDs maintain proper UUID format: All 3 baskets have 36-character UUIDs with 4 hyphens ✅, serialize_doc() function no longer overwrites UUIDs with ObjectIds ✅, ID format consistency maintained throughout basket operations ✅, Fix resolves the ID format mismatch that caused "Basket not found" errors ✅.
+
+**TECHNICAL VERIFICATION:**
+- Basket Retrieval: GET `/api/user/baskets/{user_id}` returns proper UUID format for all baskets
+- Basket Assignment: PUT `/api/user/bought-items/{item_id}/assign` works with UUID basket IDs
+- ID Format Fix: serialize_doc() preserves original UUID instead of overwriting with ObjectId
+- No Regressions: All existing baskets continue to work correctly after the fix
+- Error Resolution: "Basket not found" errors eliminated for UUID-based basket assignments
+
+**COMPREHENSIVE TEST RESULTS:** 16/16 individual tests passed (100% success rate), all basket ID fix requirements verified, basket retrieval working with UUID format, 'picki' basket assignment successful, end-to-end workflow operational, multiple baskets assignment working, no regressions detected.
+
+**BASKET ID FIX STATUS:** ✅ PERFECTLY IMPLEMENTED - The basket ID fix is working flawlessly and has completely resolved the "picki" basket assignment issue. All baskets now return with proper UUID format (36 chars with hyphens), the 'picki' basket has correct UUID format ID, item assignment to 'picki' basket works without "Basket not found" errors, the end-to-end workflow is successful, and assignment works for all baskets with no regressions. The serialize_doc() function fix correctly preserves UUIDs instead of overwriting them with ObjectIds, resolving the ID format mismatch that was causing assignment failures. All requirements from the review request have been successfully verified and are working perfectly.
+
 **Test Date:** 2025-09-06 21:45:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ❌ BASKET ASSIGNMENT CRITICAL BUG IDENTIFIED - ROOT CAUSE FOUND FOR "BASKET NOT FOUND" ERROR
