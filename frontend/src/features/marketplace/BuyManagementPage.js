@@ -387,6 +387,7 @@ function BuyManagementPage() {
                 assignmentFilter={assignmentFilter}
                 setAssignmentFilter={setAssignmentFilter}
                 onAssignToBasket={assignItemToBasket}
+                onUnassignFromBasket={unassignItemFromBasket}
                 onCreateBasket={() => setShowCreateBasket(true)}
                 loading={loading}
               />
