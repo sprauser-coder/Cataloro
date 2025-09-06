@@ -757,15 +757,45 @@ function ModernBrowsePage() {
                 }}
                 onClick={(e) => {
                   console.log('🔗 Ad clicked!');
-                  console.log('🔗 Ad URL:', adsConfig.browsePageAd.url);
+                  console.log('🔗 Event details:', { 
+                    target: e.target.tagName, 
+                    currentTarget: e.currentTarget.tagName,
+                    url: adsConfig.browsePageAd.url 
+                  });
                   
                   if (adsConfig.browsePageAd.url) {
                     e.preventDefault(); // Prevent any default behavior
                     e.stopPropagation(); // Stop event from bubbling up
+                    e.stopImmediatePropagation(); // Stop all other handlers
                     
-                    console.log('🔗 Opening URL:', adsConfig.browsePageAd.url);
+                    console.log('🔗 Opening URL in new tab:', adsConfig.browsePageAd.url);
+                    
+                    // Track the click
                     trackAdClick('browsePageAd');
-                    window.open(adsConfig.browsePageAd.url, '_blank', 'noopener,noreferrer');
+                    
+                    // Force URL to open in new tab using multiple methods
+                    try {
+                      const newWindow = window.open(adsConfig.browsePageAd.url, '_blank', 'noopener,noreferrer');
+                      if (newWindow) {
+                        newWindow.focus();
+                        console.log('✅ Successfully opened URL in new tab');
+                      } else {
+                        console.log('❌ Popup blocked - trying alternative method');
+                        // Fallback: create temporary link and click it
+                        const link = document.createElement('a');
+                        link.href = adsConfig.browsePageAd.url;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        console.log('✅ Opened URL using fallback method');
+                      }
+                    } catch (error) {
+                      console.error('❌ Failed to open URL:', error);
+                    }
+                    
+                    return false; // Ensure no further processing
                   } else {
                     console.log('🔗 No URL configured for ad');
                   }
