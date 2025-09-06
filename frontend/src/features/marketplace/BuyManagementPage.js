@@ -589,6 +589,9 @@ function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, cal
               totals={calculateTotals(basket)}
               onEdit={() => onEditBasket(basket)}
               onDelete={() => onDeleteBasket(basket.id)}
+              onUnassignFromBasket={onUnassignFromBasket}
+              onReassignToBasket={onReassignToBasket}
+              allBaskets={baskets}
             />
           ))}
         </div>
