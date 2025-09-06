@@ -3766,8 +3766,27 @@ function SiteAdministrationTab({ showToast }) {
           ...defaultConfig,
           ...parsedConfig,
           adsManager: {
-            ...defaultConfig.adsManager,
-            ...(parsedConfig.adsManager || {})
+            browsePageAd: {
+              ...defaultConfig.adsManager.browsePageAd,
+              ...(parsedConfig.adsManager?.browsePageAd || {}),
+              // CRITICAL: Preserve uploaded image URL if it exists
+              image: parsedConfig.adsManager?.browsePageAd?.image || defaultConfig.adsManager.browsePageAd.image
+            },
+            favoriteAd: {
+              ...defaultConfig.adsManager.favoriteAd,
+              ...(parsedConfig.adsManager?.favoriteAd || {}),
+              image: parsedConfig.adsManager?.favoriteAd?.image || defaultConfig.adsManager.favoriteAd.image
+            },
+            messengerAd: {
+              ...defaultConfig.adsManager.messengerAd,
+              ...(parsedConfig.adsManager?.messengerAd || {}),
+              image: parsedConfig.adsManager?.messengerAd?.image || defaultConfig.adsManager.messengerAd.image
+            },
+            footerAd: {
+              ...defaultConfig.adsManager.footerAd,
+              ...(parsedConfig.adsManager?.footerAd || {}),
+              logo: parsedConfig.adsManager?.footerAd?.logo || defaultConfig.adsManager.footerAd.logo
+            }
           }
         };
       }
