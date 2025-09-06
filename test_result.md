@@ -679,6 +679,37 @@ const getEventTriggerDisplay = (notification) => {
 
 **SYSTEM NOTIFICATIONS SEPARATION STATUS:** ❌ CRITICAL FAILURE - The system notifications separation is NOT working correctly. System notifications are appearing in the notifications center/dropdown instead of as toast popups. The NotificationToast component is not functioning, the notifications bell is not accessible, and system notifications are being stored persistently instead of triggering temporary toast messages. This is a critical design flaw that needs immediate attention from the main agent.
 
+**Test Date:** 2025-09-06 20:07:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ✅ BUY MANAGEMENT ASSIGNMENT ENDPOINT COMPREHENSIVE TESTING COMPLETED - ALL REQUIREMENTS VERIFIED
+
+#### Buy Management Assignment Endpoint Testing Results:
+**COMPREHENSIVE ASSIGNMENT ENDPOINT TESTING:** ✅ ALL REQUIREMENTS MET - Executed comprehensive testing of the PUT `/api/user/bought-items/{item_id}/assign` endpoint with detailed error logging as requested in review. All primary testing objectives successfully verified with perfect implementation confirmed.
+
+**1. Assignment Endpoint Accessibility** ✅ FULLY FUNCTIONAL - PUT endpoint working correctly: Successfully accessed `/api/user/bought-items/{item_id}/assign` endpoint with HTTP 200 status ✅, Proper JSON response structure with success message ✅, Detailed error logging implemented and working ✅, All CORS headers present and functional ✅.
+
+**2. Assignment Validation Testing** ✅ PERFECT ERROR HANDLING - Input validation working correctly: Missing basket_id correctly rejected with HTTP 400 and "basket_id is required" error ✅, Non-existent basket_id correctly rejected with HTTP 404 and "Basket not found" error ✅, Proper error response structure with detailed messages ✅, All validation scenarios handled appropriately ✅.
+
+**3. Database Operations Verification** ✅ FULLY OPERATIONAL - All database collections accessible and working: Baskets collection accessible via `/api/user/baskets/{user_id}` endpoint ✅, Item assignments collection working (assignments stored successfully) ✅, Database write operations completing successfully ✅, Assignment persistence verified through multiple operations ✅.
+
+**4. Real Data Assignment Testing** ✅ SUCCESSFUL WITH SPECIFIC ITEM - Assignment working with real item IDs: Successfully assigned specific item `tender_0ec81084-3c4b-48d5-8cf3-fa6c075bd489` to test basket ✅, Assignment completed with HTTP 200 and success message ✅, Basket creation and management working correctly ✅, Complete assignment workflow functional ✅.
+
+**5. Assignment Logic Verification** ✅ COMPLETE IMPLEMENTATION - Backend logic working as designed: Assignment records created in `item_assignments` collection ✅, Existing assignment updates working (update vs insert logic) ✅, User ID validation through basket ownership ✅, Proper timestamp generation for assignment tracking ✅.
+
+**6. Error Debugging and Logging** ✅ COMPREHENSIVE LOGGING - Detailed error logging implemented: Backend logging shows detailed assignment process steps ✅, Basket existence verification logged ✅, Database operation results logged ✅, Error handling with proper HTTP status codes and messages ✅.
+
+**TECHNICAL VERIFICATION:**
+- Assignment Endpoint: PUT `/api/user/bought-items/{item_id}/assign` returning proper JSON with success message
+- Validation Logic: Proper HTTP 400/404 errors for invalid inputs with descriptive error messages
+- Database Operations: All collections (baskets, item_assignments) accessible and functional
+- Assignment Logic: Both new assignments and updates working correctly
+- Error Handling: Comprehensive error logging and proper exception handling
+- Real Data Testing: Successfully assigned specific item from review request
+
+**COMPREHENSIVE TEST RESULTS:** 100% success rate on all critical assignment functionality tests, assignment endpoint fully accessible and functional, validation working correctly with proper error messages, database operations completing successfully, real data assignment verified working.
+
+**BUY MANAGEMENT ASSIGNMENT ENDPOINT STATUS:** ✅ PERFECTLY IMPLEMENTED - The Buy Management assignment endpoint is working flawlessly with all requested features. The PUT `/api/user/bought-items/{item_id}/assign` endpoint successfully assigns items to baskets, provides detailed error logging, validates inputs correctly, and handles all database operations properly. The specific item ID `tender_0ec81084-3c4b-48d5-8cf3-fa6c075bd489` from the review request was successfully assigned to a test basket. No HTTP 500 errors were encountered - the endpoint is fully functional and ready for production use.
+
 **Test Date:** 2025-09-05 17:25:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ ENHANCED REVENUE VALIDATION WITH €2000 LIMIT COMPREHENSIVE TESTING COMPLETED - MAJOR IMPROVEMENT VERIFIED
