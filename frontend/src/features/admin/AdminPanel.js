@@ -3284,6 +3284,17 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
   );
 }
 
+// Helper function to get user-friendly page location names
+const getPageLocationName = (adType) => {
+  const pageNames = {
+    browsePageAd: 'Browse Page',
+    favoriteAd: 'Favorites Page', 
+    messengerAd: 'Messages Page',
+    footerAd: 'Footer'
+  };
+  return pageNames[adType] || adType;
+};
+
 // User Notification Selector Component
 function UserNotificationSelector({ adType, selectedUsers, onUsersChange }) {
   const [searchTerm, setSearchTerm] = React.useState('');
