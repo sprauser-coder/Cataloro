@@ -572,7 +572,7 @@ function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, cal
 }
 
 // Bought Item Card Component
-function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
+function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket, onCreateBasket }) {
   const [showAssignMenu, setShowAssignMenu] = useState(false);
 
   return (
