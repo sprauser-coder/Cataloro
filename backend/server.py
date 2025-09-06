@@ -2061,7 +2061,7 @@ async def mark_notification_read(user_id: str, notification_id: str):
     try:
         result = await db.user_notifications.update_one(
             {"user_id": user_id, "id": notification_id},
-            {"$set": {"is_read": True, "read_at": datetime.utcnow().isoformat()}}
+            {"$set": {"read": True, "read_at": datetime.utcnow().isoformat()}}
         )
         
         if result.matched_count == 0:
