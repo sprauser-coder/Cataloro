@@ -5048,34 +5048,43 @@ async def get_bought_items(user_id: str):
         for tender in accepted_tenders:
             # Get listing details
             listing = await db.listings.find_one({"id": tender.get("listing_id")})
+            
+            # Get seller info - try from listing first, then directly from tender
+            seller_id = None
             if listing:
-                # Get seller info
-                seller = await db.users.find_one({"id": listing.get("seller_id")})
+                seller_id = listing.get("seller_id")
+            else:
+                # If listing not found, try to get seller_id from tender directly
+                seller_id = tender.get("seller_id")
+            
+            seller_name = "Unknown"
+            if seller_id:
+                seller = await db.users.find_one({"id": seller_id})
                 seller_name = seller.get("username", "Unknown") if seller else "Unknown"
-                
-                # Generate unique item ID based on tender and listing
-                item_id = f"tender_{tender.get('id', '')}"
-                
-                bought_item = {
-                    "id": item_id,
-                    "listing_id": tender.get("listing_id"),
-                    "title": listing.get("title", "Unknown Item"),
-                    "price": tender.get("offer_amount", 0),
-                    "seller_name": seller_name,
-                    "seller_id": listing.get("seller_id"),
-                    "image": listing.get("images", [""])[0] if listing.get("images") else None,
-                    "purchased_at": tender.get("accepted_at", tender.get("created_at")),
-                    "basket_id": None,  # Will be set based on assignment
-                    # Cat database fields from listing
-                    "weight": listing.get("ceramic_weight", 0.0),
-                    "pt_ppm": listing.get("pt_ppm", 0.0),
-                    "pd_ppm": listing.get("pd_ppm", 0.0),
-                    "rh_ppm": listing.get("rh_ppm", 0.0),
-                    "renumeration_pt": renumeration_pt,  # From price settings
-                    "renumeration_pd": renumeration_pd,
-                    "renumeration_rh": renumeration_rh
-                }
-                bought_items.append(bought_item)
+            
+            # Generate unique item ID based on tender and listing
+            item_id = f"tender_{tender.get('id', '')}"
+            
+            bought_item = {
+                "id": item_id,
+                "listing_id": tender.get("listing_id"),
+                "title": listing.get("title", "Unknown Item") if listing else tender.get("item_title", "Unknown Item"),
+                "price": tender.get("offer_amount", 0),
+                "seller_name": seller_name,
+                "seller_id": seller_id,
+                "image": listing.get("images", [""])[0] if listing and listing.get("images") else None,
+                "purchased_at": tender.get("accepted_at", tender.get("created_at")),
+                "basket_id": None,  # Will be set based on assignment
+                # Cat database fields from listing (fallback to defaults if no listing)
+                "weight": listing.get("ceramic_weight", 0.0) if listing else 0.0,
+                "pt_ppm": listing.get("pt_ppm", 0.0) if listing else 0.0,
+                "pd_ppm": listing.get("pd_ppm", 0.0) if listing else 0.0,
+                "rh_ppm": listing.get("rh_ppm", 0.0) if listing else 0.0,
+                "renumeration_pt": renumeration_pt,  # From price settings
+                "renumeration_pd": renumeration_pd,
+                "renumeration_rh": renumeration_rh
+            }
+            bought_items.append(bought_item)
         
         # Get items from completed orders where user is buyer
         completed_orders = await db.orders.find({
