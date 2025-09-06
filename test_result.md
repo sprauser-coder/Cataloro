@@ -4258,6 +4258,18 @@ backend:
           agent: "testing"
           comment: "✅ IMAGE UPLOAD FUNCTIONALITY TESTING COMPLETED - Comprehensive testing of Ad's Manager image upload system completed with 91.7% success rate (11/12 tests passed). ✅ WORKING PERFECTLY: Image Upload API (/api/admin/upload-image) handling multipart form data with proper file validation, Image Serving from /uploads/cms/ directory with correct Content-Type headers, Ad Configuration Storage via /api/admin/settings with hero background image URL support, CMS Content Management with enhanced hero image fields (heroImage, showHeroImage, heroImagePosition, backgroundImage), Multiple Image Formats (PNG, JPEG) upload support. ✅ VERIFIED FUNCTIONALITY: Sample image uploaded successfully to /uploads/cms/hero_background_background_image_*.png, Image accessible at full URL with proper Content-Type: image/png and 3644 bytes size, Settings updated with image URLs for hero background configuration, Content management supporting both background and foreground hero images with positioning controls. ❌ MINOR ISSUE: Image validation for invalid file types returns HTTP 500 instead of expected HTTP 400 (non-critical). All core image upload workflow for advertisements is fully operational and ready for production use."
 
+  - task: "Backend Notification Timezone Fix for German Time"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ BACKEND NOTIFICATION TIMEZONE FIX TESTING COMPLETED - ALL REQUIREMENTS VERIFIED: Executed comprehensive testing of German timezone implementation for notification timestamps as requested in review with 100% success rate (7/7 tests passed). ✅ NOTIFICATION CREATION WITH GERMAN TIMEZONE: POST /api/user/{user_id}/notifications endpoint correctly creates notifications with German timezone timestamps using datetime.now(pytz.timezone('Europe/Berlin')).isoformat() at line 2050 in server.py. Created test notification with timestamp: 2025-09-06T17:36:06.939116+02:00 (CEST). ✅ NOTIFICATION RETRIEVAL VERIFICATION: GET /api/user/{user_id}/notifications endpoint returns notifications with proper German timezone formatting (+2.0h offset from UTC). Timestamps are no longer 2 hours behind current German time. ✅ TIMEZONE FORMATTING CONSISTENCY: All notifications use consistent German timezone formatting with proper ISO 8601 format including timezone offset information. ✅ CURRENT TIME ACCURACY: Created notification timestamp matches current German time with 0.1s accuracy difference, confirming real-time German timezone implementation. ✅ PYTZ LIBRARY FUNCTIONALITY: PyTZ library working correctly for Europe/Berlin timezone with proper timezone calculations and consistent formatting across multiple notification creations. ✅ COMPREHENSIVE VERIFICATION: All notification endpoints use consistent German timezone, timestamps show correct German time instead of UTC, and the timezone fix resolves the 2-hour time difference issue. The backend notification system now properly uses German timezone (Europe/Berlin) for all timestamp operations."
+
 metadata:
   created_by: "testing_agent"
   version: "1.0"
