@@ -30,6 +30,7 @@ function PublicProfilePage() {
   const { userId } = useParams();
   const { user: currentUser } = useAuth();
   const { allProducts } = useMarketplace();
+  const { getUserDisplay } = usePermissions();
   const [profileUser, setProfileUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userStats, setUserStats] = useState({
