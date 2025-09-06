@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 
 class MultiEndpointDeletionTester:
-    def __init__(self, base_url="https://browse-ads.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-ads.preview.emergentagent.com"):
         self.base_url = base_url
         self.regular_user = None
         self.tests_run = 0

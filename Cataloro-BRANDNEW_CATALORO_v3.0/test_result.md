@@ -517,7 +517,7 @@ if not seller:
    - All services healthy and responsive
 
 3. **Environment Configuration** ✅ PASSED
-   - Backend URL: https://browse-ads.preview.emergentagent.com ✅ WORKING
+   - Backend URL: https://cataloro-ads.preview.emergentagent.com ✅ WORKING
    - MongoDB URL: mongodb://localhost:27017 ✅ WORKING
    - All API routes properly prefixed with '/api'
 

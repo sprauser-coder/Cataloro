@@ -9,7 +9,7 @@ import json
 
 def test_listing_creation_detailed():
     """Test the exact scenario users are reporting"""
-    base_url = "https://browse-ads.preview.emergentagent.com"
+    base_url = "https://cataloro-ads.preview.emergentagent.com"
     
     print("🔍 DETAILED LISTING CREATION ANALYSIS")
     print("=" * 50)

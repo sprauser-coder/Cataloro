@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://browse-ads.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-ads.preview.emergentagent.com/api"
 
 class UsernameAvailabilityTester:
     def __init__(self):
