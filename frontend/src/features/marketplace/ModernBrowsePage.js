@@ -150,6 +150,7 @@ function useAdsConfig() {
 function ModernBrowsePage() {
   const { user } = useAuth();
   const { showToast } = useNotifications();
+  const { permissions } = usePermissions();
   const navigate = useNavigate();
   const adsConfig = useAdsConfig();
   
