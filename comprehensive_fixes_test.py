@@ -17,7 +17,7 @@ import io
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://admanager-cataloro.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-4.preview.emergentagent.com/api"
 
 class ComprehensiveFixesTester:
     def __init__(self):
@@ -279,7 +279,7 @@ class ComprehensiveFixesTester:
             
             # Try to access the uploaded image
             if image_url.startswith('/uploads/cms/'):
-                full_url = f"https://admanager-cataloro.preview.emergentagent.com{image_url}"
+                full_url = f"https://cataloro-marketplace-4.preview.emergentagent.com{image_url}"
                 response = requests.get(full_url, timeout=15)
                 
                 if response.status_code == 200:

@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://admanager-cataloro.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-4.preview.emergentagent.com/api"
 
 def test_dashboard_endpoint_fix():
     """Test that /api/admin/dashboard now uses active listings filter"""

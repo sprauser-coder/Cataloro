@@ -10,7 +10,7 @@ import sys
 
 def test_favorites_bug_fix_final():
     """Final comprehensive test of favorites bug fix"""
-    base_url = 'https://admanager-cataloro.preview.emergentagent.com'
+    base_url = 'https://cataloro-marketplace-4.preview.emergentagent.com'
     
     print("🚀 FINAL FAVORITES BUG FIX VERIFICATION")
     print("=" * 60)

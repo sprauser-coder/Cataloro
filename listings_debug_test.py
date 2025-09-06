@@ -10,7 +10,7 @@ from datetime import datetime
 from collections import Counter
 
 # Get backend URL from environment
-BACKEND_URL = "https://admanager-cataloro.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-4.preview.emergentagent.com/api"
 
 class ListingsDebugTester:
     def __init__(self):

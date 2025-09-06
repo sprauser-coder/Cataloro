@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://admanager-cataloro.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-4.preview.emergentagent.com/api"
 
 class AdminDashboardWithDataTester:
     def __init__(self):

@@ -10,7 +10,7 @@ import uuid
 import time
 from datetime import datetime
 
-BACKEND_URL = "https://admanager-cataloro.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-4.preview.emergentagent.com/api"
 
 def log_test(test_name, success, details="", error_msg=""):
     """Log test results"""

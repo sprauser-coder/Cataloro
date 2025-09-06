@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 class BrowsePageLoadingTester:
-    def __init__(self, base_url="https://admanager-cataloro.preview.emergentagent.com"):
+    def __init__(self, base_url="https://cataloro-marketplace-4.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.user_token = None
