@@ -13,7 +13,7 @@ import pymongo
 from pymongo import MongoClient
 
 # Get backend URL from environment
-BACKEND_URL = "https://cataloro-marketplace-3.preview.emergentagent.com/api"
+BACKEND_URL = "https://browse-ads.preview.emergentagent.com/api"
 MONGO_URL = "mongodb://localhost:27017"
 
 class NotificationRootCauseAnalyzer:

@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://cataloro-marketplace-3.preview.emergentagent.com/api"
+BACKEND_URL = "https://browse-ads.preview.emergentagent.com/api"
 
 class FocusedAITester:
     def __init__(self):

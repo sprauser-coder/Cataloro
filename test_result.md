@@ -1616,7 +1616,7 @@ const formatDate = (listing) => {
 **6. Specific Element Verification** ✅ ALL ELEMENTS PRESENT AND FUNCTIONAL - Individual component testing completed: Pictures display at top of each tile with proper aspect ratio ✅, Titles clearly visible with appropriate font sizing ✅, Prices show current highest bid or starting price correctly ✅, Market Range badges appear for catalyst items (TRPSAK333: €135-€165, VW074131701G: €196-€240) ✅, Seller information with avatars and usernames displayed ✅, Location information shows "Location not specified" appropriately ✅, Input fields with proper placeholders (Min: €150.00, Min: €200.00, etc.) ✅, Dates positioned at bottom of tiles ✅.
 
 **TECHNICAL VERIFICATION:**
-- Browse page URL: https://cataloro-marketplace-3.preview.emergentagent.com/browse accessible and functional
+- Browse page URL: https://browse-ads.preview.emergentagent.com/browse accessible and functional
 - Total listings displayed: 22 results with consistent structure
 - Grid layout: Professional 4-column desktop layout with responsive behavior
 - Visual elements: 54 business/private badges, 39 market range badges, proper color coding
@@ -2587,7 +2587,7 @@ if not seller:
    - All services healthy and responsive
 
 3. **Environment Configuration** ✅ PASSED
-   - Backend URL: https://cataloro-marketplace-3.preview.emergentagent.com ✅ WORKING
+   - Backend URL: https://browse-ads.preview.emergentagent.com ✅ WORKING
    - MongoDB URL: mongodb://localhost:27017 ✅ WORKING
    - All API routes properly prefixed with '/api'
 

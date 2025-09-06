@@ -10,7 +10,7 @@ import json
 import time
 
 class DemoDataInvestigator:
-    def __init__(self, base_url="https://cataloro-marketplace-3.preview.emergentagent.com"):
+    def __init__(self, base_url="https://browse-ads.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
 
