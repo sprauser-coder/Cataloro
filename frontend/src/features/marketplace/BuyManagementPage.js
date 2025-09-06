@@ -701,7 +701,9 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket,
 }
 
 // Basket Card Component
-function BasketCard({ basket, totals, onEdit, onDelete }) {
+function BasketCard({ basket, totals, onEdit, onDelete, onUnassignFromBasket, onReassignToBasket, allBaskets }) {
+  const [showReassignMenu, setShowReassignMenu] = useState(null); // Track which item's menu is open
+
   return (
     <div className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600">
       <div className="p-6">
@@ -771,26 +773,78 @@ function BasketCard({ basket, totals, onEdit, onDelete }) {
           </div>
         </div>
 
-        {/* Items List Preview */}
+        {/* Items List Preview with Actions */}
         {basket.items && basket.items.length > 0 && (
           <div className="mt-4">
             <h5 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
               Items in Basket
             </h5>
-            <div className="space-y-2 max-h-32 overflow-y-auto">
-              {basket.items.slice(0, 3).map((item, index) => (
-                <div key={index} className="flex items-center justify-between text-sm">
-                  <span className="text-gray-900 dark:text-white truncate">
-                    {item.title}
-                  </span>
-                  <span className="text-gray-500 dark:text-gray-400">
-                    €{item.price?.toFixed(2) || '0.00'}
-                  </span>
+            <div className="space-y-3 max-h-64 overflow-y-auto">
+              {basket.items.map((item, index) => (
+                <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-900 dark:text-white truncate flex-1 mr-2">
+                      {item.title}
+                    </span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      €{item.price?.toFixed(2) || '0.00'}
+                    </span>
+                  </div>
+                  
+                  {/* Action buttons for each item */}
+                  <div className="flex items-center space-x-2 relative">
+                    <button
+                      onClick={() => {
+                        if (window.confirm(`Unassign "${item.title}" from this basket?`)) {
+                          onUnassignFromBasket(item.id);
+                        }
+                      }}
+                      className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 dark:bg-red-900/50 dark:text-red-400 dark:hover:bg-red-900"
+                    >
+                      Unassign
+                    </button>
+                    
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowReassignMenu(showReassignMenu === item.id ? null : item.id)}
+                        className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-400 dark:hover:bg-blue-900"
+                      >
+                        Reassign
+                      </button>
+                      
+                      {/* Reassign dropdown */}
+                      {showReassignMenu === item.id && (
+                        <div className="absolute left-0 top-full mt-1 bg-white dark:bg-gray-700 rounded-md shadow-lg border border-gray-200 dark:border-gray-600 z-50 min-w-32">
+                          <div className="py-1">
+                            {allBaskets.filter(b => b.id !== basket.id).length > 0 ? (
+                              allBaskets.filter(b => b.id !== basket.id).map((targetBasket) => (
+                                <button
+                                  key={targetBasket.id}
+                                  onClick={() => {
+                                    onReassignToBasket(item.id, basket.id, targetBasket.id);
+                                    setShowReassignMenu(null);
+                                  }}
+                                  className="block w-full px-3 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                                >
+                                  <Archive className="w-3 h-3 inline mr-2" />
+                                  {targetBasket.name}
+                                </button>
+                              ))
+                            ) : (
+                              <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                                No other baskets
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))}
-              {basket.items.length > 3 && (
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  +{basket.items.length - 3} more items
+              {basket.items.length > 5 && (
+                <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                  Showing first 5 items
                 </div>
               )}
             </div>
