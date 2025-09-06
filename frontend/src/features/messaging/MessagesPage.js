@@ -801,12 +801,19 @@ function MessagesPage() {
 
           {/* Messenger Advertisement */}
           {adsConfig?.messengerAd?.active && adsConfig.messengerAd.image && (
-            <div className="w-64 border-l border-gray-200/30 dark:border-gray-700/30 p-4">
+            <div 
+              className="border-l border-gray-200/30 dark:border-gray-700/30 p-4"
+              style={{ 
+                width: adsConfig.messengerAd.width || '250px',
+                minWidth: adsConfig.messengerAd.width || '250px'
+              }}
+            >
               <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow h-fit">
                 <img
                   src={adsConfig.messengerAd.image}
                   alt={adsConfig.messengerAd.description || 'Advertisement'}
-                  className="w-full h-64 object-cover"
+                  className="w-full object-cover"
+                  style={{ height: adsConfig.messengerAd.height || '400px' }}
                 />
                 {adsConfig.messengerAd.description && (
                   <div className="p-3">
