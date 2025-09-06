@@ -7952,26 +7952,41 @@ function CatDatabaseTab({ showToast }) {
             <p className="text-gray-600 dark:text-gray-300">Catalyst database management and price calculations</p>
           </div>
           <div className="flex items-center space-x-4">
-            <button
-              onClick={handleDeleteDatabase}
-              disabled={loading || catalystData.length === 0}
-              className="cataloro-button-danger flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-              title={catalystData.length === 0 ? "No data to delete" : "Delete entire catalyst database"}
-            >
-              <Trash2 className="w-5 h-5 mr-2" />
-              Delete Database
-            </button>
-            <label className="cataloro-button-primary cursor-pointer">
-              <Upload className="w-5 h-5 mr-2" />
-              {uploading ? 'Uploading...' : 'Upload Excel'}
-              <input
-                type="file"
-                accept=".xlsx,.xls"
-                onChange={handleExcelUpload}
-                className="hidden"
-                disabled={uploading}
-              />
-            </label>
+            {/* Delete Database - Only for full admin */}
+            {permissions.adminPanel.canDeleteDatabase && (
+              <button
+                onClick={handleDeleteDatabase}
+                disabled={loading || catalystData.length === 0}
+                className="cataloro-button-danger flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                title={catalystData.length === 0 ? "No data to delete" : "Delete entire catalyst database"}
+              >
+                <Trash2 className="w-5 h-5 mr-2" />
+                Delete Database
+              </button>
+            )}
+            
+            {/* Upload Excel - Only for full admin */}
+            {permissions.adminPanel.canUploadExcel && (
+              <label className="cataloro-button-primary cursor-pointer">
+                <Upload className="w-5 h-5 mr-2" />
+                {uploading ? 'Uploading...' : 'Upload Excel'}
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={handleExcelUpload}
+                  className="hidden"
+                  disabled={uploading}
+                />
+              </label>
+            )}
+            
+            {/* Show restricted message for Admin-Manager */}
+            {!permissions.adminPanel.canDeleteDatabase && isAdminManager() && (
+              <div className="flex items-center space-x-2 text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-3 py-2 rounded-lg border border-orange-200 dark:border-orange-800">
+                <Shield className="w-4 h-4" />
+                <span className="text-sm font-medium">Database modification restricted for Manager role</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
