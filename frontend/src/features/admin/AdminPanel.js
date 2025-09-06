@@ -3258,9 +3258,38 @@ function AdConfigPanel({
   // Update preview when adConfig changes
   React.useEffect(() => {
     if (adConfig.image && adConfig.image !== imagePreview) {
+      console.log(`🔧 AdConfigPanel (${adType}): adConfig.image changed to:`, adConfig.image);
       setImagePreview(adConfig.image);
     }
   }, [adConfig.image]);
+  
+  // CRITICAL FIX: Listen for localStorage changes and update preview
+  React.useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        const savedConfig = localStorage.getItem('cataloro_site_config');
+        if (savedConfig) {
+          const parsed = JSON.parse(savedConfig);
+          const savedImageUrl = parsed.adsManager?.[adType]?.image || parsed.adsManager?.[adType]?.logo;
+          if (savedImageUrl && savedImageUrl !== imagePreview) {
+            console.log(`🔧 AdConfigPanel (${adType}): localStorage changed, updating preview to:`, savedImageUrl);
+            setImagePreview(savedImageUrl);
+          }
+        }
+      } catch (error) {
+        console.error(`🔧 AdConfigPanel (${adType}): Error handling storage change:`, error);
+      }
+    };
+    
+    // Listen for both storage events and custom ads config events
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('adsConfigUpdated', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('adsConfigUpdated', handleStorageChange);
+    };
+  }, [adType, imagePreview]);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
