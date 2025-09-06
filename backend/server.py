@@ -5098,34 +5098,37 @@ async def get_bought_items(user_id: str):
             if not any(item["listing_id"] == listing_id for item in bought_items):
                 # Get listing details
                 listing = await db.listings.find_one({"id": listing_id})
-                if listing:
-                    # Get seller info
-                    seller = await db.users.find_one({"id": order.get("seller_id")})
+                
+                # Get seller info - we already have seller_id from order
+                seller_id = order.get("seller_id")
+                seller_name = "Unknown"
+                if seller_id:
+                    seller = await db.users.find_one({"id": seller_id})
                     seller_name = seller.get("username", "Unknown") if seller else "Unknown"
-                    
-                    # Generate unique item ID based on order and listing
-                    item_id = f"order_{order.get('id', '')}"
-                    
-                    bought_item = {
-                        "id": item_id,
-                        "listing_id": listing_id,
-                        "title": listing.get("title", "Unknown Item"),
-                        "price": listing.get("price", 0),
-                        "seller_name": seller_name,
-                        "seller_id": order.get("seller_id"),
-                        "image": listing.get("images", [""])[0] if listing.get("images") else None,
-                        "purchased_at": order.get("approved_at", order.get("created_at")),
-                        "basket_id": None,
-                        # Cat database fields from listing
-                        "weight": listing.get("ceramic_weight", 0.0),
-                        "pt_ppm": listing.get("pt_ppm", 0.0),
-                        "pd_ppm": listing.get("pd_ppm", 0.0),
-                        "rh_ppm": listing.get("rh_ppm", 0.0),
-                        "renumeration_pt": renumeration_pt,  # From price settings
-                        "renumeration_pd": renumeration_pd,
-                        "renumeration_rh": renumeration_rh
-                    }
-                    bought_items.append(bought_item)
+                
+                # Generate unique item ID based on order and listing
+                item_id = f"order_{order.get('id', '')}"
+                
+                bought_item = {
+                    "id": item_id,
+                    "listing_id": listing_id,
+                    "title": listing.get("title", "Unknown Item") if listing else order.get("item_title", "Unknown Item"),
+                    "price": listing.get("price", 0) if listing else order.get("price", 0),
+                    "seller_name": seller_name,
+                    "seller_id": seller_id,
+                    "image": listing.get("images", [""])[0] if listing and listing.get("images") else None,
+                    "purchased_at": order.get("approved_at", order.get("created_at")),
+                    "basket_id": None,
+                    # Cat database fields from listing (fallback to defaults if no listing)
+                    "weight": listing.get("ceramic_weight", 0.0) if listing else 0.0,
+                    "pt_ppm": listing.get("pt_ppm", 0.0) if listing else 0.0,
+                    "pd_ppm": listing.get("pd_ppm", 0.0) if listing else 0.0,
+                    "rh_ppm": listing.get("rh_ppm", 0.0) if listing else 0.0,
+                    "renumeration_pt": renumeration_pt,  # From price settings
+                    "renumeration_pd": renumeration_pd,
+                    "renumeration_rh": renumeration_rh
+                }
+                bought_items.append(bought_item)
         
         # Get assignments for all items
         for item in bought_items:
