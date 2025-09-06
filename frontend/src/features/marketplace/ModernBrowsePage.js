@@ -782,15 +782,7 @@ function ModernBrowsePage() {
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Advertisement Space</h3>
                       <p className="text-gray-600 dark:text-gray-400 text-sm">{adsConfig.browsePageAd.description}</p>
                     </div>
-                    {/* Description overlay */}
-                    {adsConfig.browsePageAd.description && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                        <p className="text-white text-sm font-medium">{adsConfig.browsePageAd.description}</p>
-                        {adsConfig.browsePageAd.url && (
-                          <p className="text-white/80 text-xs mt-1">Click to visit</p>
-                        )}
-                      </div>
-                    )}
+                    {/* REMOVED: Description overlay - show clean image only */}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center p-6 text-center h-full">
