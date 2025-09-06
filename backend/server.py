@@ -4010,7 +4010,7 @@ async def create_review(review_data: dict):
             "would_recommend": review_data.get("would_recommend", True),
             "verified": review_data.get("verified", False),
             "helpful_count": 0,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "images": review_data.get("images", [])
         }
         
