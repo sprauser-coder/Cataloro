@@ -1051,7 +1051,7 @@ async def create_user_by_admin(user_data: dict):
                 "email_updates": True,
                 "public_profile": True
             },
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "updated_at": datetime.utcnow().isoformat(),
             "last_login": None,
             "status": "active"
