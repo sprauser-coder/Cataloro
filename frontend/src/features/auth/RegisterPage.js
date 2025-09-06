@@ -17,6 +17,7 @@ function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    account_type: 'buyer', // Default to buyer
     is_business: false,
     company_name: '',
     country: '',
