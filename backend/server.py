@@ -1273,8 +1273,16 @@ async def create_user_by_admin(user_data: dict):
 async def delete_user_by_admin(user_id: str):
     """Admin endpoint to delete users"""
     try:
-        # Delete user
+        # Delete user - try UUID id field first, then ObjectId
         result = await db.users.delete_one({"id": user_id})
+        
+        # If not found, try by ObjectId (for API compatibility)
+        if result.deleted_count == 0:
+            try:
+                from bson import ObjectId
+                result = await db.users.delete_one({"_id": ObjectId(user_id)})
+            except:
+                pass
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="User not found")
