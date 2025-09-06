@@ -165,11 +165,10 @@ class BasketAssignmentTester:
                 "listing_id": listing_id,
                 "buyer_id": demo_id,
                 "offer_amount": 175.00,
-                "message": "Test tender for assignment functionality",
-                "status": "pending"
+                "message": "Test tender for assignment functionality"
             }
             
-            response = requests.post(f"{BACKEND_URL}/tenders", json=tender_data, timeout=10)
+            response = requests.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, timeout=10)
             if response.status_code == 200:
                 data = response.json()
                 tender_id = data.get('tender_id') or data.get('id')
