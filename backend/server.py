@@ -1968,7 +1968,7 @@ async def send_message(user_id: str, message_data: dict):
             "subject": message_data.get("subject", ""),
             "content": message_data.get("content"),
             "read": False,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "id": str(uuid.uuid4())
         }
         
