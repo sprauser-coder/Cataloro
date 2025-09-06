@@ -501,10 +501,10 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
   const [showAssignMenu, setShowAssignMenu] = useState(false);
 
   return (
-    <div className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600 overflow-hidden">
+    <div className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600">
       {/* Item Image */}
       {item.image && (
-        <div className="aspect-w-16 aspect-h-9">
+        <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-t-lg">
           <img
             src={item.image}
             alt={item.title}
