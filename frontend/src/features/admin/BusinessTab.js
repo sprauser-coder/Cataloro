@@ -300,6 +300,292 @@ function BusinessTab({ showToast }) {
         </div>
       </div>
 
+      {/* Comprehensive Business Summary Dashboard */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+        {/* User Statistics */}
+        <div className="cataloro-card-glass p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+                <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <h4 className="text-lg font-bold text-gray-900 dark:text-white">User Base</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total registered users</p>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Total Users</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">1,247</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Active Buyers</span>
+              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">892</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Active Sellers</span>
+              <span className="text-md font-semibold text-green-600 dark:text-green-400">234</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Admins/Managers</span>
+              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">8</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Pending Approval</span>
+              <span className="text-md font-semibold text-orange-600 dark:text-orange-400">23</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Business Accounts */}
+        <div className="cataloro-card-glass p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
+                <Store className="w-6 h-6 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <h4 className="text-lg font-bold text-gray-900 dark:text-white">Business Accounts</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Commercial registrations</p>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Total Business</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">156</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Verified Business</span>
+              <span className="text-md font-semibold text-green-600 dark:text-green-400">134</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Pending Verification</span>
+              <span className="text-md font-semibold text-orange-600 dark:text-orange-400">22</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Premium Business</span>
+              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">45</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Revenue Share</span>
+              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">€12.4K</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Marketplace Activity */}
+        <div className="cataloro-card-glass p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
+                <Activity className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div>
+                <h4 className="text-lg font-bold text-gray-900 dark:text-white">Activity Overview</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Platform engagement</p>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Active Listings</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">2,847</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Total Bids</span>
+              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">8,923</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Completed Deals</span>
+              <span className="text-md font-semibold text-green-600 dark:text-green-400">1,234</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Messages Sent</span>
+              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">15.6K</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Avg Response Time</span>
+              <span className="text-md font-semibold text-orange-600 dark:text-orange-400">2.4h</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Financial Overview */}
+        <div className="cataloro-card-glass p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl">
+                <DollarSign className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+              </div>
+              <div>
+                <h4 className="text-lg font-bold text-gray-900 dark:text-white">Financial Summary</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Revenue metrics</p>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Monthly Revenue</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">€45.2K</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Transaction Fees</span>
+              <span className="text-md font-semibold text-green-600 dark:text-green-400">€3.4K</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Subscription Revenue</span>
+              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">€1.8K</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Average Deal Value</span>
+              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">€127</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Growth Rate</span>
+              <span className="text-md font-semibold text-green-600 dark:text-green-400">+12.5%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Role-Based User Distribution Chart */}
+      <div className="cataloro-card-glass p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
+            <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
+              <BarChart3 className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <div>
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white">User Role Distribution</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">RBAC system implementation overview</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">Buyers</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">Sellers</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">Managers</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+              <span className="text-xs text-gray-600 dark:text-gray-400">Admins</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* User-Buyer */}
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/30 p-4 rounded-xl border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-2">
+                <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <span className="font-semibold text-blue-900 dark:text-blue-100">User-Buyer</span>
+              </div>
+              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">892</span>
+            </div>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-blue-700 dark:text-blue-300">Active Bidders</span>
+                <span className="font-medium text-blue-900 dark:text-blue-100">743</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-blue-700 dark:text-blue-300">Avg Bids/User</span>
+                <span className="font-medium text-blue-900 dark:text-blue-100">12.4</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-blue-700 dark:text-blue-300">Success Rate</span>
+                <span className="font-medium text-blue-900 dark:text-blue-100">34%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* User-Seller */}
+          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/30 p-4 rounded-xl border border-green-200 dark:border-green-800">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-2">
+                <Store className="w-5 h-5 text-green-600 dark:text-green-400" />
+                <span className="font-semibold text-green-900 dark:text-green-100">User-Seller</span>
+              </div>
+              <span className="text-2xl font-bold text-green-600 dark:text-green-400">234</span>
+            </div>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-green-700 dark:text-green-300">Active Listings</span>
+                <span className="font-medium text-green-900 dark:text-green-100">1,847</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-green-700 dark:text-green-300">Avg Price</span>
+                <span className="font-medium text-green-900 dark:text-green-100">€145</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-green-700 dark:text-green-300">Completion Rate</span>
+                <span className="font-medium text-green-900 dark:text-green-100">67%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Admin-Manager */}
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/30 p-4 rounded-xl border border-purple-200 dark:border-purple-800">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-2">
+                <Settings className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <span className="font-semibold text-purple-900 dark:text-purple-100">Admin-Manager</span>
+              </div>
+              <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">5</span>
+            </div>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-purple-700 dark:text-purple-300">Users Managed</span>
+                <span className="font-medium text-purple-900 dark:text-purple-100">1,126</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-purple-700 dark:text-purple-300">Approvals/Day</span>
+                <span className="font-medium text-purple-900 dark:text-purple-100">23</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-purple-700 dark:text-purple-300">Response Time</span>
+                <span className="font-medium text-purple-900 dark:text-purple-100">1.2h</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Admin */}
+          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-900/30 p-4 rounded-xl border border-yellow-200 dark:border-yellow-800">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-2">
+                <Shield className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                <span className="font-semibold text-yellow-900 dark:text-yellow-100">Admin</span>
+              </div>
+              <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">3</span>
+            </div>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-yellow-700 dark:text-yellow-300">System Access</span>
+                <span className="font-medium text-yellow-900 dark:text-yellow-100">Full</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-yellow-700 dark:text-yellow-300">Actions/Day</span>
+                <span className="font-medium text-yellow-900 dark:text-yellow-100">47</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-yellow-700 dark:text-yellow-300">Uptime</span>
+                <span className="font-medium text-yellow-900 dark:text-yellow-100">99.8%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* View Mode Toggle */}
       <div className="cataloro-card-glass p-6">
         <div className="flex items-center justify-between">
