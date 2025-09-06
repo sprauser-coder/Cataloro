@@ -3416,9 +3416,67 @@ function AdConfigPanel({
       <div className="space-y-6">
         <label className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
           <button
+          <button
             onClick={() => {
               console.log(`🔧 Toggle clicked: ${adType}.active from ${adConfig.active} to ${!adConfig.active}`);
-              handleAdConfigChange(adType, 'active', !adConfig.active);
+              
+              const newActiveState = !adConfig.active;
+              
+              if (newActiveState) {
+                // Admin is manually activating the ad
+                console.log(`🔧 Admin manually activating ad: ${adType}`);
+                
+                // If the ad is expired or has no expiration date, set new dates
+                const isExpired = adConfig.expirationDate && isAdExpired(adConfig);
+                const hasNoExpiration = !adConfig.expirationDate;
+                
+                if (isExpired || hasNoExpiration) {
+                  const now = new Date().toISOString();
+                  const runtime = adConfig.runtime || '1 month';
+                  const newExpiration = calculateExpirationDate(now, runtime);
+                  
+                  console.log(`🔧 Setting new activation dates for ${adType}:`, {
+                    startDate: now,
+                    expirationDate: newExpiration,
+                    runtime: runtime
+                  });
+                  
+                  // Update with new activation dates
+                  handleAdConfigChange(adType, 'active', true);
+                  handleAdConfigChange(adType, 'startDate', now);
+                  handleAdConfigChange(adType, 'expirationDate', newExpiration);
+                  
+                  // Update localStorage immediately
+                  try {
+                    const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+                    if (!currentConfig.adsManager) currentConfig.adsManager = {};
+                    if (!currentConfig.adsManager[adType]) currentConfig.adsManager[adType] = {};
+                    
+                    currentConfig.adsManager[adType].active = true;
+                    currentConfig.adsManager[adType].startDate = now;
+                    currentConfig.adsManager[adType].expirationDate = newExpiration;
+                    
+                    localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
+                    
+                    // Dispatch event
+                    window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
+                      detail: currentConfig.adsManager 
+                    }));
+                    
+                  } catch (error) {
+                    console.error('Error updating localStorage on manual activation:', error);
+                  }
+                  
+                  showToast(`Ad reactivated with new ${runtime} duration!`, 'success');
+                } else {
+                  // Ad is not expired, just toggle normally
+                  handleAdConfigChange(adType, 'active', true);
+                }
+              } else {
+                // Admin is manually deactivating the ad
+                console.log(`🔧 Admin manually deactivating ad: ${adType}`);
+                handleAdConfigChange(adType, 'active', false);
+              }
             }}
             className="mt-1 flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200"
             style={{
