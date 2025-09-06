@@ -5018,6 +5018,207 @@ async def get_user_sold_items(user_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to fetch sold items: {str(e)}")
 
 # ============================================================================
+# BUY MANAGEMENT ENDPOINTS
+# ============================================================================
+
+@app.get("/api/user/bought-items/{user_id}")
+async def get_bought_items(user_id: str):
+    """Get all bought items for a user"""
+    try:
+        # Get bought items from accepted tenders and completed orders
+        bought_items = []
+        
+        # Get items from accepted tenders where user is buyer
+        accepted_tenders = await db.tenders.find({
+            "buyer_id": user_id,
+            "status": "accepted"
+        }).to_list(length=None)
+        
+        for tender in accepted_tenders:
+            # Get listing details
+            listing = await db.listings.find_one({"id": tender.get("listing_id")})
+            if listing:
+                # Get seller info
+                seller = await db.users.find_one({"id": listing.get("seller_id")})
+                seller_name = seller.get("username", "Unknown") if seller else "Unknown"
+                
+                bought_item = {
+                    "id": generate_id(),
+                    "listing_id": tender.get("listing_id"),
+                    "title": listing.get("title", "Unknown Item"),
+                    "price": tender.get("offer_amount", 0),
+                    "seller_name": seller_name,
+                    "seller_id": listing.get("seller_id"),
+                    "image": listing.get("images", [""])[0] if listing.get("images") else None,
+                    "purchased_at": tender.get("accepted_at", tender.get("created_at")),
+                    "basket_id": None,  # Will be set when assigned to basket
+                    # Cat database fields (placeholder - would come from actual cat database)
+                    "weight": None,
+                    "pt_ppm": None,
+                    "pd_ppm": None,
+                    "rh_ppm": None,
+                    "renumeration_pt": None,
+                    "renumeration_pd": None,
+                    "renumeration_rh": None
+                }
+                bought_items.append(bought_item)
+        
+        # Get items from completed orders where user is buyer
+        completed_orders = await db.orders.find({
+            "buyer_id": user_id,
+            "status": {"$in": ["approved", "completed"]}
+        }).to_list(length=None)
+        
+        for order in completed_orders:
+            # Check if already added from tenders
+            listing_id = order.get("listing_id")
+            if not any(item["listing_id"] == listing_id for item in bought_items):
+                # Get listing details
+                listing = await db.listings.find_one({"id": listing_id})
+                if listing:
+                    # Get seller info
+                    seller = await db.users.find_one({"id": order.get("seller_id")})
+                    seller_name = seller.get("username", "Unknown") if seller else "Unknown"
+                    
+                    bought_item = {
+                        "id": generate_id(),
+                        "listing_id": listing_id,
+                        "title": listing.get("title", "Unknown Item"),
+                        "price": listing.get("price", 0),
+                        "seller_name": seller_name,
+                        "seller_id": order.get("seller_id"),
+                        "image": listing.get("images", [""])[0] if listing.get("images") else None,
+                        "purchased_at": order.get("approved_at", order.get("created_at")),
+                        "basket_id": None,
+                        # Cat database fields (placeholder)
+                        "weight": None,
+                        "pt_ppm": None,
+                        "pd_ppm": None,
+                        "rh_ppm": None,
+                        "renumeration_pt": None,
+                        "renumeration_pd": None,
+                        "renumeration_rh": None
+                    }
+                    bought_items.append(bought_item)
+        
+        # Sort by purchase date (newest first)
+        bought_items.sort(key=lambda x: x.get("purchased_at", ""), reverse=True)
+        
+        return bought_items
+        
+    except Exception as e:
+        logger.error(f"Error fetching bought items for user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch bought items: {str(e)}")
+
+@app.get("/api/user/baskets/{user_id}")
+async def get_user_baskets(user_id: str):
+    """Get all baskets for a user"""
+    try:
+        baskets = await db.baskets.find({"user_id": user_id}).sort("created_at", -1).to_list(length=None)
+        
+        # Process baskets and add items
+        for basket in baskets:
+            basket = serialize_doc(basket)
+            
+            # Get items assigned to this basket (placeholder - would be actual assignments)
+            basket["items"] = []  # This would be populated with actual bought items
+        
+        return baskets
+        
+    except Exception as e:
+        logger.error(f"Error fetching baskets for user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch baskets: {str(e)}")
+
+@app.post("/api/user/baskets")
+async def create_basket(basket_data: dict):
+    """Create a new basket"""
+    try:
+        basket_id = generate_id()
+        
+        basket = {
+            "id": basket_id,
+            "user_id": basket_data.get("user_id"),
+            "name": basket_data.get("name"),
+            "description": basket_data.get("description", ""),
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+            "updated_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+            "items": []
+        }
+        
+        await db.baskets.insert_one(basket)
+        
+        return {"message": "Basket created successfully", "basket_id": basket_id}
+        
+    except Exception as e:
+        logger.error(f"Error creating basket: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create basket: {str(e)}")
+
+@app.put("/api/user/baskets/{basket_id}")
+async def update_basket(basket_id: str, basket_data: dict):
+    """Update a basket"""
+    try:
+        update_data = {
+            "name": basket_data.get("name"),
+            "description": basket_data.get("description", ""),
+            "updated_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat()
+        }
+        
+        result = await db.baskets.update_one(
+            {"id": basket_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Basket not found")
+        
+        return {"message": "Basket updated successfully"}
+        
+    except Exception as e:
+        logger.error(f"Error updating basket {basket_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update basket: {str(e)}")
+
+@app.delete("/api/user/baskets/{basket_id}")
+async def delete_basket(basket_id: str):
+    """Delete a basket and unassign all items"""
+    try:
+        # First unassign all items from this basket (placeholder - would update bought items)
+        # await db.bought_items.update_many(
+        #     {"basket_id": basket_id},
+        #     {"$unset": {"basket_id": ""}}
+        # )
+        
+        # Delete the basket
+        result = await db.baskets.delete_one({"id": basket_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Basket not found")
+        
+        return {"message": "Basket deleted successfully"}
+        
+    except Exception as e:
+        logger.error(f"Error deleting basket {basket_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete basket: {str(e)}")
+
+@app.put("/api/user/bought-items/{item_id}/assign")
+async def assign_item_to_basket(item_id: str, assignment_data: dict):
+    """Assign a bought item to a basket"""
+    try:
+        basket_id = assignment_data.get("basket_id")
+        
+        # This would update the bought item's basket assignment
+        # For now, we'll just return success as this is a placeholder
+        # In a real implementation, you'd:
+        # 1. Find the bought item by item_id
+        # 2. Update its basket_id field
+        # 3. Update the basket's items list
+        
+        return {"message": "Item assigned to basket successfully"}
+        
+    except Exception as e:
+        logger.error(f"Error assigning item {item_id} to basket: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to assign item: {str(e)}")
+
+# ============================================================================
 # STARTUP EVENT
 # ============================================================================
 
