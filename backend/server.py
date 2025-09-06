@@ -5128,6 +5128,12 @@ async def get_user_baskets(user_id: str):
     try:
         baskets = await db.baskets.find({"user_id": user_id}).sort("created_at", -1).to_list(length=None)
         
+        # Get price settings for renumeration values
+        price_settings = await db.price_settings.find_one({}) or {}
+        renumeration_pt = price_settings.get("renumeration_pt", 50.0)
+        renumeration_pd = price_settings.get("renumeration_pd", 30.0)
+        renumeration_rh = price_settings.get("renumeration_rh", 80.0)
+        
         # Process baskets and add items (preserve original UUID)
         processed_baskets = []
         for basket in baskets:
