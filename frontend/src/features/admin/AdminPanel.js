@@ -96,6 +96,7 @@ import { useMarketplace } from '../../context/MarketplaceContext';
 import ContentManagementSystem from './ContentManagementSystem';
 import SystemNotificationsManager from './SystemNotificationsManager';
 import { useNotifications } from '../../context/NotificationContext';
+import usePermissions from '../../hooks/usePermissions';
 import { applySiteConfiguration } from '../../utils/siteConfiguration';
 import { getTimeRemaining, isAdExpired, activateAd, deactivateExpiredAds, calculateExpirationDate } from '../../utils/adsConfiguration';
 import BusinessTab from './BusinessTab';
