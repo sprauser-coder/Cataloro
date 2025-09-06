@@ -1982,7 +1982,7 @@ async def mark_message_read(user_id: str, message_id: str):
     try:
         result = await db.user_messages.update_one(
             {"id": message_id, "$or": [{"sender_id": user_id}, {"recipient_id": user_id}]},
-            {"$set": {"is_read": True, "read_at": datetime.utcnow().isoformat()}}
+            {"$set": {"read": True, "read_at": datetime.utcnow().isoformat()}}
         )
         
         if result.matched_count == 0:
