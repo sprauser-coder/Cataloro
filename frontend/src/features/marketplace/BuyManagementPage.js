@@ -497,6 +497,7 @@ function BoughtItemsTab({ items, baskets, searchTerm, setSearchTerm, assignmentF
               item={item} 
               baskets={baskets}
               onAssignToBasket={onAssignToBasket}
+              onUnassignFromBasket={onUnassignFromBasket}
               onCreateBasket={onCreateBasket}
             />
           ))}
