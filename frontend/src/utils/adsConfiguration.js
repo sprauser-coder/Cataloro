@@ -24,6 +24,8 @@ export const DEFAULT_ADS_CONFIG = {
       image: null,
       description: '',
       runtime: '1 month',
+      width: '100%',
+      height: '200px',
       url: '',
       clicks: 0,
       startDate: null,
