@@ -472,6 +472,124 @@ async def check_username_availability(username: str):
         logger.error(f"Error checking username availability: {str(e)}")
         raise HTTPException(status_code=500, detail="Error checking username availability")
 
+@app.put("/api/admin/users/{user_id}/approve")
+async def approve_user(user_id: str):
+    """Approve user registration"""
+    try:
+        # Update user status to approved
+        result = await db.users.update_one(
+            {"id": user_id},
+            {"$set": {"registration_status": "Approved"}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get user data for notification
+        user = await db.users.find_one({"id": user_id})
+        if user:
+            # Send approval notification to user
+            approval_notification = {
+                "user_id": user_id,
+                "title": "Registration Approved",
+                "message": f"Your {user.get('badge', 'user')} account has been approved! You can now access the marketplace.",
+                "type": "registration_approved",
+                "read": False,
+                "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+                "id": str(uuid.uuid4())
+            }
+            await db.user_notifications.insert_one(approval_notification)
+        
+        return {"message": "User approved successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to approve user: {str(e)}")
+
+@app.put("/api/admin/users/{user_id}/reject")
+async def reject_user(user_id: str, rejection_data: dict = None):
+    """Reject user registration"""
+    try:
+        reason = rejection_data.get("reason", "No reason provided") if rejection_data else "No reason provided"
+        
+        # Update user status to rejected
+        result = await db.users.update_one(
+            {"id": user_id},
+            {"$set": {"registration_status": "Rejected"}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get user data for notification
+        user = await db.users.find_one({"id": user_id})
+        if user:
+            # Send rejection notification to user
+            rejection_notification = {
+                "user_id": user_id,
+                "title": "Registration Rejected",
+                "message": f"Your registration has been rejected. Reason: {reason}",
+                "type": "registration_rejected",
+                "read": False,
+                "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+                "id": str(uuid.uuid4())
+            }
+            await db.user_notifications.insert_one(rejection_notification)
+        
+        return {"message": "User rejected successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reject user: {str(e)}")
+
+@app.put("/api/admin/users/{user_id}/role")
+async def update_user_role(user_id: str, role_data: dict):
+    """Update user role and badge"""
+    try:
+        new_role = role_data.get("user_role")
+        if new_role not in ["User-Seller", "User-Buyer", "Admin", "Admin-Manager"]:
+            raise HTTPException(status_code=400, detail="Invalid user role")
+        
+        # Map role to badge
+        role_badge_map = {
+            "User-Seller": "Seller",
+            "User-Buyer": "Buyer", 
+            "Admin": "Admin",
+            "Admin-Manager": "Manager"
+        }
+        
+        new_badge = role_badge_map[new_role]
+        
+        # Update legacy role for backward compatibility
+        legacy_role = "admin" if new_role in ["Admin", "Admin-Manager"] else "user"
+        
+        result = await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "user_role": new_role,
+                "badge": new_badge,
+                "role": legacy_role
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get user data for notification
+        user = await db.users.find_one({"id": user_id})
+        if user:
+            # Send role change notification to user
+            role_notification = {
+                "user_id": user_id,
+                "title": "Role Updated",
+                "message": f"Your account role has been updated to {new_badge}.",
+                "type": "role_updated",
+                "read": False,
+                "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+                "id": str(uuid.uuid4())
+            }
+            await db.user_notifications.insert_one(role_notification)
+        
+        return {"message": "User role updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update user role: {str(e)}")
+
 @app.put("/api/auth/profile/{user_id}")
 async def update_profile(user_id: str, profile_data: dict):
     """Update user profile with persistent data"""
