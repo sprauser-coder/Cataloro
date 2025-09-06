@@ -104,10 +104,17 @@ function FavoritesPage() {
       {/* Favorites Page Advertisement */}
       {adsConfig?.favoriteAd?.active && adsConfig.favoriteAd.image && (
         <div 
-          className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+          className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow ${adsConfig.favoriteAd.url ? 'cursor-pointer' : ''}`}
           style={{ 
             width: adsConfig.favoriteAd.width || '100%',
             maxWidth: '100%'
+          }}
+          onClick={() => {
+            if (adsConfig.favoriteAd.url) {
+              // Track ad click
+              console.log('Favorites ad clicked:', adsConfig.favoriteAd.url);
+              window.open(adsConfig.favoriteAd.url, '_blank');
+            }
           }}
         >
           <img
