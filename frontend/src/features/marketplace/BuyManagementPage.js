@@ -559,7 +559,7 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
           </button>
 
           {showAssignMenu && !item.basket_id && (
-            <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-50">
+            <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-[9999]">
               <div className="py-1">
                 {baskets.length > 0 ? (
                   baskets.map((basket) => (
