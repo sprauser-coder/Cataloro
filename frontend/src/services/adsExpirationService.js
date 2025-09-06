@@ -257,7 +257,7 @@ class AdsExpirationService {
             },
             body: JSON.stringify({
               title: '🔄 Advertisement Restarted',
-              message: `"${adDescription}" on ${pageLocation} has automatically restarted with a new ${originalRuntime} duration until ${new Date(newExpirationDate).toLocaleString()}`,
+              message: `"${adDescription}" on ${pageLocation} has automatically restarted with a new ${originalRuntime} duration until ${new Date(newExpirationDate).toLocaleString('de-DE', { timeZone: 'Europe/Berlin' })}`,
               type: 'info'
             })
           });
