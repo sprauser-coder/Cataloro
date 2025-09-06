@@ -1810,7 +1810,7 @@ async def add_to_favorites(user_id: str, item_id: str):
         favorite_data = {
             "user_id": user_id,
             "item_id": item_id,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "id": str(uuid.uuid4())
         }
         
