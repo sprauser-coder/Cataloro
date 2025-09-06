@@ -257,15 +257,14 @@ class BasketAssignmentTester:
             self.log_test("Create Test Basket", False, error_msg=str(e))
             return None
 
-    def test_assignment_endpoint(self, user_id, item_id, basket_id):
+    def test_assignment_endpoint(self, item_id, basket_id):
         """Test the assignment endpoint with unassigned item"""
         try:
             assignment_data = {
-                "item_ids": [item_id],
                 "basket_id": basket_id
             }
             
-            response = requests.post(f"{BACKEND_URL}/user/assign-items", json=assignment_data, timeout=10)
+            response = requests.put(f"{BACKEND_URL}/user/bought-items/{item_id}/assign", json=assignment_data, timeout=10)
             if response.status_code == 200:
                 data = response.json()
                 self.log_test(
