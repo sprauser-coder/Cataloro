@@ -367,15 +367,28 @@ function AdminPanel() {
     );
   }
 
-  const tabs = [
+  // Filter tabs based on user permissions
+  const allTabs = [
     { id: 'dashboard', label: 'Dashboard', shortLabel: 'Dashboard', icon: BarChart3 },
-    { id: 'users', label: 'Users', shortLabel: 'Users', icon: Users },
-    { id: 'listings', label: 'Listings', shortLabel: 'Listings', icon: Package },
+    { id: 'users', label: 'Users', shortLabel: 'Users', icon: Users, 
+      permission: 'canAccessUserManagement' },
+    { id: 'listings', label: 'Listings', shortLabel: 'Listings', icon: Package, 
+      permission: 'canAccessListingsManagement' },
     { id: 'business', label: 'Business', shortLabel: 'Business', icon: Building },
-    { id: 'cats', label: "Cat's", shortLabel: "Cat's", icon: Database },
-    { id: 'site-settings', label: 'Site Settings', shortLabel: 'Settings', icon: Settings },
-    { id: 'administration', label: 'Administration', shortLabel: 'Admin', icon: Shield }
+    { id: 'cats', label: "Cat's", shortLabel: "Cat's", icon: Database, 
+      permission: 'canAccessDatDatabase' },
+    { id: 'site-settings', label: 'Site Settings', shortLabel: 'Settings', icon: Settings, 
+      adminOnly: true },
+    { id: 'administration', label: 'Administration', shortLabel: 'Admin', icon: Shield, 
+      adminOnly: true }
   ];
+
+  // Filter tabs based on permissions
+  const tabs = allTabs.filter(tab => {
+    if (tab.adminOnly && !isFullAdmin()) return false;
+    if (tab.permission && !permissions.adminPanel[tab.permission]) return false;
+    return true;
+  });
 
   return (
     <div className="space-y-8">
