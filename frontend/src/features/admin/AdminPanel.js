@@ -2884,70 +2884,62 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
     try {
       setIsSavingAds(true);
       
-      console.log('🔍 Starting ads configuration save...');
-      console.log('🔍 Current siteConfig.adsManager:', siteConfig.adsManager);
+      // Check for expired ads and deactivate them first
+      deactivateExpiredAds();
       
-      // Simulate API call delay for better UX feedback
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('🔧 AdminPanel: Saving ads configuration with activation dates...');
       
-      // Ensure we have a complete ads configuration
-      const adsManagerConfig = {
-        browsePageAd: {
-          active: siteConfig.adsManager?.browsePageAd?.active || false,
-          image: siteConfig.adsManager?.browsePageAd?.image || null,
-          description: siteConfig.adsManager?.browsePageAd?.description || '',
-          runtime: siteConfig.adsManager?.browsePageAd?.runtime || '1 month',
-          width: siteConfig.adsManager?.browsePageAd?.width || '300px',
-          height: siteConfig.adsManager?.browsePageAd?.height || '600px',
-          url: siteConfig.adsManager?.browsePageAd?.url || '',
-          clicks: siteConfig.adsManager?.browsePageAd?.clicks || 0
-        },
-        favoriteAd: {
-          active: siteConfig.adsManager?.favoriteAd?.active || false,
-          image: siteConfig.adsManager?.favoriteAd?.image || null,
-          description: siteConfig.adsManager?.favoriteAd?.description || '',
-          runtime: siteConfig.adsManager?.favoriteAd?.runtime || '1 month',
-          url: siteConfig.adsManager?.favoriteAd?.url || '',
-          clicks: siteConfig.adsManager?.favoriteAd?.clicks || 0
-        },
-        messengerAd: {
-          active: siteConfig.adsManager?.messengerAd?.active || false,
-          image: siteConfig.adsManager?.messengerAd?.image || null,
-          description: siteConfig.adsManager?.messengerAd?.description || '',
-          runtime: siteConfig.adsManager?.messengerAd?.runtime || '1 month',
-          url: siteConfig.adsManager?.messengerAd?.url || '',
-          clicks: siteConfig.adsManager?.messengerAd?.clicks || 0
-        },
-        footerAd: {
-          active: siteConfig.adsManager?.footerAd?.active || false,
-          logo: siteConfig.adsManager?.footerAd?.logo || null,
-          companyName: siteConfig.adsManager?.footerAd?.companyName || '',
-          runtime: siteConfig.adsManager?.footerAd?.runtime || '1 month',
-          url: siteConfig.adsManager?.footerAd?.url || '',
-          clicks: siteConfig.adsManager?.footerAd?.clicks || 0
+      // For each active ad, set start date and expiration date
+      const updatedAdsManagerConfig = { ...siteConfig.adsManager };
+      
+      Object.keys(updatedAdsManagerConfig).forEach(adType => {
+        const adConfig = updatedAdsManagerConfig[adType];
+        
+        if (adConfig.active && !adConfig.startDate) {
+          // This is a newly activated ad - set start and expiration dates
+          const now = new Date().toISOString();
+          const expirationDate = calculateExpirationDate(now, adConfig.runtime || '1 month');
+          
+          updatedAdsManagerConfig[adType] = {
+            ...adConfig,
+            startDate: now,
+            expirationDate: expirationDate
+          };
+          
+          console.log(`🕒 Setting activation dates for ${adType}:`, {
+            startDate: now,
+            expirationDate: expirationDate,
+            runtime: adConfig.runtime
+          });
         }
+      });
+      
+      // CRITICAL FIX: Preserve ads configuration from localStorage
+      const currentLocalStorage = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+      
+      // Merge site config with existing localStorage, preserving ads configuration
+      const mergedConfig = {
+        ...siteConfig,
+        ...currentLocalStorage,
+        // Use the updated ads configuration with activation dates
+        adsManager: {
+          ...currentLocalStorage.adsManager,
+          ...updatedAdsManagerConfig
+        },
+        // Always ensure hero section is enabled
+        heroSectionEnabled: true
       };
       
-      console.log('🔍 Complete ads config to save:', adsManagerConfig);
+      console.log('🔧 AdminPanel: Saving merged config with activation dates:', mergedConfig);
       
-      // Save ads configuration to localStorage
-      const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
-      console.log('🔍 Current localStorage config:', currentConfig);
+      // Save merged configuration to localStorage
+      localStorage.setItem('cataloro_site_config', JSON.stringify(mergedConfig));
       
-      const updatedConfig = {
-        ...currentConfig,
-        adsManager: adsManagerConfig
-      };
+      // Update component state
+      setSiteConfig(prev => ({ ...prev, adsManager: updatedAdsManagerConfig }));
       
-      console.log('🔍 Final config to save:', updatedConfig);
-      localStorage.setItem('cataloro_site_config', JSON.stringify(updatedConfig));
-      
-      // Verify it was saved
-      const verifyConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
-      console.log('🔍 Verification - config after save:', verifyConfig);
-      
-      // Count active ads for user feedback
-      const activeAds = Object.entries(adsManagerConfig)
+      // Count active ads for display
+      const activeAdsCount = Object.entries(updatedAdsManagerConfig)
         .filter(([key, value]) => value.active).length;
       
       const totalConfiguredAds = Object.entries(adsManagerConfig)
