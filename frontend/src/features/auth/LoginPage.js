@@ -220,7 +220,7 @@ function LoginPage() {
                 <button
                   onClick={() => handleDemoLogin('user')}
                   disabled={isLoading || isAnimating}
-                  className="w-full h-12 rounded-xl bg-white/20 dark:bg-white/10 backdrop-blur-sm border border-white/30 text-gray-700 dark:text-gray-200 font-semibold hover:bg-white/30 dark:hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 group flex items-center justify-center space-x-3"
+                  className="w-full h-12 rounded-xl bg-white/20 dark:bg-white/10 border border-white/30 text-gray-700 dark:text-gray-200 font-semibold hover:bg-white/30 dark:hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
                 >
                   <User className="w-5 h-5 text-blue-500" />
                   <span>Demo User Experience</span>
