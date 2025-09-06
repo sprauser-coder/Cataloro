@@ -3179,7 +3179,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
         <AdConfigPanel
           title="Messenger Advertisement"
           description="Display advertisements on messages page"
-          adConfig={siteConfig.adsManager?.messengerAd || { active: false, image: null, description: '', runtime: '1 month', width: '250px', height: '400px', url: '', clicks: 0 }}
+          adConfig={siteConfig.adsManager?.messengerAd || { active: false, image: null, description: '', runtime: '1 month', width: '250px', height: '400px', url: '', clicks: 0, notificationMethods: ['notificationCenter'], notificationUsers: [] }}
           adType="messengerAd"
           handleAdConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
