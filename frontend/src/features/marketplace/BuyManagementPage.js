@@ -336,6 +336,8 @@ function BuyManagementPage() {
                 baskets={baskets}
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
+                assignmentFilter={assignmentFilter}
+                setAssignmentFilter={setAssignmentFilter}
                 onAssignToBasket={assignItemToBasket}
                 onCreateBasket={() => setShowCreateBasket(true)}
                 loading={loading}
