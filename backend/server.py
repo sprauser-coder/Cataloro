@@ -5208,9 +5208,9 @@ async def get_user_baskets(user_id: str):
                                 "pt_ppm": listing.get("pt_ppm", 1000),  # Default Pt ppm
                                 "pd_ppm": listing.get("pd_ppm", 500),   # Default Pd ppm  
                                 "rh_ppm": listing.get("rh_ppm", 200),   # Default Rh ppm
-                                "renumeration_pt": 50.0,  # Default renumeration values
-                                "renumeration_pd": 30.0,
-                                "renumeration_rh": 80.0
+                                "renumeration_pt": renumeration_pt,  # From price settings
+                                "renumeration_pd": renumeration_pd,
+                                "renumeration_rh": renumeration_rh
                             }
                             assigned_items.append(assigned_item)
             
