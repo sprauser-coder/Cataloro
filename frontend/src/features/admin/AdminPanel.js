@@ -4090,6 +4090,21 @@ function SiteAdministrationTab({ showToast }) {
     console.log(`🔧 AdminPanel: Current activeSection: ${activeSection}`);
   }, [activeSection]);
   
+  // Listen for ad expiration notifications
+  React.useEffect(() => {
+    const handleAdExpiredNotification = (event) => {
+      const { adType, message } = event.detail;
+      showToast(`🔔 ${message}`, 'warning');
+      console.log(`📧 Admin notification: ${message}`);
+    };
+    
+    window.addEventListener('adExpiredNotification', handleAdExpiredNotification);
+    
+    return () => {
+      window.removeEventListener('adExpiredNotification', handleAdExpiredNotification);
+    };
+  }, [showToast]);
+  
   // Initialize siteConfig from localStorage if available
   const [siteConfig, setSiteConfig] = React.useState(() => {
     try {
