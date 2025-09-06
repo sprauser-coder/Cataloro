@@ -3880,8 +3880,10 @@ function AdConfigPanel({
                     if (notificationMethods.includes('notificationCenter') && selectedUsers.length > 0) {
                       console.log(`🚀 Sending ad start notifications to ${selectedUsers.length} users (regular activation)`);
                       
-                      selectedUsers.forEach(async (user) => {
+                      // Send regular activation notifications properly with Promise.all
+                      const activationPromises = selectedUsers.map(async (user) => {
                         try {
+                          const adDescription = currentConfig.adsManager?.[adType]?.description || adType;
                           const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
                             method: 'POST',
                             headers: {
@@ -3889,20 +3891,32 @@ function AdConfigPanel({
                             },
                             body: JSON.stringify({
                               title: '🚀 Advertisement Started',
-                              message: `Advertisement "${adType}" has been activated and is now running`,
+                              message: `Advertisement "${adDescription}" has been activated and is now running`,
                               type: 'success'
                             })
                           });
                           
                           if (response.ok) {
-                            console.log(`✅ Ad start notification sent to user ${user.email} (${user.id})`);
+                            console.log(`✅ Regular activation notification sent to user ${user.email} (${user.id})`);
+                            return { success: true, user: user.email };
                           } else {
-                            console.error(`❌ Failed to send ad start notification to user ${user.email}`);
+                            console.error(`❌ Failed to send regular activation notification to user ${user.email}`);
+                            return { success: false, user: user.email, error: 'HTTP Error' };
                           }
                         } catch (error) {
-                          console.error(`❌ Error sending ad start notification to user ${user.email}:`, error);
+                          console.error(`❌ Error sending regular activation notification to user ${user.email}:`, error);
+                          return { success: false, user: user.email, error: error.message };
                         }
                       });
+                      
+                      // Wait for all activation notifications to complete
+                      try {
+                        const results = await Promise.all(activationPromises);
+                        const successCount = results.filter(r => r.success).length;
+                        console.log(`📊 Regular activation notifications: ${successCount}/${selectedUsers.length} sent successfully`);
+                      } catch (error) {
+                        console.error('❌ Error in batch activation notification sending:', error);
+                      }
                     }
                   } catch (error) {
                     console.error('Error sending ad start notifications:', error);
