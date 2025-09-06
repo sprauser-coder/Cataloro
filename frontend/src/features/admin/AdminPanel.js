@@ -465,6 +465,8 @@ function AdminPanel() {
       {activeTab === 'cats' && (
         <CatDatabaseTab 
           showToast={showToast}
+          permissions={permissions}
+          isAdminManager={isAdminManager}
         />
       )}
       
