@@ -1862,7 +1862,7 @@ async def add_to_cart(user_id: str, cart_item: dict):
             "item_id": cart_item.get("item_id"),
             "quantity": cart_item.get("quantity", 1),
             "price": cart_item.get("price", 0),
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "id": str(uuid.uuid4())
         }
         
