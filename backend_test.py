@@ -1216,12 +1216,12 @@ class BackendTester:
 if __name__ == "__main__":
     tester = BackendTester()
     
-    # Run Manager Panel testing as requested in the review
-    print("🎯 RUNNING MANAGER PANEL ACCESS TESTING AS REQUESTED")
-    print("Creating Admin-Manager test user and testing Manager Panel access...")
+    # Run Demo User Role testing as requested in the review
+    print("🎯 RUNNING DEMO USER ROLE & BUY MANAGEMENT TESTING AS REQUESTED")
+    print("Checking demo user role and Buy Management access permissions...")
     print()
     
-    passed, failed, results = tester.run_manager_panel_testing()
+    passed, failed, results = tester.run_demo_user_role_testing()
     
     # Exit with appropriate code
     exit(0 if failed == 0 else 1)
