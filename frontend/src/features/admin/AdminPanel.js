@@ -52,6 +52,7 @@ import {
   Layout,
   Type,
   Image as ImageIcon,
+  Link as LinkIcon,
   Play,
   Pause,
   Power,
