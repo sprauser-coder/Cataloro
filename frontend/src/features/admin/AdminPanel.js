@@ -3372,6 +3372,14 @@ function AdConfigPanel({
                       src={imagePreview} 
                       alt="Advertisement preview"
                       className="w-full h-48 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-600"
+                      onError={(e) => {
+                        console.error(`🔧 AdConfigPanel (${adType}): Image failed to load:`, imagePreview);
+                        console.log(`🔧 AdConfigPanel (${adType}): Image error event:`, e);
+                        // Don't remove the preview on error, just log it for debugging
+                      }}
+                      onLoad={() => {
+                        console.log(`🔧 AdConfigPanel (${adType}): Image loaded successfully:`, imagePreview);
+                      }}
                     />
                     <button
                       type="button"
