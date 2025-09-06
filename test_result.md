@@ -1161,7 +1161,7 @@ The user reported issue "Can create baskets but cannot assign items" appears to 
 
 **8. Tender Endpoints Discovery** ✅ ENDPOINTS EXIST AND WORKING - Found and tested tender creation workflow: Tender submission endpoint: POST /api/tenders/submit working ✅, Tender acceptance endpoint: PUT /api/tenders/{tender_id}/accept working ✅, Requires seller_id in acceptance data for security ✅, Complete tender workflow functional ✅.
 
-**9. Frontend-Backend URL Consistency** ✅ VERIFIED CORRECT - API endpoints using correct production URL: Backend URL: https://cataloro-marketplace-4.preview.emergentagent.com/api ✅, All API calls successful with proper CORS headers ✅, No URL configuration issues found ✅, Frontend should use same backend URL ✅.
+**9. Frontend-Backend URL Consistency** ✅ VERIFIED CORRECT - API endpoints using correct production URL: Backend URL: https://cataloro-admin-5.preview.emergentagent.com/api ✅, All API calls successful with proper CORS headers ✅, No URL configuration issues found ✅, Frontend should use same backend URL ✅.
 
 **10. Complete Workflow Testing** ✅ END-TO-END SUCCESS - Full buy management workflow now functional: Listing creation → Tender submission → Tender acceptance → Bought item creation ✅, All APIs working correctly with proper data flow ✅, Buy Management page should now display real data ✅, Issue resolved through proper test data creation ✅.
 
@@ -2984,7 +2984,7 @@ const formatDate = (listing) => {
 **6. Specific Element Verification** ✅ ALL ELEMENTS PRESENT AND FUNCTIONAL - Individual component testing completed: Pictures display at top of each tile with proper aspect ratio ✅, Titles clearly visible with appropriate font sizing ✅, Prices show current highest bid or starting price correctly ✅, Market Range badges appear for catalyst items (TRPSAK333: €135-€165, VW074131701G: €196-€240) ✅, Seller information with avatars and usernames displayed ✅, Location information shows "Location not specified" appropriately ✅, Input fields with proper placeholders (Min: €150.00, Min: €200.00, etc.) ✅, Dates positioned at bottom of tiles ✅.
 
 **TECHNICAL VERIFICATION:**
-- Browse page URL: https://cataloro-marketplace-4.preview.emergentagent.com/browse accessible and functional
+- Browse page URL: https://cataloro-admin-5.preview.emergentagent.com/browse accessible and functional
 - Total listings displayed: 22 results with consistent structure
 - Grid layout: Professional 4-column desktop layout with responsive behavior
 - Visual elements: 54 business/private badges, 39 market range badges, proper color coding
@@ -3955,7 +3955,7 @@ if not seller:
    - All services healthy and responsive
 
 3. **Environment Configuration** ✅ PASSED
-   - Backend URL: https://cataloro-marketplace-4.preview.emergentagent.com ✅ WORKING
+   - Backend URL: https://cataloro-admin-5.preview.emergentagent.com ✅ WORKING
    - MongoDB URL: mongodb://localhost:27017 ✅ WORKING
    - All API routes properly prefixed with '/api'
 
