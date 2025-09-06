@@ -306,6 +306,79 @@ function RegisterPage() {
               </div>
             </div>
 
+            {/* Account Type Selection */}
+            <div className="space-y-4">
+              <div className="border-t border-gray-200 pt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-4">
+                  Account Type *
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Buyer Account */}
+                  <div 
+                    className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                      formData.account_type === 'buyer' 
+                        ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => setFormData({...formData, account_type: 'buyer'})}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="radio"
+                        name="account_type"
+                        value="buyer"
+                        checked={formData.account_type === 'buyer'}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 text-blue-600"
+                      />
+                      <div>
+                        <div className="font-medium text-gray-900">Buyer Account</div>
+                        <div className="text-sm text-gray-500">Browse and bid on listings</div>
+                      </div>
+                    </div>
+                    {formData.account_type === 'buyer' && (
+                      <div className="absolute top-2 right-2">
+                        <Check className="w-5 h-5 text-blue-600" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Seller Account */}
+                  <div 
+                    className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                      formData.account_type === 'seller' 
+                        ? 'border-green-500 bg-green-50 ring-2 ring-green-200' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => setFormData({...formData, account_type: 'seller'})}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="radio"
+                        name="account_type"
+                        value="seller"
+                        checked={formData.account_type === 'seller'}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 text-green-600"
+                      />
+                      <div>
+                        <div className="font-medium text-gray-900">Seller Account</div>
+                        <div className="text-sm text-gray-500">Create and manage listings</div>
+                      </div>
+                    </div>
+                    {formData.account_type === 'seller' && (
+                      <div className="absolute top-2 right-2">
+                        <Check className="w-5 h-5 text-green-600" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  You can switch between buying and selling after account approval. Both account types are free.
+                </p>
+              </div>
+            </div>
+
             {/* Business Registration Section */}
             <div className="space-y-4">
               <div className="border-t border-gray-200 pt-6">
