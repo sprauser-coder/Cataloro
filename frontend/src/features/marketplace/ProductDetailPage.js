@@ -8,6 +8,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useMarketplace } from '../../context/MarketplaceContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
+import usePermissions from '../../hooks/usePermissions';
 import {
   Heart,
   DollarSign,
@@ -18,7 +19,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Verified,
-  Database
+  Database,
+  Settings
 } from 'lucide-react';
 import CatalystReviewsSection from '../../components/reviews/CatalystReviewsSection';
 
