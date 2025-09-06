@@ -2977,6 +2977,8 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
 
   const handleImageUpload = async (adType, file, field = 'image') => {
     try {
+      console.log(`🔧 Starting image upload for ${adType}.${field}`);
+      
       const formData = new FormData();
       formData.append('file', file);
       formData.append('section', `ads_${adType}`);
@@ -2988,10 +2990,21 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
 
       if (response.ok) {
         const result = await response.json();
-        handleAdConfigChange(adType, field, result.url);
-        showToast(`${field === 'logo' ? 'Logo' : 'Image'} uploaded successfully!`, 'success');
+        console.log('🔧 Upload successful, result:', result);
+        
+        // Update the ad configuration with the new image URL
+        const imageUrl = result.url || result.imageUrl;
+        if (imageUrl) {
+          handleAdConfigChange(adType, field, imageUrl);
+          showToast(`${field === 'logo' ? 'Logo' : 'Image'} uploaded successfully!`, 'success');
+          console.log(`🔧 Image URL set for ${adType}.${field}:`, imageUrl);
+        } else {
+          throw new Error('No image URL in response');
+        }
       } else {
-        throw new Error('Upload failed');
+        const errorText = await response.text();
+        console.error('Upload response error:', errorText);
+        throw new Error(`Upload failed: ${response.status}`);
       }
     } catch (error) {
       console.error('Image upload error:', error);
