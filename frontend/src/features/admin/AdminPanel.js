@@ -2896,25 +2896,33 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
           description: siteConfig.adsManager?.browsePageAd?.description || '',
           runtime: siteConfig.adsManager?.browsePageAd?.runtime || '1 month',
           width: siteConfig.adsManager?.browsePageAd?.width || '300px',
-          height: siteConfig.adsManager?.browsePageAd?.height || '600px'
+          height: siteConfig.adsManager?.browsePageAd?.height || '600px',
+          url: siteConfig.adsManager?.browsePageAd?.url || '',
+          clicks: siteConfig.adsManager?.browsePageAd?.clicks || 0
         },
         favoriteAd: {
           active: siteConfig.adsManager?.favoriteAd?.active || false,
           image: siteConfig.adsManager?.favoriteAd?.image || null,
           description: siteConfig.adsManager?.favoriteAd?.description || '',
-          runtime: siteConfig.adsManager?.favoriteAd?.runtime || '1 month'
+          runtime: siteConfig.adsManager?.favoriteAd?.runtime || '1 month',
+          url: siteConfig.adsManager?.favoriteAd?.url || '',
+          clicks: siteConfig.adsManager?.favoriteAd?.clicks || 0
         },
         messengerAd: {
           active: siteConfig.adsManager?.messengerAd?.active || false,
           image: siteConfig.adsManager?.messengerAd?.image || null,
           description: siteConfig.adsManager?.messengerAd?.description || '',
-          runtime: siteConfig.adsManager?.messengerAd?.runtime || '1 month'
+          runtime: siteConfig.adsManager?.messengerAd?.runtime || '1 month',
+          url: siteConfig.adsManager?.messengerAd?.url || '',
+          clicks: siteConfig.adsManager?.messengerAd?.clicks || 0
         },
         footerAd: {
           active: siteConfig.adsManager?.footerAd?.active || false,
           logo: siteConfig.adsManager?.footerAd?.logo || null,
           companyName: siteConfig.adsManager?.footerAd?.companyName || '',
-          runtime: siteConfig.adsManager?.footerAd?.runtime || '1 month'
+          runtime: siteConfig.adsManager?.footerAd?.runtime || '1 month',
+          url: siteConfig.adsManager?.footerAd?.url || '',
+          clicks: siteConfig.adsManager?.footerAd?.clicks || 0
         }
       };
       
