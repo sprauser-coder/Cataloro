@@ -5101,12 +5101,12 @@ async def get_bought_items(user_id: str):
                         "image": listing.get("images", [""])[0] if listing.get("images") else None,
                         "purchased_at": order.get("approved_at", order.get("created_at")),
                         "basket_id": None,
-                        # Cat database fields (placeholder)
-                        "weight": None,
-                        "pt_ppm": None,
-                        "pd_ppm": None,
-                        "rh_ppm": None,
-                        "renumeration_pt": None,
+                        # Cat database fields from listing
+                        "weight": listing.get("ceramic_weight", 0.0),
+                        "pt_ppm": listing.get("pt_ppm", 0.0),
+                        "pd_ppm": listing.get("pd_ppm", 0.0),
+                        "rh_ppm": listing.get("rh_ppm", 0.0),
+                        "renumeration_pt": None,  # Will be set from price settings
                         "renumeration_pd": None,
                         "renumeration_rh": None
                     }
