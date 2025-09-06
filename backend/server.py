@@ -342,33 +342,69 @@ async def login_user(credentials: dict):
         # Create demo user if not exists
         user_id = generate_id()
         
-        # Set full name based on user type
+        # Set user data based on user type
         if credentials["email"] == "admin@cataloro.com":
             full_name = "Sash"
             username = "sash_admin"
+            user_role = "Admin"
+            badge = "Admin"
+            registration_status = "Approved"
+            role = "admin"
         else:
             full_name = "Demo User"
             username = credentials.get("username", "demo_user")
+            user_role = "User-Buyer"  # Default for demo users
+            badge = "Buyer"
+            registration_status = "Approved"  # Auto-approve demo users
+            role = "user"
         
         user = {
             "id": user_id,
             "username": username,
             "email": credentials["email"],
             "full_name": full_name,
-            "role": "admin" if credentials["email"] == "admin@cataloro.com" else "user",
+            "role": role,
+            "user_role": user_role,
+            "registration_status": registration_status,
+            "badge": badge,
             "created_at": datetime.utcnow(),
             "is_active": True
         }
         await db.users.insert_one(user)
     else:
-        # Update existing admin user to have the correct name
-        if credentials["email"] == "admin@cataloro.com" and user.get("full_name") != "Sash":
+        # Update existing admin user to have the correct name and RBAC fields
+        if credentials["email"] == "admin@cataloro.com":
+            update_fields = {
+                "full_name": "Sash", 
+                "username": "sash_admin"
+            }
+            
+            # Add RBAC fields if missing
+            if "user_role" not in user:
+                update_fields["user_role"] = "Admin"
+            if "registration_status" not in user:
+                update_fields["registration_status"] = "Approved" 
+            if "badge" not in user:
+                update_fields["badge"] = "Admin"
+                
             await db.users.update_one(
                 {"email": "admin@cataloro.com"},
-                {"$set": {"full_name": "Sash", "username": "sash_admin"}}
+                {"$set": update_fields}
             )
             # Refresh user data
             user = await db.users.find_one({"email": credentials["email"]})
+        
+        # Check if user is approved for login
+        if user.get("registration_status") == "Pending":
+            raise HTTPException(
+                status_code=403, 
+                detail="Your registration is pending admin approval. Please wait for approval before logging in."
+            )
+        elif user.get("registration_status") == "Rejected":
+            raise HTTPException(
+                status_code=403,
+                detail="Your registration has been rejected. Please contact support."
+            )
     
     # Serialize user data first to get proper ID format
     serialized_user = serialize_doc(user) if user else None
