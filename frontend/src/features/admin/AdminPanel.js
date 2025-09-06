@@ -234,7 +234,6 @@ function AdminPanel() {
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState('');
   
-  const { isAdmin } = useAuth();
   const { allProducts, favorites, notifications } = useMarketplace();
   const { showToast } = useNotifications();
   const { permissions, isAdmin: isFullAdmin, isAdminManager } = usePermissions();
