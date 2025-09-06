@@ -3560,7 +3560,7 @@ function UserNotificationSelector({ adType, selectedUsers, onUsersChange }) {
                     </div>
                     <div>
                       <div className="font-medium text-gray-900 dark:text-white">
-                        {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.username}
+                        {user.full_name || user.username}
                       </div>
                       <div className="text-gray-500 dark:text-gray-400">{user.email}</div>
                     </div>
