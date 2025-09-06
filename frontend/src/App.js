@@ -43,6 +43,9 @@ function App() {
     // Initialize ads configuration on app startup
     loadAndApplyAdsConfiguration();
     
+    // Start global ads expiration monitoring service
+    adsExpirationService.start();
+    
     // Hide loading screen once React is mounted
     const loader = document.getElementById('app-loader');
     if (loader) {
@@ -50,6 +53,11 @@ function App() {
         loader.style.display = 'none';
       }, 500);
     }
+
+    // Cleanup: stop expiration service when app unmounts
+    return () => {
+      adsExpirationService.stop();
+    };
   }, []);
 
   return (
