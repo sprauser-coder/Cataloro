@@ -237,6 +237,7 @@ function AdminPanel() {
   const { isAdmin } = useAuth();
   const { allProducts, favorites, notifications } = useMarketplace();
   const { showToast } = useNotifications();
+  const { permissions, isAdmin: isFullAdmin, isAdminManager } = usePermissions();
 
   useEffect(() => {
     if (isAdmin()) {
