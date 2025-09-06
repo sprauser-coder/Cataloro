@@ -231,11 +231,17 @@ function BuyManagementPage() {
     loadBaskets();
   }, [user?.id]);
 
-  // Filter items based on search
-  const filteredItems = boughtItems.filter(item =>
-    item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.seller_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter items based on search and assignment status
+  const filteredItems = boughtItems.filter(item => {
+    const matchesSearch = item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.seller_name?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesFilter = assignmentFilter === 'all' || 
+                         (assignmentFilter === 'assigned' && item.basket_id) ||
+                         (assignmentFilter === 'not-assigned' && !item.basket_id);
+    
+    return matchesSearch && matchesFilter;
+  });
 
   // Calculate basket totals
   const calculateBasketTotals = (basket) => {
