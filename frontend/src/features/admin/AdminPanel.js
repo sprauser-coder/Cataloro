@@ -3108,6 +3108,58 @@ function AdConfigPanel({
   showDimensions = false,
   dimensionsLabel = "Ad Dimensions"
 }) {
+  const [imagePreview, setImagePreview] = React.useState(adConfig.image || null);
+  const [isUploading, setIsUploading] = React.useState(false);
+  
+  const handleLocalImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select only image files');
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      
+      // Create preview immediately
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+      
+      // Upload to server
+      await handleImageUpload(adType, file);
+      
+    } catch (error) {
+      console.error('Upload error:', error);
+      setImagePreview(null);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeImage = () => {
+    setImagePreview(null);
+    handleAdConfigChange(adType, 'image', null);
+  };
+  
+  // Update preview when adConfig changes
+  React.useEffect(() => {
+    if (adConfig.image && adConfig.image !== imagePreview) {
+      setImagePreview(adConfig.image);
+    }
+  }, [adConfig.image]);
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{title}</h4>
@@ -3143,30 +3195,65 @@ function AdConfigPanel({
 
         {adConfig.active && (
           <>
-            {/* Image Upload */}
+            {/* Image Upload with Preview - Same as Listings */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+                <ImageIcon className="w-5 h-5 inline mr-2" />
                 Advertisement Image
               </label>
-              <div className="space-y-3">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) handleImageUpload(adType, file);
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-                {adConfig.image && (
-                  <div className="mt-2">
+              
+              <div className="space-y-4">
+                {/* Image Preview */}
+                {imagePreview ? (
+                  <div className="relative group max-w-sm">
                     <img 
-                      src={adConfig.image} 
-                      alt="Advertisement preview" 
-                      className="w-32 h-32 object-cover rounded-lg border"
+                      src={imagePreview} 
+                      alt="Advertisement preview"
+                      className="w-full h-48 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-600"
                     />
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 p-2 bg-red-500 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                    <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                      Preview
+                    </div>
                   </div>
+                ) : (
+                  <label className="w-full h-48 max-w-sm border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
+                    {isUploading ? (
+                      <div className="flex flex-col items-center">
+                        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">Uploading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="w-12 h-12 text-gray-400 mb-4" />
+                        <span className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Upload Advertisement Image
+                        </span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                          Click to browse or drag and drop<br />
+                          JPG, PNG, GIF up to 5MB
+                        </span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLocalImageUpload}
+                      disabled={isUploading}
+                      className="hidden"
+                    />
+                  </label>
                 )}
+                
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Upload a high-quality image for your advertisement. Recommended size: 300x600px for browse page ads.
+                </p>
               </div>
             </div>
 
@@ -3176,7 +3263,7 @@ function AdConfigPanel({
                 Description/Alt Text
               </label>
               <textarea
-                value={adConfig.description}
+                value={adConfig.description || ''}
                 onChange={(e) => handleAdConfigChange(adType, 'description', e.target.value)}
                 placeholder="Enter advertisement description..."
                 rows={3}
@@ -3190,7 +3277,7 @@ function AdConfigPanel({
                 Runtime
               </label>
               <select
-                value={adConfig.runtime}
+                value={adConfig.runtime || '1 month'}
                 onChange={(e) => handleAdConfigChange(adType, 'runtime', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
@@ -3213,20 +3300,20 @@ function AdConfigPanel({
                     <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Width</label>
                     <input
                       type="text"
-                      value={adConfig.width}
+                      value={adConfig.width || '300px'}
                       onChange={(e) => handleAdConfigChange(adType, 'width', e.target.value)}
                       placeholder="300px"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
                     />
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Height</label>
                     <input
                       type="text"
-                      value={adConfig.height}
+                      value={adConfig.height || '600px'}
                       onChange={(e) => handleAdConfigChange(adType, 'height', e.target.value)}
                       placeholder="600px"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
                     />
                   </div>
                 </div>
