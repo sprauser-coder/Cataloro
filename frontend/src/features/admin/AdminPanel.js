@@ -3213,10 +3213,61 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
             adConfig.expirationEvents.forEach(event => {
               switch (event) {
                 case 'notify':
-                  console.log(`📧 Sending admin notification for expired ad: ${adType}`);
-                  window.dispatchEvent(new CustomEvent('adExpiredNotification', {
-                    detail: { adType, adConfig, message: `Advertisement "${adType}" has expired and been processed according to your settings` }
-                  }));
+                  console.log(`📧 Sending notifications for expired ad: ${adType}`);
+                  
+                  // Get notification methods
+                  const notificationMethods = adConfig.notificationMethods || ['toast'];
+                  
+                  notificationMethods.forEach(method => {
+                    switch (method) {
+                      case 'toast':
+                        window.dispatchEvent(new CustomEvent('adExpiredNotification', {
+                          detail: { 
+                            adType, 
+                            adConfig, 
+                            message: `Advertisement "${adType}" has expired`,
+                            method: 'toast'
+                          }
+                        }));
+                        break;
+                        
+                      case 'email':
+                        const emails = adConfig.notificationEmails || '';
+                        console.log(`📧 Email notification requested for: ${emails}`);
+                        window.dispatchEvent(new CustomEvent('adExpiredNotification', {
+                          detail: { 
+                            adType, 
+                            adConfig, 
+                            message: `Advertisement "${adType}" has expired`,
+                            method: 'email',
+                            recipients: emails
+                          }
+                        }));
+                        break;
+                        
+                      case 'browser':
+                        console.log(`🌐 Browser notification requested for ${adType}`);
+                        // Request browser notification permission and show notification
+                        if ('Notification' in window) {
+                          if (Notification.permission === 'granted') {
+                            new Notification('Advertisement Expired', {
+                              body: `Advertisement "${adType}" has expired and been processed according to your settings`,
+                              icon: '/favicon.ico'
+                            });
+                          } else if (Notification.permission !== 'denied') {
+                            Notification.requestPermission().then(permission => {
+                              if (permission === 'granted') {
+                                new Notification('Advertisement Expired', {
+                                  body: `Advertisement "${adType}" has expired`,
+                                  icon: '/favicon.ico'
+                                });
+                              }
+                            });
+                          }
+                        }
+                        break;
+                    }
+                  });
                   break;
                   
                 case 'deactivate':
