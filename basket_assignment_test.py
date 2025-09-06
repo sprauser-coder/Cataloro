@@ -436,7 +436,7 @@ class BasketAssignmentTester:
         # Accept tender to create bought item
         if not self.accept_tender(tender_id):
             print("❌ Failed to accept tender. Aborting tests.")
-            return
+            return 0, 1, []
         
         # Wait a moment for data to be processed
         time.sleep(2)
