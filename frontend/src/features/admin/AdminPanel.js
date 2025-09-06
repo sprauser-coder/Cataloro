@@ -3875,6 +3875,208 @@ function AdConfigPanel({
               </div>
             )}
 
+            {/* Expiration Events Configuration - Moved here to be right after Runtime */}
+            {(adConfig.active || adConfig.expirationDate) && (
+              <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+                <div className="flex items-center mb-3">
+                  <Bell className="w-5 h-5 text-orange-600 dark:text-orange-400 mr-2" />
+                  <h4 className="font-medium text-orange-900 dark:text-orange-100">
+                    🔔 Expiration Events
+                  </h4>
+                </div>
+                
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-orange-700 dark:text-orange-300 mb-2">
+                    What should happen when this ad expires?
+                  </label>
+                  <div className="space-y-3">
+                    {/* Notification Event with Recipients */}
+                    <div className="border border-orange-200 dark:border-orange-700 rounded-md p-3">
+                      <label className="flex items-center space-x-2 mb-2">
+                        <input
+                          type="checkbox"
+                          checked={adConfig.expirationEvents?.includes('notify') || false}
+                          onChange={(e) => {
+                            const currentEvents = adConfig.expirationEvents || [];
+                            const newEvents = e.target.checked 
+                              ? [...currentEvents, 'notify']
+                              : currentEvents.filter(event => event !== 'notify');
+                            handleAdConfigChange(adType, 'expirationEvents', newEvents);
+                          }}
+                          className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                        />
+                        <span className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                          📧 Send notification to admin
+                        </span>
+                      </label>
+                      
+                      {/* Notification Recipients - shown when notify is checked */}
+                      {adConfig.expirationEvents?.includes('notify') && (
+                        <div className="ml-6 mt-2 space-y-2">
+                          <label className="block text-xs font-medium text-orange-700 dark:text-orange-300">
+                            Notification Recipients:
+                          </label>
+                          
+                          {/* Admin Toast Notification */}
+                          <label className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              checked={adConfig.notificationMethods?.includes('toast') !== false}
+                              onChange={(e) => {
+                                const currentMethods = adConfig.notificationMethods || ['toast'];
+                                const newMethods = e.target.checked 
+                                  ? [...currentMethods.filter(m => m !== 'toast'), 'toast']
+                                  : currentMethods.filter(m => m !== 'toast');
+                                handleAdConfigChange(adType, 'notificationMethods', newMethods);
+                              }}
+                              className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                            />
+                            <span className="text-xs text-orange-700 dark:text-orange-300">
+                              🔔 Admin Panel Toast (immediate notification)
+                            </span>
+                          </label>
+                          
+                          {/* Email Notification */}
+                          <label className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              checked={adConfig.notificationMethods?.includes('email') || false}
+                              onChange={(e) => {
+                                const currentMethods = adConfig.notificationMethods || [];
+                                const newMethods = e.target.checked 
+                                  ? [...currentMethods, 'email']
+                                  : currentMethods.filter(m => m !== 'email');
+                                handleAdConfigChange(adType, 'notificationMethods', newMethods);
+                              }}
+                              className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                            />
+                            <span className="text-xs text-orange-700 dark:text-orange-300">
+                              ✉️ Email notification
+                            </span>
+                          </label>
+                          
+                          {/* Email Recipients Input - shown when email is checked */}
+                          {adConfig.notificationMethods?.includes('email') && (
+                            <div className="ml-4 mt-2">
+                              <label className="block text-xs text-orange-600 dark:text-orange-400 mb-1">
+                                Email Recipients (comma-separated):
+                              </label>
+                              <input
+                                type="text"
+                                value={adConfig.notificationEmails || ''}
+                                onChange={(e) => handleAdConfigChange(adType, 'notificationEmails', e.target.value)}
+                                placeholder="admin@company.com, manager@company.com"
+                                className="w-full px-2 py-1 text-xs border border-orange-300 dark:border-orange-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                          )}
+                          
+                          {/* Browser Notification */}
+                          <label className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              checked={adConfig.notificationMethods?.includes('browser') || false}
+                              onChange={(e) => {
+                                const currentMethods = adConfig.notificationMethods || [];
+                                const newMethods = e.target.checked 
+                                  ? [...currentMethods, 'browser']
+                                  : currentMethods.filter(m => m !== 'browser');
+                                handleAdConfigChange(adType, 'notificationMethods', newMethods);
+                              }}
+                              className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                            />
+                            <span className="text-xs text-orange-700 dark:text-orange-300">
+                              🌐 Browser push notification
+                            </span>
+                          </label>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Deactivate Event */}
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={adConfig.expirationEvents?.includes('deactivate') || false}
+                        onChange={(e) => {
+                          const currentEvents = adConfig.expirationEvents || [];
+                          let newEvents;
+                          
+                          if (e.target.checked) {
+                            // If deactivate is selected, remove reset (conflict)
+                            newEvents = [...currentEvents.filter(event => event !== 'reset'), 'deactivate'];
+                          } else {
+                            newEvents = currentEvents.filter(event => event !== 'deactivate');
+                          }
+                          
+                          handleAdConfigChange(adType, 'expirationEvents', newEvents);
+                        }}
+                        className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                      />
+                      <span className="text-sm text-orange-800 dark:text-orange-200">
+                        ❌ Deactivate advertisement
+                      </span>
+                    </label>
+                    
+                    {/* Reset Event */}
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={adConfig.expirationEvents?.includes('reset') || false}
+                        onChange={(e) => {
+                          const currentEvents = adConfig.expirationEvents || [];
+                          let newEvents;
+                          
+                          if (e.target.checked) {
+                            // If reset is selected, remove deactivate (conflict)
+                            newEvents = [...currentEvents.filter(event => event !== 'deactivate'), 'reset'];
+                          } else {
+                            newEvents = currentEvents.filter(event => event !== 'reset');
+                          }
+                          
+                          handleAdConfigChange(adType, 'expirationEvents', newEvents);
+                        }}
+                        className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                      />
+                      <span className="text-sm text-orange-800 dark:text-orange-200">
+                        🔄 Reset duration (restart with same time)
+                      </span>
+                    </label>
+                  </div>
+                </div>
+                
+                {/* Conflict Warning */}
+                {adConfig.expirationEvents?.includes('deactivate') && adConfig.expirationEvents?.includes('reset') && (
+                  <div className="mt-3 p-2 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md">
+                    <div className="text-sm text-red-800 dark:text-red-200">
+                      ⚠️ Conflict detected: Cannot both deactivate and reset. Please choose one.
+                    </div>
+                  </div>
+                )}
+                
+                {/* Events Summary */}
+                {adConfig.expirationEvents && adConfig.expirationEvents.length > 0 && (
+                  <div className="mt-3 p-3 bg-orange-100 dark:bg-orange-800/30 rounded-md">
+                    <div className="text-sm text-orange-800 dark:text-orange-200">
+                      <strong>Selected events:</strong> {' '}
+                      {adConfig.expirationEvents.map(event => {
+                        switch(event) {
+                          case 'notify': return `📧 Notify (${(adConfig.notificationMethods || ['toast']).map(m => 
+                            m === 'toast' ? 'Toast' : 
+                            m === 'email' ? 'Email' : 
+                            m === 'browser' ? 'Browser' : m
+                          ).join(', ')})`;
+                          case 'deactivate': return '❌ Deactivate';
+                          case 'reset': return '🔄 Reset duration';
+                          default: return event;
+                        }
+                      }).join(', ')}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Dimensions (for browse page ad) */}
             {showDimensions && (
               <div>
