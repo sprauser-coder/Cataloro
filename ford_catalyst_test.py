@@ -271,28 +271,200 @@ class FordCatalystTester:
             self.log_test("Verify Ford Catalyst Fix", False, error_msg=str(e))
             return False
 
-    def test_basket_calculation_with_ford(self):
-        """Test basket calculation with Ford item after fix"""
+    def create_ford_tender(self):
+        """Create a tender for Ford listing to simulate purchase"""
         if not self.demo_user or not self.ford_listing:
-            self.log_test("Test Basket Calculation", False, error_msg="Missing demo user or Ford listing")
+            self.log_test("Create Ford Tender", False, error_msg="Missing demo user or Ford listing")
+            return False, None
+            
+        try:
+            user_id = self.demo_user.get('id')
+            listing_id = self.ford_listing.get('id')
+            
+            # Create tender data
+            tender_data = {
+                "listing_id": listing_id,
+                "buyer_id": user_id,
+                "offer_amount": 250.0,  # Reasonable offer amount
+                "message": "Test tender for Ford catalyst calculation verification"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/tenders",
+                json=tender_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                tender = response.json()
+                tender_id = tender.get('id')
+                self.log_test(
+                    "Create Ford Tender", 
+                    True, 
+                    f"Created tender for Ford listing: {tender_id}"
+                )
+                return True, tender_id
+            else:
+                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                self.log_test("Create Ford Tender", False, error_msg=error_detail)
+                return False, None
+        except Exception as e:
+            self.log_test("Create Ford Tender", False, error_msg=str(e))
+            return False, None
+
+    def accept_ford_tender(self, tender_id):
+        """Accept the Ford tender to create bought item"""
+        if not tender_id:
+            self.log_test("Accept Ford Tender", False, error_msg="No tender ID provided")
+            return False
+            
+        try:
+            # Accept tender
+            acceptance_data = {
+                "acceptance_message": "Accepting tender for Ford catalyst testing"
+            }
+            
+            response = requests.put(
+                f"{BACKEND_URL}/tenders/{tender_id}/accept",
+                json=acceptance_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                self.log_test(
+                    "Accept Ford Tender", 
+                    True, 
+                    f"Successfully accepted Ford tender: {tender_id}"
+                )
+                return True
+            else:
+                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                self.log_test("Accept Ford Tender", False, error_msg=error_detail)
+                return False
+        except Exception as e:
+            self.log_test("Accept Ford Tender", False, error_msg=str(e))
+            return False
+
+    def create_test_basket(self):
+        """Create a test basket for Ford item assignment"""
+        if not self.demo_user:
+            self.log_test("Create Test Basket", False, error_msg="No demo user")
+            return False, None
+            
+        try:
+            user_id = self.demo_user.get('id')
+            
+            basket_data = {
+                "name": "Ford Catalyst Test Basket",
+                "description": "Test basket for Ford catalyst calculation verification"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/user/baskets/{user_id}",
+                json=basket_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                basket = response.json()
+                basket_id = basket.get('id')
+                self.log_test(
+                    "Create Test Basket", 
+                    True, 
+                    f"Created test basket: {basket_id}"
+                )
+                return True, basket_id
+            else:
+                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                self.log_test("Create Test Basket", False, error_msg=error_detail)
+                return False, None
+        except Exception as e:
+            self.log_test("Create Test Basket", False, error_msg=str(e))
+            return False, None
+
+    def assign_ford_to_basket(self, basket_id):
+        """Assign Ford bought item to basket"""
+        if not self.demo_user or not basket_id:
+            self.log_test("Assign Ford to Basket", False, error_msg="Missing demo user or basket ID")
             return False
             
         try:
             user_id = self.demo_user.get('id')
             listing_id = self.ford_listing.get('id')
             
-            # Get user baskets
+            # Get bought items to find Ford item
+            response = requests.get(f"{BACKEND_URL}/user/bought-items/{user_id}", timeout=10)
+            
+            if response.status_code == 200:
+                bought_items = response.json()
+                
+                # Find Ford item
+                ford_bought_item = None
+                for item in bought_items:
+                    if item.get('listing_id') == listing_id:
+                        ford_bought_item = item
+                        break
+                
+                if ford_bought_item:
+                    item_id = ford_bought_item.get('id')
+                    
+                    # Assign to basket
+                    assignment_data = {
+                        "item_ids": [item_id]
+                    }
+                    
+                    response = requests.post(
+                        f"{BACKEND_URL}/user/baskets/{basket_id}/assign",
+                        json=assignment_data,
+                        timeout=10
+                    )
+                    
+                    if response.status_code == 200:
+                        self.log_test(
+                            "Assign Ford to Basket", 
+                            True, 
+                            f"Successfully assigned Ford item {item_id} to basket {basket_id}"
+                        )
+                        return True
+                    else:
+                        error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                        self.log_test("Assign Ford to Basket", False, error_msg=error_detail)
+                        return False
+                else:
+                    self.log_test("Assign Ford to Basket", False, "Ford bought item not found")
+                    return False
+            else:
+                self.log_test("Assign Ford to Basket", False, f"HTTP {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Assign Ford to Basket", False, error_msg=str(e))
+            return False
+
+    def test_basket_calculation_with_ford(self, basket_id):
+        """Test basket calculation with Ford item after assignment"""
+        if not self.demo_user or not basket_id:
+            self.log_test("Test Basket Calculation", False, error_msg="Missing demo user or basket ID")
+            return False
+            
+        try:
+            user_id = self.demo_user.get('id')
+            listing_id = self.ford_listing.get('id')
+            
+            # Get basket with items
             response = requests.get(f"{BACKEND_URL}/user/baskets/{user_id}", timeout=10)
             
             if response.status_code == 200:
                 baskets = response.json()
                 
-                if baskets:
-                    basket = baskets[0]  # Use first basket
-                    basket_id = basket.get('id')
-                    
-                    # Check if Ford item is in basket and get calculation
-                    basket_items = basket.get('items', [])
+                # Find our test basket
+                test_basket = None
+                for basket in baskets:
+                    if basket.get('id') == basket_id:
+                        test_basket = basket
+                        break
+                
+                if test_basket:
+                    basket_items = test_basket.get('items', [])
                     ford_item = None
                     
                     for item in basket_items:
@@ -301,6 +473,20 @@ class FordCatalystTester:
                             break
                     
                     if ford_item:
+                        # Get price settings for renumeration values
+                        price_response = requests.get(f"{BACKEND_URL}/admin/catalyst/price-settings", timeout=10)
+                        
+                        if price_response.status_code == 200:
+                            price_settings = price_response.json()
+                            renumeration_pt = price_settings.get('renumeration_pt', 0.98)
+                            renumeration_pd = price_settings.get('renumeration_pd', 0.98)
+                            renumeration_rh = price_settings.get('renumeration_rh', 0.9)
+                        else:
+                            # Use default values
+                            renumeration_pt = 0.98
+                            renumeration_pd = 0.98
+                            renumeration_rh = 0.9
+                        
                         # Calculate expected values based on correct catalyst data
                         # Formula: (weight * ppm / 1000000) * renumeration
                         weight = 139.7
@@ -308,30 +494,52 @@ class FordCatalystTester:
                         pd_ppm = 959.0
                         rh_ppm = 0.0
                         
-                        # Assuming standard renumeration values (these might need to be fetched)
-                        renumeration_pt = 1.0  # This should be fetched from price settings
-                        renumeration_pd = 1.0
-                        renumeration_rh = 1.0
-                        
                         expected_pt_g = (weight * pt_ppm / 1000000) * renumeration_pt
                         expected_pd_g = (weight * pd_ppm / 1000000) * renumeration_pd
                         expected_rh_g = (weight * rh_ppm / 1000000) * renumeration_rh
                         
-                        # Get actual calculated values from item
-                        actual_pt_g = ford_item.get('pt_g', 0)
-                        actual_pd_g = ford_item.get('pd_g', 0)
-                        actual_rh_g = ford_item.get('rh_g', 0)
+                        # Get actual values from item (these should be calculated when assigned)
+                        actual_weight = ford_item.get('weight', 0)
+                        actual_pt_ppm = ford_item.get('pt_ppm', 0)
+                        actual_pd_ppm = ford_item.get('pd_ppm', 0)
+                        actual_rh_ppm = ford_item.get('rh_ppm', 0)
+                        actual_renumeration_pt = ford_item.get('renumeration_pt', 0)
+                        actual_renumeration_pd = ford_item.get('renumeration_pd', 0)
+                        actual_renumeration_rh = ford_item.get('renumeration_rh', 0)
                         
-                        # Check if calculations are correct (with small tolerance for floating point)
-                        pt_correct = abs(actual_pt_g - expected_pt_g) < 0.001
-                        pd_correct = abs(actual_pd_g - expected_pd_g) < 0.001
-                        rh_correct = abs(actual_rh_g - expected_rh_g) < 0.001
+                        # Calculate actual grams based on item values
+                        if actual_weight and actual_pt_ppm and actual_renumeration_pt:
+                            calculated_pt_g = (actual_weight * actual_pt_ppm / 1000000) * actual_renumeration_pt
+                        else:
+                            calculated_pt_g = 0
+                            
+                        if actual_weight and actual_pd_ppm and actual_renumeration_pd:
+                            calculated_pd_g = (actual_weight * actual_pd_ppm / 1000000) * actual_renumeration_pd
+                        else:
+                            calculated_pd_g = 0
+                            
+                        if actual_weight and actual_rh_ppm and actual_renumeration_rh:
+                            calculated_rh_g = (actual_weight * actual_rh_ppm / 1000000) * actual_renumeration_rh
+                        else:
+                            calculated_rh_g = 0
                         
-                        all_correct = pt_correct and pd_correct and rh_correct
+                        # Check if values match expected (with tolerance for floating point)
+                        pt_correct = abs(calculated_pt_g - expected_pt_g) < 0.001
+                        pd_correct = abs(calculated_pd_g - expected_pd_g) < 0.001
+                        rh_correct = abs(calculated_rh_g - expected_rh_g) < 0.001
                         
-                        details = f"Expected: Pt={expected_pt_g:.4f}g, Pd={expected_pd_g:.4f}g, Rh={expected_rh_g:.4f}g"
-                        details += f" | Actual: Pt={actual_pt_g}g, Pd={actual_pd_g}g, Rh={actual_rh_g}g"
-                        details += f" | Correct: Pt={pt_correct}, Pd={pd_correct}, Rh={rh_correct}"
+                        # Also check if the item has correct catalyst values from listing
+                        weight_correct = actual_weight == weight
+                        pt_ppm_correct = actual_pt_ppm == pt_ppm
+                        pd_ppm_correct = actual_pd_ppm == pd_ppm
+                        rh_ppm_correct = actual_rh_ppm == rh_ppm
+                        
+                        all_correct = pt_correct and pd_correct and rh_correct and weight_correct and pt_ppm_correct and pd_ppm_correct and rh_ppm_correct
+                        
+                        details = f"Item catalyst values - Weight: {actual_weight}, PT PPM: {actual_pt_ppm}, PD PPM: {actual_pd_ppm}, RH PPM: {actual_rh_ppm}"
+                        details += f" | Expected: Weight={weight}, PT PPM={pt_ppm}, PD PPM={pd_ppm}, RH PPM={rh_ppm}"
+                        details += f" | Calculated grams - Pt: {calculated_pt_g:.4f}g, Pd: {calculated_pd_g:.4f}g, Rh: {calculated_rh_g:.4f}g"
+                        details += f" | Expected grams - Pt: {expected_pt_g:.4f}g, Pd: {expected_pd_g:.4f}g, Rh: {expected_rh_g:.4f}g"
                         
                         self.log_test(
                             "Test Basket Calculation", 
@@ -343,7 +551,7 @@ class FordCatalystTester:
                         self.log_test("Test Basket Calculation", False, "Ford item not found in basket")
                         return False
                 else:
-                    self.log_test("Test Basket Calculation", False, "No baskets found for user")
+                    self.log_test("Test Basket Calculation", False, "Test basket not found")
                     return False
             else:
                 self.log_test("Test Basket Calculation", False, f"HTTP {response.status_code}")
