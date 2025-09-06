@@ -4581,14 +4581,154 @@ function FooterAdConfigPanel({ adConfig, adType, handleAdConfigChange, handleIma
               </div>
             )}
 
+            {/* Countdown Timer */}
+            {adConfig.active && adConfig.expirationDate && (
+              <AdCountdownTimer 
+                adType={adType} 
+                expirationDate={adConfig.expirationDate}
+                onExpired={() => {
+                  console.log(`🕒 Footer ad expired: ${adType}`);
+                }}
+              />
+            )}
+
+            {/* Expiration Events */}
+            <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+              <div className="flex items-center mb-3">
+                <Bell className="w-5 h-5 text-orange-600 dark:text-orange-400 mr-2" />
+                <h4 className="font-medium text-orange-900 dark:text-orange-100">
+                  🔔 Expiration Events
+                </h4>
+              </div>
+              
+              <div className="mb-3">
+                <label className="block text-sm font-medium text-orange-700 dark:text-orange-300 mb-2">
+                  What should happen when this footer ad expires?
+                </label>
+                <div className="space-y-3">
+                  {/* Notification Event with Recipients */}
+                  <div className="border border-orange-200 dark:border-orange-700 rounded-md p-3">
+                    <label className="flex items-center space-x-2 mb-2">
+                      <input
+                        type="checkbox"
+                        checked={adConfig.expirationEvents?.includes('notify') || false}
+                        onChange={(e) => {
+                          const currentEvents = adConfig.expirationEvents || [];
+                          const newEvents = e.target.checked 
+                            ? [...currentEvents, 'notify']
+                            : currentEvents.filter(event => event !== 'notify');
+                          handleAdConfigChange(adType, 'expirationEvents', newEvents);
+                        }}
+                        className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                      />
+                      <span className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                        📧 Send notification to admin
+                      </span>
+                    </label>
+                    
+                    {/* Notification Recipients - shown when notify is checked */}
+                    {adConfig.expirationEvents?.includes('notify') && (
+                      <div className="ml-6 mt-2 space-y-3">
+                        <label className="block text-xs font-medium text-orange-700 dark:text-orange-300">
+                          Notification Recipients:
+                        </label>
+                        
+                        {/* User Selection for Notification Center */}
+                        <div className="border border-orange-300 dark:border-orange-600 rounded-md p-3 bg-white dark:bg-gray-800">
+                          <label className="flex items-center space-x-2 mb-2">
+                            <input
+                              type="checkbox"
+                              checked={adConfig.notificationMethods?.includes('notificationCenter') !== false}
+                              onChange={(e) => {
+                                const currentMethods = adConfig.notificationMethods || ['notificationCenter'];
+                                const newMethods = e.target.checked 
+                                  ? [...currentMethods.filter(m => m !== 'notificationCenter'), 'notificationCenter']
+                                  : currentMethods.filter(m => m !== 'notificationCenter');
+                                handleAdConfigChange(adType, 'notificationMethods', newMethods);
+                              }}
+                              className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                            />
+                            <span className="text-xs text-orange-700 dark:text-orange-300">
+                              🔔 Send to Notification Center
+                            </span>
+                          </label>
+                          
+                          {/* User Selection Component */}
+                          {adConfig.notificationMethods?.includes('notificationCenter') !== false && (
+                            <UserNotificationSelector 
+                              adType={adType}
+                              selectedUsers={adConfig.notificationUsers || []}
+                              onUsersChange={(users) => handleAdConfigChange(adType, 'notificationUsers', users)}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Deactivate Event */}
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={adConfig.expirationEvents?.includes('deactivate') || false}
+                      onChange={(e) => {
+                        const currentEvents = adConfig.expirationEvents || [];
+                        let newEvents;
+                        
+                        if (e.target.checked) {
+                          // If deactivate is selected, remove reset (conflict)
+                          newEvents = [...currentEvents.filter(event => event !== 'reset'), 'deactivate'];
+                        } else {
+                          newEvents = currentEvents.filter(event => event !== 'deactivate');
+                        }
+                        
+                        handleAdConfigChange(adType, 'expirationEvents', newEvents);
+                      }}
+                      className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                    />
+                    <span className="text-sm text-orange-800 dark:text-orange-200">
+                      ❌ Deactivate footer ad
+                    </span>
+                  </label>
+                  
+                  {/* Reset Event */}
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={adConfig.expirationEvents?.includes('reset') || false}
+                      onChange={(e) => {
+                        const currentEvents = adConfig.expirationEvents || [];
+                        let newEvents;
+                        
+                        if (e.target.checked) {
+                          // If reset is selected, remove deactivate (conflict)
+                          newEvents = [...currentEvents.filter(event => event !== 'deactivate'), 'reset'];
+                        } else {
+                          newEvents = currentEvents.filter(event => event !== 'reset');
+                        }
+                        
+                        handleAdConfigChange(adType, 'expirationEvents', newEvents);
+                      }}
+                      className="rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                    />
+                    <span className="text-sm text-orange-800 dark:text-orange-200">
+                      🔄 Reset duration (restart automatically)
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
             {/* Preview */}
             {logoPreview && adConfig.companyName && (
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                 <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Footer Preview:</h5>
-                <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                  <span>In cooperation with</span>
-                  <img src={logoPreview} alt="logo" className="w-6 h-6 object-contain" />
-                  <span className="font-medium">{adConfig.companyName}</span>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <div className="mb-1">In cooperation with:</div>
+                  <div className="mb-1">
+                    <img src={logoPreview} alt="logo" className="h-6 object-contain object-left" style={{ width: '140px' }} />
+                  </div>
+                  <div className="font-medium text-gray-700 dark:text-gray-300">{adConfig.companyName}</div>
                 </div>
               </div>
             )}
