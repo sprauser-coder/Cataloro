@@ -607,10 +607,42 @@ class FordCatalystTester:
         else:
             print("✅ Ford catalyst values are already correct!")
         
-        # 7. Test Basket Calculation
-        print("🧮 TEST BASKET CALCULATION WITH FORD")
+        # 7. Create Ford Tender (to simulate purchase)
+        print("🛒 CREATE FORD TENDER")
         print("-" * 40)
-        self.test_basket_calculation_with_ford()
+        tender_created, tender_id = self.create_ford_tender()
+        
+        if tender_created and tender_id:
+            # 8. Accept Ford Tender (to create bought item)
+            print("✅ ACCEPT FORD TENDER")
+            print("-" * 40)
+            tender_accepted = self.accept_ford_tender(tender_id)
+            
+            if tender_accepted:
+                # 9. Create Test Basket
+                print("🗂️ CREATE TEST BASKET")
+                print("-" * 40)
+                basket_created, basket_id = self.create_test_basket()
+                
+                if basket_created and basket_id:
+                    # 10. Assign Ford Item to Basket
+                    print("📦 ASSIGN FORD TO BASKET")
+                    print("-" * 40)
+                    assignment_success = self.assign_ford_to_basket(basket_id)
+                    
+                    if assignment_success:
+                        # 11. Test Basket Calculation
+                        print("🧮 TEST BASKET CALCULATION WITH FORD")
+                        print("-" * 40)
+                        self.test_basket_calculation_with_ford(basket_id)
+                    else:
+                        print("❌ Failed to assign Ford item to basket. Skipping calculation test.")
+                else:
+                    print("❌ Failed to create test basket. Skipping assignment and calculation tests.")
+            else:
+                print("❌ Failed to accept Ford tender. Skipping basket tests.")
+        else:
+            print("❌ Failed to create Ford tender. Skipping purchase flow tests.")
         
         # Print Summary
         print("=" * 80)
@@ -632,6 +664,7 @@ class FordCatalystTester:
         print("Expected Results:")
         print("  ✅ Ford listing should have correct catalyst values (weight: 139.7, pt_ppm: 1394, pd_ppm: 959, rh_ppm: 0)")
         print("  ✅ Basket calculations should show: Pt g: 1.3686, Pd g: 0.9398, Rh g: 0.0000")
+        print("  ✅ Complete flow: Fix listing → Create tender → Accept tender → Assign to basket → Verify calculations")
         
         return self.passed_tests, self.failed_tests, self.test_results
 
