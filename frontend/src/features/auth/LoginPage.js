@@ -200,7 +200,7 @@ function LoginPage() {
                   ) : (
                     <>
                       <span>Sign In</span>
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                      <ArrowRight className="w-5 h-5" />
                     </>
                   )}
                 </div>
