@@ -50,6 +50,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   const { user, logout } = useAuth();
   const { favoriteCount } = useMarketplace();
   const { showToast } = useNotifications();
+  const { permissions, isAdmin, isSeller, isBuyer, isAdminLevel, getUserDisplay } = usePermissions();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showTendersMenu, setShowTendersMenu] = useState(false);
