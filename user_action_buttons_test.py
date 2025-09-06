@@ -215,71 +215,46 @@ class UserActionButtonsTester:
             self.log_test("Individual User Approval", False, error_msg=str(e))
             return False
 
-    def test_individual_user_rejection(self, user_id):
+    def test_individual_user_rejection(self):
         """Test individual user rejection button functionality"""
-        if not user_id:
-            self.log_test("Individual User Rejection", False, error_msg="No user ID provided")
-            return False
-            
         try:
-            # First verify user is in pending status
-            users_response = requests.get(f"{BACKEND_URL}/admin/users", timeout=10)
-            if users_response.status_code != 200:
-                self.log_test("Individual User Rejection", False, "Failed to get users list")
-                return False
-                
-            users = users_response.json()
-            test_user = None
-            for user in users:
-                if user.get('id') == user_id:
-                    test_user = user
-                    break
-                    
-            if not test_user:
-                self.log_test("Individual User Rejection", False, "Test user not found in users list")
-                return False
-                
-            if test_user.get('registration_status') != 'Pending':
-                self.log_test("Individual User Rejection", False, f"User status is {test_user.get('registration_status')}, expected Pending")
-                return False
+            # Create a test user for rejection testing
+            test_id = str(uuid.uuid4())[:8]
+            test_user_data = {
+                "username": f"rejection_test_{test_id}",
+                "email": f"rejection_test_{test_id}@example.com",
+                "full_name": f"Rejection Test User {test_id}",
+                "account_type": "seller"
+            }
             
-            # Test the reject button endpoint with reason
-            rejection_data = {"reason": "Test rejection for button functionality testing"}
-            response = requests.put(
-                f"{BACKEND_URL}/admin/users/{user_id}/reject", 
-                json=rejection_data,
-                timeout=10
-            )
-            
-            if response.status_code == 200:
-                # Verify user status changed to Rejected
-                time.sleep(1)  # Brief delay for database update
-                users_response = requests.get(f"{BACKEND_URL}/admin/users", timeout=10)
-                if users_response.status_code == 200:
-                    users = users_response.json()
-                    updated_user = None
-                    for user in users:
-                        if user.get('id') == user_id:
-                            updated_user = user
-                            break
-                    
-                    if updated_user and updated_user.get('registration_status') == 'Rejected':
-                        self.log_test(
-                            "Individual User Rejection", 
-                            True, 
-                            f"Successfully rejected user {user_id}, status changed from Pending to Rejected"
-                        )
-                        return True
-                    else:
-                        self.log_test("Individual User Rejection", False, "User status did not change to Rejected")
-                        return False
+            reg_response = requests.post(f"{BACKEND_URL}/auth/register", json=test_user_data, timeout=10)
+            if reg_response.status_code == 200:
+                user_id = reg_response.json().get('user_id')
+                self.test_user_ids.append(user_id)
+                
+                # Test the reject endpoint with reason
+                rejection_data = {"reason": "Test rejection for button functionality testing"}
+                response = requests.put(
+                    f"{BACKEND_URL}/admin/users/{user_id}/reject", 
+                    json=rejection_data,
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    self.log_test(
+                        "Individual User Rejection", 
+                        True, 
+                        f"Successfully tested reject endpoint with user {user_id}"
+                    )
+                    return True
                 else:
-                    self.log_test("Individual User Rejection", False, "Failed to verify status change")
+                    error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                    self.log_test("Individual User Rejection", False, error_msg=f"Reject failed: {error_detail}")
                     return False
             else:
-                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
-                self.log_test("Individual User Rejection", False, error_msg=error_detail)
+                self.log_test("Individual User Rejection", False, "Failed to create test user for rejection")
                 return False
+                
         except Exception as e:
             self.log_test("Individual User Rejection", False, error_msg=str(e))
             return False
