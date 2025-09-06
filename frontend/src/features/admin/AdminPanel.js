@@ -3216,17 +3216,44 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
                   console.log(`📧 Sending notifications for expired ad: ${adType}`);
                   
                   // Get notification methods
-                  const notificationMethods = adConfig.notificationMethods || ['toast'];
+                  const notificationMethods = adConfig.notificationMethods || ['notificationCenter'];
                   
                   notificationMethods.forEach(method => {
                     switch (method) {
-                      case 'toast':
+                      case 'notificationCenter':
+                        const selectedUsers = adConfig.notificationUsers || [];
+                        console.log(`🔔 Sending notification center alerts to ${selectedUsers.length} users`);
+                        
+                        // Send notification to each selected user
+                        selectedUsers.forEach(user => {
+                          window.dispatchEvent(new CustomEvent('addNotification', {
+                            detail: {
+                              id: `ad-expired-${adType}-${Date.now()}-${user.id}`,
+                              userId: user.id,
+                              type: 'warning',
+                              title: '⏰ Advertisement Expired',
+                              message: `Advertisement "${adType}" has expired and been processed according to your settings`,
+                              timestamp: new Date().toISOString(),
+                              read: false,
+                              actions: [
+                                {
+                                  label: 'View Ad Manager',
+                                  action: 'navigate',
+                                  target: '/admin'
+                                }
+                              ]
+                            }
+                          }));
+                        });
+                        
+                        // Also dispatch the old event for any remaining toast handlers
                         window.dispatchEvent(new CustomEvent('adExpiredNotification', {
                           detail: { 
                             adType, 
                             adConfig, 
-                            message: `Advertisement "${adType}" has expired`,
-                            method: 'toast'
+                            message: `Advertisement "${adType}" has expired - notifications sent to ${selectedUsers.length} users`,
+                            method: 'notificationCenter',
+                            recipients: selectedUsers
                           }
                         }));
                         break;
