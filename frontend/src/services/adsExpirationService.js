@@ -135,6 +135,7 @@ class AdsExpirationService {
         const notificationPromises = selectedUsers.map(async (user) => {
           try {
             const adDescription = adConfig.description || adType;
+            const pageLocation = this.getPageLocationName(adType);
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
               method: 'POST',
               headers: {
@@ -142,7 +143,7 @@ class AdsExpirationService {
               },
               body: JSON.stringify({
                 title: '⏰ Advertisement Expired',
-                message: `Advertisement "${adDescription}" has expired and been processed according to your settings`,
+                message: `"${adDescription}" on ${pageLocation} has expired and been processed according to your settings`,
                 type: 'warning'
               })
             });
