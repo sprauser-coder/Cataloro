@@ -37,12 +37,27 @@ function useAdsConfig() {
     const loadAdsConfig = () => {
       try {
         const savedConfig = localStorage.getItem('cataloro_site_config');
+        console.log('🔍 ModernBrowsePage - Loading ads config from localStorage:', savedConfig ? 'exists' : 'not found');
+        
         if (savedConfig) {
           const config = JSON.parse(savedConfig);
-          setAdsConfig(config.adsManager || null);
+          console.log('🔍 ModernBrowsePage - Parsed config:', config);
+          console.log('🔍 ModernBrowsePage - AdsManager exists:', !!config.adsManager);
+          
+          if (config.adsManager) {
+            console.log('🔍 ModernBrowsePage - Setting ads config:', config.adsManager);
+            setAdsConfig(config.adsManager);
+          } else {
+            console.log('⚠️ ModernBrowsePage - No adsManager in config');
+            setAdsConfig(null);
+          }
+        } else {
+          console.log('⚠️ ModernBrowsePage - No saved config found');
+          setAdsConfig(null);
         }
       } catch (error) {
-        console.warn('Could not load ads configuration');
+        console.error('❌ ModernBrowsePage - Error loading ads configuration:', error);
+        setAdsConfig(null);
       }
     };
 
@@ -51,6 +66,7 @@ function useAdsConfig() {
 
     // Listen for ads config updates
     const handleAdsConfigUpdate = () => {
+      console.log('🔍 ModernBrowsePage - Ads config update event received');
       loadAdsConfig();
     };
 
@@ -62,6 +78,14 @@ function useAdsConfig() {
       window.removeEventListener('storage', handleAdsConfigUpdate);
     };
   }, []);
+  
+  // Debug log current state
+  useEffect(() => {
+    console.log('🔍 ModernBrowsePage - Current adsConfig state:', adsConfig);
+    if (adsConfig?.browsePageAd) {
+      console.log('🔍 ModernBrowsePage - Browse page ad config:', adsConfig.browsePageAd);
+    }
+  }, [adsConfig]);
   
   return adsConfig;
 }
