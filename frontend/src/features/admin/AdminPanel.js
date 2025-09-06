@@ -3377,13 +3377,15 @@ function AdCountdownTimer({ adType, expirationDate, onExpired }) {
                     });
                     
                     // Wait for all restart notifications to complete
-                    try {
-                      const results = await Promise.all(restartPromises);
-                      const successCount = results.filter(r => r.success).length;
-                      console.log(`📊 Ad restart notifications: ${successCount}/${resetUsers.length} sent successfully`);
-                    } catch (error) {
-                      console.error('❌ Error in batch restart notification sending:', error);
-                    }
+                    (async () => {
+                      try {
+                        const results = await Promise.all(restartPromises);
+                        const successCount = results.filter(r => r.success).length;
+                        console.log(`📊 Ad restart notifications: ${successCount}/${resetUsers.length} sent successfully`);
+                      } catch (error) {
+                        console.error('❌ Error in batch restart notification sending:', error);
+                      }
+                    })();
                   }
                   
                   // Dispatch update event
