@@ -354,8 +354,8 @@ export const executeExpirationEvents = (adType, adConfig) => {
   });
 };
 
-// Deactivate expired ads (enhanced with event handling)
-export const deactivateExpiredAds = () => {
+// Deactivate expired ads (enhanced with event handling) - Only runs automatically, not on manual admin actions
+export const deactivateExpiredAds = (skipManualOverride = false) => {
   try {
     const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
     
@@ -365,23 +365,31 @@ export const deactivateExpiredAds = () => {
     
     Object.keys(currentConfig.adsManager).forEach(adType => {
       const adConfig = currentConfig.adsManager[adType];
+      
+      // Only process ads that are active and expired
       if (adConfig.active && isAdExpired(adConfig)) {
         
-        // Execute expiration events before deactivating
+        // Check if this is a manual admin action - if so, skip automatic processing
+        if (skipManualOverride) {
+          console.log(`🔧 Skipping automatic expiration for ${adType} - manual admin control active`);
+          return;
+        }
+        
+        // Execute expiration events before making decisions
         executeExpirationEvents(adType, adConfig);
         
-        // Check if reset event is configured - if so, don't deactivate
+        // Check configured events
         const hasResetEvent = adConfig.expirationEvents?.includes('reset');
         const hasDeactivateEvent = adConfig.expirationEvents?.includes('deactivate');
         
         if (hasResetEvent && !hasDeactivateEvent) {
           // Reset event will handle reactivation, don't deactivate
-          console.log(`🔄 Ad ${adType} expired but will be reset - keeping active`);
-        } else {
-          // Deactivate the ad (default behavior or explicit deactivate event)
+          console.log(`🔄 Ad ${adType} expired but configured for reset - automatic reactivation handled`);
+        } else if (hasDeactivateEvent || (!hasResetEvent && !hasDeactivateEvent)) {
+          // Deactivate the ad (explicit deactivate event or default behavior)
           currentConfig.adsManager[adType].active = false;
           hasChanges = true;
-          console.log(`🕒 Ad expired and deactivated: ${adType}`);
+          console.log(`🕒 Ad expired and automatically deactivated: ${adType} (can be manually reactivated by admin)`);
         }
       }
     });
