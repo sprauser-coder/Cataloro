@@ -1120,6 +1120,76 @@ function UsersTab({ users, onUpdateUser, showToast }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [filterRegistrationStatus, setFilterRegistrationStatus] = useState('all');
+
+  // RBAC Functions
+  const handleApproveUser = async (userId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}/approve`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        showToast('User approved successfully', 'success');
+        onUpdateUser(); // Refresh users list
+      } else {
+        showToast('Failed to approve user', 'error');
+      }
+    } catch (error) {
+      showToast('Error approving user', 'error');
+      console.error('Approve user error:', error);
+    }
+  };
+
+  const handleRejectUser = async (userId) => {
+    const reason = prompt('Please provide a reason for rejection (optional):');
+    if (reason === null) return; // User cancelled
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}/reject`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reason: reason || 'No reason provided' })
+      });
+
+      if (response.ok) {
+        showToast('User rejected successfully', 'success');
+        onUpdateUser(); // Refresh users list
+      } else {
+        showToast('Failed to reject user', 'error');
+      }
+    } catch (error) {
+      showToast('Error rejecting user', 'error');
+      console.error('Reject user error:', error);
+    }
+  };
+
+  const handleUpdateUserRole = async (userId, newRole) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}/role`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ user_role: newRole })
+      });
+
+      if (response.ok) {
+        showToast('User role updated successfully', 'success');
+        onUpdateUser(); // Refresh users list
+      } else {
+        showToast('Failed to update user role', 'error');
+      }
+    } catch (error) {
+      showToast('Error updating user role', 'error');
+      console.error('Update user role error:', error);
+    }
+  };
 
   const handleSuspendUser = async (userId) => {
     try {
