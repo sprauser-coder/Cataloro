@@ -2866,13 +2866,16 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
   const [adsSaved, setAdsSaved] = React.useState(false);
   
   const handleAdConfigChange = (adType, field, value) => {
-    handleConfigChange('adsManager', {
+    console.log(`🔧 Updating ad config: ${adType}.${field} = ${value}`);
+    const newAdsManager = {
       ...siteConfig.adsManager,
       [adType]: {
         ...siteConfig.adsManager[adType],
         [field]: value
       }
-    });
+    };
+    console.log(`🔧 New adsManager:`, newAdsManager);
+    handleConfigChange('adsManager', newAdsManager);
   };
 
   const saveAdsConfiguration = async () => {
