@@ -808,7 +808,16 @@ function MessagesPage() {
                 minWidth: adsConfig.messengerAd.width || '250px'
               }}
             >
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow h-fit">
+              <div 
+                className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow h-fit ${adsConfig.messengerAd.url ? 'cursor-pointer' : ''}`}
+                onClick={() => {
+                  if (adsConfig.messengerAd.url) {
+                    // Track ad click
+                    console.log('Messenger ad clicked:', adsConfig.messengerAd.url);
+                    window.open(adsConfig.messengerAd.url, '_blank');
+                  }
+                }}
+              >
                 <img
                   src={adsConfig.messengerAd.image}
                   alt={adsConfig.messengerAd.description || 'Advertisement'}
