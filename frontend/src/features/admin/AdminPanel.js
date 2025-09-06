@@ -48,6 +48,7 @@ import {
   Filter,
   ToggleLeft,
   ToggleRight,
+  Calculator,
   Sliders,
   Layout,
   Type,
