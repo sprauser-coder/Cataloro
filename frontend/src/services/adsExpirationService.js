@@ -249,6 +249,7 @@ class AdsExpirationService {
       const restartPromises = selectedUsers.map(async (user) => {
         try {
           const adDescription = adConfig.description || adType;
+          const pageLocation = this.getPageLocationName(adType);
           const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
             method: 'POST',
             headers: {
@@ -256,7 +257,7 @@ class AdsExpirationService {
             },
             body: JSON.stringify({
               title: '🔄 Advertisement Restarted',
-              message: `Advertisement "${adDescription}" has automatically restarted with a new ${originalRuntime} duration until ${new Date(newExpirationDate).toLocaleString()}`,
+              message: `"${adDescription}" on ${pageLocation} has automatically restarted with a new ${originalRuntime} duration until ${new Date(newExpirationDate).toLocaleString()}`,
               type: 'info'
             })
           });
