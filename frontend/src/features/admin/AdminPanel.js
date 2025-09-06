@@ -3454,9 +3454,9 @@ function UserNotificationSelector({ adType, selectedUsers, onUsersChange }) {
       try {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`);
         if (response.ok) {
-          const data = await response.json();
-          const users = data.users || [];
-          setAvailableUsers(users);
+          const users = await response.json();
+          // API returns users directly as an array, not wrapped in data.users
+          setAvailableUsers(Array.isArray(users) ? users : []);
           console.log(`📋 Loaded ${users.length} users for notification selection`);
         } else {
           console.error('Failed to fetch users for notification selection');
