@@ -3480,6 +3480,18 @@ function AdConfigPanel({
               </div>
             )}
 
+            {/* Countdown Timer Display */}
+            {adConfig.active && adConfig.expirationDate && (
+              <AdCountdownTimer 
+                adType={adType}
+                expirationDate={adConfig.expirationDate} 
+                onExpired={() => {
+                  console.log(`🕒 Ad expired: ${adType}`);
+                  handleAdConfigChange(adType, 'active', false);
+                }}
+              />
+            )}
+
             {/* Runtime */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
