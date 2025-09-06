@@ -3666,6 +3666,14 @@ function AdConfigPanel({
                   const selectedUsers = currentConfig.adsManager[adType].notificationUsers || [];
                   const notificationMethods = currentConfig.adsManager[adType].notificationMethods || [];
                   
+                  console.log(`🔍 Debugging ${adType} notifications:`, {
+                    adType,
+                    selectedUsers: selectedUsers.length,
+                    notificationMethods,
+                    hasNotificationCenter: notificationMethods.includes('notificationCenter'),
+                    currentConfig: currentConfig.adsManager[adType]
+                  });
+                  
                   if (notificationMethods.includes('notificationCenter') && selectedUsers.length > 0) {
                     console.log(`🚀 Sending ad start notifications to ${selectedUsers.length} users (${activationType})`);
                     
