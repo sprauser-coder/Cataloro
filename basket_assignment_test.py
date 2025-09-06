@@ -436,7 +436,7 @@ class BasketAssignmentTester:
             return 0, 1, []
         
         # Accept tender to create bought item
-        if not self.accept_tender(tender_id):
+        if not self.accept_tender(tender_id, admin_id):
             print("❌ Failed to accept tender. Aborting tests.")
             return 0, 1, []
         
