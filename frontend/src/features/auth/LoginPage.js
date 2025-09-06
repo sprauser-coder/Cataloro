@@ -154,7 +154,7 @@ function LoginPage() {
                     className="cataloro-input pl-12 h-14 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50"
                     placeholder="Enter your email address"
                   />
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-focus-within:opacity-100 pointer-events-none"></div>
                 </div>
               </div>
 
