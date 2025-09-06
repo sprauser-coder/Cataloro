@@ -1484,11 +1484,15 @@ function UsersTab({ users, onUpdateUser, showToast }) {
               <select
                 value={filterRole}
                 onChange={(e) => setFilterRole(e.target.value)}
-                className="cataloro-input w-auto min-w-[120px]"
+                className="cataloro-input w-auto min-w-[140px]"
               >
                 <option value="all">All Roles</option>
-                <option value="admin">Admin</option>
-                <option value="user">User</option>
+                <option value="Admin">Admin</option>
+                <option value="Admin-Manager">Admin Manager</option>
+                <option value="User-Seller">User Seller</option>
+                <option value="User-Buyer">User Buyer</option>
+                <option value="admin">Legacy Admin</option>
+                <option value="user">Legacy User</option>
               </select>
             </div>
             <div>
@@ -1501,6 +1505,19 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
                 <option value="inactive">Suspended</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Registration Status</label>
+              <select
+                value={filterRegistrationStatus}
+                onChange={(e) => setFilterRegistrationStatus(e.target.value)}
+                className="cataloro-input w-auto min-w-[120px]"
+              >
+                <option value="all">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
               </select>
             </div>
           </div>
