@@ -3158,13 +3158,14 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
       {activeAdTab === 'messenger' && (
         <AdConfigPanel
           title="Messenger Advertisement"
-          description="Display advertisement on the right side of messenger page aligned with conversation"
-          adConfig={siteConfig.adsManager?.messengerAd || { active: false, image: null, description: '', runtime: '1 month' }}
+          description="Display advertisements on messages page"
+          adConfig={siteConfig.adsManager?.messengerAd || { active: false, image: null, description: '', runtime: '1 month', width: '250px', height: '400px' }}
           adType="messengerAd"
           handleAdConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
           runtimeOptions={runtimeOptions}
-          showDimensions={false}
+          showDimensions={true}
+          dimensionsLabel="Messenger Ad Dimensions (Sidebar)"
           showToast={showToast}
         />
       )}
