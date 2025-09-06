@@ -3818,8 +3818,10 @@ function AdConfigPanel({
                     if (notificationMethods.includes('notificationCenter') && selectedUsers.length > 0) {
                       console.log(`🚀 Sending ad start notifications to ${selectedUsers.length} users`);
                       
-                      selectedUsers.forEach(async (user) => {
+                      // Send ad start notifications properly with Promise.all
+                      const startNotificationPromises = selectedUsers.map(async (user) => {
                         try {
+                          const adDescription = currentConfig.adsManager[adType].description || adType;
                           const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
                             method: 'POST',
                             headers: {
@@ -3827,20 +3829,32 @@ function AdConfigPanel({
                             },
                             body: JSON.stringify({
                               title: '🚀 Advertisement Started',
-                              message: `Advertisement "${adType}" has been activated and is now running until ${new Date(newExpiration).toLocaleString()}`,
+                              message: `Advertisement "${adDescription}" has been activated and is now running until ${new Date(newExpiration).toLocaleString()}`,
                               type: 'success'
                             })
                           });
                           
                           if (response.ok) {
                             console.log(`✅ Ad start notification sent to user ${user.email} (${user.id})`);
+                            return { success: true, user: user.email };
                           } else {
                             console.error(`❌ Failed to send ad start notification to user ${user.email}`);
+                            return { success: false, user: user.email, error: 'HTTP Error' };
                           }
                         } catch (error) {
                           console.error(`❌ Error sending ad start notification to user ${user.email}:`, error);
+                          return { success: false, user: user.email, error: error.message };
                         }
                       });
+                      
+                      // Wait for all start notifications to complete
+                      try {
+                        const results = await Promise.all(startNotificationPromises);
+                        const successCount = results.filter(r => r.success).length;
+                        console.log(`📊 Ad start notifications: ${successCount}/${selectedUsers.length} sent successfully`);
+                      } catch (error) {
+                        console.error('❌ Error in batch start notification sending:', error);
+                      }
                     }
                     
                     // Dispatch event
