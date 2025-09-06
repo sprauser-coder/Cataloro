@@ -290,12 +290,48 @@ class AdsExpirationService {
    */
   calculateExpirationDate(startDate, runtime) {
     const start = new Date(startDate);
+    const expiration = new Date(start);
     
-    // Parse runtime format (e.g., "2 weeks", "1 month", "3 days")
+    // Check if it's a custom runtime format (e.g., "custom_0d_0h_2m")
+    if (runtime.startsWith('custom_')) {
+      // Parse new custom format: custom_0d_0h_2m
+      const customMatch = runtime.match(/custom_(\d+)d_(\d+)h_(\d+)m/);
+      if (customMatch) {
+        const days = parseInt(customMatch[1]) || 0;
+        const hours = parseInt(customMatch[2]) || 0;
+        const minutes = parseInt(customMatch[3]) || 0;
+        
+        expiration.setDate(expiration.getDate() + days);
+        expiration.setHours(expiration.getHours() + hours);
+        expiration.setMinutes(expiration.getMinutes() + minutes);
+        
+        return expiration.toISOString();
+      }
+    }
+    
+    // Check if it's a legacy custom runtime format (e.g., "3 days 2 hours 30 minutes")
+    if (runtime.includes('days') || runtime.includes('hours') || runtime.includes('minutes')) {
+      // Parse legacy custom runtime format
+      const dayMatch = runtime.match(/(\d+)\s*days?/);
+      const hourMatch = runtime.match(/(\d+)\s*hours?/);
+      const minuteMatch = runtime.match(/(\d+)\s*minutes?/);
+      
+      const days = dayMatch ? parseInt(dayMatch[1]) : 0;
+      const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+      const minutes = minuteMatch ? parseInt(minuteMatch[1]) : 0;
+      
+      expiration.setDate(expiration.getDate() + days);
+      expiration.setHours(expiration.getHours() + hours);
+      expiration.setMinutes(expiration.getMinutes() + minutes);
+      
+      return expiration.toISOString();
+    }
+    
+    // Parse simple runtime format (e.g., "2 weeks", "1 month", "3 days")
     const [amount, unit] = runtime.split(' ');
     const numAmount = parseInt(amount);
     
-    switch (unit.toLowerCase()) {
+    switch (unit?.toLowerCase()) {
       case 'minute':
       case 'minutes':
         return new Date(start.getTime() + numAmount * 60 * 1000).toISOString();
@@ -314,7 +350,7 @@ class AdsExpirationService {
         newDate.setMonth(newDate.getMonth() + numAmount);
         return newDate.toISOString();
       default:
-        console.warn(`Unknown runtime unit: ${unit}, defaulting to 1 month`);
+        console.warn(`Unknown runtime format: ${runtime}, defaulting to 1 month`);
         const defaultDate = new Date(start);
         defaultDate.setMonth(defaultDate.getMonth() + 1);
         return defaultDate.toISOString();
