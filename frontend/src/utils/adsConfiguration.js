@@ -233,6 +233,21 @@ export const calculateExpirationDate = (startDate, runtime) => {
   
   // Handle predefined runtime options
   switch (runtime) {
+    case '1 minute':
+      expiration.setMinutes(expiration.getMinutes() + 1);
+      break;
+    case '5 minutes':
+      expiration.setMinutes(expiration.getMinutes() + 5);
+      break;
+    case '1 hour':
+      expiration.setHours(expiration.getHours() + 1);
+      break;
+    case '1 day':
+      expiration.setDate(expiration.getDate() + 1);
+      break;
+    case '1 week':
+      expiration.setDate(expiration.getDate() + 7);
+      break;
     case '1 month':
       expiration.setMonth(expiration.getMonth() + 1);
       break;
