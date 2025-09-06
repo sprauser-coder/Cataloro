@@ -3416,7 +3416,6 @@ function AdConfigPanel({
       <div className="space-y-6">
         <label className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
           <button
-          <button
             onClick={() => {
               console.log(`🔧 Toggle clicked: ${adType}.active from ${adConfig.active} to ${!adConfig.active}`);
               
