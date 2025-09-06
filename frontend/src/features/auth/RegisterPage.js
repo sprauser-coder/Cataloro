@@ -319,7 +319,7 @@ function RegisterPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Buyer Account */}
                   <div 
-                    className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                    className={`relative p-4 border-2 rounded-lg cursor-pointer ${
                       formData.account_type === 'buyer' 
                         ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' 
                         : 'border-gray-200 hover:border-gray-300'
