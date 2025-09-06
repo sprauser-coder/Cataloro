@@ -220,7 +220,7 @@ class BasketInvestigationTester:
                 }
                 
                 response = requests.put(
-                    f"{BACKEND_URL}/user/bought-items/{user_id}/{item_id}/assign-basket",
+                    f"{BACKEND_URL}/user/bought-items/{item_id}/assign",
                     json=assignment_data,
                     timeout=10
                 )
