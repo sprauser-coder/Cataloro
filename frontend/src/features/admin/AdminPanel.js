@@ -3134,6 +3134,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
           runtimeOptions={runtimeOptions}
           showDimensions={true}
           dimensionsLabel="Ad Dimensions (Vertical Banner)"
+          showToast={showToast}
         />
       )}
 
