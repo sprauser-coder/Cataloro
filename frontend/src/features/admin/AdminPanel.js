@@ -1312,11 +1312,16 @@ function UsersTab({ users, onUpdateUser, showToast }) {
     const matchesSearch = user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = filterRole === 'all' || user.role === filterRole;
+    const matchesRole = filterRole === 'all' || 
+                       user.user_role === filterRole || 
+                       user.role === filterRole; // Support both new and legacy role fields
     const matchesStatus = filterStatus === 'all' || 
                          (filterStatus === 'active' && user.is_active) ||
                          (filterStatus === 'inactive' && !user.is_active);
-    return matchesSearch && matchesRole && matchesStatus;
+    const matchesRegistrationStatus = filterRegistrationStatus === 'all' || 
+                                    user.registration_status === filterRegistrationStatus ||
+                                    (filterRegistrationStatus === 'Approved' && !user.registration_status); // Backward compatibility
+    return matchesSearch && matchesRole && matchesStatus && matchesRegistrationStatus;
   });
 
   const handleSelectAll = (checked) => {
