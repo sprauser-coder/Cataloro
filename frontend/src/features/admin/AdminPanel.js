@@ -3164,6 +3164,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
           handleImageUpload={handleImageUpload}
           runtimeOptions={runtimeOptions}
           showDimensions={false}
+          showToast={showToast}
         />
       )}
 
