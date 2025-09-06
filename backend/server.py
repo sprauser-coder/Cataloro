@@ -4235,7 +4235,7 @@ async def create_system_notification(notification_data: dict):
             "show_duration": notification_data.get("show_duration", 5000),  # milliseconds
             "delay_before_show": notification_data.get("delay_before_show", 0),  # delay in milliseconds
             "is_active": notification_data.get("is_active", True),
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "created_by": notification_data.get("created_by"),  # admin user who created it
             "expires_at": notification_data.get("expires_at"),  # optional expiration
             "auto_dismiss": notification_data.get("auto_dismiss", True),
