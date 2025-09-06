@@ -233,7 +233,7 @@ function LoginPage() {
                 >
                   <Shield className="w-5 h-5 text-purple-500" />
                   <span>Demo Admin Panel</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
