@@ -500,6 +500,19 @@ function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, cal
 function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
   const [showAssignMenu, setShowAssignMenu] = useState(false);
 
+  // Debug logging
+  console.log('BoughtItemCard render:', { 
+    itemId: item.id, 
+    basketsCount: baskets.length, 
+    showAssignMenu,
+    basketId: item.basket_id 
+  });
+
+  const handleToggleMenu = () => {
+    console.log('Toggle menu clicked, current state:', showAssignMenu);
+    setShowAssignMenu(!showAssignMenu);
+  };
+
   return (
     <div className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600 overflow-hidden">
       {/* Item Image */}
@@ -546,7 +559,7 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
         {/* Assignment Dropdown */}
         <div className="relative">
           <button
-            onClick={() => setShowAssignMenu(!showAssignMenu)}
+            onClick={handleToggleMenu}
             disabled={!!item.basket_id}
             className={`w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 ${
               item.basket_id
@@ -559,20 +572,27 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
           </button>
 
           {showAssignMenu && !item.basket_id && (
-            <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10">
+            <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-50">
               <div className="py-1">
-                {baskets.map((basket) => (
-                  <button
-                    key={basket.id}
-                    onClick={() => {
-                      onAssignToBasket(item.id, basket.id);
-                      setShowAssignMenu(false);
-                    }}
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                  >
-                    {basket.name}
-                  </button>
-                ))}
+                {baskets.length > 0 ? (
+                  baskets.map((basket) => (
+                    <button
+                      key={basket.id}
+                      onClick={() => {
+                        console.log('Assigning item to basket:', item.id, basket.id);
+                        onAssignToBasket(item.id, basket.id);
+                        setShowAssignMenu(false);
+                      }}
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                    >
+                      {basket.name}
+                    </button>
+                  ))
+                ) : (
+                  <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+                    No baskets available
+                  </div>
+                )}
                 
                 {baskets.length > 0 && (
                   <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
@@ -580,6 +600,7 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onCreateBasket }) {
                 
                 <button
                   onClick={() => {
+                    console.log('Creating new basket');
                     onCreateBasket();
                     setShowAssignMenu(false);
                   }}
