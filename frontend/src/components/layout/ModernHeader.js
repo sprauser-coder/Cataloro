@@ -1029,10 +1029,31 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                     : '1px solid rgba(0, 0, 0, 0.2)'
                 }}>
                   <div className="px-6 py-4 border-b border-white/10">
-                    <p className="text-base font-bold text-gray-900 dark:text-white">
-                      {user?.full_name || user?.username}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-white/70">{user?.email}</p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-base font-bold text-gray-900 dark:text-white">
+                          {user?.full_name || user?.username}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-white/70">{user?.email}</p>
+                      </div>
+                      {/* Role Badge */}
+                      <div className="flex flex-col items-end space-y-1">
+                        <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                          getUserDisplay().badge === 'Admin' 
+                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                            : getUserDisplay().badge === 'Manager'
+                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
+                            : getUserDisplay().badge === 'Seller'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                        }`}>
+                          {getUserDisplay().badge}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {getUserDisplay().role}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="py-2">
