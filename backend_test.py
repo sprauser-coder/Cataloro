@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Cataloro Backend Testing Suite - Manager Panel Access Testing
-Testing Admin-Manager user creation and Manager Panel access functionality
+Cataloro Backend Testing Suite - Demo User Role and Buy Management Testing
+Testing demo user role permissions and Buy Management access functionality
 """
 
 import requests
