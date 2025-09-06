@@ -1050,7 +1050,7 @@ class BackendTester:
         
         return self.passed_tests, self.failed_tests, self.test_results
 
-    def create_admin_manager_user(self):
+    def test_create_admin_manager_user(self):
         """Run Manager Panel access testing as requested in review"""
         print("=" * 80)
         print("CATALORO MANAGER PANEL ACCESS TESTING")
