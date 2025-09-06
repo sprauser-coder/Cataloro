@@ -664,8 +664,6 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket,
               <MoreHorizontal className="w-4 h-4 ml-2" />
             </button>
           )}
-            <MoreHorizontal className="w-4 h-4 ml-2" />
-          </button>
 
           {/* Simple absolute positioned dropdown */}
           {showAssignMenu && !item.basket_id && (
