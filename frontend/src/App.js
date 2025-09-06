@@ -33,6 +33,7 @@ import TenderManagementPage from './features/marketplace/TenderManagementPage';
 
 // Import centralized configuration
 import { APP_ROUTES } from './config/directions';
+import { loadAndApplyAdsConfiguration } from './utils/adsConfiguration';
 
 import './App.css';
 
