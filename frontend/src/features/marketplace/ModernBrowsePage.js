@@ -48,16 +48,49 @@ function useAdsConfig() {
             console.log('🔍 ModernBrowsePage - Setting ads config:', config.adsManager);
             setAdsConfig(config.adsManager);
           } else {
-            console.log('⚠️ ModernBrowsePage - No adsManager in config');
-            setAdsConfig(null);
+            console.log('⚠️ ModernBrowsePage - No adsManager in config, using defaults');
+            // Set default configuration for browse page ad
+            const defaultAdsConfig = {
+              browsePageAd: {
+                active: true,
+                image: null,
+                description: 'Advertisement Space',
+                runtime: '1 month',
+                width: '300px',
+                height: '600px'
+              }
+            };
+            setAdsConfig(defaultAdsConfig);
           }
         } else {
-          console.log('⚠️ ModernBrowsePage - No saved config found');
-          setAdsConfig(null);
+          console.log('⚠️ ModernBrowsePage - No saved config found, using defaults');
+          // Set default configuration for browse page ad
+          const defaultAdsConfig = {
+            browsePageAd: {
+              active: true,
+              image: null,
+              description: 'Advertisement Space',
+              runtime: '1 month',
+              width: '300px',
+              height: '600px'
+            }
+          };
+          setAdsConfig(defaultAdsConfig);
         }
       } catch (error) {
         console.error('❌ ModernBrowsePage - Error loading ads configuration:', error);
-        setAdsConfig(null);
+        // Set default configuration on error
+        const defaultAdsConfig = {
+          browsePageAd: {
+            active: true,
+            image: null,
+            description: 'Advertisement Space',
+            runtime: '1 month',
+            width: '300px',
+            height: '600px'
+          }
+        };
+        setAdsConfig(defaultAdsConfig);
       }
     };
 
