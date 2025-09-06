@@ -82,6 +82,7 @@ function ProductDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { showToast } = useNotifications();
+  const { permissions } = usePermissions();
   const {
     allProducts,
     addToFavorites,
