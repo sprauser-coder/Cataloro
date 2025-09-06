@@ -1966,7 +1966,7 @@ async def send_message(user_id: str, message_data: dict):
             "recipient_id": message_data.get("recipient_id"),
             "subject": message_data.get("subject", ""),
             "content": message_data.get("content"),
-            "is_read": False,
+            "read": False,
             "created_at": datetime.utcnow().isoformat(),
             "id": str(uuid.uuid4())
         }
