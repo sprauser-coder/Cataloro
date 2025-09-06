@@ -4960,6 +4960,22 @@ function SiteAdministrationTab({ showToast }) {
       }
     }
   }, []);
+  // Listen for ads configuration updates from global expiration service
+  React.useEffect(() => {
+    const handleConfigUpdate = (event) => {
+      const updatedAdsConfig = event.detail;
+      console.log('🔄 Ads config updated from global expiration service:', updatedAdsConfig);
+      
+      // Update the local site config with the new ads configuration
+      setSiteConfig(prev => ({
+        ...prev,
+        adsManager: updatedAdsConfig
+      }));
+    };
+
+    window.addEventListener('adsConfigUpdated', handleConfigUpdate);
+    return () => window.removeEventListener('adsConfigUpdated', handleConfigUpdate);
+  }, []);
 
   const adminSections = [
     { 
