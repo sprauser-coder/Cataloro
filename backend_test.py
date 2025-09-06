@@ -282,8 +282,8 @@ class BackendTester:
                     user_id = user.get('id')
                     
                     # Test a key Buy Management endpoint
-                    bought_items_response = requests.get(f"{BACKEND_URL}/user/{user_id}/bought-items", timeout=10)
-                    baskets_response = requests.get(f"{BACKEND_URL}/user/{user_id}/baskets", timeout=10)
+                    bought_items_response = requests.get(f"{BACKEND_URL}/user/bought-items/{user_id}", timeout=10)
+                    baskets_response = requests.get(f"{BACKEND_URL}/user/baskets/{user_id}", timeout=10)
                     
                     bought_items_accessible = bought_items_response.status_code in [200, 404]  # 404 is okay if endpoint doesn't exist
                     baskets_accessible = baskets_response.status_code in [200, 404]  # 404 is okay if endpoint doesn't exist
