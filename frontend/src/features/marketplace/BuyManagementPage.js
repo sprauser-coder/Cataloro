@@ -175,11 +175,15 @@ function BuyManagementPage() {
 
   // Delete basket
   const deleteBasket = async (basketId) => {
+    console.log('deleteBasket function called with basketId:', basketId);
+    
     if (!window.confirm('Are you sure you want to delete this basket? All items will be unassigned.')) {
+      console.log('User cancelled basket deletion');
       return;
     }
 
     try {
+      console.log('Attempting to delete basket:', basketId);
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/baskets/${basketId}`,
         {
@@ -188,11 +192,15 @@ function BuyManagementPage() {
         }
       );
       
+      console.log('Delete response status:', response.status);
+      
       if (response.ok) {
         showToast('Basket deleted successfully', 'success');
         loadBaskets();
         loadBoughtItems(); // Refresh bought items to update assignment status
       } else {
+        const errorText = await response.text();
+        console.error('Delete failed with response:', errorText);
         showToast('Failed to delete basket', 'error');
       }
     } catch (error) {
