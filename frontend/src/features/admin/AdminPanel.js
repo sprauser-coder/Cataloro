@@ -2869,6 +2869,17 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
   
   const handleAdConfigChange = (adType, field, value) => {
     console.log(`🔧 Updating ad config: ${adType}.${field} = ${value}`);
+    
+    // Special debugging for notification-related fields
+    if (field === 'notificationUsers' || field === 'notificationMethods') {
+      console.log(`🔍 ${adType} notification config update:`, {
+        field,
+        value,
+        currentUsers: siteConfig.adsManager?.[adType]?.notificationUsers?.length || 0,
+        currentMethods: siteConfig.adsManager?.[adType]?.notificationMethods || []
+      });
+    }
+    
     const newAdsManager = {
       ...siteConfig.adsManager,
       [adType]: {
