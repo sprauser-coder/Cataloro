@@ -293,7 +293,63 @@ export const activateAd = (adType, adConfig) => {
   }
 };
 
-// Deactivate expired ads (to be called periodically)
+// Execute expiration events
+export const executeExpirationEvents = (adType, adConfig) => {
+  const events = adConfig.expirationEvents || [];
+  
+  console.log(`🔔 Executing expiration events for ${adType}:`, events);
+  
+  events.forEach(event => {
+    switch (event) {
+      case 'notify':
+        // Send notification to admin
+        console.log(`📧 Sending admin notification for expired ad: ${adType}`);
+        // Dispatch custom event for notification
+        window.dispatchEvent(new CustomEvent('adExpiredNotification', {
+          detail: { adType, adConfig, message: `Advertisement "${adType}" has expired` }
+        }));
+        break;
+        
+      case 'deactivate':
+        console.log(`❌ Deactivating expired ad: ${adType}`);
+        // This will be handled by the existing deactivation logic
+        break;
+        
+      case 'reset':
+        console.log(`🔄 Resetting duration for ad: ${adType}`);
+        try {
+          const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+          if (currentConfig.adsManager && currentConfig.adsManager[adType]) {
+            const now = new Date().toISOString();
+            const originalRuntime = currentConfig.adsManager[adType].runtime;
+            const newExpirationDate = calculateExpirationDate(now, originalRuntime);
+            
+            // Reset start and expiration dates
+            currentConfig.adsManager[adType].startDate = now;
+            currentConfig.adsManager[adType].expirationDate = newExpirationDate;
+            currentConfig.adsManager[adType].active = true; // Ensure it stays active
+            
+            localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
+            
+            // Dispatch update event
+            window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
+              detail: currentConfig.adsManager 
+            }));
+            
+            console.log(`🔄 Ad duration reset for ${adType} until:`, newExpirationDate);
+          }
+        } catch (error) {
+          console.error(`Error resetting ad duration for ${adType}:`, error);
+        }
+        break;
+        
+      default:
+        console.warn(`Unknown expiration event: ${event}`);
+    }
+  });
+};
+
+// Deactivate expired ads (enhanced with event handling)
 export const deactivateExpiredAds = () => {
   try {
     const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
@@ -305,9 +361,23 @@ export const deactivateExpiredAds = () => {
     Object.keys(currentConfig.adsManager).forEach(adType => {
       const adConfig = currentConfig.adsManager[adType];
       if (adConfig.active && isAdExpired(adConfig)) {
-        currentConfig.adsManager[adType].active = false;
-        hasChanges = true;
-        console.log(`🕒 Ad expired and deactivated: ${adType}`);
+        
+        // Execute expiration events before deactivating
+        executeExpirationEvents(adType, adConfig);
+        
+        // Check if reset event is configured - if so, don't deactivate
+        const hasResetEvent = adConfig.expirationEvents?.includes('reset');
+        const hasDeactivateEvent = adConfig.expirationEvents?.includes('deactivate');
+        
+        if (hasResetEvent && !hasDeactivateEvent) {
+          // Reset event will handle reactivation, don't deactivate
+          console.log(`🔄 Ad ${adType} expired but will be reset - keeping active`);
+        } else {
+          // Deactivate the ad (default behavior or explicit deactivate event)
+          currentConfig.adsManager[adType].active = false;
+          hasChanges = true;
+          console.log(`🕒 Ad expired and deactivated: ${adType}`);
+        }
       }
     });
     
