@@ -273,12 +273,27 @@ async def health_check():
 @app.post("/api/auth/register")
 async def register_user(user_data: dict):
     user_id = generate_id()
+    
+    # Get role selection from registration data
+    selected_role = user_data.get("account_type", "buyer").lower()  # buyer or seller
+    
+    # Map to internal role system
+    if selected_role == "seller":
+        user_role = "User-Seller"
+        badge = "Seller"
+    else:
+        user_role = "User-Buyer" 
+        badge = "Buyer"
+    
     user = {
         "id": user_id,
         "username": user_data["username"],
         "email": user_data["email"],
         "full_name": user_data["full_name"],
-        "role": "user",
+        "role": "user",  # Keep backward compatibility
+        "user_role": user_role,
+        "registration_status": "Pending",  # New users need admin approval
+        "badge": badge,
         "created_at": datetime.utcnow(),
         "is_active": True,
         # Business account fields
@@ -294,10 +309,30 @@ async def register_user(user_data: dict):
     
     await db.users.insert_one(user)
     
+    # Trigger system notifications for admin about new registration
+    admin_users = await db.users.find({"user_role": {"$in": ["Admin", "Admin-Manager"]}}).to_list(length=None)
+    for admin in admin_users:
+        admin_notification = {
+            "user_id": admin.get("id"),
+            "title": "New User Registration",
+            "message": f"New {badge.lower()} registration from {user_data['full_name']} ({user_data['email']}) requires approval.",
+            "type": "registration_pending",
+            "read": False,
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+            "id": str(uuid.uuid4()),
+            "registration_user_id": user_id,
+            "registration_user_role": user_role
+        }
+        await db.user_notifications.insert_one(admin_notification)
+    
     # Trigger system notifications for first login event
     await trigger_system_notifications(user_id, "first_login")
     
-    return {"message": "User registered successfully", "user_id": user_id}
+    return {
+        "message": "Registration successful. Your account is pending admin approval.",
+        "user_id": user_id,
+        "status": "pending_approval"
+    }
 
 @app.post("/api/auth/login")
 async def login_user(credentials: dict):
