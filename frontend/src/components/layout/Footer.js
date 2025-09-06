@@ -284,6 +284,19 @@ function Footer() {
                   <MapPin className="w-4 h-4 text-blue-400" />
                   <span className="text-gray-300">{config.contact.address}</span>
                 </div>
+                
+                {/* Footer Advertisement - Right below address */}
+                {adsConfig?.footerAd?.active && adsConfig.footerAd.logo && adsConfig.footerAd.companyName && (
+                  <div className="flex items-center space-x-3 text-sm text-gray-400 mt-4 pt-4 border-t border-gray-700">
+                    <span>In cooperation with</span>
+                    <img 
+                      src={adsConfig.footerAd.logo} 
+                      alt={adsConfig.footerAd.companyName}
+                      className="w-12 h-12 object-contain" // Made bigger: was w-6 h-6, now w-12 h-12
+                    />
+                    <span className="font-medium text-gray-300">{adsConfig.footerAd.companyName}</span>
+                  </div>
+                )}
               </div>
             </div>
 
