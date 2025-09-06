@@ -95,8 +95,8 @@ function LoginPage() {
               <div className="w-20 h-20 mx-auto relative">
                 {/* Main Logo */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 p-1">
-                  <div className="w-full h-full rounded-3xl bg-white/10 backdrop-blur-xl flex items-center justify-center group">
-                    <Store className="w-10 h-10 text-white drop-shadow-lg group-hover:scale-110 transition-transform duration-300" />
+                  <div className="w-full h-full rounded-3xl bg-white/10 flex items-center justify-center">
+                    <Store className="w-10 h-10 text-white drop-shadow-lg" />
                   </div>
                 </div>
                 {/* Animated Glow */}
