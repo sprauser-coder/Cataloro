@@ -1460,87 +1460,110 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
             </div>
           )}
           
-          <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
-            <div className="flex-1">
-              <input
-                type="number"
-                min={item.bid_info?.highest_bid || item.price || 0}
-                step="10"
-                placeholder={
-                  item.time_info?.is_expired 
-                    ? "Bid..." 
-                    : item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids
-                      ? "Bid..."
-                      : `Min: €${(item.bid_info?.highest_bid || item.price || 0).toFixed(2)}`
-                }
-                disabled={item.time_info?.is_expired || (item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids)}
-                className={`w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  item.time_info?.is_expired
-                    ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 cursor-not-allowed'
-                    : item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids
-                      ? 'border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 cursor-not-allowed'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                }`}
-                onClick={(e) => e.stopPropagation()}
-                onFocus={(e) => e.stopPropagation()}
-                onChange={(e) => {
+          {/* Bidding Controls - Role-based access */}
+          {permissions?.browse?.canPlaceBid ? (
+            <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
+              <div className="flex-1">
+                <input
+                  type="number"
+                  min={item.bid_info?.highest_bid || item.price || 0}
+                  step="10"
+                  placeholder={
+                    item.time_info?.is_expired 
+                      ? "Bid..." 
+                      : item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids
+                        ? "Bid..."
+                        : `Min: €${(item.bid_info?.highest_bid || item.price || 0).toFixed(2)}`
+                  }
+                  disabled={item.time_info?.is_expired || (item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids)}
+                  className={`w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    item.time_info?.is_expired
+                      ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 cursor-not-allowed'
+                      : item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids
+                        ? 'border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 cursor-not-allowed'
+                        : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                  }`}
+                  onClick={(e) => e.stopPropagation()}
+                  onFocus={(e) => e.stopPropagation()}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    const input = e.target;
+                    input.dataset.offerAmount = e.target.value;
+                  }}
+                />
+              </div>
+              <button
+                onClick={(e) => {
                   e.stopPropagation();
-                  const input = e.target;
-                  input.dataset.offerAmount = e.target.value;
+                  if (item.time_info?.is_expired) {
+                    alert('This listing has expired. No more bids can be placed.');
+                    return;
+                  }
+                  if (item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids) {
+                    alert('You are already the highest bidder! Wait for others to place higher bids.');
+                    return;
+                  }
+                  const input = e.target.parentElement.previousElementSibling?.querySelector('input') || 
+                               e.target.parentElement.parentElement.querySelector('input');
+                  const offerAmount = parseFloat(input?.value || 0);
+                  if (offerAmount && offerAmount >= (item.highest_bid || item.price || 0)) {
+                    onSubmitTender(item, offerAmount);
+                    input.value = ''; // Clear input after submission
+                  } else {
+                    alert(`Please enter an amount of at least €${(item.highest_bid || item.price || 0).toFixed(2)}`);
+                  }
                 }}
-              />
+                disabled={isSubmittingTender || item.time_info?.is_expired || (item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids)}
+                className={`px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+                  item.time_info?.is_expired
+                    ? 'bg-red-400 text-red-100 cursor-not-allowed'
+                    : item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids
+                      ? 'bg-blue-400 text-blue-100 cursor-not-allowed'
+                      : 'bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white'
+                }`}
+                title={
+                  item.time_info?.is_expired 
+                    ? "Listing has expired" 
+                    : item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids
+                      ? "You are the highest bidder"
+                      : "Submit tender offer"
+                }
+              >
+                {item.time_info?.is_expired ? (
+                  <span>EXPIRED</span>
+                ) : item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids ? (
+                  <span>WINNING</span>
+                ) : isSubmittingTender ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <span>Offer</span>
+                )}
+              </button>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (item.time_info?.is_expired) {
-                  alert('This listing has expired. No more bids can be placed.');
-                  return;
-                }
-                if (item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids) {
-                  alert('You are already the highest bidder! Wait for others to place higher bids.');
-                  return;
-                }
-                const input = e.target.parentElement.previousElementSibling?.querySelector('input') || 
-                             e.target.parentElement.parentElement.querySelector('input');
-                const offerAmount = parseFloat(input?.value || 0);
-                if (offerAmount && offerAmount >= (item.highest_bid || item.price || 0)) {
-                  onSubmitTender(item, offerAmount);
-                  input.value = ''; // Clear input after submission
-                } else {
-                  alert(`Please enter an amount of at least €${(item.highest_bid || item.price || 0).toFixed(2)}`);
-                }
-              }}
-              disabled={isSubmittingTender || item.time_info?.is_expired || (item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids)}
-              className={`px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
-                item.time_info?.is_expired
-                  ? 'bg-red-400 text-red-100 cursor-not-allowed'
-                  : item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids
-                    ? 'bg-blue-400 text-blue-100 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white'
-              }`}
-              title={
-                item.time_info?.is_expired 
-                  ? "Listing has expired" 
-                  : item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids
-                    ? "You are the highest bidder"
-                    : "Submit tender offer"
-              }
-            >
-              {item.time_info?.is_expired ? (
-                <span>EXPIRED</span>
-              ) : item.bid_info?.highest_bidder_id === user?.id && item.bid_info?.has_bids ? (
-                <span>WINNING</span>
-              ) : isSubmittingTender ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Submitting...</span>
-                </>
-              ) : (
-                <span>Offer</span>
-              )}
-            </button>
-          </div>
+          ) : (
+            /* Show disabled bidding interface for sellers with explanation */
+            <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Seller Account - Bidding Disabled
+                </span>
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Seller accounts can view all bid information but cannot place bids. Switch to a buyer account to participate in bidding.
+              </p>
+              {/* Show bid info for sellers */}
+              <div className="mt-2 flex items-center justify-between text-sm">
+                <span className="text-gray-600 dark:text-gray-400">Current highest bid:</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  €{(item.bid_info?.highest_bid || item.price || 0).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          )}
           
           {/* Tender Confirmation Message */}
           {tenderConfirmation?.visible && (
