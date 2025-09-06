@@ -237,7 +237,44 @@ function BuyManagementPage() {
       showToast('Error unassigning item from basket', 'error');
     }
   };
-  const assignItemToBasket = async (itemId, basketId) => {
+  // Reassign item to different basket
+  const reassignItemToBasket = async (itemId, fromBasketId, toBasketId) => {
+    try {
+      // First unassign from current basket
+      const unassignResponse = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/bought-items/${itemId}/unassign`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+      
+      if (!unassignResponse.ok) {
+        throw new Error('Failed to unassign item');
+      }
+      
+      // Then assign to new basket
+      const assignResponse = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/bought-items/${itemId}/assign`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ basket_id: toBasketId })
+        }
+      );
+      
+      if (assignResponse.ok) {
+        showToast('Item reassigned to basket successfully', 'success');
+        loadBoughtItems();
+        loadBaskets();
+      } else {
+        throw new Error('Failed to assign item to new basket');
+      }
+    } catch (error) {
+      console.error('Error reassigning item:', error);
+      showToast('Error reassigning item to basket', 'error');
+    }
+  };
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/bought-items/${itemId}/assign`,
