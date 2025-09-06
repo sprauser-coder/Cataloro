@@ -437,23 +437,17 @@ class UserActionButtonsTester:
         # 4. Individual User Approval Testing
         print("✅ INDIVIDUAL USER APPROVAL TESTING")
         print("-" * 40)
-        pending_user_id = self.create_test_user_with_pending_status()
-        if pending_user_id:
-            self.test_individual_user_approval(pending_user_id)
+        self.test_individual_user_approval()
         
         # 5. Individual User Rejection Testing
         print("❌ INDIVIDUAL USER REJECTION TESTING")
         print("-" * 40)
-        pending_user_id_2 = self.create_test_user_with_pending_status()
-        if pending_user_id_2:
-            self.test_individual_user_rejection(pending_user_id_2)
+        self.test_individual_user_rejection()
         
         # 6. Individual User Delete Testing
         print("🗑️ INDIVIDUAL USER DELETE TESTING")
         print("-" * 40)
-        approved_user_id = self.create_test_user_with_approved_status()
-        if approved_user_id:
-            self.test_individual_user_deletion(approved_user_id)
+        self.test_individual_user_deletion()
         
         # 7. Cleanup
         print("🧹 CLEANUP")
