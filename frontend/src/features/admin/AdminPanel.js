@@ -3052,7 +3052,8 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
   const runtimeOptions = [
     { value: '1 month', label: '1 Month' },
     { value: '3 months', label: '3 Months' },
-    { value: '1 year', label: '1 Year' }
+    { value: '1 year', label: '1 Year' },
+    { value: 'custom', label: '⏱️ Custom Duration' }
   ];
 
   return (
