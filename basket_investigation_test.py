@@ -183,6 +183,47 @@ class BasketInvestigationTester:
             self.log_test("Create Picki Basket", False, error_msg=str(e))
             return None
 
+    def check_available_bought_items(self):
+        """Check what bought items are available for testing assignment"""
+        if not self.demo_user:
+            self.log_test("Check Available Bought Items", False, error_msg="No demo user available")
+            return []
+            
+        try:
+            user_id = self.demo_user.get('id')
+            
+            response = requests.get(f"{BACKEND_URL}/user/bought-items/{user_id}", timeout=10)
+            
+            if response.status_code == 200:
+                bought_items = response.json()
+                
+                if bought_items:
+                    item_details = []
+                    for item in bought_items:
+                        item_details.append(f"'{item.get('title', 'Unknown')}' (ID: {item.get('id', 'No ID')})")
+                    
+                    self.log_test(
+                        "Check Available Bought Items", 
+                        True, 
+                        f"Found {len(bought_items)} bought items: {'; '.join(item_details)}"
+                    )
+                else:
+                    self.log_test(
+                        "Check Available Bought Items", 
+                        True, 
+                        "No bought items found - this is expected if user hasn't purchased anything"
+                    )
+                
+                return bought_items
+            else:
+                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                self.log_test("Check Available Bought Items", False, error_msg=f"Failed to get bought items: {error_detail}")
+                return []
+                
+        except Exception as e:
+            self.log_test("Check Available Bought Items", False, error_msg=str(e))
+            return []
+
     def test_basket_assignment_with_correct_id(self, basket_id):
         """Test basket assignment endpoint with the correct basket ID"""
         if not self.demo_user or not basket_id:
