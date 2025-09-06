@@ -626,6 +626,26 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   <span className="font-medium">Tenders</span>
                 </Link>
               ) : null}
+
+              {/* Buy Management Link - Admin, Admin-Manager, and User-Buyer access */}
+              {(permissions.ui.showBuyingFeatures || permissions.ui.showAdminPanelLink) && (
+                <Link
+                  to="/buy-management"
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
+                    location.pathname === '/buy-management'
+                      ? 'bg-white/20 dark:bg-white/20 text-gray-900 dark:text-white shadow-lg backdrop-blur-md'
+                      : 'text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10'
+                  }`}
+                  style={location.pathname === '/buy-management' ? {
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
+                    backdropFilter: 'blur(20px)',
+                    boxShadow: '0 4px 15px rgba(255, 255, 255, 0.1)'
+                  } : {}}
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  <span className="font-medium">Buy Management</span>
+                </Link>
+              )}
               
               {/* Admin Link - Admin and Admin-Manager access */}
               {permissions.ui.showAdminPanelLink && (
