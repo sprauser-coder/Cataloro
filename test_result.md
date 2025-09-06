@@ -59,6 +59,10 @@
 
 **BUY MANAGEMENT CALCULATION DEBUG STATUS:** ❌ CRITICAL DATA FLOW ISSUE - The basket calculations show (0,0,0) because basket items are missing catalyst data from their original listings. While listings have proper catalyst fields (ceramic_weight, pt_ppm, pd_ppm, rh_ppm), these values are not being transferred to basket items during the assignment process. The frontend calculation logic is correct, but it's calculating with zero values. The issue is in the data flow between listings and basket items, not in the calculation itself.
 
+agent_communication:
+    -agent: "testing"
+    -message: "CRITICAL BUY MANAGEMENT ISSUE IDENTIFIED: Basket calculations showing (0,0,0) for Pt, Pd, Rh values due to missing catalyst data transfer. ROOT CAUSE: When items are added to baskets, catalyst fields (weight, pt_ppm, pd_ppm, rh_ppm) from listings are NOT being copied to basket items. SOLUTION NEEDED: Fix the assignment/bought items creation process to preserve catalyst data from original listings. Listings DO have catalyst data, but basket items have all zeros. Frontend calculation logic is correct."
+
 ## Current Work In Progress - USER MANAGEMENT BUG FIXES COMPLETED
 
 **Current Date:** 2025-01-29  
