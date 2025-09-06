@@ -1314,8 +1314,16 @@ async def bulk_user_action(action_data: dict):
         for user_id in user_ids:
             try:
                 if action == "delete":
-                    # Delete user
+                    # Delete user - try UUID id field first, then ObjectId
                     result = await db.users.delete_one({"id": user_id})
+                    if result.deleted_count == 0:
+                        # Try with ObjectId for backward compatibility
+                        try:
+                            from bson import ObjectId
+                            result = await db.users.delete_one({"_id": ObjectId(user_id)})
+                        except:
+                            pass
+                    
                     if result.deleted_count > 0:
                         # Clean up user-related data
                         await db.user_notifications.delete_many({"user_id": user_id})
@@ -1330,11 +1338,22 @@ async def bulk_user_action(action_data: dict):
                         results["errors"].append(f"User {user_id} not found")
                         
                 elif action == "activate":
-                    # Activate user
+                    # Activate user - try UUID id field first, then ObjectId
                     result = await db.users.update_one(
                         {"id": user_id},
                         {"$set": {"is_active": True}}
                     )
+                    if result.matched_count == 0:
+                        # Try with ObjectId for backward compatibility
+                        try:
+                            from bson import ObjectId
+                            result = await db.users.update_one(
+                                {"_id": ObjectId(user_id)},
+                                {"$set": {"is_active": True}}
+                            )
+                        except:
+                            pass
+                    
                     if result.matched_count > 0:
                         results["success_count"] += 1
                     else:
@@ -1342,11 +1361,22 @@ async def bulk_user_action(action_data: dict):
                         results["errors"].append(f"User {user_id} not found")
                         
                 elif action == "suspend":
-                    # Suspend user
+                    # Suspend user - try UUID id field first, then ObjectId
                     result = await db.users.update_one(
                         {"id": user_id},
                         {"$set": {"is_active": False}}
                     )
+                    if result.matched_count == 0:
+                        # Try with ObjectId for backward compatibility
+                        try:
+                            from bson import ObjectId
+                            result = await db.users.update_one(
+                                {"_id": ObjectId(user_id)},
+                                {"$set": {"is_active": False}}
+                            )
+                        except:
+                            pass
+                    
                     if result.matched_count > 0:
                         results["success_count"] += 1
                     else:
@@ -1354,14 +1384,32 @@ async def bulk_user_action(action_data: dict):
                         results["errors"].append(f"User {user_id} not found")
                         
                 elif action == "approve":
-                    # Approve user registration
+                    # Approve user registration - try UUID id field first, then ObjectId
                     result = await db.users.update_one(
                         {"id": user_id},
                         {"$set": {"registration_status": "Approved"}}
                     )
+                    if result.matched_count == 0:
+                        # Try with ObjectId for backward compatibility
+                        try:
+                            from bson import ObjectId
+                            result = await db.users.update_one(
+                                {"_id": ObjectId(user_id)},
+                                {"$set": {"registration_status": "Approved"}}
+                            )
+                        except:
+                            pass
+                    
                     if result.matched_count > 0:
-                        # Send approval notification
+                        # Send approval notification - get user data
                         user = await db.users.find_one({"id": user_id})
+                        if not user:
+                            try:
+                                from bson import ObjectId
+                                user = await db.users.find_one({"_id": ObjectId(user_id)})
+                            except:
+                                pass
+                        
                         if user:
                             approval_notification = {
                                 "user_id": user_id,
@@ -1379,14 +1427,32 @@ async def bulk_user_action(action_data: dict):
                         results["errors"].append(f"User {user_id} not found")
                         
                 elif action == "reject":
-                    # Reject user registration
+                    # Reject user registration - try UUID id field first, then ObjectId
                     result = await db.users.update_one(
                         {"id": user_id},
                         {"$set": {"registration_status": "Rejected"}}
                     )
+                    if result.matched_count == 0:
+                        # Try with ObjectId for backward compatibility
+                        try:
+                            from bson import ObjectId
+                            result = await db.users.update_one(
+                                {"_id": ObjectId(user_id)},
+                                {"$set": {"registration_status": "Rejected"}}
+                            )
+                        except:
+                            pass
+                    
                     if result.matched_count > 0:
-                        # Send rejection notification
+                        # Send rejection notification - get user data
                         user = await db.users.find_one({"id": user_id})
+                        if not user:
+                            try:
+                                from bson import ObjectId
+                                user = await db.users.find_one({"_id": ObjectId(user_id)})
+                            except:
+                                pass
+                        
                         if user:
                             rejection_notification = {
                                 "user_id": user_id,
