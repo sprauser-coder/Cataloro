@@ -3260,7 +3260,8 @@ function AdConfigPanel({
   handleImageUpload, 
   runtimeOptions,
   showDimensions = false,
-  dimensionsLabel = "Ad Dimensions"
+  dimensionsLabel = "Ad Dimensions",
+  showToast
 }) {
   // CRITICAL FIX: Initialize imagePreview from localStorage directly, not just from props
   const [imagePreview, setImagePreview] = React.useState(() => {
