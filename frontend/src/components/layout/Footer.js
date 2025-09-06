@@ -288,7 +288,7 @@ function Footer() {
                 {/* Footer Advertisement - Right below address */}
                 {adsConfig?.footerAd?.active && adsConfig.footerAd.logo && adsConfig.footerAd.companyName && (
                   <div 
-                    className={`flex items-center space-x-3 text-sm text-gray-400 mt-4 pt-4 border-t border-gray-700 ${adsConfig.footerAd.url ? 'cursor-pointer hover:text-gray-300 transition-colors' : ''}`}
+                    className={`text-sm text-gray-400 mt-4 pt-4 border-t border-gray-700 ${adsConfig.footerAd.url ? 'cursor-pointer hover:text-gray-300 transition-colors' : ''}`}
                     onClick={() => {
                       if (adsConfig.footerAd.url) {
                         // Track footer ad click using utility function
@@ -305,13 +305,25 @@ function Footer() {
                       }
                     }}
                   >
-                    <span>In cooperation with</span>
-                    <img 
-                      src={adsConfig.footerAd.logo} 
-                      alt={adsConfig.footerAd.companyName}
-                      className="w-12 h-12 object-contain" // Made bigger: was w-6 h-6, now w-12 h-12
-                    />
-                    <span className="font-medium text-gray-300">{adsConfig.footerAd.companyName}</span>
+                    {/* First line: "In cooperation with:" */}
+                    <div className="mb-2">
+                      <span>In cooperation with:</span>
+                    </div>
+                    
+                    {/* Second line: Logo (width matching first line text) */}
+                    <div className="mb-2 flex justify-start">
+                      <img 
+                        src={adsConfig.footerAd.logo} 
+                        alt={adsConfig.footerAd.companyName}
+                        className="h-8 object-contain"
+                        style={{ width: '140px' }} // Approximate width of "In cooperation with:" text
+                      />
+                    </div>
+                    
+                    {/* Third line: Company Name */}
+                    <div>
+                      <span className="font-medium text-gray-300">{adsConfig.footerAd.companyName}</span>
+                    </div>
                   </div>
                 )}
               </div>
