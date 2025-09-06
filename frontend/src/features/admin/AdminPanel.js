@@ -7699,11 +7699,18 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
   const [editingRow, setEditingRow] = useState(null);
   const [priceRangeUpdated, setPriceRangeUpdated] = useState(false);
 
-  const subTabs = [
-    { id: 'data', label: 'Data', icon: Database },
+  // Sub-tabs with permission filtering for Admin-Manager
+  const allSubTabs = [
+    { id: 'data', label: 'Data', icon: Database, adminOnly: true }, // Only full admin can see data tab
     { id: 'calculations', label: 'Price Calculations', icon: DollarSign },
     { id: 'basis', label: 'Basis', icon: Settings }
   ];
+
+  // Filter sub-tabs based on permissions
+  const subTabs = allSubTabs.filter(tab => {
+    if (tab.adminOnly && !permissions.adminPanel.canDeleteDatabase) return false; // Admin-Manager can't see data tab
+    return true;
+  });
 
   useEffect(() => {
     fetchCatalystData();
