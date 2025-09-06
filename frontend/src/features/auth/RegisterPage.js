@@ -127,12 +127,15 @@ function RegisterPage() {
         last_name: formData.last_name,
         full_name: `${formData.first_name} ${formData.last_name}`.trim(),
         password: formData.password,
+        account_type: formData.account_type, // Pass account type to backend
         is_business: formData.is_business,
         company_name: formData.is_business ? formData.company_name : '',
         country: formData.is_business ? formData.country : '',
         vat_number: formData.is_business ? formData.vat_number : ''
       });
-      navigate(APP_ROUTES.BROWSE);
+      // Show pending approval message instead of navigating
+      alert('Registration submitted successfully! Your account is pending admin approval. You will be notified once approved.');
+      navigate(APP_ROUTES.LOGIN);
     } catch (error) {
       console.error('Registration failed:', error);
     }
