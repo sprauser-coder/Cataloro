@@ -628,7 +628,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 </Link>
               ) : null}
 
-              {/* Buy Management Link - Admin, Admin-Manager, and User-Buyer access */}
+              {/* Inventory Link - Admin, Admin-Manager, and User-Buyer access */}
               {(permissions.ui.showBuyingFeatures || permissions.ui.showAdminPanelLink) && (
                 <Link
                   to="/buy-management"
