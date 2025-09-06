@@ -5205,12 +5205,35 @@ async def assign_item_to_basket(item_id: str, assignment_data: dict):
     try:
         basket_id = assignment_data.get("basket_id")
         
-        # This would update the bought item's basket assignment
-        # For now, we'll just return success as this is a placeholder
-        # In a real implementation, you'd:
-        # 1. Find the bought item by item_id
-        # 2. Update its basket_id field
-        # 3. Update the basket's items list
+        if not basket_id:
+            raise HTTPException(status_code=400, detail="basket_id is required")
+        
+        # Verify basket exists and belongs to the user
+        basket = await db.baskets.find_one({"id": basket_id})
+        if not basket:
+            raise HTTPException(status_code=404, detail="Basket not found")
+        
+        # For now, we'll store the assignment in a separate collection since bought_items are generated dynamically
+        # In a real implementation, you might want to store assignments in the baskets collection
+        assignment = {
+            "id": generate_id(),
+            "item_id": item_id,
+            "basket_id": basket_id,
+            "assigned_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+            "user_id": basket.get("user_id")
+        }
+        
+        # Check if assignment already exists
+        existing_assignment = await db.item_assignments.find_one({"item_id": item_id})
+        if existing_assignment:
+            # Update existing assignment
+            await db.item_assignments.update_one(
+                {"item_id": item_id},
+                {"$set": {"basket_id": basket_id, "assigned_at": assignment["assigned_at"]}}
+            )
+        else:
+            # Create new assignment
+            await db.item_assignments.insert_one(assignment)
         
         return {"message": "Item assigned to basket successfully"}
         
