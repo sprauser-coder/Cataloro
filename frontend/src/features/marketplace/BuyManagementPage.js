@@ -42,6 +42,7 @@ function BuyManagementPage() {
   const [selectedBasket, setSelectedBasket] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [assignmentFilter, setAssignmentFilter] = useState('all'); // all, assigned, not-assigned
   const [showCreateBasket, setShowCreateBasket] = useState(false);
   const [showEditBasket, setShowEditBasket] = useState(false);
   const [basketForm, setBasketForm] = useState({ name: '', description: '' });
