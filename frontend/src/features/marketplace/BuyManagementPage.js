@@ -201,7 +201,42 @@ function BuyManagementPage() {
     }
   };
 
-  // Assign item to basket
+  // Unassign item from basket
+  const unassignItemFromBasket = async (itemId) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/bought-items/${itemId}/unassign`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+      
+      if (response.ok) {
+        showToast('Item unassigned from basket successfully', 'success');
+        
+        // Update the local state immediately for better UX
+        setBoughtItems(prevItems => 
+          prevItems.map(item => 
+            item.id === itemId 
+              ? { ...item, basket_id: null }
+              : item
+          )
+        );
+        
+        // Reload data to ensure consistency
+        loadBoughtItems();
+        loadBaskets();
+      } else {
+        const errorText = await response.text();
+        console.error('Unassign failed:', errorText);
+        showToast('Failed to unassign item from basket', 'error');
+      }
+    } catch (error) {
+      console.error('Error unassigning item:', error);
+      showToast('Error unassigning item from basket', 'error');
+    }
+  };
   const assignItemToBasket = async (itemId, basketId) => {
     try {
       const response = await fetch(
