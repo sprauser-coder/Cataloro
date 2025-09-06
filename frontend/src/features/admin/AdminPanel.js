@@ -3663,6 +3663,15 @@ function SiteAdministrationTab({ showToast }) {
       if (savedConfig) {
         const parsedConfig = JSON.parse(savedConfig);
         console.log('🔧 AdminPanel: Initializing from localStorage:', parsedConfig);
+        console.log('🔧 AdminPanel: Parsed adsManager:', parsedConfig.adsManager);
+        
+        // Log individual image URLs for debugging
+        if (parsedConfig.adsManager) {
+          console.log('🔧 AdminPanel: Browse page ad image from localStorage:', parsedConfig.adsManager.browsePageAd?.image);
+          console.log('🔧 AdminPanel: Favorite ad image from localStorage:', parsedConfig.adsManager.favoriteAd?.image);
+          console.log('🔧 AdminPanel: Messenger ad image from localStorage:', parsedConfig.adsManager.messengerAd?.image);
+          console.log('🔧 AdminPanel: Footer ad logo from localStorage:', parsedConfig.adsManager.footerAd?.logo);
+        }
         
         // Merge with defaults to ensure all required fields exist
         const defaultConfig = {
