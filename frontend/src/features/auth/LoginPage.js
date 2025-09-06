@@ -244,7 +244,7 @@ function LoginPage() {
                 New to {UI_CONFIG.APP_NAME}?{' '}
                 <Link 
                   to={APP_ROUTES.REGISTER} 
-                  className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+                  className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 >
                   Create your account →
                 </Link>
