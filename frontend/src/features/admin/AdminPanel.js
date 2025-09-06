@@ -3193,7 +3193,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
       {/* Footer Ad Tab */}
       {activeAdTab === 'footer' && (
         <FooterAdConfigPanel
-          adConfig={siteConfig.adsManager?.footerAd || { active: false, logo: null, companyName: '', runtime: '1 month' }}
+          adConfig={siteConfig.adsManager?.footerAd || { active: false, logo: null, companyName: '', runtime: '1 month', expirationEvents: ['deactivate'], notificationMethods: ['notificationCenter'], notificationUsers: [] }}
           adType="footerAd"
           handleAdConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
