@@ -100,7 +100,7 @@ function LoginPage() {
                   </div>
                 </div>
                 {/* Animated Glow */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 blur-lg opacity-50 animate-pulse"></div>
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 opacity-50"></div>
                 {/* Sparkle Effect */}
                 <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-spin" style={{ animationDuration: '3s' }} />
               </div>
