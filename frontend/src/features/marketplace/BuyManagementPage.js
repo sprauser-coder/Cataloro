@@ -689,23 +689,13 @@ function BasketCard({ basket, totals, onEdit, onDelete }) {
           
           <div className="flex items-center space-x-2">
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Edit basket clicked for:', basket.id);
-                onEdit();
-              }}
+              onClick={onEdit}
               className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
               <Edit3 className="w-4 h-4" />
             </button>
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Delete basket clicked for:', basket.id);
-                onDelete();
-              }}
+              onClick={onDelete}
               className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400"
             >
               <Trash2 className="w-4 h-4" />
