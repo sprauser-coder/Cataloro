@@ -48,15 +48,10 @@ function BuyManagementPage() {
 
   // Load bought items
   const loadBoughtItems = async () => {
-    if (!user?.id) {
-      console.log('No user ID available for loading bought items');
-      return;
-    }
+    if (!user?.id) return;
     
     try {
       setLoading(true);
-      console.log('Loading bought items for user:', user.id);
-      
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/bought-items/${user.id}`,
         {
@@ -64,16 +59,11 @@ function BuyManagementPage() {
         }
       );
       
-      console.log('Bought items response status:', response.status);
-      
       if (response.ok) {
         const items = await response.json();
-        console.log('Bought items loaded:', items);
         setBoughtItems(items);
       } else {
-        console.error('Failed to load bought items, status:', response.status);
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
+        console.error('Failed to load bought items');
         setBoughtItems([]);
       }
     } catch (error) {
@@ -86,15 +76,10 @@ function BuyManagementPage() {
 
   // Load baskets
   const loadBaskets = async () => {
-    if (!user?.id) {
-      console.log('No user ID available for loading baskets');
-      return;
-    }
+    if (!user?.id) return;
     
     try {
       setLoading(true);
-      console.log('Loading baskets for user:', user.id);
-      
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/baskets/${user.id}`,
         {
@@ -102,16 +87,11 @@ function BuyManagementPage() {
         }
       );
       
-      console.log('Baskets response status:', response.status);
-      
       if (response.ok) {
         const basketsData = await response.json();
-        console.log('Baskets loaded:', basketsData);
         setBaskets(basketsData);
       } else {
-        console.error('Failed to load baskets, status:', response.status);
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
+        console.error('Failed to load baskets');
         setBaskets([]);
       }
     } catch (error) {
