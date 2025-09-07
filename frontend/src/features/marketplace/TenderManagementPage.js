@@ -851,9 +851,9 @@ function MyListingCard({ listing, onDelete }) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
       {/* Listing Image */}
-      <div className="relative h-48 w-full">
+      <div className="relative h-48 w-full overflow-hidden rounded-t-xl">
         <img
           src={listing.images?.[0] || '/api/placeholder/400/300'}
           alt={listing.title}
@@ -919,26 +919,26 @@ function MyListingCard({ listing, onDelete }) {
             </button>
             
             {showMenu && (
-              <div className="absolute top-8 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 min-w-[120px]">
+              <div className="absolute bottom-full right-0 mb-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 min-w-[140px]">
                 <button
                   onClick={() => {
                     window.location.href = `/edit-listing/${listing.id}`;
                     setShowMenu(false);
                   }}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2"
+                  className="w-full px-4 py-3 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2 rounded-t-lg"
                 >
                   <Edit className="w-4 h-4" />
-                  <span>Edit</span>
+                  <span>Edit Listing</span>
                 </button>
                 <button
                   onClick={() => {
                     onDelete(listing.id);
                     setShowMenu(false);
                   }}
-                  className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2"
+                  className="w-full px-4 py-3 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2 rounded-b-lg"
                 >
                   <Trash2 className="w-4 h-4" />
-                  <span>Delete</span>
+                  <span>Delete Listing</span>
                 </button>
               </div>
             )}
