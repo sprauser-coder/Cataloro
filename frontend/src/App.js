@@ -30,6 +30,7 @@ import RegisterPage from './features/auth/RegisterPage';
 import InfoPage from './features/info/InfoPage';
 import TenderManagementPage from './features/marketplace/TenderManagementPage';
 import BuyManagementPage from './features/marketplace/BuyManagementPage';
+import DashboardHub from './components/admin/DashboardHub';
 
 // Import centralized configuration
 import { APP_ROUTES } from './config/directions';
