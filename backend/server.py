@@ -108,6 +108,7 @@ async def shutdown_event():
     """Cleanup on shutdown"""
     logger.info("🛑 Shutting down Cataloro Marketplace API...")
     await cleanup_cache()
+    await cleanup_search()
 
 # Pydantic Models
 class User(BaseModel):
