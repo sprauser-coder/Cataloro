@@ -979,7 +979,7 @@ async def browse_listings(
     price_from: int = 0,  # Minimum price filter
     price_to: int = 999999,  # Maximum price filter
     page: int = 1,  # Page number for pagination
-    limit: int = 20  # Items per page
+    limit: int = 100  # Items per page - increased from 20 to show more listings
 ):
     """Browse available listings with seller information, filters, and pagination"""
     try:
