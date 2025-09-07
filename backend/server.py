@@ -569,11 +569,33 @@ async def login_user(request: Request, credentials: dict):
         
         # Check if user is approved for login
         if user.get("registration_status") == "Pending":
+            # Record failed login attempt for audit
+            security_service.record_failed_login(email)
+            security_service.record_failed_login(client_ip)
+            security_service.log_audit_event(
+                user_id=user.get("id", "unknown"),
+                action="login_failed",
+                resource="auth",
+                details={"email": email, "reason": "pending_approval"},
+                ip_address=client_ip,
+                user_agent=user_agent
+            )
             raise HTTPException(
                 status_code=403, 
                 detail="Your registration is pending admin approval. Please wait for approval before logging in."
             )
         elif user.get("registration_status") == "Rejected":
+            # Record failed login attempt for audit
+            security_service.record_failed_login(email)
+            security_service.record_failed_login(client_ip)
+            security_service.log_audit_event(
+                user_id=user.get("id", "unknown"),
+                action="login_failed",
+                resource="auth",
+                details={"email": email, "reason": "account_rejected"},
+                ip_address=client_ip,
+                user_agent=user_agent
+            )
             raise HTTPException(
                 status_code=403,
                 detail="Your registration has been rejected. Please contact support."
