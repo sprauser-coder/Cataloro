@@ -413,17 +413,16 @@ class BackendTester:
             )
             
             if response.status_code == 200:
-                baskets_data = response.json()
+                baskets = response.json()
                 
-                if not baskets_data or 'baskets' not in baskets_data:
-                    self.log_test("Basket Calculations with Preserved Data", False, error_msg="No baskets data returned")
+                if not baskets:
+                    self.log_test("Basket Calculations with Preserved Data", False, error_msg="No baskets returned")
                     return False
-                
-                baskets = baskets_data['baskets']
-                test_basket = None
                 
                 # Find our test basket
                 basket_id = basket.get('id')
+                test_basket = None
+                
                 for b in baskets:
                     if b.get('id') == basket_id:
                         test_basket = b
