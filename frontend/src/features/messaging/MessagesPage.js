@@ -116,16 +116,12 @@ function MessagesPage() {
     return () => {
       console.log('🔄 Leaving Messages area - resetting read status');
       // Reset all session read messages back to unread status
-      sessionReadMessages.forEach(messageId => {
-        // This would reset the read status on the server if needed
-        // For now, we'll just clear the local session state
-      });
-      setSessionReadMessages(new Set());
+      // For now, we'll just clear the local session state
       
       // Trigger header notification update to restore original counts
       window.dispatchEvent(new CustomEvent('messagesSessionReset'));
     };
-  }, [sessionReadMessages]);
+  }, []); // Empty dependency array to prevent infinite loop
 
   // Helper function to get user badge info (mocked for demo)
   const getUserBadgeInfo = (userId, userName) => {
