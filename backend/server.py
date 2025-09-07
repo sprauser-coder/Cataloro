@@ -25,6 +25,7 @@ from dotenv import load_dotenv
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 import logging
 from cache_service import cache_service, init_cache, cleanup_cache
+from search_service import search_service, init_search, cleanup_search
 
 # Load environment variables
 load_dotenv()
