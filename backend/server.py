@@ -126,6 +126,10 @@ async def startup_event():
     security_service.setup_rate_limiting(app)
     logger.info("✅ Security rate limiting configured")
     
+    # Start monitoring background tasks
+    monitoring_service.start_background_monitoring()
+    logger.info("✅ Monitoring background tasks started")
+    
     # Initialize Phase 5 services
     global websocket_service, multicurrency_service, escrow_service, ai_recommendation_service
     
