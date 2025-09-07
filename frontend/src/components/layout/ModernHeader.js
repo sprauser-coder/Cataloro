@@ -342,6 +342,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       return () => {
         clearInterval(notificationInterval);
         window.removeEventListener('messagesMarkedAsRead', handleMessagesMarkedAsRead);
+        window.removeEventListener('messagesSessionReset', handleMessagesSessionReset);
       };
     }
 
