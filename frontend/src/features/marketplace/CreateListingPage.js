@@ -904,7 +904,7 @@ function CreateListingPage() {
                     </div>
                     <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
                       <span className="text-gray-600 dark:text-gray-400 text-sm block mb-1">Ceramic Weight</span>
-                      <p className="font-bold text-gray-900 dark:text-white text-lg">{selectedCatalyst.ceramic_weight}g</p>
+                      <p className="font-bold text-gray-900 dark:text-white text-lg">{selectedCatalyst.weight}g</p>
                     </div>
                     <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
                       <span className="text-gray-600 dark:text-gray-400 text-sm block mb-1">Market Range</span>
