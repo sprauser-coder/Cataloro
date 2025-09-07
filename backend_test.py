@@ -48,36 +48,188 @@ class BackendTester:
             print(f"   Error: {error_msg}")
         print()
 
-    def test_unified_calculations_add_info_field(self):
-        """Test that unified calculations endpoint includes add_info field"""
+    def test_admin_authentication(self):
+        """Test admin login functionality to ensure it works properly"""
         try:
-            response = requests.get(f"{BACKEND_URL}/admin/catalyst/unified-calculations")
+            # Test admin login with correct credentials
+            admin_credentials = {
+                "email": "admin@cataloro.com",
+                "password": "admin123"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/auth/login", 
+                json=admin_credentials,
+                timeout=10
+            )
+            
             if response.status_code == 200:
-                unified_data = response.json()
+                data = response.json()
+                user = data.get('user', {})
+                user_role = user.get('user_role')
+                user_id = user.get('id')
+                username = user.get('username')
                 
-                if isinstance(unified_data, list) and len(unified_data) > 0:
-                    # Check if add_info field is present
-                    sample_item = unified_data[0]
-                    has_add_info = "add_info" in sample_item
-                    
-                    # Count items with add_info data
-                    items_with_add_info = sum(1 for item in unified_data if item.get("add_info", "").strip())
-                    
-                    self.log_test(
-                        "Unified Calculations Add Info Field", 
-                        has_add_info, 
-                        f"add_info field present: {has_add_info}, Items with add_info data: {items_with_add_info}/{len(unified_data)}"
-                    )
-                    return unified_data if has_add_info else None
-                else:
-                    self.log_test("Unified Calculations Add Info Field", True, "No data to test (empty database)")
-                    return []
+                # Verify admin user details
+                is_admin = user_role in ['Admin', 'Admin-Manager']
+                has_token = 'token' in data
+                
+                self.log_test(
+                    "Admin Authentication", 
+                    is_admin and has_token, 
+                    f"Admin login successful. Username: {username}, Role: {user_role}, User ID: {user_id}, Token provided: {has_token}"
+                )
+                return user if is_admin else None
             else:
-                self.log_test("Unified Calculations Add Info Field", False, f"HTTP {response.status_code}")
+                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                self.log_test("Admin Authentication", False, error_msg=f"Login failed: {error_detail}")
                 return None
         except Exception as e:
-            self.log_test("Unified Calculations Add Info Field", False, error_msg=str(e))
+            self.log_test("Admin Authentication", False, error_msg=str(e))
             return None
+
+    def test_mazda_listing_endpoint(self):
+        """Test the specific MazdaRF4SOK14 listing endpoint to verify it returns listing data with catalyst content fields"""
+        try:
+            # First, check if the listing exists in browse endpoint
+            browse_response = requests.get(f"{BACKEND_URL}/marketplace/browse", timeout=10)
+            mazda_listing_found = False
+            mazda_listing_data = None
+            
+            if browse_response.status_code == 200:
+                listings = browse_response.json()
+                for listing in listings:
+                    if listing.get('id') == MAZDA_LISTING_ID:
+                        mazda_listing_found = True
+                        mazda_listing_data = listing
+                        break
+            
+            if not mazda_listing_found:
+                self.log_test(
+                    "MazdaRF4SOK14 Listing Endpoint", 
+                    False, 
+                    error_msg=f"MazdaRF4SOK14 listing with ID {MAZDA_LISTING_ID} not found in browse endpoint"
+                )
+                return None
+            
+            # Test the individual listing endpoint
+            response = requests.get(f"{BACKEND_URL}/listings/{MAZDA_LISTING_ID}", timeout=10)
+            
+            if response.status_code == 200:
+                listing_data = response.json()
+                
+                # Check for catalyst content fields
+                catalyst_fields = {
+                    'ceramic_weight': listing_data.get('ceramic_weight'),
+                    'pt_ppm': listing_data.get('pt_ppm'),
+                    'pd_ppm': listing_data.get('pd_ppm'),
+                    'rh_ppm': listing_data.get('rh_ppm'),
+                    'pt_g': listing_data.get('pt_g'),
+                    'pd_g': listing_data.get('pd_g'),
+                    'rh_g': listing_data.get('rh_g')
+                }
+                
+                # Count available catalyst fields
+                available_fields = {k: v for k, v in catalyst_fields.items() if v is not None}
+                has_catalyst_data = len(available_fields) > 0
+                
+                # Get basic listing info
+                title = listing_data.get('title', 'Unknown')
+                price = listing_data.get('price', 0)
+                
+                self.log_test(
+                    "MazdaRF4SOK14 Listing Endpoint", 
+                    has_catalyst_data, 
+                    f"Listing found: {title} (€{price}). Catalyst fields available: {len(available_fields)}/7. Fields: {list(available_fields.keys())}"
+                )
+                
+                # Print detailed catalyst data for verification
+                if available_fields:
+                    print("   Catalyst Content Fields:")
+                    for field, value in available_fields.items():
+                        print(f"     - {field}: {value}")
+                
+                return listing_data if has_catalyst_data else None
+            else:
+                self.log_test(
+                    "MazdaRF4SOK14 Listing Endpoint", 
+                    False, 
+                    error_msg=f"Individual listing endpoint failed: HTTP {response.status_code}"
+                )
+                return None
+                
+        except Exception as e:
+            self.log_test("MazdaRF4SOK14 Listing Endpoint", False, error_msg=str(e))
+            return None
+
+    def test_catalyst_data_structure_compatibility(self, listing_data):
+        """Test that the listing data structure is compatible with frontend expectations"""
+        if not listing_data:
+            self.log_test("Catalyst Data Structure Compatibility", False, error_msg="No listing data provided")
+            return False
+            
+        try:
+            # Check required fields for frontend compatibility
+            required_fields = ['id', 'title', 'description', 'price', 'seller_id']
+            catalyst_fields = ['ceramic_weight', 'pt_ppm', 'pd_ppm', 'rh_ppm', 'pt_g', 'pd_g', 'rh_g']
+            
+            # Check required fields
+            missing_required = [field for field in required_fields if field not in listing_data]
+            
+            # Check catalyst fields availability
+            available_catalyst_fields = [field for field in catalyst_fields if listing_data.get(field) is not None]
+            
+            # Check seller information (should be enriched by browse endpoint)
+            has_seller_info = 'seller' in listing_data or 'seller_id' in listing_data
+            
+            success = len(missing_required) == 0 and len(available_catalyst_fields) > 0
+            
+            self.log_test(
+                "Catalyst Data Structure Compatibility", 
+                success, 
+                f"Required fields present: {len(required_fields) - len(missing_required)}/{len(required_fields)}, "
+                f"Catalyst fields available: {len(available_catalyst_fields)}/{len(catalyst_fields)}, "
+                f"Seller info present: {has_seller_info}"
+            )
+            
+            if missing_required:
+                print(f"   Missing required fields: {missing_required}")
+            
+            return success
+            
+        except Exception as e:
+            self.log_test("Catalyst Data Structure Compatibility", False, error_msg=str(e))
+            return False
+
+    def test_admin_permissions_for_catalyst_content(self, admin_user):
+        """Test that admin user has proper permissions to view catalyst content"""
+        if not admin_user:
+            self.log_test("Admin Permissions for Catalyst Content", False, error_msg="No admin user provided")
+            return False
+            
+        try:
+            user_role = admin_user.get('user_role')
+            
+            # Test permission logic that would be used in frontend
+            has_admin_permissions = user_role in ['Admin', 'Admin-Manager']
+            
+            # Test alternative permission check (Admin-Manager mapped to Manager)
+            mapped_role = 'Manager' if user_role == 'Admin-Manager' else user_role
+            alternative_permission = mapped_role in ['Admin', 'Manager']
+            
+            success = has_admin_permissions or alternative_permission
+            
+            self.log_test(
+                "Admin Permissions for Catalyst Content", 
+                success, 
+                f"User role: {user_role}, Has admin permissions: {has_admin_permissions}, Alternative check: {alternative_permission}"
+            )
+            
+            return success
+            
+        except Exception as e:
+            self.log_test("Admin Permissions for Catalyst Content", False, error_msg=str(e))
+            return False
 
     def test_health_check(self):
         """Test basic health endpoint"""
