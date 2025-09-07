@@ -3454,13 +3454,22 @@ async def approve_buy_request(order_id: str, approval_data: dict):
         
         current_time = datetime.utcnow()
         
-        # Update order status
+        # Get catalyst data from listing before updating order
+        listing = await db.listings.find_one({"id": order["listing_id"]})
+        
+        # Update order status and preserve catalyst data
         await db.orders.update_one(
             {"id": order_id},
             {
                 "$set": {
                     "status": "approved",
-                    "approved_at": current_time
+                    "approved_at": current_time,
+                    # Preserve catalyst data from listing at purchase time
+                    "ceramic_weight": listing.get("ceramic_weight", 0.0) if listing else 0.0,
+                    "pt_ppm": listing.get("pt_ppm", 0.0) if listing else 0.0,
+                    "pd_ppm": listing.get("pd_ppm", 0.0) if listing else 0.0,
+                    "rh_ppm": listing.get("rh_ppm", 0.0) if listing else 0.0,
+                    "listing_title": listing.get("title", "Unknown Item") if listing else "Unknown Item"
                 }
             }
         )
