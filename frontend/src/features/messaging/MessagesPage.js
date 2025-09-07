@@ -541,7 +541,7 @@ function MessagesPage() {
 
   return (
     <div className={`${isFullPageChat ? 'fixed inset-0 z-50 bg-white dark:bg-gray-900' : 'min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900'}`}>
-      <div className={`${isFullPageChat ? 'h-full' : 'max-w-6xl mx-auto h-[calc(80vh-2rem)]'} flex flex-col ${isFullPageChat ? 'p-0' : 'm-4'}`}>
+      <div className={`${isFullPageChat ? 'h-full' : 'max-w-6xl mx-auto min-h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)]'} flex flex-col ${isFullPageChat ? 'p-0' : 'm-4'}`}>
         
         {/* Enhanced Header - No Background */}
         <div className="border-b border-white/20 p-6">
