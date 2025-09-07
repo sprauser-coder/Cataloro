@@ -5191,14 +5191,25 @@ async def get_user_baskets(user_id: str):
             for assignment in basket_assignments:
                 item_id = assignment.get("item_id")
                 
+                # Use preserved catalyst data from assignment if available
+                preserved_catalyst = {
+                    "weight": assignment.get("weight", 0.0),
+                    "pt_ppm": assignment.get("pt_ppm", 0.0),
+                    "pd_ppm": assignment.get("pd_ppm", 0.0),
+                    "rh_ppm": assignment.get("rh_ppm", 0.0),
+                    "renumeration_pt": assignment.get("renumeration_pt", renumeration_pt),
+                    "renumeration_pd": assignment.get("renumeration_pd", renumeration_pd),
+                    "renumeration_rh": assignment.get("renumeration_rh", renumeration_rh)
+                }
+                
                 # Reconstruct the bought item details for the basket
-                # Since bought items are generated dynamically, we need to recreate them
                 if item_id.startswith("tender_"):
                     # This is from a tender
                     tender_id = item_id.replace("tender_", "")
                     tender = await db.tenders.find_one({"id": tender_id})
                     if tender:
                         listing = await db.listings.find_one({"id": tender.get("listing_id")})
+                        # Use listing data if available, otherwise use preserved data
                         if listing:
                             seller = await db.users.find_one({"id": listing.get("seller_id")})
                             seller_name = seller.get("username", "Unknown") if seller else "Unknown"
@@ -5212,14 +5223,32 @@ async def get_user_baskets(user_id: str):
                                 "image": listing.get("images", [""])[0] if listing.get("images") else None,
                                 "purchased_at": tender.get("accepted_at", tender.get("created_at")),
                                 "assigned_at": assignment.get("assigned_at"),
-                                # Cat database fields directly from listing
-                                "weight": listing.get("ceramic_weight") or 0.0,
-                                "pt_ppm": listing.get("pt_ppm") or 0.0,
-                                "pd_ppm": listing.get("pd_ppm") or 0.0,
-                                "rh_ppm": listing.get("rh_ppm") or 0.0,
-                                "renumeration_pt": renumeration_pt,  # From price settings
-                                "renumeration_pd": renumeration_pd,
-                                "renumeration_rh": renumeration_rh
+                                # Use catalyst data from listing if available, otherwise use preserved data
+                                "weight": listing.get("ceramic_weight") or preserved_catalyst["weight"],
+                                "pt_ppm": listing.get("pt_ppm") or preserved_catalyst["pt_ppm"],
+                                "pd_ppm": listing.get("pd_ppm") or preserved_catalyst["pd_ppm"],
+                                "rh_ppm": listing.get("rh_ppm") or preserved_catalyst["rh_ppm"],
+                                "renumeration_pt": preserved_catalyst["renumeration_pt"],
+                                "renumeration_pd": preserved_catalyst["renumeration_pd"],
+                                "renumeration_rh": preserved_catalyst["renumeration_rh"]
+                            }
+                            assigned_items.append(assigned_item)
+                        else:
+                            # Listing not found, use preserved data from assignment
+                            seller = await db.users.find_one({"id": tender.get("seller_id")}) 
+                            seller_name = seller.get("username", "Unknown") if seller else "Unknown"
+                            
+                            assigned_item = {
+                                "id": item_id,
+                                "listing_id": tender.get("listing_id"),
+                                "title": f"Item from Tender {tender_id[:8]}...",
+                                "price": tender.get("offer_amount", 0),
+                                "seller_name": seller_name,
+                                "image": None,
+                                "purchased_at": tender.get("accepted_at", tender.get("created_at")),
+                                "assigned_at": assignment.get("assigned_at"),
+                                # Use preserved catalyst data from assignment
+                                **preserved_catalyst
                             }
                             assigned_items.append(assigned_item)
                 
@@ -5229,6 +5258,7 @@ async def get_user_baskets(user_id: str):
                     order = await db.orders.find_one({"id": order_id})
                     if order:
                         listing = await db.listings.find_one({"id": order.get("listing_id")})
+                        # Use listing data if available, otherwise use preserved data
                         if listing:
                             seller = await db.users.find_one({"id": order.get("seller_id")})
                             seller_name = seller.get("username", "Unknown") if seller else "Unknown"
@@ -5242,14 +5272,32 @@ async def get_user_baskets(user_id: str):
                                 "image": listing.get("images", [""])[0] if listing.get("images") else None,
                                 "purchased_at": order.get("approved_at", order.get("created_at")),
                                 "assigned_at": assignment.get("assigned_at"),
-                                # Cat database fields directly from listing
-                                "weight": listing.get("ceramic_weight") or 0.0,
-                                "pt_ppm": listing.get("pt_ppm") or 0.0,
-                                "pd_ppm": listing.get("pd_ppm") or 0.0,
-                                "rh_ppm": listing.get("rh_ppm") or 0.0,
-                                "renumeration_pt": renumeration_pt,  # From price settings
-                                "renumeration_pd": renumeration_pd,
-                                "renumeration_rh": renumeration_rh
+                                # Use catalyst data from listing if available, otherwise use preserved data
+                                "weight": listing.get("ceramic_weight") or preserved_catalyst["weight"],
+                                "pt_ppm": listing.get("pt_ppm") or preserved_catalyst["pt_ppm"],
+                                "pd_ppm": listing.get("pd_ppm") or preserved_catalyst["pd_ppm"],
+                                "rh_ppm": listing.get("rh_ppm") or preserved_catalyst["rh_ppm"],
+                                "renumeration_pt": preserved_catalyst["renumeration_pt"],
+                                "renumeration_pd": preserved_catalyst["renumeration_pd"],
+                                "renumeration_rh": preserved_catalyst["renumeration_rh"]
+                            }
+                            assigned_items.append(assigned_item)
+                        else:
+                            # Listing not found, use preserved data from assignment
+                            seller = await db.users.find_one({"id": order.get("seller_id")}) 
+                            seller_name = seller.get("username", "Unknown") if seller else "Unknown"
+                            
+                            assigned_item = {
+                                "id": item_id,
+                                "listing_id": order.get("listing_id"),
+                                "title": f"Item from Order {order_id[:8]}...",
+                                "price": order.get("price", 0),
+                                "seller_name": seller_name,
+                                "image": None,
+                                "purchased_at": order.get("approved_at", order.get("created_at")),
+                                "assigned_at": assignment.get("assigned_at"),
+                                # Use preserved catalyst data from assignment
+                                **preserved_catalyst
                             }
                             assigned_items.append(assigned_item)
             
