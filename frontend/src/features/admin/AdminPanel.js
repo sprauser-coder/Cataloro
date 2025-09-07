@@ -7847,6 +7847,7 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
         showToast('Catalyst data updated successfully', 'success');
         await fetchCatalystData();
         await fetchCalculations();
+        await fetchUnifiedCalculations();
         setEditingRow(null);
       }
     } catch (error) {
