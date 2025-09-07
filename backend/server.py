@@ -4059,7 +4059,8 @@ async def get_unified_catalyst_calculations():
                 "pt_g": round(pt_g, 4),
                 "pd_g": round(pd_g, 4),
                 "rh_g": round(rh_g, 4),
-                "is_override": is_override
+                "is_override": is_override,
+                "add_info": catalyst.get('add_info', '')  # Include additional info for descriptions
             })
         
         return unified_calculations
