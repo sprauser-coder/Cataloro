@@ -782,7 +782,7 @@ async def get_unified_analytics_service(db=None) -> UnifiedAnalyticsService:
     """Get or create the global Unified Analytics service instance"""
     global _unified_analytics_service
     
-    if _unified_analytics_service is None and db:
+    if _unified_analytics_service is None and db is not None:
         _unified_analytics_service = UnifiedAnalyticsService(db)
         await _unified_analytics_service.initialize()
     
