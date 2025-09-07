@@ -397,7 +397,8 @@ async def get_performance_metrics():
                 "optimizations": {
                     "database_indexes": "✅ Created",
                     "caching": "⚠️ Fallback mode"
-                }
+                },
+                "search": await search_service.health_check()
             }
         }
 
