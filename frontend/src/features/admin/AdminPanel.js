@@ -231,6 +231,22 @@ function SystemNotificationsList() {
   );
 }
 
+// Helper function to get tab descriptions
+const getTabDescription = (tabId) => {
+  const descriptions = {
+    'dashboard': 'Comprehensive overview of your marketplace',
+    'documentation': 'API docs and system guides',
+    'media-browser': 'Manage uploaded files and media',
+    'users': 'Manage user accounts and permissions',
+    'listings': 'Oversee product listings and inventory',
+    'business': 'Business analytics and insights',
+    'cats': 'Database management and operations',
+    'site-settings': 'Configure site appearance and behavior',
+    'administration': 'Advanced system administration'
+  };
+  return descriptions[tabId] || 'Administrative tools and settings';
+};
+
 function AdminPanel() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dashboardData, setDashboardData] = useState(null);
