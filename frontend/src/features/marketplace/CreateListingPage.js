@@ -288,8 +288,13 @@ function CreateListingPage() {
     
     console.log('Selected catalyst:', catalyst); // Debug
     
-    // Build description with unified catalyst data
-    let description = `Catalyst: ${catalyst.name || 'Professional Grade Catalyst'}\n\nSpecifications:\n• Weight: ${catalyst.weight || 'N/A'}g\n• Pt content: ${catalyst.pt_g?.toFixed(4) || 'N/A'}g\n• Pd content: ${catalyst.pd_g?.toFixed(4) || 'N/A'}g\n• Rh content: ${catalyst.rh_g?.toFixed(4) || 'N/A'}g\n\nProfessional grade catalyst suitable for automotive and industrial applications.`;
+    // Build description with additional info from catalyst database (not content values)  
+    let description = `Catalyst: ${catalyst.name || 'Professional Grade Catalyst'}\n\nSpecifications:\n• Weight: ${catalyst.weight || 'N/A'}g\n• Cat ID: ${catalyst.cat_id || 'N/A'}\n\nProfessional grade catalyst suitable for automotive and industrial applications.`;
+    
+    // Add additional info if available from the catalyst database
+    if (catalyst.add_info && catalyst.add_info.trim()) {
+      description += `\n\nAdditional Information:\n${catalyst.add_info}`;
+    }
     
     console.log('Final description:', description); // Debug
     
