@@ -414,7 +414,8 @@ async def get_performance_metrics():
 
 # Authentication Endpoints
 @app.post("/api/auth/register")
-async def register_user(user_data: dict):
+@security_service.limiter.limit("3/minute")  # Rate limit registration attempts
+async def register_user(request: Request, user_data: dict):
     user_id = generate_id()
     
     # Get role selection from registration data
