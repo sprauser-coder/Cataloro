@@ -455,7 +455,7 @@ function ProductDetailPage() {
                         ? 'text-red-700 dark:text-red-300'
                         : product.time_info.time_remaining_seconds <= 21600
                           ? 'text-orange-700 dark:text-orange-300'
-                          : product.time_info.time_removing_seconds <= 86400
+                          : product.time_info.time_remaining_seconds <= 86400
                             ? 'text-yellow-700 dark:text-yellow-300'
                             : 'text-green-700 dark:text-green-300'
                       : 'text-green-700 dark:text-green-300'
