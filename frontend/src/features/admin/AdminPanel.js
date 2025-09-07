@@ -7927,64 +7927,140 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
             </div>
             
             {unifiedCalculations.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
-                  <thead className="bg-gray-50 dark:bg-gray-800">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Cat ID</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Name</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Weight (g)</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Total Price (€)</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Pt g</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Pd g</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Rh g</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {unifiedCalculations.map((calc) => (
-                      <tr key={calc.catalyst_id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-semibold">{calc.cat_id}</td>
-                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{calc.name}</td>
-                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{calc.weight}</td>
-                        <td className="px-4 py-3 text-sm">
-                          <span className={`font-semibold ${calc.is_override ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}>
+              <div className="space-y-4">
+                {/* Desktop Table View - Hidden on mobile */}
+                <div className="hidden lg:block">
+                  <div className="overflow-x-auto">
+                    <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg min-w-[1200px]">
+                      <thead className="bg-gray-50 dark:bg-gray-800">
+                        <tr>
+                          <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Cat ID</th>
+                          <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Name</th>
+                          <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Weight (g)</th>
+                          <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Total Price (€)</th>
+                          <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Pt g</th>
+                          <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Pd g</th>
+                          <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Rh g</th>
+                          <th className="px-3 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                        {unifiedCalculations.map((calc) => (
+                          <tr key={calc.catalyst_id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <td className="px-3 py-3 text-sm text-gray-900 dark:text-white font-semibold">{calc.cat_id}</td>
+                            <td className="px-3 py-3 text-sm text-gray-900 dark:text-white">{calc.name}</td>
+                            <td className="px-3 py-3 text-sm text-gray-900 dark:text-white">{calc.weight}</td>
+                            <td className="px-3 py-3 text-sm">
+                              <span className={`font-semibold ${calc.is_override ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}>
+                                €{calc.total_price.toFixed(2)}
+                              </span>
+                              <div className={`mt-1 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                calc.is_override 
+                                  ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
+                                  : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                              }`}>
+                                {calc.is_override ? 'Override' : 'Standard'}
+                              </div>
+                            </td>
+                            <td className="px-3 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400">{calc.pt_g.toFixed(4)}</td>
+                            <td className="px-3 py-3 text-sm font-semibold text-green-600 dark:text-green-400">{calc.pd_g.toFixed(4)}</td>
+                            <td className="px-3 py-3 text-sm font-semibold text-purple-600 dark:text-purple-400">{calc.rh_g.toFixed(4)}</td>
+                            <td className="px-3 py-3 text-sm">
+                              <div className="flex flex-col space-y-1">
+                                <button
+                                  onClick={() => handleResetPrice(calc.catalyst_id)}
+                                  className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded dark:bg-blue-900/30 dark:text-blue-300"
+                                >
+                                  Reset
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setSelectedCatalyst(calc);
+                                    setShowOverrideModal(true);
+                                  }}
+                                  className="px-2 py-1 text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 rounded dark:bg-orange-900/30 dark:text-orange-300"
+                                >
+                                  Override
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Mobile Card View - Visible on mobile/tablet */}
+                <div className="lg:hidden space-y-4">
+                  {unifiedCalculations.map((calc) => (
+                    <div key={calc.catalyst_id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-3">
+                      {/* Header */}
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 dark:text-white">{calc.cat_id}</h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{calc.name}</p>
+                        </div>
+                        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          calc.is_override 
+                            ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
+                            : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                        }`}>
+                          {calc.is_override ? 'Override' : 'Standard'}
+                        </div>
+                      </div>
+
+                      {/* Weight and Price */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Weight</p>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">{calc.weight}g</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Total Price</p>
+                          <p className={`text-lg font-bold ${calc.is_override ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}>
                             €{calc.total_price.toFixed(2)}
-                          </span>
-                          <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            calc.is_override 
-                              ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
-                              : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                          }`}>
-                            {calc.is_override ? 'Override' : 'Standard'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400">{calc.pt_g.toFixed(4)}</td>
-                        <td className="px-4 py-3 text-sm font-semibold text-green-600 dark:text-green-400">{calc.pd_g.toFixed(4)}</td>
-                        <td className="px-4 py-3 text-sm font-semibold text-purple-600 dark:text-purple-400">{calc.rh_g.toFixed(4)}</td>
-                        <td className="px-4 py-3 text-sm">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleResetPrice(calc.catalyst_id)}
-                              className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded dark:bg-blue-900/30 dark:text-blue-300"
-                            >
-                              Reset
-                            </button>
-                            <button
-                              onClick={() => {
-                                setSelectedCatalyst(calc);
-                                setShowOverrideModal(true);
-                              }}
-                              className="px-3 py-1 text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 rounded dark:bg-orange-900/30 dark:text-orange-300"
-                            >
-                              Override
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Precious Metals */}
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="text-center">
+                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Pt</div>
+                          <div className="text-sm font-semibold text-blue-600 dark:text-blue-400">{calc.pt_g.toFixed(4)}g</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Pd</div>
+                          <div className="text-sm font-semibold text-green-600 dark:text-green-400">{calc.pd_g.toFixed(4)}g</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Rh</div>
+                          <div className="text-sm font-semibold text-purple-600 dark:text-purple-400">{calc.rh_g.toFixed(4)}g</div>
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex space-x-2 pt-2">
+                        <button
+                          onClick={() => handleResetPrice(calc.catalyst_id)}
+                          className="flex-1 px-3 py-2 text-sm bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg dark:bg-blue-900/30 dark:text-blue-300 transition-colors"
+                        >
+                          Reset Price
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedCatalyst(calc);
+                            setShowOverrideModal(true);
+                          }}
+                          className="flex-1 px-3 py-2 text-sm bg-orange-100 hover:bg-orange-200 text-orange-800 rounded-lg dark:bg-orange-900/30 dark:text-orange-300 transition-colors"
+                        >
+                          Override
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="text-center py-12">
