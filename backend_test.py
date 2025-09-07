@@ -1,715 +1,644 @@
 #!/usr/bin/env python3
 """
-PHASE 4 BUSINESS INTELLIGENCE & ANALYTICS TESTING
-Comprehensive testing of the newly implemented analytics features in Cataloro Marketplace backend
+Cataloro Marketplace - Consolidated Backend Services Testing
+Tests the newly consolidated Phase 1-6 backend services with focus on:
+1. Unified Analytics Service (consolidated analytics + advanced analytics)
+2. Unified Security Service (consolidated security + enterprise security)  
+3. Advanced Features Status (consolidated endpoints)
+4. Currency & Escrow (Phase 5 services)
+5. AI & Chatbot (Phase 6 services)
 """
 
-import requests
+import asyncio
+import aiohttp
 import json
+import sys
 import time
 from datetime import datetime
-import sys
+from typing import Dict, List, Any
 
-# Configuration
+# Backend URL from environment
 BACKEND_URL = "https://enterprise-market.preview.emergentagent.com/api"
 
-class Phase4AnalyticsTest:
+class ConsolidatedBackendTester:
     def __init__(self):
-        self.backend_url = BACKEND_URL
-        self.session = requests.Session()
-        self.admin_token = None
+        self.session = None
         self.test_results = []
+        self.failed_tests = []
         
-    def log_test(self, test_name, status, details="", response_time=0):
-        """Log test results"""
+    async def setup(self):
+        """Setup test session"""
+        self.session = aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=30),
+            connector=aiohttp.TCPConnector(ssl=False)
+        )
+        
+    async def cleanup(self):
+        """Cleanup test session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, method: str, endpoint: str, data: Dict = None, params: Dict = None) -> Dict:
+        """Make HTTP request to backend"""
+        url = f"{BACKEND_URL}{endpoint}"
+        
+        try:
+            if method.upper() == "GET":
+                async with self.session.get(url, params=params) as response:
+                    return {
+                        "status": response.status,
+                        "data": await response.json() if response.content_type == 'application/json' else await response.text(),
+                        "success": response.status < 400
+                    }
+            elif method.upper() == "POST":
+                async with self.session.post(url, json=data, params=params) as response:
+                    return {
+                        "status": response.status,
+                        "data": await response.json() if response.content_type == 'application/json' else await response.text(),
+                        "success": response.status < 400
+                    }
+        except Exception as e:
+            return {
+                "status": 500,
+                "data": {"error": str(e)},
+                "success": False
+            }
+    
+    def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+        """Log test result"""
         result = {
             "test": test_name,
-            "status": status,
+            "success": success,
             "details": details,
-            "response_time": f"{response_time:.2f}ms",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "response_data": response_data
         }
+        
         self.test_results.append(result)
         
-        status_icon = "✅" if status == "PASS" else "❌" if status == "FAIL" else "⚠️"
-        print(f"{status_icon} {test_name}: {status}")
-        if details:
-            print(f"   Details: {details}")
-        if response_time > 0:
-            print(f"   Response Time: {response_time:.2f}ms")
-        print()
-
-    def admin_login(self):
-        """Login as admin user for analytics access"""
-        try:
-            start_time = time.time()
-            
-            response = self.session.post(f"{self.backend_url}/auth/login", json={
-                "email": "admin@cataloro.com",
-                "password": "admin123"
-            })
-            
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                self.admin_token = data.get("token")
-                user_info = data.get("user", {})
-                
-                self.log_test(
-                    "Admin Authentication", 
-                    "PASS",
-                    f"Admin login successful - Role: {user_info.get('user_role', 'Unknown')}, ID: {user_info.get('id', 'Unknown')}",
-                    response_time
-                )
-                return True
-            else:
-                self.log_test(
-                    "Admin Authentication", 
-                    "FAIL", 
-                    f"Login failed - Status: {response.status_code}, Response: {response.text}",
-                    response_time
-                )
-                return False
-                
-        except Exception as e:
-            self.log_test("Admin Authentication", "FAIL", f"Exception: {str(e)}")
-            return False
-
-    def test_user_analytics(self):
-        """Test User Analytics Endpoint"""
-        try:
-            print("🔍 Testing User Analytics Endpoints...")
-            
-            # Test default 30 days
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/users")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                analytics = data.get("analytics", {})
-                
-                # Verify structure
-                required_sections = ["period", "user_registrations", "user_activity", "engagement_metrics", "summary"]
-                missing_sections = [section for section in required_sections if section not in analytics]
-                
-                if not missing_sections:
-                    summary = analytics.get("summary", {})
-                    self.log_test(
-                        "User Analytics (30 days)", 
-                        "PASS",
-                        f"Complete analytics structure - Total Users: {summary.get('total_users', 0)}, Active Users: {summary.get('active_users', 0)}, Growth Rate: {summary.get('user_growth_rate', 0)}%",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "User Analytics (30 days)", 
-                        "FAIL",
-                        f"Missing sections: {missing_sections}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "User Analytics (30 days)", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-            
-            # Test custom period (7 days)
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/users?days=7")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                analytics = data.get("analytics", {})
-                period = analytics.get("period", {})
-                
-                if period.get("days") == 7:
-                    self.log_test(
-                        "User Analytics (7 days)", 
-                        "PASS",
-                        f"Custom period working - Period: {period.get('days')} days",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "User Analytics (7 days)", 
-                        "FAIL",
-                        f"Period mismatch - Expected: 7, Got: {period.get('days')}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "User Analytics (7 days)", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                
-        except Exception as e:
-            self.log_test("User Analytics", "FAIL", f"Exception: {str(e)}")
-
-    def test_sales_analytics(self):
-        """Test Sales Analytics Endpoint"""
-        try:
-            print("💰 Testing Sales Analytics Endpoints...")
-            
-            # Test default 30 days
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/sales")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                analytics = data.get("analytics", {})
-                
-                # Verify structure
-                required_sections = ["period", "revenue", "transactions", "summary"]
-                missing_sections = [section for section in required_sections if section not in analytics]
-                
-                if not missing_sections:
-                    summary = analytics.get("summary", {})
-                    self.log_test(
-                        "Sales Analytics (30 days)", 
-                        "PASS",
-                        f"Complete sales structure - Revenue: €{summary.get('total_revenue', 0)}, Transactions: {summary.get('total_transactions', 0)}, Avg Value: €{summary.get('avg_transaction_value', 0)}",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Sales Analytics (30 days)", 
-                        "FAIL",
-                        f"Missing sections: {missing_sections}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Sales Analytics (30 days)", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-            
-            # Test custom period (14 days)
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/sales?days=14")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                analytics = data.get("analytics", {})
-                period = analytics.get("period", {})
-                
-                if period.get("days") == 14:
-                    self.log_test(
-                        "Sales Analytics (14 days)", 
-                        "PASS",
-                        f"Custom period working - Period: {period.get('days')} days",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Sales Analytics (14 days)", 
-                        "FAIL",
-                        f"Period mismatch - Expected: 14, Got: {period.get('days')}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Sales Analytics (14 days)", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                
-        except Exception as e:
-            self.log_test("Sales Analytics", "FAIL", f"Exception: {str(e)}")
-
-    def test_marketplace_analytics(self):
-        """Test Marketplace Analytics Endpoint"""
-        try:
-            print("🏪 Testing Marketplace Analytics Endpoints...")
-            
-            # Test default 30 days
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/marketplace")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                analytics = data.get("analytics", {})
-                
-                # Verify structure
-                required_sections = ["period", "listings", "categories", "platform_health", "summary"]
-                missing_sections = [section for section in required_sections if section not in analytics]
-                
-                if not missing_sections:
-                    summary = analytics.get("summary", {})
-                    self.log_test(
-                        "Marketplace Analytics (30 days)", 
-                        "PASS",
-                        f"Complete marketplace structure - Active Listings: {summary.get('total_active_listings', 0)}, New Listings: {summary.get('new_listings', 0)}, Success Rate: {summary.get('listing_success_rate', 0)}%",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Marketplace Analytics (30 days)", 
-                        "FAIL",
-                        f"Missing sections: {missing_sections}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Marketplace Analytics (30 days)", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-            
-            # Test extended period (60 days)
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/marketplace?days=60")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                analytics = data.get("analytics", {})
-                period = analytics.get("period", {})
-                
-                if period.get("days") == 60:
-                    self.log_test(
-                        "Marketplace Analytics (60 days)", 
-                        "PASS",
-                        f"Extended period working - Period: {period.get('days')} days",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Marketplace Analytics (60 days)", 
-                        "FAIL",
-                        f"Period mismatch - Expected: 60, Got: {period.get('days')}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Marketplace Analytics (60 days)", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                
-        except Exception as e:
-            self.log_test("Marketplace Analytics", "FAIL", f"Exception: {str(e)}")
-
-    def test_business_intelligence_reporting(self):
-        """Test Business Intelligence Reporting"""
-        try:
-            print("📊 Testing Business Intelligence Reporting...")
-            
-            # Test comprehensive report
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/business-report")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                report = data.get("report", {})
-                
-                # Verify structure
-                required_sections = ["executive_summary", "detailed_analytics", "recommendations", "key_insights", "health_scores"]
-                missing_sections = [section for section in required_sections if section not in report]
-                
-                if not missing_sections:
-                    exec_summary = report.get("executive_summary", {})
-                    insights_count = len(report.get("key_insights", []))
-                    recommendations_count = len(report.get("recommendations", []))
-                    
-                    self.log_test(
-                        "Business Intelligence Report", 
-                        "PASS",
-                        f"Complete BI report - Users: {exec_summary.get('total_users', 0)}, Revenue: €{exec_summary.get('total_revenue', 0)}, Insights: {insights_count}, Recommendations: {recommendations_count}",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Business Intelligence Report", 
-                        "FAIL",
-                        f"Missing sections: {missing_sections}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Business Intelligence Report", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-            
-            # Test summary report with custom period
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/business-report?report_type=summary&days=14")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                report = data.get("report", {})
-                
-                if report.get("report_type") == "summary" and report.get("period_days") == 14:
-                    self.log_test(
-                        "Business Report (Summary, 14 days)", 
-                        "PASS",
-                        f"Custom report working - Type: {report.get('report_type')}, Period: {report.get('period_days')} days",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Business Report (Summary, 14 days)", 
-                        "FAIL",
-                        f"Configuration mismatch - Type: {report.get('report_type')}, Period: {report.get('period_days')}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Business Report (Summary, 14 days)", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                
-        except Exception as e:
-            self.log_test("Business Intelligence Reporting", "FAIL", f"Exception: {str(e)}")
-
-    def test_predictive_analytics(self):
-        """Test Predictive Analytics"""
-        try:
-            print("🔮 Testing Predictive Analytics...")
-            
-            # Test 30-day forecast
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/predictive")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                predictions = data.get("predictions", {})
-                
-                # Verify structure
-                required_sections = ["revenue_forecast", "user_growth_forecast", "listing_volume_forecast", "confidence_intervals"]
-                missing_sections = [section for section in required_sections if section not in predictions]
-                
-                if not missing_sections:
-                    revenue_forecast = predictions.get("revenue_forecast", {})
-                    user_forecast = predictions.get("user_growth_forecast", {})
-                    confidence = predictions.get("confidence_intervals", {})
-                    
-                    self.log_test(
-                        "Predictive Analytics (30 days)", 
-                        "PASS",
-                        f"Complete forecasts - Revenue: €{revenue_forecast.get('forecast', 0)}, Users: {user_forecast.get('forecast', 0)}, Revenue Confidence: {confidence.get('revenue', 0)}",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Predictive Analytics (30 days)", 
-                        "FAIL",
-                        f"Missing sections: {missing_sections}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Predictive Analytics (30 days)", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-            
-            # Test 60-day forecast
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/predictive?forecast_days=60")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                predictions = data.get("predictions", {})
-                
-                if predictions.get("forecast_period_days") == 60:
-                    self.log_test(
-                        "Predictive Analytics (60 days)", 
-                        "PASS",
-                        f"Extended forecast working - Period: {predictions.get('forecast_period_days')} days",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Predictive Analytics (60 days)", 
-                        "FAIL",
-                        f"Period mismatch - Expected: 60, Got: {predictions.get('forecast_period_days')}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Predictive Analytics (60 days)", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                
-        except Exception as e:
-            self.log_test("Predictive Analytics", "FAIL", f"Exception: {str(e)}")
-
-    def test_analytics_dashboard(self):
-        """Test Analytics Dashboard"""
-        try:
-            print("📈 Testing Analytics Dashboard...")
-            
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/dashboard")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Verify structure
-                required_sections = ["overview", "trends", "forecasts", "charts_data", "performance_indicators"]
-                missing_sections = [section for section in required_sections if section not in data]
-                
-                if not missing_sections:
-                    overview = data.get("overview", {})
-                    trends = data.get("trends", {})
-                    forecasts = data.get("forecasts", {})
-                    
-                    self.log_test(
-                        "Analytics Dashboard", 
-                        "PASS",
-                        f"Complete dashboard - Users: {overview.get('total_users', 0)}, Revenue: €{overview.get('total_revenue', 0)}, Growth Rate: {trends.get('user_growth_rate', 0)}%, Forecasts Available: {len(forecasts)}",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Analytics Dashboard", 
-                        "FAIL",
-                        f"Missing sections: {missing_sections}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Analytics Dashboard", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                
-        except Exception as e:
-            self.log_test("Analytics Dashboard", "FAIL", f"Exception: {str(e)}")
-
-    def test_key_performance_indicators(self):
-        """Test Key Performance Indicators"""
-        try:
-            print("📊 Testing Key Performance Indicators...")
-            
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/analytics/kpis")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Verify structure
-                required_sections = ["business_metrics", "growth_indicators", "health_scores", "recommendations", "overall_health_score"]
-                missing_sections = [section for section in required_sections if section not in data]
-                
-                if not missing_sections:
-                    business_metrics = data.get("business_metrics", {})
-                    health_scores = data.get("health_scores", {})
-                    recommendations = data.get("recommendations", [])
-                    overall_health = data.get("overall_health_score", 0)
-                    
-                    self.log_test(
-                        "Key Performance Indicators", 
-                        "PASS",
-                        f"Complete KPIs - Users: {business_metrics.get('total_users', 0)}, Revenue: €{business_metrics.get('total_revenue', 0)}, Overall Health: {overall_health}%, Recommendations: {len(recommendations)}",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Key Performance Indicators", 
-                        "FAIL",
-                        f"Missing sections: {missing_sections}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Key Performance Indicators", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                
-        except Exception as e:
-            self.log_test("Key Performance Indicators", "FAIL", f"Exception: {str(e)}")
-
-    def test_custom_report_generation(self):
-        """Test Custom Report Generation"""
-        try:
-            print("📋 Testing Custom Report Generation...")
-            
-            # Test custom report with different configuration
-            report_config = {
-                "type": "comprehensive",
-                "days": 30,
-                "include_predictions": True
-            }
-            
-            start_time = time.time()
-            response = self.session.post(f"{self.backend_url}/admin/analytics/reports/generate", json=report_config)
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                report = data.get("report", {})
-                
-                # Verify structure
-                required_sections = ["executive_summary", "detailed_analytics", "predictions", "report_config"]
-                missing_sections = [section for section in required_sections if section not in report]
-                
-                if not missing_sections:
-                    config = report.get("report_config", {})
-                    predictions = report.get("predictions", {})
-                    
-                    self.log_test(
-                        "Custom Report Generation", 
-                        "PASS",
-                        f"Custom report generated - Type: {config.get('type')}, Days: {config.get('days')}, Predictions: {'Yes' if predictions else 'No'}",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Custom Report Generation", 
-                        "FAIL",
-                        f"Missing sections: {missing_sections}",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Custom Report Generation", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                
-        except Exception as e:
-            self.log_test("Custom Report Generation", "FAIL", f"Exception: {str(e)}")
-
-    def test_performance_integration(self):
-        """Test Performance Integration with Analytics"""
-        try:
-            print("⚡ Testing Performance Integration...")
-            
-            start_time = time.time()
-            response = self.session.get(f"{self.backend_url}/admin/performance")
-            response_time = (time.time() - start_time) * 1000
-            
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check if analytics service status is included
-                analytics_section = data.get("analytics", {})
-                
-                if analytics_section:
-                    service_enabled = analytics_section.get("service_enabled", False)
-                    business_intelligence = analytics_section.get("business_intelligence", "")
-                    
-                    self.log_test(
-                        "Performance Analytics Integration", 
-                        "PASS",
-                        f"Analytics integration verified - Service Enabled: {service_enabled}, BI Status: {business_intelligence}",
-                        response_time
-                    )
-                else:
-                    self.log_test(
-                        "Performance Analytics Integration", 
-                        "FAIL",
-                        "Analytics section not found in performance endpoint",
-                        response_time
-                    )
-            else:
-                self.log_test(
-                    "Performance Analytics Integration", 
-                    "FAIL",
-                    f"HTTP {response.status_code}: {response.text}",
-                    response_time
-                )
-                
-        except Exception as e:
-            self.log_test("Performance Integration", "FAIL", f"Exception: {str(e)}")
-
-    def run_all_tests(self):
-        """Run all Phase 4 analytics tests"""
-        print("🚀 PHASE 4 BUSINESS INTELLIGENCE & ANALYTICS TESTING")
-        print("=" * 70)
-        print()
+        if success:
+            print(f"✅ {test_name}: {details}")
+        else:
+            print(f"❌ {test_name}: {details}")
+            self.failed_tests.append(result)
+    
+    # ==== UNIFIED ANALYTICS SERVICE TESTS ====
+    
+    async def test_unified_analytics_dashboard(self):
+        """Test unified analytics dashboard (HIGH PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/analytics/dashboard")
         
-        # Admin authentication
-        if not self.admin_login():
-            print("❌ Cannot proceed without admin authentication")
-            return False
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "dashboard_data" in data:
+                dashboard = data["dashboard_data"]
+                overview = dashboard.get("overview", {})
+                
+                # Verify real data structure
+                users = overview.get("total_users", 0)
+                revenue = overview.get("total_revenue", 0)
+                listings = overview.get("active_listings", 0)
+                
+                self.log_test(
+                    "Unified Analytics Dashboard",
+                    True,
+                    f"Dashboard loaded with Users: {users}, Revenue: €{revenue}, Listings: {listings}",
+                    dashboard
+                )
+            else:
+                self.log_test("Unified Analytics Dashboard", False, "Invalid dashboard data structure", data)
+        else:
+            self.log_test("Unified Analytics Dashboard", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_user_analytics_real_data(self):
+        """Test user analytics with real data (HIGH PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/analytics/user", params={"days": 30})
         
-        # Run all analytics tests
-        self.test_user_analytics()
-        self.test_sales_analytics()
-        self.test_marketplace_analytics()
-        self.test_business_intelligence_reporting()
-        self.test_predictive_analytics()
-        self.test_analytics_dashboard()
-        self.test_key_performance_indicators()
-        self.test_custom_report_generation()
-        self.test_performance_integration()
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "analytics" in data:
+                analytics = data["analytics"]
+                summary = analytics.get("summary", {})
+                
+                total_users = summary.get("total_users", 0)
+                new_users = summary.get("new_users", 0)
+                growth_rate = summary.get("user_growth_rate", 0)
+                
+                self.log_test(
+                    "User Analytics (Real Data)",
+                    True,
+                    f"Total Users: {total_users}, New Users (30d): {new_users}, Growth: {growth_rate}%",
+                    analytics
+                )
+            else:
+                self.log_test("User Analytics (Real Data)", False, "Invalid analytics data", data)
+        else:
+            self.log_test("User Analytics (Real Data)", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_sales_analytics_real_data(self):
+        """Test sales analytics with real data (HIGH PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/analytics/sales", params={"days": 30})
         
-        # Summary
-        print("=" * 70)
-        print("📊 PHASE 4 ANALYTICS TESTING SUMMARY")
-        print("=" * 70)
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "analytics" in data:
+                analytics = data["analytics"]
+                summary = analytics.get("summary", {})
+                
+                revenue = summary.get("total_revenue", 0)
+                transactions = summary.get("total_transactions", 0)
+                avg_value = summary.get("avg_transaction_value", 0)
+                
+                self.log_test(
+                    "Sales Analytics (Real Data)",
+                    True,
+                    f"Revenue: €{revenue}, Transactions: {transactions}, Avg Value: €{avg_value}",
+                    analytics
+                )
+            else:
+                self.log_test("Sales Analytics (Real Data)", False, "Invalid sales analytics data", data)
+        else:
+            self.log_test("Sales Analytics (Real Data)", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_marketplace_analytics_real_data(self):
+        """Test marketplace analytics with real data (HIGH PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/analytics/marketplace", params={"days": 30})
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "analytics" in data:
+                analytics = data["analytics"]
+                summary = analytics.get("summary", {})
+                
+                active_listings = summary.get("total_active_listings", 0)
+                new_listings = summary.get("new_listings", 0)
+                success_rate = summary.get("listing_success_rate", 0)
+                
+                self.log_test(
+                    "Marketplace Analytics (Real Data)",
+                    True,
+                    f"Active Listings: {active_listings}, New: {new_listings}, Success Rate: {success_rate}%",
+                    analytics
+                )
+            else:
+                self.log_test("Marketplace Analytics (Real Data)", False, "Invalid marketplace analytics", data)
+        else:
+            self.log_test("Marketplace Analytics (Real Data)", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_predictive_analytics(self):
+        """Test predictive analytics (MEDIUM PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/analytics/predictive", params={"forecast_days": 30})
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "predictions" in data:
+                predictions = data["predictions"]
+                
+                revenue_forecast = predictions.get("revenue_forecast", {})
+                user_forecast = predictions.get("user_growth_forecast", {})
+                
+                self.log_test(
+                    "Predictive Analytics",
+                    True,
+                    f"Revenue Forecast: {revenue_forecast.get('forecast', 0)}, User Growth: {user_forecast.get('forecast', 0)}",
+                    predictions
+                )
+            else:
+                self.log_test("Predictive Analytics", False, "Invalid predictions data", data)
+        else:
+            self.log_test("Predictive Analytics", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_market_trends_analysis(self):
+        """Test market trends with real data (MEDIUM PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/analytics/market-trends", params={"time_period": "30d"})
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "trends" in data:
+                trends = data["trends"]
+                
+                if trends:
+                    trend_count = len(trends)
+                    top_trend = trends[0] if trends else {}
+                    
+                    self.log_test(
+                        "Market Trends Analysis",
+                        True,
+                        f"Found {trend_count} trends, Top: {top_trend.get('category', 'N/A')} ({top_trend.get('trend_direction', 'N/A')})",
+                        trends[:3]  # Show top 3 trends
+                    )
+                else:
+                    self.log_test("Market Trends Analysis", True, "No trends found (empty database)", trends)
+            else:
+                self.log_test("Market Trends Analysis", False, "Invalid trends data", data)
+        else:
+            self.log_test("Market Trends Analysis", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_seller_performance_forecasting(self):
+        """Test seller performance forecasting (MEDIUM PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/analytics/seller-performance")
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "seller_performance" in data:
+                performance = data["seller_performance"]
+                
+                if performance:
+                    seller_count = len(performance)
+                    top_seller = performance[0] if performance else {}
+                    
+                    self.log_test(
+                        "Seller Performance Forecasting",
+                        True,
+                        f"Analyzed {seller_count} sellers, Top: {top_seller.get('seller_name', 'N/A')} (Rating: {top_seller.get('current_rating', 0)})",
+                        performance[:2]  # Show top 2 sellers
+                    )
+                else:
+                    self.log_test("Seller Performance Forecasting", True, "No sellers found (empty database)", performance)
+            else:
+                self.log_test("Seller Performance Forecasting", False, "Invalid performance data", data)
+        else:
+            self.log_test("Seller Performance Forecasting", False, f"Request failed: {response['status']}", response["data"])
+    
+    # ==== UNIFIED SECURITY SERVICE TESTS ====
+    
+    async def test_security_dashboard(self):
+        """Test unified security dashboard (HIGH PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/security/dashboard")
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "security_data" in data:
+                security_data = data["security_data"]
+                
+                total_events = security_data.get("total_events", 0)
+                critical_events = security_data.get("critical_events", 0)
+                security_score = security_data.get("security_score", 0)
+                
+                self.log_test(
+                    "Unified Security Dashboard",
+                    True,
+                    f"Events: {total_events}, Critical: {critical_events}, Score: {security_score}",
+                    security_data
+                )
+            else:
+                self.log_test("Unified Security Dashboard", False, "Invalid security data", data)
+        else:
+            self.log_test("Unified Security Dashboard", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_security_event_logging(self):
+        """Test security event logging (HIGH PRIORITY)"""
+        event_data = {
+            "event_type": "test_event",
+            "severity": "medium",
+            "user_id": "test_user_123",
+            "ip_address": "192.168.1.100",
+            "description": "Test security event for consolidation testing"
+        }
+        
+        response = await self.make_request("POST", "/v2/advanced/security/log-event", data=event_data)
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "event_id" in data:
+                event_id = data["event_id"]
+                
+                self.log_test(
+                    "Security Event Logging",
+                    True,
+                    f"Event logged with ID: {event_id}",
+                    data
+                )
+            else:
+                self.log_test("Security Event Logging", False, "Invalid event logging response", data)
+        else:
+            self.log_test("Security Event Logging", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_compliance_status(self):
+        """Test compliance status (HIGH PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/security/compliance")
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "compliance" in data:
+                compliance = data["compliance"]
+                
+                total_checks = compliance.get("total_checks", 0)
+                passing_checks = compliance.get("passing_checks", 0)
+                compliance_score = compliance.get("compliance_score", 0)
+                
+                self.log_test(
+                    "Compliance Status",
+                    True,
+                    f"Checks: {total_checks}, Passing: {passing_checks}, Score: {compliance_score}%",
+                    compliance
+                )
+            else:
+                self.log_test("Compliance Status", False, "Invalid compliance data", data)
+        else:
+            self.log_test("Compliance Status", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_user_security_insights(self):
+        """Test user security insights (HIGH PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/security/user-insights", params={"limit": 10})
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "user_insights" in data:
+                insights = data["user_insights"]
+                
+                if insights:
+                    user_count = len(insights)
+                    high_risk_users = len([u for u in insights if u.get("risk_score", 0) > 0.7])
+                    
+                    self.log_test(
+                        "User Security Insights",
+                        True,
+                        f"Analyzed {user_count} users, High Risk: {high_risk_users}",
+                        insights[:2]  # Show first 2 users
+                    )
+                else:
+                    self.log_test("User Security Insights", True, "No user insights available", insights)
+            else:
+                self.log_test("User Security Insights", False, "Invalid insights data", data)
+        else:
+            self.log_test("User Security Insights", False, f"Request failed: {response['status']}", response["data"])
+    
+    # ==== ADVANCED FEATURES STATUS TESTS ====
+    
+    async def test_advanced_features_status(self):
+        """Test consolidated services status (MEDIUM PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/status")
+        
+        if response["success"]:
+            data = response["data"]
+            if "services" in data and "consolidation_info" in data:
+                services = data["services"]
+                consolidation = data["consolidation_info"]
+                
+                operational_services = [name for name, info in services.items() if info.get("status") == "operational"]
+                
+                self.log_test(
+                    "Advanced Features Status",
+                    True,
+                    f"Operational Services: {len(operational_services)}/{len(services)}, Consolidated: {consolidation.get('dummy_data_removed', False)}",
+                    {
+                        "services": list(services.keys()),
+                        "consolidation": consolidation
+                    }
+                )
+            else:
+                self.log_test("Advanced Features Status", False, "Invalid status data structure", data)
+        else:
+            self.log_test("Advanced Features Status", False, f"Request failed: {response['status']}", response["data"])
+    
+    # ==== CURRENCY & ESCROW TESTS ====
+    
+    async def test_supported_currencies(self):
+        """Test currency support still works (MEDIUM PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/currency/supported")
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "currencies" in data:
+                currencies = data["currencies"]
+                
+                currency_count = len(currencies)
+                currency_codes = [c.get("code", "N/A") for c in currencies[:5]]
+                
+                self.log_test(
+                    "Supported Currencies",
+                    True,
+                    f"Found {currency_count} currencies: {', '.join(currency_codes)}",
+                    currencies[:3]
+                )
+            else:
+                self.log_test("Supported Currencies", False, "Invalid currencies data", data)
+        else:
+            self.log_test("Supported Currencies", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_exchange_rates(self):
+        """Test exchange rates still work (MEDIUM PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/currency/rates")
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "rates" in data:
+                rates = data["rates"]
+                base_currency = data.get("base_currency", "EUR")
+                
+                rate_count = len(rates)
+                sample_rates = list(rates.items())[:3]
+                
+                self.log_test(
+                    "Exchange Rates",
+                    True,
+                    f"Base: {base_currency}, {rate_count} rates, Sample: {sample_rates}",
+                    rates
+                )
+            else:
+                self.log_test("Exchange Rates", False, "Invalid rates data", data)
+        else:
+            self.log_test("Exchange Rates", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_currency_conversion(self):
+        """Test currency conversion still works (MEDIUM PRIORITY)"""
+        conversion_data = {
+            "amount": 100,
+            "from_currency": "EUR",
+            "to_currency": "USD"
+        }
+        
+        response = await self.make_request("POST", "/v2/advanced/currency/convert", data=conversion_data)
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "conversion" in data:
+                conversion = data["conversion"]
+                
+                converted_amount = conversion.get("converted_amount", 0)
+                exchange_rate = conversion.get("exchange_rate", 0)
+                
+                self.log_test(
+                    "Currency Conversion",
+                    True,
+                    f"€100 → ${converted_amount} (Rate: {exchange_rate})",
+                    conversion
+                )
+            else:
+                self.log_test("Currency Conversion", False, "Invalid conversion data", data)
+        else:
+            self.log_test("Currency Conversion", False, f"Request failed: {response['status']}", response["data"])
+    
+    # ==== AI & CHATBOT TESTS ====
+    
+    async def test_ai_trending_items(self):
+        """Test AI trending items (LOW PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/ai/trending", params={"limit": 5})
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "trending_items" in data:
+                trending = data["trending_items"]
+                
+                if trending:
+                    item_count = len(trending)
+                    top_item = trending[0] if trending else {}
+                    
+                    self.log_test(
+                        "AI Trending Items",
+                        True,
+                        f"Found {item_count} trending items, Top: {top_item.get('title', 'N/A')}",
+                        trending[:2]
+                    )
+                else:
+                    self.log_test("AI Trending Items", True, "No trending items (empty database)", trending)
+            else:
+                self.log_test("AI Trending Items", False, "Invalid trending data", data)
+        else:
+            self.log_test("AI Trending Items", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_chatbot_start_session(self):
+        """Test chatbot session start (LOW PRIORITY)"""
+        session_data = {
+            "user_id": "test_user_123"
+        }
+        
+        response = await self.make_request("POST", "/v2/advanced/chatbot/start-session", data=session_data)
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "session_id" in data:
+                session_id = data["session_id"]
+                
+                self.log_test(
+                    "Chatbot Start Session",
+                    True,
+                    f"Session started: {session_id}",
+                    data
+                )
+                
+                # Store session ID for potential follow-up tests
+                self.chatbot_session_id = session_id
+            else:
+                self.log_test("Chatbot Start Session", False, "Invalid session data", data)
+        else:
+            self.log_test("Chatbot Start Session", False, f"Request failed: {response['status']}", response["data"])
+    
+    async def test_chatbot_analytics(self):
+        """Test chatbot analytics (LOW PRIORITY)"""
+        response = await self.make_request("GET", "/v2/advanced/chatbot/analytics")
+        
+        if response["success"]:
+            data = response["data"]
+            if data.get("success") and "analytics" in data:
+                analytics = data["analytics"]
+                
+                total_sessions = analytics.get("total_sessions", 0)
+                active_sessions = analytics.get("active_sessions", 0)
+                
+                self.log_test(
+                    "Chatbot Analytics",
+                    True,
+                    f"Sessions: {total_sessions}, Active: {active_sessions}",
+                    analytics
+                )
+            else:
+                self.log_test("Chatbot Analytics", False, "Invalid analytics data", data)
+        else:
+            self.log_test("Chatbot Analytics", False, f"Request failed: {response['status']}", response["data"])
+    
+    # ==== MAIN TEST EXECUTION ====
+    
+    async def run_all_tests(self):
+        """Run all consolidation tests"""
+        print("🚀 Starting Cataloro Marketplace Consolidated Backend Testing...")
+        print(f"📡 Testing against: {BACKEND_URL}")
+        print("=" * 80)
+        
+        # HIGH PRIORITY TESTS - Unified Analytics
+        print("\n🔍 HIGH PRIORITY: Unified Analytics Service Tests")
+        await self.test_unified_analytics_dashboard()
+        await self.test_user_analytics_real_data()
+        await self.test_sales_analytics_real_data()
+        await self.test_marketplace_analytics_real_data()
+        
+        # HIGH PRIORITY TESTS - Unified Security
+        print("\n🔒 HIGH PRIORITY: Unified Security Service Tests")
+        await self.test_security_dashboard()
+        await self.test_security_event_logging()
+        await self.test_compliance_status()
+        await self.test_user_security_insights()
+        
+        # MEDIUM PRIORITY TESTS
+        print("\n📊 MEDIUM PRIORITY: Advanced Features & Predictive Analytics")
+        await self.test_predictive_analytics()
+        await self.test_market_trends_analysis()
+        await self.test_seller_performance_forecasting()
+        await self.test_advanced_features_status()
+        
+        # MEDIUM PRIORITY TESTS - Currency & Escrow
+        print("\n💰 MEDIUM PRIORITY: Currency & Escrow Services")
+        await self.test_supported_currencies()
+        await self.test_exchange_rates()
+        await self.test_currency_conversion()
+        
+        # LOW PRIORITY TESTS - AI & Chatbot
+        print("\n🤖 LOW PRIORITY: AI & Chatbot Services")
+        await self.test_ai_trending_items()
+        await self.test_chatbot_start_session()
+        await self.test_chatbot_analytics()
+        
+        # Print summary
+        self.print_summary()
+    
+    def print_summary(self):
+        """Print test summary"""
+        print("\n" + "=" * 80)
+        print("📋 CONSOLIDATED BACKEND TESTING SUMMARY")
+        print("=" * 80)
         
         total_tests = len(self.test_results)
-        passed_tests = len([r for r in self.test_results if r["status"] == "PASS"])
-        failed_tests = len([r for r in self.test_results if r["status"] == "FAIL"])
+        passed_tests = len([t for t in self.test_results if t["success"]])
+        failed_tests = len(self.failed_tests)
         
-        print(f"Total Tests: {total_tests}")
-        print(f"Passed: {passed_tests} ✅")
-        print(f"Failed: {failed_tests} ❌")
-        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
-        print()
+        print(f"✅ Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"📊 Success Rate: {(passed_tests/total_tests)*100:.1f}%")
         
-        if failed_tests > 0:
-            print("❌ FAILED TESTS:")
-            for result in self.test_results:
-                if result["status"] == "FAIL":
-                    print(f"   • {result['test']}: {result['details']}")
-            print()
+        if self.failed_tests:
+            print(f"\n❌ FAILED TESTS ({len(self.failed_tests)}):")
+            for test in self.failed_tests:
+                print(f"   • {test['test']}: {test['details']}")
         
-        # Test specific analytics data quality
-        print("📈 ANALYTICS DATA QUALITY VERIFICATION:")
-        print("   • User Analytics: Registration, Activity, Engagement metrics")
-        print("   • Sales Analytics: Revenue, Transaction, Performance data")
-        print("   • Marketplace Analytics: Listing, Category, Platform health")
-        print("   • Business Reports: Executive summary, Insights, Recommendations")
-        print("   • Predictive Analytics: Revenue, User growth, Listing forecasts")
-        print("   • Dashboard: Overview metrics, Trends, Chart data")
-        print("   • KPIs: Business metrics, Health scores, Recommendations")
-        print()
+        print(f"\n🎯 CONSOLIDATION VERIFICATION:")
+        print(f"   • Unified Analytics Service: {'✅' if any('Analytics' in t['test'] and t['success'] for t in self.test_results) else '❌'}")
+        print(f"   • Unified Security Service: {'✅' if any('Security' in t['test'] and t['success'] for t in self.test_results) else '❌'}")
+        print(f"   • Advanced Features Status: {'✅' if any('Status' in t['test'] and t['success'] for t in self.test_results) else '❌'}")
+        print(f"   • Currency & Escrow: {'✅' if any('Currency' in t['test'] and t['success'] for t in self.test_results) else '❌'}")
+        print(f"   • AI & Chatbot: {'✅' if any('Chatbot' in t['test'] and t['success'] for t in self.test_results) else '❌'}")
         
-        return failed_tests == 0
+        if failed_tests == 0:
+            print(f"\n🎉 ALL CONSOLIDATION TESTS PASSED! The unified services are working correctly.")
+        elif failed_tests <= 2:
+            print(f"\n⚠️  MOSTLY SUCCESSFUL with {failed_tests} minor issues.")
+        else:
+            print(f"\n🚨 CONSOLIDATION ISSUES DETECTED - {failed_tests} tests failed.")
+
+async def main():
+    """Main test execution"""
+    tester = ConsolidatedBackendTester()
+    
+    try:
+        await tester.setup()
+        await tester.run_all_tests()
+    except KeyboardInterrupt:
+        print("\n⚠️ Testing interrupted by user")
+    except Exception as e:
+        print(f"\n💥 Testing failed with error: {e}")
+    finally:
+        await tester.cleanup()
 
 if __name__ == "__main__":
-    tester = Phase4AnalyticsTest()
-    success = tester.run_all_tests()
-    
-    if success:
-        print("🎉 ALL PHASE 4 BUSINESS INTELLIGENCE & ANALYTICS TESTS PASSED!")
-        sys.exit(0)
-    else:
-        print("💥 SOME PHASE 4 ANALYTICS TESTS FAILED!")
-        sys.exit(1)
+    asyncio.run(main())
