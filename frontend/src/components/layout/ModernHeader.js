@@ -320,21 +320,29 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       
       // Listen for custom events when messages are marked as read
       const handleMessagesMarkedAsRead = (event) => {
-        console.log('📧 Messages marked as read event received');
+        console.log('📧 ModernHeader received messagesMarkedAsRead event with detail:', event.detail);
         const messageIds = event.detail?.messageIds || [];
         const count = event.detail?.count || 0;
+        
+        console.log(`🔢 Reducing unread message count by ${count} (current: ${unreadMessages})`);
         
         // Update session read message tracking
         setSessionReadMessageIds(prev => {
           const updated = new Set(prev);
           messageIds.forEach(id => updated.add(id));
+          console.log('📝 Updated session read message IDs:', Array.from(updated));
           return updated;
         });
         
         // Immediately reduce unread count by the number of messages marked as read
-        setUnreadMessages(prev => Math.max(0, prev - count));
+        setUnreadMessages(prev => {
+          const newCount = Math.max(0, prev - count);
+          console.log(`📊 Updated unread messages count: ${prev} → ${newCount}`);
+          return newCount;
+        });
         
-        // Also refresh from server
+        // Also refresh from server to sync
+        console.log('🔄 Triggering loadNotifications to sync with server');
         loadNotifications(true);
       };
       
