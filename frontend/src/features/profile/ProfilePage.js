@@ -853,9 +853,11 @@ function ProfilePage() {
                         </div>
                       </div>
                     </div>
-                  ) : (
+                  )}
+
+                  {!profileData.is_business && (
                     /* Private Account Display */
-                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
                       <div className="flex items-center">
                         <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg mr-3">
                           <User className="w-4 h-4 text-white" />
