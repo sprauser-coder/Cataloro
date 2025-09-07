@@ -13,7 +13,7 @@ import pymongo
 from pymongo import MongoClient
 
 # Get backend URL from environment
-BACKEND_URL = "https://catalyst-calc.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-market-2.preview.emergentagent.com/api"
 MONGO_URL = "mongodb://localhost:27017"
 
 class PersistentNotificationTester:

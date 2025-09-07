@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://catalyst-calc.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-market-2.preview.emergentagent.com/api"
 
 class RBACTester:
     def __init__(self):
