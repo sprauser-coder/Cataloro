@@ -417,7 +417,17 @@ function AdminPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900" style={{ paddingBottom: 0 }}>
+      {/* Hide footer in admin panel */}
+      <style>
+        {`
+          body footer,
+          #root footer,
+          .footer {
+            display: none !important;
+          }
+        `}
+      </style>
       {/* Left Sidebar Navigation - positioned below header */}
       <div className="fixed top-20 left-0 bottom-0 z-40 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-lg overflow-y-auto">
         {/* Sidebar Header */}
