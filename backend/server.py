@@ -1242,7 +1242,7 @@ async def get_admin_dashboard():
         except Exception:
             pass
         
-        return {
+        dashboard_data = {
             "kpis": {
                 "total_users": total_users,
                 "total_listings": total_listings,
@@ -1253,6 +1253,12 @@ async def get_admin_dashboard():
             },
             "recent_activity": recent_activity
         }
+        
+        # Cache the dashboard data for better performance
+        await cache_service.cache_dashboard_data(dashboard_data)
+        logger.info("📊 Cached dashboard data")
+        
+        return dashboard_data
         
     except Exception as e:
         print(f"Error getting admin dashboard: {e}")
