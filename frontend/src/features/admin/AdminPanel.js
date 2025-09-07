@@ -479,6 +479,14 @@ function AdminPanel() {
         <MegaUnifiedDashboard />
       )}
       
+      {activeTab === 'documentation' && (
+        <DocumentationDashboard />
+      )}
+      
+      {activeTab === 'media-browser' && (
+        <MediaBrowserDashboard />
+      )}
+      
       {activeTab === 'users' && (
         <UsersTab 
           users={users} 
