@@ -376,6 +376,8 @@ function AdminPanel() {
   // Filter tabs based on user permissions
   const allTabs = [
     { id: 'dashboard', label: 'Mega Dashboard', shortLabel: 'Dashboard', icon: BarChart3 },
+    { id: 'documentation', label: 'Documentation', shortLabel: 'Docs', icon: BookOpen },
+    { id: 'media-browser', label: 'Media Browser', shortLabel: 'Media', icon: ImageIcon },
     { id: 'users', label: 'Users', shortLabel: 'Users', icon: Users, 
       permission: 'canAccessUserManagement' },
     { id: 'listings', label: 'Listings', shortLabel: 'Listings', icon: Package, 
