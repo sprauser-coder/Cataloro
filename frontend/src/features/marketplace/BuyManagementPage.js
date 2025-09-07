@@ -334,9 +334,34 @@ function BuyManagementPage() {
   const calculateBasketTotals = (basket) => {
     const items = basket.items || [];
     const valuePaid = items.reduce((sum, item) => sum + (item.price || 0), 0);
-    const ptG = items.reduce((sum, item) => sum + ((item.weight || 0) * (item.pt_ppm || 0) / 1000 * (item.renumeration_pt || 0)), 0);
-    const pdG = items.reduce((sum, item) => sum + ((item.weight || 0) * (item.pd_ppm || 0) / 1000 * (item.renumeration_pd || 0)), 0);
-    const rhG = items.reduce((sum, item) => sum + ((item.weight || 0) * (item.rh_ppm || 0) / 1000 * (item.renumeration_rh || 0)), 0);
+    
+    // Enhanced calculation logic: use pre-calculated values if available, otherwise calculate from PPM
+    const ptG = items.reduce((sum, item) => {
+      // Check if pre-calculated pt_g value exists and is non-zero
+      if (item.pt_g && item.pt_g > 0) {
+        return sum + item.pt_g;
+      }
+      // Fallback to PPM-based calculation
+      return sum + ((item.weight || 0) * (item.pt_ppm || 0) / 1000 * (item.renumeration_pt || 0));
+    }, 0);
+    
+    const pdG = items.reduce((sum, item) => {
+      // Check if pre-calculated pd_g value exists and is non-zero
+      if (item.pd_g && item.pd_g > 0) {
+        return sum + item.pd_g;
+      }
+      // Fallback to PPM-based calculation
+      return sum + ((item.weight || 0) * (item.pd_ppm || 0) / 1000 * (item.renumeration_pd || 0));
+    }, 0);
+    
+    const rhG = items.reduce((sum, item) => {
+      // Check if pre-calculated rh_g value exists and is non-zero
+      if (item.rh_g && item.rh_g > 0) {
+        return sum + item.rh_g;
+      }
+      // Fallback to PPM-based calculation
+      return sum + ((item.weight || 0) * (item.rh_ppm || 0) / 1000 * (item.renumeration_rh || 0));
+    }, 0);
     
     return { valuePaid, ptG, pdG, rhG };
   };
