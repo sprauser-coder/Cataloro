@@ -389,8 +389,9 @@ class BMWPreCalculatedTester:
                         "Verify Pre-calculated Values Preserved", 
                         fix_working, 
                         f"BMW Item: {bmw_item.get('title')}, Weight: {weight}g, "
-                        f"PPM values: PT={pt_ppm}, PD={pd_ppm}, RH={rh_ppm} (should be 0/missing), "
-                        f"Pre-calculated: PT={pt_g}g, PD={pd_g}g, RH={rh_g}g (should be preserved)"
+                        f"PPM values: PT={pt_ppm}, PD={pd_ppm}, RH={rh_ppm} (should be None/missing), "
+                        f"Pre-calculated: PT={pt_g}g, PD={pd_g}g, RH={rh_g}g. "
+                        f"Expected: PT={expected_pt_g}g, PD={expected_pd_g}g, RH={expected_rh_g}g"
                     )
                     
                     return bmw_item if fix_working else None
