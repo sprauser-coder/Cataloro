@@ -7820,6 +7820,7 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
         showToast(`Successfully uploaded ${result.count} catalyst records`, 'success');
         await fetchCatalystData();
         await fetchCalculations();
+        await fetchUnifiedCalculations();
       } else {
         throw new Error('Upload failed');
       }
