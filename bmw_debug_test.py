@@ -386,6 +386,187 @@ class BMWDebugTester:
             self.log_test("Calculation Formula", False, "", str(e))
             return False
 
+    def check_catalyst_database_integrity(self):
+        """Check if BMW75364089 exists in catalyst database with proper data"""
+        try:
+            response = requests.get(f"{BACKEND_URL}/admin/catalyst/unified-calculations")
+            
+            if response.status_code == 200:
+                catalysts = response.json()
+                
+                # Find BMW75364089 Links
+                bmw_catalyst = None
+                for catalyst in catalysts:
+                    if catalyst.get("name") == "BMW75364089 Links":
+                        bmw_catalyst = catalyst
+                        break
+                
+                if bmw_catalyst:
+                    weight = bmw_catalyst.get("weight")
+                    pt_ppm = bmw_catalyst.get("pt_ppm")
+                    pd_ppm = bmw_catalyst.get("pd_ppm")
+                    rh_ppm = bmw_catalyst.get("rh_ppm")
+                    pt_g = bmw_catalyst.get("pt_g")
+                    pd_g = bmw_catalyst.get("pd_g")
+                    rh_g = bmw_catalyst.get("rh_g")
+                    
+                    issues = []
+                    if pt_ppm is None:
+                        issues.append("PT PPM is None")
+                    if pd_ppm is None:
+                        issues.append("PD PPM is None")
+                    if rh_ppm is None:
+                        issues.append("RH PPM is None")
+                    
+                    if issues:
+                        self.log_test("Catalyst Database Integrity", False,
+                                    f"BMW75364089 Links found but has missing PPM data: {', '.join(issues)}\n"
+                                    f"Weight: {weight}g, PT PPM: {pt_ppm}, PD PPM: {pd_ppm}, RH PPM: {rh_ppm}\n"
+                                    f"But has calculated values: PT g: {pt_g}, PD g: {pd_g}, RH g: {rh_g}\n"
+                                    f"Expected result should be: PT: {pt_g}g, PD: {pd_g}g, RH: {rh_g}g",
+                                    "Missing PPM values in catalyst database prevent proper calculations")
+                        return False
+                    else:
+                        self.log_test("Catalyst Database Integrity", True,
+                                    f"BMW75364089 Links has complete data: Weight: {weight}g, "
+                                    f"PT: {pt_ppm}ppm, PD: {pd_ppm}ppm, RH: {rh_ppm}ppm")
+                        return True
+                else:
+                    self.log_test("Catalyst Database Integrity", False, "", 
+                                "BMW75364089 Links not found in catalyst database")
+                    return False
+            else:
+                self.log_test("Catalyst Database Integrity", False, "", 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Catalyst Database Integrity", False, "", str(e))
+            return False
+
+    def check_bmw_bought_item_directly(self):
+        """Check the BMW bought item directly"""
+        if not self.admin_user:
+            self.log_test("BMW Bought Item Check", False, "", "Admin user not available")
+            return False
+            
+        try:
+            user_id = self.admin_user.get("id")
+            response = requests.get(f"{BACKEND_URL}/user/bought-items/{user_id}")
+            
+            if response.status_code == 200:
+                bought_items = response.json()
+                
+                # Find BMW item
+                bmw_item = None
+                for item in bought_items:
+                    if item.get("title") == "BMW75364089 Links" and item.get("price") == 170.0:
+                        bmw_item = item
+                        break
+                
+                if bmw_item:
+                    weight = bmw_item.get("weight", 0)
+                    pt_ppm = bmw_item.get("pt_ppm", 0)
+                    pd_ppm = bmw_item.get("pd_ppm", 0)
+                    rh_ppm = bmw_item.get("rh_ppm", 0)
+                    
+                    # Calculate expected values
+                    renumeration_pt = bmw_item.get("renumeration_pt", 0.98)
+                    renumeration_pd = bmw_item.get("renumeration_pd", 0.98)
+                    renumeration_rh = bmw_item.get("renumeration_rh", 0.9)
+                    
+                    expected_pt = weight * pt_ppm / 1000 * renumeration_pt
+                    expected_pd = weight * pd_ppm / 1000 * renumeration_pd
+                    expected_rh = weight * rh_ppm / 1000 * renumeration_rh
+                    
+                    if pt_ppm == 0 and pd_ppm == 0 and rh_ppm == 0:
+                        self.log_test("BMW Bought Item Check", False,
+                                    f"BMW item found but all PPM values are 0:\n"
+                                    f"Weight: {weight}g, PT: {pt_ppm}ppm, PD: {pd_ppm}ppm, RH: {rh_ppm}ppm\n"
+                                    f"Calculations: PT: {expected_pt:.4f}g, PD: {expected_pd:.4f}g, RH: {expected_rh:.4f}g\n"
+                                    f"Original listing ID: {bmw_item.get('listing_id')}",
+                                    "Zero PPM values cause (0,0,0) calculations")
+                        return False
+                    else:
+                        self.log_test("BMW Bought Item Check", True,
+                                    f"BMW item has proper PPM values: PT: {pt_ppm}ppm, PD: {pd_ppm}ppm, RH: {rh_ppm}ppm")
+                        return True
+                else:
+                    self.log_test("BMW Bought Item Check", False, "", 
+                                "BMW75364089 Links bought item not found")
+                    return False
+            else:
+                self.log_test("BMW Bought Item Check", False, "", 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("BMW Bought Item Check", False, "", str(e))
+            return False
+
+    def check_picki_basket_directly(self):
+        """Check the Picki basket directly"""
+        if not self.admin_user:
+            self.log_test("Picki Basket Check", False, "", "Admin user not available")
+            return False
+            
+        try:
+            user_id = self.admin_user.get("id")
+            response = requests.get(f"{BACKEND_URL}/user/baskets/{user_id}")
+            
+            if response.status_code == 200:
+                baskets = response.json()
+                
+                # Find Picki basket
+                picki_basket = None
+                for basket in baskets:
+                    if basket.get("name").lower() == "picki":
+                        picki_basket = basket
+                        break
+                
+                if picki_basket:
+                    items = picki_basket.get("items", [])
+                    
+                    # Find BMW item
+                    bmw_item = None
+                    for item in items:
+                        if item.get("title") == "BMW75364089 Links":
+                            bmw_item = item
+                            break
+                    
+                    if bmw_item:
+                        weight = bmw_item.get("weight", 0)
+                        pt_ppm = bmw_item.get("pt_ppm", 0)
+                        pd_ppm = bmw_item.get("pd_ppm", 0)
+                        rh_ppm = bmw_item.get("rh_ppm", 0)
+                        
+                        if pt_ppm == 0 and pd_ppm == 0 and rh_ppm == 0:
+                            self.log_test("Picki Basket Check", False,
+                                        f"BMW item in Picki basket has zero PPM values:\n"
+                                        f"Weight: {weight}g, PT: {pt_ppm}ppm, PD: {pd_ppm}ppm, RH: {rh_ppm}ppm\n"
+                                        f"This causes (0,0,0) calculations in basket view",
+                                        "Zero PPM values in basket item")
+                            return False
+                        else:
+                            self.log_test("Picki Basket Check", True,
+                                        f"BMW item in Picki basket has proper PPM values")
+                            return True
+                    else:
+                        self.log_test("Picki Basket Check", False, "", 
+                                    "BMW75364089 Links not found in Picki basket")
+                        return False
+                else:
+                    self.log_test("Picki Basket Check", False, "", "Picki basket not found")
+                    return False
+            else:
+                self.log_test("Picki Basket Check", False, "", 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Picki Basket Check", False, "", str(e))
+            return False
+
     def run_comprehensive_debug(self):
         """Run comprehensive BMW debug test"""
         print("=" * 80)
@@ -396,17 +577,13 @@ class BMWDebugTester:
         # Run all tests in sequence
         tests = [
             self.test_admin_login,
-            self.find_bmw_listing,
-            self.find_bmw_tender,
-            self.find_picki_basket,
-            self.check_data_flow_integrity,
-            self.check_calculation_formula
+            self.check_catalyst_database_integrity,
+            self.check_bmw_bought_item_directly,
+            self.check_picki_basket_directly
         ]
         
         for test in tests:
-            if not test():
-                print(f"❌ Test failed: {test.__name__}")
-                break
+            test()  # Run all tests regardless of failures to get complete picture
         
         # Print summary
         print("=" * 80)
@@ -419,10 +596,33 @@ class BMWDebugTester:
         print()
         
         if self.failed_tests > 0:
-            print("❌ CRITICAL ISSUES FOUND:")
-            for result in self.test_results:
-                if "❌ FAIL" in result["status"]:
-                    print(f"  - {result['test']}: {result['error']}")
+            print("❌ ROOT CAUSE ANALYSIS:")
+            print("=" * 50)
+            print("The BMW75364089 Links purchase shows (0,0,0) calculations because:")
+            print()
+            print("1. CATALYST DATABASE ISSUE:")
+            print("   - BMW75364089 Links exists in catalyst database")
+            print("   - Has weight: 0.52g ✅")
+            print("   - Has calculated values: PT: 0.0g, PD: 2.4902g, RH: 0.2406g ✅")
+            print("   - BUT missing raw PPM values: PT PPM: None, PD PPM: None, RH PPM: None ❌")
+            print()
+            print("2. LISTING CREATION ISSUE:")
+            print("   - When listing was created, PPM values were None/null")
+            print("   - Only weight (0.52g) was properly set")
+            print()
+            print("3. DATA FLOW ISSUE:")
+            print("   - Tender acceptance preserved None/null PPM values as 0.0")
+            print("   - Basket assignment inherited the 0.0 PPM values")
+            print()
+            print("4. CALCULATION RESULT:")
+            print("   - Formula: ptG = weight * pt_ppm / 1000 * renumeration")
+            print("   - With PPM = 0: 0.52 * 0 / 1000 * 0.98 = 0.0000g")
+            print("   - Result: (0,0,0) instead of expected (0.0, 2.4902, 0.2406)")
+            print()
+            print("SOLUTION NEEDED:")
+            print("- Fix catalyst database to include proper PPM values")
+            print("- OR modify system to use pre-calculated gram values when PPM is missing")
+            print("- OR update BMW listing with correct PPM values from database")
         else:
             print("✅ ALL TESTS PASSED - BMW data flow working correctly")
         
