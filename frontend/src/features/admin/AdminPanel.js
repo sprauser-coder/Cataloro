@@ -6341,7 +6341,7 @@ function ListingsTab({ showToast }) {
         const backendData = await response.json();
         console.log('📊 Backend listings response:', backendData);
         
-        // Handle different response formats
+        // Handle different response formats - backend returns {listings: [...], total: N}
         let listingsArray = [];
         if (Array.isArray(backendData)) {
           listingsArray = backendData;
@@ -6366,20 +6366,40 @@ function ListingsTab({ showToast }) {
           console.log('⚠️ Could not fetch orders data:', orderError);
         }
         
-        // Convert backend listings to admin format with pending orders count
+        // Fetch user data to resolve seller information
+        let allUsers = [];
+        try {
+          const usersResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`);
+          if (usersResponse.ok) {
+            allUsers = await usersResponse.json();
+          }
+        } catch (userError) {
+          console.log('⚠️ Could not fetch users data:', userError);
+        }
+        
+        // Convert backend listings to admin format with proper seller info
         const backendListings = listingsArray.map((listing, index) => {
           // Count pending orders for this listing
           const pendingOrders = allOrders.filter(order => 
             order.listing_id === listing.id && order.status === 'pending'
           ).length;
           
+          // Find seller information
+          const seller = allUsers.find(user => user.id === listing.seller_id);
+          const sellerInfo = {
+            id: listing.seller_id,
+            username: seller?.username || 'Unknown User',
+            full_name: seller?.full_name || seller?.username || 'Unknown User'
+          };
+          
           return {
             id: listing.id || listing._id || `backend-${index}`,
             title: listing.title,
             price: listing.price,
-            category: listing.category || 'Unknown',
             status: listing.status || 'active',
-            seller: listing.seller_id || 'Unknown Seller',
+            seller_id: listing.seller_id,
+            seller_username: sellerInfo.username,
+            seller_full_name: sellerInfo.full_name,
             created_date: listing.created_at ? new Date(listing.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
             views: listing.views || Math.floor(Math.random() * 1000),
             image: listing.images?.[0] || listing.image,
@@ -6390,7 +6410,7 @@ function ListingsTab({ showToast }) {
           };
         });
         
-        console.log('✅ Successfully loaded', backendListings.length, 'listings from backend with pending orders data');
+        console.log('✅ Successfully loaded', backendListings.length, 'listings from backend with seller info');
         setListings(backendListings);
       } else {
         console.error('❌ Backend fetch failed with status:', response.status);
