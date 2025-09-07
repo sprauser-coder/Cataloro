@@ -5344,7 +5344,7 @@ async def delete_basket(basket_id: str):
 
 @app.put("/api/user/bought-items/{item_id}/assign")
 async def assign_item_to_basket(item_id: str, assignment_data: dict):
-    """Assign a bought item to a basket"""
+    """Assign a bought item to a basket with catalyst data preservation"""
     try:
         logger.info(f"Attempting to assign item {item_id} with data: {assignment_data}")
         
@@ -5364,36 +5364,94 @@ async def assign_item_to_basket(item_id: str, assignment_data: dict):
         
         logger.info(f"Found basket: {basket.get('name', 'Unknown')} for user: {basket.get('user_id')}")
         
-        # For now, we'll store the assignment in a separate collection since bought_items are generated dynamically
-        # In a real implementation, you might want to store assignments in the baskets collection
+        # Get price settings for renumeration values
+        price_settings = await db.price_settings.find_one({}) or {}
+        renumeration_pt = price_settings.get("renumeration_pt", 0.98)
+        renumeration_pd = price_settings.get("renumeration_pd", 0.98)
+        renumeration_rh = price_settings.get("renumeration_rh", 0.9)
+        
+        # Get catalyst data from the original listing to preserve it
+        catalyst_data = {
+            "weight": 0.0,
+            "pt_ppm": 0.0,
+            "pd_ppm": 0.0,
+            "rh_ppm": 0.0,
+            "renumeration_pt": renumeration_pt,
+            "renumeration_pd": renumeration_pd,
+            "renumeration_rh": renumeration_rh
+        }
+        
+        # Extract listing_id from item_id and get catalyst data
+        listing_id = None
+        if item_id.startswith("tender_"):
+            # This is from a tender
+            tender_id = item_id.replace("tender_", "")
+            tender = await db.tenders.find_one({"id": tender_id})
+            if tender:
+                listing_id = tender.get("listing_id")
+        elif item_id.startswith("order_"):
+            # This is from an order
+            order_id = item_id.replace("order_", "")
+            order = await db.orders.find_one({"id": order_id})
+            if order:
+                listing_id = order.get("listing_id")
+        
+        if listing_id:
+            listing = await db.listings.find_one({"id": listing_id})
+            if listing:
+                logger.info(f"Found original listing with catalyst data for item {item_id}")
+                catalyst_data.update({
+                    "weight": listing.get("ceramic_weight", 0.0),
+                    "pt_ppm": listing.get("pt_ppm", 0.0),
+                    "pd_ppm": listing.get("pd_ppm", 0.0),
+                    "rh_ppm": listing.get("rh_ppm", 0.0)
+                })
+            else:
+                logger.warning(f"Original listing not found for item {item_id}, listing_id: {listing_id}")
+        else:
+            logger.warning(f"Could not extract listing_id from item_id: {item_id}")
+        
+        # Store the assignment with preserved catalyst data
         assignment = {
             "id": generate_id(),
             "item_id": item_id,
             "basket_id": basket_id,
             "assigned_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
-            "user_id": basket.get("user_id")
+            "user_id": basket.get("user_id"),
+            # Preserve catalyst data at assignment time
+            **catalyst_data
         }
         
-        logger.info(f"Creating assignment record: {assignment}")
+        logger.info(f"Creating assignment record with catalyst data: {assignment}")
         
         # Check if assignment already exists
         existing_assignment = await db.item_assignments.find_one({"item_id": item_id})
         if existing_assignment:
             logger.info(f"Updating existing assignment for item {item_id}")
-            # Update existing assignment
+            # Update existing assignment with catalyst data
             result = await db.item_assignments.update_one(
                 {"item_id": item_id},
-                {"$set": {"basket_id": basket_id, "assigned_at": assignment["assigned_at"]}}
+                {"$set": {
+                    "basket_id": basket_id, 
+                    "assigned_at": assignment["assigned_at"],
+                    "weight": catalyst_data["weight"],
+                    "pt_ppm": catalyst_data["pt_ppm"],
+                    "pd_ppm": catalyst_data["pd_ppm"],
+                    "rh_ppm": catalyst_data["rh_ppm"],
+                    "renumeration_pt": catalyst_data["renumeration_pt"],
+                    "renumeration_pd": catalyst_data["renumeration_pd"],
+                    "renumeration_rh": catalyst_data["renumeration_rh"]
+                }}
             )
             logger.info(f"Update result: matched={result.matched_count}, modified={result.modified_count}")
         else:
             logger.info(f"Creating new assignment for item {item_id}")
-            # Create new assignment
+            # Create new assignment with catalyst data
             result = await db.item_assignments.insert_one(assignment)
             logger.info(f"Insert result: inserted_id={result.inserted_id}")
         
-        logger.info(f"Successfully assigned item {item_id} to basket {basket_id}")
-        return {"message": "Item assigned to basket successfully"}
+        logger.info(f"Successfully assigned item {item_id} to basket {basket_id} with catalyst data preserved")
+        return {"message": "Item assigned to basket successfully with catalyst data preserved"}
         
     except HTTPException:
         # Re-raise HTTP exceptions as-is
