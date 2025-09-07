@@ -1443,7 +1443,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center justify-center">
-                {users.filter(u => u.role === 'admin').length}
+                {users.filter(u => u.user_role === 'Admin' || u.user_role === 'Admin-Manager' || (!u.user_role && u.role === 'admin')).length}
               </div>
               <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Admins</div>
             </div>
