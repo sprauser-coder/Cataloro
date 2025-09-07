@@ -7391,6 +7391,18 @@ function ListingModal({ listing, onSave, onClose }) {
     }
   };
 
+  const fetchUnifiedCalculations = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/unified-calculations`);
+      if (response.ok) {
+        const data = await response.json();
+        setUnifiedCalculations(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch unified calculations:', error);
+    }
+  };
+
   const handleTitleChange = (e) => {
     const value = e.target.value;
     setFormData({...formData, title: value});
