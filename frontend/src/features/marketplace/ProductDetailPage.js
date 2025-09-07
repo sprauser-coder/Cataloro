@@ -22,7 +22,6 @@ import {
   Database,
   Settings
 } from 'lucide-react';
-import CatalystReviewsSection from '../../components/reviews/CatalystReviewsSection';
 
 // Countdown Timer Component - Returns formatted time text
 function CountdownTimer({ timeInfo }) {
