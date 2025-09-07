@@ -39,7 +39,7 @@ const Phase5Dashboard = ({ currentUser }) => {
     try {
       setLoading(true);
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
-      const response = await fetch(`${backendUrl}/v2/status`);
+      const response = await fetch(`${backendUrl}/api/v2/status`);
       
       if (response.ok) {
         const data = await response.json();
