@@ -88,6 +88,13 @@ function ProductDetailPage() {
   const isAdminOrManager = (permissions?.userRole === 'Admin' || permissions?.userRole === 'Manager') || 
                           (permissions?.hasPermission && (permissions.hasPermission('admin') || permissions.hasPermission('manager'))) ||
                           false;
+  
+  // Debug logging for permissions (will help verify permission checking)
+  console.log('ProductDetailPage - Permission Debug:', {
+    userRole: permissions?.userRole,
+    isAdminOrManager: isAdminOrManager,
+    permissions: permissions
+  });
   const {
     allProducts,
     addToFavorites,
