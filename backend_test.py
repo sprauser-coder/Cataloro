@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Cataloro Backend Testing Suite - Individual Listing Page Catalyst Content Display
-Testing the individual listing page catalyst content display functionality for Admin/Manager users
+Cataloro Backend Testing Suite - MazdaRF4SOK14 Listing and Admin Authentication Testing
+Testing the specific individual listing endpoint for MazdaRF4SOK14 listing and admin login functionality
 """
 
 import requests
@@ -12,6 +12,9 @@ from datetime import datetime
 
 # Get backend URL from environment
 BACKEND_URL = "https://catalyst-unified.preview.emergentagent.com/api"
+
+# Specific listing ID to test as requested in review
+MAZDA_LISTING_ID = "6b7961e7-3191-4a3b-84cb-cdcbe74a6ea3"
 
 class BackendTester:
     def __init__(self):
