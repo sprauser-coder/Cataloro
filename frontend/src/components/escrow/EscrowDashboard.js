@@ -39,7 +39,7 @@ const EscrowDashboard = ({ userId }) => {
     try {
       setLoading(true);
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
-      const response = await fetch(`${backendUrl}/v2/escrow/user/${userId}`);
+      const response = await fetch(`${backendUrl}/api/v2/escrow/user/${userId}`);
       
       if (response.ok) {
         const data = await response.json();
