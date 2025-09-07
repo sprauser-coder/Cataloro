@@ -249,11 +249,13 @@ class BackendTester:
     def test_verify_catalyst_data_in_bought_items(self):
         """Test that catalyst data is preserved in bought items after purchase"""
         try:
-            if not self.admin_user:
-                self.log_test("Verify Catalyst Data in Bought Items", False, error_msg="Admin user not available")
+            # Use buyer user if available, otherwise admin
+            test_user = getattr(self, 'buyer_user', self.admin_user)
+            if not test_user:
+                self.log_test("Verify Catalyst Data in Bought Items", False, error_msg="No test user available")
                 return None
                 
-            user_id = self.admin_user.get('id')
+            user_id = test_user.get('id')
             
             # Get bought items for the user
             response = requests.get(
