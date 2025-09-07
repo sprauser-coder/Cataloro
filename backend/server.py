@@ -2578,8 +2578,34 @@ async def get_all_listings(
 @app.post("/api/listings")
 @security_service.limiter.limit("10/minute")  # Rate limit listing creation
 async def create_listing(request: Request, listing_data: dict):
-    """Create a new listing"""
+    """Create a new listing with security validation"""
     try:
+        # Security validations
+        client_ip = get_client_ip(request)
+        user_agent = request.headers.get("user-agent", "unknown")
+        
+        # Validate and sanitize listing data
+        validation_result = security_service.validate_listing_data(listing_data)
+        
+        if not validation_result["valid"]:
+            # Log security incident
+            security_service.log_audit_event(
+                user_id=listing_data.get("seller_id", "unknown"),
+                action="listing_creation_blocked",
+                resource="listings",
+                details={"issues": validation_result["issues"]},
+                ip_address=client_ip,
+                user_agent=user_agent
+            )
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Validation failed: {', '.join(validation_result['issues'])}"
+            )
+        
+        # Use sanitized data
+        for field, sanitized_value in validation_result["sanitized_data"].items():
+            listing_data[field] = sanitized_value
+        
         # Add metadata
         listing_data["id"] = str(uuid.uuid4())
         listing_data["created_at"] = datetime.utcnow().isoformat()
