@@ -7190,18 +7190,21 @@ function ListingsTab({ showToast }) {
                     </span>
                   </td>
                   <td className="px-3 py-4">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100/80 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 backdrop-blur-md">
-                      {listing.category}
-                    </span>
-                  </td>
-                  <td className="px-3 py-4">
                     <div className="flex items-center space-x-2">
                       <div className="w-6 h-6 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-white font-medium text-xs">
-                          {listing.seller?.charAt(0) || 'U'}
+                          {listing.seller_username?.charAt(0) || 'U'}
                         </span>
                       </div>
-                      <span className="text-sm text-gray-900 dark:text-white font-medium truncate" title={listing.seller}>{listing.seller}</span>
+                      <a
+                        href={`/profile/${listing.seller_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium truncate hover:underline"
+                        title={`View ${listing.seller_full_name}'s profile`}
+                      >
+                        {listing.seller_username}
+                      </a>
                     </div>
                   </td>
                   <td className="px-3 py-4">
