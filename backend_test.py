@@ -441,12 +441,12 @@ class BackendTester:
 if __name__ == "__main__":
     tester = BackendTester()
     
-    # Run Unified Calculations testing as requested in the review
-    print("🎯 RUNNING UNIFIED CALCULATIONS ENDPOINT TESTING AS REQUESTED")
-    print("Testing the new /api/admin/catalyst/unified-calculations endpoint...")
+    # Run Updated Description Functionality testing as requested in the review
+    print("🎯 RUNNING UPDATED DESCRIPTION FUNCTIONALITY TESTING AS REQUESTED")
+    print("Testing the updated description functionality and unified calculations endpoint with add_info field...")
     print()
     
-    passed, failed, results = tester.run_unified_calculations_testing()
+    passed, failed, results = tester.run_updated_description_functionality_testing()
     
     # Exit with appropriate code
     exit(0 if failed == 0 else 1)
