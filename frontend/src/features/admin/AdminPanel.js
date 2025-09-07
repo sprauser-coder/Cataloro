@@ -409,10 +409,26 @@ function AdminPanel() {
 
   // Filter tabs based on permissions
   const visibleTabs = allTabs.filter(tab => {
-    if (tab.adminOnly && !isFullAdmin()) return false;
     if (tab.permission && !permissions.adminPanel[tab.permission]) return false;
+    if (tab.adminOnly && !isFullAdmin()) return false;
     return true;
   });
+
+  // Helper function to get tab descriptions
+  const getTabDescription = (tabId) => {
+    const descriptions = {
+      'dashboard': 'Unified analytics, system health & enterprise intelligence',
+      'documentation': 'System architecture, API docs & troubleshooting guides',
+      'media-browser': 'Manage admin-uploaded images and media files',
+      'users': 'User management, roles & permissions',
+      'listings': 'Marketplace listings management & moderation',
+      'business': 'Business analytics & performance metrics',
+      'cats': 'Catalyst database management & configuration',
+      'site-settings': 'Global site configuration & settings',
+      'administration': 'System administration & maintenance tools'
+    };
+    return descriptions[tabId] || 'Admin panel section';
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
