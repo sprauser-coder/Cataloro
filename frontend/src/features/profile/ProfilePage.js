@@ -857,23 +857,6 @@ function ProfilePage() {
                       </div>
                     </div>
                   )}
-
-                  {!profileData.is_business && (
-                    /* Private Account Display */
-                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
-                      <div className="flex items-center">
-                        <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg mr-3">
-                          <User className="w-4 h-4 text-white" />
-                        </div>
-                        <div>
-                          <h5 className="font-medium text-green-900 dark:text-green-100">Private Account Active</h5>
-                          <p className="text-sm text-green-600 dark:text-green-300">
-                            Personal marketplace account for individual sellers
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
