@@ -277,7 +277,7 @@ function NotificationsPage() {
 
         {/* Filters and Search */}
         <div className="cataloro-card-glass p-6 mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:gap-6">
             
             {/* Search */}
             <div className="relative flex-1 lg:max-w-md">
@@ -291,8 +291,8 @@ function NotificationsPage() {
               />
             </div>
 
-            {/* Filter buttons - Enhanced alignment */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2">
+            {/* Filter buttons - Enhanced alignment with proper spacing */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-end gap-2 lg:ml-6">
               {[
                 { id: 'all', label: 'All', count: notifications.length },
                 { id: 'unread', label: 'Unread', count: unreadCount },
