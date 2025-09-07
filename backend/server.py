@@ -114,7 +114,7 @@ async def startup_event():
     
     # Initialize analytics service (security service already initialized)
     global analytics_service
-    analytics_service = get_unified_analytics_service()
+    analytics_service = await get_unified_analytics_service(db)
     logger.info("✅ Unified analytics service initialized")
     
     # Setup security rate limiting
