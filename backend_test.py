@@ -219,8 +219,6 @@ class BackendTester:
             tender = tender_response.json()
             tender_id = tender.get('tender_id') or tender.get('id')
             
-            print(f"DEBUG: Created tender - ID: {tender_id}, Response: {tender}")
-            
             if not tender_id:
                 self.log_test("Create Tender and Accept", False, error_msg="No tender ID returned from creation")
                 return None
