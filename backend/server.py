@@ -2907,7 +2907,7 @@ async def create_listing(request: Request, listing_data: dict):
         
         # Log audit event for listing creation
         security_service.log_audit_event(
-            user_id=seller_id,
+            user_id=listing_data.get("seller_id", "unknown"),
             action="listing_created",
             resource="listings",
             details={
