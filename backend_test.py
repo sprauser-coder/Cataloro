@@ -441,8 +441,6 @@ class BackendTester:
                 # Check calculations for the first item
                 item = items[0]
                 
-                print(f"DEBUG: Basket item data: {item}")
-                
                 # Verify calculation values are non-zero
                 pt_g = item.get('pt_g', 0)
                 pd_g = item.get('pd_g', 0) 
@@ -456,10 +454,6 @@ class BackendTester:
                 renumeration_pt = item.get('renumeration_pt', 0)
                 renumeration_pd = item.get('renumeration_pd', 0)
                 renumeration_rh = item.get('renumeration_rh', 0)
-                
-                print(f"DEBUG: Raw catalyst data - Weight: {weight}, PT: {pt_ppm}ppm, PD: {pd_ppm}ppm, RH: {rh_ppm}ppm")
-                print(f"DEBUG: Renumeration values - PT: {renumeration_pt}, PD: {renumeration_pd}, RH: {renumeration_rh}")
-                print(f"DEBUG: Calculated values - PT: {pt_g}g, PD: {pd_g}g, RH: {rh_g}g")
                 
                 calculations_working = any([pt_g > 0, pd_g > 0, rh_g > 0])
                 
