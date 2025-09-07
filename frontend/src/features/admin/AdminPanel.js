@@ -7921,6 +7921,7 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
       if (response.ok) {
         showToast('Price reset to standard calculation', 'success');
         await fetchCalculations();
+        await fetchUnifiedCalculations();
       }
     } catch (error) {
       showToast('Failed to reset price', 'error');
