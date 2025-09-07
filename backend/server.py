@@ -5227,18 +5227,22 @@ async def get_bought_items(user_id: str):
                 bought_item = {
                     "id": item_id,
                     "listing_id": listing_id,
-                    "title": listing.get("title", "Unknown Item") if listing else order.get("item_title", "Unknown Item"),
+                    "title": listing.get("title", "Unknown Item") if listing else order.get("listing_title", order.get("item_title", "Unknown Item")),
                     "price": listing.get("price", 0) if listing else order.get("price", 0),
                     "seller_name": seller_name,
                     "seller_id": seller_id,
                     "image": listing.get("images", [""])[0] if listing and listing.get("images") else None,
                     "purchased_at": order.get("approved_at", order.get("created_at")),
                     "basket_id": None,
-                    # Cat database fields from listing (fallback to defaults if no listing)
-                    "weight": listing.get("ceramic_weight", 0.0) if listing else 0.0,
-                    "pt_ppm": listing.get("pt_ppm", 0.0) if listing else 0.0,
-                    "pd_ppm": listing.get("pd_ppm", 0.0) if listing else 0.0,
-                    "rh_ppm": listing.get("rh_ppm", 0.0) if listing else 0.0,
+                    # Cat database fields - prioritize preserved data from order, fallback to listing
+                    "weight": order.get("ceramic_weight", listing.get("ceramic_weight", 0.0) if listing else 0.0),
+                    "pt_ppm": order.get("pt_ppm", listing.get("pt_ppm", 0.0) if listing else 0.0),
+                    "pd_ppm": order.get("pd_ppm", listing.get("pd_ppm", 0.0) if listing else 0.0),
+                    "rh_ppm": order.get("rh_ppm", listing.get("rh_ppm", 0.0) if listing else 0.0),
+                    # Pre-calculated values from order (the fix for BMW75364089 Links)
+                    "pt_g": order.get("pt_g", listing.get("pt_g", 0.0) if listing else 0.0),
+                    "pd_g": order.get("pd_g", listing.get("pd_g", 0.0) if listing else 0.0),
+                    "rh_g": order.get("rh_g", listing.get("rh_g", 0.0) if listing else 0.0),
                     "renumeration_pt": renumeration_pt,  # From price settings
                     "renumeration_pd": renumeration_pd,
                     "renumeration_rh": renumeration_rh
