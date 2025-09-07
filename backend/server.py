@@ -1072,6 +1072,247 @@ async def browse_listings(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to browse listings: {str(e)}")
 
+@app.get("/api/marketplace/search")
+async def advanced_search_listings(
+    q: str = "",  # Search query
+    category: str = "",  # Category filter
+    price_min: float = 0,  # Minimum price
+    price_max: float = 999999,  # Maximum price
+    condition: str = "",  # Condition filter
+    seller_type: str = "",  # Seller type filter (Private/Business)
+    location: str = "",  # Location filter
+    sort_by: str = "relevance",  # Sort by: relevance, price_low, price_high, newest, oldest
+    page: int = 1,  # Page number
+    limit: int = 20  # Results per page
+):
+    """Advanced search with Elasticsearch or fallback to database search"""
+    try:
+        # Calculate pagination
+        from_ = (page - 1) * limit
+        
+        # Try Elasticsearch search first
+        search_results = await search_service.search_listings(
+            query=q,
+            category=category,
+            price_min=price_min,
+            price_max=price_max,
+            condition=condition,
+            seller_type=seller_type,
+            location=location,
+            size=limit,
+            from_=from_,
+            sort_by=sort_by
+        )
+        
+        if search_results.get("hits"):
+            return {
+                "results": search_results["hits"],
+                "total": search_results["total"],
+                "page": page,
+                "limit": limit,
+                "took": search_results["took"],
+                "aggregations": search_results.get("aggregations", {}),
+                "search_engine": "elasticsearch"
+            }
+        
+        # Fallback to database search if Elasticsearch not available
+        logger.info("🔄 Using database fallback search")
+        
+        # Build database query
+        query = {"status": "active"}
+        
+        # Apply filters similar to browse_listings
+        if price_min > 0 or price_max < 999999:
+            query["price"] = {}
+            if price_min > 0:
+                query["price"]["$gte"] = price_min
+            if price_max < 999999:
+                query["price"]["$lte"] = price_max
+        
+        if category:
+            query["category"] = category
+        
+        if condition:
+            query["condition"] = condition
+        
+        # Text search using MongoDB text search (basic)
+        if q:
+            query["$text"] = {"$search": q}
+        
+        # Calculate pagination
+        skip = (page - 1) * limit
+        
+        # Build sort criteria
+        sort_criteria = []
+        if sort_by == "price_low":
+            sort_criteria = [("price", 1)]
+        elif sort_by == "price_high":
+            sort_criteria = [("price", -1)]
+        elif sort_by == "newest":
+            sort_criteria = [("created_at", -1)]
+        elif sort_by == "oldest":
+            sort_criteria = [("created_at", 1)]
+        elif q:  # For text search, sort by score
+            sort_criteria = [("score", {"$meta": "textScore"})]
+        else:
+            sort_criteria = [("created_at", -1)]  # Default to newest
+        
+        # Execute database search
+        cursor = db.listings.find(query).sort(sort_criteria).skip(skip).limit(limit)
+        listings = await cursor.to_list(length=None)
+        
+        # Get total count
+        total_count = await db.listings.count_documents(query)
+        
+        # Enrich with seller information (simplified version)
+        enriched_listings = []
+        for listing in listings:
+            if 'id' not in listing and '_id' in listing:
+                listing['id'] = str(listing['_id'])
+            listing.pop('_id', None)
+            
+            # Basic seller info (could be enhanced)
+            seller_id = listing.get('seller_id')
+            if seller_id:
+                seller_profile = await db.users.find_one({"id": seller_id})
+                if seller_profile:
+                    listing['seller'] = {
+                        "name": seller_profile.get('username', 'Unknown'),
+                        "username": seller_profile.get('username', 'Unknown'),
+                        "is_business": seller_profile.get('is_business', False)
+                    }
+            
+            enriched_listings.append(listing)
+        
+        return {
+            "results": enriched_listings,
+            "total": total_count,
+            "page": page,
+            "limit": limit,
+            "took": 0,
+            "aggregations": {},
+            "search_engine": "database_fallback"
+        }
+        
+    except Exception as e:
+        logger.error(f"Advanced search failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+
+@app.get("/api/marketplace/search/suggestions")
+async def get_search_suggestions(q: str = "", limit: int = 5):
+    """Get search suggestions/auto-complete"""
+    try:
+        if not q:
+            return {"suggestions": []}
+        
+        # Try Elasticsearch suggestions first
+        suggestions = await search_service.get_search_suggestions(q, limit)
+        
+        if suggestions:
+            return {
+                "suggestions": suggestions,
+                "source": "elasticsearch"
+            }
+        
+        # Fallback to simple database suggestions
+        # Get listings that match the query prefix
+        regex_pattern = f"^{q}"
+        cursor = db.listings.find({
+            "status": "active",
+            "title": {"$regex": regex_pattern, "$options": "i"}
+        }).limit(limit)
+        
+        suggestions = []
+        async for listing in cursor:
+            suggestions.append(listing.get("title", ""))
+        
+        return {
+            "suggestions": suggestions[:limit],
+            "source": "database_fallback"
+        }
+        
+    except Exception as e:
+        logger.error(f"Search suggestions failed: {e}")
+        return {"suggestions": [], "error": str(e)}
+
+@app.get("/api/marketplace/search/trending")
+async def get_trending_searches(limit: int = 10):
+    """Get trending/popular search queries"""
+    try:
+        trending = await search_service.get_trending_searches(limit)
+        
+        if trending:
+            return {
+                "trending": trending,
+                "source": "elasticsearch"
+            }
+        
+        # Fallback: return common categories as "trending"
+        categories_cursor = db.listings.aggregate([
+            {"$match": {"status": "active"}},
+            {"$group": {"_id": "$category", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}},
+            {"$limit": limit}
+        ])
+        
+        trending = []
+        async for category in categories_cursor:
+            trending.append({
+                "query": category["_id"],
+                "count": category["count"]
+            })
+        
+        return {
+            "trending": trending,
+            "source": "database_fallback"
+        }
+        
+    except Exception as e:
+        logger.error(f"Trending searches failed: {e}")
+        return {"trending": [], "error": str(e)}
+
+@app.get("/api/marketplace/listings/{listing_id}/similar")
+async def get_similar_listings(listing_id: str, limit: int = 5):
+    """Get similar/recommended listings"""
+    try:
+        # Try Elasticsearch similarity search first
+        similar = await search_service.get_similar_listings(listing_id, limit)
+        
+        if similar:
+            return {
+                "similar_listings": similar,
+                "source": "elasticsearch"
+            }
+        
+        # Fallback to category-based recommendations
+        original_listing = await db.listings.find_one({"id": listing_id})
+        
+        if not original_listing:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        
+        # Find similar listings in same category
+        cursor = db.listings.find({
+            "status": "active",
+            "category": original_listing.get("category"),
+            "id": {"$ne": listing_id}
+        }).limit(limit)
+        
+        similar = []
+        async for listing in cursor:
+            if 'id' not in listing and '_id' in listing:
+                listing['id'] = str(listing['_id'])
+            listing.pop('_id', None)
+            similar.append(listing)
+        
+        return {
+            "similar_listings": similar,
+            "source": "database_fallback"
+        }
+        
+    except Exception as e:
+        logger.error(f"Similar listings failed: {e}")
+        return {"similar_listings": [], "error": str(e)}
+
 @app.get("/api/user/my-listings/{user_id}")
 async def get_my_listings(user_id: str):
     """Get user's listings - only active listings for consistency with browse"""
