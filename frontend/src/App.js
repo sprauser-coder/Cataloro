@@ -76,7 +76,6 @@ function App() {
                 <Route path="/" element={<ModernLayout />}>
                   <Route index element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
                   <Route path={APP_ROUTES.BROWSE} element={<ModernBrowsePage />} />
-                  <Route path="categories" element={<CategoriesPage />} />
 
                   <Route path="product/:productId" element={<ProductDetailPage />} />
                   <Route path="search" element={<ModernBrowsePage />} />
