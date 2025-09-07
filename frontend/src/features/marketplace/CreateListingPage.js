@@ -121,8 +121,7 @@ function CreateListingPage() {
 
   // Fetch Cat Database on component mount and load profile address
   useEffect(() => {
-    fetchCatalystData();
-    fetchCalculations();
+    fetchUnifiedCalculations(); // Use unified endpoint instead of separate calls
     loadProfileAddress();
   }, []);
 
