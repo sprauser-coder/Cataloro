@@ -472,7 +472,7 @@ function AdminPanel() {
 
       {/* Tab Content */}
       {activeTab === 'dashboard' && (
-        <DashboardTab dashboardData={dashboardData} loading={loading} />
+        <MegaUnifiedDashboard />
       )}
       
       {activeTab === 'users' && (
