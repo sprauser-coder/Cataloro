@@ -43,6 +43,7 @@ async def create_database_indexes():
         await db.listings.create_index([("seller_id", 1), ("status", 1)])  # Compound for seller's active listings
         await db.listings.create_index([("category", 1), ("status", 1)])  # Compound for category filtering
         await db.listings.create_index([("price", 1), ("status", 1)])  # Compound for price filtering
+        await db.listings.create_index([("title", "text"), ("description", "text")])  # Text index for search
         print("✅ Listings indexes created")
         
         # Tenders Collection Indexes
