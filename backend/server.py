@@ -1889,7 +1889,12 @@ async def get_all_listings(
                 query['price'] = {'$lte': max_price}
         
         # Get listings from database
-        listings_cursor = db.listings.find(query).sort("created_at", -1).skip(offset).limit(limit)
+        listings_cursor = db.listings.find(query).sort("created_at", -1).skip(offset)
+        
+        # Apply limit only if specified (for admin panels, we want all listings)
+        if limit is not None:
+            listings_cursor = listings_cursor.limit(limit)
+            
         listings = []
         
         async for listing in listings_cursor:
