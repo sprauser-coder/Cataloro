@@ -1108,8 +1108,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                         </p>
                         <p className="text-sm text-gray-600 dark:text-white/70">{user?.email}</p>
                       </div>
-                      {/* Role Badge */}
-                      <div className="flex flex-col items-end space-y-1">
+                      {/* Role Badge - Clean single display */}
+                      <div className="flex flex-col items-end">
                         <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
                           getUserDisplay().badge === 'Admin' 
                             ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
@@ -1120,9 +1120,6 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                             : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                         }`}>
                           {getUserDisplay().badge}
-                        </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {getUserDisplay().role}
                         </span>
                       </div>
                     </div>
