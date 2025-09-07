@@ -588,6 +588,20 @@ async def login_user(request: Request, credentials: dict):
     else:
         user_id = generate_id()
     
+    # Clear failed login attempts on successful login
+    security_service.clear_login_attempts(email)
+    security_service.clear_login_attempts(client_ip)
+    
+    # Log successful login audit event
+    security_service.log_audit_event(
+        user_id=user_id,
+        action="login_success",
+        resource="auth",
+        details={"email": email},
+        ip_address=client_ip,
+        user_agent=user_agent
+    )
+    
     # Cache user session for better performance
     if serialized_user:
         await cache_service.cache_user_session(user_id, serialized_user)
