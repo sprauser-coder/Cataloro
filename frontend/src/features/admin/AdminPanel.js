@@ -7978,6 +7978,7 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
         // Refresh data
         await fetchCatalystData();
         await fetchCalculations();
+        await fetchUnifiedCalculations();
       } else {
         throw new Error('Failed to delete database');
       }
