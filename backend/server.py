@@ -71,7 +71,7 @@ app.add_middleware(
 app.add_middleware(MonitoringMiddleware)
 
 # Setup security and rate limiting
-security_service.setup_rate_limiting(app)
+# security_service.setup_rate_limiting(app)  # Will be initialized in startup
 
 # Additional CORS headers for edge cases
 @app.middleware("http")
