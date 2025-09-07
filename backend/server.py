@@ -112,11 +112,10 @@ async def startup_event():
     # Initialize search service
     await init_search()
     
-    # Initialize unified services
-    global security_service, analytics_service
-    security_service = get_unified_security_service()
+    # Initialize analytics service (security service already initialized)
+    global analytics_service
     analytics_service = get_unified_analytics_service()
-    logger.info("✅ Unified security and analytics services initialized")
+    logger.info("✅ Unified analytics service initialized")
     
     # Setup security rate limiting
     security_service.setup_rate_limiting(app)
