@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://product-page-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://catalyst-view.preview.emergentagent.com/api"
 
 class BuyManagementDebugger:
     def __init__(self):

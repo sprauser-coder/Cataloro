@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://product-page-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://catalyst-view.preview.emergentagent.com/api"
 
 # Specific listing ID to test as requested in review
 MAZDA_LISTING_ID = "6b7961e7-3191-4a3b-84cb-cdcbe74a6ea3"

@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_search():
-    base_url = "https://product-page-fix.preview.emergentagent.com"
+    base_url = "https://catalyst-view.preview.emergentagent.com"
     
     # Create a test user
     user_data = {

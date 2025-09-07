@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 class ListingsResponseTester:
-    def __init__(self, base_url="https://product-page-fix.preview.emergentagent.com"):
+    def __init__(self, base_url="https://catalyst-view.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
 

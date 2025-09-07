@@ -11,7 +11,7 @@ import sys
 from datetime import datetime, timedelta
 
 # Configuration
-BACKEND_URL = "https://product-page-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://catalyst-view.preview.emergentagent.com/api"
 
 class DashboardDebugTester:
     def __init__(self):
