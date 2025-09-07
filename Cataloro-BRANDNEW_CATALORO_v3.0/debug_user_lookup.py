@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_user_lookup():
-    base_url = "https://catalyst-unified.preview.emergentagent.com"
+    base_url = "https://product-page-fix.preview.emergentagent.com"
     
     # Get all users to see how they're stored
     print("Getting all users from admin endpoint...")

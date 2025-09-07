@@ -7,7 +7,7 @@ import subprocess
 import json
 import time
 
-BACKEND_URL = "https://catalyst-unified.preview.emergentagent.com/api"
+BACKEND_URL = "https://product-page-fix.preview.emergentagent.com/api"
 
 def run_curl(method, endpoint, data=None):
     """Run curl command and return response"""

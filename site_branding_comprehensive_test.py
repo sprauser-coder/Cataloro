@@ -15,7 +15,7 @@ import base64
 from datetime import datetime
 
 class SiteBrandingTester:
-    def __init__(self, base_url="https://catalyst-unified.preview.emergentagent.com"):
+    def __init__(self, base_url="https://product-page-fix.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.admin_user = None
