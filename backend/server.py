@@ -92,6 +92,9 @@ async def startup_event():
     # Initialize cache service
     await init_cache()
     
+    # Initialize search service
+    await init_search()
+    
     # Run database optimization (indexes) on startup
     try:
         from optimize_database import create_database_indexes
