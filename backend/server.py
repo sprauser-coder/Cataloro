@@ -1865,7 +1865,7 @@ async def get_all_listings(
     condition: str = None,
     search: str = None,
     status: str = "active",  # Default to active listings only
-    limit: int = 20,
+    limit: int = None,  # No default limit - let frontend specify
     offset: int = 0
 ):
     """Get all listings with optional filtering - defaults to active listings only"""
