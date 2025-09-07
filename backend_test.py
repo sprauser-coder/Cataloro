@@ -645,12 +645,12 @@ class BackendTester:
 if __name__ == "__main__":
     tester = BackendTester()
     
-    # Run Individual Listing Catalyst Content Display testing as requested in the review
-    print("🎯 RUNNING INDIVIDUAL LISTING CATALYST CONTENT DISPLAY TESTING AS REQUESTED")
-    print("Testing the individual listing page catalyst content display functionality for Admin/Manager users...")
+    # Run MazdaRF4SOK14 listing and admin authentication testing as requested in the review
+    print("🎯 RUNNING MAZDA RF4SOK14 LISTING AND ADMIN AUTHENTICATION TESTING AS REQUESTED")
+    print("Testing the specific individual listing endpoint for MazdaRF4SOK14 listing and admin login functionality...")
     print()
     
-    passed, failed, results = tester.run_individual_listing_catalyst_content_testing()
+    passed, failed, results = tester.run_mazda_listing_and_admin_testing()
     
     # Exit with appropriate code
     exit(0 if failed == 0 else 1)
