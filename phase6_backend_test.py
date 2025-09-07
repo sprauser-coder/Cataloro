@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Backend URL from environment
-BACKEND_URL = "https://enterprise-market.preview.emergentagent.com"
+BACKEND_URL = "https://marketplace-central.preview.emergentagent.com"
 
 class Phase6BackendTester:
     def __init__(self):

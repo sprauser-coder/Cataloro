@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://enterprise-market.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-central.preview.emergentagent.com/api"
 
 class CatalystListingTester:
     def __init__(self):
@@ -342,7 +342,7 @@ class CatalystListingTester:
         
         if self.created_listing_id:
             print(f"\n🎯 CREATED LISTING ID: {self.created_listing_id}")
-            print(f"📋 Frontend URL: https://enterprise-market.preview.emergentagent.com/listing/{self.created_listing_id}")
+            print(f"📋 Frontend URL: https://marketplace-central.preview.emergentagent.com/listing/{self.created_listing_id}")
             print(f"🔍 Use this listing ID to test ProductDetailPage content value display")
         
         print("\n📊 DETAILED TEST RESULTS:")

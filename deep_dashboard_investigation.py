@@ -10,7 +10,7 @@ import sys
 from datetime import datetime, timedelta
 
 # Configuration
-BACKEND_URL = "https://enterprise-market.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-central.preview.emergentagent.com/api"
 
 class DeepDashboardInvestigator:
     def __init__(self):

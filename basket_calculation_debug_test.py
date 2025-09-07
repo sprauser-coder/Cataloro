@@ -12,7 +12,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://enterprise-market.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-central.preview.emergentagent.com/api"
 
 class BasketCalculationDebugTester:
     def __init__(self):

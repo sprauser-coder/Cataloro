@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Use the production URL from frontend/.env
-BASE_URL = "https://enterprise-market.preview.emergentagent.com/api"
+BASE_URL = "https://marketplace-central.preview.emergentagent.com/api"
 
 def test_admin_dashboard_revenue_validation():
     """Test the admin dashboard with enhanced revenue validation"""
