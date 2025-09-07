@@ -104,6 +104,11 @@ async def startup_event():
     # Initialize search service
     await init_search()
     
+    # Initialize analytics service
+    global analytics_service
+    analytics_service = await create_analytics_service(db)
+    logger.info("✅ Analytics service initialized")
+    
     # Run database optimization (indexes) on startup
     try:
         from optimize_database import create_database_indexes
