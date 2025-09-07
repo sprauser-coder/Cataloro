@@ -428,6 +428,24 @@ function AdminPanel() {
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
+                
+                if (tab.isLink) {
+                  return (
+                    <Link
+                      key={tab.id}
+                      to={tab.linkTo}
+                      className={`admin-tab-button flex flex-col sm:flex-row items-center justify-center px-1 sm:px-2 lg:px-3 py-2 lg:py-3 text-xs lg:text-sm font-medium border-b-2 transition-all duration-200 flex-1 text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 rounded-t-lg`}
+                      title={tab.label}
+                    >
+                      <Icon className="w-4 h-4 lg:w-5 lg:h-5 mb-1 sm:mb-0 sm:mr-1 lg:mr-2 flex-shrink-0" />
+                      <span className="text-xs sm:text-xs lg:text-sm leading-tight text-center sm:text-left">
+                        <span className="hidden xl:inline">{tab.label}</span>
+                        <span className="xl:hidden">{tab.shortLabel}</span>
+                      </span>
+                    </Link>
+                  );
+                }
+                
                 return (
                   <button
                     key={tab.id}
