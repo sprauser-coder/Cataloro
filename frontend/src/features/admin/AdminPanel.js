@@ -421,13 +421,13 @@ function AdminPanel() {
       {/* Left Sidebar Navigation - positioned below header */}
       <div className="fixed top-16 left-0 bottom-0 z-40 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-lg overflow-y-auto">
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
-              <Shield className="w-5 h-5 text-white" />
+        <div className="flex items-center justify-between h-12 px-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-2">
+            <div className="p-1.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+              <Shield className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white">Admin Panel</h1>
+              <h1 className="text-base font-bold text-gray-900 dark:text-white">Admin Panel</h1>
             </div>
           </div>
         </div>
