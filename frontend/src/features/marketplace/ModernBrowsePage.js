@@ -1121,20 +1121,22 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
   // User can place bid if they have permission AND are not the owner
   const canPlaceBid = permissions?.browse?.canPlaceBid && !isOwner;
   
-  // Debug: Log seller data for first few items
+  // Debug: Always log for first few items to diagnose the issue
   React.useEffect(() => {
     if (item.id && ['2e2836dc-c1f2-48e5-94a6-9aaf2828c16a', 'listing-0', 'listing-1'].includes(item.id)) {
       console.log(`🔍 ProductCard Debug - Item ${item.id}:`, {
         title: item.title,
         seller: item.seller,
-        'seller.is_business': item.seller?.is_business,
-        'seller.name': item.seller?.name,
+        seller_id: item.seller_id,
         'seller.username': item.seller?.username,
+        'user.username': user?.username,
+        'user.id': user?.id,
         isOwner: isOwner,
-        canPlaceBid: canPlaceBid
+        canPlaceBid: canPlaceBid,
+        'permissions.browse.canPlaceBid': permissions?.browse?.canPlaceBid
       });
     }
-  }, [item.id, item.seller, isOwner, canPlaceBid]);
+  }, [item.id, item.seller, item.seller_id, user, isOwner, canPlaceBid, permissions]);
 
   // Fetch price suggestion for catalyst items
   useEffect(() => {
