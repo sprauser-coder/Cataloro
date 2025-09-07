@@ -2645,6 +2645,21 @@ async def create_listing(request: Request, listing_data: dict):
         # Index the new listing in Elasticsearch
         await search_service.index_listing(listing_data)
         
+        # Log audit event for listing creation
+        security_service.log_audit_event(
+            user_id=seller_id,
+            action="listing_created",
+            resource="listings",
+            details={
+                "listing_id": listing_data["id"],
+                "title": listing_data.get("title", ""),
+                "price": listing_data.get("price", 0),
+                "category": listing_data.get("category", "")
+            },
+            ip_address=client_ip,
+            user_agent=user_agent
+        )
+        
         # Trigger system notifications for listing published event
         seller_id = listing_data.get("seller_id")
         if seller_id:
