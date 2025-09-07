@@ -352,13 +352,23 @@ function MessagesPage() {
   };
 
   const selectConversation = (conversation) => {
+    console.log('🎯 selectConversation called for:', conversation.name);
+    console.log('🔍 Conversation data:', conversation);
+    
     setSelectedConversation(conversation);
     // Sort messages with newest first (reverse chronological order)
     const sortedMessages = conversation.messages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     setConversationMessages(sortedMessages);
     
     // Find unread messages in this conversation
-    const unreadMessages = conversation.messages.filter(msg => !msg.is_read && msg.sender_id !== user.id);
+    const unreadMessages = conversation.messages.filter(msg => {
+      const isUnread = !msg.is_read;
+      const isNotFromCurrentUser = msg.sender_id !== user.id;
+      console.log(`📝 Message ${msg.id}: is_read=${msg.is_read}, sender_id=${msg.sender_id}, current_user=${user.id}, isUnread=${isUnread}, isNotFromCurrentUser=${isNotFromCurrentUser}`);
+      return isUnread && isNotFromCurrentUser;
+    });
+    
+    console.log(`🔢 Found ${unreadMessages.length} unread messages:`, unreadMessages.map(m => m.id));
     
     if (unreadMessages.length > 0) {
       console.log(`📖 Marking ${unreadMessages.length} messages as read in conversation with ${conversation.name}`);
@@ -412,6 +422,8 @@ function MessagesPage() {
       
       // Mark messages as read on server (async)
       unreadMessages.forEach(msg => handleMarkAsRead(msg.id));
+    } else {
+      console.log('ℹ️ No unread messages found in this conversation');
     }
   };
 
