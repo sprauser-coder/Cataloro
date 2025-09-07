@@ -1322,7 +1322,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                          user.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'all' || 
                        user.user_role === filterRole || 
-                       user.role === filterRole; // Support both new and legacy role fields
+                       (!user.user_role && user.role === filterRole); // Support legacy role as fallback
     const matchesStatus = filterStatus === 'all' || 
                          (filterStatus === 'active' && user.is_active) ||
                          (filterStatus === 'inactive' && !user.is_active);
