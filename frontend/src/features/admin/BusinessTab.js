@@ -70,6 +70,48 @@ function BusinessTab({ showToast }) {
   const [selectedProcess, setSelectedProcess] = useState(null);
   const [viewMode, setViewMode] = useState('visual'); // visual, list, detailed
   const [expandedSections, setExpandedSections] = useState({});
+  const [realBusinessData, setRealBusinessData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchRealBusinessData();
+  }, []);
+
+  const fetchRealBusinessData = async () => {
+    try {
+      setLoading(true);
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+      
+      // Fetch real business metrics
+      const [analyticsRes, userRes, salesRes] = await Promise.all([
+        fetch(`${backendUrl}/api/v2/advanced/analytics/dashboard`),
+        fetch(`${backendUrl}/api/v2/advanced/analytics/user?days=30`),
+        fetch(`${backendUrl}/api/v2/advanced/analytics/sales?days=30`)
+      ]);
+
+      const [analytics, user, sales] = await Promise.all([
+        analyticsRes.json(),
+        userRes.json(),
+        salesRes.json()
+      ]);
+
+      if (analytics.success && user.success && sales.success) {
+        setRealBusinessData({
+          totalUsers: user.analytics?.summary?.total_users || 0,
+          newUsers: user.analytics?.summary?.new_users || 0,
+          totalRevenue: sales.analytics?.summary?.total_revenue || 0,
+          totalTransactions: sales.analytics?.summary?.total_transactions || 0,
+          conversionRate: sales.analytics?.summary?.conversion_rate || 0,
+          avgTransactionValue: sales.analytics?.summary?.avg_transaction_value || 0,
+          userGrowthRate: user.analytics?.summary?.user_growth_rate || 0
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch real business data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Comprehensive business processes mapping
   const businessProcesses = [
