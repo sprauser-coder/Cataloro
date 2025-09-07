@@ -56,7 +56,7 @@ function Navigation() {
       if (currentCount) {
         setMessageUnreadCount(parseInt(currentCount, 10));
       }
-    }, 5000);
+    }, 300000); // 5 minutes instead of frequent polling
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
