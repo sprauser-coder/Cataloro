@@ -177,10 +177,29 @@ class BackendTester:
             listing_id = listing.get('id')
             seller_id = listing.get('seller_id')
             
+            # Use a different user as buyer (get existing user from system)
+            users_response = requests.get(f"{BACKEND_URL}/admin/users", timeout=10)
+            if users_response.status_code != 200:
+                self.log_test("Create Tender and Accept", False, error_msg="Could not get users list")
+                return None
+                
+            users = users_response.json()
+            buyer_user = None
+            
+            # Find a user that's not the seller
+            for user in users:
+                if user.get('id') != seller_id and user.get('registration_status') == 'Approved':
+                    buyer_user = user
+                    break
+            
+            if not buyer_user:
+                self.log_test("Create Tender and Accept", False, error_msg="No suitable buyer user found")
+                return None
+            
             # Create a tender (buyer makes offer)
             tender_data = {
                 "listing_id": listing_id,
-                "buyer_id": self.admin_user.get('id'),  # Admin acts as buyer for testing
+                "buyer_id": buyer_user.get('id'),
                 "offer_amount": listing.get('price', 150.0),
                 "message": "Test tender for catalyst data preservation testing"
             }
@@ -212,9 +231,11 @@ class BackendTester:
                 self.log_test(
                     "Create Tender and Accept", 
                     True, 
-                    f"Tender ID: {tender_id}, Amount: €{tender.get('offer_amount')}, Status: {accepted_tender.get('status', 'accepted')}"
+                    f"Tender ID: {tender_id}, Amount: €{tender.get('offer_amount')}, Buyer: {buyer_user.get('username')}, Status: {accepted_tender.get('status', 'accepted')}"
                 )
                 
+                # Store buyer info for later use
+                self.buyer_user = buyer_user
                 return accepted_tender
             else:
                 error_detail = accept_response.json().get('detail', 'Unknown error') if accept_response.content else f"HTTP {accept_response.status_code}"
