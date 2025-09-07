@@ -372,7 +372,12 @@ function ModernBrowsePage() {
       return;
     }
 
-    if (item.seller?.username === user.username || item.seller_id === user.id) {
+    // Enhanced check to prevent owner from bidding on own listing
+    const isOwner = item.seller?.username === user.username || 
+                    item.seller_id === user.id || 
+                    item.seller?.id === user.id;
+    
+    if (isOwner) {
       showToast('You cannot bid on your own listing', 'error');
       return;
     }
