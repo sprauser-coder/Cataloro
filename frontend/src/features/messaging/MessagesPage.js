@@ -347,6 +347,9 @@ function MessagesPage() {
             : conv
         )
       );
+      
+      // Trigger header message count update
+      window.dispatchEvent(new CustomEvent('messagesMarkedAsRead'));
     }
     
     // Mark messages as read (async)
