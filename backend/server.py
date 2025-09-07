@@ -5302,7 +5302,11 @@ async def get_user_baskets(user_id: str):
                             "weight": tender.get("ceramic_weight") or preserved_catalyst["weight"] or (listing.get("ceramic_weight", 0.0) if listing else 0.0),
                             "pt_ppm": tender.get("pt_ppm") or preserved_catalyst["pt_ppm"] or (listing.get("pt_ppm", 0.0) if listing else 0.0),
                             "pd_ppm": tender.get("pd_ppm") or preserved_catalyst["pd_ppm"] or (listing.get("pd_ppm", 0.0) if listing else 0.0),
-                            "rh_ppm": tender.get("rh_ppm") or preserved_catalyst["rh_ppm"] or (listing.get("rh_ppm", 0.0) if listing else 0.0)
+                            "rh_ppm": tender.get("rh_ppm") or preserved_catalyst["rh_ppm"] or (listing.get("rh_ppm", 0.0) if listing else 0.0),
+                            # Include pre-calculated values if available
+                            "pt_g": tender.get("pt_g") or (listing.get("pt_g", 0.0) if listing else 0.0),
+                            "pd_g": tender.get("pd_g") or (listing.get("pd_g", 0.0) if listing else 0.0),
+                            "rh_g": tender.get("rh_g") or (listing.get("rh_g", 0.0) if listing else 0.0)
                         }
                         
                         # Use listing data if available, otherwise use tender data for display info
