@@ -6674,6 +6674,140 @@ async def unassign_item_from_basket(item_id: str):
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to unassign item: {str(e)}")
 
+# Webhook Management API Endpoints
+@app.get("/api/admin/webhooks")
+async def get_webhooks():
+    """Get all webhooks"""
+    try:
+        webhook_service = get_webhook_service()
+        webhooks = await webhook_service.get_webhooks()
+        return {"success": True, "webhooks": webhooks}
+    except Exception as e:
+        logger.error(f"Failed to get webhooks: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+@app.post("/api/admin/webhooks")
+async def create_webhook(webhook_data: dict):
+    """Create a new webhook"""
+    try:
+        # Validate required fields
+        if not webhook_data.get("url"):
+            raise HTTPException(status_code=400, detail="URL is required")
+        if not webhook_data.get("events"):
+            raise HTTPException(status_code=400, detail="Events are required")
+        
+        webhook_service = get_webhook_service()
+        webhook = await webhook_service.create_webhook(webhook_data)
+        
+        return {"success": True, "webhook": webhook}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to create webhook: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/admin/webhooks/{webhook_id}")
+async def get_webhook(webhook_id: str):
+    """Get a specific webhook"""
+    try:
+        webhook_service = get_webhook_service()
+        webhook = await webhook_service.get_webhook(webhook_id)
+        
+        if not webhook:
+            raise HTTPException(status_code=404, detail="Webhook not found")
+        
+        return {"success": True, "webhook": webhook}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get webhook: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.put("/api/admin/webhooks/{webhook_id}")
+async def update_webhook(webhook_id: str, update_data: dict):
+    """Update a webhook"""
+    try:
+        webhook_service = get_webhook_service()
+        webhook = await webhook_service.update_webhook(webhook_id, update_data)
+        
+        if not webhook:
+            raise HTTPException(status_code=404, detail="Webhook not found")
+        
+        return {"success": True, "webhook": webhook}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to update webhook: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/admin/webhooks/{webhook_id}")
+async def delete_webhook(webhook_id: str):
+    """Delete a webhook"""
+    try:
+        webhook_service = get_webhook_service()
+        success = await webhook_service.delete_webhook(webhook_id)
+        
+        if not success:
+            raise HTTPException(status_code=404, detail="Webhook not found")
+        
+        return {"success": True, "message": "Webhook deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to delete webhook: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/admin/webhooks/{webhook_id}/deliveries")
+async def get_webhook_deliveries(webhook_id: str, limit: int = 50, offset: int = 0):
+    """Get webhook delivery history"""
+    try:
+        webhook_service = get_webhook_service()
+        deliveries = await webhook_service.get_webhook_deliveries(webhook_id, limit, offset)
+        
+        return {"success": True, "deliveries": deliveries}
+    except Exception as e:
+        logger.error(f"Failed to get webhook deliveries: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/admin/webhook-events")
+async def get_supported_webhook_events():
+    """Get list of supported webhook events"""
+    try:
+        webhook_service = get_webhook_service()
+        events = await webhook_service.get_supported_events()
+        
+        return {"success": True, "events": events}
+    except Exception as e:
+        logger.error(f"Failed to get supported events: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/admin/webhooks/{webhook_id}/test")
+async def test_webhook(webhook_id: str):
+    """Test a webhook by sending a test event"""
+    try:
+        webhook_service = get_webhook_service()
+        webhook = await webhook_service.get_webhook(webhook_id)
+        
+        if not webhook:
+            raise HTTPException(status_code=404, detail="Webhook not found")
+        
+        # Send a test event
+        test_data = {
+            "test": True,
+            "webhook_id": webhook_id,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "message": "This is a test webhook delivery from Cataloro Marketplace"
+        }
+        
+        await webhook_service.trigger_event("test.webhook", test_data)
+        
+        return {"success": True, "message": "Test webhook sent successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to test webhook: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ============================================================================
 # STARTUP EVENT
 # ============================================================================
