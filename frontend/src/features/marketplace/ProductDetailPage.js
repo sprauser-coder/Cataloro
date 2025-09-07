@@ -115,6 +115,24 @@ function ProductDetailPage() {
   const [priceSuggestion, setPriceSuggestion] = useState(null);
   const [loadingSuggestion, setLoadingSuggestion] = useState(false);
   
+  // Debug logging for catalyst data when product is loaded
+  useEffect(() => {
+    if (product) {
+      console.log('ProductDetailPage - Catalyst Data Debug:', {
+        productId: product.id,
+        title: product.title,
+        ceramic_weight: product.ceramic_weight,
+        pt_ppm: product.pt_ppm,
+        pd_ppm: product.pd_ppm,
+        rh_ppm: product.rh_ppm,
+        pt_g: product.pt_g,
+        pd_g: product.pd_g,
+        rh_g: product.rh_g,
+        hasCatalystData: !!(product.ceramic_weight || product.pt_ppm || product.pd_ppm || product.rh_ppm || product.pt_g || product.pd_g || product.rh_g)
+      });
+    }
+  }, [product]);
+  
   // Calculate if the listing is expired
   const isExpired = product?.time_info?.is_expired || false;
 
