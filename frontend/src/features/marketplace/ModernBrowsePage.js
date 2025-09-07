@@ -1111,6 +1111,16 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
 
   const isGridView = viewMode === 'grid';
   
+  // Check if current user is the owner of this listing
+  const isOwner = user && (
+    item.seller?.username === user.username || 
+    item.seller_id === user.id || 
+    item.seller?.id === user.id
+  );
+  
+  // User can place bid if they have permission AND are not the owner
+  const canPlaceBid = permissions?.browse?.canPlaceBid && !isOwner;
+  
   // Debug: Log seller data for first few items
   React.useEffect(() => {
     if (item.id && ['2e2836dc-c1f2-48e5-94a6-9aaf2828c16a', 'listing-0', 'listing-1'].includes(item.id)) {
@@ -1119,10 +1129,12 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
         seller: item.seller,
         'seller.is_business': item.seller?.is_business,
         'seller.name': item.seller?.name,
-        'seller.username': item.seller?.username
+        'seller.username': item.seller?.username,
+        isOwner: isOwner,
+        canPlaceBid: canPlaceBid
       });
     }
-  }, [item.id, item.seller]);
+  }, [item.id, item.seller, isOwner, canPlaceBid]);
 
   // Fetch price suggestion for catalyst items
   useEffect(() => {
