@@ -338,7 +338,18 @@ function MessagesPage() {
     const sortedMessages = conversation.messages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     setConversationMessages(sortedMessages);
     
-    // Mark messages as read
+    // Immediately update the unread count to 0 for instant UI feedback
+    if (conversation.unreadCount > 0) {
+      setConversations(prev => 
+        prev.map(conv => 
+          conv.id === conversation.id 
+            ? { ...conv, unreadCount: 0 }
+            : conv
+        )
+      );
+    }
+    
+    // Mark messages as read (async)
     conversation.messages
       .filter(msg => !msg.is_read && msg.sender_id !== user.id)
       .forEach(msg => handleMarkAsRead(msg.id));
