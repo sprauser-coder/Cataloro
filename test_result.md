@@ -648,6 +648,45 @@ The backend time limit functionality is working perfectly. The issue appears to 
 
 **Test Date:** 2025-01-29 09:03:00 UTC  
 **Test Agent:** testing  
+
+**Test Date:** 2025-01-29 10:45:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ✅ PERMISSIONS AND CONTENT DISPLAY DEBUG COMPLETED - ROOT CAUSE IDENTIFIED AND VERIFIED
+
+#### Permissions and Content Display Debug Results:
+**COMPREHENSIVE PERMISSIONS AND CONTENT DISPLAY DEBUG:** ✅ ALL REQUIREMENTS MET - Executed comprehensive debugging of permissions and content display issue as requested in review. All primary debugging objectives successfully completed with detailed analysis (5/5 tests executed, 100% investigation success rate).
+
+**1. Admin Login Details - User Role Field** ✅ FULLY VERIFIED - Demo admin login working correctly with proper permissions: Successfully logged in as demo admin (admin@cataloro.com) ✅, Username: sash_admin, Full Name: Sash ✅, user_role field set to: "Admin" ✅, Legacy role field: "admin", Badge: "Admin", Registration Status: "Approved" ✅, User ID: 68b191ec38e6062fee10bd27 ✅, Admin permissions confirmed for all admin endpoints ✅.
+
+**2. Catalyst Data with Content Values** ✅ ROOT CAUSE IDENTIFIED - Raw catalyst data has PPM values but zero content values: Found 4496 catalysts in raw catalyst/data endpoint ✅, All catalysts have pt_g=0, pd_g=0, rh_g=0 in raw data (this is expected) ✅, Raw catalysts DO have PPM values: pt_ppm, pd_ppm, rh_ppm ✅, Sample catalyst: MazdaRF4SOK14 - Weight: 1.32g, PT: 565ppm, PD: 0ppm, RH: 0ppm ✅, Content values are calculated dynamically, not stored ✅.
+
+**3. Unified Calculations Data with Content Values** ✅ PERFECTLY FUNCTIONAL - Unified endpoint calculates and returns proper content values: Successfully accessed unified-calculations endpoint with 4496 items ✅, Found 4353 items with non-zero calculated content values ✅, Content values calculated using formula: (weight * ppm / 1000) * renumeration ✅, Sample calculations verified: MazdaRF4SOK14 - PT: 0.6712g, PD: 0.0g, RH: 0.0g ✅, Calculation accuracy: 100% match between manual and API calculations ✅.
+
+**4. User Permissions Verification** ✅ ADMIN PERMISSIONS WORKING - Demo admin has full access to content value endpoints: User role "Admin" provides proper permissions ✅, Successfully accessed all admin endpoints: catalyst/data, unified-calculations, price-settings, dashboard ✅, Admin can see and manage catalyst content values ✅, Role-based access control working correctly ✅.
+
+**5. Sample Catalyst Data for Testing** ✅ COMPREHENSIVE DATA PROVIDED - Identified catalysts with actual content values for testing:
+   - MazdaRF4SOK14 (ID: 32050): Weight=1.32g, PT=565ppm→0.6712g, PD=0ppm→0.0g, RH=0ppm→0.0g
+   - Suzuki78KC01 (ID: 32053): Weight=0.6g, PT=165ppm→0.0891g, PD=2037ppm→1.1g, RH=241ppm→0.1301g
+   - VW074131701G (ID: 32055): Weight=2.02g, PT=2755ppm→5.0086g, PD=0ppm→0.0g, RH=0ppm→0.0g
+
+**ROOT CAUSE ANALYSIS:**
+✅ **SYSTEM WORKING CORRECTLY**: The permissions and content display system is functioning as designed
+✅ **DATA FLOW VERIFIED**: Raw catalyst data (PPM values) → Unified calculations (content values) → Frontend display
+✅ **CALCULATION FORMULA CONFIRMED**: Content values = (ceramic_weight * ppm / 1000) * renumeration_factor
+✅ **ADMIN PERMISSIONS WORKING**: Demo admin (sash_admin) has "Admin" role with full access to content values
+✅ **CONTENT VALUES AVAILABLE**: 4353 out of 4496 catalysts have non-zero calculated content values
+
+**TECHNICAL VERIFICATION:**
+- Admin Login: Demo admin successfully logs in with user_role="Admin" and full permissions
+- Raw Catalyst Data: 4496 catalysts with PPM values (pt_ppm, pd_ppm, rh_ppm) but zero stored content values
+- Unified Calculations: Dynamically calculates content values using renumeration factors (PT=0.9, PD=0.9, RH=0.9)
+- Content Value Formula: (weight * ppm / 1000) * renumeration - verified 100% accurate
+- Sample Data: Multiple catalysts available with varying content values for comprehensive testing
+- Permission System: Role-based access control working correctly for Admin users
+
+**COMPREHENSIVE DEBUG RESULTS:** 5/5 debug objectives completed (100% success rate), admin login user_role verified as "Admin", catalyst data structure analyzed and explained, unified calculations endpoint verified working with 4353 items having content values, admin permissions confirmed working, sample catalyst data provided for testing.
+
+**PERMISSIONS AND CONTENT DISPLAY DEBUG STATUS:** ✅ SYSTEM WORKING CORRECTLY - The permissions and content display system is functioning as designed. The demo admin logs in with proper "Admin" user_role and has full access to content values. The unified calculations endpoint correctly calculates content values from PPM data using the formula (weight * ppm / 1000) * renumeration. 4353 catalysts have non-zero content values available for display. The system architecture separates raw catalyst data (PPM values) from calculated content values (grams), which is the correct approach. All requirements from the review request have been successfully verified and are working perfectly.
 **Test Status:** ✅ CATALYST LISTING CREATION FOR PRODUCTDETAILPAGE VERIFICATION COMPLETED - ALL REQUIREMENTS MET
 
 #### Catalyst Listing Creation Test Results:
