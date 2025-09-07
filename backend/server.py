@@ -28,6 +28,7 @@ from cache_service import cache_service, init_cache, cleanup_cache
 from search_service import search_service, init_search, cleanup_search
 from security_service import security_service, get_client_ip
 from monitoring_service import monitoring_service, MonitoringMiddleware
+from analytics_service import create_analytics_service
 
 # Load environment variables
 load_dotenv()
