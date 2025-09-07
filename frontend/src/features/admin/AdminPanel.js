@@ -1727,28 +1727,16 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="space-y-1">
-                      {/* User Role - Display Only */}
+                      {/* Role Badge - Single Field */}
                       <div className="flex items-center space-x-2">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          user.user_role === 'Admin' || user.user_role === 'Admin-Manager' || user.role === 'admin'
+                          user.user_role === 'Admin' || user.user_role === 'Admin-Manager' || (!user.user_role && user.role === 'admin')
                             ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' 
                             : user.user_role === 'User-Seller'
                             ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                             : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                         }`}>
-                          {user.user_role || user.role?.toUpperCase() || 'USER'}
-                        </span>
-                      </div>
-                      {/* Badge - Display Only */}
-                      <div>
-                        <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
-                          user.badge === 'Admin' || user.badge === 'Manager'
-                            ? 'bg-purple-200 text-purple-900 dark:bg-purple-800/30 dark:text-purple-200'
-                            : user.badge === 'Seller'
-                            ? 'bg-green-200 text-green-900 dark:bg-green-800/30 dark:text-green-200'
-                            : 'bg-blue-200 text-blue-900 dark:bg-blue-800/30 dark:text-blue-200'
-                        }`}>
-                          {user.badge || (user.role === 'admin' ? 'Admin' : 'Buyer')}
+                          {user.user_role || (user.role === 'admin' ? 'Admin' : 'User-Buyer')}
                         </span>
                       </div>
                     </div>
