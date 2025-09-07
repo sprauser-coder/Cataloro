@@ -478,7 +478,8 @@ async def register_user(user_data: dict):
     }
 
 @app.post("/api/auth/login")
-async def login_user(credentials: dict):
+@security_service.limiter.limit("5/minute")  # Rate limit login attempts
+async def login_user(request: Request, credentials: dict):
     # Mock authentication for demo
     user = await db.users.find_one({"email": credentials["email"]})
     if not user:
