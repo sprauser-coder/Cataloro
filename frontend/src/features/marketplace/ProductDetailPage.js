@@ -89,12 +89,30 @@ function ProductDetailPage() {
                           (permissions?.hasPermission && (permissions.hasPermission('admin') || permissions.hasPermission('manager'))) ||
                           false;
   
-  // Debug logging for permissions (will help verify permission checking)
+  // Debug logging for permissions and catalyst data (will help verify both permission checking and data availability)
   console.log('ProductDetailPage - Permission Debug:', {
     userRole: permissions?.userRole,
     isAdminOrManager: isAdminOrManager,
     permissions: permissions
   });
+  
+  // Debug logging for catalyst data when product is loaded
+  useEffect(() => {
+    if (product) {
+      console.log('ProductDetailPage - Catalyst Data Debug:', {
+        productId: product.id,
+        title: product.title,
+        ceramic_weight: product.ceramic_weight,
+        pt_ppm: product.pt_ppm,
+        pd_ppm: product.pd_ppm,
+        rh_ppm: product.rh_ppm,
+        pt_g: product.pt_g,
+        pd_g: product.pd_g,
+        rh_g: product.rh_g,
+        hasCatalystData: !!(product.ceramic_weight || product.pt_ppm || product.pd_ppm || product.rh_ppm || product.pt_g || product.pd_g || product.rh_g)
+      });
+    }
+  }, [product]);
   const {
     allProducts,
     addToFavorites,
