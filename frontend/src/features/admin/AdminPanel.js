@@ -7878,6 +7878,7 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
         setTimeout(() => setPriceRangeUpdated(false), 3000);
         
         await fetchCalculations();
+        await fetchUnifiedCalculations();
       }
     } catch (error) {
       showToast('Failed to update price settings', 'error');
