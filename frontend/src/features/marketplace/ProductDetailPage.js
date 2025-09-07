@@ -608,39 +608,52 @@ function ProductDetailPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Your Tender Offer:
                 </label>
-                <div className="flex space-x-2">
-                  <input
-                    type="number"
-                    step="0.01"
-                    min={product.bid_info?.highest_bid || product.price}
-                    value={tenderAmount}
-                    onChange={(e) => setTenderAmount(e.target.value)}
-                    disabled={isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)}
-                    className={`flex-1 px-3 py-2 border rounded-lg text-sm ${
-                      isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)
-                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                        : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500'
-                    }`}
-                    placeholder={
-                      product.time_info?.is_expired 
-                        ? "Bid..." 
-                        : product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids
-                          ? "Bid..."
-                          : `Minimum: €${(product.bid_info?.highest_bid || product.price || 0).toFixed(2)}`
-                    }
-                  />
-                  <button
-                    onClick={handleSubmitTender}
-                    disabled={submittingTender || isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
-                      submittingTender || isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)
-                        ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed'
-                        : 'bg-blue-600 hover:bg-blue-700 text-white'
-                    }`}
-                  >
-                    {submittingTender ? 'Submitting...' : 'Submit Bid'}
-                  </button>
-                </div>
+                
+                {/* Check if user is the listing owner */}
+                {(product.seller?.username === user?.username || product.seller_id === user?.id || product.seller?.id === user?.id) ? (
+                  <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 text-center">
+                    <div className="text-yellow-700 dark:text-yellow-300 font-medium">
+                      You cannot bid on your own listing
+                    </div>
+                    <div className="text-sm text-yellow-600 dark:text-yellow-400 mt-1">
+                      This is your product listing
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex space-x-2">
+                    <input
+                      type="number"
+                      step="0.01"
+                      min={product.bid_info?.highest_bid || product.price}
+                      value={tenderAmount}
+                      onChange={(e) => setTenderAmount(e.target.value)}
+                      disabled={isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)}
+                      className={`flex-1 px-3 py-2 border rounded-lg text-sm ${
+                        isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)
+                          ? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                          : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500'
+                      }`}
+                      placeholder={
+                        product.time_info?.is_expired 
+                          ? "Expired" 
+                          : product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids
+                            ? "You have the highest bid"
+                            : `Minimum: €${(product.bid_info?.highest_bid || product.price || 0).toFixed(2)}`
+                      }
+                    />
+                    <button
+                      onClick={handleSubmitTender}
+                      disabled={submittingTender || isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors text-sm ${
+                        submittingTender || isExpired || (product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids)
+                          ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed'
+                          : 'bg-blue-600 hover:bg-blue-700 text-white'
+                      }`}
+                    >
+                      {submittingTender ? 'Submitting...' : 'Submit Bid'}
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Time Remaining */}
