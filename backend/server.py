@@ -494,6 +494,11 @@ async def login_user(credentials: dict):
 
 @app.get("/api/auth/profile/{user_id}")
 async def get_profile(user_id: str):
+    # Try to get cached profile first
+    cached_profile = await cache_service.get_cached_user_profile(user_id)
+    if cached_profile:
+        return cached_profile
+    
     # Try to find user by id field first, then by _id
     user = await db.users.find_one({"id": user_id})
     if not user:
@@ -506,7 +511,13 @@ async def get_profile(user_id: str):
     
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return serialize_doc(user)
+    
+    profile_data = serialize_doc(user)
+    
+    # Cache the profile data
+    await cache_service.cache_user_profile(user_id, profile_data)
+    
+    return profile_data
 
 @app.get("/api/auth/check-username/{username}")
 async def check_username_availability(username: str):
