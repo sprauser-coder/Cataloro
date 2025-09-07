@@ -727,18 +727,24 @@ function ProfilePage() {
                   </p>
                 </div>
 
-                {/* Business Account Section */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-md font-semibold text-gray-900 dark:text-white flex items-center">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Account Type
-                      <span className="ml-2 text-xs text-gray-500 dark:text-gray-400 font-normal">
-                        (Can be changed anytime)
-                      </span>
-                    </h4>
+                {/* Business Account Section - Clean single toggle */}
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg">
+                        <Settings className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="text-md font-semibold text-gray-900 dark:text-white">
+                          Business Account
+                        </h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          Professional marketplace seller with business verification
+                        </p>
+                      </div>
+                    </div>
                     
-                    {/* Business Account Toggle - Using same pattern as preferences toggles for better visibility */}
+                    {/* Single Clean Toggle Switch */}
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -748,26 +754,18 @@ function ProfilePage() {
                         className="sr-only peer"
                       />
                       <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}></div>
-                      <span className="ml-3 text-sm text-gray-700 dark:text-gray-300 flex items-center">
-                        <User className="w-3 h-3 mr-1" />
-                        {profileData.is_business ? 'Switch to Private Account' : 'Switch to Business Account'}
+                      <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {profileData.is_business ? 'Active' : 'Inactive'}
                       </span>
                     </label>
                   </div>
 
-                  {profileData.is_business ? (
-                    /* Business Information Display */
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                      <div className="flex items-center mb-3">
-                        <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg mr-3">
-                          <Settings className="w-4 h-4 text-white" />
-                        </div>
-                        <div>
-                          <h5 className="font-medium text-blue-900 dark:text-blue-100">Business Account Active</h5>
-                          <p className="text-sm text-blue-600 dark:text-blue-300">
-                            Professional marketplace seller with business verification
-                          </p>
-                        </div>
+                  {profileData.is_business && (
+                    /* Business Information Fields */
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+                      <div className="flex items-center mb-4">
+                        <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                        <h5 className="font-medium text-blue-900 dark:text-blue-100">Business Account Active</h5>
                       </div>
                       
                       {/* Business Fields */}
