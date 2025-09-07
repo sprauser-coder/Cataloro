@@ -87,8 +87,7 @@ class User(BaseModel):
     username: str
     email: str
     full_name: str
-    role: str = "user"  # Keep for backward compatibility
-    user_role: str = "User-Buyer"  # New RBAC role: User-Seller, User-Buyer, Admin, Admin-Manager
+    user_role: str = "User-Buyer"  # Consolidated RBAC role: User-Seller, User-Buyer, Admin, Admin-Manager
     registration_status: str = "Approved"  # Pending, Approved, Rejected
     badge: str = "Buyer"  # Display badge: Buyer, Seller, Admin, Manager
     created_at: datetime = None
