@@ -9,7 +9,7 @@ import json
 import time
 
 def test_system_notifications():
-    base_url = "https://inventory-fix-1.preview.emergentagent.com"
+    base_url = "https://market-evolution-2.preview.emergentagent.com"
     
     print("🚀 SYSTEM NOTIFICATION FIX - FINAL VERIFICATION")
     print("=" * 60)

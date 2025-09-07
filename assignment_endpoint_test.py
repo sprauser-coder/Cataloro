@@ -11,7 +11,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://inventory-fix-1.preview.emergentagent.com/api"
+BASE_URL = "https://market-evolution-2.preview.emergentagent.com/api"
 
 class AssignmentEndpointTester:
     def __init__(self):
