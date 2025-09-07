@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://cataloro-market-2.preview.emergentagent.com/api"
+BASE_URL = "https://catalyst-unified.preview.emergentagent.com/api"
 
 class BuyManagementTester:
     def __init__(self):

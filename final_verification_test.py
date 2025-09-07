@@ -15,7 +15,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://cataloro-market-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://catalyst-unified.preview.emergentagent.com/api"
 
 class FinalVerificationTester:
     def __init__(self):
