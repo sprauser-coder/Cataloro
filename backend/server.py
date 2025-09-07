@@ -2576,7 +2576,8 @@ async def get_all_listings(
         raise HTTPException(status_code=500, detail=f"Failed to fetch listings: {str(e)}")
 
 @app.post("/api/listings")
-async def create_listing(listing_data: dict):
+@security_service.limiter.limit("10/minute")  # Rate limit listing creation
+async def create_listing(request: Request, listing_data: dict):
     """Create a new listing"""
     try:
         # Add metadata
