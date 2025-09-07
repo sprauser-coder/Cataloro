@@ -12,7 +12,6 @@ import ModernLayout from './components/layout/ModernLayout';
 
 // Modern Feature Components
 import ModernBrowsePage from './features/marketplace/ModernBrowsePage';
-import CategoriesPage from './features/marketplace/CategoriesPage';
 
 import ProductDetailPage from './features/marketplace/ProductDetailPage';
 import MyListingsPage from './features/marketplace/MyListingsPage';
