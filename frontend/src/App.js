@@ -110,9 +110,10 @@ function App() {
                 <Route path="*" element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
               </Routes>
             </Router>
-          </MarketplaceProvider>
-        </NotificationProvider>
-      </AuthProvider>
+          </WebSocketProvider>
+        </MarketplaceProvider>
+      </NotificationProvider>
+    </AuthProvider>
     </div>
   );
 }
