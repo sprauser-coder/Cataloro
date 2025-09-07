@@ -355,7 +355,11 @@ class BackendTester:
                 return None
                 
             basket = basket_response.json()
-            basket_id = basket.get('id')
+            basket_id = basket.get('basket_id') or basket.get('id')
+            
+            if not basket_id:
+                self.log_test("Create Basket and Assign Item", False, error_msg="No basket ID returned from creation")
+                return None
             
             # Assign the bought item to the basket
             item_id = bought_item.get('id')
