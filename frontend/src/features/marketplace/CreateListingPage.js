@@ -131,6 +131,15 @@ function CreateListingPage() {
     fetchUnifiedCalculations(); // Use unified endpoint instead of separate calls
     loadProfileAddress();
   }, []);
+  
+  // Debug permissions and state
+  useEffect(() => {
+    console.log('CreateListingPage - Debug Info:');
+    console.log('  permissions:', permissions);
+    console.log('  isAdminOrManager:', isAdminOrManager);
+    console.log('  selectedCatalyst:', selectedCatalyst);
+    console.log('  unifiedCalculations length:', unifiedCalculations.length);
+  }, [permissions, isAdminOrManager, selectedCatalyst, unifiedCalculations]);
 
   const loadProfileAddress = () => {
     try {
