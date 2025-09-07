@@ -357,24 +357,56 @@ function MessagesPage() {
     const sortedMessages = conversation.messages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     setConversationMessages(sortedMessages);
     
-    // Immediately update the unread count to 0 for instant UI feedback
-    if (conversation.unreadCount > 0) {
+    // Find unread messages in this conversation
+    const unreadMessages = conversation.messages.filter(msg => !msg.is_read && msg.sender_id !== user.id);
+    
+    if (unreadMessages.length > 0) {
+      console.log(`📖 Marking ${unreadMessages.length} messages as read in conversation with ${conversation.name}`);
+      
+      // Track these messages as read in current session
+      const newSessionReadMessages = new Set(sessionReadMessages);
+      unreadMessages.forEach(msg => {
+        newSessionReadMessages.add(msg.id);
+      });
+      setSessionReadMessages(newSessionReadMessages);
+      
+      // Immediately update the conversation list to remove red badges
       setConversations(prev => 
         prev.map(conv => 
           conv.id === conversation.id 
-            ? { ...conv, unreadCount: 0 }
+            ? { 
+                ...conv, 
+                unreadCount: 0,
+                messages: conv.messages.map(msg => 
+                  unreadMessages.find(unread => unread.id === msg.id) 
+                    ? { ...msg, is_read: true }
+                    : msg
+                )
+              }
             : conv
         )
       );
       
-      // Trigger header message count update
-      window.dispatchEvent(new CustomEvent('messagesMarkedAsRead'));
+      // Update the conversation messages state to show as read
+      setConversationMessages(prev => 
+        prev.map(msg => 
+          unreadMessages.find(unread => unread.id === msg.id)
+            ? { ...msg, is_read: true }
+            : msg
+        )
+      );
+      
+      // Trigger header message count update immediately
+      window.dispatchEvent(new CustomEvent('messagesMarkedAsRead', {
+        detail: { 
+          messageIds: unreadMessages.map(msg => msg.id),
+          count: unreadMessages.length 
+        }
+      }));
+      
+      // Mark messages as read on server (async)
+      unreadMessages.forEach(msg => handleMarkAsRead(msg.id));
     }
-    
-    // Mark messages as read (async)
-    conversation.messages
-      .filter(msg => !msg.is_read && msg.sender_id !== user.id)
-      .forEach(msg => handleMarkAsRead(msg.id));
   };
 
   const handleSendMessage = async () => {
