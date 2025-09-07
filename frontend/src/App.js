@@ -96,6 +96,7 @@ function App() {
                   <Route path={APP_ROUTES.ADMIN_PANEL} element={<AdminPanel />} />
                   <Route path="admin/analytics" element={<AdminPanel />} />
                   <Route path="admin/users" element={<AdminPanel />} />
+                  <Route path="admin/dashboard" element={<DashboardHub />} />
                   <Route path={APP_ROUTES.FAVORITES} element={<FavoritesPage />} />
                   <Route path={APP_ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
                   <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
