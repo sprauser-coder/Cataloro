@@ -642,6 +642,44 @@ The backend time limit functionality is working perfectly. The issue appears to 
 
 **BUY MANAGEMENT CALCULATION FIX STATUS:** ✅ PERFECTLY IMPLEMENTED - The Buy Management calculation fix is working flawlessly. The main agent successfully implemented all three changes mentioned in the review request: (1) Modified get_bought_items endpoint to get price settings for renumeration values at start, (2) Changed bought item creation to copy catalyst fields directly from listings (weight, pt_ppm, pd_ppm, rh_ppm), (3) Set renumeration values from price settings instead of None. The calculations now produce proper non-zero values when catalyst data exists, eliminating the (0,0,0) issue. All requirements from the review request have been successfully verified and are working perfectly.
 
+**Test Date:** 2025-01-29 09:03:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ✅ CATALYST LISTING CREATION FOR PRODUCTDETAILPAGE VERIFICATION COMPLETED - ALL REQUIREMENTS MET
+
+#### Catalyst Listing Creation Test Results:
+**COMPREHENSIVE CATALYST LISTING CREATION TESTING:** ✅ ALL REQUIREMENTS MET - Executed comprehensive testing of catalyst listing creation to verify ProductDetailPage displays content values correctly as requested in review. All primary testing objectives successfully verified with perfect implementation confirmed (5/5 tests passed, 100% success rate).
+
+**1. Demo Admin Login** ✅ FULLY FUNCTIONAL - Successfully logged in as demo admin user: Admin login successful with credentials admin@cataloro.com ✅, User role confirmed as 'Admin' with proper permissions ✅, Admin user ID obtained: sash_admin ✅, Authentication working correctly for admin operations ✅.
+
+**2. Catalyst Data Retrieval** ✅ COMPREHENSIVE DATA AVAILABLE - Retrieved catalyst data from unified calculations endpoint: Successfully accessed /api/admin/catalyst/unified-calculations endpoint ✅, Retrieved 4496 catalyst entries with complete data structure ✅, Selected catalyst: MazdaRF4SOK14 with content values (pt_g: 0.6712, pd_g: 0.0, rh_g: 0.0) ✅, Catalyst data includes all required fields for listing creation ✅.
+
+**3. Listing Creation with Catalyst Data** ✅ SUCCESSFULLY COMPLETED - Created comprehensive listing with all catalyst fields: Successfully created listing ID: 3215645c-64c4-441d-a18b-2aa2c9ce256f ✅, Listing includes comprehensive catalyst data: ceramic_weight (1.32g), pt_ppm, pd_ppm, rh_ppm ✅, Content values properly stored: pt_g (0.6712), pd_g (0.0), rh_g (0.0) ✅, Catalyst specs object created with all inventory management fields ✅.
+
+**4. Listing Catalyst Data Verification** ✅ PERFECTLY IMPLEMENTED - All catalyst fields properly stored and accessible: All 9 catalyst fields present: ceramic_weight, pt_ppm, pd_ppm, rh_ppm, catalyst_id, catalyst_name, calculated_price, catalyst_specs, is_catalyst_listing ✅, Catalyst specs object contains 7 fields: catalyst_id, name, weight, pt_g, pd_g, rh_g, total_price ✅, Content values correctly preserved for ProductDetailPage display ✅, Comprehensive data structure ready for frontend consumption ✅.
+
+**5. Browse Endpoint Verification** ✅ FULLY OPERATIONAL - Listing appears in browse endpoint with catalyst data: Created listing found in browse results with ID 3215645c-64c4-441d-a18b-2aa2c9ce256f ✅, Browse endpoint preserves 5 catalyst fields: ceramic_weight, pt_ppm, pd_ppm, rh_ppm, catalyst_specs ✅, Listing accessible via marketplace browse functionality ✅, All catalyst data properly maintained through browse endpoint ✅.
+
+**TECHNICAL VERIFICATION:**
+- Admin Authentication: Successfully logged in as admin@cataloro.com with Admin role permissions
+- Catalyst Data Source: /api/admin/catalyst/unified-calculations returning 4496 entries with complete structure
+- Listing Creation: POST /api/listings successfully created listing with comprehensive catalyst data
+- Content Values: pt_g (0.6712), pd_g (0.0), rh_g (0.0) properly stored in catalyst_specs object
+- Weight and Price: ceramic_weight (1.32g), calculated_price (€28.19) correctly preserved
+- Catalyst Identification: catalyst_id, catalyst_name (MazdaRF4SOK14) properly stored
+- Browse Integration: Listing appears in marketplace browse with all catalyst fields intact
+
+**CREATED LISTING DETAILS:**
+- **Listing ID**: 3215645c-64c4-441d-a18b-2aa2c9ce256f
+- **Frontend URL**: https://catalyst-calc.preview.emergentagent.com/listing/3215645c-64c4-441d-a18b-2aa2c9ce256f
+- **Catalyst Name**: MazdaRF4SOK14
+- **Content Values**: PT: 0.6712g, PD: 0.0g, RH: 0.0g
+- **Weight**: 1.32g ceramic weight
+- **Price**: €28.19 calculated price
+
+**COMPREHENSIVE TEST RESULTS:** 5/5 individual tests passed (100% success rate), all catalyst listing creation requirements verified, admin login successful, catalyst data retrieved, listing created with comprehensive data, catalyst fields verified, browse endpoint integration confirmed.
+
+**CATALYST LISTING CREATION STATUS:** ✅ PERFECTLY IMPLEMENTED - The catalyst listing creation for ProductDetailPage verification is working flawlessly. Successfully logged in as demo admin user, retrieved comprehensive catalyst data from unified calculations endpoint, created listing with all required catalyst fields including content values (pt_g, pd_g, rh_g), verified comprehensive data storage, and confirmed browse endpoint integration. The created listing (ID: 3215645c-64c4-441d-a18b-2aa2c9ce256f) contains all necessary catalyst data for ProductDetailPage content value display testing. All requirements from the review request have been successfully verified and are working perfectly.
+
 **Test Date:** 2025-01-29 23:45:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ❌ SELLER NAME "UNKNOWN" ISSUE CONFIRMED - ROOT CAUSE IDENTIFIED AND SOLUTION PROVIDED
