@@ -709,7 +709,7 @@ function MessagesPage() {
                           </div>
                           <div className="flex items-center space-x-2">
                             {conversation.unreadCount > 0 && (
-                              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium animate-pulse">
                                 {conversation.unreadCount}
                               </span>
                             )}
