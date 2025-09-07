@@ -8642,9 +8642,8 @@ function UserEditModal({ user, onClose, onSave }) {
     last_name: user?.last_name || (user?.full_name ? user.full_name.split(' ').slice(1).join(' ') : ''),
     username: user?.username || '',
     email: user?.email || '',
-    role: user?.role || 'user',
-    user_role: user?.user_role || 'User-Buyer', // Add RBAC role field
-    registration_status: user?.registration_status || 'Approved', // Add registration status field
+    user_role: user?.user_role || user?.role === 'admin' ? 'Admin' : 'User-Buyer', // Migrate legacy role to user_role
+    registration_status: user?.registration_status || 'Approved',
     is_active: user?.is_active !== undefined ? user.is_active : true,
     password: '',
     confirmPassword: '',
