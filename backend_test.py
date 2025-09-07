@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 """
-Cataloro Backend Testing Suite - Catalyst Data Preservation and Basket Calculation Testing
-Testing the fixed inventory/basket calculation functionality with catalyst data preservation
+CATALORO MARKETPLACE - PHASE 3 SECURITY & MONITORING BACKEND TESTING
+Comprehensive testing of security features, monitoring system, and admin dashboards
 """
 
-import requests
+import asyncio
 import json
-import uuid
 import time
+import requests
 from datetime import datetime
+from typing import Dict, List, Any
 
-# Get backend URL from environment
+# Configuration
 BACKEND_URL = "https://inventory-fix-1.preview.emergentagent.com/api"
+ADMIN_EMAIL = "admin@cataloro.com"
+ADMIN_PASSWORD = "admin123"
 
-class BackendTester:
+class Phase3SecurityMonitoringTester:
     def __init__(self):
         self.test_results = []
         self.total_tests = 0
