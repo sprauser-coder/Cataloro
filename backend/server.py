@@ -360,7 +360,7 @@ async def get_performance_metrics():
                 "name": db_stats.get("db", "cataloro_marketplace"),
                 "total_size": db_stats.get("dataSize", 0),
                 "index_size": db_stats.get("indexSize", 0),
-                "collections": len(db_stats.get("collections", 0))
+                "collections": db_stats.get("collections", 0)
             },
             "cache": cache_health,
             "collections": collections_stats,
