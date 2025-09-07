@@ -7196,15 +7196,13 @@ function ListingsTab({ showToast }) {
                           {listing.seller_username?.charAt(0) || 'U'}
                         </span>
                       </div>
-                      <a
-                        href={`/profile/${listing.seller_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link
+                        to={`/profile/${listing.seller_id}`}
                         className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium truncate hover:underline"
                         title={`View ${listing.seller_full_name}'s profile`}
                       >
                         {listing.seller_username}
-                      </a>
+                      </Link>
                     </div>
                   </td>
                   <td className="px-3 py-4">
