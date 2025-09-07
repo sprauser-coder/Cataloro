@@ -32,6 +32,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 
 function CreateListingPage() {
   const navigate = useNavigate();
+  const permissions = usePermissions();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [images, setImages] = useState([]);
