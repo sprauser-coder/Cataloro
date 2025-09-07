@@ -100,6 +100,10 @@ db = client.cataloro_marketplace
 security_service = None
 analytics_service = None
 
+# Global service instances (initialized in startup)
+security_service = None
+analytics_service = None
+
 # Startup and Shutdown Events
 @app.on_event("startup")
 async def startup_event():
