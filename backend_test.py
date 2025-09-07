@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Cataloro Backend Testing Suite - Demo User Role and Buy Management Testing
-Testing demo user role permissions and Buy Management access functionality
+Cataloro Backend Testing Suite - Unified Calculations Endpoint Testing
+Testing the new /api/admin/catalyst/unified-calculations endpoint
 """
 
 import requests
