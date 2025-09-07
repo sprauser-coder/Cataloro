@@ -7148,7 +7148,6 @@ function ListingsTab({ showToast }) {
                 </th>
                 <th className="px-4 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider min-w-[280px]">Listing Details</th>
                 <th className="px-3 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider w-24">Price</th>
-                <th className="px-3 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider w-28">Category</th>
                 <th className="px-3 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider w-32">Seller</th>
                 <th className="px-3 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider w-24">Status</th>
                 <th className="px-3 py-4 text-left text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider w-20">Views</th>
