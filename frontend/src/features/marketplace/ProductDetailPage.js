@@ -20,7 +20,8 @@ import {
   ChevronRight,
   Verified,
   Database,
-  Settings
+  Settings,
+  TrendingUp
 } from 'lucide-react';
 
 // Countdown Timer Component - Returns formatted time text
