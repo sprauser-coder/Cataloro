@@ -472,6 +472,10 @@ async def login_user(credentials: dict):
     else:
         user_id = generate_id()
     
+    # Cache user session for better performance
+    if serialized_user:
+        await cache_service.cache_user_session(user_id, serialized_user)
+    
     # Trigger login-based system notifications with proper user_id format
     try:
         print(f"DEBUG: Triggering login notification for user_id: {user_id}")
