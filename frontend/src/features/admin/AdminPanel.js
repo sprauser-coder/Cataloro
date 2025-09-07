@@ -7356,6 +7356,7 @@ function ListingModal({ listing, onSave, onClose }) {
   // Cat Database integration
   const [catalystData, setCatalystData] = useState([]);
   const [calculations, setCalculations] = useState([]);
+  const [unifiedCalculations, setUnifiedCalculations] = useState([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedCatalyst, setSelectedCatalyst] = useState(null);
