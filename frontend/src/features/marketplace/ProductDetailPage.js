@@ -409,12 +409,22 @@ function ProductDetailPage() {
                   <div className="text-sm font-semibold text-green-700 dark:text-green-300 uppercase tracking-wide mb-1">
                     {product.bid_info?.has_bids ? 'Current Highest Bid' : 'Starting Price'}
                   </div>
-                  <MultiCurrencyPrice 
-                    basePrice={(product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price}
-                    baseCurrency="EUR"
-                    showAlternativePrices={true}
-                    compact={false}
-                  />
+                  <div className="mb-4">
+                    <CurrencyPriceDisplay 
+                      price={(product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price}
+                      baseCurrency="EUR"
+                      className="mb-2"
+                    />
+                  </div>
+                  {/* Alternative currencies for reference */}
+                  <div className="text-sm text-green-600 dark:text-green-400">
+                    <MultiCurrencyPrice 
+                      basePrice={(product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price}
+                      baseCurrency="EUR"
+                      showAlternativePrices={true}
+                      compact={true}
+                    />
+                  </div>
                   {product.bid_info?.has_bids && (
                     <div className="text-sm text-green-600 dark:text-green-400 mt-2">
                       Starting price: €{product.price.toLocaleString()}
