@@ -533,67 +533,30 @@ class BackendTester:
             self.log_test("Frontend Buy Management Permissions", False, error_msg=str(e))
             return False
 
-    def run_demo_user_role_testing(self):
-        """Run Demo User Role and Buy Management testing as requested in review"""
+    def run_unified_calculations_testing(self):
+        """Run Unified Calculations Endpoint testing as requested in review"""
         print("=" * 80)
-        print("CATALORO DEMO USER ROLE & BUY MANAGEMENT TESTING")
+        print("CATALORO UNIFIED CALCULATIONS ENDPOINT TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
         print(f"Test Started: {datetime.now().isoformat()}")
         print()
         
-        demo_user = None
-        has_buy_management_role = False
-        
         # 1. Basic Health Check
         print("🔍 BASIC HEALTH CHECK")
         print("-" * 40)
         if not self.test_health_check():
-            print("❌ Health check failed. Aborting Demo User testing.")
+            print("❌ Health check failed. Aborting Unified Calculations testing.")
             return
         
-        # 2. Demo User Login and Role Check
-        print("👤 DEMO USER LOGIN AND ROLE CHECK")
+        # 2. Run Unified Calculations Tests
+        print("🧮 UNIFIED CALCULATIONS ENDPOINT TESTING")
         print("-" * 40)
-        demo_user, has_buy_management_role = self.test_demo_user_login_and_role_check()
-        
-        if not demo_user:
-            print("❌ Failed to login as demo user. Aborting tests.")
-            return
-        
-        # 3. Test Buy Management Access
-        print("🛒 TEST BUY MANAGEMENT ACCESS")
-        print("-" * 40)
-        buy_management_accessible = self.test_buy_management_access(demo_user)
-        
-        # 4. Update Demo User Role if Needed
-        print("🔧 UPDATE DEMO USER ROLE IF NEEDED")
-        print("-" * 40)
-        if not has_buy_management_role:
-            print("⚠️  Demo user doesn't have User-Buyer role. Updating...")
-            role_updated = self.test_update_demo_user_role_if_needed(demo_user)
-            
-            if role_updated:
-                # 5. Verify Updated Access
-                print("✅ VERIFY UPDATED DEMO USER ACCESS")
-                print("-" * 40)
-                self.test_verify_updated_demo_user_access()
-        else:
-            print("✅ Demo user already has correct role for Buy Management features.")
-        
-        # 6. Test Different User Roles
-        print("🎭 TEST DIFFERENT USER ROLES BUY MANAGEMENT")
-        print("-" * 40)
-        self.test_different_user_roles_buy_management()
-        
-        # 7. Test Frontend Permission Logic
-        print("🎨 TEST FRONTEND BUY MANAGEMENT PERMISSIONS")
-        print("-" * 40)
-        self.test_frontend_buy_management_permissions(demo_user)
+        self.test_unified_calculations_endpoint()
         
         # Print Summary
         print("=" * 80)
-        print("DEMO USER ROLE TEST SUMMARY")
+        print("UNIFIED CALCULATIONS ENDPOINT TEST SUMMARY")
         print("=" * 80)
         print(f"Total Tests: {self.total_tests}")
         print(f"Passed: {self.passed_tests} ✅")
@@ -607,24 +570,25 @@ class BackendTester:
                 if "❌ FAIL" in result["status"]:
                     print(f"  - {result['test']}: {result['error']}")
         
-        print("\n🎯 DEMO USER ROLE TESTING COMPLETE")
+        print("\n🎯 UNIFIED CALCULATIONS ENDPOINT TESTING COMPLETE")
         print("Expected Results:")
-        print("  ✅ Demo user should have 'User-Buyer', 'Admin', or 'Admin-Manager' role")
-        print("  ✅ Demo user should be able to access Buy Management features")
-        print("  ✅ Frontend showBuyingFeatures should be true for demo user")
-        print("  ✅ Buy Management endpoints should be accessible")
+        print("  ✅ Endpoint should return unified data combining price and content calculations")
+        print("  ✅ Should include fields: catalyst_id, cat_id, name, weight, total_price, pt_g, pd_g, rh_g, is_override")
+        print("  ✅ Should hide database_id from response")
+        print("  ✅ Should calculate content values using formula (weight * ppm / 1000 * renumeration)")
+        print("  ✅ Should handle edge cases like empty database, missing settings")
         
         return self.passed_tests, self.failed_tests, self.test_results
 
 if __name__ == "__main__":
     tester = BackendTester()
     
-    # Run Demo User Role testing as requested in the review
-    print("🎯 RUNNING DEMO USER ROLE & BUY MANAGEMENT TESTING AS REQUESTED")
-    print("Checking demo user role and Buy Management access permissions...")
+    # Run Unified Calculations testing as requested in the review
+    print("🎯 RUNNING UNIFIED CALCULATIONS ENDPOINT TESTING AS REQUESTED")
+    print("Testing the new /api/admin/catalyst/unified-calculations endpoint...")
     print()
     
-    passed, failed, results = tester.run_demo_user_role_testing()
+    passed, failed, results = tester.run_unified_calculations_testing()
     
     # Exit with appropriate code
     exit(0 if failed == 0 else 1)
