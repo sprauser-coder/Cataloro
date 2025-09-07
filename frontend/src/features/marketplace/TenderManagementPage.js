@@ -851,88 +851,97 @@ function MyListingCard({ listing, onDelete }) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-      <div className="flex items-start space-x-4">
-        <div className="w-20 h-20 flex-shrink-0">
-          <img
-            src={listing.images?.[0] || '/api/placeholder/400/300'}
-            alt={listing.title}
-            className="w-full h-full object-cover rounded-lg"
-          />
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      {/* Listing Image */}
+      <div className="relative h-48 w-full">
+        <img
+          src={listing.images?.[0] || '/api/placeholder/400/300'}
+          alt={listing.title}
+          className="w-full h-full object-cover"
+        />
+        {/* Status Badge - Positioned over image */}
+        <div className="absolute top-3 right-3">
+          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold shadow-lg ${getStatusColor(listing.status || (listing.is_draft ? 'draft' : 'active'))}`}>
+            {(listing.status || (listing.is_draft ? 'DRAFT' : 'ACTIVE')).toUpperCase()}
+          </span>
+        </div>
+      </div>
+      
+      {/* Card Content */}
+      <div className="p-6">
+        {/* Title and Price */}
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2 mb-2 min-h-[3.5rem]">
+            {listing.title}
+          </h3>
+          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            €{listing.price.toFixed(2)}
+          </p>
         </div>
         
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-                {listing.title}
-              </h3>
-              <p className="text-xl font-bold text-blue-600 dark:text-blue-400 mt-1">
-                €{listing.price.toFixed(2)}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">
-                {listing.description}
-              </p>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(listing.status || (listing.is_draft ? 'draft' : 'active'))}`}>
-                {(listing.status || (listing.is_draft ? 'DRAFT' : 'ACTIVE')).toUpperCase()}
-              </span>
-              
-              {/* Add prominent Edit button */}
-              <button
-                onClick={() => window.location.href = `/edit-listing/${listing.id}`}
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-medium transition-colors flex items-center space-x-1"
-                title="Edit Listing"
-              >
-                <Edit className="w-4 h-4" />
-                <span>Edit</span>
-              </button>
-              
-              <div className="relative">
-                <button 
-                  onClick={() => setShowMenu(!showMenu)}
-                  className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
-                
-                {showMenu && (
-                  <div className="absolute top-8 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 min-w-[120px]">
-                    <button
-                      onClick={() => {
-                        window.location.href = `/edit-listing/${listing.id}`;
-                        setShowMenu(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2"
-                    >
-                      <Edit className="w-4 h-4" />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        onDelete(listing.id);
-                        setShowMenu(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      <span>Delete</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+        {/* Description */}
+        <div className="mb-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 min-h-[4rem]">
+            {listing.description}
+          </p>
+        </div>
+        
+        {/* Metadata */}
+        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+          <span className="truncate">
+            {listing.category || 'No category'}
+          </span>
+          <span className="ml-2 whitespace-nowrap">
+            {new Date(listing.created_at).toLocaleDateString()}
+          </span>
+        </div>
+        
+        {/* Actions */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => window.location.href = `/edit-listing/${listing.id}`}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-medium transition-colors"
+              title="Edit Listing"
+            >
+              <Edit className="w-4 h-4 mr-1.5" />
+              Edit
+            </button>
           </div>
           
-          <div className="flex items-center justify-between mt-4">
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {listing.category}
-            </span>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {new Date(listing.created_at).toLocaleDateString()}
-            </span>
+          <div className="relative">
+            <button 
+              onClick={() => setShowMenu(!showMenu)}
+              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              title="More options"
+            >
+              <MoreHorizontal className="w-4 h-4" />
+            </button>
+            
+            {showMenu && (
+              <div className="absolute top-8 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 min-w-[120px]">
+                <button
+                  onClick={() => {
+                    window.location.href = `/edit-listing/${listing.id}`;
+                    setShowMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  <span>Edit</span>
+                </button>
+                <button
+                  onClick={() => {
+                    onDelete(listing.id);
+                    setShowMenu(false);
+                  }}
+                  className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center space-x-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Delete</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
