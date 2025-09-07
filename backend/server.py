@@ -5516,25 +5516,43 @@ async def assign_item_to_basket(item_id: str, assignment_data: dict):
             "renumeration_rh": renumeration_rh
         }
         
-        # Extract listing_id from item_id and get catalyst data
+        # Extract listing_id from item_id and get catalyst data from purchase record
         listing_id = None
         if item_id.startswith("tender_"):
-            # This is from a tender
+            # This is from a tender - get catalyst data from the tender record
             tender_id = item_id.replace("tender_", "")
             tender = await db.tenders.find_one({"id": tender_id})
             if tender:
                 listing_id = tender.get("listing_id")
+                # Use preserved catalyst data from tender acceptance
+                catalyst_data.update({
+                    "weight": tender.get("ceramic_weight", 0.0),
+                    "pt_ppm": tender.get("pt_ppm", 0.0),
+                    "pd_ppm": tender.get("pd_ppm", 0.0),
+                    "rh_ppm": tender.get("rh_ppm", 0.0)
+                })
+                logger.info(f"Using preserved catalyst data from tender record for item {item_id}")
         elif item_id.startswith("order_"):
-            # This is from an order
+            # This is from an order - get catalyst data from the order record
             order_id = item_id.replace("order_", "")
             order = await db.orders.find_one({"id": order_id})
             if order:
                 listing_id = order.get("listing_id")
+                # Use preserved catalyst data from order approval
+                catalyst_data.update({
+                    "weight": order.get("ceramic_weight", 0.0),
+                    "pt_ppm": order.get("pt_ppm", 0.0),
+                    "pd_ppm": order.get("pd_ppm", 0.0),
+                    "rh_ppm": order.get("rh_ppm", 0.0)
+                })
+                logger.info(f"Using preserved catalyst data from order record for item {item_id}")
         
-        if listing_id:
+        # Fallback to original listing if no preserved data found
+        if (catalyst_data["weight"] == 0.0 and catalyst_data["pt_ppm"] == 0.0 and 
+            catalyst_data["pd_ppm"] == 0.0 and catalyst_data["rh_ppm"] == 0.0 and listing_id):
             listing = await db.listings.find_one({"id": listing_id})
             if listing:
-                logger.info(f"Found original listing with catalyst data for item {item_id}")
+                logger.info(f"Fallback: Using catalyst data from original listing for item {item_id}")
                 catalyst_data.update({
                     "weight": listing.get("ceramic_weight", 0.0),
                     "pt_ppm": listing.get("pt_ppm", 0.0),
@@ -5543,8 +5561,9 @@ async def assign_item_to_basket(item_id: str, assignment_data: dict):
                 })
             else:
                 logger.warning(f"Original listing not found for item {item_id}, listing_id: {listing_id}")
-        else:
-            logger.warning(f"Could not extract listing_id from item_id: {item_id}")
+        
+        if catalyst_data["weight"] == 0.0 and catalyst_data["pt_ppm"] == 0.0:
+            logger.warning(f"No catalyst data found for item {item_id} from any source")
         
         # Store the assignment with preserved catalyst data
         assignment = {
