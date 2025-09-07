@@ -67,7 +67,8 @@ function App() {
       <AuthProvider>
         <NotificationProvider>
           <MarketplaceProvider>
-            <Router>
+            <WebSocketProvider>
+              <Router>
               <Routes>
                 {/* Public Routes */}
                 <Route path={APP_ROUTES.LOGIN} element={<SimpleLoginPage />} />
