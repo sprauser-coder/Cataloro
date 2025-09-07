@@ -2311,7 +2311,9 @@ async def generate_custom_report(report_config: dict):
 
 # Include Phase 5 endpoints
 from phase5_endpoints import phase5_router
+from phase6_endpoints import phase6_router
 app.include_router(phase5_router)
+app.include_router(phase6_router)
 
 @app.post("/api/admin/users/bulk-action")
 async def bulk_user_action(action_data: dict):
