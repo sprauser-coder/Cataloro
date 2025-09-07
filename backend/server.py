@@ -3473,6 +3473,10 @@ async def approve_buy_request(order_id: str, approval_data: dict):
                     "pt_ppm": listing.get("pt_ppm", 0.0) if listing else 0.0,
                     "pd_ppm": listing.get("pd_ppm", 0.0) if listing else 0.0,
                     "rh_ppm": listing.get("rh_ppm", 0.0) if listing else 0.0,
+                    # Preserve pre-calculated values if available
+                    "pt_g": listing.get("pt_g", 0.0) if listing else 0.0,
+                    "pd_g": listing.get("pd_g", 0.0) if listing else 0.0,
+                    "rh_g": listing.get("rh_g", 0.0) if listing else 0.0,
                     "listing_title": listing.get("title", "Unknown Item") if listing else "Unknown Item"
                 }
             }
