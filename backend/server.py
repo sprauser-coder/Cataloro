@@ -62,6 +62,12 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
+# Add monitoring middleware
+app.add_middleware(MonitoringMiddleware)
+
+# Setup security and rate limiting
+security_service.setup_rate_limiting(app)
+
 # Additional CORS headers for edge cases
 @app.middleware("http")
 async def add_cors_headers(request: Request, call_next):
