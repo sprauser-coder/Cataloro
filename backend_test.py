@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Cataloro Backend Testing Suite - Updated Description Functionality and Unified Calculations
-Testing the updated description functionality and unified calculations endpoint with add_info field
+Cataloro Backend Testing Suite - Individual Listing Page Catalyst Content Display
+Testing the individual listing page catalyst content display functionality for Admin/Manager users
 """
 
 import requests
