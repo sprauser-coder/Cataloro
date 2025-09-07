@@ -418,8 +418,8 @@ function AdminPanel() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Left Sidebar Navigation */}
-      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-lg">
+      {/* Left Sidebar Navigation - positioned below header */}
+      <div className="fixed top-16 left-0 bottom-0 z-40 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-lg overflow-y-auto">
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3">
@@ -433,7 +433,7 @@ function AdminPanel() {
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+        <nav className="flex-1 px-4 py-6 space-y-2">
           {visibleTabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -480,8 +480,8 @@ function AdminPanel() {
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="ml-64">
+      {/* Main Content Area - positioned below header and beside sidebar */}
+      <div className="ml-64 pt-16 min-h-screen">
         {/* Top Header Bar */}
         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
           <div className="flex items-center justify-between">
@@ -504,8 +504,8 @@ function AdminPanel() {
           </div>
         </div>
 
-        {/* Tab Content */}
-        <div className="p-6">
+        {/* Tab Content with proper spacing and height */}
+        <div className="p-6 pb-12 min-h-[calc(100vh-8rem)]">
           {activeTab === 'dashboard' && (
             <MegaUnifiedDashboard />
           )}
