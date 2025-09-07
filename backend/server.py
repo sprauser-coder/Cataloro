@@ -96,13 +96,9 @@ MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client.cataloro_marketplace
 
-# Global service instances (initialized in startup)
-security_service = None
-analytics_service = None
-
-# Global service instances (initialized in startup)
-security_service = None
-analytics_service = None
+# Global service instances (initialized immediately for decorators)
+security_service = get_unified_security_service()
+analytics_service = None  # Will be initialized in startup
 
 # Startup and Shutdown Events
 @app.on_event("startup")
