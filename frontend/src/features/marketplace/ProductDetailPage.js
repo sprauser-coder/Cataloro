@@ -270,13 +270,6 @@ function ProductDetailPage() {
           Browse
         </button>
         <span>›</span>
-        <button
-          onClick={() => navigate(`/browse?category=${encodeURIComponent(product.category)}`)}
-          className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-        >
-          {product.category}
-        </button>
-        <span>›</span>
         <span className="text-gray-900 dark:text-white">{product.title}</span>
       </div>
 
