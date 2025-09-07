@@ -122,6 +122,10 @@ async def startup_event():
     analytics_service = get_unified_analytics_service()
     logger.info("✅ Unified security and analytics services initialized")
     
+    # Setup security rate limiting
+    security_service.setup_rate_limiting(app)
+    logger.info("✅ Security rate limiting configured")
+    
     # Initialize Phase 5 services
     global websocket_service, multicurrency_service, escrow_service, ai_recommendation_service
     
