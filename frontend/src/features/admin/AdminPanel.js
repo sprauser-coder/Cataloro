@@ -385,6 +385,8 @@ function AdminPanel() {
     { id: 'listings', label: 'Listings', shortLabel: 'Listings', icon: Package, 
       permission: 'canAccessListingsManagement' },
     { id: 'business', label: 'Business', shortLabel: 'Business', icon: Building },
+    { id: 'advanced-features', label: 'Advanced Features', shortLabel: 'Advanced', icon: Zap,
+      adminOnly: true },
     { id: 'cats', label: "Cat's", shortLabel: "Cat's", icon: Database, 
       permission: 'canAccessDatDatabase' },
     { id: 'site-settings', label: 'Site Settings', shortLabel: 'Settings', icon: Settings, 
