@@ -371,10 +371,10 @@ class BackendTester:
             self.log_test("Data Consistency Across Endpoints", False, error_msg=str(e))
             return False
 
-    def run_unified_calculations_testing(self):
-        """Run Unified Calculations Endpoint testing as requested in review"""
+    def run_updated_description_functionality_testing(self):
+        """Run updated description functionality and unified calculations testing"""
         print("=" * 80)
-        print("CATALORO UNIFIED CALCULATIONS ENDPOINT TESTING")
+        print("CATALORO UPDATED DESCRIPTION FUNCTIONALITY TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
         print(f"Test Started: {datetime.now().isoformat()}")
@@ -384,17 +384,37 @@ class BackendTester:
         print("🔍 BASIC HEALTH CHECK")
         print("-" * 40)
         if not self.test_health_check():
-            print("❌ Health check failed. Aborting Unified Calculations testing.")
+            print("❌ Health check failed. Aborting testing.")
             return
         
-        # 2. Run Unified Calculations Tests
-        print("🧮 UNIFIED CALCULATIONS ENDPOINT TESTING")
+        # 2. Test Unified Calculations Endpoint with Add Info
+        print("🧮 UNIFIED CALCULATIONS ENDPOINT ADD_INFO TESTING")
         print("-" * 40)
-        self.test_unified_calculations_endpoint()
+        unified_data = self.test_unified_calculations_add_info_field()
+        
+        # 3. Test Admin Login and Permissions
+        print("👤 ADMIN LOGIN AND PERMISSIONS TESTING")
+        print("-" * 40)
+        admin_user = self.test_admin_login_and_permissions()
+        
+        # 4. Test Listing Creation with Add Info
+        print("📝 LISTING CREATION WITH ADD_INFO TESTING")
+        print("-" * 40)
+        self.test_listing_creation_with_add_info(admin_user, unified_data)
+        
+        # 5. Test Content Values Stored Separately
+        print("🔒 CONTENT VALUES SEPARATION TESTING")
+        print("-" * 40)
+        self.test_content_values_stored_separately(admin_user, unified_data)
+        
+        # 6. Test Data Consistency
+        print("🔄 DATA CONSISTENCY TESTING")
+        print("-" * 40)
+        self.test_data_consistency_across_endpoints(unified_data)
         
         # Print Summary
         print("=" * 80)
-        print("UNIFIED CALCULATIONS ENDPOINT TEST SUMMARY")
+        print("UPDATED DESCRIPTION FUNCTIONALITY TEST SUMMARY")
         print("=" * 80)
         print(f"Total Tests: {self.total_tests}")
         print(f"Passed: {self.passed_tests} ✅")
@@ -408,13 +428,13 @@ class BackendTester:
                 if "❌ FAIL" in result["status"]:
                     print(f"  - {result['test']}: {result['error']}")
         
-        print("\n🎯 UNIFIED CALCULATIONS ENDPOINT TESTING COMPLETE")
+        print("\n🎯 UPDATED DESCRIPTION FUNCTIONALITY TESTING COMPLETE")
         print("Expected Results:")
-        print("  ✅ Endpoint should return unified data combining price and content calculations")
-        print("  ✅ Should include fields: catalyst_id, cat_id, name, weight, total_price, pt_g, pd_g, rh_g, is_override")
-        print("  ✅ Should hide database_id from response")
-        print("  ✅ Should calculate content values using formula (weight * ppm / 1000 * renumeration)")
-        print("  ✅ Should handle edge cases like empty database, missing settings")
+        print("  ✅ Unified calculations endpoint includes add_info field")
+        print("  ✅ Listing creation uses add_info in descriptions (not pt_g, pd_g, rh_g)")
+        print("  ✅ Admin/Manager permissions work for content value visibility")
+        print("  ✅ Content values are stored separately but not in descriptions")
+        print("  ✅ Data consistency maintained across all endpoints")
         
         return self.passed_tests, self.failed_tests, self.test_results
 
