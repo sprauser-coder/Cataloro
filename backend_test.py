@@ -579,12 +579,13 @@ class BackendTester:
             except:
                 pass
 
-    def run_individual_listing_catalyst_content_testing(self):
-        """Run individual listing page catalyst content display testing"""
+    def run_mazda_listing_and_admin_testing(self):
+        """Run MazdaRF4SOK14 listing and admin authentication testing as requested in review"""
         print("=" * 80)
-        print("CATALORO INDIVIDUAL LISTING PAGE CATALYST CONTENT DISPLAY TESTING")
+        print("CATALORO MAZDA RF4SOK14 LISTING AND ADMIN AUTHENTICATION TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
+        print(f"Target Listing ID: {MAZDA_LISTING_ID}")
         print(f"Test Started: {datetime.now().isoformat()}")
         print()
         
@@ -595,43 +596,29 @@ class BackendTester:
             print("❌ Health check failed. Aborting testing.")
             return
         
-        # 2. Test Admin Login and Permissions
-        print("👤 ADMIN LOGIN AND CATALYST PERMISSIONS TESTING")
+        # 2. Test Admin Authentication
+        print("👤 ADMIN AUTHENTICATION TESTING")
         print("-" * 40)
-        admin_user = self.test_admin_login_and_permissions()
+        admin_user = self.test_admin_authentication()
         
-        # 3. Test Backend Provides Listings with Catalyst Data
-        print("📊 BACKEND CATALYST DATA PROVISION TESTING")
+        # 3. Test MazdaRF4SOK14 Listing Endpoint
+        print("🚗 MAZDA RF4SOK14 LISTING ENDPOINT TESTING")
         print("-" * 40)
-        catalyst_listings = self.test_listings_with_catalyst_data()
+        mazda_listing = self.test_mazda_listing_endpoint()
         
-        # 4. Test Individual Listing Catalyst Display
-        print("🔍 INDIVIDUAL LISTING CATALYST DISPLAY TESTING")
+        # 4. Test Catalyst Data Structure Compatibility
+        print("📊 CATALYST DATA STRUCTURE COMPATIBILITY TESTING")
         print("-" * 40)
-        self.test_individual_listing_catalyst_display(catalyst_listings)
+        self.test_catalyst_data_structure_compatibility(mazda_listing)
         
-        # 5. Test Catalyst Calculations Section Data
-        print("🧮 CATALYST CALCULATIONS SECTION DATA TESTING")
+        # 5. Test Admin Permissions for Catalyst Content
+        print("🔐 ADMIN PERMISSIONS FOR CATALYST CONTENT TESTING")
         print("-" * 40)
-        self.test_catalyst_calculations_section_data(catalyst_listings)
-        
-        # 6. Test Permission Logic Verification
-        print("🔐 PERMISSION LOGIC VERIFICATION TESTING")
-        print("-" * 40)
-        self.test_permission_logic_verification(admin_user)
-        
-        # 7. Create Test Listing for Comprehensive Testing
-        print("🆕 CREATE TEST CATALYST LISTING")
-        print("-" * 40)
-        test_listing = self.test_create_catalyst_listing_for_testing(admin_user)
-        
-        # Clean up test listing
-        if test_listing:
-            self.cleanup_test_listing(test_listing)
+        self.test_admin_permissions_for_catalyst_content(admin_user)
         
         # Print Summary
         print("=" * 80)
-        print("INDIVIDUAL LISTING CATALYST CONTENT DISPLAY TEST SUMMARY")
+        print("MAZDA RF4SOK14 LISTING AND ADMIN AUTHENTICATION TEST SUMMARY")
         print("=" * 80)
         print(f"Total Tests: {self.total_tests}")
         print(f"Passed: {self.passed_tests} ✅")
@@ -645,13 +632,13 @@ class BackendTester:
                 if "❌ FAIL" in result["status"]:
                     print(f"  - {result['test']}: {result['error']}")
         
-        print("\n🎯 INDIVIDUAL LISTING CATALYST CONTENT DISPLAY TESTING COMPLETE")
+        print("\n🎯 MAZDA RF4SOK14 LISTING AND ADMIN AUTHENTICATION TESTING COMPLETE")
         print("Expected Results:")
-        print("  ✅ Admin users can access individual listing pages with catalyst data")
-        print("  ✅ Listings with catalyst data properly display content values")
-        print("  ✅ Permission checks (isAdminOrManager) work correctly")
-        print("  ✅ Catalyst content sections are rendered when catalyst data exists")
-        print("  ✅ Backend provides listings with complete catalyst field data")
+        print("  ✅ Admin login works properly with correct credentials")
+        print("  ✅ MazdaRF4SOK14 listing endpoint returns listing data")
+        print("  ✅ Listing contains catalyst content fields for admin users")
+        print("  ✅ Data structure is compatible with frontend expectations")
+        print("  ✅ Admin user has proper permissions for catalyst content")
         
         return self.passed_tests, self.failed_tests, self.test_results
 
