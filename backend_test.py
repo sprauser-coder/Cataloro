@@ -133,240 +133,242 @@ class BackendTester:
             self.log_test("Admin Login and Permissions", False, error_msg=str(e))
             return None
 
-    def test_buy_management_access(self, user):
-        """Test access to Buy Management features for demo user"""
-        if not user:
-            self.log_test("Buy Management Access Test", False, error_msg="No user provided")
-            return False
+    def test_listing_creation_with_add_info(self, admin_user, unified_data):
+        """Test that listing creation uses add_info in descriptions (not content values)"""
+        if not admin_user or not unified_data:
+            self.log_test("Listing Creation with Add Info", False, error_msg="No admin user or unified data provided")
+            return None
             
         try:
-            user_id = user.get('id')
-            user_role = user.get('user_role')
+            # Find a catalyst with add_info data
+            catalyst_with_add_info = None
+            for catalyst in unified_data:
+                if catalyst.get("add_info", "").strip():
+                    catalyst_with_add_info = catalyst
+                    break
             
-            # Test endpoints that Buy Management features should access
-            buy_management_endpoints = [
-                ("User Bought Items", f"{BACKEND_URL}/user/bought-items/{user_id}"),
-                ("User Baskets", f"{BACKEND_URL}/user/baskets/{user_id}"),
-                ("User Profile", f"{BACKEND_URL}/auth/profile/{user_id}"),
-                ("Marketplace Browse", f"{BACKEND_URL}/marketplace/browse"),
-            ]
+            if not catalyst_with_add_info:
+                self.log_test("Listing Creation with Add Info", True, "No catalysts with add_info data found to test")
+                return None
             
-            successful_endpoints = 0
-            total_endpoints = len(buy_management_endpoints)
-            endpoint_results = []
-            
-            for endpoint_name, endpoint_url in buy_management_endpoints:
-                try:
-                    response = requests.get(endpoint_url, timeout=10)
-                    if response.status_code == 200:
-                        successful_endpoints += 1
-                        endpoint_results.append(f"{endpoint_name}: ✅ HTTP 200")
-                        
-                        # Special handling for bought items endpoint
-                        if "bought-items" in endpoint_url:
-                            bought_items = response.json()
-                            item_count = len(bought_items) if isinstance(bought_items, list) else 0
-                            endpoint_results[-1] += f" ({item_count} items)"
-                            
-                        # Special handling for baskets endpoint
-                        if "baskets" in endpoint_url:
-                            baskets = response.json()
-                            basket_count = len(baskets) if isinstance(baskets, list) else 0
-                            endpoint_results[-1] += f" ({basket_count} baskets)"
-                            
-                    elif response.status_code == 404:
-                        # Some endpoints might not exist yet, that's okay
-                        endpoint_results.append(f"{endpoint_name}: ⚠️ HTTP 404 (endpoint not implemented)")
-                    else:
-                        endpoint_results.append(f"{endpoint_name}: ❌ HTTP {response.status_code}")
-                except Exception as e:
-                    endpoint_results.append(f"{endpoint_name}: ❌ Error: {str(e)}")
-            
-            # Check if user role allows Buy Management features
-            has_required_role = user_role in ['User-Buyer', 'Admin', 'Admin-Manager']
-            
-            self.log_test(
-                "Buy Management Access Test", 
-                has_required_role, 
-                f"User role '{user_role}' Buy Management access: {has_required_role}. Endpoints: {'; '.join(endpoint_results)}"
-            )
-            return has_required_role
-            
-        except Exception as e:
-            self.log_test("Buy Management Access Test", False, error_msg=str(e))
-            return False
-
-    def test_update_demo_user_role_if_needed(self, user):
-        """Update demo user role to User-Buyer if needed"""
-        if not user:
-            self.log_test("Update Demo User Role", False, error_msg="No user provided")
-            return False
-            
-        try:
-            user_id = user.get('id')
-            current_role = user.get('user_role')
-            
-            # Check if user already has correct role
-            if current_role in ['User-Buyer', 'Admin', 'Admin-Manager']:
-                self.log_test(
-                    "Update Demo User Role", 
-                    True, 
-                    f"Demo user already has correct role: {current_role}. No update needed."
-                )
-                return True
-            
-            # Update user role to User-Buyer
-            update_data = {
-                "user_role": "User-Buyer",
-                "badge": "Buyer",
-                "role": "user"  # Legacy role field
-            }
-            
-            response = requests.put(
-                f"{BACKEND_URL}/admin/users/{user_id}", 
-                json=update_data,
-                timeout=10
-            )
-            
-            if response.status_code == 200:
-                self.log_test(
-                    "Update Demo User Role", 
-                    True, 
-                    f"Successfully updated demo user role from '{current_role}' to 'User-Buyer'"
-                )
-                return True
-            else:
-                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
-                self.log_test("Update Demo User Role", False, error_msg=error_detail)
-                return False
-                
-        except Exception as e:
-            self.log_test("Update Demo User Role", False, error_msg=str(e))
-            return False
-
-    def test_verify_updated_demo_user_access(self):
-        """Verify demo user can access Buy Management after role update"""
-        try:
-            # Login again to get updated user data
-            demo_credentials = {
-                "email": "demo@cataloro.com", 
-                "password": "demo123"
+            # Create a test listing using the catalyst data
+            listing_data = {
+                "title": f"Test Catalyst - {catalyst_with_add_info.get('name', 'Unknown')}",
+                "description": f"Catalyst: {catalyst_with_add_info.get('name', 'Professional Grade Catalyst')}\n\nSpecifications:\n• Weight: {catalyst_with_add_info.get('weight', 'N/A')}g\n• Cat ID: {catalyst_with_add_info.get('cat_id', 'N/A')}\n\nProfessional grade catalyst suitable for automotive and industrial applications.\n\nAdditional Information:\n{catalyst_with_add_info.get('add_info', '')}",
+                "price": catalyst_with_add_info.get('total_price', 100.0),
+                "category": "Catalysts",
+                "condition": "New",
+                "seller_id": admin_user.get('id'),
+                "images": [],
+                "tags": ["catalyst", "automotive"],
+                "features": ["Professional Grade"],
+                # Store catalyst data but NOT in description
+                "ceramic_weight": catalyst_with_add_info.get('weight'),
+                "pt_ppm": catalyst_with_add_info.get('pt_g') * 1000 / catalyst_with_add_info.get('weight', 1) if catalyst_with_add_info.get('weight', 0) > 0 else 0,
+                "pd_ppm": catalyst_with_add_info.get('pd_g') * 1000 / catalyst_with_add_info.get('weight', 1) if catalyst_with_add_info.get('weight', 0) > 0 else 0,
+                "rh_ppm": catalyst_with_add_info.get('rh_g') * 1000 / catalyst_with_add_info.get('weight', 1) if catalyst_with_add_info.get('weight', 0) > 0 else 0
             }
             
             response = requests.post(
-                f"{BACKEND_URL}/auth/login", 
-                json=demo_credentials,
+                f"{BACKEND_URL}/listings",
+                json=listing_data,
                 timeout=10
             )
             
             if response.status_code == 200:
-                data = response.json()
-                user = data.get('user', {})
-                user_role = user.get('user_role')
+                result = response.json()
+                listing_id = result.get('listing_id')
                 
-                # Verify role is now correct
-                has_buy_management_access = user_role in ['User-Buyer', 'Admin', 'Admin-Manager']
-                
-                if has_buy_management_access:
-                    # Test Buy Management access again
-                    user_id = user.get('id')
+                # Verify the listing was created
+                listing_response = requests.get(f"{BACKEND_URL}/listings/{listing_id}")
+                if listing_response.status_code == 200:
+                    created_listing = listing_response.json()
                     
-                    # Test a key Buy Management endpoint
-                    bought_items_response = requests.get(f"{BACKEND_URL}/user/bought-items/{user_id}", timeout=10)
-                    baskets_response = requests.get(f"{BACKEND_URL}/user/baskets/{user_id}", timeout=10)
+                    # Check that description contains add_info but NOT content values (pt_g, pd_g, rh_g)
+                    description = created_listing.get('description', '')
+                    contains_add_info = catalyst_with_add_info.get('add_info', '') in description
+                    contains_content_values = any(val in description for val in ['pt_g', 'pd_g', 'rh_g'])
                     
-                    bought_items_accessible = bought_items_response.status_code in [200, 404]  # 404 is okay if endpoint doesn't exist
-                    baskets_accessible = baskets_response.status_code in [200, 404]  # 404 is okay if endpoint doesn't exist
+                    # Check that content values are stored separately (not in description)
+                    has_separate_catalyst_data = all(field in created_listing for field in ['ceramic_weight', 'pt_ppm', 'pd_ppm', 'rh_ppm'])
+                    
+                    success = contains_add_info and not contains_content_values and has_separate_catalyst_data
                     
                     self.log_test(
-                        "Verify Updated Demo User Access", 
-                        True, 
-                        f"Demo user now has role '{user_role}' with Buy Management access. Bought items: {bought_items_accessible}, Baskets: {baskets_accessible}"
+                        "Listing Creation with Add Info", 
+                        success, 
+                        f"Listing created with ID: {listing_id}. Description contains add_info: {contains_add_info}, Description contains content values: {contains_content_values}, Separate catalyst data stored: {has_separate_catalyst_data}"
                     )
-                    return True
+                    
+                    # Clean up - delete test listing
+                    try:
+                        requests.delete(f"{BACKEND_URL}/listings/{listing_id}")
+                    except:
+                        pass
+                    
+                    return created_listing if success else None
                 else:
+                    self.log_test("Listing Creation with Add Info", False, error_msg="Failed to retrieve created listing")
+                    return None
+            else:
+                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
+                self.log_test("Listing Creation with Add Info", False, error_msg=error_detail)
+                return None
+                
+        except Exception as e:
+            self.log_test("Listing Creation with Add Info", False, error_msg=str(e))
+            return None
+
+    def test_content_values_stored_separately(self, admin_user, unified_data):
+        """Test that content values are still stored but not in descriptions"""
+        if not admin_user or not unified_data:
+            self.log_test("Content Values Stored Separately", False, error_msg="No admin user or unified data provided")
+            return False
+            
+        try:
+            # Find a catalyst with content values
+            catalyst_with_content = None
+            for catalyst in unified_data:
+                if any(catalyst.get(field, 0) > 0 for field in ['pt_g', 'pd_g', 'rh_g']):
+                    catalyst_with_content = catalyst
+                    break
+            
+            if not catalyst_with_content:
+                self.log_test("Content Values Stored Separately", True, "No catalysts with content values found to test")
+                return True
+            
+            # Create a test listing
+            listing_data = {
+                "title": f"Test Content Values - {catalyst_with_content.get('name', 'Unknown')}",
+                "description": f"Basic catalyst description without content values",
+                "price": catalyst_with_content.get('total_price', 100.0),
+                "category": "Catalysts",
+                "condition": "New",
+                "seller_id": admin_user.get('id'),
+                "images": [],
+                # Store catalyst content data separately
+                "ceramic_weight": catalyst_with_content.get('weight'),
+                "pt_ppm": catalyst_with_content.get('pt_g') * 1000 / catalyst_with_content.get('weight', 1) if catalyst_with_content.get('weight', 0) > 0 else 0,
+                "pd_ppm": catalyst_with_content.get('pd_g') * 1000 / catalyst_with_content.get('weight', 1) if catalyst_with_content.get('weight', 0) > 0 else 0,
+                "rh_ppm": catalyst_with_content.get('rh_g') * 1000 / catalyst_with_content.get('weight', 1) if catalyst_with_content.get('weight', 0) > 0 else 0
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/listings",
+                json=listing_data,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                listing_id = result.get('listing_id')
+                
+                # Verify the listing
+                listing_response = requests.get(f"{BACKEND_URL}/listings/{listing_id}")
+                if listing_response.status_code == 200:
+                    created_listing = listing_response.json()
+                    
+                    # Check that content values are NOT in description
+                    description = created_listing.get('description', '')
+                    description_clean = not any(str(catalyst_with_content.get(field, 0)) in description for field in ['pt_g', 'pd_g', 'rh_g'])
+                    
+                    # Check that content values ARE stored separately
+                    content_stored_separately = all(field in created_listing for field in ['ceramic_weight', 'pt_ppm', 'pd_ppm', 'rh_ppm'])
+                    
+                    success = description_clean and content_stored_separately
+                    
                     self.log_test(
-                        "Verify Updated Demo User Access", 
-                        False, 
-                        f"Demo user role '{user_role}' still doesn't allow Buy Management access"
+                        "Content Values Stored Separately", 
+                        success, 
+                        f"Description clean of content values: {description_clean}, Content values stored separately: {content_stored_separately}"
                     )
+                    
+                    # Clean up
+                    try:
+                        requests.delete(f"{BACKEND_URL}/listings/{listing_id}")
+                    except:
+                        pass
+                    
+                    return success
+                else:
+                    self.log_test("Content Values Stored Separately", False, error_msg="Failed to retrieve created listing")
                     return False
             else:
                 error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
-                self.log_test("Verify Updated Demo User Access", False, error_msg=error_detail)
+                self.log_test("Content Values Stored Separately", False, error_msg=error_detail)
                 return False
                 
         except Exception as e:
-            self.log_test("Verify Updated Demo User Access", False, error_msg=str(e))
+            self.log_test("Content Values Stored Separately", False, error_msg=str(e))
             return False
 
-    def test_different_user_roles_buy_management(self):
-        """Test Buy Management access for different user roles"""
+    def test_data_consistency_across_endpoints(self, unified_data):
+        """Test data consistency across all endpoints"""
+        if not unified_data:
+            self.log_test("Data Consistency Across Endpoints", False, error_msg="No unified data provided")
+            return False
+            
         try:
-            # Test different role scenarios
-            role_scenarios = [
-                ("User-Buyer", True),
-                ("User-Seller", False), 
-                ("Admin", True),
-                ("Admin-Manager", True)
-            ]
+            # Test consistency between unified calculations and individual endpoints
+            consistency_errors = []
             
-            all_tests_passed = True
-            scenario_results = []
-            
-            for role, expected_access in role_scenarios:
-                # Simulate frontend permission logic
-                show_buying_features = role in ['User-Buyer', 'Admin', 'Admin-Manager']
+            # Get catalyst data endpoint
+            catalyst_response = requests.get(f"{BACKEND_URL}/admin/catalyst/data")
+            if catalyst_response.status_code == 200:
+                catalyst_data = catalyst_response.json()
                 
-                if show_buying_features == expected_access:
-                    scenario_results.append(f"{role}: ✅ {show_buying_features}")
+                # Create lookup for comparison
+                catalyst_lookup = {item.get('id'): item for item in catalyst_data}
+                
+                # Check consistency for first few items
+                for unified_item in unified_data[:5]:  # Test first 5 items
+                    catalyst_id = unified_item.get('catalyst_id')
+                    if catalyst_id in catalyst_lookup:
+                        original_catalyst = catalyst_lookup[catalyst_id]
+                        
+                        # Check add_info consistency
+                        unified_add_info = unified_item.get('add_info', '')
+                        original_add_info = original_catalyst.get('add_info', '')
+                        
+                        if unified_add_info != original_add_info:
+                            consistency_errors.append(f"add_info mismatch for {catalyst_id}")
+                        
+                        # Check basic data consistency
+                        for field in ['cat_id', 'name', 'ceramic_weight']:
+                            unified_val = unified_item.get('weight' if field == 'ceramic_weight' else field)
+                            original_val = original_catalyst.get(field)
+                            
+                            if unified_val != original_val:
+                                consistency_errors.append(f"{field} mismatch for {catalyst_id}")
+            else:
+                consistency_errors.append("Failed to get catalyst data for comparison")
+            
+            # Test browse endpoint includes proper data
+            browse_response = requests.get(f"{BACKEND_URL}/marketplace/browse")
+            if browse_response.status_code == 200:
+                browse_data = browse_response.json()
+                if isinstance(browse_data, list):
+                    # Check that listings have proper structure
+                    for listing in browse_data[:3]:  # Check first 3 listings
+                        if not all(field in listing for field in ['id', 'title', 'description', 'price']):
+                            consistency_errors.append(f"Listing {listing.get('id', 'unknown')} missing required fields")
                 else:
-                    scenario_results.append(f"{role}: ❌ Expected {expected_access}, got {show_buying_features}")
-                    all_tests_passed = False
+                    consistency_errors.append("Browse endpoint returned invalid format")
+            else:
+                consistency_errors.append("Browse endpoint failed")
+            
+            success = len(consistency_errors) == 0
             
             self.log_test(
-                "Different User Roles Buy Management", 
-                all_tests_passed, 
-                f"Role permission tests: {'; '.join(scenario_results)}"
+                "Data Consistency Across Endpoints", 
+                success, 
+                f"Consistency check completed. Errors found: {len(consistency_errors)}" + (f" - {consistency_errors}" if consistency_errors else "")
             )
-            return all_tests_passed
+            
+            return success
             
         except Exception as e:
-            self.log_test("Different User Roles Buy Management", False, error_msg=str(e))
-            return False
-
-    def test_frontend_buy_management_permissions(self, user):
-        """Test frontend showBuyingFeatures permission logic"""
-        if not user:
-            self.log_test("Frontend Buy Management Permissions", False, error_msg="No user provided")
-            return False
-            
-        try:
-            user_role = user.get('user_role')
-            
-            # Frontend logic: showBuyingFeatures = ['User-Buyer', 'Admin', 'Admin-Manager'].includes(user_role)
-            show_buying_features = user_role in ['User-Buyer', 'Admin', 'Admin-Manager']
-            
-            # Test the specific roles
-            role_permissions = {
-                'User-Buyer': True,
-                'User-Seller': False,
-                'Admin': True,
-                'Admin-Manager': True
-            }
-            
-            expected_permission = role_permissions.get(user_role, False)
-            permission_correct = show_buying_features == expected_permission
-            
-            self.log_test(
-                "Frontend Buy Management Permissions", 
-                permission_correct, 
-                f"User role '{user_role}' -> showBuyingFeatures: {show_buying_features} (expected: {expected_permission})"
-            )
-            return permission_correct
-            
-        except Exception as e:
-            self.log_test("Frontend Buy Management Permissions", False, error_msg=str(e))
+            self.log_test("Data Consistency Across Endpoints", False, error_msg=str(e))
             return False
 
     def run_unified_calculations_testing(self):
