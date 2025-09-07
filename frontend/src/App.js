@@ -32,8 +32,8 @@ import InfoPage from './features/info/InfoPage';
 import TenderManagementPage from './features/marketplace/TenderManagementPage';
 import BuyManagementPage from './features/marketplace/BuyManagementPage';
 import DashboardHub from './components/admin/DashboardHub';
-import Phase5Dashboard from './components/phase5/Phase5Dashboard';
-import Phase6Dashboard from './components/phase6/Phase6Dashboard';
+import UnifiedAnalyticsDashboard from './components/analytics/UnifiedAnalyticsDashboard';
+import UnifiedEnterpriseDashboard from './components/enterprise/UnifiedEnterpriseDashboard';
 
 // Import centralized configuration
 import { APP_ROUTES } from './config/directions';
