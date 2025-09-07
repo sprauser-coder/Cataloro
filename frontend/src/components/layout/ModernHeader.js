@@ -305,10 +305,10 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       loadNotifications();
       requestNotificationPermission();
       
-      // Set up real-time notification polling every 30 seconds
+      // Set up real-time notification polling every 2 minutes (reduced from 30 seconds to prevent rate limiting)
       const notificationInterval = setInterval(() => {
         loadNotifications(true);
-      }, 30000);
+      }, 120000); // 2 minutes instead of 30 seconds
       
       // Listen for custom events when messages are marked as read
       const handleMessagesMarkedAsRead = (event) => {
