@@ -730,6 +730,44 @@ if seller_id:
 
 **BUY MANAGEMENT IMPROVEMENTS FINAL STATUS:** ✅ PERFECTLY IMPLEMENTED - All Buy Management improvements requested in the review are working flawlessly. The critical calculation fix ensures catalyst calculations no longer show (0,0,0) for Pt g, Pd g, Rh g when catalyst data exists. The seller name fix eliminates 'Unknown' seller names by using direct seller_id lookup. Data integrity is maintained with catalyst fields properly copied from listings to bought items. Renumeration values are correctly applied from price settings. Basket functionality works perfectly with proper catalyst data. All requirements from the review request have been successfully verified and are working perfectly. items now show actual seller usernames (sash_admin) instead of "Unknown". The fix includes proper database query fallback mechanism and works for both tender-based and order-based bought items. The issue where listings were deleted/inactive after purchase no longer affects seller name display. All requirements from the review request have been successfully verified and are working perfectly.
 
+**Test Date:** 2025-01-29 07:40:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ❌ BASKET CALCULATION (0,0,0) ROOT CAUSE IDENTIFIED - CRITICAL DATA FLOW ISSUE CONFIRMED
+
+#### Basket Calculation (0,0,0) Investigation Results:
+**COMPREHENSIVE BASKET CALCULATION (0,0,0) INVESTIGATION:** ❌ CRITICAL ISSUE CONFIRMED - Executed comprehensive investigation of basket calculations showing (0,0,0) despite fix attempts as requested in review. Root cause successfully identified with detailed analysis addressing all 5 specific investigation points (5/5 investigation areas completed, 100% coverage).
+
+**1. Original Listings Catalyst Data Check** ✅ LISTINGS HAVE CATALYST DATA - Found 9/21 listings with proper catalyst data: Successfully verified that original listings DO have catalyst data stored correctly ✅, Examples found: Test Catalyst Converter Ford F150 (Weight=139.7, PT=1394.0, PD=959.0, RH=0.0), MercedesKT0137 (Weight=1.48, PT=0, PD=4981, RH=469) ✅, Total 21 listings with 9 having complete catalyst fields ✅, Listings are NOT the source of the (0,0,0) problem ✅.
+
+**2. Price Settings Renumeration Check** ✅ PRICE SETTINGS HAVE PROPER VALUES - Renumeration values correctly configured: Successfully verified price settings have proper renumeration values ✅, PT renumeration: 0.98, PD renumeration: 0.98, RH renumeration: 0.9 ✅, All renumeration values are non-zero and properly configured ✅, Price settings are NOT the source of the (0,0,0) problem ✅.
+
+**3. Basket Retrieval Debug Analysis** ❌ BASKET ITEMS MISSING CATALYST DATA - GET /api/user/baskets/{user_id} shows zero catalyst values: Found 9 total baskets with 3 containing items ✅, ALL basket items have zero catalyst values: weight=0.0, pt_ppm=0.0, pd_ppm=0.0, rh_ppm=0.0 ❌, Renumeration values are present (PT=0.98, PD=0.98, RH=0.9) but catalyst data is missing ❌, Manual calculations confirm (0,0,0) results due to zero input values ❌.
+
+**4. Manual Calculation Verification** ❌ CALCULATIONS PRODUCE (0,0,0) DUE TO ZERO INPUT DATA - Formula working correctly but input data missing: Formula verified: weight × ppm ÷ 1000 × renumeration ✅, Example calculation: 0.0 × 0.0 ÷ 1000 × 0.98 = 0.0000 ❌, All 3 basket items produce (0,0,0) results ❌, Calculation logic is correct but input catalyst data is all zeros ❌.
+
+**5. Bought Items vs Baskets Comparison** ❌ CRITICAL DATA INCONSISTENCY FOUND - Basket items missing catalyst data from original listings: Found 3 bought items with 1 having proper catalyst data (Weight=139.7, PT=1394.0, PD=959.0, RH=0.0) ✅, Basket items for same listings have zero catalyst values ❌, Original listings referenced by basket items NOT FOUND in active listings ❌, Basket items reference deleted/inactive listings: 5dba72f1-40e7-4508-873f-521e61afeb6b, 24ff350c-c5a4-455b-9349-447e9883c7cc, 6b08eee3-d8d8-4547-b1e6-a22cbe9e6d05 ❌.
+
+**ROOT CAUSE IDENTIFIED:**
+❌ **CRITICAL ISSUE**: Basket items are assigned from listings that are later deleted/made inactive, losing catalyst data reference
+❌ **DATA FLOW PROBLEM**: When items are assigned to baskets, catalyst data is not copied from listings - only listing ID is stored
+❌ **MISSING LISTINGS**: Original listings for basket items no longer exist in active listings (deleted after assignment)
+❌ **CALCULATION FAILURE**: Frontend calculation (weight × ppm ÷ 1000 × renumeration) results in (0,0,0) because all catalyst values are 0.0
+
+**TECHNICAL VERIFICATION:**
+- Original Listings: ✅ DO have catalyst data (9/21 listings with complete catalyst fields)
+- Price Settings: ✅ DO have proper renumeration values (PT=0.98, PD=0.98, RH=0.9)
+- Basket Items: ❌ ALL have zero catalyst values (weight=0.0, pt_ppm=0.0, pd_ppm=0.0, rh_ppm=0.0)
+- Original Listing References: ❌ Basket items reference listings that no longer exist in active listings
+- Data Preservation: ❌ Catalyst data NOT copied from listings to basket items during assignment
+
+**SPECIFIC EXAMPLES WITH ACTUAL VALUES:**
+- Basket Item: "Test Item for Buy Management" (Listing ID: 5dba72f1-40e7-4508-873f-521e61afeb6b)
+  - Basket Values: Weight=0.0, PT=0.0, PD=0.0, RH=0.0, Renumeration PT=0.98
+  - Calculation: (0.0 × 0.0 ÷ 1000) × 0.98 = 0.0000
+  - Original Listing: NOT FOUND in active listings (deleted/inactive)
+
+**BASKET CALCULATION (0,0,0) INVESTIGATION STATUS:** ❌ CRITICAL DATA FLOW ISSUE - The basket calculations show (0,0,0) because basket items do not preserve catalyst data from their original listings. When items are assigned to baskets, only the listing ID is stored, but the catalyst fields (ceramic_weight, pt_ppm, pd_ppm, rh_ppm) are not copied. When the original listings are later deleted or made inactive, the basket items lose access to catalyst data, resulting in zero values for all calculations. The fix requires modifying the basket assignment process to copy catalyst data directly from listings to basket items at the time of assignment, ensuring data persistence even if original listings are removed.
+
 **Test Date:** 2025-01-29 22:45:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ FORD LISTING BASKET CALCULATION DEBUG COMPLETED - ROOT CAUSE IDENTIFIED AND RESOLVED
