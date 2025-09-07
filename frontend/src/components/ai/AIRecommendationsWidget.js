@@ -40,10 +40,10 @@ const AIRecommendationsWidget = ({
     try {
       setLoading(true);
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
-      let endpoint = `/v2/ai/recommendations/${userId}?limit=${limit}`;
+      let endpoint = `/api/v2/ai/recommendations/${userId}?limit=${limit}`;
       
       if (category) {
-        endpoint = `/v2/ai/category/${userId}/${category}?limit=${limit}`;
+        endpoint = `/api/v2/ai/category/${userId}/${category}?limit=${limit}`;
       }
 
       const response = await fetch(`${backendUrl}${endpoint}`);
