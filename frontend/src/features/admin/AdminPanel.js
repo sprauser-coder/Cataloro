@@ -479,7 +479,7 @@ function AdminPanel() {
       </div>
 
       {/* Main Content Area - positioned below header and beside sidebar */}
-      <div className="ml-64 pt-16 min-h-screen">
+      <div className="ml-64 pt-20 min-h-screen">
         {/* Top Header Bar */}
         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
           <div className="flex items-center justify-between">
