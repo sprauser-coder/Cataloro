@@ -381,6 +381,10 @@ async def get_performance_metrics():
                 "query_performance": "Optimized with indexes",
                 "memory_usage": "Low-memory operations",
                 "concurrent_users": "High throughput ready"
+            },
+            "search": {
+                "elasticsearch_enabled": search_service.connected,
+                "status": "enabled" if search_service.connected else "fallback_mode"
             }
         }
         
