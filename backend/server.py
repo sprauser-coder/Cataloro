@@ -2301,6 +2301,10 @@ async def generate_custom_report(report_config: dict):
         logger.error(f"Custom report generation failed: {e}")
         raise HTTPException(status_code=500, detail=f"Custom report failed: {str(e)}")
 
+# Include Phase 5 endpoints
+from phase5_endpoints import phase5_router
+app.include_router(phase5_router)
+
 @app.post("/api/admin/users/bulk-action")
 async def bulk_user_action(action_data: dict):
     """Bulk operations on users"""
