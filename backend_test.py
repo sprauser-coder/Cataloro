@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Cataloro Backend Testing Suite - Unified Calculations Endpoint Testing
-Testing the new /api/admin/catalyst/unified-calculations endpoint
+Cataloro Backend Testing Suite - Updated Description Functionality and Unified Calculations
+Testing the updated description functionality and unified calculations endpoint with add_info field
 """
 
 import requests
