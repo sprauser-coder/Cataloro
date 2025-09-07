@@ -311,17 +311,17 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       }, 30000);
       
       // Listen for custom events when messages are marked as read
-      const [sessionReadMessageIds, setSessionReadMessageIds] = useState(new Set());
-      
       const handleMessagesMarkedAsRead = (event) => {
         console.log('📧 Messages marked as read event received');
         const messageIds = event.detail?.messageIds || [];
         const count = event.detail?.count || 0;
         
         // Update session read message tracking
-        const updatedSessionReadIds = new Set(sessionReadMessageIds);
-        messageIds.forEach(id => updatedSessionReadIds.add(id));
-        setSessionReadMessageIds(updatedSessionReadIds);
+        setSessionReadMessageIds(prev => {
+          const updated = new Set(prev);
+          messageIds.forEach(id => updated.add(id));
+          return updated;
+        });
         
         // Immediately reduce unread count by the number of messages marked as read
         setUnreadMessages(prev => Math.max(0, prev - count));
