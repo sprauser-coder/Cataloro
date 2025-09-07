@@ -399,6 +399,12 @@ async def get_performance_metrics():
             "search": {
                 "elasticsearch_enabled": search_service.connected,
                 "status": "enabled" if search_service.connected else "fallback_mode"
+            },
+            "analytics": {
+                "service_enabled": True,
+                "cache_duration": 300,
+                "forecasting_available": True,
+                "business_intelligence": "enabled"
             }
         }
         
