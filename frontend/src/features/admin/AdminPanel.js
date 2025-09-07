@@ -7903,6 +7903,7 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
       if (response.ok) {
         showToast('Price override set successfully', 'success');
         await fetchCalculations();
+        await fetchUnifiedCalculations();
         setShowOverrideModal(false);
       }
     } catch (error) {
