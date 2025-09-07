@@ -349,77 +349,39 @@ function MessagesPage() {
 
   const selectConversation = (conversation) => {
     console.log('🎯 selectConversation called for:', conversation.name);
-    console.log('🔍 Conversation data:', conversation);
     
     setSelectedConversation(conversation);
     // Sort messages with newest first (reverse chronological order)
     const sortedMessages = conversation.messages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     setConversationMessages(sortedMessages);
     
-    // Find unread messages in this conversation
-    const unreadMessages = conversation.messages.filter(msg => {
-      const isUnread = !msg.is_read;
-      const isNotFromCurrentUser = msg.sender_id !== user.id;
-      console.log(`📝 Message ${msg.id}: is_read=${msg.is_read}, sender_id=${msg.sender_id}, current_user=${user.id}, isUnread=${isUnread}, isNotFromCurrentUser=${isNotFromCurrentUser}`);
-      return isUnread && isNotFromCurrentUser;
-    });
+    // Immediately update conversation display to remove red badge
+    setConversations(prev => 
+      prev.map(conv => 
+        conv.id === conversation.id 
+          ? { ...conv, unreadCount: 0 }
+          : conv
+      )
+    );
     
-    console.log(`🔢 Found ${unreadMessages.length} unread messages:`, unreadMessages.map(m => m.id));
-    
-    if (unreadMessages.length > 0) {
-      console.log(`📖 Marking ${unreadMessages.length} messages as read in conversation with ${conversation.name}`);
+    // Update header immediately by reducing unread count
+    const previousUnreadCount = conversation.unreadCount || 0;
+    if (previousUnreadCount > 0) {
+      console.log(`📧 Immediately updating header - reducing count by ${previousUnreadCount}`);
       
-      // Track these messages as read in current session
-      const newSessionReadMessages = new Set(sessionReadMessages);
-      unreadMessages.forEach(msg => {
-        newSessionReadMessages.add(msg.id);
-      });
-      setSessionReadMessages(newSessionReadMessages);
-      
-      // Immediately update the conversation list to remove red badges
-      setConversations(prev => 
-        prev.map(conv => 
-          conv.id === conversation.id 
-            ? { 
-                ...conv, 
-                unreadCount: 0,
-                messages: conv.messages.map(msg => 
-                  unreadMessages.find(unread => unread.id === msg.id) 
-                    ? { ...msg, is_read: true }
-                    : msg
-                )
-              }
-            : conv
-        )
-      );
-      
-      // Update the conversation messages state to show as read
-      setConversationMessages(prev => 
-        prev.map(msg => 
-          unreadMessages.find(unread => unread.id === msg.id)
-            ? { ...msg, is_read: true }
-            : msg
-        )
-      );
-      
-      // Trigger header message count update immediately
-      console.log('🔔 Dispatching messagesMarkedAsRead event with details:', {
-        messageIds: unreadMessages.map(msg => msg.id),
-        count: unreadMessages.length,
-        conversationName: conversation.name
-      });
-      
+      // Dispatch event to update header
       window.dispatchEvent(new CustomEvent('messagesMarkedAsRead', {
         detail: { 
-          messageIds: unreadMessages.map(msg => msg.id),
-          count: unreadMessages.length 
+          count: previousUnreadCount
         }
       }));
       
-      // Mark messages as read on server (async)
-      unreadMessages.forEach(msg => handleMarkAsRead(msg.id));
-    } else {
-      console.log('ℹ️ No unread messages found in this conversation');
+      // Mark messages as read on server (async, in background)
+      const unreadMessages = conversation.messages.filter(msg => !msg.is_read && msg.sender_id !== user.id);
+      unreadMessages.forEach(msg => {
+        console.log(`📝 Marking message ${msg.id} as read on server`);
+        handleMarkAsRead(msg.id);
+      });
     }
   };
 
