@@ -380,7 +380,8 @@ class BackendTester:
                     f"Basket ID: {basket_id}, Assigned Item: {bought_item.get('title')}"
                 )
                 
-                return basket
+                # Return basket with correct ID for further testing
+                return {"id": basket_id, "name": basket_data["name"]}
             else:
                 error_detail = assign_response.json().get('detail', 'Unknown error') if assign_response.content else f"HTTP {assign_response.status_code}"
                 self.log_test("Create Basket and Assign Item", False, error_msg=f"Item assignment failed: {error_detail}")
