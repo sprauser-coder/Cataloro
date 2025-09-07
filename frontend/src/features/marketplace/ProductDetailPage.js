@@ -774,25 +774,30 @@ function CatalystCalculationsSection({ weight, ptPpm, pdPpm, rhPpm, ptG, pdG, rh
         </span>
       </div>
       
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-green-100 dark:border-green-800">
+          <div className="text-xs text-gray-600 dark:text-gray-400 uppercase font-medium mb-1">Weight</div>
+          <div className="text-lg font-bold text-gray-900 dark:text-white">{weight || 0}g</div>
+        </div>
+        
         <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-green-100 dark:border-green-800">
           <div className="text-xs text-blue-600 dark:text-blue-400 uppercase font-medium mb-1">Pt g</div>
-          <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{(calculatedPtG || 0).toFixed(4)}</div>
+          <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{(calculatedPtG || 0).toFixed(4)}</div>
         </div>
         
         <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-green-100 dark:border-green-800">
           <div className="text-xs text-green-600 dark:text-green-400 uppercase font-medium mb-1">Pd g</div>
-          <div className="text-xl font-bold text-green-600 dark:text-green-400">{(calculatedPdG || 0).toFixed(4)}</div>
+          <div className="text-lg font-bold text-green-600 dark:text-green-400">{(calculatedPdG || 0).toFixed(4)}</div>
         </div>
         
         <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-green-100 dark:border-green-800">
           <div className="text-xs text-purple-600 dark:text-purple-400 uppercase font-medium mb-1">Rh g</div>
-          <div className="text-xl font-bold text-purple-600 dark:text-purple-400">{(calculatedRhG || 0).toFixed(4)}</div>
+          <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{(calculatedRhG || 0).toFixed(4)}</div>
         </div>
       </div>
       
-      <div className="mt-4 text-xs text-green-600 dark:text-green-400">
-        <Database className="w-4 h-4 inline mr-1" />
+      <div className="mt-4 text-xs text-green-600 dark:text-green-400 flex items-center">
+        <Database className="w-4 h-4 mr-1" />
         {ptG !== undefined ? 'Values from unified catalyst calculations' : 'Calculated using: Weight × ppm ÷ 1000 × Renumeration Factor'}
       </div>
     </div>
