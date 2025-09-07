@@ -215,7 +215,7 @@ class UnifiedAnalyticsService:
                     "total_revenue": round(total_revenue, 2),
                     "total_transactions": transaction_count,
                     "avg_transaction_value": round(avg_transaction_value, 2),
-                    "conversion_rate": self._calculate_conversion_rate()
+                    "conversion_rate": await self._calculate_conversion_rate()
                 },
                 "revenue_sources": {
                     "tenders": len(accepted_tenders),
