@@ -7749,6 +7749,7 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
     fetchCatalystData();
     fetchPriceSettings();
     fetchCalculations();
+    fetchUnifiedCalculations();
   }, []);
 
   const fetchCatalystData = async () => {
