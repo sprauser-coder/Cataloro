@@ -37,6 +37,11 @@ function CreateListingPage() {
   // Safety check for permissions
   const isAdminOrManager = permissions?.ui?.showAdminPanelLink || false;
   
+  // Debug permissions
+  console.log('CreateListingPage - permissions:', permissions);
+  console.log('CreateListingPage - isAdminOrManager:', isAdminOrManager);
+  console.log('CreateListingPage - selectedCatalyst:', selectedCatalyst);
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [images, setImages] = useState([]);
