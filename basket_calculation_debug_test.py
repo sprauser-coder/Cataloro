@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Cataloro Backend Testing Suite - Detailed Basket Calculation Debug
-Deep dive into basket calculation issues and catalyst data flow
+Cataloro Basket Calculation Investigation - Review Request Analysis
+Comprehensive investigation of basket calculations showing (0,0,0) issue
+Addressing specific points from review request
 """
 
 import requests
