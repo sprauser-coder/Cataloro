@@ -502,6 +502,16 @@ function ProductDetailPage() {
               </div>
             )}
 
+            {/* Catalyst Calculations - Pt g, Pd g, Rh g for Admin/Admin-Manager */}
+            {(permissions.ui.showAdminPanelLink) && (product.ceramic_weight || product.pt_ppm || product.pd_ppm || product.rh_ppm) && (
+              <CatalystCalculationsSection 
+                weight={product.ceramic_weight}
+                ptPpm={product.pt_ppm}
+                pdPpm={product.pd_ppm}
+                rhPpm={product.rh_ppm}
+              />
+            )}
+
             {/* Category */}
             <div>
               <span className="inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-sm px-3 py-1 rounded-full font-medium">
