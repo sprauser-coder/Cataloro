@@ -1,5 +1,47 @@
 **Test Date:** 2025-09-07 14:10:00 UTC  
 **Test Agent:** development  
+**Test Status:** ✅ INVENTORY CALCULATION FIX IMPLEMENTED - CATALYST DATA PRESERVATION COMPLETED
+
+#### Inventory Calculation Fix Implementation Results:
+**INVENTORY CALCULATION FIX IMPLEMENTED:** ✅ IMPLEMENTATION COMPLETED - Successfully implemented comprehensive catalyst data preservation in the inventory/basket calculation system to resolve the (0,0,0) calculation issue reported by user.
+
+**1. Root Cause Analysis:** ✅ ISSUE IDENTIFIED - The basket calculations showed (0,0,0) because catalyst data was not being preserved at purchase time. When items were assigned to baskets, the system tried to look up original listings that may have been modified or deleted.
+
+**2. Purchase Data Preservation:** ✅ FULLY IMPLEMENTED - Modified both tender acceptance and order approval endpoints to preserve catalyst data at purchase time:
+   - **Tender Acceptance**: Updated `/api/tenders/{tender_id}/accept` to preserve ceramic_weight, pt_ppm, pd_ppm, rh_ppm from original listing
+   - **Order Approval**: Updated `/api/orders/{order_id}/approve` to preserve catalyst data from original listing
+   - **Title Preservation**: Added listing_title preservation for better display when original listing is unavailable
+
+**3. Assignment Logic Enhancement:** ✅ CORRECTLY IMPLEMENTED - Enhanced the basket assignment endpoint to prioritize preserved catalyst data:
+   - **Primary Source**: Uses catalyst data preserved in tender/order records at purchase time
+   - **Secondary Source**: Falls back to assignment record preserved data
+   - **Tertiary Source**: Falls back to original listing data if still available
+   - **Data Validation**: Added logging to track catalyst data sources and identify zero-value issues
+
+**4. Basket Retrieval Optimization:** ✅ COMPREHENSIVE UPDATE - Updated basket retrieval logic to use preserved catalyst data with proper fallback hierarchy:
+   - **Tender Items**: Prioritizes tender.ceramic_weight → preserved_catalyst.weight → listing.ceramic_weight
+   - **Order Items**: Prioritizes order.ceramic_weight → preserved_catalyst.weight → listing.ceramic_weight
+   - **Data Integrity**: Ensures all catalyst fields (weight, pt_ppm, pd_ppm, rh_ppm) are properly populated
+   - **Title Handling**: Uses preserved listing titles when original listings are unavailable
+
+**5. Backend Testing Results:** ✅ COMPREHENSIVE VERIFICATION - Created and executed comprehensive backend test suite:
+   - **Data Flow Verification**: ✅ Complete flow works: listing → tender → purchase → basket → data preservation
+   - **Catalyst Data Preservation**: ✅ Raw data preserved correctly (Weight: 142.5g, PT: 1450.0ppm, PD: 980.0ppm, RH: 125.0ppm)
+   - **Formula Verification**: ✅ Mathematical formula produces expected values (PT: 185.9625g, PD: 125.6850g, RH: 16.0312g)
+   - **Assignment Process**: ✅ Items successfully assigned to baskets with preserved catalyst data
+   - **Authentication**: ✅ Admin login and permissions working correctly
+
+**TECHNICAL IMPLEMENTATION:**
+- Modified tender acceptance to preserve: ceramic_weight, pt_ppm, pd_ppm, rh_ppm, listing_title
+- Modified order approval to preserve: ceramic_weight, pt_ppm, pd_ppm, rh_ppm, listing_title  
+- Enhanced assignment endpoint with 3-tier catalyst data lookup hierarchy
+- Updated basket retrieval with comprehensive catalyst_data fallback logic
+- Added extensive logging for catalyst data source tracking and debugging
+
+**INVENTORY CALCULATION STATUS:** ✅ FULLY IMPLEMENTED - The inventory calculation fix has been comprehensively implemented. Catalyst data is now properly preserved at purchase time (tender acceptance/order approval) and flows correctly through the entire system: purchase → assignment → basket calculations. The backend testing confirms all components work correctly. New purchases will have proper catalyst data for accurate basket calculations. Existing basket items with zero values were created before the fix and will need to be re-purchased or manually updated to benefit from the new calculation system. The mathematical formula (ptG = weight * pt_ppm / 1000 * renumeration_pt) is working correctly with preserved data.
+
+**Test Date:** 2025-09-07 14:10:00 UTC  
+**Test Agent:** development  
 **Test Status:** ✅ CATALYST CONTENT BOX IMPLEMENTATION COMPLETED - BLUE BOX ADDED FOR ADMIN/MANAGER VISIBILITY
 
 #### Catalyst Content Box Implementation Results:
