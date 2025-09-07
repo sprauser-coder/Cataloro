@@ -424,6 +424,14 @@ async def get_performance_metrics():
                 "cache_duration": 300,
                 "forecasting_available": True,
                 "business_intelligence": "enabled"
+            },
+            "phase5_services": {
+                "websocket": "enabled" if websocket_service else "disabled",
+                "multicurrency": "enabled" if multicurrency_service else "disabled", 
+                "escrow": "enabled" if escrow_service else "disabled",
+                "ai_recommendations": "enabled" if ai_recommendation_service else "disabled",
+                "real_time_features": "operational",
+                "advanced_business": "operational"
             }
         }
         
