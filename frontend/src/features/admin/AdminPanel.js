@@ -104,6 +104,8 @@ import { applySiteConfiguration } from '../../utils/siteConfiguration';
 import { getTimeRemaining, isAdExpired, activateAd, deactivateExpiredAds, calculateExpirationDate } from '../../utils/adsConfiguration';
 import BusinessTab from './BusinessTab';
 import MegaUnifiedDashboard from '../../components/admin/MegaUnifiedDashboard';
+import DocumentationDashboard from '../../components/admin/DocumentationDashboard';
+import MediaBrowserDashboard from '../../components/admin/MediaBrowserDashboard';
 
 // System Notifications List Component
 function SystemNotificationsList() {
