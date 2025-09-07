@@ -1913,6 +1913,152 @@ async def sync_listings_to_elasticsearch():
         logger.error(f"Listing sync failed: {e}")
         raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
 
+@app.get("/api/admin/security/dashboard")
+async def get_security_dashboard():
+    """Get comprehensive security dashboard data (Admin only)"""
+    try:
+        security_metrics = security_service.get_security_metrics()
+        recent_audit_logs = security_service.get_recent_audit_logs(20)
+        active_alerts = security_service.get_active_security_alerts()
+        
+        return {
+            "security_metrics": security_metrics,
+            "recent_audit_logs": recent_audit_logs,
+            "active_security_alerts": active_alerts,
+            "security_recommendations": [
+                {
+                    "title": "Regular Password Updates",
+                    "description": "Encourage users to update passwords regularly",
+                    "priority": "medium"
+                },
+                {
+                    "title": "Monitor Failed Login Attempts",
+                    "description": "Review failed login patterns for suspicious activity",
+                    "priority": "high"
+                },
+                {
+                    "title": "Review Security Alerts",
+                    "description": "Regularly review and resolve security alerts",
+                    "priority": "high"
+                }
+            ]
+        }
+        
+    except Exception as e:
+        logger.error(f"Security dashboard failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get security dashboard: {str(e)}")
+
+@app.get("/api/admin/monitoring/dashboard")
+async def get_monitoring_dashboard():
+    """Get comprehensive monitoring dashboard data (Admin only)"""
+    try:
+        dashboard_data = monitoring_service.get_monitoring_dashboard_data()
+        
+        return {
+            **dashboard_data,
+            "monitoring_recommendations": [
+                {
+                    "title": "Monitor Response Times",
+                    "description": "Keep average response times under 1 second",
+                    "priority": "medium"
+                },
+                {
+                    "title": "Watch Error Rates",
+                    "description": "Investigate if error rates exceed 5%",
+                    "priority": "high"
+                },
+                {
+                    "title": "System Resource Usage",
+                    "description": "Monitor CPU, memory, and disk usage regularly",
+                    "priority": "high"
+                }
+            ]
+        }
+        
+    except Exception as e:
+        logger.error(f"Monitoring dashboard failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get monitoring dashboard: {str(e)}")
+
+@app.post("/api/admin/security/alerts/{alert_id}/resolve")
+async def resolve_security_alert(alert_id: str):
+    """Resolve a security alert (Admin only)"""
+    try:
+        success = security_service.resolve_security_alert(alert_id)
+        
+        if success:
+            return {"message": "Security alert resolved successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Security alert not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to resolve security alert {alert_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to resolve alert: {str(e)}")
+
+@app.post("/api/admin/monitoring/alerts/{alert_id}/resolve")  
+async def resolve_monitoring_alert(alert_id: str):
+    """Resolve a monitoring alert (Admin only)"""
+    try:
+        success = monitoring_service.resolve_alert(alert_id)
+        
+        if success:
+            return {"message": "Monitoring alert resolved successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Monitoring alert not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to resolve monitoring alert {alert_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to resolve alert: {str(e)}")
+
+@app.get("/api/admin/system/health")
+async def get_system_health():
+    """Get comprehensive system health check (Admin only)"""
+    try:
+        # Run health checks
+        health_results = await monitoring_service.run_health_checks()
+        
+        # Get security status
+        security_metrics = security_service.get_security_metrics()
+        
+        # Get cache and search status
+        cache_health = await cache_service.health_check()
+        search_health = await search_service.health_check()
+        
+        # Determine overall system status
+        all_healthy = (
+            health_results["overall_healthy"] and
+            security_metrics["security_status"] in ["secure", "medium_risk"] and
+            cache_health["status"] in ["healthy", "disabled"] and
+            search_health["status"] in ["healthy", "disabled"]
+        )
+        
+        return {
+            "overall_status": "healthy" if all_healthy else "degraded",
+            "timestamp": datetime.utcnow().isoformat(),
+            "components": {
+                "monitoring": health_results,
+                "security": {
+                    "status": security_metrics["security_status"],
+                    "details": security_metrics
+                },
+                "cache": cache_health,
+                "search": search_health
+            },
+            "recommendations": [
+                "Monitor system resources regularly",
+                "Review security alerts and audit logs",
+                "Keep software components updated",
+                "Maintain regular backups"
+            ]
+        }
+        
+    except Exception as e:
+        logger.error(f"System health check failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")
+
 @app.post("/api/admin/users/bulk-action")
 async def bulk_user_action(action_data: dict):
     """Bulk operations on users"""
