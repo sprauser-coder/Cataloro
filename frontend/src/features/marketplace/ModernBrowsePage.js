@@ -1491,8 +1491,8 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
             </div>
           )}
           
-          {/* Bidding Controls - Role-based access */}
-          {permissions?.browse?.canPlaceBid ? (
+          {/* Bidding Controls - Role-based access with owner check */}
+          {canPlaceBid ? (
             <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
               <div className="flex-1">
                 <input
@@ -1573,6 +1573,26 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
                   <span>Offer</span>
                 )}
               </button>
+            </div>
+          ) : isOwner ? (
+            /* Show owner message */
+            <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <span className="text-sm font-medium text-yellow-700 dark:text-yellow-300">
+                  Your Listing - Bidding Disabled
+                </span>
+              </div>
+              <p className="text-xs text-yellow-600 dark:text-yellow-400">
+                You cannot bid on your own listing.
+              </p>
+              {/* Show bid info for owners */}
+              <div className="mt-2 flex items-center justify-between text-sm">
+                <span className="text-yellow-600 dark:text-yellow-400">Current highest bid:</span>
+                <span className="font-semibold text-yellow-900 dark:text-yellow-100">
+                  €{(item.bid_info?.highest_bid || item.price || 0).toFixed(2)}
+                </span>
+              </div>
             </div>
           ) : (
             /* Show disabled bidding interface for sellers with explanation */
