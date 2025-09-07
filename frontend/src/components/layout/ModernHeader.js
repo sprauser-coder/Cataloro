@@ -310,11 +310,34 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       }, 30000);
       
       // Listen for custom events when messages are marked as read
-      const handleMessagesMarkedAsRead = () => {
-        loadNotifications(true); // Refresh message count
+      const [sessionReadMessageIds, setSessionReadMessageIds] = useState(new Set());
+      
+      const handleMessagesMarkedAsRead = (event) => {
+        console.log('📧 Messages marked as read event received');
+        const messageIds = event.detail?.messageIds || [];
+        const count = event.detail?.count || 0;
+        
+        // Update session read message tracking
+        const updatedSessionReadIds = new Set(sessionReadMessageIds);
+        messageIds.forEach(id => updatedSessionReadIds.add(id));
+        setSessionReadMessageIds(updatedSessionReadIds);
+        
+        // Immediately reduce unread count by the number of messages marked as read
+        setUnreadMessages(prev => Math.max(0, prev - count));
+        
+        // Also refresh from server
+        loadNotifications(true);
+      };
+      
+      const handleMessagesSessionReset = () => {
+        console.log('🔄 Messages session reset - restoring original unread counts');
+        setSessionReadMessageIds(new Set());
+        // Reload notifications to get true unread count from server
+        loadNotifications(true);
       };
       
       window.addEventListener('messagesMarkedAsRead', handleMessagesMarkedAsRead);
+      window.addEventListener('messagesSessionReset', handleMessagesSessionReset);
       
       return () => {
         clearInterval(notificationInterval);
