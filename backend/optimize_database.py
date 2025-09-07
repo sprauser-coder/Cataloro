@@ -110,12 +110,23 @@ async def create_database_indexes():
         await db.bought_items.create_index([("user_id", 1), ("purchased_at", -1)])  # Compound for user purchases
         print("✅ Bought items indexes created")
         
-        # User Favorites Collection Indexes
+        # User Favorites Collection Indexes  
         print("📊 Creating indexes for user_favorites collection...")
         await db.user_favorites.create_index("user_id")
         await db.user_favorites.create_index("listing_id")
-        await db.user_favorites.create_index([("user_id", 1), ("listing_id", 1)], unique=True)  # Compound unique
-        print("✅ User favorites indexes created")
+        
+        # Handle potential duplicate data before creating unique index
+        try:
+            # Clean up any null listing_id entries that might cause duplicates
+            await db.user_favorites.delete_many({"listing_id": None})
+            await db.user_favorites.delete_many({"listing_id": {"$exists": False}})
+            
+            # Create unique compound index
+            await db.user_favorites.create_index([("user_id", 1), ("listing_id", 1)], unique=True)
+            print("✅ User favorites indexes created (with cleanup)")
+        except Exception as e:
+            print(f"⚠️ User favorites unique index skipped due to data issues: {e}")
+            print("✅ User favorites basic indexes created")
         
         # Catalyst Database Collection Indexes (for admin features)
         print("📊 Creating indexes for catalyst_data collection...")
