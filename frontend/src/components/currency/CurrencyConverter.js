@@ -49,7 +49,7 @@ const CurrencyConverter = ({
 
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
-      const response = await fetch(`${backendUrl}/v2/currency/convert`, {
+      const response = await fetch(`${backendUrl}/api/v2/currency/convert`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
