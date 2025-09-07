@@ -84,8 +84,10 @@ function ProductDetailPage() {
   const { showToast } = useNotifications();
   const { permissions } = usePermissions();
   
-  // Safety check for permissions
-  const isAdminOrManager = permissions?.userRole === 'Admin' || permissions?.userRole === 'Admin-Manager' || permissions?.ui?.showAdminPanelLink || false;
+  // Safety check for permissions - check role directly for reliability
+  const isAdminOrManager = (permissions?.userRole === 'Admin' || permissions?.userRole === 'Manager') || 
+                          (permissions?.hasPermission && (permissions.hasPermission('admin') || permissions.hasPermission('manager'))) ||
+                          false;
   const {
     allProducts,
     addToFavorites,
