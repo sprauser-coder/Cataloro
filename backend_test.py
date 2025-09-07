@@ -441,22 +441,34 @@ class BackendTester:
                 # Check calculations for the first item
                 item = items[0]
                 
+                print(f"DEBUG: Basket item data: {item}")
+                
                 # Verify calculation values are non-zero
                 pt_g = item.get('pt_g', 0)
                 pd_g = item.get('pd_g', 0) 
                 rh_g = item.get('rh_g', 0)
                 
+                # Check raw catalyst data
+                weight = item.get('weight', 0)
+                pt_ppm = item.get('pt_ppm', 0)
+                pd_ppm = item.get('pd_ppm', 0)
+                rh_ppm = item.get('rh_ppm', 0)
+                renumeration_pt = item.get('renumeration_pt', 0)
+                renumeration_pd = item.get('renumeration_pd', 0)
+                renumeration_rh = item.get('renumeration_rh', 0)
+                
+                print(f"DEBUG: Raw catalyst data - Weight: {weight}, PT: {pt_ppm}ppm, PD: {pd_ppm}ppm, RH: {rh_ppm}ppm")
+                print(f"DEBUG: Renumeration values - PT: {renumeration_pt}, PD: {renumeration_pd}, RH: {renumeration_rh}")
+                print(f"DEBUG: Calculated values - PT: {pt_g}g, PD: {pd_g}g, RH: {rh_g}g")
+                
                 calculations_working = any([pt_g > 0, pd_g > 0, rh_g > 0])
                 
                 # Verify formula: ptG = weight * pt_ppm / 1000 * renumeration_pt
-                weight = item.get('weight', 0)
-                pt_ppm = item.get('pt_ppm', 0)
-                renumeration_pt = item.get('renumeration_pt', 0)
-                
                 if weight > 0 and pt_ppm > 0 and renumeration_pt > 0:
                     expected_pt_g = weight * pt_ppm / 1000 * renumeration_pt
                     formula_correct = abs(pt_g - expected_pt_g) < 0.01  # Allow small floating point differences
                 else:
+                    expected_pt_g = 0
                     formula_correct = False
                 
                 self.log_test(
