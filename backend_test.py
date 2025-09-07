@@ -424,248 +424,10 @@ class BackendTester:
             except:
                 pass
 
-    def test_listing_creation_with_add_info(self, admin_user, unified_data):
-        """Test that listing creation uses add_info in descriptions (not content values)"""
-        if not admin_user or not unified_data:
-            self.log_test("Listing Creation with Add Info", False, error_msg="No admin user or unified data provided")
-            return None
-            
-        try:
-            # Find a catalyst with add_info data
-            catalyst_with_add_info = None
-            for catalyst in unified_data:
-                if catalyst.get("add_info", "").strip():
-                    catalyst_with_add_info = catalyst
-                    break
-            
-            if not catalyst_with_add_info:
-                self.log_test("Listing Creation with Add Info", True, "No catalysts with add_info data found to test")
-                return None
-            
-            # Create a test listing using the catalyst data
-            listing_data = {
-                "title": f"Test Catalyst - {catalyst_with_add_info.get('name', 'Unknown')}",
-                "description": f"Catalyst: {catalyst_with_add_info.get('name', 'Professional Grade Catalyst')}\n\nSpecifications:\n• Weight: {catalyst_with_add_info.get('weight', 'N/A')}g\n• Cat ID: {catalyst_with_add_info.get('cat_id', 'N/A')}\n\nProfessional grade catalyst suitable for automotive and industrial applications.\n\nAdditional Information:\n{catalyst_with_add_info.get('add_info', '')}",
-                "price": catalyst_with_add_info.get('total_price', 100.0),
-                "category": "Catalysts",
-                "condition": "New",
-                "seller_id": admin_user.get('id'),
-                "images": [],
-                "tags": ["catalyst", "automotive"],
-                "features": ["Professional Grade"],
-                # Store catalyst data but NOT in description
-                "ceramic_weight": catalyst_with_add_info.get('weight'),
-                "pt_ppm": catalyst_with_add_info.get('pt_g') * 1000 / catalyst_with_add_info.get('weight', 1) if catalyst_with_add_info.get('weight', 0) > 0 else 0,
-                "pd_ppm": catalyst_with_add_info.get('pd_g') * 1000 / catalyst_with_add_info.get('weight', 1) if catalyst_with_add_info.get('weight', 0) > 0 else 0,
-                "rh_ppm": catalyst_with_add_info.get('rh_g') * 1000 / catalyst_with_add_info.get('weight', 1) if catalyst_with_add_info.get('weight', 0) > 0 else 0
-            }
-            
-            response = requests.post(
-                f"{BACKEND_URL}/listings",
-                json=listing_data,
-                timeout=10
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                listing_id = result.get('listing_id')
-                
-                # Verify the listing was created
-                listing_response = requests.get(f"{BACKEND_URL}/listings/{listing_id}")
-                if listing_response.status_code == 200:
-                    created_listing = listing_response.json()
-                    
-                    # Check that description contains add_info but NOT content values (pt_g, pd_g, rh_g)
-                    description = created_listing.get('description', '')
-                    contains_add_info = catalyst_with_add_info.get('add_info', '') in description
-                    contains_content_values = any(val in description for val in ['pt_g', 'pd_g', 'rh_g'])
-                    
-                    # Check that content values are stored separately (not in description)
-                    has_separate_catalyst_data = all(field in created_listing for field in ['ceramic_weight', 'pt_ppm', 'pd_ppm', 'rh_ppm'])
-                    
-                    success = contains_add_info and not contains_content_values and has_separate_catalyst_data
-                    
-                    self.log_test(
-                        "Listing Creation with Add Info", 
-                        success, 
-                        f"Listing created with ID: {listing_id}. Description contains add_info: {contains_add_info}, Description contains content values: {contains_content_values}, Separate catalyst data stored: {has_separate_catalyst_data}"
-                    )
-                    
-                    # Clean up - delete test listing
-                    try:
-                        requests.delete(f"{BACKEND_URL}/listings/{listing_id}")
-                    except:
-                        pass
-                    
-                    return created_listing if success else None
-                else:
-                    self.log_test("Listing Creation with Add Info", False, error_msg="Failed to retrieve created listing")
-                    return None
-            else:
-                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
-                self.log_test("Listing Creation with Add Info", False, error_msg=error_detail)
-                return None
-                
-        except Exception as e:
-            self.log_test("Listing Creation with Add Info", False, error_msg=str(e))
-            return None
-
-    def test_content_values_stored_separately(self, admin_user, unified_data):
-        """Test that content values are still stored but not in descriptions"""
-        if not admin_user or not unified_data:
-            self.log_test("Content Values Stored Separately", False, error_msg="No admin user or unified data provided")
-            return False
-            
-        try:
-            # Find a catalyst with content values
-            catalyst_with_content = None
-            for catalyst in unified_data:
-                if any(catalyst.get(field, 0) > 0 for field in ['pt_g', 'pd_g', 'rh_g']):
-                    catalyst_with_content = catalyst
-                    break
-            
-            if not catalyst_with_content:
-                self.log_test("Content Values Stored Separately", True, "No catalysts with content values found to test")
-                return True
-            
-            # Create a test listing
-            listing_data = {
-                "title": f"Test Content Values - {catalyst_with_content.get('name', 'Unknown')}",
-                "description": f"Basic catalyst description without content values",
-                "price": catalyst_with_content.get('total_price', 100.0),
-                "category": "Catalysts",
-                "condition": "New",
-                "seller_id": admin_user.get('id'),
-                "images": [],
-                # Store catalyst content data separately
-                "ceramic_weight": catalyst_with_content.get('weight'),
-                "pt_ppm": catalyst_with_content.get('pt_g') * 1000 / catalyst_with_content.get('weight', 1) if catalyst_with_content.get('weight', 0) > 0 else 0,
-                "pd_ppm": catalyst_with_content.get('pd_g') * 1000 / catalyst_with_content.get('weight', 1) if catalyst_with_content.get('weight', 0) > 0 else 0,
-                "rh_ppm": catalyst_with_content.get('rh_g') * 1000 / catalyst_with_content.get('weight', 1) if catalyst_with_content.get('weight', 0) > 0 else 0
-            }
-            
-            response = requests.post(
-                f"{BACKEND_URL}/listings",
-                json=listing_data,
-                timeout=10
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                listing_id = result.get('listing_id')
-                
-                # Verify the listing
-                listing_response = requests.get(f"{BACKEND_URL}/listings/{listing_id}")
-                if listing_response.status_code == 200:
-                    created_listing = listing_response.json()
-                    
-                    # Check that content values are NOT in description
-                    description = created_listing.get('description', '')
-                    description_clean = not any(str(catalyst_with_content.get(field, 0)) in description for field in ['pt_g', 'pd_g', 'rh_g'])
-                    
-                    # Check that content values ARE stored separately
-                    content_stored_separately = all(field in created_listing for field in ['ceramic_weight', 'pt_ppm', 'pd_ppm', 'rh_ppm'])
-                    
-                    success = description_clean and content_stored_separately
-                    
-                    self.log_test(
-                        "Content Values Stored Separately", 
-                        success, 
-                        f"Description clean of content values: {description_clean}, Content values stored separately: {content_stored_separately}"
-                    )
-                    
-                    # Clean up
-                    try:
-                        requests.delete(f"{BACKEND_URL}/listings/{listing_id}")
-                    except:
-                        pass
-                    
-                    return success
-                else:
-                    self.log_test("Content Values Stored Separately", False, error_msg="Failed to retrieve created listing")
-                    return False
-            else:
-                error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
-                self.log_test("Content Values Stored Separately", False, error_msg=error_detail)
-                return False
-                
-        except Exception as e:
-            self.log_test("Content Values Stored Separately", False, error_msg=str(e))
-            return False
-
-    def test_data_consistency_across_endpoints(self, unified_data):
-        """Test data consistency across all endpoints"""
-        if not unified_data:
-            self.log_test("Data Consistency Across Endpoints", False, error_msg="No unified data provided")
-            return False
-            
-        try:
-            # Test consistency between unified calculations and individual endpoints
-            consistency_errors = []
-            
-            # Get catalyst data endpoint
-            catalyst_response = requests.get(f"{BACKEND_URL}/admin/catalyst/data")
-            if catalyst_response.status_code == 200:
-                catalyst_data = catalyst_response.json()
-                
-                # Create lookup for comparison
-                catalyst_lookup = {item.get('id'): item for item in catalyst_data}
-                
-                # Check consistency for first few items
-                for unified_item in unified_data[:5]:  # Test first 5 items
-                    catalyst_id = unified_item.get('catalyst_id')
-                    if catalyst_id in catalyst_lookup:
-                        original_catalyst = catalyst_lookup[catalyst_id]
-                        
-                        # Check add_info consistency
-                        unified_add_info = unified_item.get('add_info', '')
-                        original_add_info = original_catalyst.get('add_info', '')
-                        
-                        if unified_add_info != original_add_info:
-                            consistency_errors.append(f"add_info mismatch for {catalyst_id}")
-                        
-                        # Check basic data consistency
-                        for field in ['cat_id', 'name', 'ceramic_weight']:
-                            unified_val = unified_item.get('weight' if field == 'ceramic_weight' else field)
-                            original_val = original_catalyst.get(field)
-                            
-                            if unified_val != original_val:
-                                consistency_errors.append(f"{field} mismatch for {catalyst_id}")
-            else:
-                consistency_errors.append("Failed to get catalyst data for comparison")
-            
-            # Test browse endpoint includes proper data
-            browse_response = requests.get(f"{BACKEND_URL}/marketplace/browse")
-            if browse_response.status_code == 200:
-                browse_data = browse_response.json()
-                if isinstance(browse_data, list):
-                    # Check that listings have proper structure
-                    for listing in browse_data[:3]:  # Check first 3 listings
-                        if not all(field in listing for field in ['id', 'title', 'description', 'price']):
-                            consistency_errors.append(f"Listing {listing.get('id', 'unknown')} missing required fields")
-                else:
-                    consistency_errors.append("Browse endpoint returned invalid format")
-            else:
-                consistency_errors.append("Browse endpoint failed")
-            
-            success = len(consistency_errors) == 0
-            
-            self.log_test(
-                "Data Consistency Across Endpoints", 
-                success, 
-                f"Consistency check completed. Errors found: {len(consistency_errors)}" + (f" - {consistency_errors}" if consistency_errors else "")
-            )
-            
-            return success
-            
-        except Exception as e:
-            self.log_test("Data Consistency Across Endpoints", False, error_msg=str(e))
-            return False
-
-    def run_updated_description_functionality_testing(self):
-        """Run updated description functionality and unified calculations testing"""
+    def run_individual_listing_catalyst_content_testing(self):
+        """Run individual listing page catalyst content display testing"""
         print("=" * 80)
-        print("CATALORO UPDATED DESCRIPTION FUNCTIONALITY TESTING")
+        print("CATALORO INDIVIDUAL LISTING PAGE CATALYST CONTENT DISPLAY TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
         print(f"Test Started: {datetime.now().isoformat()}")
@@ -678,34 +440,43 @@ class BackendTester:
             print("❌ Health check failed. Aborting testing.")
             return
         
-        # 2. Test Unified Calculations Endpoint with Add Info
-        print("🧮 UNIFIED CALCULATIONS ENDPOINT ADD_INFO TESTING")
-        print("-" * 40)
-        unified_data = self.test_unified_calculations_add_info_field()
-        
-        # 3. Test Admin Login and Permissions
-        print("👤 ADMIN LOGIN AND PERMISSIONS TESTING")
+        # 2. Test Admin Login and Permissions
+        print("👤 ADMIN LOGIN AND CATALYST PERMISSIONS TESTING")
         print("-" * 40)
         admin_user = self.test_admin_login_and_permissions()
         
-        # 4. Test Listing Creation with Add Info
-        print("📝 LISTING CREATION WITH ADD_INFO TESTING")
+        # 3. Test Backend Provides Listings with Catalyst Data
+        print("📊 BACKEND CATALYST DATA PROVISION TESTING")
         print("-" * 40)
-        self.test_listing_creation_with_add_info(admin_user, unified_data)
+        catalyst_listings = self.test_listings_with_catalyst_data()
         
-        # 5. Test Content Values Stored Separately
-        print("🔒 CONTENT VALUES SEPARATION TESTING")
+        # 4. Test Individual Listing Catalyst Display
+        print("🔍 INDIVIDUAL LISTING CATALYST DISPLAY TESTING")
         print("-" * 40)
-        self.test_content_values_stored_separately(admin_user, unified_data)
+        self.test_individual_listing_catalyst_display(catalyst_listings)
         
-        # 6. Test Data Consistency
-        print("🔄 DATA CONSISTENCY TESTING")
+        # 5. Test Catalyst Calculations Section Data
+        print("🧮 CATALYST CALCULATIONS SECTION DATA TESTING")
         print("-" * 40)
-        self.test_data_consistency_across_endpoints(unified_data)
+        self.test_catalyst_calculations_section_data(catalyst_listings)
+        
+        # 6. Test Permission Logic Verification
+        print("🔐 PERMISSION LOGIC VERIFICATION TESTING")
+        print("-" * 40)
+        self.test_permission_logic_verification(admin_user)
+        
+        # 7. Create Test Listing for Comprehensive Testing
+        print("🆕 CREATE TEST CATALYST LISTING")
+        print("-" * 40)
+        test_listing = self.test_create_catalyst_listing_for_testing(admin_user)
+        
+        # Clean up test listing
+        if test_listing:
+            self.cleanup_test_listing(test_listing)
         
         # Print Summary
         print("=" * 80)
-        print("UPDATED DESCRIPTION FUNCTIONALITY TEST SUMMARY")
+        print("INDIVIDUAL LISTING CATALYST CONTENT DISPLAY TEST SUMMARY")
         print("=" * 80)
         print(f"Total Tests: {self.total_tests}")
         print(f"Passed: {self.passed_tests} ✅")
@@ -719,25 +490,25 @@ class BackendTester:
                 if "❌ FAIL" in result["status"]:
                     print(f"  - {result['test']}: {result['error']}")
         
-        print("\n🎯 UPDATED DESCRIPTION FUNCTIONALITY TESTING COMPLETE")
+        print("\n🎯 INDIVIDUAL LISTING CATALYST CONTENT DISPLAY TESTING COMPLETE")
         print("Expected Results:")
-        print("  ✅ Unified calculations endpoint includes add_info field")
-        print("  ✅ Listing creation uses add_info in descriptions (not pt_g, pd_g, rh_g)")
-        print("  ✅ Admin/Manager permissions work for content value visibility")
-        print("  ✅ Content values are stored separately but not in descriptions")
-        print("  ✅ Data consistency maintained across all endpoints")
+        print("  ✅ Admin users can access individual listing pages with catalyst data")
+        print("  ✅ Listings with catalyst data properly display content values")
+        print("  ✅ Permission checks (isAdminOrManager) work correctly")
+        print("  ✅ Catalyst content sections are rendered when catalyst data exists")
+        print("  ✅ Backend provides listings with complete catalyst field data")
         
         return self.passed_tests, self.failed_tests, self.test_results
 
 if __name__ == "__main__":
     tester = BackendTester()
     
-    # Run Updated Description Functionality testing as requested in the review
-    print("🎯 RUNNING UPDATED DESCRIPTION FUNCTIONALITY TESTING AS REQUESTED")
-    print("Testing the updated description functionality and unified calculations endpoint with add_info field...")
+    # Run Individual Listing Catalyst Content Display testing as requested in the review
+    print("🎯 RUNNING INDIVIDUAL LISTING CATALYST CONTENT DISPLAY TESTING AS REQUESTED")
+    print("Testing the individual listing page catalyst content display functionality for Admin/Manager users...")
     print()
     
-    passed, failed, results = tester.run_updated_description_functionality_testing()
+    passed, failed, results = tester.run_individual_listing_catalyst_content_testing()
     
     # Exit with appropriate code
     exit(0 if failed == 0 else 1)
