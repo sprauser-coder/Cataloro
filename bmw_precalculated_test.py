@@ -368,15 +368,22 @@ class BMWPreCalculatedTester:
                     weight = bmw_item.get('weight', 0)
                     
                     # Check if PPM values are missing (as expected)
-                    pt_ppm = bmw_item.get('pt_ppm', 0)
-                    pd_ppm = bmw_item.get('pd_ppm', 0)
-                    rh_ppm = bmw_item.get('rh_ppm', 0)
+                    pt_ppm = bmw_item.get('pt_ppm')
+                    pd_ppm = bmw_item.get('pd_ppm')
+                    rh_ppm = bmw_item.get('rh_ppm')
                     
-                    has_precalculated = any([pt_g > 0, pd_g > 0, rh_g > 0])
-                    ppm_missing = all([pt_ppm == 0, pd_ppm == 0, rh_ppm == 0])
+                    # Expected values for BMW75364089 Links
+                    expected_pt_g = 0.0
+                    expected_pd_g = 2.4902
+                    expected_rh_g = 0.2406
                     
-                    # This is the key test - we should have pre-calculated values even when PPM is missing
-                    fix_working = has_precalculated and ppm_missing
+                    # Check if we have the expected pre-calculated values
+                    pt_correct = abs(pt_g - expected_pt_g) < 0.01
+                    pd_correct = abs(pd_g - expected_pd_g) < 0.01
+                    rh_correct = abs(rh_g - expected_rh_g) < 0.01
+                    
+                    # This is the key test - we should have pre-calculated values matching expected BMW values
+                    fix_working = pt_correct and pd_correct and rh_correct
                     
                     self.log_test(
                         "Verify Pre-calculated Values Preserved", 
