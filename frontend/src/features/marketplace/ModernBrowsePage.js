@@ -1287,18 +1287,18 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
           </h3>
         </div>
 
-        {/* 2. Price */}
+        {/* 2. Price Display with Currency Converter */}
         <div className="mb-3">
-          <div className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              €{((item.bid_info?.has_bids && item.bid_info?.highest_bid) ? item.bid_info.highest_bid : item.price).toFixed(2)}
-            </span>
-            {item.bid_info?.has_bids && (
-              <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                €{item.price.toFixed(2)} starting
-              </span>
-            )}
-          </div>
+          <CurrencyPriceDisplay 
+            price={(item.bid_info?.has_bids && item.bid_info?.highest_bid) ? item.bid_info.highest_bid : item.price}
+            baseCurrency="EUR"
+            className="mb-2"
+          />
+          {item.bid_info?.has_bids && (
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="line-through">€{item.price.toFixed(2)} starting</span>
+            </div>
+          )}
         </div>
 
         {/* 3. Market Range - Show for catalyst items */}
