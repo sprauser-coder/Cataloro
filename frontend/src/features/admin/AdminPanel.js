@@ -39,7 +39,6 @@ import {
   Zap,
   Mail,
   BookOpen,
-  Image as ImageIcon,
   Bell,
   Monitor,
   Smartphone,
