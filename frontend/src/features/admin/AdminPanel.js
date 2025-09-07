@@ -408,7 +408,7 @@ function AdminPanel() {
   ];
 
   // Filter tabs based on permissions
-  const tabs = allTabs.filter(tab => {
+  const visibleTabs = allTabs.filter(tab => {
     if (tab.adminOnly && !isFullAdmin()) return false;
     if (tab.permission && !permissions.adminPanel[tab.permission]) return false;
     return true;
