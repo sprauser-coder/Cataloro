@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { MarketplaceProvider } from './context/MarketplaceContext';
+import WebSocketProvider from './components/realtime/WebSocketProvider';
 import ModernLayout from './components/layout/ModernLayout';
 
 // Modern Feature Components
