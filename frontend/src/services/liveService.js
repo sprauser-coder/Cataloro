@@ -64,12 +64,7 @@ class LiveService {
   
   async getUserFavorites(userId) {
     try {
-      const response = await fetch(`${this.baseURL}/user/${userId}/favorites`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
+      const response = await this.handleRateLimitedRequest(`${this.baseURL}/user/${userId}/favorites`);
       return await response.json();
     } catch (error) {
       console.error('Error fetching favorites:', error);
