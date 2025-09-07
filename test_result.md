@@ -783,6 +783,10 @@ if seller_id:
 **Test Agent:** testing  
 **Test Status:** ✅ BASKET CALCULATION FIX COMPREHENSIVE TESTING COMPLETED - ALL REQUIREMENTS VERIFIED WORKING
 
+**Test Date:** 2025-01-29 08:30:00 UTC  
+**Test Agent:** testing  
+**Test Status:** ✅ UNIFIED CALCULATIONS ENDPOINT COMPREHENSIVE TESTING COMPLETED - ALL REQUIREMENTS VERIFIED WORKING
+
 #### Basket Calculation Fix Comprehensive Testing Results:
 **COMPREHENSIVE BASKET CALCULATION FIX TESTING:** ✅ ALL REQUIREMENTS MET - Executed comprehensive testing of the basket calculation fix that preserves catalyst data from original listings as requested in review. All primary testing objectives successfully verified with perfect implementation confirmed (4/4 tests passed, 100% success rate).
 
