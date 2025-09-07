@@ -193,7 +193,7 @@ function DealsPage() {
       if (realTimeUpdates) {
         intervalRef.current = setInterval(() => {
           fetchLiveDealsData();
-        }, 30000); // Update every 30 seconds
+        }, 120000); // Update every 2 minutes instead of 30 seconds to reduce load
       }
     }
 
