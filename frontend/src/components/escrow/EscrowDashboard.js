@@ -97,25 +97,25 @@ const EscrowDashboard = ({ userId }) => {
 
       switch (action) {
         case 'fund':
-          endpoint = `/v2/escrow/${escrowId}/fund`;
+          endpoint = `/api/v2/escrow/${escrowId}/fund`;
           body = {
             funded_by: userId,
             payment_proof: { method: 'bank_transfer', reference: `PAY-${Date.now()}` }
           };
           break;
         case 'request_release':
-          endpoint = `/v2/escrow/${escrowId}/release`;
+          endpoint = `/api/v2/escrow/${escrowId}/release`;
           body = {
             requested_by: userId,
             reason: 'Transaction completed successfully'
           };
           break;
         case 'approve_release':
-          endpoint = `/v2/escrow/${escrowId}/approve`;
+          endpoint = `/api/v2/escrow/${escrowId}/approve`;
           body = { approved_by: userId };
           break;
         case 'dispute':
-          endpoint = `/v2/escrow/${escrowId}/dispute`;
+          endpoint = `/api/v2/escrow/${escrowId}/dispute`;
           body = {
             disputed_by: userId,
             reason: 'Issue with transaction',
