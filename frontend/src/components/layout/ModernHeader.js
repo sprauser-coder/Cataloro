@@ -309,7 +309,17 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
         loadNotifications(true);
       }, 30000);
       
-      return () => clearInterval(notificationInterval);
+      // Listen for custom events when messages are marked as read
+      const handleMessagesMarkedAsRead = () => {
+        loadNotifications(true); // Refresh message count
+      };
+      
+      window.addEventListener('messagesMarkedAsRead', handleMessagesMarkedAsRead);
+      
+      return () => {
+        clearInterval(notificationInterval);
+        window.removeEventListener('messagesMarkedAsRead', handleMessagesMarkedAsRead);
+      };
     }
 
     // Listen for localStorage changes (when admin updates branding)
