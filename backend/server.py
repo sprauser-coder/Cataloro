@@ -108,10 +108,11 @@ async def startup_event():
     # Initialize search service
     await init_search()
     
-    # Initialize analytics service
-    global analytics_service
-    analytics_service = await create_analytics_service(db)
-    logger.info("✅ Analytics service initialized")
+    # Initialize unified services
+    global security_service, analytics_service
+    security_service = get_unified_security_service()
+    analytics_service = get_unified_analytics_service()
+    logger.info("✅ Unified security and analytics services initialized")
     
     # Initialize Phase 5 services
     global websocket_service, multicurrency_service, escrow_service, ai_recommendation_service
