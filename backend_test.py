@@ -378,11 +378,17 @@ class BackendTester:
     def test_basket_calculations_with_preserved_data(self, basket):
         """Test that basket calculations produce non-zero values using preserved catalyst data"""
         try:
-            if not basket or not self.admin_user:
-                self.log_test("Basket Calculations with Preserved Data", False, error_msg="Basket or admin user not available")
+            if not basket:
+                self.log_test("Basket Calculations with Preserved Data", False, error_msg="Basket not available")
                 return False
                 
-            user_id = self.admin_user.get('id')
+            # Use buyer user if available, otherwise admin
+            test_user = getattr(self, 'buyer_user', self.admin_user)
+            if not test_user:
+                self.log_test("Basket Calculations with Preserved Data", False, error_msg="No test user available")
+                return False
+                
+            user_id = test_user.get('id')
             
             # Get baskets with calculations
             response = requests.get(
