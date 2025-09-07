@@ -58,6 +58,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   const [notifications, setNotifications] = useState([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [sessionReadMessageIds, setSessionReadMessageIds] = useState(new Set()); // Moved to component level
   const [siteBranding, setSiteBranding] = useState({});
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [notificationFilter, setNotificationFilter] = useState('all'); // all, unread, read
