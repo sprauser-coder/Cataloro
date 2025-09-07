@@ -703,8 +703,8 @@ function ProductDetailPage() {
   );
 }
 
-// Catalyst Calculations Component for Pt g, Pd g, Rh g
-function CatalystCalculationsSection({ weight, ptPpm, pdPpm, rhPpm, ptG, pdG, rhG }) {
+// Catalyst Content Box Component - Blue themed box showing weight and content values (Pt g, Pd g, Rh g)
+function CatalystContentBox({ weight, ptPpm, pdPpm, rhPpm, ptG, pdG, rhG }) {
   const [priceSettings, setPriceSettings] = useState(null);
 
   useEffect(() => {
@@ -743,46 +743,46 @@ function CatalystCalculationsSection({ weight, ptPpm, pdPpm, rhPpm, ptG, pdG, rh
     calculatedRhG = 0;
   }
 
-  // Always show for Admin users (for debugging purposes - remove this after testing)
+  // Only show if there's meaningful data (weight or any content values)
+  if (!weight && !calculatedPtG && !calculatedPdG && !calculatedRhG) {
+    return null;
+  }
+
   return (
-    <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-800">
       <div className="flex items-center space-x-2 mb-4">
-        <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
-        <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">Catalyst Content</h3>
+        <Database className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+        <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">Catalyst Content</h3>
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
           Admin Only
         </span>
       </div>
       
-      {/* Debug Info */}
-      <div className="bg-yellow-100 dark:bg-yellow-900/30 p-3 rounded-lg mb-4">
-        <p className="text-xs text-yellow-800 dark:text-yellow-200">
-          <strong>Debug Info:</strong> weight: {weight || 'undefined'}, ptG: {ptG || 'undefined'}, pdG: {pdG || 'undefined'}, rhG: {rhG || 'undefined'},
-          ptPpm: {ptPpm || 'undefined'}, pdPpm: {pdPpm || 'undefined'}, rhPpm: {rhPpm || 'undefined'},
-          priceSettings: {priceSettings ? 'loaded' : 'not loaded'}
-        </p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-blue-800 shadow-sm">
+          <div className="text-xs text-blue-600 dark:text-blue-400 uppercase font-medium mb-1">Weight</div>
+          <div className="text-xl font-bold text-gray-900 dark:text-white">{weight || 0}g</div>
+        </div>
+        
+        <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-blue-800 shadow-sm">
+          <div className="text-xs text-blue-600 dark:text-blue-400 uppercase font-medium mb-1">Pt g</div>
+          <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{(calculatedPtG || 0).toFixed(4)}</div>
+        </div>
+        
+        <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-blue-800 shadow-sm">
+          <div className="text-xs text-green-600 dark:text-green-400 uppercase font-medium mb-1">Pd g</div>
+          <div className="text-xl font-bold text-green-600 dark:text-green-400">{(calculatedPdG || 0).toFixed(4)}</div>
+        </div>
+        
+        <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-blue-800 shadow-sm">
+          <div className="text-xs text-purple-600 dark:text-purple-400 uppercase font-medium mb-1">Rh g</div>
+          <div className="text-xl font-bold text-purple-600 dark:text-purple-400">{(calculatedRhG || 0).toFixed(4)}</div>
+        </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-green-100 dark:border-green-800">
-          <div className="text-xs text-gray-600 dark:text-gray-400 uppercase font-medium mb-1">Weight</div>
-          <div className="text-lg font-bold text-gray-900 dark:text-white">{weight || 0}g</div>
-        </div>
-        
-        <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-green-100 dark:border-green-800">
-          <div className="text-xs text-blue-600 dark:text-blue-400 uppercase font-medium mb-1">Pt g</div>
-          <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{(calculatedPtG || 0).toFixed(4)}</div>
-        </div>
-        
-        <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-green-100 dark:border-green-800">
-          <div className="text-xs text-green-600 dark:text-green-400 uppercase font-medium mb-1">Pd g</div>
-          <div className="text-lg font-bold text-green-600 dark:text-green-400">{(calculatedPdG || 0).toFixed(4)}</div>
-        </div>
-        
-        <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-green-100 dark:border-green-800">
-          <div className="text-xs text-purple-600 dark:text-purple-400 uppercase font-medium mb-1">Rh g</div>
-          <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{(calculatedRhG || 0).toFixed(4)}</div>
-        </div>
+      <div className="mt-4 text-xs text-blue-600 dark:text-blue-400">
+        <Database className="w-4 h-4 inline mr-1" />
+        Content values visible only to Admin and Manager users for catalyst analysis.
       </div>
     </div>
   );
