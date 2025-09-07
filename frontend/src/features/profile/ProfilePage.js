@@ -727,7 +727,7 @@ function ProfilePage() {
                   </p>
                 </div>
 
-                {/* Account Type Section - SINGLE CONTROL ONLY */}
+                {/* Account Type Section - CLEAN BUTTON TOGGLE ONLY */}
                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
@@ -747,21 +747,22 @@ function ProfilePage() {
                       </div>
                     </div>
                     
-                    {/* ONLY ONE TOGGLE CONTROL - NO CHECKBOXES */}
-                    <div className="flex items-center space-x-4">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {/* SAME CLEAN BUTTON TOGGLE AS PREFERENCES - NO CHECKBOX */}
+                    <div className="flex items-center space-x-3">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
                         {profileData.is_business ? 'Business' : 'Personal'}
                       </span>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={profileData.is_business}
-                          onChange={(e) => handleBusinessToggle(e.target.checked)}
-                          disabled={!isEditing}
-                          className="sr-only peer"
-                        />
-                        <div className={`w-12 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}></div>
-                      </label>
+                      <button
+                        onClick={() => handleBusinessToggle(!profileData.is_business)}
+                        disabled={!isEditing}
+                        className={`w-11 h-6 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                          profileData.is_business ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
+                        } ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${
+                          profileData.is_business ? 'translate-x-5' : 'translate-x-0.5'
+                        }`} />
+                      </button>
                     </div>
                   </div>
 
