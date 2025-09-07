@@ -302,7 +302,7 @@ function CreateListingPage() {
   };
 
   const getCalculatedPrice = (catalystId) => {
-    const calculation = calculations.find(calc => calc.cat_id === catalystId);
+    const calculation = unifiedCalculations.find(calc => calc.cat_id === catalystId);
     console.log('Looking for price for catalyst:', catalystId, 'Found calculation:', calculation); // Debug
     return calculation?.total_price || null;
   };
