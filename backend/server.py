@@ -113,6 +113,21 @@ async def startup_event():
     analytics_service = await create_analytics_service(db)
     logger.info("✅ Analytics service initialized")
     
+    # Initialize Phase 5 services
+    global websocket_service, multicurrency_service, escrow_service, ai_recommendation_service
+    
+    websocket_service = await init_websocket_service(db)
+    logger.info("✅ WebSocket service initialized")
+    
+    multicurrency_service = await init_multicurrency_service(db)
+    logger.info("✅ Multi-currency service initialized")
+    
+    escrow_service = await init_escrow_service(db)
+    logger.info("✅ Escrow service initialized")
+    
+    ai_recommendation_service = await init_ai_recommendation_service(db)
+    logger.info("✅ AI Recommendation service initialized")
+    
     # Run database optimization (indexes) on startup
     try:
         from optimize_database import create_database_indexes
