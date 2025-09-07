@@ -8119,42 +8119,42 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
           </div>
         )}
 
-        {/* Price Calculations Tab */}
+        {/* Unified Calculations Tab */}
         {activeSubTab === 'calculations' && (
           <div className="p-6">
             <div className="mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Price Calculations</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Calculations</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Calculated prices based on metal content and current market prices.
+                Unified view showing both price calculations and content values (Pt g, Pd g, Rh g) for all catalysts.
               </p>
             </div>
             
-            {calculations.length > 0 ? (
+            {unifiedCalculations.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
                   <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Database ID</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Cat ID</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Name</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Weight (g)</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Total Price (€)</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Status</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Pt g</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Pd g</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Rh g</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {calculations.map((calc) => (
-                      <tr key={calc._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-mono text-xs">{calc.database_id || calc._id}</td>
+                    {unifiedCalculations.map((calc) => (
+                      <tr key={calc.catalyst_id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td className="px-4 py-3 text-sm text-gray-900 dark:text-white font-semibold">{calc.cat_id}</td>
                         <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{calc.name}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{calc.weight}</td>
                         <td className="px-4 py-3 text-sm">
                           <span className={`font-semibold ${calc.is_override ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}>
                             €{calc.total_price.toFixed(2)}
                           </span>
-                        </td>
-                        <td className="px-4 py-3 text-sm">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          <span className={`ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                             calc.is_override 
                               ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
                               : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
@@ -8162,10 +8162,13 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
                             {calc.is_override ? 'Override' : 'Standard'}
                           </span>
                         </td>
+                        <td className="px-4 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400">{calc.pt_g.toFixed(4)}</td>
+                        <td className="px-4 py-3 text-sm font-semibold text-green-600 dark:text-green-400">{calc.pd_g.toFixed(4)}</td>
+                        <td className="px-4 py-3 text-sm font-semibold text-purple-600 dark:text-purple-400">{calc.rh_g.toFixed(4)}</td>
                         <td className="px-4 py-3 text-sm">
                           <div className="flex space-x-2">
                             <button
-                              onClick={() => handleResetPrice(calc._id)}
+                              onClick={() => handleResetPrice(calc.catalyst_id)}
                               className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 rounded dark:bg-blue-900/30 dark:text-blue-300"
                             >
                               Reset
@@ -8188,7 +8191,7 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
               </div>
             ) : (
               <div className="text-center py-12">
-                <DollarSign className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <Calculator className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Calculations Available</h3>
                 <p className="text-gray-600 dark:text-gray-400">Upload catalyst data and configure price settings first.</p>
               </div>
