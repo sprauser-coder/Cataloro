@@ -458,7 +458,7 @@ function ProductDetailPage() {
             </div>
 
             {/* Catalyst Database Fields - Only visible to Admin/Admin-Manager */}
-            {(permissions.ui.showAdminPanelLink) && (product.ceramic_weight || product.pt_ppm || product.pd_ppm || product.rh_ppm) && (
+            {isAdminOrManager && (product.ceramic_weight || product.pt_ppm || product.pd_ppm || product.rh_ppm) && (
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
                 <div className="flex items-center space-x-2 mb-4">
                   <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400" />
