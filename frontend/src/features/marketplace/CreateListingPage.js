@@ -136,6 +136,8 @@ function CreateListingPage() {
   useEffect(() => {
     console.log('CreateListingPage - Debug Info:');
     console.log('  permissions:', permissions);
+    console.log('  permissions.ui:', permissions?.ui);
+    console.log('  permissions.ui.showAdminPanelLink:', permissions?.ui?.showAdminPanelLink);
     console.log('  isAdminOrManager:', isAdminOrManager);
     console.log('  selectedCatalyst:', selectedCatalyst);
     console.log('  unifiedCalculations length:', unifiedCalculations.length);
