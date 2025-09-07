@@ -57,7 +57,7 @@ const CurrencySelector = ({ selectedCurrency, onCurrencyChange, showLabel = true
   const saveUserPreference = async (userId, currencyCode) => {
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
-      await fetch(`${backendUrl}/v2/currency/user/preference`, {
+      await fetch(`${backendUrl}/api/v2/currency/user/preference`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
