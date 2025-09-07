@@ -127,7 +127,7 @@ async def startup_event():
     logger.info("✅ Monitoring background tasks started")
     
     # Initialize Phase 5 services
-    global websocket_service, multicurrency_service, escrow_service, ai_recommendation_service
+    global websocket_service, multicurrency_service, escrow_service, ai_recommendation_service, webhook_service
     
     websocket_service = await init_websocket_service(db)
     logger.info("✅ WebSocket service initialized")
@@ -140,6 +140,11 @@ async def startup_event():
     
     ai_recommendation_service = await init_ai_recommendation_service(db)
     logger.info("✅ AI Recommendation service initialized")
+    
+    # Initialize webhook service  
+    await init_webhook_service(db)
+    webhook_service = get_webhook_service()
+    logger.info("✅ Webhook service initialized")
     
     # Run database optimization (indexes) on startup
     try:
