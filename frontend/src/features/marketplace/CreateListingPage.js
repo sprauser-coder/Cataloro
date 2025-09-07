@@ -33,6 +33,10 @@ import { usePermissions } from '../../hooks/usePermissions';
 function CreateListingPage() {
   const navigate = useNavigate();
   const permissions = usePermissions();
+  
+  // Safety check for permissions
+  const isAdminOrManager = permissions?.ui?.showAdminPanelLink || false;
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [images, setImages] = useState([]);
