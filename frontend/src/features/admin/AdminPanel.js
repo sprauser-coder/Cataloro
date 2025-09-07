@@ -38,7 +38,6 @@ import {
   Lock,
   Zap,
   Mail,
-  BookOpen,
   Bell,
   Monitor,
   Smartphone,
