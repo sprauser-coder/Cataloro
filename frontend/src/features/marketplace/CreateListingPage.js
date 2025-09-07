@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';
+import { usePermissions } from '../../hooks/usePermissions';
 
 function CreateListingPage() {
   const navigate = useNavigate();
