@@ -29,6 +29,10 @@ from search_service import search_service, init_search, cleanup_search
 from security_service import security_service, get_client_ip
 from monitoring_service import monitoring_service, MonitoringMiddleware
 from analytics_service import create_analytics_service
+from websocket_service import init_websocket_service, get_websocket_service
+from multicurrency_service import init_multicurrency_service, get_multicurrency_service
+from escrow_service import init_escrow_service, get_escrow_service
+from ai_recommendation_service import init_ai_recommendation_service, get_ai_recommendation_service
 
 # Load environment variables
 load_dotenv()
