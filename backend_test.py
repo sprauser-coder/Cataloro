@@ -220,8 +220,12 @@ class BackendTester:
             tender_id = tender.get('id')
             
             # Accept the tender (seller accepts offer)
+            accept_data = {
+                "seller_id": seller_id
+            }
             accept_response = requests.put(
                 f"{BACKEND_URL}/tenders/{tender_id}/accept",
+                json=accept_data,
                 timeout=10
             )
             
