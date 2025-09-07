@@ -1079,8 +1079,13 @@ async def get_notifications(user_id: str):
 # Admin Endpoints
 @app.get("/api/admin/dashboard")
 async def get_admin_dashboard():
-    """Get real-time admin dashboard with accurate KPIs"""
+    """Get real-time admin dashboard with accurate KPIs and caching"""
     try:
+        # Try to get cached dashboard data first
+        cached_data = await cache_service.get_cached_dashboard_data()
+        if cached_data:
+            logger.info("📊 Returning cached dashboard data")
+            return cached_data
         # Get accurate KPIs from database
         total_users = await db.users.count_documents({})
         # Count only active listings to match what users see in listings management and browse pages
