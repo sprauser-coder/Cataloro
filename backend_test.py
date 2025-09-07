@@ -18,39 +18,27 @@ ADMIN_PASSWORD = "admin123"
 
 class Phase3SecurityMonitoringTester:
     def __init__(self):
-        self.test_results = []
-        self.total_tests = 0
-        self.passed_tests = 0
-        self.failed_tests = 0
-        self.admin_user = None
+        self.session = requests.Session()
         self.admin_token = None
+        self.admin_user_id = None
+        self.test_results = []
         
-    def log_test(self, test_name, success, details="", error_msg=""):
-        """Log test results"""
-        self.total_tests += 1
-        if success:
-            self.passed_tests += 1
-            status = "✅ PASS"
-        else:
-            self.failed_tests += 1
-            status = "❌ FAIL"
-            
+    def log_test(self, test_name: str, success: bool, details: str = "", data: Any = None):
+        """Log test result"""
         result = {
             "test": test_name,
-            "status": status,
+            "success": success,
             "details": details,
-            "error": error_msg,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
+            "data": data
         }
         self.test_results.append(result)
-        print(f"{status}: {test_name}")
-        if details:
-            print(f"   Details: {details}")
-        if error_msg:
-            print(f"   Error: {error_msg}")
-        print()
-
-    def test_admin_login(self):
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} - {test_name}: {details}")
+        if data and not success:
+            print(f"   Data: {json.dumps(data, indent=2)}")
+    
+    def admin_login(self) -> bool:
         """Test admin login and store credentials for subsequent tests"""
         try:
             admin_credentials = {
