@@ -516,7 +516,7 @@ function DashboardTab({ dashboardData, loading }) {
         orders: Math.floor(Math.random() * 10) + 5
       };
       setRealTimeData(prev => [...prev.slice(-9), newData]);
-    }, 5000);
+    }, 60000); // 1 minute instead of 5 seconds to reduce load
 
     return () => clearInterval(interval);
   }, []);
