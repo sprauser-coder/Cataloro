@@ -126,26 +126,38 @@ class BackendTester:
             )
             
             if response.status_code == 200:
-                created_listing = response.json()
-                listing_id = created_listing.get('id')
+                create_response = response.json()
+                listing_id = create_response.get('listing_id')
                 
-                # Verify catalyst data was stored
-                has_catalyst_data = all([
-                    created_listing.get('ceramic_weight') is not None,
-                    created_listing.get('pt_ppm') is not None,
-                    created_listing.get('pd_ppm') is not None,
-                    created_listing.get('rh_ppm') is not None
-                ])
-                
-                self.log_test(
-                    "Create Listing with Catalyst Data", 
-                    has_catalyst_data, 
-                    f"Listing ID: {listing_id}, Weight: {created_listing.get('ceramic_weight')}g, "
-                    f"PT: {created_listing.get('pt_ppm')}ppm, PD: {created_listing.get('pd_ppm')}ppm, "
-                    f"RH: {created_listing.get('rh_ppm')}ppm"
-                )
-                
-                return created_listing if has_catalyst_data else None
+                if listing_id:
+                    # Get the created listing to verify catalyst data
+                    get_response = requests.get(f"{BACKEND_URL}/listings/{listing_id}", timeout=10)
+                    if get_response.status_code == 200:
+                        created_listing = get_response.json()
+                        
+                        # Verify catalyst data was stored
+                        has_catalyst_data = all([
+                            created_listing.get('ceramic_weight') is not None,
+                            created_listing.get('pt_ppm') is not None,
+                            created_listing.get('pd_ppm') is not None,
+                            created_listing.get('rh_ppm') is not None
+                        ])
+                        
+                        self.log_test(
+                            "Create Listing with Catalyst Data", 
+                            has_catalyst_data, 
+                            f"Listing ID: {listing_id}, Weight: {created_listing.get('ceramic_weight')}g, "
+                            f"PT: {created_listing.get('pt_ppm')}ppm, PD: {created_listing.get('pd_ppm')}ppm, "
+                            f"RH: {created_listing.get('rh_ppm')}ppm"
+                        )
+                        
+                        return created_listing if has_catalyst_data else None
+                    else:
+                        self.log_test("Create Listing with Catalyst Data", False, error_msg="Failed to retrieve created listing")
+                        return None
+                else:
+                    self.log_test("Create Listing with Catalyst Data", False, error_msg="No listing ID returned")
+                    return None
             else:
                 error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
                 self.log_test("Create Listing with Catalyst Data", False, error_msg=error_detail)
