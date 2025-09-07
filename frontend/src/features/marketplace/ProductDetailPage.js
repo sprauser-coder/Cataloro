@@ -86,16 +86,6 @@ function ProductDetailPage() {
   
   // Safety check for permissions
   const isAdminOrManager = permissions?.ui?.showAdminPanelLink || false;
-  
-  // Debug permissions
-  console.log('ProductDetailPage - permissions:', permissions);
-  console.log('ProductDetailPage - isAdminOrManager:', isAdminOrManager);
-  console.log('ProductDetailPage - product catalyst data:', {
-    pt_g: product?.pt_g,
-    pd_g: product?.pd_g, 
-    rh_g: product?.rh_g,
-    ceramic_weight: product?.ceramic_weight
-  });
   const {
     allProducts,
     addToFavorites,
