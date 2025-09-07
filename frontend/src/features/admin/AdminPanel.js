@@ -411,8 +411,9 @@ function AdminPanel() {
       'users': 'User management, roles & permissions',
       'listings': 'Marketplace listings management & moderation',
       'business': 'Business analytics & performance metrics',
+      'advanced-features': 'Currencies, languages, escrow, AI & enterprise features',
       'cats': 'Catalyst database management & configuration',
-      'site-settings': 'Global site configuration & settings',
+      'site-settings': 'Global site configuration & branding settings',
       'administration': 'System administration & maintenance tools'
     };
     return descriptions[tabId] || 'Admin panel section';
