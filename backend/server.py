@@ -2333,12 +2333,15 @@ async def create_listing(listing_data: dict):
         await cache_service.invalidate_listings_cache()
         await cache_service.invalidate_dashboard_cache()
         
+        # Index the new listing in Elasticsearch
+        await search_service.index_listing(listing_data)
+        
         # Trigger system notifications for listing published event
         seller_id = listing_data.get("seller_id")
         if seller_id:
             await trigger_system_notifications(seller_id, "listing_published")
         
-        logger.info(f"📝 Created new listing: {listing_data['id']} - Cache invalidated")
+        logger.info(f"📝 Created new listing: {listing_data['id']} - Cache invalidated, Indexed in search")
         
         return {
             "message": "Listing created successfully",
