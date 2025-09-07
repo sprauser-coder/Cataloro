@@ -62,7 +62,7 @@ const AIRecommendationsWidget = ({
   const fetchTrendingItems = async () => {
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
-      let endpoint = `/v2/ai/trending?limit=${limit}`;
+      let endpoint = `/api/v2/ai/trending?limit=${limit}`;
       
       if (category) {
         endpoint += `&category=${category}`;
