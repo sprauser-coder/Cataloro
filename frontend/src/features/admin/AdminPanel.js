@@ -73,6 +73,7 @@ import {
   Plus,
   ShoppingBag,
   MessageCircle,
+  MessageSquare,
   CreditCard,
   FileText,
   ThumbsUp,
