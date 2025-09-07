@@ -1611,7 +1611,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                       u.id,
                       u.full_name || u.username,
                       u.email,
-                      u.user_role || u.role,
+                      u.user_role || (u.role === 'admin' ? 'Admin' : 'User-Buyer'),
                       u.is_active ? 'Active' : 'Suspended',
                       u.registration_status || 'Approved'
                     ].join(','))
