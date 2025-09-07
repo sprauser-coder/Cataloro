@@ -90,7 +90,8 @@ import {
   Layers,
   GitBranch,
   RotateCcw,
-  ExternalLink
+  ExternalLink,
+  Sparkles
 } from 'lucide-react';
 import { adminService } from '../../services/adminService';
 import { useAuth } from '../../context/AuthContext';
