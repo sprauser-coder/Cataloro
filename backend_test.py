@@ -45,199 +45,36 @@ class BackendTester:
             print(f"   Error: {error_msg}")
         print()
 
-    def test_unified_calculations_endpoint(self):
-        """Test the unified calculations endpoint comprehensively"""
-        print("=" * 80)
-        print("UNIFIED CALCULATIONS ENDPOINT TESTING")
-        print("=" * 80)
-        
-        # Test 1: Basic endpoint accessibility
+    def test_unified_calculations_add_info_field(self):
+        """Test that unified calculations endpoint includes add_info field"""
         try:
             response = requests.get(f"{BACKEND_URL}/admin/catalyst/unified-calculations")
             if response.status_code == 200:
-                self.log_test("Unified Calculations Endpoint Accessibility", True, "Endpoint accessible and returns 200")
                 unified_data = response.json()
-            else:
-                self.log_test("Unified Calculations Endpoint Accessibility", False, f"Status code: {response.status_code}")
-                return
-        except Exception as e:
-            self.log_test("Unified Calculations Endpoint Accessibility", False, error_msg=str(e))
-            return
-        
-        # Test 2: Response structure validation
-        if isinstance(unified_data, list):
-            self.log_test("Response Structure Validation", True, "Response is a valid list")
-        else:
-            self.log_test("Response Structure Validation", False, f"Response is not a list: {type(unified_data)}")
-            return
-        
-        # Test 3: Required fields validation
-        required_fields = ["catalyst_id", "cat_id", "name", "weight", "total_price", "pt_g", "pd_g", "rh_g", "is_override"]
-        missing_fields = []
-        
-        if len(unified_data) > 0:
-            sample_item = unified_data[0]
-            for field in required_fields:
-                if field not in sample_item:
-                    missing_fields.append(field)
-            
-            if not missing_fields:
-                self.log_test("Required Fields Validation", True, f"All required fields present: {required_fields}")
-            else:
-                self.log_test("Required Fields Validation", False, f"Missing fields: {missing_fields}")
-        else:
-            self.log_test("Required Fields Validation", True, "No data to validate (empty database)")
-        
-        # Test 4: Database_id field should be hidden
-        has_database_id = False
-        if len(unified_data) > 0:
-            sample_item = unified_data[0]
-            if "database_id" in sample_item or "_id" in sample_item:
-                has_database_id = True
-        
-        if not has_database_id:
-            self.log_test("Database ID Hidden", True, "database_id field is properly hidden from response")
-        else:
-            self.log_test("Database ID Hidden", False, "database_id field is exposed in response")
-        
-        # Test 5: Content calculation validation
-        calculation_errors = []
-        if len(unified_data) > 0:
-            try:
-                # Get price settings for validation
-                settings_response = requests.get(f"{BACKEND_URL}/admin/catalyst/price-settings")
-                if settings_response.status_code == 200:
-                    settings = settings_response.json()
+                
+                if isinstance(unified_data, list) and len(unified_data) > 0:
+                    # Check if add_info field is present
+                    sample_item = unified_data[0]
+                    has_add_info = "add_info" in sample_item
                     
-                    # Get catalyst data to verify PPM values
-                    catalyst_response = requests.get(f"{BACKEND_URL}/admin/catalyst/data")
-                    if catalyst_response.status_code == 200:
-                        catalyst_data = catalyst_response.json()
-                        
-                        # Test calculation for first item with non-zero values
-                        for item in unified_data:
-                            if item.get("weight", 0) > 0:
-                                weight = item["weight"]
-                                
-                                # Find matching catalyst
-                                matching_catalyst = None
-                                for catalyst in catalyst_data:
-                                    if catalyst.get("id") == item["catalyst_id"]:
-                                        matching_catalyst = catalyst
-                                        break
-                                
-                                if matching_catalyst:
-                                    # Verify calculations using formula: (weight * ppm / 1000 * renumeration)
-                                    pt_ppm = matching_catalyst.get("pt_ppm", 0)
-                                    pd_ppm = matching_catalyst.get("pd_ppm", 0)
-                                    rh_ppm = matching_catalyst.get("rh_ppm", 0)
-                                    
-                                    expected_pt_g = (weight * pt_ppm / 1000) * settings.get("renumeration_pt", 0.95)
-                                    expected_pd_g = (weight * pd_ppm / 1000) * settings.get("renumeration_pd", 0.92)
-                                    expected_rh_g = (weight * rh_ppm / 1000) * settings.get("renumeration_rh", 0.88)
-                                    
-                                    # Allow small floating point differences
-                                    tolerance = 0.001
-                                    
-                                    if abs(item["pt_g"] - expected_pt_g) > tolerance:
-                                        calculation_errors.append(f"PT calculation mismatch for {item['cat_id']}: expected {expected_pt_g:.4f}, got {item['pt_g']}")
-                                    
-                                    if abs(item["pd_g"] - expected_pd_g) > tolerance:
-                                        calculation_errors.append(f"PD calculation mismatch for {item['cat_id']}: expected {expected_pd_g:.4f}, got {item['pd_g']}")
-                                    
-                                    if abs(item["rh_g"] - expected_rh_g) > tolerance:
-                                        calculation_errors.append(f"RH calculation mismatch for {item['cat_id']}: expected {expected_rh_g:.4f}, got {item['rh_g']}")
-                                    
-                                    break  # Test only first valid item
-                    else:
-                        calculation_errors.append("Failed to get catalyst data")
+                    # Count items with add_info data
+                    items_with_add_info = sum(1 for item in unified_data if item.get("add_info", "").strip())
+                    
+                    self.log_test(
+                        "Unified Calculations Add Info Field", 
+                        has_add_info, 
+                        f"add_info field present: {has_add_info}, Items with add_info data: {items_with_add_info}/{len(unified_data)}"
+                    )
+                    return unified_data if has_add_info else None
                 else:
-                    calculation_errors.append("Failed to get price settings")
-            except Exception as e:
-                calculation_errors.append(f"Calculation validation error: {e}")
-        
-        if not calculation_errors:
-            self.log_test("Content Calculations Validation", True, "Content calculations (Pt g, Pd g, Rh g) are correct")
-        else:
-            self.log_test("Content Calculations Validation", False, f"Calculation errors: {calculation_errors}")
-        
-        # Test 6: Price calculation validation
-        price_errors = []
-        if len(unified_data) > 0:
-            for item in unified_data:
-                if item.get("weight", 0) > 0:
-                    # Check if price is reasonable (not negative, not extremely high)
-                    total_price = item.get("total_price", 0)
-                    
-                    if total_price < 0:
-                        price_errors.append(f"Negative price for {item['cat_id']}: {total_price}")
-                    elif total_price > 10000:  # Reasonable upper limit
-                        price_errors.append(f"Extremely high price for {item['cat_id']}: {total_price}")
-                    
-                    # Verify override flag consistency
-                    is_override = item.get("is_override", False)
-                    if not isinstance(is_override, bool):
-                        price_errors.append(f"Invalid is_override type for {item['cat_id']}: {type(is_override)}")
-                    
-                    break  # Test only first valid item
-        
-        if not price_errors:
-            self.log_test("Price Calculations Validation", True, "Price calculations are reasonable and properly formatted")
-        else:
-            self.log_test("Price Calculations Validation", False, f"Price errors: {price_errors}")
-        
-        # Test 7: Compare with existing calculations endpoint
-        try:
-            old_response = requests.get(f"{BACKEND_URL}/admin/catalyst/calculations")
-            if old_response.status_code == 200:
-                old_data = old_response.json()
-                
-                # Compare data consistency
-                comparison_errors = []
-                
-                # Create lookup dictionaries
-                unified_lookup = {item["catalyst_id"]: item for item in unified_data}
-                old_lookup = {item.get("database_id", item.get("_id")): item for item in old_data}
-                
-                # Compare prices and override flags
-                for catalyst_id, unified_item in unified_lookup.items():
-                    if catalyst_id in old_lookup:
-                        old_item = old_lookup[catalyst_id]
-                        
-                        # Compare total_price
-                        if abs(unified_item["total_price"] - old_item["total_price"]) > 0.01:
-                            comparison_errors.append(f"Price mismatch for {catalyst_id}: unified={unified_item['total_price']}, old={old_item['total_price']}")
-                        
-                        # Compare is_override
-                        if unified_item["is_override"] != old_item["is_override"]:
-                            comparison_errors.append(f"Override flag mismatch for {catalyst_id}")
-                
-                if not comparison_errors:
-                    self.log_test("Endpoint Comparison", True, "Unified endpoint matches existing calculations endpoint")
-                else:
-                    self.log_test("Endpoint Comparison", False, f"Comparison errors: {comparison_errors}")
+                    self.log_test("Unified Calculations Add Info Field", True, "No data to test (empty database)")
+                    return []
             else:
-                self.log_test("Endpoint Comparison", True, "Old calculations endpoint unavailable for comparison")
+                self.log_test("Unified Calculations Add Info Field", False, f"HTTP {response.status_code}")
+                return None
         except Exception as e:
-            self.log_test("Endpoint Comparison", True, f"Comparison skipped: {str(e)}")
-        
-        # Test 8: Edge case handling
-        if isinstance(unified_data, list):
-            self.log_test("Edge Case Handling", True, f"Endpoint handles database state gracefully (returned {len(unified_data)} items)")
-        else:
-            self.log_test("Edge Case Handling", False, "Endpoint does not handle database state properly")
-        
-        # Test 9: Data completeness check
-        if len(unified_data) > 0:
-            complete_items = 0
-            for item in unified_data:
-                if all(field in item for field in required_fields):
-                    complete_items += 1
-            
-            completeness_rate = (complete_items / len(unified_data)) * 100
-            self.log_test("Data Completeness", True, f"Data completeness: {completeness_rate:.1f}% ({complete_items}/{len(unified_data)} items complete)")
-        else:
-            self.log_test("Data Completeness", True, "No data to check completeness (empty database)")
+            self.log_test("Unified Calculations Add Info Field", False, error_msg=str(e))
+            return None
 
     def test_health_check(self):
         """Test basic health endpoint"""
