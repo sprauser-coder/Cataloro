@@ -397,6 +397,12 @@ function MessagesPage() {
       );
       
       // Trigger header message count update immediately
+      console.log('🔔 Dispatching messagesMarkedAsRead event with details:', {
+        messageIds: unreadMessages.map(msg => msg.id),
+        count: unreadMessages.length,
+        conversationName: conversation.name
+      });
+      
       window.dispatchEvent(new CustomEvent('messagesMarkedAsRead', {
         detail: { 
           messageIds: unreadMessages.map(msg => msg.id),
