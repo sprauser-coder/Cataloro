@@ -187,6 +187,23 @@ function CreateListingPage() {
     }
   };
 
+  const fetchUnifiedCalculations = async () => {
+    try {
+      setLoadingCatalysts(true);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/unified-calculations`);
+      if (response.ok) {
+        const data = await response.json();
+        setUnifiedCalculations(data);
+        console.log('Loaded unified calculations:', data.length, 'entries');
+        console.log('Sample unified calculation:', data[0]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch unified calculations:', error);
+    } finally {
+      setLoadingCatalysts(false);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
