@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://catalyst-view.preview.emergentagent.com/api"
+BACKEND_URL = "https://inventory-fix-1.preview.emergentagent.com/api"
 
 def test_admin_listings_with_limits():
     """Test admin listings endpoint with different limit parameters"""

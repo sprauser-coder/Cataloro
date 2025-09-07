@@ -7,7 +7,7 @@ Check if the dashboard endpoint can access the database correctly
 import requests
 import json
 
-BACKEND_URL = "https://catalyst-view.preview.emergentagent.com/api"
+BACKEND_URL = "https://inventory-fix-1.preview.emergentagent.com/api"
 
 def test_database_access():
     """Test various endpoints to debug database access"""

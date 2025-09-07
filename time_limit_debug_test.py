@@ -11,7 +11,7 @@ import time
 from datetime import datetime, timedelta
 
 # Get backend URL from environment
-BACKEND_URL = "https://catalyst-view.preview.emergentagent.com/api"
+BACKEND_URL = "https://inventory-fix-1.preview.emergentagent.com/api"
 
 class TimeLimitDebugTester:
     def __init__(self):

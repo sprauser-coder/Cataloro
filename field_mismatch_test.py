@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://catalyst-view.preview.emergentagent.com/api"
+BACKEND_URL = "https://inventory-fix-1.preview.emergentagent.com/api"
 
 class FieldMismatchAnalyzer:
     def __init__(self):

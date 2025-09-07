@@ -7,7 +7,7 @@ import requests
 import json
 
 def test_complete_flow():
-    base_url = "https://catalyst-view.preview.emergentagent.com"
+    base_url = "https://inventory-fix-1.preview.emergentagent.com"
     
     # Create two test users
     user1_data = {

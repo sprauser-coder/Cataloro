@@ -10,7 +10,7 @@ import uuid
 import urllib.parse
 from datetime import datetime
 
-BACKEND_URL = "https://catalyst-view.preview.emergentagent.com/api"
+BACKEND_URL = "https://inventory-fix-1.preview.emergentagent.com/api"
 
 class FinalUsernameTester:
     def __init__(self):
