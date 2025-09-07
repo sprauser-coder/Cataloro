@@ -219,10 +219,14 @@ class BackendTester:
             tender = tender_response.json()
             tender_id = tender.get('id')
             
+            print(f"DEBUG: Created tender - ID: {tender_id}, Status: {tender.get('status')}")
+            print(f"DEBUG: Tender data: {tender}")
+            
             # Accept the tender (seller accepts offer)
             accept_data = {
                 "seller_id": seller_id
             }
+            print(f"DEBUG: Accepting tender with seller_id: {seller_id}")
             accept_response = requests.put(
                 f"{BACKEND_URL}/tenders/{tender_id}/accept",
                 json=accept_data,
