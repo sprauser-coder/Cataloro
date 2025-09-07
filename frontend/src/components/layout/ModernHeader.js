@@ -205,7 +205,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     
     return filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   };
-  // Load notifications from backend with enhanced features
+  // Load notifications from backend with enhanced features and rate limit handling
   const loadNotifications = async (showNewNotificationAlert = false) => {
     if (!user?.id) return;
     
@@ -238,7 +238,15 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       setLastNotificationCheck(Date.now());
     } catch (error) {
       console.error('Failed to load notifications:', error);
-      // Use empty array as fallback instead of fake data
+      
+      // Handle rate limiting specifically
+      if (error.message?.includes('429') || error.status === 429) {
+        console.warn('⚠️ Rate limit detected - backing off notifications polling');
+        // Don't reset data on rate limit, just log the warning
+        return;
+      }
+      
+      // Use empty array as fallback for other errors
       setNotifications([]);
       setUnreadNotifications(0);
       setUnreadMessages(0);
