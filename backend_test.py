@@ -187,7 +187,7 @@ class BackendTester:
             
             # Create tender
             tender_response = requests.post(
-                f"{BACKEND_URL}/tenders",
+                f"{BACKEND_URL}/tenders/submit",
                 json=tender_data,
                 timeout=10
             )
