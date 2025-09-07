@@ -24,6 +24,7 @@ from bson import ObjectId
 from dotenv import load_dotenv
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 import logging
+from cache_service import cache_service, init_cache, cleanup_cache
 
 # Load environment variables
 load_dotenv()
