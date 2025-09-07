@@ -260,8 +260,14 @@ async def get_unified_analytics_dashboard():
 async def get_user_analytics(days: int = 30):
     """Get user analytics"""
     try:
+        # Import db from server module
+        import sys
+        import os
+        sys.path.append(os.path.dirname(__file__))
+        from server import db
+        
         from unified_analytics_service import get_unified_analytics_service
-        analytics_service = await get_unified_analytics_service()
+        analytics_service = await get_unified_analytics_service(db)
         
         user_analytics = await analytics_service.get_user_analytics(days)
         
