@@ -83,6 +83,9 @@ function ProductDetailPage() {
   const { user } = useAuth();
   const { showToast } = useNotifications();
   const { permissions } = usePermissions();
+  
+  // Safety check for permissions
+  const isAdminOrManager = permissions?.ui?.showAdminPanelLink || false;
   const {
     allProducts,
     addToFavorites,
