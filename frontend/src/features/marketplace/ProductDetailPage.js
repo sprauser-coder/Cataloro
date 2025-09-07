@@ -812,14 +812,12 @@ function CatalystCalculationsSection({ weight, ptPpm, pdPpm, rhPpm, ptG, pdG, rh
     calculatedRhG = weight && rhPpm ? (weight * rhPpm / 1000) * (priceSettings.renumeration_rh || 0.9) : 0;
   } else {
     // No data available
-    return null;
+    calculatedPtG = 0;
+    calculatedPdG = 0;
+    calculatedRhG = 0;
   }
 
-  // Don't render if all values are zero or undefined
-  if (!calculatedPtG && !calculatedPdG && !calculatedRhG) {
-    return null;
-  }
-
+  // Always show for Admin users (for debugging purposes - remove this after testing)
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
       <div className="flex items-center space-x-2 mb-4">
@@ -828,6 +826,15 @@ function CatalystCalculationsSection({ weight, ptPpm, pdPpm, rhPpm, ptG, pdG, rh
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
           Admin Only
         </span>
+      </div>
+      
+      {/* Debug Info */}
+      <div className="bg-yellow-100 dark:bg-yellow-900/30 p-3 rounded-lg mb-4">
+        <p className="text-xs text-yellow-800 dark:text-yellow-200">
+          <strong>Debug Info:</strong> weight: {weight || 'undefined'}, ptG: {ptG || 'undefined'}, pdG: {pdG || 'undefined'}, rhG: {rhG || 'undefined'},
+          ptPpm: {ptPpm || 'undefined'}, pdPpm: {pdPpm || 'undefined'}, rhPpm: {rhPpm || 'undefined'},
+          priceSettings: {priceSettings ? 'loaded' : 'not loaded'}
+        </p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -850,11 +857,6 @@ function CatalystCalculationsSection({ weight, ptPpm, pdPpm, rhPpm, ptG, pdG, rh
           <div className="text-xs text-purple-600 dark:text-purple-400 uppercase font-medium mb-1">Rh g</div>
           <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{(calculatedRhG || 0).toFixed(4)}</div>
         </div>
-      </div>
-      
-      <div className="mt-4 text-xs text-green-600 dark:text-green-400 flex items-center">
-        <Database className="w-4 h-4 mr-1" />
-        {ptG !== undefined ? 'Values from unified catalyst calculations' : 'Calculated using: Weight × ppm ÷ 1000 × Renumeration Factor'}
       </div>
     </div>
   );
