@@ -506,7 +506,7 @@ function ProductDetailPage() {
             )}
 
             {/* Catalyst Calculations - Pt g, Pd g, Rh g for Admin/Admin-Manager */}
-            {(permissions.ui.showAdminPanelLink) && (
+            {isAdminOrManager && (
               product.pt_g !== undefined || product.pd_g !== undefined || product.rh_g !== undefined || 
               product.ceramic_weight || product.pt_ppm || product.pd_ppm || product.rh_ppm
             ) && (
