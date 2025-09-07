@@ -95,18 +95,18 @@ class BackendTester:
             self.log_test("Health Check", False, error_msg=str(e))
             return False
 
-    def test_demo_user_login_and_role_check(self):
-        """Test demo user login and check their user_role field"""
+    def test_admin_login_and_permissions(self):
+        """Test admin login and verify permissions for content value visibility"""
         try:
-            # Login as demo user
-            demo_credentials = {
-                "email": "demo@cataloro.com",
-                "password": "demo123"
+            # Login as admin
+            admin_credentials = {
+                "email": "admin@cataloro.com",
+                "password": "admin123"
             }
             
             response = requests.post(
                 f"{BACKEND_URL}/auth/login", 
-                json=demo_credentials,
+                json=admin_credentials,
                 timeout=10
             )
             
@@ -115,24 +115,23 @@ class BackendTester:
                 user = data.get('user', {})
                 user_role = user.get('user_role')
                 user_id = user.get('id')
-                registration_status = user.get('registration_status')
                 
-                # Check if user has proper role for Buy Management
-                has_buy_management_role = user_role in ['User-Buyer', 'Admin', 'Admin-Manager']
+                # Check if user has admin/manager permissions
+                has_admin_permissions = user_role in ['Admin', 'Admin-Manager']
                 
                 self.log_test(
-                    "Demo User Login and Role Check", 
-                    True, 
-                    f"Demo user logged in successfully. Role: {user_role}, Status: {registration_status}, Has Buy Management Access: {has_buy_management_role}"
+                    "Admin Login and Permissions", 
+                    has_admin_permissions, 
+                    f"Admin logged in successfully. Role: {user_role}, Has admin permissions: {has_admin_permissions}"
                 )
-                return user, has_buy_management_role
+                return user if has_admin_permissions else None
             else:
                 error_detail = response.json().get('detail', 'Unknown error') if response.content else f"HTTP {response.status_code}"
-                self.log_test("Demo User Login and Role Check", False, error_msg=error_detail)
-                return None, False
+                self.log_test("Admin Login and Permissions", False, error_msg=error_detail)
+                return None
         except Exception as e:
-            self.log_test("Demo User Login and Role Check", False, error_msg=str(e))
-            return None, False
+            self.log_test("Admin Login and Permissions", False, error_msg=str(e))
+            return None
 
     def test_buy_management_access(self, user):
         """Test access to Buy Management features for demo user"""
