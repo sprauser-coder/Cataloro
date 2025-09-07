@@ -727,51 +727,51 @@ function ProfilePage() {
                   </p>
                 </div>
 
-                {/* Business Account Section - Clean single toggle with conditional content */}
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-lg ${profileData.is_business ? 'bg-gradient-to-r from-blue-500 to-indigo-600' : 'bg-gradient-to-r from-green-500 to-emerald-600'}`}>
-                        {profileData.is_business ? <Settings className="w-5 h-5 text-white" /> : <User className="w-5 h-5 text-white" />}
+                {/* Account Type Section - SINGLE CONTROL ONLY */}
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className={`p-3 rounded-xl ${profileData.is_business ? 'bg-gradient-to-r from-blue-500 to-indigo-600' : 'bg-gradient-to-r from-green-500 to-emerald-600'}`}>
+                        {profileData.is_business ? <Settings className="w-6 h-6 text-white" /> : <User className="w-6 h-6 text-white" />}
                       </div>
                       <div>
-                        <h4 className="text-md font-semibold text-gray-900 dark:text-white">
-                          {profileData.is_business ? 'Business Account' : 'Private Account'}
-                        </h4>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          Account Type
+                        </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           {profileData.is_business 
-                            ? 'Professional marketplace seller with business verification'
-                            : 'Personal marketplace account for individual sellers'
+                            ? 'Professional business marketplace seller'
+                            : 'Personal marketplace account for individuals'
                           }
                         </p>
                       </div>
                     </div>
                     
-                    {/* Single Clean Toggle Switch */}
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={profileData.is_business}
-                        onChange={(e) => handleBusinessToggle(e.target.checked)}
-                        disabled={!isEditing}
-                        className="sr-only peer"
-                      />
-                      <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}></div>
-                      <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {profileData.is_business ? 'Business' : 'Private'}
+                    {/* ONLY ONE TOGGLE CONTROL - NO CHECKBOXES */}
+                    <div className="flex items-center space-x-4">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {profileData.is_business ? 'Business' : 'Personal'}
                       </span>
-                    </label>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={profileData.is_business}
+                          onChange={(e) => handleBusinessToggle(e.target.checked)}
+                          disabled={!isEditing}
+                          className="sr-only peer"
+                        />
+                        <div className={`w-12 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}></div>
+                      </label>
+                    </div>
                   </div>
 
                   {profileData.is_business && (
-                    /* Business Information Fields - Only show when business account is active */
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-                      <div className="flex items-center mb-4">
+                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+                      <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                        <h5 className="font-medium text-blue-900 dark:text-blue-100">Business Account Settings</h5>
-                      </div>
+                        Business Information
+                      </h4>
                       
-                      {/* Business Fields */}
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
