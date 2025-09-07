@@ -480,8 +480,37 @@ async def register_user(user_data: dict):
 @app.post("/api/auth/login")
 @security_service.limiter.limit("5/minute")  # Rate limit login attempts
 async def login_user(request: Request, credentials: dict):
-    # Mock authentication for demo
-    user = await db.users.find_one({"email": credentials["email"]})
+    # Security validations
+    client_ip = get_client_ip(request)
+    user_agent = request.headers.get("user-agent", "unknown")
+    
+    # Validate input
+    email = credentials.get("email", "").strip()
+    password = credentials.get("password", "")
+    
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password are required")
+    
+    if not security_service.validate_email(email):
+        raise HTTPException(status_code=400, detail="Invalid email format")
+    
+    # Check for login attempt limits
+    if not security_service.check_login_attempts(email) or not security_service.check_login_attempts(client_ip):
+        security_service.log_audit_event(
+            user_id="unknown",
+            action="login_blocked",
+            resource="auth",
+            details={"email": email, "reason": "too_many_attempts"},
+            ip_address=client_ip,
+            user_agent=user_agent
+        )
+        raise HTTPException(
+            status_code=429, 
+            detail="Too many failed login attempts. Please try again later."
+        )
+    
+    # Mock authentication for demo (enhanced with security)
+    user = await db.users.find_one({"email": email})
     if not user:
         # Create demo user if not exists
         user_id = generate_id()
