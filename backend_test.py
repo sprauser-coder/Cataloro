@@ -563,7 +563,10 @@ if __name__ == "__main__":
     print("Testing the fixed inventory/basket calculation functionality with catalyst data preservation...")
     print()
     
-    passed, failed, results = tester.run_catalyst_data_preservation_testing()
-    
-    # Exit with appropriate code
-    exit(0 if failed == 0 else 1)
+    result = tester.run_catalyst_data_preservation_testing()
+    if result:
+        passed, failed, results = result
+        # Exit with appropriate code
+        exit(0 if failed == 0 else 1)
+    else:
+        exit(1)
