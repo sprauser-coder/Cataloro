@@ -5296,7 +5296,16 @@ async def get_user_baskets(user_id: str):
                     tender = await db.tenders.find_one({"id": tender_id})
                     if tender:
                         listing = await db.listings.find_one({"id": tender.get("listing_id")})
-                        # Use listing data if available, otherwise use preserved data
+                        
+                        # Get catalyst data from tender record (preserved at purchase time) with fallback
+                        catalyst_data = {
+                            "weight": tender.get("ceramic_weight") or preserved_catalyst["weight"] or (listing.get("ceramic_weight", 0.0) if listing else 0.0),
+                            "pt_ppm": tender.get("pt_ppm") or preserved_catalyst["pt_ppm"] or (listing.get("pt_ppm", 0.0) if listing else 0.0),
+                            "pd_ppm": tender.get("pd_ppm") or preserved_catalyst["pd_ppm"] or (listing.get("pd_ppm", 0.0) if listing else 0.0),
+                            "rh_ppm": tender.get("rh_ppm") or preserved_catalyst["rh_ppm"] or (listing.get("rh_ppm", 0.0) if listing else 0.0)
+                        }
+                        
+                        # Use listing data if available, otherwise use tender data for display info
                         if listing:
                             seller = await db.users.find_one({"id": listing.get("seller_id")})
                             seller_name = seller.get("username", "Unknown") if seller else "Unknown"
@@ -5304,38 +5313,36 @@ async def get_user_baskets(user_id: str):
                             assigned_item = {
                                 "id": item_id,
                                 "listing_id": tender.get("listing_id"),
-                                "title": listing.get("title", "Unknown Item"),
+                                "title": listing.get("title", tender.get("listing_title", "Unknown Item")),
                                 "price": tender.get("offer_amount", 0),
                                 "seller_name": seller_name,
                                 "image": listing.get("images", [""])[0] if listing.get("images") else None,
                                 "purchased_at": tender.get("accepted_at", tender.get("created_at")),
                                 "assigned_at": assignment.get("assigned_at"),
-                                # Use catalyst data from listing if available, otherwise use preserved data
-                                "weight": listing.get("ceramic_weight") or preserved_catalyst["weight"],
-                                "pt_ppm": listing.get("pt_ppm") or preserved_catalyst["pt_ppm"],
-                                "pd_ppm": listing.get("pd_ppm") or preserved_catalyst["pd_ppm"],
-                                "rh_ppm": listing.get("rh_ppm") or preserved_catalyst["rh_ppm"],
+                                # Use preserved catalyst data from tender
+                                **catalyst_data,
                                 "renumeration_pt": preserved_catalyst["renumeration_pt"],
                                 "renumeration_pd": preserved_catalyst["renumeration_pd"],
                                 "renumeration_rh": preserved_catalyst["renumeration_rh"]
                             }
                             assigned_items.append(assigned_item)
                         else:
-                            # Listing not found, use preserved data from assignment
+                            # Listing not found, use preserved data from tender and assignment
                             seller = await db.users.find_one({"id": tender.get("seller_id")}) 
                             seller_name = seller.get("username", "Unknown") if seller else "Unknown"
                             
                             assigned_item = {
                                 "id": item_id,
                                 "listing_id": tender.get("listing_id"),
-                                "title": f"Item from Tender {tender_id[:8]}...",
+                                "title": tender.get("listing_title", f"Item from Tender {tender_id[:8]}..."),
                                 "price": tender.get("offer_amount", 0),
                                 "seller_name": seller_name,
                                 "image": None,
                                 "purchased_at": tender.get("accepted_at", tender.get("created_at")),
                                 "assigned_at": assignment.get("assigned_at"),
-                                # Use preserved catalyst data from assignment
-                                **preserved_catalyst
+                                # Use preserved catalyst data from tender and assignment
+                                **catalyst_data,
+                                **{k: v for k, v in preserved_catalyst.items() if k.startswith("renumeration_")}
                             }
                             assigned_items.append(assigned_item)
                 
