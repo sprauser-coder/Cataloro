@@ -87,7 +87,7 @@ const AIRecommendationsWidget = ({
 
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
-      await fetch(`${backendUrl}/v2/ai/interaction`, {
+      await fetch(`${backendUrl}/api/v2/ai/interaction`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
