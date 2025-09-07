@@ -1998,10 +1998,16 @@ async def create_listing(listing_data: dict):
         # Insert into database
         result = await db.listings.insert_one(listing_data)
         
+        # Invalidate listings cache when new listing is created
+        await cache_service.invalidate_listings_cache()
+        await cache_service.invalidate_dashboard_cache()
+        
         # Trigger system notifications for listing published event
         seller_id = listing_data.get("seller_id")
         if seller_id:
             await trigger_system_notifications(seller_id, "listing_published")
+        
+        logger.info(f"📝 Created new listing: {listing_data['id']} - Cache invalidated")
         
         return {
             "message": "Listing created successfully",
