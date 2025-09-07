@@ -15,7 +15,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://market-evolution-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://enterprise-market.preview.emergentagent.com/api"
 
 class AdminDashboardTester:
     def __init__(self):

@@ -10,7 +10,7 @@ import uuid
 import time
 from datetime import datetime
 
-BACKEND_URL = "https://market-evolution-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://enterprise-market.preview.emergentagent.com/api"
 
 def log_test(test_name, success, details="", error_msg=""):
     """Log test results"""

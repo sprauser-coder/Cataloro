@@ -10,7 +10,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://market-evolution-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://enterprise-market.preview.emergentagent.com/api"
 
 class DetailedBasketInvestigator:
     def __init__(self):

@@ -19,7 +19,7 @@ import os
 import sys
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://market-evolution-2.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://enterprise-market.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
 class SystemNotificationsComprehensiveTest:

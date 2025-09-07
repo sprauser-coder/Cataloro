@@ -8,7 +8,7 @@ import time
 import json
 from datetime import datetime
 
-BACKEND_URL = "https://market-evolution-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://enterprise-market.preview.emergentagent.com/api"
 
 def test_login_rate_limiting():
     """Test login rate limiting with different approaches"""

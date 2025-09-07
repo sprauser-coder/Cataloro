@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 import threading
 
 # Get backend URL from environment
-BACKEND_URL = "https://market-evolution-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://enterprise-market.preview.emergentagent.com/api"
 
 class NotificationSystemTester:
     def __init__(self):

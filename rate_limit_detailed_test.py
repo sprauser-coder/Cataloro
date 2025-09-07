@@ -7,7 +7,7 @@ import requests
 import time
 import json
 
-BACKEND_URL = "https://market-evolution-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://enterprise-market.preview.emergentagent.com/api"
 
 def test_same_email_rate_limiting():
     """Test rate limiting with same email"""
