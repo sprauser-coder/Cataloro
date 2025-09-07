@@ -20,7 +20,7 @@ function NotificationToast() {
       // Also set up periodic checking for new system notifications every 3 minutes (reduced to prevent rate limiting)
       const interval = setInterval(() => {
         loadSystemNotifications();
-      }, 30000);
+      }, 180000); // 3 minutes instead of 30 seconds
       
       return () => clearInterval(interval);
     }
