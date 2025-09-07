@@ -549,6 +549,12 @@ function AdminPanel() {
             />
           )}
           
+          {activeTab === 'advanced-features' && (
+            <AdvancedFeaturesTab 
+              showToast={showToast}
+            />
+          )}
+          
           {activeTab === 'cats' && (
             <CatDatabaseTab 
               showToast={showToast}
