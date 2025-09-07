@@ -98,6 +98,9 @@ function MessagesPage() {
   const [isFullPageChat, setIsFullPageChat] = useState(false); // New state for full page chat
   const [highlightedMessageId, setHighlightedMessageId] = useState(null); // New state for message highlighting
   
+  // Track read messages in current session (reset when leaving messages area)
+  const [sessionReadMessages, setSessionReadMessages] = useState(new Set());
+  
   // User search for compose
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [userSearchResults, setUserSearchResults] = useState([]);
@@ -107,6 +110,22 @@ function MessagesPage() {
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const messageRefs = useRef({}); // New ref for individual messages
+
+  // Reset read status when component unmounts (leaving messages area)
+  useEffect(() => {
+    return () => {
+      console.log('🔄 Leaving Messages area - resetting read status');
+      // Reset all session read messages back to unread status
+      sessionReadMessages.forEach(messageId => {
+        // This would reset the read status on the server if needed
+        // For now, we'll just clear the local session state
+      });
+      setSessionReadMessages(new Set());
+      
+      // Trigger header notification update to restore original counts
+      window.dispatchEvent(new CustomEvent('messagesSessionReset'));
+    };
+  }, [sessionReadMessages]);
 
   // Helper function to get user badge info (mocked for demo)
   const getUserBadgeInfo = (userId, userName) => {
