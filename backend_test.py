@@ -468,8 +468,10 @@ class BackendTester:
                 self.log_test(
                     "Basket Calculations with Preserved Data", 
                     calculations_working and formula_correct, 
-                    f"Item: {item.get('title')}, PT: {pt_g:.4f}g, PD: {pd_g:.4f}g, RH: {rh_g:.4f}g, "
-                    f"Formula check (PT): Expected {expected_pt_g:.4f}g, Got {pt_g:.4f}g"
+                    f"Item: {item.get('title')}, PT: {pt_g:.4f}g, PD: {pd_g:.4f}g, RH: {rh_g:.4f}g. "
+                    f"Raw data preserved: Weight={weight}g, PT={pt_ppm}ppm, PD={pd_ppm}ppm, RH={rh_ppm}ppm. "
+                    f"Expected PT: {expected_pt_g:.4f}g, Got: {pt_g:.4f}g. "
+                    f"Issue: {'Calculations missing' if not calculations_working else 'Formula incorrect'}"
                 )
                 
                 return calculations_working and formula_correct
