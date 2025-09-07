@@ -2066,6 +2066,216 @@ async def get_system_health():
         logger.error(f"System health check failed: {e}")
         raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")
 
+@app.get("/api/admin/analytics/users")
+async def get_user_analytics(days: int = 30):
+    """Get comprehensive user analytics (Admin only)"""
+    try:
+        analytics = await analytics_service.get_user_analytics(days)
+        return {
+            "analytics": analytics,
+            "status": "success" if "error" not in analytics else "error"
+        }
+    except Exception as e:
+        logger.error(f"User analytics failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Analytics failed: {str(e)}")
+
+@app.get("/api/admin/analytics/sales") 
+async def get_sales_analytics(days: int = 30):
+    """Get comprehensive sales and revenue analytics (Admin only)"""
+    try:
+        analytics = await analytics_service.get_sales_analytics(days)
+        return {
+            "analytics": analytics,
+            "status": "success" if "error" not in analytics else "error"
+        }
+    except Exception as e:
+        logger.error(f"Sales analytics failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Analytics failed: {str(e)}")
+
+@app.get("/api/admin/analytics/marketplace")
+async def get_marketplace_analytics(days: int = 30):
+    """Get comprehensive marketplace analytics (Admin only)"""
+    try:
+        analytics = await analytics_service.get_marketplace_analytics(days)
+        return {
+            "analytics": analytics,
+            "status": "success" if "error" not in analytics else "error"
+        }
+    except Exception as e:
+        logger.error(f"Marketplace analytics failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Analytics failed: {str(e)}")
+
+@app.get("/api/admin/analytics/business-report")
+async def generate_business_report(
+    report_type: str = "comprehensive",
+    days: int = 30
+):
+    """Generate comprehensive business intelligence report (Admin only)"""
+    try:
+        report = await analytics_service.generate_business_report(report_type, days)
+        return {
+            "report": report,
+            "status": "success" if "error" not in report else "error"
+        }
+    except Exception as e:
+        logger.error(f"Business report generation failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Report generation failed: {str(e)}")
+
+@app.get("/api/admin/analytics/predictive")
+async def get_predictive_analytics(forecast_days: int = 30):
+    """Get predictive analytics and forecasts (Admin only)"""
+    try:
+        predictions = await analytics_service.get_predictive_analytics(forecast_days)
+        return {
+            "predictions": predictions,
+            "status": "success" if "error" not in predictions else "error"
+        }
+    except Exception as e:
+        logger.error(f"Predictive analytics failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Predictive analytics failed: {str(e)}")
+
+@app.get("/api/admin/analytics/dashboard")
+async def get_analytics_dashboard():
+    """Get comprehensive analytics dashboard data (Admin only)"""
+    try:
+        # Get all analytics for dashboard
+        user_analytics = await analytics_service.get_user_analytics(30)
+        sales_analytics = await analytics_service.get_sales_analytics(30)
+        marketplace_analytics = await analytics_service.get_marketplace_analytics(30)
+        predictions = await analytics_service.get_predictive_analytics(30)
+        
+        # Compile dashboard data
+        dashboard = {
+            "overview": {
+                "total_users": user_analytics.get("summary", {}).get("total_users", 0),
+                "new_users_30d": user_analytics.get("summary", {}).get("new_users", 0),
+                "total_revenue": sales_analytics.get("summary", {}).get("total_revenue", 0),
+                "total_transactions": sales_analytics.get("summary", {}).get("total_transactions", 0),
+                "active_listings": marketplace_analytics.get("summary", {}).get("total_active_listings", 0),
+                "conversion_rate": sales_analytics.get("summary", {}).get("conversion_rate", 0)
+            },
+            "trends": {
+                "user_growth_rate": user_analytics.get("summary", {}).get("user_growth_rate", 0),
+                "avg_transaction_value": sales_analytics.get("summary", {}).get("avg_transaction_value", 0),
+                "new_listings_30d": marketplace_analytics.get("summary", {}).get("new_listings", 0)
+            },
+            "forecasts": {
+                "revenue_forecast": predictions.get("revenue_forecast", {}),
+                "user_growth_forecast": predictions.get("user_growth_forecast", {}),
+                "listing_volume_forecast": predictions.get("listing_volume_forecast", {})
+            },
+            "charts_data": {
+                "daily_registrations": user_analytics.get("user_registrations", {}).get("daily_registrations", []),
+                "daily_revenue": sales_analytics.get("revenue", {}).get("daily_revenue", {}),
+                "user_type_breakdown": user_analytics.get("user_registrations", {}).get("user_type_breakdown", []),
+                "revenue_by_category": sales_analytics.get("revenue", {}).get("revenue_by_category", {})
+            },
+            "performance_indicators": {
+                "user_engagement_score": user_analytics.get("engagement_metrics", {}).get("engagement_score", 0),
+                "marketplace_health": "healthy" if marketplace_analytics.get("summary", {}).get("total_active_listings", 0) > 10 else "needs_attention",
+                "revenue_trend": "growing" if sales_analytics.get("summary", {}).get("total_revenue", 0) > 0 else "stable"
+            }
+        }
+        
+        return dashboard
+        
+    except Exception as e:
+        logger.error(f"Analytics dashboard failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Dashboard generation failed: {str(e)}")
+
+@app.get("/api/admin/analytics/kpis")
+async def get_key_performance_indicators():
+    """Get key performance indicators summary (Admin only)"""
+    try:
+        # Get current metrics
+        user_analytics = await analytics_service.get_user_analytics(30)
+        sales_analytics = await analytics_service.get_sales_analytics(30)
+        marketplace_analytics = await analytics_service.get_marketplace_analytics(30)
+        
+        # Calculate KPIs
+        kpis = {
+            "business_metrics": {
+                "total_users": user_analytics.get("summary", {}).get("total_users", 0),
+                "monthly_active_users": user_analytics.get("summary", {}).get("active_users", 0),
+                "user_growth_rate": user_analytics.get("summary", {}).get("user_growth_rate", 0),
+                "total_revenue": sales_analytics.get("summary", {}).get("total_revenue", 0),
+                "avg_transaction_value": sales_analytics.get("summary", {}).get("avg_transaction_value", 0),
+                "conversion_rate": sales_analytics.get("summary", {}).get("conversion_rate", 0),
+                "active_listings": marketplace_analytics.get("summary", {}).get("total_active_listings", 0)
+            },
+            "growth_indicators": {
+                "user_acquisition_trend": "growing" if user_analytics.get("summary", {}).get("user_growth_rate", 0) > 0 else "stable",
+                "revenue_trend": "growing" if sales_analytics.get("summary", {}).get("total_revenue", 0) > 0 else "stable",
+                "marketplace_activity": "active" if marketplace_analytics.get("summary", {}).get("total_active_listings", 0) > 20 else "moderate"
+            },
+            "health_scores": {
+                "user_health": min(max(user_analytics.get("summary", {}).get("user_growth_rate", 0) * 2, 0), 100),
+                "revenue_health": min(sales_analytics.get("summary", {}).get("avg_transaction_value", 0), 100),
+                "marketplace_health": min(marketplace_analytics.get("summary", {}).get("total_active_listings", 0) * 2, 100)
+            },
+            "recommendations": [
+                {
+                    "category": "Growth",
+                    "priority": "high",
+                    "message": "Focus on user acquisition to drive marketplace growth",
+                    "metric": "user_growth_rate"
+                },
+                {
+                    "category": "Revenue",
+                    "priority": "medium", 
+                    "message": "Optimize conversion funnel to increase transaction rates",
+                    "metric": "conversion_rate"
+                },
+                {
+                    "category": "Engagement",
+                    "priority": "medium",
+                    "message": "Encourage more listing creation to boost marketplace activity",
+                    "metric": "active_listings"
+                }
+            ]
+        }
+        
+        # Calculate overall health score
+        health_scores = kpis["health_scores"]
+        overall_health = (health_scores["user_health"] + health_scores["revenue_health"] + health_scores["marketplace_health"]) / 3
+        kpis["overall_health_score"] = round(overall_health, 1)
+        
+        return kpis
+        
+    except Exception as e:
+        logger.error(f"KPIs calculation failed: {e}")
+        raise HTTPException(status_code=500, detail=f"KPIs calculation failed: {str(e)}")
+
+@app.post("/api/admin/analytics/reports/generate")
+async def generate_custom_report(report_config: dict):
+    """Generate custom analytics report (Admin only)"""
+    try:
+        report_type = report_config.get("type", "comprehensive")
+        days = report_config.get("days", 30)
+        include_predictions = report_config.get("include_predictions", True)
+        
+        # Generate base report
+        report = await analytics_service.generate_business_report(report_type, days)
+        
+        # Add predictions if requested
+        if include_predictions:
+            predictions = await analytics_service.get_predictive_analytics(30)
+            report["predictions"] = predictions
+        
+        # Add custom formatting
+        report["report_config"] = report_config
+        report["export_formats"] = ["json", "pdf", "excel"]  # Available formats
+        
+        return {
+            "report": report,
+            "status": "success",
+            "message": f"Custom {report_type} report generated successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Custom report generation failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Custom report failed: {str(e)}")
+
 @app.post("/api/admin/users/bulk-action")
 async def bulk_user_action(action_data: dict):
     """Bulk operations on users"""
