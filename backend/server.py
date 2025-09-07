@@ -3999,6 +3999,74 @@ async def get_catalyst_calculations():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to calculate prices: {str(e)}")
 
+@app.get("/api/admin/catalyst/unified-calculations")
+async def get_unified_catalyst_calculations():
+    """Get unified calculations combining both price and content data for all catalysts"""
+    try:
+        # Get price settings
+        settings = await db.catalyst_price_settings.find_one({"type": "price_settings"})
+        if not settings:
+            # Default values
+            settings = {
+                "pt_price": 25.0,
+                "pd_price": 18.0,
+                "rh_price": 45.0,
+                "renumeration_pt": 0.95,
+                "renumeration_pd": 0.92,
+                "renumeration_rh": 0.88
+            }
+        
+        # Get all catalyst data
+        catalysts = await db.catalyst_data.find({}).to_list(length=None)
+        
+        # Get price overrides
+        overrides = await db.catalyst_price_overrides.find({}).to_list(length=None)
+        override_dict = {override['catalyst_id']: override for override in overrides}
+        
+        # Calculate unified data (both price and content)
+        unified_calculations = []
+        for catalyst in catalysts:
+            catalyst_id = catalyst['id']
+            ceramic_weight = catalyst.get('ceramic_weight', 0)
+            pt_ppm = catalyst.get('pt_ppm', 0)
+            pd_ppm = catalyst.get('pd_ppm', 0)
+            rh_ppm = catalyst.get('rh_ppm', 0)
+            
+            # Calculate content values (Pt g, Pd g, Rh g)
+            pt_g = (ceramic_weight * pt_ppm / 1000) * settings['renumeration_pt']
+            pd_g = (ceramic_weight * pd_ppm / 1000) * settings['renumeration_pd']
+            rh_g = (ceramic_weight * rh_ppm / 1000) * settings['renumeration_rh']
+            
+            # Calculate price
+            if catalyst_id in override_dict and override_dict[catalyst_id]['is_override']:
+                total_price = override_dict[catalyst_id]['override_price']
+                is_override = True
+            else:
+                # Calculate standard price
+                pt_value = pt_g * settings['pt_price']
+                pd_value = pd_g * settings['pd_price'] 
+                rh_value = rh_g * settings['rh_price']
+                
+                total_price = pt_value + pd_value + rh_value
+                is_override = False
+            
+            unified_calculations.append({
+                "catalyst_id": catalyst_id,  # Keep internal ID for actions, but don't show as Database ID
+                "cat_id": catalyst.get('cat_id', ''),
+                "name": catalyst.get('name', ''),
+                "weight": round(ceramic_weight, 2),
+                "total_price": round(total_price, 2),
+                "pt_g": round(pt_g, 4),
+                "pd_g": round(pd_g, 4),
+                "rh_g": round(rh_g, 4),
+                "is_override": is_override
+            })
+        
+        return unified_calculations
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get unified calculations: {str(e)}")
+
 @app.post("/api/admin/catalyst/override/{catalyst_id}")
 async def set_price_override(catalyst_id: str, override_data: CatalystPriceOverride):
     """Set price override for specific catalyst"""
