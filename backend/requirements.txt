@@ -12,3 +12,7 @@ redis==5.0.1
 aioredis==2.0.1
 elasticsearch==8.11.1
 aioelasticsearch==0.7.0
+slowapi==0.1.9
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
