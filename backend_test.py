@@ -313,11 +313,17 @@ class BackendTester:
     def test_create_basket_and_assign_item(self, bought_item):
         """Test creating a basket and assigning the bought item to it"""
         try:
-            if not bought_item or not self.admin_user:
-                self.log_test("Create Basket and Assign Item", False, error_msg="Bought item or admin user not available")
+            if not bought_item:
+                self.log_test("Create Basket and Assign Item", False, error_msg="Bought item not available")
                 return None
                 
-            user_id = self.admin_user.get('id')
+            # Use buyer user if available, otherwise admin
+            test_user = getattr(self, 'buyer_user', self.admin_user)
+            if not test_user:
+                self.log_test("Create Basket and Assign Item", False, error_msg="No test user available")
+                return None
+                
+            user_id = test_user.get('id')
             
             # Create a new basket
             basket_data = {
