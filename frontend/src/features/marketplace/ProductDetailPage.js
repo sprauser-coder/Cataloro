@@ -485,7 +485,7 @@ function ProductDetailPage() {
             </div>
 
             {/* Catalyst Database Fields - Only visible to Admin/Admin-Manager */}
-            {isAdminOrManager && (product.ceramic_weight || product.pt_ppm || product.pd_ppm || product.rh_ppm) && (
+            {isAdminOrManager && (
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
                 <div className="flex items-center space-x-2 mb-4">
                   <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -495,32 +495,61 @@ function ProductDetailPage() {
                   </span>
                 </div>
                 
+                {/* Debug Info */}
+                <div className="bg-yellow-100 dark:bg-yellow-900/30 p-3 rounded-lg mb-4">
+                  <p className="text-xs text-yellow-800 dark:text-yellow-200">
+                    <strong>Debug Info:</strong> ceramic_weight: {product.ceramic_weight || 'undefined'}, 
+                    pt_ppm: {product.pt_ppm || 'undefined'}, pd_ppm: {product.pd_ppm || 'undefined'}, 
+                    rh_ppm: {product.rh_ppm || 'undefined'}
+                  </p>
+                </div>
+                
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {product.ceramic_weight && (
+                  {product.ceramic_weight ? (
                     <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-blue-800">
                       <div className="text-xs text-blue-600 dark:text-blue-400 uppercase font-medium mb-1">Weight</div>
                       <div className="text-lg font-bold text-gray-900 dark:text-white">{product.ceramic_weight}g</div>
                     </div>
+                  ) : (
+                    <div className="text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 uppercase font-medium mb-1">Weight</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">No data</div>
+                    </div>
                   )}
                   
-                  {product.pt_ppm !== undefined && (
+                  {product.pt_ppm !== undefined ? (
                     <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-blue-800">
                       <div className="text-xs text-blue-600 dark:text-blue-400 uppercase font-medium mb-1">Pt ppm</div>
                       <div className="text-lg font-bold text-gray-900 dark:text-white">{product.pt_ppm}</div>
                     </div>
-                  )}
-                  
-                  {product.pd_ppm !== undefined && (
-                    <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-blue-800">
-                      <div className="text-xs text-blue-600 dark:text-blue-400 uppercase font-medium mb-1">Pd ppm</div>
-                      <div className="text-lg font-bold text-gray-900 dark:text-white">{product.pd_ppm}</div>
+                  ) : (
+                    <div className="text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 uppercase font-medium mb-1">Pt ppm</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">No data</div>
                     </div>
                   )}
                   
-                  {product.rh_ppm !== undefined && (
+                  {product.pd_ppm !== undefined ? (
                     <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-blue-800">
-                      <div className="text-xs text-blue-600 dark:text-blue-400 uppercase font-medium mb-1">Rh ppm</div>
+                      <div className="text-xs text-green-600 dark:text-green-400 uppercase font-medium mb-1">Pd ppm</div>
+                      <div className="text-lg font-bold text-gray-900 dark:text-white">{product.pd_ppm}</div>
+                    </div>
+                  ) : (
+                    <div className="text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 uppercase font-medium mb-1">Pd ppm</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">No data</div>
+                    </div>
+                  )}
+                  
+                  {product.rh_ppm !== undefined ? (
+                    <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-100 dark:border-blue-800">
+                      <div className="text-xs text-purple-600 dark:text-purple-400 uppercase font-medium mb-1">Rh ppm</div>
                       <div className="text-lg font-bold text-gray-900 dark:text-white">{product.rh_ppm}</div>
+                    </div>
+                  ) : (
+                    <div className="text-center p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 uppercase font-medium mb-1">Rh ppm</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">No data</div>
                     </div>
                   )}
                 </div>
