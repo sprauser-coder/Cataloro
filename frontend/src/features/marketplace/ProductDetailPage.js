@@ -393,17 +393,32 @@ function ProductDetailPage() {
               </button>
             </div>
 
-            {/* Price Display Section */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="text-4xl font-bold text-gray-900 dark:text-white">
-                  €{((product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price).toLocaleString()}
-                </div>
-                {product.bid_info?.has_bids && (
-                  <div className="text-lg text-gray-500 dark:text-gray-400 line-through">
-                    Initial: €{product.price.toLocaleString()}
+            {/* Enhanced Price Display */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/40 rounded-xl p-6 border-2 border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-semibold text-green-700 dark:text-green-300 uppercase tracking-wide mb-1">
+                    {product.bid_info?.has_bids ? 'Current Highest Bid' : 'Starting Price'}
                   </div>
-                )}
+                  <div className="text-4xl font-bold text-green-900 dark:text-green-100">
+                    €{((product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price).toLocaleString()}
+                  </div>
+                  {product.bid_info?.has_bids && (
+                    <div className="text-sm text-green-600 dark:text-green-400 mt-1">
+                      Starting price: €{product.price.toLocaleString()}
+                    </div>
+                  )}
+                </div>
+                <div className="text-right">
+                  <div className="bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium">
+                    {product.bid_info?.has_bids ? `${product.bid_info.total_bids || 0} bids` : 'No bids yet'}
+                  </div>
+                  {product.bid_info?.has_bids && (
+                    <div className="text-xs text-green-700 dark:text-green-300 mt-1">
+                      Total bids received
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
