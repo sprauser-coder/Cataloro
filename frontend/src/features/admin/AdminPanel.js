@@ -7717,6 +7717,7 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
     price_range_max_percent: 10.0
   });
   const [calculations, setCalculations] = useState([]);
+  const [unifiedCalculations, setUnifiedCalculations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showOverrideModal, setShowOverrideModal] = useState(false);
