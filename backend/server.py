@@ -1779,6 +1779,64 @@ async def delete_user_by_admin(user_id: str):
         print(f"Error deleting user: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to delete user: {str(e)}")
 
+@app.post("/api/admin/search/sync")
+async def sync_listings_to_elasticsearch():
+    """Sync all existing listings to Elasticsearch (Admin only)"""
+    try:
+        if not search_service.connected:
+            return {
+                "message": "Elasticsearch not available - sync skipped",
+                "synced": 0,
+                "status": "elasticsearch_disabled"
+            }
+        
+        # Get all active listings from database
+        listings = await db.listings.find({"status": "active"}).to_list(length=None)
+        
+        if not listings:
+            return {
+                "message": "No listings found to sync",
+                "synced": 0,
+                "status": "no_data"
+            }
+        
+        # Enrich listings with seller information for better search
+        enriched_listings = []
+        for listing in listings:
+            # Ensure consistent ID format
+            if 'id' not in listing and '_id' in listing:
+                listing['id'] = str(listing['_id'])
+            listing.pop('_id', None)
+            
+            # Fetch seller information
+            seller_id = listing.get('seller_id')
+            if seller_id:
+                seller_profile = await db.users.find_one({"id": seller_id})
+                if seller_profile:
+                    listing['seller'] = {
+                        "name": seller_profile.get('username', 'Unknown'),
+                        "username": seller_profile.get('username', 'Unknown'),
+                        "email": seller_profile.get('email', ''),
+                        "is_business": seller_profile.get('is_business', False),
+                        "verified": seller_profile.get('verified', False)
+                    }
+            
+            enriched_listings.append(listing)
+        
+        # Bulk index to Elasticsearch
+        synced_count = await search_service.bulk_index_listings(enriched_listings)
+        
+        return {
+            "message": f"Successfully synced {synced_count} listings to Elasticsearch",
+            "synced": synced_count,
+            "total_found": len(listings),
+            "status": "success"
+        }
+        
+    except Exception as e:
+        logger.error(f"Listing sync failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
+
 @app.post("/api/admin/users/bulk-action")
 async def bulk_user_action(action_data: dict):
     """Bulk operations on users"""
