@@ -415,135 +415,150 @@ function AdminPanel() {
   });
 
   return (
-    <div className="space-y-8">
-      {/* Page Header */}
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              {isAdminManager() ? 'Manager Panel' : 'Admin Panel'}
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">
-              {isAdminManager() 
-                ? 'Limited administrative access with live data management'
-                : 'Full control over your marketplace platform'
-              }
-            </p>
-          </div>
-          <span className={`px-3 py-1 rounded-full text-sm font-medium backdrop-blur-md ${
-            isAdminManager()
-              ? 'bg-blue-100/80 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
-              : 'bg-purple-100/80 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
-          }`}>
-            {isAdminManager() ? 'MANAGER ACCESS' : 'ADMIN ACCESS'}
-          </span>
-        </div>
-      </div>
-
-      {/* Tab Navigation - Fixed Width Container */}
-      <div className="cataloro-card-glass">
-        <div className="border-b border-white/10 dark:border-white/10">
-          <nav className="-mb-px">
-            <div className="flex justify-between px-2 lg:px-4 xl:px-6">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                
-                if (tab.isLink) {
-                  return (
-                    <Link
-                      key={tab.id}
-                      to={tab.linkTo}
-                      className={`admin-tab-button flex flex-col sm:flex-row items-center justify-center px-1 sm:px-2 lg:px-3 py-2 lg:py-3 text-xs lg:text-sm font-medium border-b-2 transition-all duration-200 flex-1 text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 rounded-t-lg`}
-                      title={tab.label}
-                    >
-                      <Icon className="w-4 h-4 lg:w-5 lg:h-5 mb-1 sm:mb-0 sm:mr-1 lg:mr-2 flex-shrink-0" />
-                      <span className="text-xs sm:text-xs lg:text-sm leading-tight text-center sm:text-left">
-                        <span className="hidden xl:inline">{tab.label}</span>
-                        <span className="xl:hidden">{tab.shortLabel}</span>
-                      </span>
-                    </Link>
-                  );
-                }
-                
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`admin-tab-button flex flex-col sm:flex-row items-center justify-center px-1 sm:px-2 lg:px-3 py-2 lg:py-3 text-xs lg:text-sm font-medium border-b-2 transition-all duration-200 flex-1 ${
-                      isActive
-                        ? 'active text-gray-900 dark:text-white border-blue-600 bg-white/10 dark:bg-white/10 backdrop-blur-md rounded-t-lg'
-                        : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:bg-white/5 dark:hover:bg-white/5 rounded-t-lg'
-                    }`}
-                    title={tab.label}
-                  >
-                    <Icon className="w-4 h-4 lg:w-5 lg:h-5 mb-1 sm:mb-0 sm:mr-1 lg:mr-2 flex-shrink-0" />
-                    <span className="text-xs sm:text-xs lg:text-sm leading-tight text-center sm:text-left">
-                      <span className="hidden xl:inline">{tab.label}</span>
-                      <span className="xl:hidden">{tab.shortLabel}</span>
-                    </span>
-                  </button>
-                );
-              })}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Left Sidebar Navigation */}
+      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-lg">
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+              <Shield className="w-5 h-5 text-white" />
             </div>
-          </nav>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900 dark:text-white">Admin Panel</h1>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center space-x-3 px-4 py-3 text-left rounded-lg transition-colors duration-200 ${
+                  isActive
+                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-r-2 border-blue-500'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                }`}
+              >
+                <div className={`p-2 rounded-lg ${
+                  isActive 
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                    : 'bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
+                }`}>
+                  <tab.icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-medium">{tab.label}</div>
+                  {tab.shortLabel !== tab.label && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {getTabDescription(tab.id)}
+                    </div>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-medium">A</span>
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-900 dark:text-white">Admin User</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">Full Access</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Tab Content */}
-      {activeTab === 'dashboard' && (
-        <MegaUnifiedDashboard />
-      )}
-      
-      {activeTab === 'documentation' && (
-        <DocumentationDashboard />
-      )}
-      
-      {activeTab === 'media-browser' && (
-        <MediaBrowserDashboard />
-      )}
-      
-      {activeTab === 'users' && (
-        <UsersTab 
-          users={users} 
-          onUpdateUser={fetchUsers}
-          showToast={showToast}
-        />
-      )}
-      
-      {activeTab === 'listings' && (
-        <ListingsTab 
-          showToast={showToast}
-        />
-      )}
-      
-      {activeTab === 'business' && (
-        <BusinessTab 
-          showToast={showToast}
-        />
-      )}
-      
-      {activeTab === 'cats' && (
-        <CatDatabaseTab 
-          showToast={showToast}
-          permissions={permissions}
-          isAdminManager={isAdminManager}
-        />
-      )}
-      
-      {activeTab === 'site-settings' && (
-        <SettingsTab 
-          settings={settings}
-          onUpdateSettings={fetchSettings}
-          showToast={showToast}
-        />
-      )}
-      
-      {activeTab === 'administration' && (
-        <SiteAdministrationTab 
-          showToast={showToast}
-        />
-      )}
+      {/* Main Content Area */}
+      <div className="ml-64">
+        {/* Top Header Bar */}
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {tabs.find(tab => tab.id === activeTab)?.label || 'Dashboard'}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
+                {getTabDescription(activeTab)}
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full text-sm font-medium">
+                ADMIN ACCESS
+              </div>
+              <button className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <RefreshCw className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className="p-6">
+          {activeTab === 'dashboard' && (
+            <MegaUnifiedDashboard />
+          )}
+          
+          {activeTab === 'documentation' && (
+            <DocumentationDashboard />
+          )}
+          
+          {activeTab === 'media-browser' && (
+            <MediaBrowserDashboard />
+          )}
+          
+          {activeTab === 'users' && (
+            <UsersTab 
+              users={users} 
+              onUpdateUser={fetchUsers}
+              showToast={showToast}
+            />
+          )}
+          
+          {activeTab === 'listings' && (
+            <ListingsTab 
+              showToast={showToast}
+            />
+          )}
+          
+          {activeTab === 'business' && (
+            <BusinessTab 
+              showToast={showToast}
+            />
+          )}
+          
+          {activeTab === 'cats' && (
+            <CatDatabaseTab 
+              showToast={showToast}
+              permissions={permissions}
+              isAdminManager={isAdminManager}
+            />
+          )}
+          
+          {activeTab === 'site-settings' && (
+            <SettingsTab 
+              settings={settings}
+              onUpdateSettings={fetchSettings}
+              showToast={showToast}
+            />
+          )}
+          
+          {activeTab === 'administration' && (
+            <SiteAdministrationTab 
+              showToast={showToast}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
