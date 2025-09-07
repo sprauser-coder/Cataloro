@@ -513,6 +513,42 @@ function ProductDetailPage() {
               />
             )}
 
+            {/* Seller Information - Between Time Limit and Location */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/40 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-800">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                  {(product.seller?.username || product.seller?.name || 'U').charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wide mb-1">
+                    Sold by
+                  </div>
+                  <div className="text-xl font-bold text-blue-900 dark:text-blue-100">
+                    {product.seller?.username || product.seller?.name || 'Unknown Seller'}
+                  </div>
+                  {product.seller?.is_business && product.seller?.business_name && (
+                    <div className="text-sm text-blue-600 dark:text-blue-400 mt-1">
+                      {product.seller.business_name}
+                    </div>
+                  )}
+                </div>
+                <div className="text-right">
+                  <button
+                    onClick={() => navigate(`/profile/${product.seller_id}`)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    View Profile
+                  </button>
+                  {product.seller?.verified && (
+                    <div className="flex items-center justify-end space-x-1 mt-2">
+                      <Verified className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <span className="text-xs text-blue-600 dark:text-blue-400">Verified</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
 
 
             {/* Category */}
