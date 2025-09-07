@@ -35,7 +35,7 @@ function CreateListingPage() {
   const permissions = usePermissions();
   
   // Safety check for permissions
-  const isAdminOrManager = permissions?.ui?.showAdminPanelLink || false;
+  const isAdminOrManager = permissions?.userRole === 'Admin' || permissions?.userRole === 'Admin-Manager' || permissions?.ui?.showAdminPanelLink || false;
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
