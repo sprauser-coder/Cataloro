@@ -38,6 +38,8 @@ import {
   Lock,
   Zap,
   Mail,
+  BookOpen,
+  Image as ImageIcon,
   Bell,
   Monitor,
   Smartphone,
