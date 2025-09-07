@@ -25,7 +25,7 @@ const MultiCurrencyPrice = ({
   const fetchExchangeRates = async () => {
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
-      const response = await fetch(`${backendUrl}/v2/currency/rates`);
+      const response = await fetch(`${backendUrl}/api/v2/currency/rates`);
       const data = await response.json();
       
       if (data.success) {
