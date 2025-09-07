@@ -183,7 +183,7 @@ class CatalystListingTester:
             
             if response.status_code == 200:
                 listing_result = response.json()
-                self.created_listing_id = listing_result.get("id")
+                self.created_listing_id = listing_result.get("listing_id")
                 
                 self.log_test("Listing Creation with Catalyst Data", True, 
                             f"Successfully created listing ID: {self.created_listing_id}")
