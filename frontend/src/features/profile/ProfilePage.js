@@ -968,7 +968,7 @@ function ProfilePage() {
             </div>
           )}
 
-          {/* Preferences Tab */}
+          {/* Preferences Tab - CLEAN TOGGLES ONLY */}
           {activeTab === 'preferences' && (
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
@@ -983,27 +983,35 @@ function ProfilePage() {
                     Notifications
                   </h3>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {[
                       { key: 'emailNotifications', label: 'Email Notifications', description: 'Receive notifications via email' },
                       { key: 'smsNotifications', label: 'SMS Notifications', description: 'Receive notifications via SMS' },
                       { key: 'marketingEmails', label: 'Marketing Emails', description: 'Receive promotional content' },
                       { key: 'browserNotifications', label: 'Browser Notifications', description: 'Show desktop notifications' }
                     ].map((pref) => (
-                      <div key={pref.key} className="flex items-center justify-between">
+                      <div key={pref.key} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
                         <div>
                           <h4 className="font-medium text-gray-900 dark:text-white">{pref.label}</h4>
                           <p className="text-sm text-gray-600 dark:text-gray-400">{pref.description}</p>
                         </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={preferences[pref.key]}
-                            onChange={(e) => handlePreferenceChange(pref.key, e.target.checked)}
-                            className="sr-only peer"
-                          />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        </label>
+                        
+                        {/* SINGLE TOGGLE - NO CHECKBOX */}
+                        <div className="flex items-center space-x-3">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {preferences[pref.key] ? 'On' : 'Off'}
+                          </span>
+                          <button
+                            onClick={() => handlePreferenceChange(pref.key, !preferences[pref.key])}
+                            className={`w-11 h-6 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                              preferences[pref.key] ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
+                            }`}
+                          >
+                            <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${
+                              preferences[pref.key] ? 'translate-x-5' : 'translate-x-0.5'
+                            }`} />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1016,26 +1024,34 @@ function ProfilePage() {
                     Privacy
                   </h3>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {[
                       { key: 'publicProfile', label: 'Public Profile', description: 'Make your profile visible to everyone' },
                       { key: 'showEmail', label: 'Show Email', description: 'Display email on public profile' },
                       { key: 'showPhone', label: 'Show Phone', description: 'Display phone number on public profile' }
                     ].map((pref) => (
-                      <div key={pref.key} className="flex items-center justify-between">
+                      <div key={pref.key} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
                         <div>
                           <h4 className="font-medium text-gray-900 dark:text-white">{pref.label}</h4>
                           <p className="text-sm text-gray-600 dark:text-gray-400">{pref.description}</p>
                         </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={preferences[pref.key]}
-                            onChange={(e) => handlePreferenceChange(pref.key, e.target.checked)}
-                            className="sr-only peer"
-                          />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        </label>
+                        
+                        {/* SINGLE TOGGLE - NO CHECKBOX */}
+                        <div className="flex items-center space-x-3">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {preferences[pref.key] ? 'On' : 'Off'}
+                          </span>
+                          <button
+                            onClick={() => handlePreferenceChange(pref.key, !preferences[pref.key])}
+                            className={`w-11 h-6 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                              preferences[pref.key] ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
+                            }`}
+                          >
+                            <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out ${
+                              preferences[pref.key] ? 'translate-x-5' : 'translate-x-0.5'
+                            }`} />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
