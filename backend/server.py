@@ -82,6 +82,29 @@ MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client.cataloro_marketplace
 
+# Startup and Shutdown Events
+@app.on_event("startup")
+async def startup_event():
+    """Initialize services on startup"""
+    logger.info("🚀 Starting Cataloro Marketplace API...")
+    
+    # Initialize cache service
+    await init_cache()
+    
+    # Run database optimization (indexes) on startup
+    try:
+        from optimize_database import create_database_indexes
+        await create_database_indexes()
+        logger.info("✅ Database indexes optimized")
+    except Exception as e:
+        logger.warning(f"⚠️ Database optimization skipped: {e}")
+
+@app.on_event("shutdown") 
+async def shutdown_event():
+    """Cleanup on shutdown"""
+    logger.info("🛑 Shutting down Cataloro Marketplace API...")
+    await cleanup_cache()
+
 # Pydantic Models
 class User(BaseModel):
     id: str = None
