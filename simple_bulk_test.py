@@ -7,7 +7,7 @@ Testing bulk operations with existing users and non-destructive operations
 import requests
 import json
 
-BACKEND_URL = "https://cataloro-admin-5.preview.emergentagent.com/api"
+BACKEND_URL = "https://catalyst-calc.preview.emergentagent.com/api"
 
 def test_bulk_endpoint_exists():
     """Test that the bulk endpoint exists and responds"""

@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get backend URL from environment
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://cataloro-admin-5.preview.emergentagent.com')
+BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://catalyst-calc.preview.emergentagent.com')
 BASE_URL = f"{BACKEND_URL}/api"
 
 class FocusedSystemNotificationsTest:

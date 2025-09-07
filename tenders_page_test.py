@@ -13,7 +13,7 @@ import sys
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://cataloro-admin-5.preview.emergentagent.com"
+BACKEND_URL = "https://catalyst-calc.preview.emergentagent.com"
 
 class TendersPageTester:
     def __init__(self):
