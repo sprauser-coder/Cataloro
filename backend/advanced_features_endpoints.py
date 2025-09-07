@@ -385,8 +385,14 @@ async def get_market_trends(time_period: str = "30d"):
 async def get_seller_performance(seller_id: Optional[str] = None):
     """Get seller performance forecasting"""
     try:
+        # Import db from server module
+        import sys
+        import os
+        sys.path.append(os.path.dirname(__file__))
+        from server import db
+        
         from unified_analytics_service import get_unified_analytics_service
-        analytics_service = await get_unified_analytics_service()
+        analytics_service = await get_unified_analytics_service(db)
         
         performance = await analytics_service.forecast_seller_performance(seller_id)
         
