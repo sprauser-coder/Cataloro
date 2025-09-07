@@ -375,6 +375,84 @@ function ProductDetailPage() {
               </div>
             </div>
 
+            {/* Market Range - similar to tile listings format */}
+            {product.market_range && (
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-6 border border-purple-200 dark:border-purple-800">
+                <div className="flex items-center space-x-2 mb-2">
+                  <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100">Market Range</h3>
+                </div>
+                <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                  {product.market_range}
+                </div>
+              </div>
+            )}
+
+            {/* Time Left - Always show for consistency */}
+            <div className={`rounded-xl border-2 p-6 ${
+              product.time_info?.has_time_limit
+                ? product.time_info.is_expired 
+                  ? 'border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/30'
+                  : product.time_info.time_remaining_seconds <= 3600
+                    ? 'border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/30'
+                    : product.time_info.time_remaining_seconds <= 21600
+                      ? 'border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/30'
+                      : product.time_info.time_remaining_seconds <= 86400
+                        ? 'border-yellow-200 dark:border-yellow-800 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/30'
+                        : 'border-green-200 dark:border-green-800 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/30'
+                : 'border-green-200 dark:border-green-800 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/30'
+            }`}>
+              <div className="flex items-center space-x-3">
+                <div className={`p-2 rounded-lg shadow-sm ${
+                  product.time_info?.has_time_limit
+                    ? product.time_info.is_expired || product.time_info.time_remaining_seconds <= 3600
+                      ? 'bg-gradient-to-r from-red-500 to-red-600'
+                      : product.time_info.time_remaining_seconds <= 21600
+                        ? 'bg-gradient-to-r from-orange-500 to-orange-600'
+                        : product.time_info.time_remaining_seconds <= 86400
+                          ? 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+                          : 'bg-gradient-to-r from-green-500 to-green-600'
+                    : 'bg-gradient-to-r from-green-500 to-green-600'
+                }`}>
+                  <Clock className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <div className={`text-sm font-medium uppercase tracking-wide ${
+                    product.time_info?.has_time_limit
+                      ? product.time_info.is_expired || product.time_info.time_remaining_seconds <= 3600
+                        ? 'text-red-700 dark:text-red-300'
+                        : product.time_info.time_remaining_seconds <= 21600
+                          ? 'text-orange-700 dark:text-orange-300'
+                          : product.time_info.time_remaining_seconds <= 86400
+                            ? 'text-yellow-700 dark:text-yellow-300'
+                            : 'text-green-700 dark:text-green-300'
+                      : 'text-green-700 dark:text-green-300'
+                  }`}>
+                    {product.time_info?.has_time_limit 
+                      ? (product.time_info.is_expired ? 'Expired' : 'Time Left')
+                      : 'Without Time Limit'
+                    }
+                  </div>
+                  <div className={`text-xl font-bold leading-tight ${
+                    product.time_info?.has_time_limit
+                      ? product.time_info.is_expired || product.time_info.time_remaining_seconds <= 3600
+                        ? 'text-red-900 dark:text-red-100'
+                        : product.time_info.time_remaining_seconds <= 21600
+                          ? 'text-orange-900 dark:text-orange-100'
+                          : product.time_info.time_remaining_seconds <= 86400
+                            ? 'text-yellow-900 dark:text-yellow-100'
+                            : 'text-green-900 dark:text-green-100'
+                      : 'text-green-900 dark:text-green-100'
+                  }`}>
+                    {product.time_info?.has_time_limit 
+                      ? <CountdownTimer timeInfo={product.time_info} />
+                      : 'Always Available'
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Catalyst Database Fields - Only visible to Admin/Admin-Manager */}
             {(permissions.ui.showAdminPanelLink) && (product.ceramic_weight || product.pt_ppm || product.pd_ppm || product.rh_ppm) && (
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
