@@ -375,14 +375,6 @@ function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Description */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Description</h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                {product.description}
-              </p>
-            </div>
-
             {/* Catalyst Database Fields - Only visible to Admin/Admin-Manager */}
             {(permissions.ui.showAdminPanelLink) && (product.ceramic_weight || product.pt_ppm || product.pd_ppm || product.rh_ppm) && (
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
