@@ -2818,14 +2818,23 @@ async def accept_tender(tender_id: str, acceptance_data: dict):
         
         current_time = datetime.utcnow()
         
-        # Update tender status to accepted
+        # Get catalyst data from listing before updating tender
+        listing = await db.listings.find_one({"id": tender["listing_id"]})
+        
+        # Update tender status to accepted and preserve catalyst data
         await db.tenders.update_one(
             {"id": tender_id},
             {
                 "$set": {
                     "status": "accepted",
                     "accepted_at": current_time,
-                    "updated_at": current_time
+                    "updated_at": current_time,
+                    # Preserve catalyst data from listing at purchase time
+                    "ceramic_weight": listing.get("ceramic_weight", 0.0) if listing else 0.0,
+                    "pt_ppm": listing.get("pt_ppm", 0.0) if listing else 0.0,
+                    "pd_ppm": listing.get("pd_ppm", 0.0) if listing else 0.0,
+                    "rh_ppm": listing.get("rh_ppm", 0.0) if listing else 0.0,
+                    "listing_title": listing.get("title", "Unknown Item") if listing else "Unknown Item"
                 }
             }
         )
