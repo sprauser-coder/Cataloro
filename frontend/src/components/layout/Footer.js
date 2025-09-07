@@ -154,7 +154,6 @@ function Footer() {
       ],
       marketplace: [
         { label: 'Browse Products', url: '/browse' },
-        { label: 'Categories', url: '/categories' },
         { label: 'Sell on Cataloro', url: '/sell' },
         { label: 'Seller Center', url: '/seller' }
       ],
