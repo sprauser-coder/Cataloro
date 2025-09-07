@@ -202,7 +202,12 @@ function ProductDetailPage() {
       return;
     }
 
-    if (product.seller?.username === user.username || product.seller_id === user.id) {
+    // Enhanced check to prevent owner from bidding on own listing
+    const isOwner = product.seller?.username === user.username || 
+                    product.seller_id === user.id || 
+                    product.seller?.id === user.id;
+    
+    if (isOwner) {
       showToast('You cannot bid on your own listing', 'error');
       return;
     }
