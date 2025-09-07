@@ -372,6 +372,8 @@ function AdminPanel() {
   // Filter tabs based on user permissions
   const allTabs = [
     { id: 'dashboard', label: 'Dashboard', shortLabel: 'Dashboard', icon: BarChart3 },
+    { id: 'advanced-dashboard', label: 'Advanced Analytics', shortLabel: 'Analytics', icon: Activity, 
+      isLink: true, linkTo: '/admin/dashboard' },
     { id: 'users', label: 'Users', shortLabel: 'Users', icon: Users, 
       permission: 'canAccessUserManagement' },
     { id: 'listings', label: 'Listings', shortLabel: 'Listings', icon: Package, 
