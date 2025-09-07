@@ -758,10 +758,21 @@ async def update_profile(user_id: str, profile_data: dict):
 async def browse_listings(
     type: str = "all",  # Filter by seller type: "all", "Private", "Business"
     price_from: int = 0,  # Minimum price filter
-    price_to: int = 999999  # Maximum price filter
+    price_to: int = 999999,  # Maximum price filter
+    page: int = 1,  # Page number for pagination
+    limit: int = 20  # Items per page
 ):
-    """Browse available listings with seller information and filters"""
+    """Browse available listings with seller information, filters, and pagination"""
     try:
+        # Create cache key based on parameters
+        cache_key = f"{type}_{price_from}_{price_to}_{page}_{limit}"
+        
+        # Try to get cached results first
+        cached_listings = await cache_service.get_cached_listings(cache_key)
+        if cached_listings:
+            logger.info(f"📋 Returning cached listings for key: {cache_key}")
+            return cached_listings
+        
         # Build query for active listings
         query = {"status": "active"}
         
@@ -773,8 +784,11 @@ async def browse_listings(
             if price_to < 999999:
                 query["price"]["$lte"] = price_to
         
-        # Get filtered listings sorted by newest first
-        listings = await db.listings.find(query).sort("created_at", -1).to_list(length=None)
+        # Calculate pagination
+        skip = (page - 1) * limit
+        
+        # Get filtered listings with pagination - use optimized query with indexes
+        listings = await db.listings.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(length=None)
         
         # Enrich listings with seller information
         enriched_listings = []
