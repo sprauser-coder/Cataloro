@@ -974,6 +974,10 @@ async def browse_listings(
             elif type == "Business":
                 enriched_listings = [listing for listing in enriched_listings if listing.get('seller', {}).get('is_business', False)]
         
+        # Cache the results for better performance
+        await cache_service.cache_listings(cache_key, enriched_listings)
+        
+        logger.info(f"📋 Cached {len(enriched_listings)} listings for key: {cache_key}")
         return enriched_listings
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to browse listings: {str(e)}")
