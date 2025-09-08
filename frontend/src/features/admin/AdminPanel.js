@@ -400,6 +400,8 @@ function AdminPanel() {
     { id: 'site-settings', label: 'Site Settings', shortLabel: 'Settings', icon: Settings, 
       adminOnly: true },
     { id: 'administration', label: 'Administration', shortLabel: 'Admin', icon: Shield, 
+      adminOnly: true },
+    { id: 'edit-side-menu', label: 'Edit Side Menu', shortLabel: 'Menu', icon: Menu,
       adminOnly: true }
   ];
 
