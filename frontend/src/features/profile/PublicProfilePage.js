@@ -88,26 +88,52 @@ function PublicProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Loading Profile...</h2>
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Loading profile...</p>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (!profileUser || !profileUser.publicProfile) {
+  if (error || !profile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-8">
-          <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-            <User className="w-12 h-12 text-gray-400" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Profile Not Available</h2>
-          <p className="text-gray-600 dark:text-gray-300">
-            This user's profile is private or doesn't exist.
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="text-center py-12">
+          <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Profile Not Found</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {error || 'This profile does not exist or is private.'}
           </p>
+          <button
+            onClick={() => window.history.back()}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile.public) {
+    return (
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="text-center py-12">
+          <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Private Profile</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            This user has chosen to keep their profile private.
+          </p>
+          <button
+            onClick={() => window.history.back()}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );
