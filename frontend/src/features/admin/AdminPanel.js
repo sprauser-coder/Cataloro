@@ -2822,6 +2822,17 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
           </button>
         </div>
       </div>
+
+      {/* Media Selector Modal */}
+      {showMediaSelector && (
+        <MediaSelector
+          isOpen={showMediaSelector}
+          onClose={() => setShowMediaSelector(false)}
+          onSelect={handleMediaSelection}
+          category="logos"
+          title={`Select ${mediaSelectorType === 'light' ? 'Light' : 'Dark'} Mode Logo`}
+        />
+      )}
     </div>
   );
 }
