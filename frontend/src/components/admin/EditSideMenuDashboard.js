@@ -144,17 +144,47 @@ function EditSideMenuDashboard() {
     loadMenuConfiguration(realMenuItems);
   }, [permissions]);
 
-  const loadMenuConfiguration = () => {
+  const loadMenuConfiguration = (defaultItems) => {
     try {
       const savedMenu = localStorage.getItem('cataloro_side_menu');
       if (savedMenu) {
         const parsedMenu = JSON.parse(savedMenu);
-        setMenuItems(parsedMenu);
+        // Merge saved menu with real menu items to ensure we have current navigation
+        const mergedMenu = mergeMenuItems(defaultItems, parsedMenu);
+        setMenuItems(mergedMenu);
+      } else if (defaultItems) {
+        setMenuItems(defaultItems);
       }
     } catch (error) {
       console.error('Failed to load menu configuration:', error);
       showToast('Failed to load menu configuration', 'error');
+      if (defaultItems) {
+        setMenuItems(defaultItems);
+      }
     }
+  };
+
+  // Merge saved menu configuration with current real menu items
+  const mergeMenuItems = (realItems, savedItems) => {
+    const merged = [...realItems];
+    
+    // Apply saved visibility and order preferences
+    savedItems.forEach(savedItem => {
+      const realItemIndex = merged.findIndex(item => item.id === savedItem.id);
+      if (realItemIndex !== -1) {
+        // Update real item with saved preferences
+        merged[realItemIndex] = {
+          ...merged[realItemIndex],
+          visible: savedItem.visible,
+          // Keep real path and type, only apply saved visibility and custom properties
+        };
+      } else if (savedItem.type === 'custom') {
+        // Add custom items that don't exist in real menu
+        merged.push(savedItem);
+      }
+    });
+    
+    return merged;
   };
 
   const saveMenuConfiguration = () => {
