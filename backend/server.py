@@ -5,6 +5,7 @@ Scalable FastAPI backend with MongoDB integration
 
 from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
