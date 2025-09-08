@@ -373,12 +373,6 @@ function AdminPanel() {
   // Filter tabs based on user permissions
   const allTabs = [
     { id: 'dashboard', label: 'Dashboard', shortLabel: 'Dashboard', icon: BarChart3 },
-    { id: 'advanced-dashboard', label: 'Advanced Analytics', shortLabel: 'Analytics', icon: Activity, 
-      isLink: true, linkTo: '/admin/dashboard' },
-    { id: 'phase5-features', label: 'Phase 5 Features', shortLabel: 'Phase 5', icon: Sparkles,
-      isLink: true, linkTo: '/admin/phase5' },
-    { id: 'phase6-enterprise', label: 'Phase 6 Enterprise', shortLabel: 'Phase 6', icon: BarChart3,
-      isLink: true, linkTo: '/admin/phase6' },
     { id: 'users', label: 'Users', shortLabel: 'Users', icon: Users, 
       permission: 'canAccessUserManagement' },
     { id: 'listings', label: 'Listings', shortLabel: 'Listings', icon: Package, 
