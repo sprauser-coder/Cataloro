@@ -1216,11 +1216,28 @@ async def browse_listings(
             elif type == "Business":
                 enriched_listings = [listing for listing in enriched_listings if listing.get('seller', {}).get('is_business', False)]
         
-        # Cache the results for better performance
-        await cache_service.cache_listings(cache_key, enriched_listings)
+        # Cache the results for better performance (5 minutes)
+        result = {
+            "listings": enriched_listings,
+            "pagination": {
+                "current_page": page,
+                "total_pages": total_pages,
+                "total_items": total_count,
+                "items_per_page": limit,
+                "has_next": page < total_pages,
+                "has_prev": page > 1
+            },
+            "filters_applied": {
+                "type": type,
+                "price_from": price_from,
+                "price_to": price_to,
+                "bid_status": bid_status
+            },
+            "success": True
+        }
         
-        logger.info(f"📋 Cached {len(enriched_listings)} listings for key: {cache_key}")
-        return enriched_listings
+        await cache_service.set(f"browse_listings_{cache_key}", result, ttl=300)  # 5 minutes
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to browse listings: {str(e)}")
 
