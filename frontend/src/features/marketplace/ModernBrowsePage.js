@@ -30,7 +30,6 @@ import { useNotifications } from '../../context/NotificationContext';
 import { liveService } from '../../services/liveService';
 import { trackAdClick } from '../../utils/adsConfiguration';
 import usePermissions from '../../hooks/usePermissions';
-import CurrencyPriceDisplay from '../../components/currency/CurrencyPriceDisplay';
 
 // Hook to get ads configuration
 function useAdsConfig() {
