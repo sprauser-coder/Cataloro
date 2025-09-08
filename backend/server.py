@@ -94,7 +94,13 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # MongoDB Connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
+client = motor.motor_asyncio.AsyncIOMotorClient(
+    MONGO_URL,
+    maxPoolSize=200,  # Increased pool size for better concurrency
+    minPoolSize=10,
+    maxIdleTimeMS=30000,
+    serverSelectionTimeoutMS=5000
+)
 db = client.cataloro_marketplace
 
 # Global service instances (initialized immediately for decorators)
