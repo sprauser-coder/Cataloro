@@ -2962,7 +2962,8 @@ async def export_basket_pdf(export_data: dict):
             textColor=HexColor('#1F2937')
         )
         
-        # Add logo if available
+        # Add logo if available (instead of text title)
+        logo_added = False
         if pdf_logo_url and pdf_logo_url.startswith('http'):
             try:
                 # Download and add logo
@@ -2972,20 +2973,23 @@ async def export_basket_pdf(export_data: dict):
                     logo_temp.write(logo_response.content)
                     logo_temp.close()
                     
-                    # Add logo to PDF
-                    logo = Image(logo_temp.name, width=2*inch, height=1*inch)
+                    # Add logo to PDF (larger size for header)
+                    logo = Image(logo_temp.name, width=3*inch, height=1.5*inch)
                     logo.hAlign = 'CENTER'
                     story.append(logo)
-                    story.append(Spacer(1, 20))
+                    story.append(Spacer(1, 30))
+                    logo_added = True
                     
                     # Clean up logo file
                     os.unlink(logo_temp.name)
             except Exception as e:
                 logger.warning(f"Could not add logo to PDF: {e}")
         
-        # Add title
-        title = Paragraph(f"{site_name} - Basket Export", title_style)
-        story.append(title)
+        # Only add text title if logo wasn't added
+        if not logo_added:
+            title = Paragraph("Basket Export", title_style)
+            story.append(title)
+            story.append(Spacer(1, 20))
         
         # Add export date
         export_date = datetime.now().strftime("%B %d, %Y at %I:%M %p")
