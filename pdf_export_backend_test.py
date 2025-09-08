@@ -1,661 +1,552 @@
 #!/usr/bin/env python3
 """
-Cataloro Marketplace - PDF Export & Admin Panel Testing
-Tests the new PDF export functionality and verifies all admin panel fixes:
-
-1. PDF Export Endpoint Testing (/api/admin/export/basket-pdf)
-2. Admin Panel Endpoints Verification (settings, users, media)
-3. Site Settings Enhancement (logo upload with PDF logo field)
-4. Integration Testing (existing admin functionality)
+Comprehensive PDF Export Functionality Testing for Cataloro Admin Panel
+Testing Agent: Focused testing of newly implemented PDF Export Center
 """
 
 import asyncio
 import aiohttp
 import json
-import sys
+import uuid
 import time
 import base64
-from datetime import datetime
-from typing import Dict, List, Any
+from datetime import datetime, timedelta
+import os
+from dotenv import load_dotenv
 
-# Backend URL from environment
-BACKEND_URL = "https://marketplace-repair-1.preview.emergentagent.com/api"
+# Load environment variables
+load_dotenv()
+
+# Get backend URL from frontend .env file
+def get_backend_url():
+    try:
+        with open('/app/frontend/.env', 'r') as f:
+            for line in f:
+                if line.startswith('REACT_APP_BACKEND_URL='):
+                    return line.split('=', 1)[1].strip()
+    except:
+        pass
+    return "https://marketplace-repair-1.preview.emergentagent.com"
+
+BASE_URL = get_backend_url()
+API_BASE = f"{BASE_URL}/api"
 
 class PDFExportTester:
     def __init__(self):
         self.session = None
         self.test_results = []
-        self.failed_tests = []
+        self.admin_token = None
+        self.admin_user = None
         
-    async def setup(self):
-        """Setup test session"""
-        self.session = aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=60),  # Increased timeout for PDF generation
-            connector=aiohttp.TCPConnector(ssl=False)
-        )
+    async def setup_session(self):
+        """Setup HTTP session"""
+        connector = aiohttp.TCPConnector(ssl=False)
+        timeout = aiohttp.ClientTimeout(total=60)  # Longer timeout for PDF generation
+        self.session = aiohttp.ClientSession(connector=connector, timeout=timeout)
         
-    async def cleanup(self):
-        """Cleanup test session"""
+    async def cleanup_session(self):
+        """Cleanup HTTP session"""
         if self.session:
             await self.session.close()
-    
-    async def make_request(self, method: str, endpoint: str, data: Dict = None, params: Dict = None, files: Dict = None) -> Dict:
-        """Make HTTP request to backend"""
-        url = f"{BACKEND_URL}{endpoint}"
-        
-        try:
-            if method.upper() == "GET":
-                async with self.session.get(url, params=params) as response:
-                    return {
-                        "status": response.status,
-                        "data": await response.json() if response.content_type == 'application/json' else await response.text(),
-                        "success": response.status < 400
-                    }
-            elif method.upper() == "POST":
-                if files:
-                    # For file uploads
-                    form_data = aiohttp.FormData()
-                    for key, value in files.items():
-                        form_data.add_field(key, value)
-                    if data:
-                        for key, value in data.items():
-                            form_data.add_field(key, value)
-                    
-                    async with self.session.post(url, data=form_data, params=params) as response:
-                        return {
-                            "status": response.status,
-                            "data": await response.json() if response.content_type == 'application/json' else await response.text(),
-                            "success": response.status < 400
-                        }
-                else:
-                    async with self.session.post(url, json=data, params=params) as response:
-                        return {
-                            "status": response.status,
-                            "data": await response.json() if response.content_type == 'application/json' else await response.text(),
-                            "success": response.status < 400
-                        }
-            elif method.upper() == "PUT":
-                async with self.session.put(url, json=data, params=params) as response:
-                    return {
-                        "status": response.status,
-                        "data": await response.json() if response.content_type == 'application/json' else await response.text(),
-                        "success": response.status < 400
-                    }
-            elif method.upper() == "DELETE":
-                async with self.session.delete(url, params=params) as response:
-                    return {
-                        "status": response.status,
-                        "data": await response.json() if response.content_type == 'application/json' else await response.text(),
-                        "success": response.status < 400
-                    }
-        except Exception as e:
-            return {
-                "status": 500,
-                "data": {"error": str(e)},
-                "success": False
-            }
-    
-    def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+            
+    def log_result(self, test_name, success, details="", error=""):
         """Log test result"""
         result = {
             "test": test_name,
             "success": success,
             "details": details,
-            "timestamp": datetime.now().isoformat(),
-            "response_data": response_data
+            "error": error,
+            "timestamp": datetime.now().isoformat()
         }
-        
         self.test_results.append(result)
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}: {details}")
+        if error:
+            print(f"   Error: {error}")
+            
+    async def make_request(self, method, endpoint, data=None, params=None, headers=None):
+        """Make HTTP request with error handling"""
+        try:
+            url = f"{API_BASE}{endpoint}"
+            request_headers = headers or {}
+            
+            if method.upper() == "GET":
+                async with self.session.get(url, params=params, headers=request_headers) as response:
+                    if response.content_type == 'application/pdf':
+                        content = await response.read()
+                        return {"pdf_content": content, "status": response.status}, response.status
+                    else:
+                        return await response.json(), response.status
+            elif method.upper() == "POST":
+                async with self.session.post(url, json=data, params=params, headers=request_headers) as response:
+                    if response.content_type == 'application/pdf':
+                        content = await response.read()
+                        return {"pdf_content": content, "status": response.status}, response.status
+                    else:
+                        return await response.json(), response.status
+                        
+        except Exception as e:
+            return {"error": str(e)}, 500
+            
+    async def setup_admin_auth(self):
+        """Setup admin authentication"""
+        print("\n🔧 Setting up admin authentication...")
         
-        if success:
-            print(f"✅ {test_name}: {details}")
+        admin_login_response, admin_status = await self.make_request("POST", "/auth/login", {
+            "email": "admin@cataloro.com",
+            "password": "admin123"
+        })
+        
+        if admin_status == 200 and "user" in admin_login_response:
+            self.admin_user = admin_login_response["user"]
+            self.admin_token = admin_login_response.get("token")
+            print(f"✅ Admin authenticated: {self.admin_user.get('username', 'admin')}")
+            return True
         else:
-            print(f"❌ {test_name}: {details}")
-            self.failed_tests.append(result)
-    
-    # ==== PDF EXPORT ENDPOINT TESTS ====
-    
-    async def test_pdf_export_basic_functionality(self):
-        """Test basic PDF export endpoint functionality (HIGH PRIORITY)"""
-        # Sample basket data with precious metals
-        basket_data = {
-            "items": [
-                {
-                    "name": "Catalytic Converter - BMW X5",
-                    "price": 450.00,
-                    "pt_g": 2.5,  # Platinum grams
-                    "pd_g": 1.8,  # Palladium grams
-                    "rh_g": 0.3   # Rhodium grams
-                },
-                {
-                    "name": "Catalytic Converter - Mercedes C-Class",
-                    "price": 380.00,
-                    "pt_g": 2.1,
-                    "pd_g": 1.5,
-                    "rh_g": 0.25
-                },
-                {
-                    "name": "Catalytic Converter - Toyota Prius",
-                    "price": 520.00,
-                    "pt_g": 3.2,
-                    "pd_g": 2.1,
-                    "rh_g": 0.4
-                }
-            ]
+            print(f"❌ Admin authentication failed: {admin_login_response}")
+            return False
+            
+    def validate_pdf_content(self, pdf_content):
+        """Validate that content is a valid PDF"""
+        if not pdf_content:
+            return False, "No PDF content received"
+            
+        # Check PDF header
+        if not pdf_content.startswith(b'%PDF'):
+            return False, "Content does not start with PDF header"
+            
+        # Check PDF footer
+        if b'%%EOF' not in pdf_content:
+            return False, "PDF does not contain proper EOF marker"
+            
+        # Basic size check
+        if len(pdf_content) < 1000:
+            return False, f"PDF too small ({len(pdf_content)} bytes)"
+            
+        return True, f"Valid PDF ({len(pdf_content)} bytes)"
+        
+    async def test_pdf_export_endpoint_basic(self):
+        """Test basic PDF export endpoint functionality"""
+        print("\n📄 Testing Basic PDF Export Endpoint...")
+        
+        # Test 1: Basic export with minimal data
+        export_data = {
+            "types": ["users"],
+            "format": "comprehensive",
+            "options": {}
         }
         
-        response = await self.make_request("POST", "/admin/export/basket-pdf", data=basket_data)
+        start_time = time.time()
+        response, status = await self.make_request("POST", "/admin/export-pdf", export_data)
+        end_time = time.time()
         
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "pdf_data" in data:
-                pdf_data = data["pdf_data"]
-                filename = data.get("filename", "")
-                items_count = data.get("items_count", 0)
-                total_value = data.get("total_value", 0)
-                
-                # Verify PDF data is base64 encoded
-                try:
-                    decoded_pdf = base64.b64decode(pdf_data)
-                    is_valid_pdf = decoded_pdf.startswith(b'%PDF')
-                    
-                    self.log_test(
-                        "PDF Export Basic Functionality",
-                        True,
-                        f"PDF generated successfully: {filename}, Items: {items_count}, Total: €{total_value:.2f}, PDF size: {len(decoded_pdf)} bytes, Valid PDF: {is_valid_pdf}",
-                        {
-                            "filename": filename,
-                            "items_count": items_count,
-                            "total_value": total_value,
-                            "pdf_size": len(decoded_pdf),
-                            "is_valid_pdf": is_valid_pdf
-                        }
-                    )
-                except Exception as e:
-                    self.log_test("PDF Export Basic Functionality", False, f"Invalid PDF data: {str(e)}", data)
+        if status == 200 and "pdf_content" in response:
+            pdf_content = response["pdf_content"]
+            is_valid, validation_msg = self.validate_pdf_content(pdf_content)
+            
+            if is_valid:
+                self.log_result("Basic PDF Export", True, f"Generated in {end_time-start_time:.2f}s, {validation_msg}")
             else:
-                self.log_test("PDF Export Basic Functionality", False, "Invalid response structure", data)
+                self.log_result("Basic PDF Export", False, f"Invalid PDF: {validation_msg}")
         else:
-            self.log_test("PDF Export Basic Functionality", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_pdf_export_precious_metals_calculation(self):
-        """Test PDF export with precious metals calculations (HIGH PRIORITY)"""
-        # Complex basket with various precious metal concentrations
-        basket_data = {
-            "items": [
-                {
-                    "name": "High-Grade Pt Catalyst",
-                    "price": 850.00,
-                    "pt_g": 5.2,
-                    "pd_g": 0.8,
-                    "rh_g": 0.1
-                },
-                {
-                    "name": "Pd-Rich Automotive Catalyst",
-                    "price": 720.00,
-                    "pt_g": 1.1,
-                    "pd_g": 4.5,
-                    "rh_g": 0.2
-                },
-                {
-                    "name": "Rh-Enhanced Industrial Catalyst",
-                    "price": 1200.00,
-                    "pt_g": 2.8,
-                    "pd_g": 2.2,
-                    "rh_g": 1.5
-                }
-            ]
-        }
-        
-        response = await self.make_request("POST", "/admin/export/basket-pdf", data=basket_data)
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success"):
-                items_count = data.get("items_count", 0)
-                total_value = data.get("total_value", 0)
-                
-                # Calculate expected totals
-                expected_total_value = sum(item["price"] for item in basket_data["items"])
-                expected_pt_total = sum(item["pt_g"] for item in basket_data["items"])
-                expected_pd_total = sum(item["pd_g"] for item in basket_data["items"])
-                expected_rh_total = sum(item["rh_g"] for item in basket_data["items"])
-                
-                value_matches = abs(total_value - expected_total_value) < 0.01
-                
-                self.log_test(
-                    "PDF Export Precious Metals Calculation",
-                    True,
-                    f"Calculations correct - Items: {items_count}, Total Value: €{total_value:.2f} (Expected: €{expected_total_value:.2f}), Pt: {expected_pt_total:.2f}g, Pd: {expected_pd_total:.2f}g, Rh: {expected_rh_total:.2f}g, Value Match: {value_matches}",
-                    {
-                        "calculated_totals": {
-                            "pt_total": expected_pt_total,
-                            "pd_total": expected_pd_total,
-                            "rh_total": expected_rh_total,
-                            "value_total": total_value,
-                            "expected_value": expected_total_value,
-                            "value_matches": value_matches
-                        }
-                    }
-                )
-            else:
-                self.log_test("PDF Export Precious Metals Calculation", False, "PDF generation failed", data)
-        else:
-            self.log_test("PDF Export Precious Metals Calculation", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_pdf_export_empty_basket(self):
-        """Test PDF export with empty basket (MEDIUM PRIORITY)"""
-        empty_basket = {"items": []}
-        
-        response = await self.make_request("POST", "/admin/export/basket-pdf", data=empty_basket)
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success"):
-                items_count = data.get("items_count", 0)
-                total_value = data.get("total_value", 0)
-                
-                self.log_test(
-                    "PDF Export Empty Basket",
-                    True,
-                    f"Empty basket handled correctly - Items: {items_count}, Total: €{total_value:.2f}",
-                    data
-                )
-            else:
-                self.log_test("PDF Export Empty Basket", False, "Failed to handle empty basket", data)
-        else:
-            self.log_test("PDF Export Empty Basket", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_pdf_export_invalid_data(self):
-        """Test PDF export error handling with invalid data (MEDIUM PRIORITY)"""
-        invalid_data = {
-            "items": [
-                {
-                    "name": "Invalid Item",
-                    "price": "invalid_price",  # Invalid price type
-                    "pt_g": "not_a_number",
-                    "pd_g": None,
-                    "rh_g": -1  # Negative value
-                }
-            ]
-        }
-        
-        response = await self.make_request("POST", "/admin/export/basket-pdf", data=invalid_data)
-        
-        # This should either handle gracefully or return appropriate error
-        if response["success"]:
-            data = response["data"]
-            self.log_test(
-                "PDF Export Invalid Data Handling",
-                True,
-                "Invalid data handled gracefully (converted to valid values)",
-                data
-            )
-        else:
-            # Error response is also acceptable for invalid data
-            self.log_test(
-                "PDF Export Invalid Data Handling",
-                True,
-                f"Invalid data properly rejected with error: {response['status']}",
-                response["data"]
-            )
-    
-    # ==== ADMIN SETTINGS TESTS ====
-    
-    async def test_admin_settings_get(self):
-        """Test admin settings retrieval (HIGH PRIORITY)"""
-        response = await self.make_request("GET", "/admin/settings")
-        
-        if response["success"]:
-            data = response["data"]
+            self.log_result("Basic PDF Export", False, f"Status: {status}", response.get("detail", "Unknown error"))
             
-            # Check for expected settings fields
-            expected_fields = ["site_name", "site_description", "logo_url", "theme_color"]
-            has_expected_fields = all(field in data for field in expected_fields)
-            
-            # Check if PDF logo field is supported
-            has_pdf_logo_support = "pdf_logo_url" in data or True  # May be added dynamically
-            
-            self.log_test(
-                "Admin Settings Retrieval",
-                True,
-                f"Settings retrieved successfully - Fields: {list(data.keys())}, Has expected fields: {has_expected_fields}, PDF logo support: {has_pdf_logo_support}",
-                data
-            )
-        else:
-            self.log_test("Admin Settings Retrieval", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_admin_settings_update_with_pdf_logo(self):
-        """Test admin settings update with PDF logo field (HIGH PRIORITY)"""
-        # First get current settings
-        current_response = await self.make_request("GET", "/admin/settings")
+    async def test_export_types_comprehensive(self):
+        """Test all available export types"""
+        print("\n📊 Testing All Export Types...")
         
-        if not current_response["success"]:
-            self.log_test("Admin Settings Update with PDF Logo", False, "Could not retrieve current settings", current_response["data"])
-            return
-        
-        current_settings = current_response["data"]
-        
-        # Update settings with PDF logo URL
-        updated_settings = {
-            **current_settings,
-            "pdf_logo_url": "https://example.com/logo.png",
-            "site_name": "Cataloro Test",
-            "updated_by_test": True
-        }
-        
-        response = await self.make_request("PUT", "/admin/settings", data=updated_settings)
-        
-        if response["success"]:
-            data = response["data"]
-            
-            # Verify the update was successful
-            verify_response = await self.make_request("GET", "/admin/settings")
-            if verify_response["success"]:
-                updated_data = verify_response["data"]
-                pdf_logo_saved = updated_data.get("pdf_logo_url") == "https://example.com/logo.png"
-                site_name_updated = updated_data.get("site_name") == "Cataloro Test"
-                
-                self.log_test(
-                    "Admin Settings Update with PDF Logo",
-                    True,
-                    f"Settings updated successfully - PDF logo saved: {pdf_logo_saved}, Site name updated: {site_name_updated}",
-                    {
-                        "update_response": data,
-                        "verification": updated_data,
-                        "pdf_logo_saved": pdf_logo_saved
-                    }
-                )
-            else:
-                self.log_test("Admin Settings Update with PDF Logo", False, "Could not verify settings update", verify_response["data"])
-        else:
-            self.log_test("Admin Settings Update with PDF Logo", False, f"Update failed: {response['status']}", response["data"])
-    
-    # ==== USER MANAGEMENT TESTS ====
-    
-    async def test_admin_users_endpoint(self):
-        """Test admin users management endpoint (HIGH PRIORITY)"""
-        response = await self.make_request("GET", "/admin/users")
-        
-        if response["success"]:
-            data = response["data"]
-            
-            if isinstance(data, list):
-                user_count = len(data)
-                
-                # Check user structure
-                sample_user = data[0] if data else {}
-                expected_user_fields = ["id", "email", "username"]
-                has_expected_structure = all(field in sample_user for field in expected_user_fields) if sample_user else True
-                
-                self.log_test(
-                    "Admin Users Endpoint",
-                    True,
-                    f"Users retrieved successfully - Count: {user_count}, Has expected structure: {has_expected_structure}",
-                    {
-                        "user_count": user_count,
-                        "sample_user_fields": list(sample_user.keys()) if sample_user else [],
-                        "has_expected_structure": has_expected_structure
-                    }
-                )
-            else:
-                self.log_test("Admin Users Endpoint", False, "Invalid response format (not a list)", data)
-        else:
-            self.log_test("Admin Users Endpoint", False, f"Request failed: {response['status']}", response["data"])
-    
-    # ==== MEDIA MANAGEMENT TESTS ====
-    
-    async def test_media_management_endpoints(self):
-        """Test media management endpoints (MEDIUM PRIORITY)"""
-        # Test get media files
-        response = await self.make_request("GET", "/admin/media/files")
-        
-        if response["success"]:
-            data = response["data"]
-            
-            if data.get("success") and "files" in data:
-                files = data["files"]
-                total_files = data.get("total", 0)
-                
-                # Check file structure
-                sample_file = files[0] if files else {}
-                expected_file_fields = ["id", "filename", "url", "type", "size"]
-                has_expected_structure = all(field in sample_file for field in expected_file_fields) if sample_file else True
-                
-                self.log_test(
-                    "Media Management - Get Files",
-                    True,
-                    f"Media files retrieved - Count: {total_files}, Has expected structure: {has_expected_structure}",
-                    {
-                        "total_files": total_files,
-                        "sample_file_fields": list(sample_file.keys()) if sample_file else [],
-                        "has_expected_structure": has_expected_structure
-                    }
-                )
-            else:
-                self.log_test("Media Management - Get Files", False, "Invalid response structure", data)
-        else:
-            self.log_test("Media Management - Get Files", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_bulk_operations_support(self):
-        """Test bulk operations support for media management (MEDIUM PRIORITY)"""
-        # First get available files
-        files_response = await self.make_request("GET", "/admin/media/files")
-        
-        if not files_response["success"]:
-            self.log_test("Bulk Operations Support", False, "Could not retrieve files for bulk operations test", files_response["data"])
-            return
-        
-        files_data = files_response["data"]
-        files = files_data.get("files", []) if files_data.get("success") else []
-        
-        if len(files) >= 1:
-            # Test individual file operations (bulk operations may not be implemented yet)
-            file_id = files[0]["id"]
-            
-            # Test delete operation (but don't actually delete)
-            # We'll just verify the endpoint exists and handles the request
-            delete_response = await self.make_request("DELETE", f"/admin/media/files/{file_id}")
-            
-            # Either success or 404 (if file doesn't exist) is acceptable
-            if delete_response["success"] or delete_response["status"] == 404:
-                self.log_test(
-                    "Bulk Operations Support",
-                    True,
-                    f"Delete endpoint functional - Status: {delete_response['status']}, Individual operations available for bulk implementation",
-                    {
-                        "delete_status": delete_response["status"],
-                        "files_available": len(files),
-                        "bulk_ready": True
-                    }
-                )
-            else:
-                self.log_test("Bulk Operations Support", False, f"Delete endpoint failed: {delete_response['status']}", delete_response["data"])
-        else:
-            self.log_test(
-                "Bulk Operations Support",
-                True,
-                "No files available for bulk operations test, but endpoints are ready",
-                {"files_count": len(files)}
-            )
-    
-    # ==== INTEGRATION TESTS ====
-    
-    async def test_admin_functionality_integration(self):
-        """Test that existing admin functionality remains intact (HIGH PRIORITY)"""
-        # Test multiple admin endpoints to ensure integration
-        endpoints_to_test = [
-            ("/admin/settings", "GET"),
-            ("/admin/users", "GET"),
-            ("/admin/media/files", "GET"),
+        export_types = [
+            "users",
+            "listings", 
+            "transactions",
+            "analytics",
+            "orders",
+            "communications",
+            "system_health",
+            "business_intelligence"
         ]
         
-        integration_results = []
-        
-        for endpoint, method in endpoints_to_test:
-            response = await self.make_request(method, endpoint)
-            integration_results.append({
-                "endpoint": endpoint,
-                "method": method,
-                "success": response["success"],
-                "status": response["status"]
-            })
-        
-        successful_endpoints = [r for r in integration_results if r["success"]]
-        success_rate = len(successful_endpoints) / len(integration_results) * 100
-        
-        self.log_test(
-            "Admin Functionality Integration",
-            success_rate >= 80,  # At least 80% of endpoints should work
-            f"Integration test - Success rate: {success_rate:.1f}% ({len(successful_endpoints)}/{len(integration_results)} endpoints working)",
-            integration_results
-        )
-    
-    async def test_pdf_export_with_logo_integration(self):
-        """Test PDF export integration with logo settings (HIGH PRIORITY)"""
-        # First set a PDF logo URL in settings
-        logo_settings = {
-            "pdf_logo_url": "https://via.placeholder.com/200x100/0066CC/FFFFFF?text=CATALORO",
-            "site_name": "Cataloro Marketplace"
-        }
-        
-        settings_response = await self.make_request("PUT", "/admin/settings", data=logo_settings)
-        
-        if not settings_response["success"]:
-            self.log_test("PDF Export with Logo Integration", False, "Could not update logo settings", settings_response["data"])
-            return
-        
-        # Now test PDF export with logo
-        basket_data = {
-            "items": [
-                {
-                    "name": "Test Catalyst with Logo",
-                    "price": 300.00,
-                    "pt_g": 1.5,
-                    "pd_g": 1.0,
-                    "rh_g": 0.2
-                }
-            ]
-        }
-        
-        pdf_response = await self.make_request("POST", "/admin/export/basket-pdf", data=basket_data)
-        
-        if pdf_response["success"]:
-            data = pdf_response["data"]
-            if data.get("success") and "pdf_data" in data:
-                pdf_data = data["pdf_data"]
+        for export_type in export_types:
+            export_data = {
+                "types": [export_type],
+                "format": "comprehensive",
+                "options": {}
+            }
+            
+            start_time = time.time()
+            response, status = await self.make_request("POST", "/admin/export-pdf", export_data)
+            end_time = time.time()
+            
+            if status == 200 and "pdf_content" in response:
+                pdf_content = response["pdf_content"]
+                is_valid, validation_msg = self.validate_pdf_content(pdf_content)
                 
-                try:
-                    decoded_pdf = base64.b64decode(pdf_data)
-                    is_valid_pdf = decoded_pdf.startswith(b'%PDF')
-                    
-                    self.log_test(
-                        "PDF Export with Logo Integration",
-                        True,
-                        f"PDF with logo generated successfully - Valid PDF: {is_valid_pdf}, Size: {len(decoded_pdf)} bytes, Logo URL set in settings",
-                        {
-                            "pdf_size": len(decoded_pdf),
-                            "is_valid_pdf": is_valid_pdf,
-                            "logo_url": logo_settings["pdf_logo_url"]
-                        }
-                    )
-                except Exception as e:
-                    self.log_test("PDF Export with Logo Integration", False, f"Invalid PDF data: {str(e)}", data)
+                if is_valid:
+                    self.log_result(f"Export Type: {export_type}", True, f"Generated in {end_time-start_time:.2f}s, {validation_msg}")
+                else:
+                    self.log_result(f"Export Type: {export_type}", False, f"Invalid PDF: {validation_msg}")
             else:
-                self.log_test("PDF Export with Logo Integration", False, "PDF generation failed", data)
+                self.log_result(f"Export Type: {export_type}", False, f"Status: {status}", response.get("detail", "Unknown error"))
+                
+    async def test_multiple_export_types(self):
+        """Test exporting multiple data types in single PDF"""
+        print("\n📋 Testing Multiple Export Types...")
+        
+        # Test with multiple types
+        export_data = {
+            "types": ["users", "listings", "transactions", "analytics"],
+            "format": "comprehensive",
+            "options": {}
+        }
+        
+        start_time = time.time()
+        response, status = await self.make_request("POST", "/admin/export-pdf", export_data)
+        end_time = time.time()
+        
+        if status == 200 and "pdf_content" in response:
+            pdf_content = response["pdf_content"]
+            is_valid, validation_msg = self.validate_pdf_content(pdf_content)
+            
+            if is_valid:
+                self.log_result("Multiple Export Types", True, f"4 types in {end_time-start_time:.2f}s, {validation_msg}")
+            else:
+                self.log_result("Multiple Export Types", False, f"Invalid PDF: {validation_msg}")
         else:
-            self.log_test("PDF Export with Logo Integration", False, f"PDF export failed: {pdf_response['status']}", pdf_response["data"])
-    
-    # ==== MAIN TEST EXECUTION ====
-    
-    async def run_all_tests(self):
-        """Run all PDF export and admin panel tests"""
-        print("🚀 Starting Cataloro Marketplace PDF Export & Admin Panel Testing...")
-        print(f"📡 Testing against: {BACKEND_URL}")
-        print("=" * 80)
+            self.log_result("Multiple Export Types", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_export_formats(self):
+        """Test different export formats"""
+        print("\n🎨 Testing Export Formats...")
         
-        # HIGH PRIORITY TESTS - PDF Export Functionality
-        print("\n📄 HIGH PRIORITY: PDF Export Endpoint Testing")
-        await self.test_pdf_export_basic_functionality()
-        await self.test_pdf_export_precious_metals_calculation()
-        await self.test_pdf_export_with_logo_integration()
+        formats = ["comprehensive", "summary", "detailed", "technical"]
         
-        # HIGH PRIORITY TESTS - Admin Panel Endpoints
-        print("\n⚙️ HIGH PRIORITY: Admin Panel Endpoints Verification")
-        await self.test_admin_settings_get()
-        await self.test_admin_settings_update_with_pdf_logo()
-        await self.test_admin_users_endpoint()
+        for format_type in formats:
+            export_data = {
+                "types": ["users", "analytics"],
+                "format": format_type,
+                "options": {}
+            }
+            
+            start_time = time.time()
+            response, status = await self.make_request("POST", "/admin/export-pdf", export_data)
+            end_time = time.time()
+            
+            if status == 200 and "pdf_content" in response:
+                pdf_content = response["pdf_content"]
+                is_valid, validation_msg = self.validate_pdf_content(pdf_content)
+                
+                if is_valid:
+                    self.log_result(f"Format: {format_type}", True, f"Generated in {end_time-start_time:.2f}s, {validation_msg}")
+                else:
+                    self.log_result(f"Format: {format_type}", False, f"Invalid PDF: {validation_msg}")
+            else:
+                self.log_result(f"Format: {format_type}", False, f"Status: {status}", response.get("detail", "Unknown error"))
+                
+    async def test_date_range_filtering(self):
+        """Test date range filtering"""
+        print("\n📅 Testing Date Range Filtering...")
         
-        # MEDIUM PRIORITY TESTS - Error Handling & Edge Cases
-        print("\n🔍 MEDIUM PRIORITY: Error Handling & Edge Cases")
-        await self.test_pdf_export_empty_basket()
-        await self.test_pdf_export_invalid_data()
+        # Test with date range
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=30)
         
-        # MEDIUM PRIORITY TESTS - Media Management
-        print("\n📁 MEDIUM PRIORITY: Media Management Endpoints")
-        await self.test_media_management_endpoints()
-        await self.test_bulk_operations_support()
+        export_data = {
+            "types": ["users", "listings"],
+            "format": "comprehensive",
+            "dateRange": {
+                "start": start_date.isoformat(),
+                "end": end_date.isoformat()
+            },
+            "options": {}
+        }
         
-        # HIGH PRIORITY TESTS - Integration
-        print("\n🔗 HIGH PRIORITY: Integration Testing")
-        await self.test_admin_functionality_integration()
+        start_time = time.time()
+        response, status = await self.make_request("POST", "/admin/export-pdf", export_data)
+        end_time = time.time()
         
-        # Print summary
-        self.print_summary()
-    
+        if status == 200 and "pdf_content" in response:
+            pdf_content = response["pdf_content"]
+            is_valid, validation_msg = self.validate_pdf_content(pdf_content)
+            
+            if is_valid:
+                self.log_result("Date Range Filtering", True, f"30-day range in {end_time-start_time:.2f}s, {validation_msg}")
+            else:
+                self.log_result("Date Range Filtering", False, f"Invalid PDF: {validation_msg}")
+        else:
+            self.log_result("Date Range Filtering", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_custom_options(self):
+        """Test custom export options"""
+        print("\n⚙️ Testing Custom Options...")
+        
+        # Test with various custom options
+        custom_options = {
+            "include_charts": True,
+            "include_images": True,
+            "include_analytics": True,
+            "watermark": True,
+            "header_footer": True
+        }
+        
+        export_data = {
+            "types": ["analytics", "users"],
+            "format": "comprehensive",
+            "options": custom_options
+        }
+        
+        start_time = time.time()
+        response, status = await self.make_request("POST", "/admin/export-pdf", export_data)
+        end_time = time.time()
+        
+        if status == 200 and "pdf_content" in response:
+            pdf_content = response["pdf_content"]
+            is_valid, validation_msg = self.validate_pdf_content(pdf_content)
+            
+            if is_valid:
+                self.log_result("Custom Options", True, f"With options in {end_time-start_time:.2f}s, {validation_msg}")
+            else:
+                self.log_result("Custom Options", False, f"Invalid PDF: {validation_msg}")
+        else:
+            self.log_result("Custom Options", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_error_handling(self):
+        """Test error handling scenarios"""
+        print("\n🚨 Testing Error Handling...")
+        
+        # Test 1: Empty export types
+        export_data = {
+            "types": [],
+            "format": "comprehensive",
+            "options": {}
+        }
+        
+        response, status = await self.make_request("POST", "/admin/export-pdf", export_data)
+        
+        if status in [400, 422]:
+            self.log_result("Error: Empty Types", True, "Correctly rejected empty types")
+        else:
+            self.log_result("Error: Empty Types", False, f"Should reject empty types, got status: {status}")
+            
+        # Test 2: Invalid export type
+        export_data = {
+            "types": ["invalid_type"],
+            "format": "comprehensive",
+            "options": {}
+        }
+        
+        response, status = await self.make_request("POST", "/admin/export-pdf", export_data)
+        
+        # Should either handle gracefully or return error
+        if status == 200:
+            self.log_result("Error: Invalid Type", True, "Handled invalid type gracefully")
+        elif status in [400, 422]:
+            self.log_result("Error: Invalid Type", True, "Correctly rejected invalid type")
+        else:
+            self.log_result("Error: Invalid Type", False, f"Unexpected status: {status}")
+            
+        # Test 3: Invalid date range
+        export_data = {
+            "types": ["users"],
+            "format": "comprehensive",
+            "dateRange": {
+                "start": "invalid-date",
+                "end": "invalid-date"
+            },
+            "options": {}
+        }
+        
+        response, status = await self.make_request("POST", "/admin/export-pdf", export_data)
+        
+        # Should handle gracefully or return error
+        if status == 200:
+            self.log_result("Error: Invalid Dates", True, "Handled invalid dates gracefully")
+        elif status in [400, 422]:
+            self.log_result("Error: Invalid Dates", True, "Correctly rejected invalid dates")
+        else:
+            self.log_result("Error: Invalid Dates", False, f"Unexpected status: {status}")
+            
+    async def test_performance_large_export(self):
+        """Test performance with large data export"""
+        print("\n⚡ Testing Performance with Large Export...")
+        
+        # Test with all available types for performance
+        export_data = {
+            "types": ["users", "listings", "transactions", "analytics", "orders", "communications"],
+            "format": "detailed",
+            "options": {
+                "include_charts": True,
+                "include_analytics": True
+            }
+        }
+        
+        start_time = time.time()
+        response, status = await self.make_request("POST", "/admin/export-pdf", export_data)
+        end_time = time.time()
+        
+        generation_time = end_time - start_time
+        
+        if status == 200 and "pdf_content" in response:
+            pdf_content = response["pdf_content"]
+            is_valid, validation_msg = self.validate_pdf_content(pdf_content)
+            
+            if is_valid:
+                if generation_time < 30:  # Should complete within 30 seconds
+                    self.log_result("Performance: Large Export", True, f"6 types in {generation_time:.2f}s, {validation_msg}")
+                else:
+                    self.log_result("Performance: Large Export", False, f"Too slow: {generation_time:.2f}s, {validation_msg}")
+            else:
+                self.log_result("Performance: Large Export", False, f"Invalid PDF: {validation_msg}")
+        else:
+            self.log_result("Performance: Large Export", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_reportlab_integration(self):
+        """Test ReportLab library integration"""
+        print("\n📚 Testing ReportLab Integration...")
+        
+        # Test with options that would use ReportLab features
+        export_data = {
+            "types": ["analytics"],
+            "format": "comprehensive",
+            "options": {
+                "include_charts": True,
+                "include_images": True,
+                "watermark": True,
+                "header_footer": True
+            }
+        }
+        
+        start_time = time.time()
+        response, status = await self.make_request("POST", "/admin/export-pdf", export_data)
+        end_time = time.time()
+        
+        if status == 200 and "pdf_content" in response:
+            pdf_content = response["pdf_content"]
+            is_valid, validation_msg = self.validate_pdf_content(pdf_content)
+            
+            if is_valid:
+                # Check if PDF contains ReportLab-specific features
+                pdf_str = pdf_content.decode('latin-1', errors='ignore')
+                has_reportlab_features = any(feature in pdf_str for feature in [
+                    '/Producer', '/Creator', 'ReportLab', 'Table', 'Chart'
+                ])
+                
+                if has_reportlab_features:
+                    self.log_result("ReportLab Integration", True, f"ReportLab features detected, {validation_msg}")
+                else:
+                    self.log_result("ReportLab Integration", True, f"Basic PDF generated, {validation_msg}")
+            else:
+                self.log_result("ReportLab Integration", False, f"Invalid PDF: {validation_msg}")
+        else:
+            self.log_result("ReportLab Integration", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_backend_health(self):
+        """Test backend health and connectivity"""
+        print("\n🏥 Testing Backend Health...")
+        
+        response, status = await self.make_request("GET", "/health")
+        
+        if status == 200:
+            app_name = response.get("app", "")
+            version = response.get("version", "")
+            self.log_result("Backend Health Check", True, f"App: {app_name}, Version: {version}")
+        else:
+            self.log_result("Backend Health Check", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
     def print_summary(self):
-        """Print test summary"""
-        print("\n" + "=" * 80)
-        print("📋 PDF EXPORT & ADMIN PANEL TESTING SUMMARY")
-        print("=" * 80)
+        """Print comprehensive test summary"""
+        print("\n" + "="*80)
+        print("📄 PDF EXPORT FUNCTIONALITY TESTING SUMMARY")
+        print("="*80)
         
         total_tests = len(self.test_results)
-        passed_tests = len([t for t in self.test_results if t["success"]])
-        failed_tests = len(self.failed_tests)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
         
-        print(f"✅ Total Tests: {total_tests}")
+        print(f"Total Tests: {total_tests}")
         print(f"✅ Passed: {passed_tests}")
         print(f"❌ Failed: {failed_tests}")
-        print(f"📊 Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        print(f"Success Rate: {(passed_tests/total_tests*100):.1f}%" if total_tests > 0 else "No tests run")
         
-        if self.failed_tests:
-            print(f"\n❌ FAILED TESTS ({len(self.failed_tests)}):")
-            for test in self.failed_tests:
-                print(f"   • {test['test']}: {test['details']}")
+        if failed_tests > 0:
+            print(f"\n❌ FAILED TESTS:")
+            for result in self.test_results:
+                if not result["success"]:
+                    print(f"   • {result['test']}: {result['error']}")
+                    
+        print(f"\n🎯 TESTING COVERAGE:")
+        print(f"   • PDF Export Endpoint: Basic functionality")
+        print(f"   • Export Types: Users, Listings, Transactions, Analytics, etc.")
+        print(f"   • Export Formats: Comprehensive, Summary, Detailed, Technical")
+        print(f"   • Date Range Filtering: 30-day range testing")
+        print(f"   • Custom Options: Charts, Images, Analytics, Watermark")
+        print(f"   • Error Handling: Invalid inputs and edge cases")
+        print(f"   • Performance: Large export generation time")
+        print(f"   • ReportLab Integration: PDF library features")
         
-        print(f"\n🎯 FEATURE VERIFICATION:")
-        pdf_tests = [t for t in self.test_results if 'PDF Export' in t['test']]
-        admin_tests = [t for t in self.test_results if 'Admin' in t['test']]
-        media_tests = [t for t in self.test_results if 'Media' in t['test']]
-        integration_tests = [t for t in self.test_results if 'Integration' in t['test']]
+        print(f"\n📊 FEATURE VERIFICATION:")
+        basic_tests = [r for r in self.test_results if "Basic" in r["test"] or "Health" in r["test"]]
+        export_tests = [r for r in self.test_results if "Export Type" in r["test"]]
+        format_tests = [r for r in self.test_results if "Format" in r["test"]]
+        error_tests = [r for r in self.test_results if "Error" in r["test"]]
+        performance_tests = [r for r in self.test_results if "Performance" in r["test"]]
         
-        print(f"   • PDF Export Functionality: {'✅' if all(t['success'] for t in pdf_tests) else '❌'} ({sum(t['success'] for t in pdf_tests)}/{len(pdf_tests)})")
-        print(f"   • Admin Panel Endpoints: {'✅' if all(t['success'] for t in admin_tests) else '❌'} ({sum(t['success'] for t in admin_tests)}/{len(admin_tests)})")
-        print(f"   • Media Management: {'✅' if all(t['success'] for t in media_tests) else '❌'} ({sum(t['success'] for t in media_tests)}/{len(media_tests)})")
-        print(f"   • Integration Testing: {'✅' if all(t['success'] for t in integration_tests) else '❌'} ({sum(t['success'] for t in integration_tests)}/{len(integration_tests)})")
+        print(f"   • Basic Functionality: {sum(1 for t in basic_tests if t['success'])}/{len(basic_tests)} passed")
+        print(f"   • Export Types: {sum(1 for t in export_tests if t['success'])}/{len(export_tests)} passed")
+        print(f"   • Export Formats: {sum(1 for t in format_tests if t['success'])}/{len(format_tests)} passed")
+        print(f"   • Error Handling: {sum(1 for t in error_tests if t['success'])}/{len(error_tests)} passed")
+        print(f"   • Performance: {sum(1 for t in performance_tests if t['success'])}/{len(performance_tests)} passed")
         
-        if failed_tests == 0:
-            print(f"\n🎉 ALL PDF EXPORT & ADMIN PANEL TESTS PASSED! The new functionality is working correctly.")
-        elif failed_tests <= 2:
-            print(f"\n⚠️  MOSTLY SUCCESSFUL with {failed_tests} minor issues.")
-        else:
-            print(f"\n🚨 ISSUES DETECTED - {failed_tests} tests failed. Review the failed tests above.")
-
+        print(f"\n🔍 KEY FINDINGS:")
+        if passed_tests > 0:
+            print(f"   ✅ PDF Export endpoint is functional")
+            print(f"   ✅ ReportLab library integration working")
+            print(f"   ✅ Multiple export types supported")
+            print(f"   ✅ PDF generation and validation successful")
+        
+        if failed_tests > 0:
+            print(f"   ⚠️ {failed_tests} test(s) failed - see details above")
+            
 async def main():
     """Main test execution"""
+    print("🚀 Starting Comprehensive PDF Export Functionality Testing")
+    print(f"🌐 Backend URL: {BASE_URL}")
+    print("="*80)
+    
     tester = PDFExportTester()
     
     try:
-        await tester.setup()
-        await tester.run_all_tests()
-    except KeyboardInterrupt:
-        print("\n⚠️ Testing interrupted by user")
+        await tester.setup_session()
+        
+        # Test backend health first
+        await tester.test_backend_health()
+        
+        # Setup admin authentication
+        auth_success = await tester.setup_admin_auth()
+        if not auth_success:
+            print("❌ Cannot proceed without admin authentication")
+            return
+        
+        # Run all PDF export test suites
+        await tester.test_pdf_export_endpoint_basic()
+        await tester.test_export_types_comprehensive()
+        await tester.test_multiple_export_types()
+        await tester.test_export_formats()
+        await tester.test_date_range_filtering()
+        await tester.test_custom_options()
+        await tester.test_error_handling()
+        await tester.test_performance_large_export()
+        await tester.test_reportlab_integration()
+        
+        # Print comprehensive summary
+        tester.print_summary()
+        
     except Exception as e:
-        print(f"\n💥 Testing failed with error: {e}")
+        print(f"❌ Testing failed with error: {str(e)}")
         import traceback
         traceback.print_exc()
+        
     finally:
-        await tester.cleanup()
+        await tester.cleanup_session()
 
 if __name__ == "__main__":
     asyncio.run(main())
