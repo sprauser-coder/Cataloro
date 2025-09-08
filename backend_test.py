@@ -505,7 +505,7 @@ class BackendTester:
         
 async def main():
     """Main test execution"""
-    print("🚀 Starting Comprehensive Backend Testing")
+    print("🚀 Starting Individual Basket PDF Export Testing")
     print(f"🌐 Backend URL: {BASE_URL}")
     print("="*80)
     
@@ -520,10 +520,8 @@ async def main():
         # Setup test data
         await tester.setup_test_data()
         
-        # Run all test suites
-        await tester.test_user_rating_system()
-        await tester.test_enhanced_messaging_system()
-        await tester.test_enhanced_profile_endpoints()
+        # Run basket PDF export tests
+        await tester.test_basket_pdf_export_functionality()
         
         # Print summary
         tester.print_summary()
