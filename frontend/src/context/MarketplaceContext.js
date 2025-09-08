@@ -664,12 +664,44 @@ export function MarketplaceProvider({ children }) {
       const newFilters = { ...state.activeFilters, ...filters };
       dispatch({ type: ACTIONS.SET_FILTERS, payload: filters });
       
-      // For type and price filters, reload from backend
-      if (filters.type !== undefined || filters.priceFrom !== undefined || filters.priceTo !== undefined) {
-        await loadInitialProducts(newFilters);
+      // For type, price, and bid status filters, reload from backend
+      if (filters.type !== undefined || filters.priceFrom !== undefined || filters.priceTo !== undefined || filters.bidStatus !== undefined) {
+        await loadInitialProducts(newFilters, 1); // Reset to page 1 when filters change
       } else {
         // For other filters (search, sorting), use local filtering
         applyFiltersAndSearch(state.searchQuery, newFilters, state.sortBy);
+      }
+    },
+    
+    // Pagination actions
+    setCurrentPage: async (page) => {
+      dispatch({ type: ACTIONS.SET_CURRENT_PAGE, payload: page });
+      await loadInitialProducts(state.activeFilters, page);
+    },
+    
+    goToNextPage: async () => {
+      if (state.pagination.hasNext) {
+        const nextPage = state.pagination.currentPage + 1;
+        await actions.setCurrentPage(nextPage);
+      }
+    },
+    
+    goToPrevPage: async () => {
+      if (state.pagination.hasPrev) {
+        const prevPage = state.pagination.currentPage - 1;
+        await actions.setCurrentPage(prevPage);
+      }
+    },
+    
+    goToFirstPage: async () => {
+      if (state.pagination.currentPage !== 1) {
+        await actions.setCurrentPage(1);
+      }
+    },
+    
+    goToLastPage: async () => {
+      if (state.pagination.currentPage !== state.pagination.totalPages) {
+        await actions.setCurrentPage(state.pagination.totalPages);
       }
     },
     
