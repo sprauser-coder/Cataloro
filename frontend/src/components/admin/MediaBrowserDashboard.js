@@ -236,7 +236,6 @@ const MediaBrowserDashboard = ({ className = '' }) => {
       const response = await fetch(`${backendUrl}/api/admin/media/files/${fileId}`, {
         method: 'DELETE'
       });
-      });
       
       if (response.ok) {
         const result = await response.json();
