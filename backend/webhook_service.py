@@ -73,7 +73,7 @@ class WebhookService:
         return result.deleted_count > 0
     
     async def trigger_event(self, event_type: str, data: Dict[str, Any]):
-        """Trigger a webhook event"""
+        """Trigger a webhook event with background processing"""
         # Store the event
         event = {
             "event_id": str(uuid.uuid4()),
@@ -92,12 +92,12 @@ class WebhookService:
         }):
             active_webhooks.append(webhook)
         
-        # Deliver to all matching webhooks
+        # Process webhooks in background to avoid blocking the main request
         for webhook in active_webhooks:
-            await self._deliver_webhook(webhook, event)
+            asyncio.create_task(self._deliver_webhook_background(webhook, event))
     
-    async def _deliver_webhook(self, webhook: Dict[str, Any], event: Dict[str, Any]):
-        """Deliver a webhook event to an endpoint"""
+    async def _deliver_webhook_background(self, webhook: Dict[str, Any], event: Dict[str, Any]):
+        """Deliver webhook in background with retry logic"""
         delivery_id = str(uuid.uuid4())
         payload = {
             "event_id": event["event_id"],
@@ -116,7 +116,6 @@ class WebhookService:
         
         # Add signature if secret is provided
         if webhook.get("secret"):
-            # In a production environment, you would add HMAC signature here
             headers["X-Webhook-Secret"] = webhook["secret"]
         
         delivery_record = {
@@ -136,12 +135,21 @@ class WebhookService:
         
         await self.webhook_deliveries_collection.insert_one(delivery_record)
         
-        # Attempt delivery
-        await self._attempt_delivery(delivery_record, webhook, payload, headers)
+        # Attempt delivery with retry logic
+        max_attempts = webhook.get("retry_attempts", 3)
+        for attempt in range(1, max_attempts + 1):
+            success = await self._attempt_delivery_with_retry(delivery_record, webhook, payload, headers, attempt)
+            if success:
+                break
+            
+            # Calculate exponential backoff for retry
+            if attempt < max_attempts:
+                backoff_seconds = (2 ** attempt) * 60  # 2, 4, 8 minutes
+                await asyncio.sleep(backoff_seconds)
     
-    async def _attempt_delivery(self, delivery: Dict[str, Any], webhook: Dict[str, Any], 
-                              payload: Dict[str, Any], headers: Dict[str, str]):
-        """Attempt to deliver a webhook"""
+    async def _attempt_delivery_with_retry(self, delivery: Dict[str, Any], webhook: Dict[str, Any], 
+                                         payload: Dict[str, Any], headers: Dict[str, str], attempt: int) -> bool:
+        """Attempt webhook delivery with comprehensive error handling"""
         try:
             timeout = aiohttp.ClientTimeout(total=webhook.get("timeout_seconds", 30))
             
@@ -153,20 +161,31 @@ class WebhookService:
                 ) as response:
                     response_body = await response.text()
                     
-                    await self.webhook_deliveries_collection.update_one(
-                        {"delivery_id": delivery["delivery_id"]},
-                        {
-                            "$set": {
-                                "status": "success" if response.status < 400 else "failed",
-                                "response_status": response.status,
-                                "response_body": response_body[:1000],  # Limit response body size
-                                "completed_at": datetime.now(timezone.utc)
-                            }
-                        }
-                    )
+                    # Update delivery record
+                    update_data = {
+                        "attempt": attempt,
+                        "response_status": response.status,
+                        "response_body": response_body[:1000],  # Limit response body size
+                        "completed_at": datetime.now(timezone.utc)
+                    }
                     
-                    if response.status >= 400:
+                    if response.status < 400:
+                        update_data["status"] = "success"
+                        await self.webhook_deliveries_collection.update_one(
+                            {"delivery_id": delivery["delivery_id"]},
+                            {"$set": update_data}
+                        )
+                        logger.info(f"Webhook delivered successfully: {webhook['url']} - Status: {response.status}")
+                        return True
+                    else:
+                        update_data["status"] = "failed"
+                        update_data["error_message"] = f"HTTP {response.status}: {response_body[:200]}"
+                        await self.webhook_deliveries_collection.update_one(
+                            {"delivery_id": delivery["delivery_id"]},
+                            {"$set": update_data}
+                        )
                         logger.warning(f"Webhook delivery failed: {webhook['url']} - Status: {response.status}")
+                        return False
                         
         except Exception as e:
             error_message = str(e)
@@ -176,12 +195,14 @@ class WebhookService:
                 {"delivery_id": delivery["delivery_id"]},
                 {
                     "$set": {
+                        "attempt": attempt,
                         "status": "failed",
                         "error_message": error_message,
                         "completed_at": datetime.now(timezone.utc)
                     }
                 }
             )
+            return False
     
     async def get_webhook_deliveries(self, webhook_id: Optional[str] = None, 
                                    limit: int = 50, offset: int = 0) -> List[Dict[str, Any]]:
