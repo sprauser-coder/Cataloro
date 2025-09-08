@@ -185,25 +185,38 @@ class ImageUploadTester:
         # Create a text file instead of image
         text_data = io.BytesIO(b"This is not an image file")
         
-        response, status = await self.make_upload_request(
-            text_data,
-            "not_an_image.txt",
-            "ads_browsePageAd",
-            "image"
-        )
+        try:
+            url = f"{API_BASE}/admin/upload-image"
+            
+            # Create FormData with explicit text content type
+            data = aiohttp.FormData()
+            data.add_field('image', text_data, filename='not_an_image.txt', content_type='text/plain')
+            data.add_field('section', 'ads_browsePageAd')
+            data.add_field('field', 'image')
+            
+            async with self.session.post(url, data=data) as response:
+                response_data = await response.json()
+                status = response.status
         
-        if status == 400:
-            self.log_result(
-                "Invalid File Type Upload", 
-                True, 
-                "Correctly rejected non-image file"
-            )
-        else:
+            if status == 400:
+                self.log_result(
+                    "Invalid File Type Upload", 
+                    True, 
+                    "Correctly rejected non-image file"
+                )
+            else:
+                self.log_result(
+                    "Invalid File Type Upload", 
+                    False, 
+                    f"Should reject non-image file, got status: {status}",
+                    str(response_data)
+                )
+        except Exception as e:
             self.log_result(
                 "Invalid File Type Upload", 
                 False, 
-                f"Should reject non-image file, got status: {status}",
-                str(response)
+                "Request failed", 
+                str(e)
             )
             
     async def test_missing_file(self):
