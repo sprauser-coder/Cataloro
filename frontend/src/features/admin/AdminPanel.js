@@ -5822,6 +5822,12 @@ function SiteAdministrationTab({ showToast, initialSection = 'appearance' }) {
       label: 'System & Maintenance', 
       icon: Server,
       description: 'System settings, maintenance, and advanced configuration'
+    },
+    { 
+      id: 'export-manager', 
+      label: 'Export Manager', 
+      icon: FileText,
+      description: 'Design and customize PDF export templates for various reports'
     }
   ];
 
