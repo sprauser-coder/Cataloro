@@ -417,6 +417,7 @@ function AdminPanel() {
       'users': 'User management, roles & permissions',
       'listings': 'Marketplace listings management & moderation',
       'business': 'Business analytics & performance metrics',
+      'ads-manager': 'Advertising campaigns, placements & analytics',
       'advanced-features': 'Currencies, languages, escrow, AI & enterprise features',
       'cats': 'Catalyst database management & configuration',
       'site-settings': 'Global site configuration & branding settings',
