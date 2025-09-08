@@ -123,7 +123,8 @@ const generateRealMenuItems = (permissions) => {
 
 function EditSideMenuDashboard() {
   const { showToast } = useNotifications();
-  const [menuItems, setMenuItems] = useState(defaultMenuItems);
+  const { permissions } = usePermissions();
+  const [menuItems, setMenuItems] = useState([]);
   const [draggedItem, setDraggedItem] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
@@ -137,8 +138,11 @@ function EditSideMenuDashboard() {
   });
 
   useEffect(() => {
-    loadMenuConfiguration();
-  }, []);
+    // Generate real menu items based on user permissions
+    const realMenuItems = generateRealMenuItems(permissions);
+    setMenuItems(realMenuItems);
+    loadMenuConfiguration(realMenuItems);
+  }, [permissions]);
 
   const loadMenuConfiguration = () => {
     try {
