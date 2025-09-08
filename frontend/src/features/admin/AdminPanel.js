@@ -3146,26 +3146,25 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
 
 // Comprehensive Site Administration Tab Component
 // Ad's Manager Component
-function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
-  const [activeAdTab, setActiveAdTab] = React.useState('browse');
+function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
+  const [activeAdTab, setActiveAdTab] = React.useState('overview');
   const [isSavingAds, setIsSavingAds] = React.useState(false);
   const [adsSaved, setAdsSaved] = React.useState(false);
+  const [expandedAdType, setExpandedAdType] = React.useState(null);
+  
+  const adTypes = [
+    { key: 'browse', label: 'Browse Page Ad', icon: Globe, description: 'Displayed on the main browse/marketplace page' },
+    { key: 'product', label: 'Product Detail Ad', icon: Package, description: 'Shown on individual product pages' },
+    { key: 'messengerAd', label: 'Messenger Ad', icon: MessageCircle, description: 'Integrated into the messaging interface' },
+    { key: 'profileAd', label: 'Profile Ad', icon: User, description: 'Displayed on user profile pages' },
+    { key: 'inventoryAd', label: 'Inventory Ad', icon: Database, description: 'Shown in user inventory/basket sections' }
+  ];
   
   const handleAdConfigChange = (adType, field, value) => {
     console.log(`🔧 Updating ad config: ${adType}.${field} = ${value}`);
     
     // Initialize adsManager if it doesn't exist
     const currentAdsManager = siteConfig.adsManager || {};
-    
-    // Special debugging for notification-related fields
-    if (field === 'notificationUsers' || field === 'notificationMethods') {
-      console.log(`🔍 ${adType} notification config update:`, {
-        field,
-        value,
-        currentUsers: currentAdsManager[adType]?.notificationUsers?.length || 0,
-        currentMethods: currentAdsManager[adType]?.notificationMethods || []
-      });
-    }
     
     const newAdsManager = {
       ...currentAdsManager,
