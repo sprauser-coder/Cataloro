@@ -613,6 +613,10 @@ function AdminPanel() {
               showToast={showToast}
             />
           )}
+
+          {activeTab === 'edit-side-menu' && (
+            <EditSideMenuDashboard />
+          )}
         </div>
       </div>
     </div>
