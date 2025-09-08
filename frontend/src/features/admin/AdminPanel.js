@@ -107,6 +107,7 @@ import BusinessTab from './BusinessTab';
 import MegaUnifiedDashboard from '../../components/admin/MegaUnifiedDashboard';
 import DocumentationDashboard from '../../components/admin/DocumentationDashboard';
 import MediaBrowserDashboard from '../../components/admin/MediaBrowserDashboard';
+import MediaSelector from '../../components/admin/MediaSelector';
 
 // System Notifications List Component
 function SystemNotificationsList() {
