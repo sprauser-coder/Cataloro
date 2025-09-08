@@ -3345,65 +3345,176 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
 
       {/* Browse Page Ad Tab */}
       {activeAdTab === 'browse' && (
-        <AdConfigPanel
-          title="Browse Page Advertisement"
-          description="Display advertisement on the right side of browse page (3 listings per row layout)"
-          adConfig={siteConfig.adsManager?.browsePageAd || { active: false, image: null, description: '', runtime: '1 month', width: '300px', height: '600px' }}
-          adType="browsePageAd"
-          handleAdConfigChange={handleAdConfigChange}
-          handleImageUpload={handleImageUpload}
-          runtimeOptions={runtimeOptions}
-          showDimensions={true}
-          dimensionsLabel="Ad Dimensions (Vertical Banner)"
-          showToast={showToast}
-        />
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Browse Page Advertisement</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Display advertisement on the right side of browse page (3 listings per row layout)</p>
+
+          {/* Active Toggle */}
+          <div className="space-y-6">
+            <label className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+              <button
+                onClick={() => {
+                  const currentActive = (siteConfig.adsManager?.browsePageAd?.active) || false;
+                  handleAdConfigChange('browsePageAd', 'active', !currentActive);
+                }}
+                className="mt-1 flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200"
+                style={{
+                  backgroundColor: (siteConfig.adsManager?.browsePageAd?.active) ? '#10B981' : '#6B7280',
+                  color: 'white'
+                }}
+              >
+                {(siteConfig.adsManager?.browsePageAd?.active) ? (
+                  <CheckCircle className="w-5 h-5" />
+                ) : (
+                  <X className="w-5 h-5" />
+                )}
+              </button>
+              <div>
+                <div className="font-medium text-gray-900 dark:text-white">
+                  Active {(siteConfig.adsManager?.browsePageAd?.active) ? '✓ ON' : '✗ OFF'}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Enable this advertisement section</div>
+              </div>
+            </label>
+
+            {(siteConfig.adsManager?.browsePageAd?.active) && (
+              <div className="space-y-4">
+                {/* Image Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+                    <ImageIcon className="w-5 h-5 inline mr-2" />
+                    Advertisement Image
+                  </label>
+                  
+                  <div className="space-y-4">
+                    {/* Current Image Preview */}
+                    {(siteConfig.adsManager?.browsePageAd?.image) && (
+                      <div className="relative group max-w-sm">
+                        <img 
+                          src={siteConfig.adsManager.browsePageAd.image} 
+                          alt="Advertisement preview"
+                          className="w-full h-48 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-600"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleAdConfigChange('browsePageAd', 'image', null)}
+                          className="absolute top-2 right-2 p-2 bg-red-500 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                    
+                    {/* File Upload Area */}
+                    <label className="w-full h-48 max-w-sm border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
+                      <Upload className="w-12 h-12 text-gray-400 mb-4" />
+                      <span className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Upload Advertisement Image
+                      </span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                        Click to browse or drag and drop<br />
+                        JPG, PNG, GIF up to 5MB
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload('browsePageAd', e.target.files[0])}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description/Alt Text
+                  </label>
+                  <textarea
+                    value={(siteConfig.adsManager?.browsePageAd?.description) || ''}
+                    onChange={(e) => handleAdConfigChange('browsePageAd', 'description', e.target.value)}
+                    placeholder="Enter advertisement description..."
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                {/* URL Link */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Target URL (Optional)
+                  </label>
+                  <input
+                    type="url"
+                    value={(siteConfig.adsManager?.browsePageAd?.url) || ''}
+                    onChange={(e) => handleAdConfigChange('browsePageAd', 'url', e.target.value)}
+                    placeholder="https://example.com (Leave empty for non-clickable ad)"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                {/* Runtime */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Runtime
+                  </label>
+                  <select
+                    value={(siteConfig.adsManager?.browsePageAd?.runtime) || '1 month'}
+                    onChange={(e) => handleAdConfigChange('browsePageAd', 'runtime', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    {runtimeOptions.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
-      {/* Favorite Page Ad Tab */}
-      {activeAdTab === 'favorite' && (
-        <AdConfigPanel
-          title="Favorite Page Advertisement"
-          description="Display advertisement on the favorites/wishlist page"
-          adConfig={siteConfig.adsManager?.favoriteAd || { active: false, image: null, description: '', runtime: '1 month', width: '100%', height: '200px' }}
-          adType="favoriteAd"
-          handleAdConfigChange={handleAdConfigChange}
-          handleImageUpload={handleImageUpload}
-          runtimeOptions={runtimeOptions}
-          showDimensions={true}
-          dimensionsLabel="Ad Dimensions (Horizontal Banner)"
-          showToast={showToast}
-        />
-      )}
-
-      {/* Messenger Ad Tab */}
-      {activeAdTab === 'messenger' && (
-        <AdConfigPanel
-          title="Messenger Advertisement"
-          description="Display advertisement in the messaging interface"
-          adConfig={siteConfig.adsManager?.messengerAd || { active: false, image: null, description: '', runtime: '1 month', width: '250px', height: '400px' }}
-          adType="messengerAd"
-          handleAdConfigChange={handleAdConfigChange}
-          handleImageUpload={handleImageUpload}
-          runtimeOptions={runtimeOptions}
-          showDimensions={true}
-          dimensionsLabel="Ad Dimensions (Sidebar Banner)"
-          showToast={showToast}
-        />
-      )}
-
-      {/* Footer Ad Tab */}
-      {activeAdTab === 'footer' && (
-        <AdConfigPanel
-          title="Footer Advertisement"
-          description="Display advertisement in the website footer"
-          adConfig={siteConfig.adsManager?.footerAd || { active: false, logo: null, description: '', runtime: '1 month' }}
-          adType="footerAd"
-          handleAdConfigChange={handleAdConfigChange}
-          handleImageUpload={handleImageUpload}
-          runtimeOptions={runtimeOptions}
-          showDimensions={false}
-          showToast={showToast}
-        />
+      {/* Placeholder for other tabs */}
+      {activeAdTab !== 'browse' && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            {activeAdTab === 'favorite' && 'Favorite Page Advertisement'}
+            {activeAdTab === 'messenger' && 'Messenger Advertisement'}
+            {activeAdTab === 'footer' && 'Footer Advertisement'}
+          </h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+            Configuration for {activeAdTab} advertisements coming soon...
+          </p>
+          
+          {/* Active Toggle for other tabs */}
+          <label className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+            <button
+              onClick={() => {
+                const currentActive = (siteConfig.adsManager?.[`${activeAdTab}Ad`]?.active) || false;
+                handleAdConfigChange(`${activeAdTab}Ad`, 'active', !currentActive);
+              }}
+              className="mt-1 flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200"
+              style={{
+                backgroundColor: (siteConfig.adsManager?.[`${activeAdTab}Ad`]?.active) ? '#10B981' : '#6B7280',
+                color: 'white'
+              }}
+            >
+              {(siteConfig.adsManager?.[`${activeAdTab}Ad`]?.active) ? (
+                <CheckCircle className="w-5 h-5" />
+              ) : (
+                <X className="w-5 h-5" />
+              )}
+            </button>
+            <div>
+              <div className="font-medium text-gray-900 dark:text-white">
+                Active {(siteConfig.adsManager?.[`${activeAdTab}Ad`]?.active) ? '✓ ON' : '✗ OFF'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Enable this advertisement section</div>
+            </div>
+          </label>
+        </div>
       )}
     </div>
   );
