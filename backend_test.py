@@ -35,8 +35,8 @@ class BackendTester:
         self.session = None
         self.test_results = []
         self.test_users = []
-        self.test_transactions = []
-        self.test_messages = []
+        self.test_baskets = []
+        self.test_items = []
         
     async def setup_session(self):
         """Setup HTTP session"""
