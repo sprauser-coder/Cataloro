@@ -2675,6 +2675,9 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
         }
       }
       
+      // Debug logging
+      console.log('🔧 Saving settings with PDF logo:', updatedFormData.pdf_logo_url);
+      
       // Store settings in localStorage for immediate use
       localStorage.setItem('cataloro_site_branding', JSON.stringify(updatedFormData));
       
@@ -2692,7 +2695,8 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
       // Apply logo changes to the site immediately
       applyLogoChanges(updatedFormData);
       
-      // Try to save to backend
+      // Try to save to backend with explicit PDF logo field
+      console.log('🔧 Calling adminService.updateSettings with:', updatedFormData);
       await adminService.updateSettings(updatedFormData);
       showToast('✅ Site branding and PDF logo saved successfully! Ready for PDF export.', 'success');
       onUpdateSettings();
