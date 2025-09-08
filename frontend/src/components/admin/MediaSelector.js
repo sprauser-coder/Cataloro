@@ -44,80 +44,14 @@ const MediaSelector = ({
       
       if (data.success) {
         setMediaFiles(data.files || []);
+        console.log(`📁 MediaSelector loaded ${data.files?.length || 0} real media files`);
       } else {
-        // Mock data for demo
-        const mockFiles = [
-          {
-            id: '1',
-            filename: 'cataloro-logo-light.png',
-            url: '/api/uploads/admin/cataloro-logo-light.png',
-            type: 'image/png',
-            size: 45678,
-            uploadedBy: 'admin',
-            uploadedAt: new Date(Date.now() - 86400000).toISOString(),
-            category: 'logos',
-            description: 'Light mode logo'
-          },
-          {
-            id: '2',
-            filename: 'cataloro-logo-dark.png',
-            url: '/api/uploads/admin/cataloro-logo-dark.png',
-            type: 'image/png',
-            size: 43210,
-            uploadedBy: 'admin',
-            uploadedAt: new Date(Date.now() - 86400000).toISOString(),
-            category: 'logos',
-            description: 'Dark mode logo'
-          },
-          {
-            id: '3', 
-            filename: 'hero-background.jpg',
-            url: '/api/uploads/admin/hero-background.jpg',
-            type: 'image/jpeg',
-            size: 234567,
-            uploadedBy: 'admin',
-            uploadedAt: new Date(Date.now() - 172800000).toISOString(),
-            category: 'backgrounds',
-            description: 'Homepage hero background'
-          },
-          {
-            id: '4',
-            filename: 'feature-preview.png', 
-            url: '/api/uploads/admin/feature-preview.png',
-            type: 'image/png',
-            size: 123456,
-            uploadedBy: 'admin',
-            uploadedAt: new Date(Date.now() - 259200000).toISOString(),
-            category: 'features',
-            description: 'Feature showcase image'
-          },
-          {
-            id: '5',
-            filename: 'company-logo.png',
-            url: '/api/uploads/admin/company-logo.png', 
-            type: 'image/png',
-            size: 87654,
-            uploadedBy: 'admin',
-            uploadedAt: new Date(Date.now() - 432000000).toISOString(),
-            category: 'logos',
-            description: 'Company branding logo'
-          },
-          {
-            id: '6',
-            filename: 'banner-promotion.jpg',
-            url: '/api/uploads/admin/banner-promotion.jpg',
-            type: 'image/jpeg',
-            size: 198765,
-            uploadedBy: 'admin-manager',
-            uploadedAt: new Date(Date.now() - 518400000).toISOString(),
-            category: 'marketing',
-            description: 'Promotional banner image'
-          }
-        ];
-        setMediaFiles(mockFiles);
+        console.error('MediaSelector: Failed to fetch media files:', data);
+        setMediaFiles([]);
       }
     } catch (error) {
-      console.error('Failed to fetch media files:', error);
+      console.error('MediaSelector: Failed to fetch media files:', error);
+      setMediaFiles([]);
     } finally {
       setLoading(false);
     }
