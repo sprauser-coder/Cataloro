@@ -1010,8 +1010,24 @@ async def browse_listings(
             if price_to < 999999:
                 query["price"]["$lte"] = price_to
         
+        # New bid status filter
+        if bid_status == "highest_bidder":
+            # Listings where current user has the highest bid
+            query["bid_info.has_bids"] = True
+            query["bid_info.highest_bidder"] = {"$exists": True}
+        elif bid_status == "not_bid_yet":
+            # Listings with no bids yet
+            query["$or"] = [
+                {"bid_info.has_bids": False},
+                {"bid_info": {"$exists": False}}
+            ]
+        
         # Calculate pagination
         skip = (page - 1) * limit
+        
+        # Get total count for pagination info
+        total_count = await db.listings.count_documents(query)
+        total_pages = (total_count + limit - 1) // limit  # Ceiling division
         
         # Get filtered listings with pagination - use optimized query with indexes
         listings = await db.listings.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(length=None)
