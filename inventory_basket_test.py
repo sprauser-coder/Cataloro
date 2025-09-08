@@ -178,37 +178,12 @@ class InventoryBasketTester:
     async def create_test_basket(self):
         """Create a test basket for testing purposes"""
         basket_data = {
+            "user_id": self.test_user_id,
             "name": "Test Precious Metals Basket",
-            "description": "Test basket for inventory testing with precious metals",
-            "items": [
-                {
-                    "id": "test_item_1",
-                    "title": "Platinum Catalyst Sample",
-                    "weight": 9.10,
-                    "pt_ppm": 2500.0,
-                    "pd_ppm": 1200.0,
-                    "rh_ppm": 180.0,
-                    "price": 1850.00,
-                    "renumeration_pt": 45.50,
-                    "renumeration_pd": 28.80,
-                    "renumeration_rh": 32.40
-                },
-                {
-                    "id": "test_item_2", 
-                    "title": "Palladium Catalyst Sample",
-                    "weight": 7.50,
-                    "pt_ppm": 800.0,
-                    "pd_ppm": 3200.0,
-                    "rh_ppm": 150.0,
-                    "price": 920.00,
-                    "renumeration_pt": 18.20,
-                    "renumeration_pd": 57.60,
-                    "renumeration_rh": 27.00
-                }
-            ]
+            "description": "Test basket for inventory testing with precious metals"
         }
         
-        response = await self.make_request("POST", f"/user/baskets/{self.test_user_id}", data=basket_data)
+        response = await self.make_request("POST", "/user/baskets", data=basket_data)
         
         if response["success"]:
             data = response["data"]
