@@ -3572,35 +3572,7 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
         </button>
       </div>
     </div>
-  ); 
-        All advertisement functionalities are now live across the marketplace!`, 
-        'success'
-      );
-      
-      // Log detailed ads configuration for debugging
-      console.log('🎉 COMPLETE Ad\'s Manager Configuration Applied:', {
-        ...updatedAdsManagerConfig,
-        appliedAt: new Date().toISOString(),
-        activeAds: activeAdsCount,
-        totalConfigured: totalConfiguredAds
-      });
-      
-      // Show visual confirmation
-      setAdsSaved(true);
-      setTimeout(() => setAdsSaved(false), 3000);
-      
-      // Trigger a custom event to notify other components that ads config has changed
-      window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
-        detail: updatedAdsManagerConfig 
-      }));
-      
-    } catch (error) {
-      console.error('Failed to save ads configuration:', error);
-      showToast('Failed to save ads configuration. Please try again.', 'error');
-    } finally {
-      setIsSavingAds(false);
-    }
-  };
+  );
 
   const handleImageUpload = async (adType, file, field = 'image') => {
     try {
