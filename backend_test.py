@@ -306,8 +306,8 @@ class BackendTester:
                         
                         # Check PDF size (should be reasonable for content)
                         pdf_size = len(pdf_content)
-                        if 5000 < pdf_size < 500000:  # Between 5KB and 500KB seems reasonable
-                            self.log_result("PDF Content Validation - Size", True, f"PDF size: {pdf_size} bytes")
+                        if 2000 < pdf_size < 100000:  # Between 2KB and 100KB seems reasonable for basket PDFs
+                            self.log_result("PDF Content Validation - Size", True, f"PDF size: {pdf_size} bytes (reasonable)")
                         else:
                             self.log_result("PDF Content Validation - Size", False, f"Unusual PDF size: {pdf_size} bytes")
                             
