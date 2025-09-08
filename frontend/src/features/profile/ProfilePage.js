@@ -404,6 +404,87 @@ function ProfilePage() {
     }
   };
 
+  const handleExportData = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/profile/${user.id}/export`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Convert base64 to blob and download
+        const byteCharacters = atob(data.pdf_data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        
+        // Create download link
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = data.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        showToast('Data exported successfully', 'success');
+      } else {
+        throw new Error('Export failed');
+      }
+    } catch (error) {
+      console.error('Failed to export data:', error);
+      showToast('Failed to export data', 'error');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const password = prompt('Please enter your password to confirm account deletion:');
+    if (!password) return;
+    
+    const confirmation = prompt('Type "delete my account" to confirm:');
+    if (confirmation?.toLowerCase() !== 'delete my account') {
+      showToast('Account deletion cancelled - incorrect confirmation', 'info');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/profile/${user.id}/delete-account`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          password: password,
+          confirmation: 'delete my account'
+        })
+      });
+      
+      if (response.ok) {
+        showToast('Account deleted successfully. You will be logged out.', 'success');
+        // Redirect to login or logout
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      } else {
+        const error = await response.json();
+        throw new Error(error.detail || 'Account deletion failed');
+      }
+    } catch (error) {
+      console.error('Failed to delete account:', error);
+      showToast(error.message || 'Failed to delete account', 'error');
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
       {/* Profile Header */}
