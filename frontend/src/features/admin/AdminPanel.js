@@ -6114,6 +6114,13 @@ function SiteAdministrationTab({ showToast, initialSection = 'appearance' }) {
           </div>
         )}
 
+        {/* Export Manager Section */}
+        {activeSection === 'export-manager' && (
+          <ExportManagerSection 
+            showToast={showToast}
+          />
+        )}
+
 
 
         {/* System Notifications Section */}
