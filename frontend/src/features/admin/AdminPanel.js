@@ -3365,7 +3365,7 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
       }
     } catch (error) {
       console.error('Image upload error:', error);
-      showToast('Failed to upload image. Please try again.', 'error');
+      showToast(`Failed to upload image: ${error.message}`, 'error');
     }
   };
 
