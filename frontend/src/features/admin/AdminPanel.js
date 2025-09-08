@@ -3548,16 +3548,27 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
                         </select>
                       </div>
                       
-                      {ad.startDate && (
-                        <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                          <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                            <div>Started: {new Date(ad.startDate).toLocaleDateString()}</div>
-                            {ad.expirationDate && (
-                              <div>Expires: {new Date(ad.expirationDate).toLocaleDateString()}</div>
+                      {/* Ad Statistics */}
+                      <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                          {ad.startDate ? (
+                            <>
+                              <div>Started: {new Date(ad.startDate).toLocaleDateString()}</div>
+                              {ad.expirationDate && (
+                                <div>Expires: {new Date(ad.expirationDate).toLocaleDateString()}</div>
+                              )}
+                            </>
+                          ) : (
+                            <div>Not activated yet</div>
+                          )}
+                          <div className="flex items-center space-x-4 pt-2 border-t border-gray-200 dark:border-gray-600">
+                            <span>Clicks: <strong>{ad.clicks || 0}</strong></span>
+                            {ad.active && (
+                              <span className="text-green-600 dark:text-green-400">● Active</span>
                             )}
                           </div>
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 )}
