@@ -589,7 +589,14 @@ function AdminPanel() {
               {/* Direct Ads Manager - Individual Ad Tags without Administration Sections */}
               <AdsManagerSection 
                 siteConfig={settings} 
-                handleConfigChange={() => {}} 
+                handleConfigChange={(field, value) => {
+                  console.log('🔧 Config change in Ads Manager:', field, value);
+                  // Update the settings state
+                  setSettings(prev => ({
+                    ...prev,
+                    [field]: value
+                  }));
+                }} 
                 showToast={showToast}
               />
             </div>
