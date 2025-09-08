@@ -9402,3 +9402,5 @@ function WebhookManagement({ showToast }) {
     </div>
   );
 }
+
+export default AdminPanel;
