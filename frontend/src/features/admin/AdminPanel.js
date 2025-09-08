@@ -1119,16 +1119,25 @@ function UsersTab({ users, onUpdateUser, showToast }) {
       {/* Create User Button - Moved to Top */}
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">User Management</h3>
-        <button
-          onClick={() => {
-            setSelectedUser(null);
-            setShowEditModal(true);
-          }}
-          className="cataloro-button-primary flex items-center space-x-2"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create New User</span>
-        </button>
+        <div className="flex space-x-3">
+          <button
+            onClick={handleExportBasketPDF}
+            className="flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+          >
+            <FileText className="w-4 h-4" />
+            <span>Export Baskets PDF</span>
+          </button>
+          <button
+            onClick={() => {
+              setSelectedUser(null);
+              setShowEditModal(true);
+            }}
+            className="cataloro-button-primary flex items-center space-x-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create New User</span>
+          </button>
+        </div>
       </div>
 
       {/* Users Table - STANDARDIZED SPACING */}
