@@ -172,7 +172,7 @@ const MediaBrowserDashboard = ({ className = '' }) => {
   const bulkDeleteFiles = async () => {
     if (selectedFiles.length === 0) return;
     
-    if (!confirm(`Are you sure you want to delete ${selectedFiles.length} selected file(s)? This action cannot be undone.`)) {
+    if (!window.confirm(`Are you sure you want to delete ${selectedFiles.length} selected file(s)? This action cannot be undone.`)) {
       return;
     }
 
