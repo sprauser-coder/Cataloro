@@ -1050,8 +1050,16 @@ async def update_profile(user_id: str, profile_data: dict):
 async def get_profile_statistics(user_id: str):
     """Get comprehensive profile statistics with real backend data"""
     try:
-        # Get user info
+        # Get user info - try both id field and _id field
         user = await db.users.find_one({"id": user_id})
+        if not user:
+            # Try with _id in case it's stored differently
+            try:
+                from bson import ObjectId
+                user = await db.users.find_one({"_id": ObjectId(user_id)})
+            except:
+                pass
+        
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
