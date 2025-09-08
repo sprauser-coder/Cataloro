@@ -384,14 +384,14 @@ function BuyManagementPage() {
 
       basketsToExport.forEach(basket => {
         if (basket.items && basket.items.length > 0) {
+          const totals = calculateBasketTotals(basket);
           basket.items.forEach(item => {
-            const totals = calculateTotals([item]);
             exportData.items.push({
               name: `${item.product_name || item.name || 'Unknown Item'} (${basket.name})`,
-              price: totals.valuePaid || 0,
-              pt_g: totals.ptG || 0,
-              pd_g: totals.pdG || 0,
-              rh_g: totals.rhG || 0
+              price: item.price || 0,
+              pt_g: item.pt_g || 0,
+              pd_g: item.pd_g || 0,
+              rh_g: item.rh_g || 0
             });
           });
         }
