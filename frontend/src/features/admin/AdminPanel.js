@@ -8972,6 +8972,8 @@ function UserEditModal({ user, onClose, onSave }) {
       </div>
     </div>
   );
+}
+
 // Webhook Management Component
 function WebhookManagement({ showToast }) {
   const [webhooks, setWebhooks] = useState([]);
