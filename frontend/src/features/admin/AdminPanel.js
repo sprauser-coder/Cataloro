@@ -2764,6 +2764,66 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
             </div>
           </div>
 
+          {/* PDF Export Logo */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              PDF Export Logo
+            </label>
+            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-white dark:bg-gray-700 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden">
+                  {(pdfLogoPreview || formData.pdf_logo_url) ? (
+                    <img 
+                      src={pdfLogoPreview || formData.pdf_logo_url} 
+                      alt="PDF Logo" 
+                      className="w-full h-full object-contain" 
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <FileText className="w-6 h-6 text-gray-400 mx-auto mb-1" />
+                      <span className="text-xs text-gray-400">PDF</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <div className="flex space-x-2">
+                    <label className="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg cursor-pointer transition-colors text-sm">
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload PDF Logo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleLogoUpload(e, 'pdf')}
+                        className="hidden"
+                      />
+                    </label>
+                    <button
+                      onClick={() => openMediaSelector('pdf')}
+                      className="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-sm"
+                    >
+                      <ImageIcon className="w-4 h-4 mr-2" />
+                      Select from Library
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Logo used in PDF exports (baskets/inventory)
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="flex items-start space-x-2">
+                <div className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5">
+                  📄
+                </div>
+                <div className="text-sm text-green-800 dark:text-green-200">
+                  <strong>PDF Export:</strong> This logo will appear on PDF exports of basket/inventory data. Recommended size: 200x100px with transparent background for best results.
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Site Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Site Name</label>
