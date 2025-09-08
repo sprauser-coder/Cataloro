@@ -3132,13 +3132,16 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
       
       console.log('🔧 AdminPanel: Saving ads configuration with activation dates...');
       
+      // Initialize adsManager if it doesn't exist
+      const currentAdsManager = siteConfig.adsManager || {};
+      
       // For each active ad, set start date and expiration date
-      const updatedAdsManagerConfig = { ...siteConfig.adsManager };
+      const updatedAdsManagerConfig = { ...currentAdsManager };
       
       Object.keys(updatedAdsManagerConfig).forEach(adType => {
         const adConfig = updatedAdsManagerConfig[adType];
         
-        if (adConfig.active && !adConfig.startDate) {
+        if (adConfig && adConfig.active && !adConfig.startDate) {
           // This is a newly activated ad - set start and expiration dates
           const now = new Date().toISOString();
           const expirationDate = calculateExpirationDate(now, adConfig.runtime || '1 month');
