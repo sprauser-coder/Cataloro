@@ -170,7 +170,14 @@ function ModernBrowsePage() {
     sortBy: globalSortBy,
     viewMode: globalViewMode,
     isLoading,
-    refreshListings: contextRefreshListings
+    refreshListings: contextRefreshListings,
+    // Pagination functions and state
+    pagination,
+    setCurrentPage,
+    goToNextPage,
+    goToPrevPage,
+    goToFirstPage,
+    goToLastPage
   } = useMarketplace();
 
   // Message modal state
