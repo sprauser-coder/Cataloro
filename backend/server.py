@@ -43,12 +43,15 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# Initialize FastAPI app
+# Initialize FastAPI app with compression and optimizations
 app = FastAPI(
     title="Cataloro Marketplace API",
     description="Scalable marketplace backend with feature-based architecture",
     version="1.0.0"
 )
+
+# Add compression middleware for better performance
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # CORS Configuration for production deployment
 origins = [
