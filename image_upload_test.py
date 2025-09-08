@@ -1,20 +1,35 @@
 #!/usr/bin/env python3
 """
-Cataloro Backend Testing Suite - Image Upload Functionality for Ad's Manager
-Testing the image upload workflow specifically for advertisements
+URGENT: Image Upload Functionality Testing for Ads Manager
+Testing Agent: Focused testing of /api/admin/upload-image endpoint after critical fix
 """
 
-import requests
+import asyncio
+import aiohttp
 import json
 import uuid
 import time
 import os
 import io
 from datetime import datetime
-from PIL import Image
+from dotenv import load_dotenv
 
-# Get backend URL from environment
-BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
+# Load environment variables
+load_dotenv()
+
+# Get backend URL from frontend .env file
+def get_backend_url():
+    try:
+        with open('/app/frontend/.env', 'r') as f:
+            for line in f:
+                if line.startswith('REACT_APP_BACKEND_URL='):
+                    return line.split('=', 1)[1].strip()
+    except:
+        pass
+    return "https://cataloro-menueditor.preview.emergentagent.com"
+
+BASE_URL = get_backend_url()
+API_BASE = f"{BASE_URL}/api"
 
 class ImageUploadTester:
     def __init__(self):
