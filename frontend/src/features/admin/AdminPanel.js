@@ -3274,6 +3274,81 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
 
   const stats = getAdStats();
 
+  // Handle image upload for ads
+  const handleImageUpload = async (adType, file, field = 'image') => {
+    try {
+      console.log(`🔧 Starting image upload for ${adType}.${field}`);
+      
+      const formData = new FormData();
+      formData.append('image', file);  // Backend expects 'image', not 'file'
+      formData.append('section', `ads_${adType}`);
+      formData.append('field', field);
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload-image`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('🔧 Upload successful, result:', result);
+        
+        // Update the ad configuration with the new image URL
+        const imageUrl = result.url || result.imageUrl;
+        if (imageUrl) {
+          handleAdConfigChange(adType, field, imageUrl);
+          
+          // IMMEDIATELY save to localStorage for instant display on browse page
+          const currentConfig = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
+          if (!currentConfig.adsManager) currentConfig.adsManager = {};
+          if (!currentConfig.adsManager[adType]) currentConfig.adsManager[adType] = {};
+          
+          currentConfig.adsManager[adType][field] = imageUrl;
+          
+          // Ensure other required fields exist
+          currentConfig.adsManager[adType].active = currentConfig.adsManager[adType].active !== false;
+          currentConfig.adsManager[adType].description = currentConfig.adsManager[adType].description || 'Advertisement';
+          currentConfig.adsManager[adType].runtime = currentConfig.adsManager[adType].runtime || '1 month';
+          
+          // Set default dimensions based on ad type
+          if (adType === 'browsePageAd') {
+            currentConfig.adsManager[adType].width = currentConfig.adsManager[adType].width || '300px';
+            currentConfig.adsManager[adType].height = currentConfig.adsManager[adType].height || '600px';
+          } else if (adType === 'favoriteAd') {
+            currentConfig.adsManager[adType].width = currentConfig.adsManager[adType].width || '100%';
+            currentConfig.adsManager[adType].height = currentConfig.adsManager[adType].height || '200px';
+          } else if (adType === 'messengerAd') {
+            currentConfig.adsManager[adType].width = currentConfig.adsManager[adType].width || '250px';
+            currentConfig.adsManager[adType].height = currentConfig.adsManager[adType].height || '400px';
+          }
+          
+          currentConfig.adsManager[adType].url = currentConfig.adsManager[adType].url || '';
+          currentConfig.adsManager[adType].clicks = currentConfig.adsManager[adType].clicks || 0;
+          
+          localStorage.setItem('cataloro_site_config', JSON.stringify(currentConfig));
+          
+          // Dispatch event to notify browse page
+          window.dispatchEvent(new CustomEvent('adsConfigUpdated', { 
+            detail: currentConfig.adsManager 
+          }));
+          
+          showToast(`${field === 'logo' ? 'Logo' : 'Image'} uploaded and activated successfully!`, 'success');
+          console.log(`🔧 Image URL set and saved for ${adType}.${field}:`, imageUrl);
+          console.log('🔧 Updated localStorage config:', currentConfig);
+        } else {
+          throw new Error('No image URL in response');
+        }
+      } else {
+        const errorText = await response.text();
+        console.error('Upload response error:', errorText);
+        throw new Error(`Upload failed: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Image upload error:', error);
+      showToast('Failed to upload image. Please try again.', 'error');
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Consolidated Header */}
