@@ -1,30 +1,36 @@
 /**
- * CATALORO - Public Profile Page
- * View-only public profile for users
+ * CATALORO - Public Profile Page with Rating System
+ * Enhanced public profile display with comprehensive user ratings
  */
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
+  User,
   Calendar,
-  Star,
+  MapPin,
   Package,
-  DollarSign,
-  Heart,
+  Award,
+  Star,
+  MessageCircle,
   Shield,
   CheckCircle,
-  MessageCircle,
-  Eye,
+  Building,
   Globe,
-  Settings
+  Phone,
+  Mail,
+  ExternalLink,
+  Activity,
+  TrendingUp,
+  DollarSign,
+  Heart,
+  Users,
+  Clock,
+  AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { useMarketplace } from '../../context/MarketplaceContext';
-import usePermissions from '../../hooks/usePermissions';
+import { useNotifications } from '../../context/NotificationContext';
+import UserRatingSystem from '../../components/ratings/UserRatingSystem';
 
 function PublicProfilePage() {
   const { userId } = useParams();
