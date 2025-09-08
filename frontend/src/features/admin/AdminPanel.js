@@ -584,6 +584,12 @@ function AdminPanel() {
             />
           )}
           
+          {activeTab === 'ads-manager' && (
+            <AdsManagerTab 
+              showToast={showToast}
+            />
+          )}
+          
           {activeTab === 'administration' && (
             <SiteAdministrationTab 
               showToast={showToast}
