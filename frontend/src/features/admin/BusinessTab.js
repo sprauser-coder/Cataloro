@@ -82,11 +82,11 @@ function BusinessTab({ showToast }) {
       setLoading(true);
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
       
-      // Fetch real business metrics
+      // Fetch real business metrics using correct endpoint paths
       const [analyticsRes, userRes, salesRes] = await Promise.all([
-        fetch(`${backendUrl}/api/v2/advanced/analytics/dashboard`),
-        fetch(`${backendUrl}/api/v2/advanced/analytics/user?days=30`),
-        fetch(`${backendUrl}/api/v2/advanced/analytics/sales?days=30`)
+        fetch(`${backendUrl}/api/admin/analytics/dashboard`),
+        fetch(`${backendUrl}/api/admin/analytics/users?days=30`),
+        fetch(`${backendUrl}/api/admin/analytics/sales?days=30`)
       ]);
 
       const [analytics, user, sales] = await Promise.all([
@@ -95,9 +95,11 @@ function BusinessTab({ showToast }) {
         salesRes.json()
       ]);
 
+      console.log('📊 Business Tab Analytics Data:', { analytics, user, sales });
+
       if (analytics.success && user.success && sales.success) {
         setRealBusinessData({
-          totalUsers: user.analytics?.summary?.total_users || 0,
+          totalUsers: user.analytics?.summary?.total_users || analytics.analytics?.users?.total || 0,
           newUsers: user.analytics?.summary?.new_users || 0,
           totalRevenue: sales.analytics?.summary?.total_revenue || 0,
           totalTransactions: sales.analytics?.summary?.total_transactions || 0,
