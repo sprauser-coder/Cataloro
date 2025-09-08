@@ -151,7 +151,78 @@ const MediaBrowserDashboard = ({ className = '' }) => {
     }
   };
 
-  const deleteFile = async (fileId) => {
+  // Bulk selection functions
+  const toggleFileSelection = (fileId) => {
+    setSelectedFiles(prev => 
+      prev.includes(fileId) 
+        ? prev.filter(id => id !== fileId)
+        : [...prev, fileId]
+    );
+  };
+
+  const selectAllFiles = () => {
+    if (selectedFiles.length === filteredFiles.length) {
+      setSelectedFiles([]);
+    } else {
+      setSelectedFiles(filteredFiles.map(file => file.id));
+    }
+  };
+
+  // Bulk operations
+  const bulkDeleteFiles = async () => {
+    if (selectedFiles.length === 0) return;
+    
+    if (!confirm(`Are you sure you want to delete ${selectedFiles.length} selected file(s)? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+      let deleteCount = 0;
+
+      for (const fileId of selectedFiles) {
+        const response = await fetch(`${backendUrl}/api/admin/media/files/${fileId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          deleteCount++;
+        }
+      }
+
+      // Remove deleted files from state
+      setMediaFiles(prev => prev.filter(file => !selectedFiles.includes(file.id)));
+      setSelectedFiles([]);
+      
+      console.log(`✅ Bulk deleted ${deleteCount} files`);
+      alert(`Successfully deleted ${deleteCount} file(s)!`);
+      
+      // Refresh to ensure sync
+      setTimeout(() => fetchMediaFiles(), 500);
+      
+    } catch (error) {
+      console.error('Bulk delete failed:', error);
+      alert('Failed to delete files: ' + error.message);
+    }
+  };
+
+  const bulkDownloadFiles = () => {
+    if (selectedFiles.length === 0) return;
+    
+    selectedFiles.forEach(fileId => {
+      const file = mediaFiles.find(f => f.id === fileId);
+      if (file) {
+        const link = document.createElement('a');
+        link.href = file.url;
+        link.download = file.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    });
+    
+    alert(`Started download of ${selectedFiles.length} file(s)!`);
+  };
     if (!confirm('Are you sure you want to delete this file? This action cannot be undone.')) {
       return;
     }
