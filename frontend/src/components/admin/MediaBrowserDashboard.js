@@ -223,6 +223,8 @@ const MediaBrowserDashboard = ({ className = '' }) => {
     
     alert(`Started download of ${selectedFiles.length} file(s)!`);
   };
+
+  const deleteFile = async (fileId) => {
     if (!confirm('Are you sure you want to delete this file? This action cannot be undone.')) {
       return;
     }
@@ -233,6 +235,7 @@ const MediaBrowserDashboard = ({ className = '' }) => {
       // Use the correct API endpoint for deleting files
       const response = await fetch(`${backendUrl}/api/admin/media/files/${fileId}`, {
         method: 'DELETE'
+      });
       });
       
       if (response.ok) {
