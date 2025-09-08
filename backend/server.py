@@ -3484,6 +3484,7 @@ async def create_listing(request: Request, listing_data: dict):
         
         return {
             "message": "Listing created successfully",
+            "id": listing_data["id"],  # For compatibility with tests
             "listing_id": listing_data["id"],
             "status": "active",
             "has_time_limit": listing_data.get("has_time_limit", False),
