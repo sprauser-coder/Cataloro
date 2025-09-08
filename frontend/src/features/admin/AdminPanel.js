@@ -5325,6 +5325,12 @@ function SiteAdministrationTab({ showToast }) {
       label: 'System & Maintenance', 
       icon: Server,
       description: 'System settings, maintenance, and advanced configuration'
+    },
+    { 
+      id: 'pdf-export', 
+      label: 'PDF Export Center', 
+      icon: Download,
+      description: 'Export comprehensive reports and data in PDF format'
     }
   ];
 
