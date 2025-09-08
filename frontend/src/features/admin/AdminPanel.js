@@ -3184,7 +3184,7 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
       // Check for expired ads and deactivate them first
       deactivateExpiredAds();
       
-      console.log('🔧 AdminPanel: Saving ads configuration with activation dates...');
+      console.log('🔧 ConsolidatedAdsManager: Saving ads configuration...');
       
       // Initialize adsManager if it doesn't exist
       const currentAdsManager = siteConfig.adsManager || {};
@@ -3205,49 +3205,374 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
             startDate: now,
             expirationDate: expirationDate
           };
-          
-          console.log(`🕒 Setting activation dates for ${adType}:`, {
-            startDate: now,
-            expirationDate: expirationDate,
-            runtime: adConfig.runtime
-          });
         }
       });
       
-      // CRITICAL FIX: Preserve ads configuration from localStorage
+      // Save configuration
       const currentLocalStorage = JSON.parse(localStorage.getItem('cataloro_site_config') || '{}');
-      
-      // Merge site config with existing localStorage, preserving ads configuration
       const mergedConfig = {
         ...siteConfig,
         ...currentLocalStorage,
-        // Use the updated ads configuration with activation dates
         adsManager: {
           ...currentLocalStorage.adsManager,
           ...updatedAdsManagerConfig
         },
-        // Always ensure hero section is enabled
         heroSectionEnabled: true
       };
       
-      console.log('🔧 AdminPanel: Saving merged config with activation dates:', mergedConfig);
-      
-      // Save merged configuration to localStorage
       localStorage.setItem('cataloro_site_config', JSON.stringify(mergedConfig));
-      
-      // Update the ads manager configuration through the parent handler
       handleConfigChange('adsManager', updatedAdsManagerConfig);
       
-      // Count active ads for display
+      // Count active ads
       const activeAdsCount = Object.entries(updatedAdsManagerConfig)
         .filter(([key, value]) => value.active).length;
       
-      const totalConfiguredAds = Object.entries(updatedAdsManagerConfig)
-        .filter(([key, value]) => value.image || value.logo).length;
+      showToast(`🎯 Consolidated Ads Manager: ${activeAdsCount} ads configured successfully!`, 'success');
+      setAdsSaved(true);
       
-      showToast(
-        `🎯 Ad's Manager configuration saved successfully! 
-        ${activeAdsCount} active ads, ${totalConfiguredAds} configured ads. 
+      // Trigger global ads config update
+      window.dispatchEvent(new CustomEvent('adsConfigUpdated', {
+        detail: updatedAdsManagerConfig
+      }));
+      
+      setTimeout(() => setAdsSaved(false), 3000);
+      
+    } catch (error) {
+      console.error('Failed to save ads configuration:', error);
+      showToast('Failed to save ads configuration', 'error');
+    } finally {
+      setIsSavingAds(false);
+    }
+  };
+
+  // Get ad statistics
+  const getAdStats = () => {
+    const adsManager = siteConfig.adsManager || {};
+    const total = adTypes.length;
+    const configured = adTypes.filter(type => {
+      const ad = adsManager[type.key];
+      return ad && (ad.image || ad.logo || ad.content);
+    }).length;
+    const active = adTypes.filter(type => {
+      const ad = adsManager[type.key];
+      return ad && ad.active;
+    }).length;
+    
+    return { total, configured, active };
+  };
+
+  const stats = getAdStats();
+
+  return (
+    <div className="space-y-8">
+      {/* Consolidated Header */}
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold mb-2 flex items-center">
+              <Target className="w-8 h-8 mr-3" />
+              Consolidated Ads Manager
+            </h2>
+            <p className="text-purple-100">Manage all advertising placements from one unified interface</p>
+          </div>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="bg-white/20 rounded-lg p-3">
+              <div className="text-2xl font-bold">{stats.active}</div>
+              <div className="text-sm text-purple-100">Active</div>
+            </div>
+            <div className="bg-white/20 rounded-lg p-3">
+              <div className="text-2xl font-bold">{stats.configured}</div>
+              <div className="text-sm text-purple-100">Configured</div>
+            </div>
+            <div className="bg-white/20 rounded-lg p-3">
+              <div className="text-2xl font-bold">{stats.total}</div>
+              <div className="text-sm text-purple-100">Total Slots</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+        <button
+          onClick={() => setActiveAdTab('overview')}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+            activeAdTab === 'overview'
+              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+          }`}
+        >
+          Overview
+        </button>
+        <button
+          onClick={() => setActiveAdTab('management')}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+            activeAdTab === 'management'
+              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+          }`}
+        >
+          Ad Management
+        </button>
+        <button
+          onClick={() => setActiveAdTab('analytics')}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+            activeAdTab === 'analytics'
+              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+          }`}
+        >
+          Analytics
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeAdTab === 'overview' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {adTypes.map((adType) => {
+            const ad = siteConfig.adsManager?.[adType.key] || {};
+            const isActive = ad.active;
+            const isConfigured = ad.image || ad.logo || ad.content;
+            
+            return (
+              <div
+                key={adType.key}
+                className={`bg-white dark:bg-gray-800 rounded-xl border-2 p-6 cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                  isActive 
+                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                    : isConfigured 
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-purple-300'
+                }`}
+                onClick={() => {
+                  setActiveAdTab('management');
+                  setExpandedAdType(adType.key);
+                }}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className={`p-2 rounded-lg ${
+                      isActive ? 'bg-green-100 text-green-600' :
+                      isConfigured ? 'bg-blue-100 text-blue-600' :
+                      'bg-gray-100 text-gray-600'
+                    }`}>
+                      <adType.icon className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{adType.label}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{adType.description}</p>
+                    </div>
+                  </div>
+                  <div className={`w-3 h-3 rounded-full ${
+                    isActive ? 'bg-green-500' :
+                    isConfigured ? 'bg-blue-500' :
+                    'bg-gray-300'
+                  }`}></div>
+                </div>
+                
+                <div className="flex items-center justify-between text-sm">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    isActive 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' 
+                      : isConfigured 
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                  }`}>
+                    {isActive ? 'Active' : isConfigured ? 'Configured' : 'Not Configured'}
+                  </span>
+                  
+                  {ad.expirationDate && isActive && (
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Expires: {new Date(ad.expirationDate).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {activeAdTab === 'management' && (
+        <div className="space-y-6">
+          {adTypes.map((adType) => {
+            const ad = siteConfig.adsManager?.[adType.key] || {};
+            const isExpanded = expandedAdType === adType.key || expandedAdType === null;
+            
+            if (!isExpanded && expandedAdType !== null) return null;
+            
+            return (
+              <div key={adType.key} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <adType.icon className="w-6 h-6 text-purple-600" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{adType.label}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{adType.description}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={ad.active || false}
+                        onChange={(e) => handleAdConfigChange(adType.key, 'active', e.target.checked)}
+                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Active</span>
+                    </label>
+                    
+                    <button
+                      onClick={() => setExpandedAdType(expandedAdType === adType.key ? null : adType.key)}
+                      className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    >
+                      {expandedAdType === adType.key ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+
+                {(expandedAdType === adType.key || expandedAdType === null) && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Ad Content Configuration */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Ad Title
+                        </label>
+                        <input
+                          type="text"
+                          value={ad.title || ''}
+                          onChange={(e) => handleAdConfigChange(adType.key, 'title', e.target.value)}
+                          placeholder="Enter ad title"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Ad Content/Description
+                        </label>
+                        <textarea
+                          value={ad.content || ''}
+                          onChange={(e) => handleAdConfigChange(adType.key, 'content', e.target.value)}
+                          placeholder="Enter ad content or description"
+                          rows={3}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Target URL (Optional)
+                        </label>
+                        <input
+                          type="url"
+                          value={ad.url || ''}
+                          onChange={(e) => handleAdConfigChange(adType.key, 'url', e.target.value)}
+                          placeholder="https://example.com"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Media & Settings */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Ad Image URL
+                        </label>
+                        <input
+                          type="url"
+                          value={ad.image || ''}
+                          onChange={(e) => handleAdConfigChange(adType.key, 'image', e.target.value)}
+                          placeholder="https://example.com/ad-image.jpg"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Runtime Duration
+                        </label>
+                        <select
+                          value={ad.runtime || '1 month'}
+                          onChange={(e) => handleAdConfigChange(adType.key, 'runtime', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="1 week">1 Week</option>
+                          <option value="2 weeks">2 Weeks</option>
+                          <option value="1 month">1 Month</option>
+                          <option value="3 months">3 Months</option>
+                          <option value="6 months">6 Months</option>
+                          <option value="1 year">1 Year</option>
+                        </select>
+                      </div>
+                      
+                      {ad.startDate && (
+                        <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                          <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                            <div>Started: {new Date(ad.startDate).toLocaleDateString()}</div>
+                            {ad.expirationDate && (
+                              <div>Expires: {new Date(ad.expirationDate).toLocaleDateString()}</div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {activeAdTab === 'analytics' && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <div className="text-center py-12">
+            <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Analytics Coming Soon</h3>
+            <p className="text-gray-600 dark:text-gray-400">
+              Advanced analytics and performance metrics for your ad campaigns will be available here.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Save Button */}
+      <div className="flex justify-end space-x-4">
+        <button
+          onClick={saveAdsConfiguration}
+          disabled={isSavingAds}
+          className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+            isSavingAds
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : adsSaved
+                ? 'bg-green-600 text-white'
+                : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl'
+          }`}
+        >
+          {isSavingAds ? (
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent animate-spin rounded-full"></div>
+              <span>Saving...</span>
+            </div>
+          ) : adsSaved ? (
+            <div className="flex items-center space-x-2">
+              <Check className="w-4 h-4" />
+              <span>Saved!</span>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Save className="w-4 h-4" />
+              <span>Save Configuration</span>
+            </div>
+          )}
+        </button>
+      </div>
+    </div>
+  ); 
         All advertisement functionalities are now live across the marketplace!`, 
         'success'
       );
