@@ -2631,7 +2631,7 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
                       </div>
                     )}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 space-y-2">
                     <label className="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg cursor-pointer transition-colors text-sm">
                       <Upload className="w-4 h-4 mr-2" />
                       Upload Dark Logo
@@ -2642,6 +2642,13 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
                         className="hidden"
                       />
                     </label>
+                    <button
+                      onClick={() => openMediaSelector('dark')}
+                      className="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-sm ml-2"
+                    >
+                      <ImageIcon className="w-4 h-4 mr-2" />
+                      Select from Media Library
+                    </button>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       For dark backgrounds
                     </p>
