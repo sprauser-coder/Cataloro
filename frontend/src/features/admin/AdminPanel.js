@@ -427,7 +427,8 @@ function AdminPanel() {
       'advanced-features': 'Currencies, languages, escrow, AI & enterprise features',
       'cats': 'Catalyst database management & configuration',
       'site-settings': 'Global site configuration & branding settings',
-      'administration': 'System administration & maintenance tools'
+      'administration': 'System administration & maintenance tools',
+      'edit-side-menu': 'Customize navigation menu with drag-and-drop functionality'
     };
     return descriptions[tabId] || 'Admin panel section';
   };
