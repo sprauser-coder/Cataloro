@@ -456,7 +456,7 @@ class BackendTester:
     def print_summary(self):
         """Print test summary"""
         print("\n" + "="*80)
-        print("🧪 BACKEND TESTING SUMMARY")
+        print("🧪 BASKET PDF EXPORT TESTING SUMMARY")
         print("="*80)
         
         total_tests = len(self.test_results)
@@ -475,19 +475,33 @@ class BackendTester:
                     print(f"   • {result['test']}: {result['error']}")
                     
         print(f"\n🎯 TESTING FOCUS AREAS:")
-        print(f"   • User Rating System: 4 endpoints tested")
-        print(f"   • Enhanced Messaging: 5 endpoints tested") 
-        print(f"   • Enhanced Profile: 3 endpoints tested")
-        print(f"   • Backend Health: 1 endpoint tested")
+        print(f"   • Basket Export Endpoint: /api/user/export-basket-pdf")
+        print(f"   • PDF Generation: ReportLab integration")
+        print(f"   • Basket Data Structure: Items, totals, precious metals")
+        print(f"   • Logo Integration: Cataloro branding")
+        print(f"   • Data Formatting: Precious metals calculations")
+        print(f"   • Error Handling: Invalid data scenarios")
+        print(f"   • File Generation: PDF structure and headers")
         
-        print(f"\n📊 ENDPOINT COVERAGE:")
-        rating_tests = [r for r in self.test_results if "Rating" in r["test"]]
-        messaging_tests = [r for r in self.test_results if "Message" in r["test"] or "Conversation" in r["test"]]
-        profile_tests = [r for r in self.test_results if "Profile" in r["test"]]
+        print(f"\n📊 TEST CATEGORIES:")
+        pdf_tests = [r for r in self.test_results if "PDF" in r["test"] or "Basket" in r["test"]]
+        logo_tests = [r for r in self.test_results if "Logo" in r["test"]]
+        metals_tests = [r for r in self.test_results if "Metals" in r["test"] or "Precious" in r["test"]]
+        error_tests = [r for r in self.test_results if "Error" in r["test"]]
         
-        print(f"   • Rating System: {sum(1 for t in rating_tests if t['success'])}/{len(rating_tests)} passed")
-        print(f"   • Messaging System: {sum(1 for t in messaging_tests if t['success'])}/{len(messaging_tests)} passed")
-        print(f"   • Profile System: {sum(1 for t in profile_tests if t['success'])}/{len(profile_tests)} passed")
+        print(f"   • PDF Export Tests: {sum(1 for t in pdf_tests if t['success'])}/{len(pdf_tests)} passed")
+        print(f"   • Logo Integration: {sum(1 for t in logo_tests if t['success'])}/{len(logo_tests)} passed")
+        print(f"   • Precious Metals: {sum(1 for t in metals_tests if t['success'])}/{len(metals_tests)} passed")
+        print(f"   • Error Handling: {sum(1 for t in error_tests if t['success'])}/{len(error_tests)} passed")
+        
+        print(f"\n📋 BASKET TEST DATA:")
+        print(f"   • Test Baskets: {len(self.test_baskets)}")
+        print(f"   • Test Items: {len(self.test_items)}")
+        if self.test_baskets:
+            basket = self.test_baskets[0]
+            print(f"   • Sample Basket: '{basket['basketName']}' with {len(basket['items'])} items")
+            print(f"   • Total Value: €{basket['totals']['valuePaid']:.2f}")
+            print(f"   • Precious Metals: Pt={basket['totals']['ptG']:.3f}g, Pd={basket['totals']['pdG']:.3f}g, Rh={basket['totals']['rhG']:.3f}g")
         
 async def main():
     """Main test execution"""
