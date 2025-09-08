@@ -3315,6 +3315,7 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
         // Update the ad configuration with the new image URL
         const imageUrl = result.url || result.imageUrl;
         if (imageUrl) {
+          console.log(`✅ Image uploaded successfully: ${imageUrl}`);
           handleAdConfigChange(adType, field, imageUrl);
           
           // IMMEDIATELY save to localStorage for instant display on browse page
