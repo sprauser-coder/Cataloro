@@ -137,8 +137,14 @@ async def startup_event():
         await db.listings.create_index([("category", 1), ("status", 1)])  # Category filter
         
         # Users collection indexes
-        await db.users.create_index([("email", 1)], unique=True)
-        await db.users.create_index([("username", 1)], unique=True)
+        try:
+            await db.users.create_index([("email", 1)], unique=True)
+        except Exception:
+            pass  # Index might already exist
+        try:
+            await db.users.create_index([("username", 1)], unique=True)
+        except Exception:
+            pass  # Index might already exist
         await db.users.create_index([("is_active", 1)])
         
         # Bids collection indexes
