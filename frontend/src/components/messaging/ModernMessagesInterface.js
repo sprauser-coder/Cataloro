@@ -649,15 +649,9 @@ function ModernMessagesInterface() {
             /* No conversation selected */
             <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
               <div className="text-center">
-                <MessageCircle className="w-24 h-24 text-gray-400 mx-auto mb-6" />
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Select a conversation</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">Choose a conversation from the sidebar to start messaging</p>
-                <button
-                  onClick={() => setShowUserSearch(true)}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium"
-                >
-                  Start New Conversation
-                </button>
+                <MessageCircle className="w-24 h-24 text-gray-300 dark:text-gray-600 mb-6" />
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Welcome to Messages</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">Select a conversation from the sidebar to view messages from your sales and purchases</p>
               </div>
             </div>
           )}
