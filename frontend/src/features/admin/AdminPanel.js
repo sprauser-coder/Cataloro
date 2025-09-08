@@ -418,13 +418,10 @@ function AdminPanel() {
       'media-browser': 'Manage admin-uploaded images and media files',
       'users': 'User management, roles & permissions',
       'listings': 'Marketplace listings management & moderation',
-      'business': 'Business analytics & performance metrics',
       'ads-manager': 'Advertising campaigns, placements & analytics',
-      'advanced-features': 'Currencies, languages, escrow, AI & enterprise features',
       'cats': 'Catalyst database management & configuration',
       'site-settings': 'Global site configuration & branding settings',
-      'administration': 'System administration & maintenance tools',
-      'edit-side-menu': 'Customize navigation menu with drag-and-drop functionality'
+      'administration': 'System administration & maintenance tools'
     };
     return descriptions[tabId] || 'Admin panel section';
   };
