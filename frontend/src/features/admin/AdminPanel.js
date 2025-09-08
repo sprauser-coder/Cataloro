@@ -90,6 +90,7 @@ import {
   ChevronDown,
   ChevronUp,
   BookOpen,
+  Menu,
   Layers,
   GitBranch,
   RotateCcw,
