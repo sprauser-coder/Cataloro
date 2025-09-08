@@ -11,7 +11,7 @@ from datetime import datetime
 import uuid
 
 class StatusFilteringTester:
-    def __init__(self, base_url="https://cataloro-menueditor.preview.emergentagent.com"):
+    def __init__(self, base_url="https://marketplace-repair-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.user_token = None

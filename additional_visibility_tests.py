@@ -8,7 +8,7 @@ import requests
 import json
 
 class AdditionalVisibilityTests:
-    def __init__(self, base_url="https://cataloro-menueditor.preview.emergentagent.com"):
+    def __init__(self, base_url="https://marketplace-repair-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
 

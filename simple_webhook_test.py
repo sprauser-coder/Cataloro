@@ -7,7 +7,7 @@ import asyncio
 import aiohttp
 import json
 
-BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-repair-1.preview.emergentagent.com/api"
 
 async def test_existing_webhook():
     """Test existing webhook functionality"""

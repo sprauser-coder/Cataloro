@@ -9,7 +9,7 @@ import json
 import base64
 
 # Backend URL from environment
-BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-repair-1.preview.emergentagent.com/api"
 
 async def test_pdf_improvements():
     """Test the improved PDF export functionality"""

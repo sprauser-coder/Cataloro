@@ -11,7 +11,7 @@ from datetime import datetime
 import sys
 
 # Configuration
-BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-repair-1.preview.emergentagent.com/api"
 
 class Phase5BackendTest:
     def __init__(self):

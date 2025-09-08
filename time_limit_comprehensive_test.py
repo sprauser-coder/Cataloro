@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import uuid
 
 # Get backend URL from environment
-BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-repair-1.preview.emergentagent.com/api"
 
 class TimeLimitTester:
     def __init__(self):

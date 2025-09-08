@@ -14,7 +14,7 @@ from typing import Dict, List, Any
 import statistics
 
 # Backend URL from environment
-BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-repair-1.preview.emergentagent.com/api"
 
 class FocusedStressTester:
     def __init__(self):

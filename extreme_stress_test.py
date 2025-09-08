@@ -33,7 +33,7 @@ import threading
 import signal
 
 # Backend URL from environment
-BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-repair-1.preview.emergentagent.com/api"
 
 @dataclass
 class StressTestConfig:
