@@ -281,12 +281,19 @@ export function MarketplaceProvider({ children }) {
       const apiResponse = await marketplaceService.browseListings(apiFilters);
       console.log('✅ Loaded real listings from API with filters:', apiFilters, apiResponse);
       
-      // The browse endpoint returns array format directly
-      let apiListings;
+      // Handle both array format (old) and structured format (new with pagination)
+      let apiListings, paginationInfo;
       if (Array.isArray(apiResponse)) {
+        // Old array format
         apiListings = apiResponse;
+        paginationInfo = null;
+      } else if (apiResponse && apiResponse.listings) {
+        // New structured format with pagination
+        apiListings = apiResponse.listings;
+        paginationInfo = apiResponse.pagination;
+        console.log('📋 Pagination info:', paginationInfo);
       } else {
-        throw new Error('Invalid API response format: expected array');
+        throw new Error('Invalid API response format');
       }
       
       console.log('📋 Processing listings:', apiListings.length);
