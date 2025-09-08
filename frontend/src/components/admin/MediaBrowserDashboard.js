@@ -50,81 +50,13 @@ const MediaBrowserDashboard = ({ className = '' }) => {
       
       if (data.success) {
         setMediaFiles(data.files || []);
+        console.log(`📁 Loaded ${data.files?.length || 0} real media files from uploads directory`);
       } else {
-        // Create mock admin media files for demo
-        const mockFiles = [
-          {
-            id: '1',
-            filename: 'cataloro-logo-main.png',
-            url: '/api/uploads/admin/cataloro-logo-main.png',
-            type: 'image/png',
-            size: 45678,
-            uploadedBy: 'admin',
-            uploadedAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-            category: 'logos',
-            description: 'Main Cataloro marketplace logo'
-          },
-          {
-            id: '2', 
-            filename: 'hero-background.jpg',
-            url: '/api/uploads/admin/hero-background.jpg',
-            type: 'image/jpeg',
-            size: 234567,
-            uploadedBy: 'admin-manager',
-            uploadedAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-            category: 'backgrounds',
-            description: 'Homepage hero section background image'
-          },
-          {
-            id: '3',
-            filename: 'feature-analytics.png', 
-            url: '/api/uploads/admin/feature-analytics.png',
-            type: 'image/png',
-            size: 123456,
-            uploadedBy: 'admin',
-            uploadedAt: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
-            category: 'features',
-            description: 'Analytics dashboard feature preview'
-          },
-          {
-            id: '4',
-            filename: 'admin-panel-preview.jpg',
-            url: '/api/uploads/admin/admin-panel-preview.jpg', 
-            type: 'image/jpeg',
-            size: 345678,
-            uploadedBy: 'admin',
-            uploadedAt: new Date(Date.now() - 432000000).toISOString(), // 5 days ago
-            category: 'screenshots',
-            description: 'Admin panel interface screenshot'
-          },
-          {
-            id: '5',
-            filename: 'marketplace-diagram.svg',
-            url: '/api/uploads/admin/marketplace-diagram.svg',
-            type: 'image/svg+xml', 
-            size: 67890,
-            uploadedBy: 'admin-manager',
-            uploadedAt: new Date(Date.now() - 604800000).toISOString(), // 1 week ago
-            category: 'diagrams',
-            description: 'System architecture diagram'
-          },
-          {
-            id: '6',
-            filename: 'testimonial-bg.png',
-            url: '/api/uploads/admin/testimonial-bg.png',
-            type: 'image/png',
-            size: 156789,
-            uploadedBy: 'admin',
-            uploadedAt: new Date(Date.now() - 864000000).toISOString(), // 10 days ago
-            category: 'backgrounds', 
-            description: 'Testimonials section background'
-          }
-        ];
-        setMediaFiles(mockFiles);
+        console.error('Failed to fetch media files:', data);
+        setMediaFiles([]);
       }
     } catch (error) {
       console.error('Failed to fetch media files:', error);
-      // Fallback to empty array if fetch fails
       setMediaFiles([]);
     } finally {
       setLoading(false);
