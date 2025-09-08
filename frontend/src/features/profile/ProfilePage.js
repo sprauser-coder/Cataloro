@@ -319,6 +319,64 @@ function ProfilePage() {
     });
   };
 
+  // Username verification function
+  const checkUsernameAvailability = async (username) => {
+    if (!username || username === user?.username) {
+      setUsernameStatus({ isChecking: false, isAvailable: null, message: '' });
+      return;
+    }
+
+    if (username.length < 3) {
+      setUsernameStatus({ 
+        isChecking: false, 
+        isAvailable: false, 
+        message: 'Username must be at least 3 characters' 
+      });
+      return;
+    }
+
+    setUsernameStatus({ isChecking: true, isAvailable: null, message: 'Checking availability...' });
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/check-username`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setUsernameStatus({
+          isChecking: false,
+          isAvailable: result.available,
+          message: result.available ? '✅ Username is available' : '❌ Username is already taken'
+        });
+      } else {
+        throw new Error('Failed to check username');
+      }
+    } catch (error) {
+      console.error('Username check error:', error);
+      setUsernameStatus({
+        isChecking: false,
+        isAvailable: false,
+        message: 'Error checking username availability'
+      });
+    }
+  };
+
+  // Debounced username check
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (profileData.username && profileData.username !== user?.username) {
+        checkUsernameAvailability(profileData.username);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [profileData.username, user?.username]);
+
   const handleSaveProfile = async () => {
     try {
       // Check if account type changed
