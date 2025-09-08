@@ -9157,7 +9157,7 @@ function WebhookManagement({ showToast }) {
   };
 
   const handleDeleteWebhook = async (webhookId) => {
-    if (!confirm('Are you sure you want to delete this webhook?')) return;
+    if (!window.confirm('Are you sure you want to delete this webhook?')) return;
 
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/webhooks/${webhookId}`, {
