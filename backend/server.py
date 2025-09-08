@@ -3549,7 +3549,15 @@ async def update_listing(listing_id: str, update_data: dict):
             except Exception as fav_error:
                 print(f"Warning: Failed to clean up favorites for {status} listing: {fav_error}")
         
-        return {"message": "Listing updated successfully"}
+        # Get the updated listing to return
+        updated_listing = await db.listings.find_one({"id": listing_id})
+        if updated_listing:
+            # Convert ObjectId to string for JSON serialization
+            if updated_listing.get('_id'):
+                updated_listing['_id'] = str(updated_listing['_id'])
+            return updated_listing
+        else:
+            return {"message": "Listing updated successfully"}
         
     except HTTPException:
         raise
