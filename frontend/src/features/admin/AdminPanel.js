@@ -3502,6 +3502,34 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
                         />
                       </div>
                       
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Width
+                          </label>
+                          <input
+                            type="text"
+                            value={ad.width || (adType.key === 'browsePageAd' ? '300px' : '100%')}
+                            onChange={(e) => handleAdConfigChange(adType.key, 'width', e.target.value)}
+                            placeholder="300px"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Height
+                          </label>
+                          <input
+                            type="text"
+                            value={ad.height || (adType.key === 'browsePageAd' ? '600px' : '200px')}
+                            onChange={(e) => handleAdConfigChange(adType.key, 'height', e.target.value)}
+                            placeholder="600px"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                          />
+                        </div>
+                      </div>
+                      
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Runtime Duration
