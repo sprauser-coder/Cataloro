@@ -87,6 +87,12 @@ function ProfilePage() {
   const [showCountrySuggestions, setShowCountrySuggestions] = useState(false);
   const [showBusinessCountrySuggestions, setShowBusinessCountrySuggestions] = useState(false);
 
+  const [usernameStatus, setUsernameStatus] = useState({
+    isChecking: false,
+    isAvailable: null,
+    message: ''
+  });
+
   const [preferences, setPreferences] = useState({
     emailNotifications: true,
     smsNotifications: false,
