@@ -2656,6 +2656,7 @@ async def get_site_settings():
                 "logo_url": "/favicon.ico",
                 "logo_light_url": "",
                 "logo_dark_url": "",
+                "pdf_logo_url": "",
                 "theme_color": "#3B82F6",
                 "allow_registration": True,
                 "require_approval": False,
