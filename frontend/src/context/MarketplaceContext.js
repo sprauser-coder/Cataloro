@@ -287,16 +287,21 @@ export function MarketplaceProvider({ children }) {
     localStorage.setItem('cataloro_favorites', JSON.stringify(state.favorites));
   }, [state.favorites]);
 
-  const loadInitialProducts = async (filters = null) => {
+  const loadInitialProducts = async (filters = null, page = 1) => {
     // Set loading state
     dispatch({ type: ACTIONS.SET_LOADING, payload: true });
     
     try {
       // Use provided filters or current state filters
       const currentFilters = filters || state.activeFilters;
+      const currentPage = page || state.pagination.currentPage;
       
       // Convert filter format for API call
-      const apiFilters = {};
+      const apiFilters = {
+        page: currentPage,
+        limit: 40 // Set items per page
+      };
+      
       if (currentFilters.type && currentFilters.type !== 'all') {
         apiFilters.type = currentFilters.type;
       }
@@ -305,6 +310,9 @@ export function MarketplaceProvider({ children }) {
       }
       if (currentFilters.priceTo < 10000) {
         apiFilters.price_to = currentFilters.priceTo;
+      }
+      if (currentFilters.bidStatus && currentFilters.bidStatus !== 'all') {
+        apiFilters.bid_status = currentFilters.bidStatus;
       }
       
       // Try to fetch real listings from API using marketplaceService
@@ -322,6 +330,11 @@ export function MarketplaceProvider({ children }) {
         apiListings = apiResponse.listings;
         paginationInfo = apiResponse.pagination;
         console.log('📋 Pagination info:', paginationInfo);
+        
+        // Update pagination state
+        if (paginationInfo) {
+          dispatch({ type: ACTIONS.SET_PAGINATION, payload: paginationInfo });
+        }
       } else {
         throw new Error('Invalid API response format');
       }
