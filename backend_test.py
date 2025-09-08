@@ -341,8 +341,9 @@ class BackendTester:
                     else:
                         self.log_result("Logo Integration", True, "PDF generated without logo (acceptable if no logo file found)")
                         
-                    # Check for Cataloro branding text
-                    if b'CATALORO' in pdf_content or b'Cataloro' in pdf_content:
+                    # Check for Cataloro branding text (case insensitive)
+                    pdf_text = pdf_content.decode('latin-1', errors='ignore').upper()
+                    if 'CATALORO' in pdf_text:
                         self.log_result("Logo Integration - Branding", True, "Cataloro branding text found in PDF")
                     else:
                         self.log_result("Logo Integration - Branding", False, "Cataloro branding text not found")
