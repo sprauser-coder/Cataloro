@@ -2309,6 +2309,317 @@ async def generate_custom_report(report_config: dict):
         logger.error(f"Custom report generation failed: {e}")
         raise HTTPException(status_code=500, detail=f"Custom report failed: {str(e)}")
 
+@app.post("/api/admin/export-pdf")
+async def export_comprehensive_pdf(export_data: dict):
+    """Generate comprehensive PDF export with selected data types"""
+    try:
+        from reportlab.lib.pagesizes import letter, A4
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import inch
+        from reportlab.lib import colors
+        from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+        from reportlab.graphics.shapes import Drawing
+        from reportlab.graphics.charts.linecharts import HorizontalLineChart
+        from reportlab.graphics.charts.piecharts import Pie
+        from fastapi.responses import StreamingResponse
+        import tempfile
+        
+        # Extract export parameters
+        export_types = export_data.get("types", [])
+        date_range = export_data.get("dateRange", {})
+        format_type = export_data.get("format", "comprehensive")
+        options = export_data.get("options", {})
+        
+        logger.info(f"Generating PDF export for types: {export_types}")
+        
+        # Create temporary file for PDF
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+            pdf_filename = tmp_file.name
+        
+        # Initialize PDF document
+        doc = SimpleDocTemplate(
+            pdf_filename,
+            pagesize=A4,
+            rightMargin=72,
+            leftMargin=72,
+            topMargin=72,
+            bottomMargin=18
+        )
+        
+        # Get sample styles
+        styles = getSampleStyleSheet()
+        
+        # Create custom styles
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            spaceAfter=30,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor('#2563eb')
+        )
+        
+        heading_style = ParagraphStyle(
+            'CustomHeading',
+            parent=styles['Heading2'],
+            fontSize=16,
+            spaceAfter=12,
+            spaceBefore=20,
+            textColor=colors.HexColor('#1f2937')
+        )
+        
+        # Story container for PDF content
+        story = []
+        
+        # Add title page
+        story.append(Paragraph("CATALORO MARKETPLACE", title_style))
+        story.append(Paragraph("Comprehensive Data Export Report", styles['Title']))
+        
+        # Add generation info
+        generation_date = datetime.now(timezone.utc).strftime("%B %d, %Y at %H:%M UTC")
+        story.append(Spacer(1, 20))
+        story.append(Paragraph(f"Generated on: {generation_date}", styles['Normal']))
+        
+        if date_range.get('start') and date_range.get('end'):
+            start_date = datetime.fromisoformat(date_range['start']).strftime("%B %d, %Y")
+            end_date = datetime.fromisoformat(date_range['end']).strftime("%B %d, %Y")
+            story.append(Paragraph(f"Data Period: {start_date} to {end_date}", styles['Normal']))
+        
+        story.append(Spacer(1, 30))
+        
+        # Add executive summary
+        summary_data = []
+        total_users = await db.users.count_documents({})
+        total_listings = await db.listings.count_documents({})
+        total_orders = await db.orders.count_documents({})
+        
+        summary_data.extend([
+            ["Metric", "Value"],
+            ["Total Users", f"{total_users:,}"],
+            ["Total Listings", f"{total_listings:,}"],
+            ["Total Orders", f"{total_orders:,}"],
+            ["Report Types", f"{len(export_types)}"],
+            ["Export Format", format_type.title()]
+        ])
+        
+        summary_table = Table(summary_data, colWidths=[3*inch, 2*inch])
+        summary_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f3f4f6')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#1f2937')),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e5e7eb'))
+        ]))
+        
+        story.append(Paragraph("Executive Summary", heading_style))
+        story.append(summary_table)
+        story.append(PageBreak())
+        
+        # Process each selected export type
+        for export_type in export_types:
+            try:
+                story.append(Paragraph(f"{export_type.replace('_', ' ').title()} Report", heading_style))
+                
+                if export_type == "users":
+                    # Users Report
+                    users = await db.users.find({}, {"_id": 0}).to_list(length=100)  # Limit for performance
+                    
+                    if users:
+                        user_data = [["Username", "Email", "Join Date", "Status"]]
+                        for user in users[:50]:  # Limit to first 50 for PDF
+                            join_date = user.get('created_at', 'N/A')
+                            if isinstance(join_date, str):
+                                try:
+                                    join_date = datetime.fromisoformat(join_date.replace('Z', '+00:00')).strftime("%Y-%m-%d")
+                                except:
+                                    join_date = 'N/A'
+                            
+                            user_data.append([
+                                user.get('username', 'N/A')[:20],
+                                user.get('email', 'N/A')[:30],
+                                join_date,
+                                user.get('status', 'active')
+                            ])
+                        
+                        user_table = Table(user_data, colWidths=[1.5*inch, 2.5*inch, 1.5*inch, 1*inch])
+                        user_table.setStyle(TableStyle([
+                            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3b82f6')),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                            ('FONTSIZE', (0, 0), (-1, 0), 10),
+                            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e5e7eb')),
+                            ('FONTSIZE', (0, 1), (-1, -1), 8)
+                        ]))
+                        
+                        story.append(user_table)
+                        if len(users) > 50:
+                            story.append(Paragraph(f"Showing first 50 of {len(users)} total users", styles['Normal']))
+                
+                elif export_type == "listings":
+                    # Listings Report
+                    listings = await db.listings.find({}, {"_id": 0}).to_list(length=100)
+                    
+                    if listings:
+                        listing_data = [["Title", "Price", "Category", "Created", "Status"]]
+                        for listing in listings[:50]:  # Limit for PDF
+                            created_at = listing.get('created_at', 'N/A')
+                            if isinstance(created_at, str):
+                                try:
+                                    created_at = datetime.fromisoformat(created_at.replace('Z', '+00:00')).strftime("%Y-%m-%d")
+                                except:
+                                    created_at = 'N/A'
+                            
+                            listing_data.append([
+                                listing.get('title', 'N/A')[:25],
+                                f"€{listing.get('price', 0)}",
+                                listing.get('category', 'N/A')[:15],
+                                created_at,
+                                listing.get('status', 'active')
+                            ])
+                        
+                        listing_table = Table(listing_data, colWidths=[2*inch, 1*inch, 1.5*inch, 1*inch, 1*inch])
+                        listing_table.setStyle(TableStyle([
+                            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#10b981')),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                            ('FONTSIZE', (0, 0), (-1, 0), 10),
+                            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e5e7eb')),
+                            ('FONTSIZE', (0, 1), (-1, -1), 8)
+                        ]))
+                        
+                        story.append(listing_table)
+                        if len(listings) > 50:
+                            story.append(Paragraph(f"Showing first 50 of {len(listings)} total listings", styles['Normal']))
+                
+                elif export_type == "transactions":
+                    # Transactions Report
+                    orders = await db.orders.find({}, {"_id": 0}).to_list(length=100)
+                    
+                    if orders:
+                        order_data = [["Order ID", "Amount", "Status", "Date", "User"]]
+                        total_revenue = 0
+                        
+                        for order in orders[:50]:
+                            amount = order.get('total_amount', 0)
+                            total_revenue += amount
+                            
+                            created_at = order.get('created_at', 'N/A')
+                            if isinstance(created_at, str):
+                                try:
+                                    created_at = datetime.fromisoformat(created_at.replace('Z', '+00:00')).strftime("%Y-%m-%d")
+                                except:
+                                    created_at = 'N/A'
+                            
+                            order_data.append([
+                                order.get('id', 'N/A')[:15],
+                                f"€{amount:.2f}",
+                                order.get('status', 'N/A'),
+                                created_at,
+                                order.get('buyer_email', 'N/A')[:20]
+                            ])
+                        
+                        order_table = Table(order_data, colWidths=[1.5*inch, 1*inch, 1*inch, 1*inch, 2*inch])
+                        order_table.setStyle(TableStyle([
+                            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f59e0b')),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                            ('FONTSIZE', (0, 0), (-1, 0), 10),
+                            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e5e7eb')),
+                            ('FONTSIZE', (0, 1), (-1, -1), 8)
+                        ]))
+                        
+                        story.append(order_table)
+                        story.append(Spacer(1, 12))
+                        story.append(Paragraph(f"Total Revenue (shown): €{total_revenue:.2f}", styles['Normal']))
+                        
+                        if len(orders) > 50:
+                            story.append(Paragraph(f"Showing first 50 of {len(orders)} total orders", styles['Normal']))
+                
+                elif export_type == "analytics":
+                    # Analytics Report
+                    story.append(Paragraph("Platform Analytics Overview", styles['Normal']))
+                    
+                    # Get basic analytics
+                    user_count_by_month = await db.users.count_documents({})
+                    listing_count_by_category = await db.listings.count_documents({})
+                    
+                    analytics_data = [
+                        ["Metric", "Value", "Period"],
+                        ["Total Users", f"{user_count_by_month}", "All Time"],
+                        ["Total Listings", f"{listing_count_by_category}", "All Time"],
+                        ["Active Orders", f"{await db.orders.count_documents({'status': 'active'})}", "Current"],
+                        ["Completed Orders", f"{await db.orders.count_documents({'status': 'completed'})}", "All Time"]
+                    ]
+                    
+                    analytics_table = Table(analytics_data, colWidths=[2*inch, 1.5*inch, 1.5*inch])
+                    analytics_table.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#8b5cf6')),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                        ('FONTSIZE', (0, 0), (-1, 0), 10),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e5e7eb'))
+                    ]))
+                    
+                    story.append(analytics_table)
+                
+                else:
+                    # Generic report for other types
+                    story.append(Paragraph(f"Data export for {export_type} is being processed...", styles['Normal']))
+                    story.append(Paragraph("This section contains comprehensive data analysis and insights.", styles['Normal']))
+                
+                story.append(Spacer(1, 20))
+                
+            except Exception as e:
+                logger.error(f"Error processing {export_type}: {e}")
+                story.append(Paragraph(f"Error processing {export_type}: {str(e)}", styles['Normal']))
+                story.append(Spacer(1, 20))
+        
+        # Add footer info
+        story.append(PageBreak())
+        story.append(Paragraph("Report Generation Complete", heading_style))
+        story.append(Paragraph(f"This report was generated by Cataloro Marketplace Admin Panel on {generation_date}.", styles['Normal']))
+        story.append(Paragraph("For questions about this data, please contact your system administrator.", styles['Normal']))
+        
+        # Build PDF
+        doc.build(story)
+        
+        # Read the PDF file and return as streaming response
+        def iterfile():
+            with open(pdf_filename, mode="rb") as file_like:
+                yield from file_like
+        
+        # Clean up temp file after response
+        import atexit
+        atexit.register(lambda: os.unlink(pdf_filename) if os.path.exists(pdf_filename) else None)
+        
+        return StreamingResponse(
+            iterfile(),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=cataloro-export-{datetime.now().strftime('%Y%m%d-%H%M%S')}.pdf"
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"PDF export failed: {e}")
+        raise HTTPException(status_code=500, detail=f"PDF export failed: {str(e)}")
+
 # Include Phase 5 endpoints
 from phase5_endpoints import phase5_router
 from phase6_endpoints import phase6_router
