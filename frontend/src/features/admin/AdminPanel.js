@@ -780,6 +780,79 @@ function UsersTab({ users, onUpdateUser, showToast }) {
     }
   };
 
+  // PDF Export function
+  const handleExportBasketPDF = async () => {
+    try {
+      showToast('Generating PDF export...', 'info');
+      
+      // Create dummy basket data for demo (in production, this would come from actual user baskets)
+      const basketData = {
+        items: [
+          {
+            name: 'Platinum Ring',
+            price: 1250.00,
+            pt_g: 5.2,
+            pd_g: 0.0,
+            rh_g: 0.0
+          },
+          {
+            name: 'Palladium Necklace',
+            price: 890.50,
+            pt_g: 0.0,
+            pd_g: 3.8,
+            rh_g: 0.0
+          },
+          {
+            name: 'Rhodium Bracelet',
+            price: 2340.75,
+            pt_g: 0.0,
+            pd_g: 0.0,
+            rh_g: 1.2
+          },
+          {
+            name: 'Mixed Metal Watch',
+            price: 4500.00,
+            pt_g: 2.1,
+            pd_g: 1.5,
+            rh_g: 0.3
+          }
+        ]
+      };
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/export/basket-pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(basketData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Convert base64 to blob and download
+        const pdfBlob = new Blob([
+          Uint8Array.from(atob(result.pdf_data), c => c.charCodeAt(0))
+        ], { type: 'application/pdf' });
+        
+        const url = window.URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = result.filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        showToast(`✅ PDF exported successfully! ${result.items_count} items, Total: €${result.total_value.toFixed(2)}`, 'success');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to generate PDF');
+      }
+    } catch (error) {
+      console.error('PDF export error:', error);
+      showToast(`❌ Failed to export PDF: ${error.message}`, 'error');
+    }
+  };
+
   // Filter users based on search and filter criteria
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
