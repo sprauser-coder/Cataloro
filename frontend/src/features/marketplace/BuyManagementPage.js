@@ -202,6 +202,60 @@ function BuyManagementPage() {
     }
   };
 
+  // Export basket as PDF
+  const exportBasketPDF = async (basket, totals) => {
+    try {
+      showToast('Generating PDF export...', 'info');
+      
+      const exportData = {
+        basketId: basket.id,
+        basketName: basket.name,
+        basketDescription: basket.description,
+        totals: totals,
+        items: basket.items || [],
+        userId: user.id,
+        exportDate: new Date().toISOString()
+      };
+
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/export-basket-pdf`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify(exportData)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Export failed: ${response.statusText}`);
+      }
+
+      // Handle file download
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      const filename = `cataloro-basket-${basket.name.replace(/[^a-zA-Z0-9]/g, '_')}-${timestamp}.pdf`;
+      link.download = filename;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      showToast('Basket PDF exported successfully!', 'success');
+
+    } catch (error) {
+      console.error('Export error:', error);
+      showToast(`Export failed: ${error.message}`, 'error');
+    }
+  };
+
   // Unassign item from basket
   const unassignItemFromBasket = async (itemId) => {
     try {
