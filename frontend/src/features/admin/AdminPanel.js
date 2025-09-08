@@ -2513,6 +2513,20 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
 
   useEffect(() => {
     setFormData(settings);
+    
+    // Initialize PDF logo preview if it exists in settings
+    if (settings.pdf_logo_url) {
+      setPdfLogoPreview(settings.pdf_logo_url);
+      console.log('🔧 Loaded existing PDF logo:', settings.pdf_logo_url);
+    }
+    
+    // Initialize other logo previews
+    if (settings.logo_light_url) {
+      setLogoLightPreview(settings.logo_light_url);
+    }
+    if (settings.logo_dark_url) {
+      setLogoDarkPreview(settings.logo_dark_url);
+    }
   }, [settings]);
 
   const handleInputChange = (e) => {
