@@ -64,69 +64,68 @@ const MediaBrowserDashboard = ({ className = '' }) => {
   };
 
   const handleFileUpload = async (files) => {
+    if (!files || files.length === 0) return;
+    
     try {
-      setUploadProgress(0);
-      const formData = new FormData();
-      
-      Array.from(files).forEach((file, index) => {
-        formData.append(`files`, file);
-      });
-      
-      formData.append('uploadedBy', 'admin');
-      formData.append('category', 'general');
-      
+      setUploadProgress(10);
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
       
-      // Simulate upload progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 100);
+      const uploadedFiles = [];
+      const totalFiles = files.length;
       
-      const response = await fetch(`${backendUrl}/api/admin/media/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        // Add uploaded files to the list
-        setMediaFiles(prev => [...result.files, ...prev]);
-        setUploadModalOpen(false);
-        setUploadProgress(0);
-      } else {
-        // Simulate successful upload for demo
-        const newFiles = Array.from(files).map((file, index) => ({
-          id: Date.now() + index,
-          filename: file.name,
-          url: `/api/uploads/admin/${file.name}`,
-          type: file.type,
-          size: file.size,
-          uploadedBy: 'admin',
-          uploadedAt: new Date().toISOString(),
-          category: 'general',
-          description: `Uploaded ${file.name}`
-        }));
+      // Upload files one by one (can be optimized to parallel later)
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const formData = new FormData();
         
-        setMediaFiles(prev => [...newFiles, ...prev]);
+        formData.append('file', file);
+        formData.append('category', 'uploads');
+        formData.append('description', `Uploaded via media browser: ${file.name}`);
+        
+        // Update progress
+        const progressValue = 20 + ((i / totalFiles) * 60);
+        setUploadProgress(progressValue);
+        
+        const response = await fetch(`${backendUrl}/api/admin/media/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.file) {
+            uploadedFiles.push(result.file);
+            console.log(`✅ Uploaded: ${result.file.filename}`);
+          }
+        } else {
+          console.error(`Failed to upload: ${file.name}`, response.status);
+        }
+      }
+      
+      setUploadProgress(90);
+      
+      if (uploadedFiles.length > 0) {
+        // Refresh the entire file list to show new uploads with proper metadata
+        await fetchMediaFiles();
+        
         setUploadModalOpen(false);
-        setUploadProgress(0);
+        setUploadProgress(100);
+        
+        console.log(`✅ Successfully uploaded ${uploadedFiles.length} of ${totalFiles} files`);
+        
+        // Show success message
+        alert(`Successfully uploaded ${uploadedFiles.length} file(s)!`);
+      } else {
+        alert('Failed to upload files. Please try again.');
       }
       
       setTimeout(() => setUploadProgress(0), 2000);
       
     } catch (error) {
-      console.error('Upload failed:', error);
+      console.error('Upload error:', error);
+      alert('Upload failed: ' + error.message);
       setUploadProgress(0);
+      setUploadModalOpen(false);
     }
   };
 
