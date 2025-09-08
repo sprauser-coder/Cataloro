@@ -19,6 +19,7 @@ const initialState = {
     type: 'all', // Changed from category to type (Private/Business)
     priceFrom: 0, // Changed from priceRange array to separate from/to values
     priceTo: 10000,
+    bidStatus: 'all', // New filter: 'all', 'highest_bidder', 'not_bid_yet'
     rating: 0,
     location: 'all'
     // Removed condition filter
@@ -28,6 +29,16 @@ const initialState = {
   allProducts: [],
   filteredProducts: [],
   categories: [],
+  
+  // Pagination
+  pagination: {
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 40,
+    hasNext: false,
+    hasPrev: false
+  },
   
   // User Interactions
   recentlyViewed: [],
