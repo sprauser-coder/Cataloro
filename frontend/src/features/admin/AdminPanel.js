@@ -9447,4 +9447,32 @@ function WebhookManagement({ showToast }) {
   );
 }
 
+// Ad Type Section Component - Unified display for each ad type
+function AdTypeSection({ adType, title, description, icon: Icon, adConfig, handleConfigChange, handleImageUpload, showToast, runtimeOptions }) {
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+          <Icon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+        </div>
+        <div>
+          <h4 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
+        </div>
+      </div>
+
+      <AdConfigPanel
+        title={title}
+        description={description}
+        adConfig={adConfig || { active: false, image: null, description: '', runtime: '1 month' }}
+        adType={adType}
+        handleAdConfigChange={handleConfigChange}
+        handleImageUpload={handleImageUpload}
+        runtimeOptions={runtimeOptions}
+        showToast={showToast}
+      />
+    </div>
+  );
+}
+
 export default AdminPanel;
