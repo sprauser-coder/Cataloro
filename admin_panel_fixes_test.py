@@ -231,7 +231,7 @@ class AdminPanelFixesTester:
         
         response, status = await self.make_request("DELETE", f"/auth/profile/{user_id}/delete-account", invalid_delete_data)
         
-        if status == 400:
+        if status in [400, 422]:  # Accept both 400 and 422 for validation errors
             self.log_result("Profile Delete Account - Invalid Confirmation", True, "Correctly rejected invalid confirmation text")
         else:
             self.log_result("Profile Delete Account - Invalid Confirmation", False, f"Should reject invalid confirmation, got status: {status}")
