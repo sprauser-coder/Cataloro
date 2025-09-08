@@ -210,14 +210,14 @@ class InventoryBasketTester:
         """Test basket CRUD operations (HIGH PRIORITY)"""
         # Test basket update
         if hasattr(self, 'test_basket') and self.test_basket:
-            basket_id = self.test_basket.get('id')
+            basket_id = self.test_basket.get('basket_id') or self.test_basket.get('id')
             
             update_data = {
                 "name": "Updated Test Basket",
                 "description": "Updated description for testing"
             }
             
-            response = await self.make_request("PUT", f"/user/baskets/{self.test_user_id}/{basket_id}", data=update_data)
+            response = await self.make_request("PUT", f"/user/baskets/{basket_id}", data=update_data)
             
             if response["success"]:
                 self.log_test(
