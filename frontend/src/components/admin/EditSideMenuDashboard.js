@@ -72,9 +72,12 @@ import {
   Moon,
   Cloud,
   Umbrella,
-  Mountain
+  Mountain,
+  Store
 } from 'lucide-react';
 import { useNotifications } from '../../context/NotificationContext';
+import usePermissions from '../../hooks/usePermissions';
+import { APP_ROUTES } from '../../config/directions';
 
 // Available icons for menu items
 const availableIcons = {
