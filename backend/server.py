@@ -1055,7 +1055,15 @@ async def browse_listings(
         cached_listings = await cache_service.get_cached_listings(cache_key)
         if cached_listings:
             logger.info(f"📋 Returning cached listings for key: {cache_key}")
-            return cached_listings
+            # Add cache headers for client-side caching
+            return JSONResponse(
+                content=cached_listings,
+                headers={
+                    "Cache-Control": "public, max-age=300, s-maxage=600",  # 5 min client, 10 min CDN
+                    "ETag": f'"{hash(str(cached_listings))}"',
+                    "X-Cache-Status": "HIT"
+                }
+            )
         
         # Build query for active listings
         query = {"status": "active"}
