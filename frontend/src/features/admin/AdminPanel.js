@@ -3721,59 +3721,34 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
         </div>
       </div>
 
-      {/* Ads Configuration Content - Direct display without tabs */}
-      <div className="space-y-8">
-        {/* Browse Page Ads */}
-        <AdTypeSection 
-          adType="browse"
-          title="Browse Page Ad's"
-          description="Configure advertisements displayed on the browse listings page"
-          icon={Package}
-          adConfig={siteConfig.adsManager?.browse || { active: false, image: null, description: '', runtime: '1 month' }}
-          handleConfigChange={handleAdConfigChange}
-          handleImageUpload={handleImageUpload}
-          showToast={showToast}
-          runtimeOptions={runtimeOptions}
-        />
-
-        {/* Favorite Ads */}
-        <AdTypeSection 
-          adType="favorite"
-          title="Favorite Ad's"
-          description="Configure advertisements displayed on the favorites page"
-          icon={Heart}
-          adConfig={siteConfig.adsManager?.favorite || { active: false, image: null, description: '', runtime: '1 month' }}
-          handleConfigChange={handleAdConfigChange}
-          handleImageUpload={handleImageUpload}
-          showToast={showToast}
-          runtimeOptions={runtimeOptions}
-        />
-
-        {/* Messenger Ads */}
-        <AdTypeSection 
-          adType="messenger"
-          title="Messenger Ad's"
-          description="Configure advertisements displayed in the messaging interface"
-          icon={MessageCircle}
-          adConfig={siteConfig.adsManager?.messenger || { active: false, image: null, description: '', runtime: '1 month' }}
-          handleConfigChange={handleAdConfigChange}
-          handleImageUpload={handleImageUpload}
-          showToast={showToast}
-          runtimeOptions={runtimeOptions}
-        />
-
-        {/* Footer Ads */}
-        <AdTypeSection 
-          adType="footer"
-          title="Footer Ad's"
-          description="Configure advertisements displayed in the page footer"
-          icon={Layout}
-          adConfig={siteConfig.adsManager?.footer || { active: false, image: null, description: '', runtime: '1 month' }}
-          handleConfigChange={handleAdConfigChange}
-          handleImageUpload={handleImageUpload}
-          showToast={showToast}
-          runtimeOptions={runtimeOptions}
-        />
+      {/* Save Configuration Button */}
+      <div className="flex justify-center">
+        <button
+          onClick={saveAdsConfiguration}
+          disabled={isSavingAds}
+          className={`flex items-center space-x-3 px-8 py-4 rounded-xl font-medium transition-all duration-200 ${
+            adsSaved 
+              ? 'bg-green-600 text-white' 
+              : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl'
+          } ${isSavingAds ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {isSavingAds ? (
+            <>
+              <RefreshCw className="w-5 h-5 animate-spin" />
+              <span>Saving Configuration...</span>
+            </>
+          ) : adsSaved ? (
+            <>
+              <CheckCircle className="w-5 h-5" />
+              <span>Configuration Saved!</span>
+            </>
+          ) : (
+            <>
+              <Save className="w-5 h-5" />
+              <span>Save Ads Configuration</span>
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
