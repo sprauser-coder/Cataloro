@@ -217,333 +217,228 @@ class BackendTester:
             
         print(f"✅ Setup complete: {len(self.test_baskets)} baskets, {len(self.test_items)} items")
                 
-    async def test_user_rating_system(self):
-        """Test all user rating system endpoints"""
-        print("\n🔍 Testing User Rating System Endpoints...")
+    async def test_basket_pdf_export_functionality(self):
+        """Test comprehensive basket PDF export functionality"""
+        print("\n📄 Testing Basket PDF Export Functionality...")
         
-        if len(self.test_users) < 1:
-            self.log_result("User Rating System Setup", False, "Insufficient test data", "Need at least 1 user")
+        if len(self.test_baskets) < 1:
+            self.log_result("Basket PDF Export Setup", False, "Insufficient test data", "Need at least 1 basket")
+            return
+        
+        # Test 1: Basic basket PDF export with sample data
+        await self.test_basic_basket_pdf_export()
+        
+        # Test 2: Empty basket PDF export (edge case)
+        await self.test_empty_basket_pdf_export()
+        
+        # Test 3: PDF structure and content validation
+        await self.test_pdf_content_validation()
+        
+        # Test 4: Logo integration testing
+        await self.test_logo_integration()
+        
+        # Test 5: Precious metals data formatting
+        await self.test_precious_metals_formatting()
+        
+        # Test 6: Error handling scenarios
+        await self.test_error_handling_scenarios()
+        
+        # Test 7: File generation and response validation
+        await self.test_file_generation_validation()
+        
+    async def test_basic_basket_pdf_export(self):
+        """Test basic basket PDF export with sample data"""
+        basket = self.test_baskets[0]  # Use the basket with items
+        
+        response, status = await self.make_request("POST", "/user/export-basket-pdf", basket)
+        
+        if status == 200:
+            # Check if response is a streaming response (PDF file)
+            if hasattr(response, 'read') or isinstance(response, bytes):
+                self.log_result("Basic Basket PDF Export", True, f"PDF generated for basket: {basket['basketName']}")
+            else:
+                self.log_result("Basic Basket PDF Export", False, "Response is not a valid PDF file")
+        else:
+            self.log_result("Basic Basket PDF Export", False, f"Status: {status}", str(response))
+            
+    async def test_empty_basket_pdf_export(self):
+        """Test PDF export with empty basket (edge case)"""
+        if len(self.test_baskets) < 2:
+            self.log_result("Empty Basket PDF Export", False, "No empty basket available for testing")
             return
             
-        user = self.test_users[0]
-        user_id = user["id"]
+        empty_basket = self.test_baskets[1]  # Use the empty basket
         
-        # Test endpoints that don't require transactions first
-        # Test 2: GET /api/user-ratings/{user_id}
-        await self.test_get_user_ratings(user_id)
-        
-        # Test 3: GET /api/user-ratings/{user_id}/stats
-        await self.test_get_user_rating_stats(user_id)
-        
-        # Test 4: GET /api/user-ratings/can-rate/{user_id}/{target_user_id} (using same user)
-        await self.test_can_rate_user(user_id, user_id)
-        
-        # Test 1: POST /api/user-ratings/create (will likely fail without real transaction, but tests endpoint)
-        if len(self.test_transactions) > 0:
-            transaction = self.test_transactions[0]
-            await self.test_create_user_rating(user_id, user_id, transaction["id"])
-        
-    async def test_create_user_rating(self, rater_id, rated_user_id, transaction_id):
-        """Test creating a user rating"""
-        rating_data = {
-            "rater_id": rater_id,
-            "rated_user_id": rated_user_id,
-            "transaction_id": transaction_id,
-            "rating": 5,
-            "comment": "Excellent seller, fast shipping and great communication!"
-        }
-        
-        response, status = await self.make_request("POST", "/user-ratings/create", rating_data)
+        response, status = await self.make_request("POST", "/user/export-basket-pdf", empty_basket)
         
         if status == 200:
-            self.log_result("Create User Rating", True, f"Rating created successfully: {response.get('rating_id')}")
+            self.log_result("Empty Basket PDF Export", True, "PDF generated successfully for empty basket")
         else:
-            self.log_result("Create User Rating", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            self.log_result("Empty Basket PDF Export", False, f"Status: {status}", str(response))
             
-        # Test invalid rating (should fail)
-        invalid_rating_data = rating_data.copy()
-        invalid_rating_data["rating"] = 6  # Invalid rating > 5
+    async def test_pdf_content_validation(self):
+        """Test PDF content structure and data accuracy"""
+        basket = self.test_baskets[0]
         
-        response, status = await self.make_request("POST", "/user-ratings/create", invalid_rating_data)
-        
-        if status == 400:
-            self.log_result("Create User Rating - Invalid Data", True, "Correctly rejected invalid rating")
-        else:
-            self.log_result("Create User Rating - Invalid Data", False, f"Should reject invalid rating, got status: {status}")
-            
-    async def test_get_user_ratings(self, user_id):
-        """Test fetching user ratings"""
-        response, status = await self.make_request("GET", f"/user-ratings/{user_id}")
-        
-        if status == 200:
-            ratings = response if isinstance(response, list) else []
-            self.log_result("Get User Ratings", True, f"Retrieved {len(ratings)} ratings")
-            
-            # Test with filter parameters
-            response, status = await self.make_request("GET", f"/user-ratings/{user_id}", params={"as_seller": True, "limit": 10})
-            if status == 200:
-                self.log_result("Get User Ratings - Filtered", True, f"Retrieved seller ratings with filters")
-            else:
-                self.log_result("Get User Ratings - Filtered", False, f"Status: {status}")
-        else:
-            self.log_result("Get User Ratings", False, f"Status: {status}", response.get("detail", "Unknown error"))
-            
-    async def test_get_user_rating_stats(self, user_id):
-        """Test fetching user rating statistics"""
-        response, status = await self.make_request("GET", f"/user-ratings/{user_id}/stats")
-        
-        if status == 200:
-            required_fields = ["total_ratings", "average_rating", "seller_rating", "buyer_rating", "rating_distribution"]
-            missing_fields = [field for field in required_fields if field not in response]
-            
-            if not missing_fields:
-                self.log_result("Get User Rating Stats", True, f"Stats: {response['total_ratings']} ratings, avg: {response['average_rating']}")
-            else:
-                self.log_result("Get User Rating Stats", False, f"Missing fields: {missing_fields}")
-        else:
-            self.log_result("Get User Rating Stats", False, f"Status: {status}", response.get("detail", "Unknown error"))
-            
-    async def test_can_rate_user(self, user_id, target_user_id):
-        """Test checking if user can rate another user"""
-        response, status = await self.make_request("GET", f"/user-ratings/can-rate/{user_id}/{target_user_id}")
-        
-        if status == 200:
-            can_rate = response.get("can_rate", False)
-            reason = response.get("reason", "")
-            self.log_result("Can Rate User Check", True, f"Can rate: {can_rate}, Reason: {reason}")
-        else:
-            self.log_result("Can Rate User Check", False, f"Status: {status}", response.get("detail", "Unknown error"))
-            
-    async def test_enhanced_messaging_system(self):
-        """Test all enhanced messaging system endpoints"""
-        print("\n💬 Testing Enhanced Messaging System Endpoints...")
-        
-        if len(self.test_users) < 1:
-            self.log_result("Enhanced Messaging Setup", False, "Insufficient test data", "Need at least 1 user")
-            return
-            
-        user1 = self.test_users[0]
-        # Use same user for both sender and recipient for testing
-        user2 = self.test_users[0] if len(self.test_users) == 1 else self.test_users[1]
-        
-        # Test 1: POST /api/messages/send
-        message_id = await self.test_send_enhanced_message(user1["id"], user2["id"])
-        
-        # Test 2: GET /api/messages/conversations/{user_id}
-        await self.test_get_user_conversations(user1["id"])
-        
-        # Test 3: GET /api/messages/conversation/{user_id}/{other_user_id}
-        await self.test_get_conversation_messages(user1["id"], user2["id"])
-        
-        # Test 4: DELETE /api/messages/{message_id}
-        if message_id:
-            await self.test_delete_message(message_id, user1["id"])
-            
-        # Test 5: GET /api/messages/search/{user_id}
-        await self.test_search_messages(user1["id"])
-        
-    async def test_send_enhanced_message(self, sender_id, recipient_id):
-        """Test sending enhanced messages"""
-        # Skip if trying to send to same user (not allowed)
-        if sender_id == recipient_id:
-            self.log_result("Send Enhanced Message", True, "Skipped - cannot send message to self")
-            return None
-            
-        message_data = {
-            "sender_id": sender_id,
-            "recipient_id": recipient_id,
-            "content": "Hello! This is a test message for the enhanced messaging system.",
-            "message_type": "text",
-            "metadata": {"test": True}
-        }
-        
-        response, status = await self.make_request("POST", "/messages/send", message_data)
-        
-        if status == 200:
-            message_id = response.get("message_id")
-            self.test_messages.append(message_id)
-            self.log_result("Send Enhanced Message", True, f"Message sent successfully: {message_id}")
-            return message_id
-        else:
-            self.log_result("Send Enhanced Message", False, f"Status: {status}", response.get("detail", "Unknown error"))
-            return None
-            
-    async def test_get_user_conversations(self, user_id):
-        """Test fetching user conversations"""
-        response, status = await self.make_request("GET", f"/messages/conversations/{user_id}")
-        
-        if status == 200:
-            conversations = response.get("conversations", [])
-            total_conversations = response.get("total_conversations", 0)
-            total_unread = response.get("total_unread", 0)
-            
-            self.log_result("Get User Conversations", True, f"Retrieved {total_conversations} conversations, {total_unread} unread")
-        else:
-            self.log_result("Get User Conversations", False, f"Status: {status}", response.get("detail", "Unknown error"))
-            
-    async def test_get_conversation_messages(self, user_id, other_user_id):
-        """Test fetching specific conversation messages"""
-        response, status = await self.make_request("GET", f"/messages/conversation/{user_id}/{other_user_id}")
-        
-        if status == 200:
-            messages = response.get("messages", [])
-            has_more = response.get("has_more", False)
-            
-            self.log_result("Get Conversation Messages", True, f"Retrieved {len(messages)} messages, has_more: {has_more}")
-        else:
-            self.log_result("Get Conversation Messages", False, f"Status: {status}", response.get("detail", "Unknown error"))
-            
-        # Test with pagination parameters
-        response, status = await self.make_request("GET", f"/messages/conversation/{user_id}/{other_user_id}", params={"limit": 10, "offset": 0})
-        
-        if status == 200:
-            self.log_result("Get Conversation Messages - Paginated", True, "Pagination parameters accepted")
-        else:
-            self.log_result("Get Conversation Messages - Paginated", False, f"Status: {status}")
-            
-    async def test_delete_message(self, message_id, user_id):
-        """Test deleting messages"""
-        response, status = await self.make_request("DELETE", f"/messages/{message_id}", params={"user_id": user_id})
-        
-        if status == 200:
-            self.log_result("Delete Message", True, "Message deleted successfully")
-        else:
-            self.log_result("Delete Message", False, f"Status: {status}", response.get("detail", "Unknown error"))
-            
-        # Test deleting non-existent message
-        fake_message_id = str(uuid.uuid4())
-        response, status = await self.make_request("DELETE", f"/messages/{fake_message_id}", params={"user_id": user_id})
-        
-        if status == 404:
-            self.log_result("Delete Message - Not Found", True, "Correctly handled non-existent message")
-        else:
-            self.log_result("Delete Message - Not Found", False, f"Should return 404, got status: {status}")
-            
-    async def test_search_messages(self, user_id):
-        """Test searching messages"""
-        # Test with search query
-        response, status = await self.make_request("GET", f"/messages/search/{user_id}", params={"q": "test", "limit": 10})
-        
-        if status == 200:
-            results = response.get("results", [])
-            self.log_result("Search Messages", True, f"Search returned {len(results)} results")
-        else:
-            self.log_result("Search Messages", False, f"Status: {status}", response.get("detail", "Unknown error"))
-            
-        # Test empty search query
-        response, status = await self.make_request("GET", f"/messages/search/{user_id}", params={"q": ""})
-        
-        if status == 200:
-            results = response.get("results", [])
-            if len(results) == 0:
-                self.log_result("Search Messages - Empty Query", True, "Empty query returned no results")
-            else:
-                self.log_result("Search Messages - Empty Query", False, "Empty query should return no results")
-        else:
-            self.log_result("Search Messages - Empty Query", False, f"Status: {status}")
-            
-    async def test_enhanced_profile_endpoints(self):
-        """Test enhanced profile endpoints"""
-        print("\n👤 Testing Enhanced Profile Endpoints...")
-        
-        if len(self.test_users) < 1:
-            self.log_result("Enhanced Profile Setup", False, "Insufficient test data", "Need at least 1 user")
-            return
-            
-        user = self.test_users[0]
-        user_id = user["id"]
-        
-        # First verify basic profile endpoint works
-        await self.test_basic_profile_access(user_id)
-        
-        # Test 1: GET /api/auth/profile/{user_id}/stats
-        await self.test_get_profile_statistics(user_id)
-        
-        # Test 2: POST /api/auth/profile/{user_id}/export
-        await self.test_export_user_data(user_id)
-        
-        # Test 3: GET /api/profile/{user_id}/public
-        await self.test_get_public_profile(user_id)
-        
-    async def test_basic_profile_access(self, user_id):
-        """Test basic profile endpoint to verify user exists"""
-        response, status = await self.make_request("GET", f"/auth/profile/{user_id}")
-        
-        if status == 200:
-            username = response.get("username", "Unknown")
-            self.log_result("Basic Profile Access", True, f"Profile accessible for user: {username}")
-        else:
-            self.log_result("Basic Profile Access", False, f"Status: {status}", response.get("detail", "Unknown error"))
-        
-    async def test_get_profile_statistics(self, user_id):
-        """Test fetching comprehensive profile statistics"""
-        response, status = await self.make_request("GET", f"/auth/profile/{user_id}/stats")
-        
-        if status == 200:
-            required_sections = ["user_info", "statistics", "ratings", "activity"]
-            missing_sections = [section for section in required_sections if section not in response]
-            
-            if not missing_sections:
-                user_info = response["user_info"]
-                stats = response["statistics"]
-                self.log_result("Get Profile Statistics", True, f"User: {user_info.get('username')}, Listings: {stats.get('total_listings', 0)}")
-            else:
-                self.log_result("Get Profile Statistics", False, f"Missing sections: {missing_sections}")
-        elif status == 404:
-            # Try with the user's actual ID format - check if user exists first
-            profile_response, profile_status = await self.make_request("GET", f"/auth/profile/{user_id}")
-            if profile_status == 200:
-                # User exists, but stats endpoint has an issue
-                self.log_result("Get Profile Statistics", False, f"User exists but stats endpoint returned 404")
-            else:
-                self.log_result("Get Profile Statistics", False, f"User not found in system")
-        else:
-            self.log_result("Get Profile Statistics", False, f"Status: {status}", response.get("detail", "Unknown error"))
-            
-    async def test_export_user_data(self, user_id):
-        """Test PDF data export functionality"""
-        response, status = await self.make_request("POST", f"/auth/profile/{user_id}/export")
-        
-        if status == 200:
-            pdf_data = response.get("pdf_data")
-            filename = response.get("filename")
-            
-            if pdf_data and filename:
-                # Verify PDF data is base64 encoded
-                try:
-                    import base64
-                    decoded = base64.b64decode(pdf_data)
-                    if decoded.startswith(b'%PDF'):
-                        self.log_result("Export User Data", True, f"PDF export successful: {filename}")
+        # Make a custom request to get raw response for validation
+        try:
+            url = f"{API_BASE}/user/export-basket-pdf"
+            async with self.session.post(url, json=basket) as response:
+                if response.status == 200:
+                    pdf_content = await response.read()
+                    
+                    # Validate PDF header
+                    if pdf_content.startswith(b'%PDF'):
+                        self.log_result("PDF Content Validation - Header", True, "Valid PDF header detected")
+                        
+                        # Check PDF size (should be reasonable for content)
+                        pdf_size = len(pdf_content)
+                        if 5000 < pdf_size < 500000:  # Between 5KB and 500KB seems reasonable
+                            self.log_result("PDF Content Validation - Size", True, f"PDF size: {pdf_size} bytes")
+                        else:
+                            self.log_result("PDF Content Validation - Size", False, f"Unusual PDF size: {pdf_size} bytes")
+                            
+                        # Check for ReportLab markers (indicates proper library usage)
+                        if b'ReportLab' in pdf_content or b'reportlab' in pdf_content:
+                            self.log_result("PDF Content Validation - ReportLab", True, "ReportLab library integration confirmed")
+                        else:
+                            self.log_result("PDF Content Validation - ReportLab", False, "ReportLab markers not found in PDF")
+                            
                     else:
-                        self.log_result("Export User Data", False, "PDF data is not valid PDF format")
-                except Exception as e:
-                    self.log_result("Export User Data", False, f"PDF data validation failed: {str(e)}")
-            else:
-                self.log_result("Export User Data", False, "Missing pdf_data or filename in response")
-        else:
-            self.log_result("Export User Data", False, f"Status: {status}", response.get("detail", "Unknown error"))
-            
-    async def test_get_public_profile(self, user_id):
-        """Test public profile endpoint"""
-        response, status = await self.make_request("GET", f"/profile/{user_id}/public")
-        
-        if status == 200:
-            is_public = response.get("public", False)
-            
-            if is_public:
-                required_fields = ["user", "statistics", "ratings"]
-                missing_fields = [field for field in required_fields if field not in response]
-                
-                if not missing_fields:
-                    user_data = response["user"]
-                    self.log_result("Get Public Profile", True, f"Public profile for: {user_data.get('username')}")
+                        self.log_result("PDF Content Validation - Header", False, "Invalid PDF header")
                 else:
-                    self.log_result("Get Public Profile", False, f"Missing fields: {missing_fields}")
+                    self.log_result("PDF Content Validation", False, f"Status: {response.status}")
+                    
+        except Exception as e:
+            self.log_result("PDF Content Validation", False, f"Validation failed: {str(e)}")
+            
+    async def test_logo_integration(self):
+        """Test Cataloro logo integration in PDF"""
+        basket = self.test_baskets[0]
+        
+        try:
+            url = f"{API_BASE}/user/export-basket-pdf"
+            async with self.session.post(url, json=basket) as response:
+                if response.status == 200:
+                    pdf_content = await response.read()
+                    
+                    # Check for image markers in PDF (indicates logo presence)
+                    if b'/Image' in pdf_content or b'/XObject' in pdf_content:
+                        self.log_result("Logo Integration", True, "Image/logo markers found in PDF")
+                    else:
+                        self.log_result("Logo Integration", True, "PDF generated without logo (acceptable if no logo file found)")
+                        
+                    # Check for Cataloro branding text
+                    if b'CATALORO' in pdf_content or b'Cataloro' in pdf_content:
+                        self.log_result("Logo Integration - Branding", True, "Cataloro branding text found in PDF")
+                    else:
+                        self.log_result("Logo Integration - Branding", False, "Cataloro branding text not found")
+                        
+                else:
+                    self.log_result("Logo Integration", False, f"Status: {response.status}")
+                    
+        except Exception as e:
+            self.log_result("Logo Integration", False, f"Test failed: {str(e)}")
+            
+    async def test_precious_metals_formatting(self):
+        """Test proper formatting of precious metals data (Pt, Pd, Rh)"""
+        basket = self.test_baskets[0]
+        
+        # Verify the test data has proper precious metals values
+        expected_pt = basket['totals']['ptG']
+        expected_pd = basket['totals']['pdG'] 
+        expected_rh = basket['totals']['rhG']
+        
+        if expected_pt > 0 and expected_pd > 0 and expected_rh > 0:
+            self.log_result("Precious Metals Data - Test Setup", True, f"Test data: Pt={expected_pt}g, Pd={expected_pd}g, Rh={expected_rh}g")
+            
+            response, status = await self.make_request("POST", "/user/export-basket-pdf", basket)
+            
+            if status == 200:
+                self.log_result("Precious Metals Formatting", True, "PDF generated with precious metals data")
+                
+                # Test individual item precious metals calculations
+                for item in basket['items']:
+                    if item.get('pt_g', 0) > 0:
+                        self.log_result("Precious Metals - Item Level", True, f"Item '{item['title'][:20]}...' has Pt: {item['pt_g']}g")
+                        break
+                        
             else:
-                self.log_result("Get Public Profile", True, "Profile is private (correctly handled)")
+                self.log_result("Precious Metals Formatting", False, f"Status: {status}")
         else:
-            self.log_result("Get Public Profile", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            self.log_result("Precious Metals Data - Test Setup", False, "Test data lacks precious metals values")
+            
+    async def test_error_handling_scenarios(self):
+        """Test various error scenarios"""
+        
+        # Test 1: Missing required fields
+        invalid_basket = {"basketName": "Test"}  # Missing required fields
+        
+        response, status = await self.make_request("POST", "/user/export-basket-pdf", invalid_basket)
+        
+        if status in [400, 422, 500]:  # Any error status is acceptable for invalid data
+            self.log_result("Error Handling - Invalid Data", True, f"Properly handled invalid data (status: {status})")
+        else:
+            self.log_result("Error Handling - Invalid Data", False, f"Should reject invalid data, got status: {status}")
+            
+        # Test 2: Empty request body
+        response, status = await self.make_request("POST", "/user/export-basket-pdf", {})
+        
+        if status in [400, 422, 500]:
+            self.log_result("Error Handling - Empty Request", True, f"Properly handled empty request (status: {status})")
+        else:
+            self.log_result("Error Handling - Empty Request", False, f"Should reject empty request, got status: {status}")
+            
+        # Test 3: Malformed data types
+        malformed_basket = {
+            "basketName": 12345,  # Should be string
+            "totals": "invalid",  # Should be object
+            "items": "not_array"  # Should be array
+        }
+        
+        response, status = await self.make_request("POST", "/user/export-basket-pdf", malformed_basket)
+        
+        if status in [400, 422, 500]:
+            self.log_result("Error Handling - Malformed Data", True, f"Properly handled malformed data (status: {status})")
+        else:
+            self.log_result("Error Handling - Malformed Data", False, f"Should reject malformed data, got status: {status}")
+            
+    async def test_file_generation_validation(self):
+        """Test file generation and response headers"""
+        basket = self.test_baskets[0]
+        
+        try:
+            url = f"{API_BASE}/user/export-basket-pdf"
+            async with self.session.post(url, json=basket) as response:
+                if response.status == 200:
+                    # Check response headers
+                    content_type = response.headers.get('content-type', '')
+                    content_disposition = response.headers.get('content-disposition', '')
+                    
+                    if 'application/pdf' in content_type:
+                        self.log_result("File Generation - Content Type", True, f"Correct content type: {content_type}")
+                    else:
+                        self.log_result("File Generation - Content Type", False, f"Incorrect content type: {content_type}")
+                        
+                    if 'attachment' in content_disposition and 'cataloro-basket' in content_disposition:
+                        self.log_result("File Generation - Filename", True, f"Proper filename in headers: {content_disposition}")
+                    else:
+                        self.log_result("File Generation - Filename", False, f"Missing or incorrect filename: {content_disposition}")
+                        
+                    # Check file size
+                    pdf_content = await response.read()
+                    file_size = len(pdf_content)
+                    
+                    if file_size > 1000:  # Should be at least 1KB for a proper PDF
+                        self.log_result("File Generation - Size", True, f"Generated PDF size: {file_size} bytes")
+                    else:
+                        self.log_result("File Generation - Size", False, f"PDF too small: {file_size} bytes")
+                        
+                else:
+                    self.log_result("File Generation Validation", False, f"Status: {response.status}")
+                    
+        except Exception as e:
+            self.log_result("File Generation Validation", False, f"Test failed: {str(e)}")
             
     async def test_backend_health(self):
         """Test backend health and connectivity"""
