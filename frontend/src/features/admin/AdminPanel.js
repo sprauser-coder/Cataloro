@@ -6721,6 +6721,11 @@ function SiteAdministrationTab({ showToast, initialSection = 'appearance' }) {
             </div>
           </div>
         )}
+
+        {/* Export Manager Section */}
+        {activeSection === 'export-manager' && (
+          <ExportManagerDashboard />
+        )}
       </div>
     </div>
   );
