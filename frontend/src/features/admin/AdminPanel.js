@@ -2403,6 +2403,8 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
   const [logoDarkFile, setLogoDarkFile] = useState(null);
   const [logoLightPreview, setLogoLightPreview] = useState('');
   const [logoDarkPreview, setLogoDarkPreview] = useState('');
+  const [showMediaSelector, setShowMediaSelector] = useState(false);
+  const [mediaSelectorType, setMediaSelectorType] = useState('light'); // 'light' or 'dark'
 
   useEffect(() => {
     setFormData(settings);
