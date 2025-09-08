@@ -876,12 +876,105 @@ function ModernBrowsePage() {
       )}
       </div>
 
-      {/* Load More Button */}
-      {filteredListings.length > 0 && (
-        <div className="text-center pt-8">
-          <button className="px-8 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
-            Load More Products
-          </button>
+      {/* Pagination Controls */}
+      {pagination && pagination.totalPages > 1 && (
+        <div className="flex flex-col items-center space-y-4 pt-8">
+          {/* Pagination Info */}
+          <div className="text-sm text-gray-600 dark:text-gray-400 text-center">
+            Showing page {pagination.currentPage} of {pagination.totalPages} 
+            ({pagination.totalItems} total items)
+          </div>
+          
+          {/* Pagination Buttons */}
+          <div className="flex items-center space-x-2">
+            {/* First Page */}
+            <button
+              onClick={goToFirstPage}
+              disabled={!pagination.hasPrev}
+              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              First
+            </button>
+            
+            {/* Previous Page */}
+            <button
+              onClick={goToPrevPage}
+              disabled={!pagination.hasPrev}
+              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            
+            {/* Page Numbers */}
+            <div className="flex items-center space-x-1">
+              {(() => {
+                const current = pagination.currentPage;
+                const total = pagination.totalPages;
+                const pages = [];
+                
+                // Show up to 5 page numbers around current page
+                const start = Math.max(1, current - 2);
+                const end = Math.min(total, current + 2);
+                
+                // Add first page if not in range
+                if (start > 1) {
+                  pages.push(1);
+                  if (start > 2) pages.push('...');
+                }
+                
+                // Add pages in range
+                for (let i = start; i <= end; i++) {
+                  pages.push(i);
+                }
+                
+                // Add last page if not in range
+                if (end < total) {
+                  if (end < total - 1) pages.push('...');
+                  pages.push(total);
+                }
+                
+                return pages.map((page, index) => (
+                  <button
+                    key={index}
+                    onClick={() => page !== '...' && setCurrentPage(page)}
+                    disabled={page === '...' || page === current}
+                    className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                      page === current
+                        ? 'bg-blue-600 text-white'
+                        : page === '...'
+                        ? 'cursor-default text-gray-400'
+                        : 'border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ));
+              })()}
+            </div>
+            
+            {/* Next Page */}
+            <button
+              onClick={goToNextPage}
+              disabled={!pagination.hasNext}
+              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+            
+            {/* Last Page */}
+            <button
+              onClick={goToLastPage}
+              disabled={!pagination.hasNext}
+              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Last
+            </button>
+          </div>
+          
+          {/* Items per page info */}
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            {pagination.itemsPerPage} items per page
+          </div>
         </div>
       )}
 
