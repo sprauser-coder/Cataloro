@@ -110,55 +110,103 @@ analytics_service = None  # Will be initialized in startup
 # Startup and Shutdown Events
 @app.on_event("startup")
 async def startup_event():
-    """Initialize services on startup"""
-    logger.info("🚀 Starting Cataloro Marketplace API...")
+    global db, websocket_service, multicurrency_service, escrow_service, ai_recommendation_service, webhook_service
     
-    # Initialize cache service
-    await init_cache()
-    
-    # Initialize search service
-    await init_search()
-    
-    # Initialize analytics service (security service already initialized)
-    global analytics_service
-    analytics_service = await get_unified_analytics_service(db)
-    logger.info("✅ Unified analytics service initialized")
-    
-    # Setup security rate limiting
-    security_service.setup_rate_limiting(app)
-    logger.info("✅ Security rate limiting configured")
-    
-    # Start monitoring background tasks
-    monitoring_service.start_background_monitoring()
-    logger.info("✅ Monitoring background tasks started")
-    
-    # Initialize Phase 5 services
-    global websocket_service, multicurrency_service, escrow_service, ai_recommendation_service, webhook_service
-    
-    websocket_service = await init_websocket_service(db)
-    logger.info("✅ WebSocket service initialized")
-    
-    multicurrency_service = await init_multicurrency_service(db)
-    logger.info("✅ Multi-currency service initialized")
-    
-    escrow_service = await init_escrow_service(db)
-    logger.info("✅ Escrow service initialized")
-    
-    ai_recommendation_service = await init_ai_recommendation_service(db)
-    logger.info("✅ AI Recommendation service initialized")
-    
-    # Initialize webhook service  
-    await init_webhook_service(db)
-    webhook_service = get_webhook_service()
-    logger.info("✅ Webhook service initialized")
-    
-    # Run database optimization (indexes) on startup
     try:
-        from optimize_database import create_database_indexes
-        await create_database_indexes()
-        logger.info("✅ Database indexes optimized")
+        print("🚀 Starting Cataloro Marketplace Backend...")
+        
+        # Test database connection
+        await db.admin.command('ping')
+        print("✅ Connected to MongoDB successfully")
+        
+        # Create optimized indexes for pagination and filtering
+        print("📊 Creating database indexes for optimal performance...")
+        
+        # Listings collection indexes
+        await db.listings.create_index([("status", 1), ("created_at", -1)])  # Main browse query
+        await db.listings.create_index([("status", 1), ("seller_type", 1), ("created_at", -1)])  # Type filter
+        await db.listings.create_index([("status", 1), ("price", 1), ("created_at", -1)])  # Price filter
+        await db.listings.create_index([("status", 1), ("bid_info.has_bids", 1), ("created_at", -1)])  # Bid status filter
+        await db.listings.create_index([("status", 1), ("bid_info.highest_bidder", 1), ("created_at", -1)])  # Highest bidder filter
+        await db.listings.create_index([("seller_id", 1), ("status", 1)])  # Seller listings
+        await db.listings.create_index([("title", "text"), ("description", "text")])  # Text search
+        await db.listings.create_index([("category", 1), ("status", 1)])  # Category filter
+        
+        # Users collection indexes
+        await db.users.create_index([("email", 1)], unique=True)
+        await db.users.create_index([("username", 1)], unique=True)
+        await db.users.create_index([("is_active", 1)])
+        
+        # Bids collection indexes
+        await db.bids.create_index([("listing_id", 1), ("amount", -1)])  # Highest bid queries
+        await db.bids.create_index([("bidder_id", 1), ("created_at", -1)])  # User bid history
+        await db.bids.create_index([("listing_id", 1), ("created_at", -1)])  # Bid timeline
+        
+        # Messages collection indexes
+        await db.messages.create_index([("sender_id", 1), ("created_at", -1)])
+        await db.messages.create_index([("recipient_id", 1), ("created_at", -1)])
+        await db.messages.create_index([("listing_id", 1), ("created_at", -1)])
+        
+        # Favorites collection indexes
+        await db.favorites.create_index([("user_id", 1), ("listing_id", 1)], unique=True)
+        await db.favorites.create_index([("user_id", 1), ("created_at", -1)])
+        
+        # Webhooks collection indexes
+        await db.webhooks.create_index([("active", 1)])
+        await db.webhook_deliveries.create_index([("webhook_id", 1), ("created_at", -1)])
+        await db.webhook_events.create_index([("event_type", 1), ("timestamp", -1)])
+        
+        print("✅ Database indexes created successfully")
+        
+        # Initialize services
+        await init_cache()
+        logger.info("✅ Cache service initialized")
+        
+        await init_search()
+        logger.info("✅ Search service initialized")
+        
+        # Initialize analytics service (security service already initialized)
+        global analytics_service
+        analytics_service = await get_unified_analytics_service(db)
+        logger.info("✅ Unified analytics service initialized")
+        
+        # Setup security rate limiting
+        security_service.setup_rate_limiting(app)
+        logger.info("✅ Security rate limiting configured")
+        
+        # Start monitoring background tasks
+        monitoring_service.start_background_monitoring()
+        logger.info("✅ Monitoring background tasks started")
+        
+        # Initialize Phase 5 services
+        websocket_service = await init_websocket_service(db)
+        logger.info("✅ WebSocket service initialized")
+        
+        multicurrency_service = await init_multicurrency_service(db)
+        logger.info("✅ Multi-currency service initialized")
+        
+        escrow_service = await init_escrow_service(db)
+        logger.info("✅ Escrow service initialized")
+        
+        ai_recommendation_service = await init_ai_recommendation_service(db)
+        logger.info("✅ AI Recommendation service initialized")
+        
+        # Initialize webhook service  
+        await init_webhook_service(db)
+        webhook_service = get_webhook_service()
+        logger.info("✅ Webhook service initialized")
+        
+        # Run database optimization (indexes) on startup
+        try:
+            from optimize_database import create_database_indexes
+            await create_database_indexes()
+            logger.info("✅ Database indexes optimized")
+        except Exception as e:
+            logger.warning(f"⚠️ Database optimization skipped: {e}")
+            
     except Exception as e:
-        logger.warning(f"⚠️ Database optimization skipped: {e}")
+        logger.error(f"❌ Startup failed: {e}")
+        raise
 
 @app.on_event("shutdown") 
 async def shutdown_event():
