@@ -3383,10 +3383,7 @@ async def get_all_listings(
             listing['_id'] = str(listing['_id'])
             listings.append(listing)
         
-        return {
-            "listings": listings,
-            "total": await db.listings.count_documents(query)
-        }
+        return listings
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch listings: {str(e)}")
