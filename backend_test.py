@@ -86,7 +86,7 @@ class BackendTester:
             return {"error": str(e)}, 500
             
     async def setup_test_data(self):
-        """Setup test users and transactions for rating system testing"""
+        """Setup test users and basket data for PDF export testing"""
         print("\n🔧 Setting up test data...")
         
         # Use admin user for testing
@@ -113,21 +113,109 @@ class BackendTester:
         
         print(f"✅ Setup {len(self.test_users)} test users")
         
-        # Create mock transaction data for testing
+        # Create sample basket data for testing
         if len(self.test_users) >= 1:
             user = self.test_users[0]
             
-            # Create mock transaction for rating system testing
-            mock_transaction = {
-                "id": str(uuid.uuid4()),
-                "buyer_id": user["id"],
-                "seller_id": user["id"],  # Same user for simplicity
-                "listing_id": str(uuid.uuid4()),
-                "status": "completed"
+            # Create sample basket items with realistic precious metals data
+            sample_items = [
+                {
+                    "id": str(uuid.uuid4()),
+                    "title": "BMW 320d Catalytic Converter",
+                    "price": 450.00,
+                    "seller": "AutoParts Pro",
+                    "seller_name": "AutoParts Pro",
+                    "created_at": "2024-12-15T10:30:00Z",
+                    "weight": 1.2,
+                    "pt_ppm": 1200,
+                    "pd_ppm": 800,
+                    "rh_ppm": 150,
+                    "renumeration_pt": 0.85,
+                    "renumeration_pd": 0.80,
+                    "renumeration_rh": 0.75,
+                    "pt_g": 1.224,
+                    "pd_g": 0.768,
+                    "rh_g": 0.135
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "title": "Mercedes E-Class Catalyst",
+                    "price": 650.00,
+                    "seller": "Euro Catalysts",
+                    "seller_name": "Euro Catalysts",
+                    "created_at": "2024-12-16T14:20:00Z",
+                    "weight": 1.8,
+                    "pt_ppm": 1500,
+                    "pd_ppm": 1000,
+                    "rh_ppm": 200,
+                    "renumeration_pt": 0.85,
+                    "renumeration_pd": 0.80,
+                    "renumeration_rh": 0.75,
+                    "pt_g": 2.295,
+                    "pd_g": 1.440,
+                    "rh_g": 0.270
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "title": "Audi A4 Catalytic Converter",
+                    "price": 350.00,
+                    "seller": "German Auto Parts",
+                    "seller_name": "German Auto Parts",
+                    "created_at": "2024-12-17T09:15:00Z",
+                    "weight": 0.9,
+                    "pt_ppm": 1000,
+                    "pd_ppm": 600,
+                    "rh_ppm": 100,
+                    "renumeration_pt": 0.85,
+                    "renumeration_pd": 0.80,
+                    "renumeration_rh": 0.75,
+                    "pt_g": 0.765,
+                    "pd_g": 0.432,
+                    "rh_g": 0.068
+                }
+            ]
+            
+            self.test_items = sample_items
+            
+            # Create sample basket with totals
+            sample_basket = {
+                "basketId": str(uuid.uuid4()),
+                "basketName": "Premium Catalysts Collection",
+                "basketDescription": "High-value catalytic converters from European vehicles",
+                "userId": user["id"],
+                "exportDate": "2024-12-18T16:45:00Z",
+                "items": sample_items,
+                "totals": {
+                    "valuePaid": 1450.00,
+                    "ptG": 4.284,  # Sum of all pt_g values
+                    "pdG": 2.640,  # Sum of all pd_g values
+                    "rhG": 0.473   # Sum of all rh_g values
+                }
             }
             
-            self.test_transactions.append(mock_transaction)
-            print(f"✅ Created mock transaction: {mock_transaction['id']}")
+            self.test_baskets.append(sample_basket)
+            print(f"✅ Created sample basket: {sample_basket['basketName']} with {len(sample_items)} items")
+            
+            # Create empty basket for testing edge cases
+            empty_basket = {
+                "basketId": str(uuid.uuid4()),
+                "basketName": "Empty Test Basket",
+                "basketDescription": "Test basket with no items",
+                "userId": user["id"],
+                "exportDate": "2024-12-18T16:45:00Z",
+                "items": [],
+                "totals": {
+                    "valuePaid": 0.00,
+                    "ptG": 0.00,
+                    "pdG": 0.00,
+                    "rhG": 0.00
+                }
+            }
+            
+            self.test_baskets.append(empty_basket)
+            print(f"✅ Created empty basket for edge case testing")
+            
+        print(f"✅ Setup complete: {len(self.test_baskets)} baskets, {len(self.test_items)} items")
                 
     async def test_user_rating_system(self):
         """Test all user rating system endpoints"""
