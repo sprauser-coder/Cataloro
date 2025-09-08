@@ -366,19 +366,26 @@ class BackendTester:
         if expected_pt > 0 and expected_pd > 0 and expected_rh > 0:
             self.log_result("Precious Metals Data - Test Setup", True, f"Test data: Pt={expected_pt}g, Pd={expected_pd}g, Rh={expected_rh}g")
             
-            response, status = await self.make_request("POST", "/user/export-basket-pdf", basket)
-            
-            if status == 200:
-                self.log_result("Precious Metals Formatting", True, "PDF generated with precious metals data")
-                
-                # Test individual item precious metals calculations
-                for item in basket['items']:
-                    if item.get('pt_g', 0) > 0:
-                        self.log_result("Precious Metals - Item Level", True, f"Item '{item['title'][:20]}...' has Pt: {item['pt_g']}g")
-                        break
+            try:
+                url = f"{API_BASE}/user/export-basket-pdf"
+                async with self.session.post(url, json=basket) as response:
+                    if response.status == 200:
+                        pdf_content = await response.read()
                         
-            else:
-                self.log_result("Precious Metals Formatting", False, f"Status: {status}")
+                        if pdf_content.startswith(b'%PDF'):
+                            self.log_result("Precious Metals Formatting", True, "PDF generated with precious metals data")
+                            
+                            # Test individual item precious metals calculations
+                            for item in basket['items']:
+                                if item.get('pt_g', 0) > 0:
+                                    self.log_result("Precious Metals - Item Level", True, f"Item '{item['title'][:20]}...' has Pt: {item['pt_g']}g")
+                                    break
+                        else:
+                            self.log_result("Precious Metals Formatting", False, "Invalid PDF generated")
+                    else:
+                        self.log_result("Precious Metals Formatting", False, f"Status: {response.status}")
+            except Exception as e:
+                self.log_result("Precious Metals Formatting", False, f"Request failed: {str(e)}")
         else:
             self.log_result("Precious Metals Data - Test Setup", False, "Test data lacks precious metals values")
             
