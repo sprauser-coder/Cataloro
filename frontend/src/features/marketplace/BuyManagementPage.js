@@ -368,15 +368,19 @@ function BuyManagementPage() {
     return { valuePaid, ptG, pdG, rhG };
   };
 
-  // PDF Export function for baskets
+  // Enhanced PDF Export function for baskets with loading states
   const handleExportBasketsPDF = async (basketsToExport) => {
-    try {
-      if (!basketsToExport || basketsToExport.length === 0) {
-        showToast('No baskets available for export', 'error');
-        return;
-      }
+    if (!basketsToExport || basketsToExport.length === 0) {
+      showToast('No baskets available for export', 'error');
+      return;
+    }
 
-      showToast('Generating PDF export...', 'info');
+    // Add baskets to exporting state
+    const basketIds = basketsToExport.map(b => b.id);
+    setExportingBaskets(prev => new Set([...prev, ...basketIds]));
+
+    try {
+      showToast('🔄 Generating PDF export...', 'info');
       
       // Prepare data for all baskets
       const exportData = {
@@ -436,6 +440,13 @@ function BuyManagementPage() {
     } catch (error) {
       console.error('PDF export error:', error);
       showToast(`❌ Failed to export PDF: ${error.message}`, 'error');
+    } finally {
+      // Remove baskets from exporting state
+      setExportingBaskets(prev => {
+        const newSet = new Set(prev);
+        basketIds.forEach(id => newSet.delete(id));
+        return newSet;
+      });
     }
   };
 
