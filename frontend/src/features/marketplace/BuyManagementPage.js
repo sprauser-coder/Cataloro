@@ -671,6 +671,7 @@ function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, onU
               totals={calculateTotals(basket)}
               onEdit={() => onEditBasket(basket)}
               onDelete={() => onDeleteBasket(basket.id)}
+              onExport={() => exportBasketPDF(basket, calculateTotals(basket))}
               onUnassignFromBasket={onUnassignFromBasket}
               onReassignToBasket={onReassignToBasket}
               allBaskets={baskets}
