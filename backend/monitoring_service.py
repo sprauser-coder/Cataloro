@@ -39,14 +39,9 @@ class MonitoringService:
         # Monitoring state
         self.monitoring_enabled = True
         self.start_time = datetime.utcnow()
-        self._background_task = None
         
-        # Background monitoring will be started in startup event
-    
-    def start_background_monitoring(self):
-        """Start background monitoring task"""
-        if self._background_task is None:
-            self._background_task = asyncio.create_task(self._start_background_monitoring())
+        # Initialize system monitoring
+        asyncio.create_task(self._start_background_monitoring())
     
     async def _start_background_monitoring(self):
         """Start background monitoring tasks"""

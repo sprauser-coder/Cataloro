@@ -10,7 +10,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import usePermissions from '../../hooks/usePermissions';
 import MultiCurrencyPrice from '../../components/currency/MultiCurrencyPrice';
-import CurrencyPriceDisplay from '../../components/currency/CurrencyPriceDisplay';
+import SimilarItemsPanel from '../../components/ai/SimilarItemsPanel';
+import LiveBiddingWidget from '../../components/realtime/LiveBiddingWidget';
 import {
   Heart,
   DollarSign,
@@ -407,22 +408,12 @@ function ProductDetailPage() {
                   <div className="text-sm font-semibold text-green-700 dark:text-green-300 uppercase tracking-wide mb-1">
                     {product.bid_info?.has_bids ? 'Current Highest Bid' : 'Starting Price'}
                   </div>
-                  <div className="mb-4">
-                    <CurrencyPriceDisplay 
-                      price={(product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price}
-                      baseCurrency="EUR"
-                      className="mb-2"
-                    />
-                  </div>
-                  {/* Alternative currencies for reference */}
-                  <div className="text-sm text-green-600 dark:text-green-400">
-                    <MultiCurrencyPrice 
-                      basePrice={(product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price}
-                      baseCurrency="EUR"
-                      showAlternativePrices={true}
-                      compact={true}
-                    />
-                  </div>
+                  <MultiCurrencyPrice 
+                    basePrice={(product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price}
+                    baseCurrency="EUR"
+                    showAlternativePrices={true}
+                    compact={false}
+                  />
                   {product.bid_info?.has_bids && (
                     <div className="text-sm text-green-600 dark:text-green-400 mt-2">
                       Starting price: €{product.price.toLocaleString()}
@@ -784,6 +775,31 @@ function ProductDetailPage() {
         </div>
       )}
 
+      {/* Live Bidding Widget */}
+      {user && !isExpired && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Live Bidding</h2>
+          <LiveBiddingWidget
+            listing={product}
+            currentUser={user}
+            onBidPlaced={(bidAmount) => {
+              showToast(`Bid of €${bidAmount} placed successfully!`, 'success');
+              // Refresh product data to update bid info
+              window.location.reload();
+            }}
+          />
+        </div>
+      )}
+
+      {/* Similar Items */}
+      <SimilarItemsPanel
+        listingId={product.id}
+        currentUserId={user?.id}
+        limit={4}
+        onItemClick={(listing) => {
+          navigate(`/product/${listing.id}`);
+        }}
+      />
     </div>
   );
 }

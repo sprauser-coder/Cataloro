@@ -5,7 +5,6 @@ Scalable FastAPI backend with MongoDB integration
 
 from fastapi import FastAPI, HTTPException, Depends, File, UploadFile, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -27,14 +26,13 @@ from emergentintegrations.llm.chat import LlmChat, UserMessage
 import logging
 from cache_service import cache_service, init_cache, cleanup_cache
 from search_service import search_service, init_search, cleanup_search
-from unified_security_service import get_unified_security_service, get_client_ip
+from security_service import security_service, get_client_ip
 from monitoring_service import monitoring_service, MonitoringMiddleware
-from unified_analytics_service import get_unified_analytics_service
+from analytics_service import create_analytics_service
 from websocket_service import init_websocket_service, get_websocket_service
 from multicurrency_service import init_multicurrency_service, get_multicurrency_service
 from escrow_service import init_escrow_service, get_escrow_service
 from ai_recommendation_service import init_ai_recommendation_service, get_ai_recommendation_service
-from webhook_service import init_webhook_service, get_webhook_service
 
 # Load environment variables
 load_dotenv()
@@ -43,15 +41,12 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# Initialize FastAPI app with compression and optimizations
+# Initialize FastAPI app
 app = FastAPI(
     title="Cataloro Marketplace API",
     description="Scalable marketplace backend with feature-based architecture",
     version="1.0.0"
 )
-
-# Add compression middleware for better performance
-app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # CORS Configuration for production deployment
 origins = [
@@ -59,7 +54,7 @@ origins = [
     "https://217.154.0.82",
     "http://localhost:3000",  # Development
     "http://localhost:3001",  # Development alternative
-    "https://marketplace-repair-1.preview.emergentagent.com",  # Emergent preview domain
+    "https://market-evolution-2.preview.emergentagent.com",  # Emergent preview domain
     "*"  # Allow all origins temporarily for debugging
 ]
 
@@ -76,7 +71,7 @@ app.add_middleware(
 app.add_middleware(MonitoringMiddleware)
 
 # Setup security and rate limiting
-# security_service.setup_rate_limiting(app)  # Will be initialized in startup
+security_service.setup_rate_limiting(app)
 
 # Additional CORS headers for edge cases
 @app.middleware("http")
@@ -93,134 +88,53 @@ async def add_cors_headers(request: Request, call_next):
     return response
 
 # Static Files - Serve uploaded images
-uploads_directory = "/app/backend/uploads"
-os.makedirs(uploads_directory, exist_ok=True)
-app.mount("/api/uploads", StaticFiles(directory=uploads_directory), name="uploads")
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # MongoDB Connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = motor.motor_asyncio.AsyncIOMotorClient(
-    MONGO_URL,
-    maxPoolSize=200,  # Increased pool size for better concurrency
-    minPoolSize=10,
-    maxIdleTimeMS=30000,
-    serverSelectionTimeoutMS=5000
-)
+client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client.cataloro_marketplace
-
-# Global service instances (initialized immediately for decorators)
-security_service = get_unified_security_service()
-analytics_service = None  # Will be initialized in startup
 
 # Startup and Shutdown Events
 @app.on_event("startup")
 async def startup_event():
-    global db, websocket_service, multicurrency_service, escrow_service, ai_recommendation_service, webhook_service
+    """Initialize services on startup"""
+    logger.info("🚀 Starting Cataloro Marketplace API...")
     
+    # Initialize cache service
+    await init_cache()
+    
+    # Initialize search service
+    await init_search()
+    
+    # Initialize analytics service
+    global analytics_service
+    analytics_service = await create_analytics_service(db)
+    logger.info("✅ Analytics service initialized")
+    
+    # Initialize Phase 5 services
+    global websocket_service, multicurrency_service, escrow_service, ai_recommendation_service
+    
+    websocket_service = await init_websocket_service(db)
+    logger.info("✅ WebSocket service initialized")
+    
+    multicurrency_service = await init_multicurrency_service(db)
+    logger.info("✅ Multi-currency service initialized")
+    
+    escrow_service = await init_escrow_service(db)
+    logger.info("✅ Escrow service initialized")
+    
+    ai_recommendation_service = await init_ai_recommendation_service(db)
+    logger.info("✅ AI Recommendation service initialized")
+    
+    # Run database optimization (indexes) on startup
     try:
-        print("🚀 Starting Cataloro Marketplace Backend...")
-        
-        # Test database connection
-        await client.admin.command('ping')
-        print("✅ Connected to MongoDB successfully")
-        
-        # Create optimized indexes for pagination and filtering
-        print("📊 Creating database indexes for optimal performance...")
-        
-        # Listings collection indexes
-        await db.listings.create_index([("status", 1), ("created_at", -1)])  # Main browse query
-        await db.listings.create_index([("status", 1), ("seller_type", 1), ("created_at", -1)])  # Type filter
-        await db.listings.create_index([("status", 1), ("price", 1), ("created_at", -1)])  # Price filter
-        await db.listings.create_index([("status", 1), ("bid_info.has_bids", 1), ("created_at", -1)])  # Bid status filter
-        await db.listings.create_index([("status", 1), ("bid_info.highest_bidder", 1), ("created_at", -1)])  # Highest bidder filter
-        await db.listings.create_index([("seller_id", 1), ("status", 1)])  # Seller listings
-        await db.listings.create_index([("title", "text"), ("description", "text")])  # Text search
-        await db.listings.create_index([("category", 1), ("status", 1)])  # Category filter
-        
-        # Users collection indexes
-        try:
-            await db.users.create_index([("email", 1)], unique=True)
-        except Exception:
-            pass  # Index might already exist
-        try:
-            await db.users.create_index([("username", 1)], unique=True)
-        except Exception:
-            pass  # Index might already exist
-        await db.users.create_index([("is_active", 1)])
-        
-        # Bids collection indexes
-        await db.bids.create_index([("listing_id", 1), ("amount", -1)])  # Highest bid queries
-        await db.bids.create_index([("bidder_id", 1), ("created_at", -1)])  # User bid history
-        await db.bids.create_index([("listing_id", 1), ("created_at", -1)])  # Bid timeline
-        
-        # Messages collection indexes
-        await db.messages.create_index([("sender_id", 1), ("created_at", -1)])
-        await db.messages.create_index([("recipient_id", 1), ("created_at", -1)])
-        await db.messages.create_index([("listing_id", 1), ("created_at", -1)])
-        
-        # Favorites collection indexes
-        try:
-            await db.favorites.create_index([("user_id", 1), ("listing_id", 1)], unique=True)
-        except Exception:
-            pass  # Index might already exist
-        await db.favorites.create_index([("user_id", 1), ("created_at", -1)])
-        
-        # Webhooks collection indexes
-        await db.webhooks.create_index([("active", 1)])
-        await db.webhook_deliveries.create_index([("webhook_id", 1), ("created_at", -1)])
-        await db.webhook_events.create_index([("event_type", 1), ("timestamp", -1)])
-        
-        print("✅ Database indexes created successfully")
-        
-        # Initialize services
-        await init_cache()
-        logger.info("✅ Cache service initialized")
-        
-        await init_search()
-        logger.info("✅ Search service initialized")
-        
-        # Initialize analytics service (security service already initialized)
-        global analytics_service
-        analytics_service = await get_unified_analytics_service(db)
-        logger.info("✅ Unified analytics service initialized")
-        
-        # Setup security rate limiting
-        security_service.setup_rate_limiting(app)
-        logger.info("✅ Security rate limiting configured")
-        
-        # Start monitoring background tasks
-        monitoring_service.start_background_monitoring()
-        logger.info("✅ Monitoring background tasks started")
-        
-        # Initialize Phase 5 services
-        websocket_service = await init_websocket_service(db)
-        logger.info("✅ WebSocket service initialized")
-        
-        multicurrency_service = await init_multicurrency_service(db)
-        logger.info("✅ Multi-currency service initialized")
-        
-        escrow_service = await init_escrow_service(db)
-        logger.info("✅ Escrow service initialized")
-        
-        ai_recommendation_service = await init_ai_recommendation_service(db)
-        logger.info("✅ AI Recommendation service initialized")
-        
-        # Initialize webhook service  
-        await init_webhook_service(db)
-        webhook_service = get_webhook_service()
-        logger.info("✅ Webhook service initialized")
-        
-        # Run database optimization (indexes) on startup
-        try:
-            from optimize_database import create_database_indexes
-            await create_database_indexes()
-            logger.info("✅ Database indexes optimized")
-        except Exception as e:
-            logger.warning(f"⚠️ Database optimization skipped: {e}")
-            
+        from optimize_database import create_database_indexes
+        await create_database_indexes()
+        logger.info("✅ Database indexes optimized")
     except Exception as e:
-        logger.error(f"❌ Startup failed: {e}")
-        raise
+        logger.warning(f"⚠️ Database optimization skipped: {e}")
 
 @app.on_event("shutdown") 
 async def shutdown_event():
@@ -1046,328 +960,25 @@ async def update_profile(user_id: str, profile_data: dict):
         print(f"Error updating profile: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to update profile: {str(e)}")
 
-@app.get("/api/auth/profile/{user_id}/stats")
-async def get_profile_statistics(user_id: str):
-    """Get comprehensive profile statistics with real backend data"""
-    try:
-        # Get user info - try both id field and _id field
-        user = await db.users.find_one({"id": user_id})
-        if not user:
-            # Try with _id in case it's stored differently
-            try:
-                from bson import ObjectId
-                user = await db.users.find_one({"_id": ObjectId(user_id)})
-            except:
-                pass
-        
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        # Get user's listings statistics
-        total_listings = await db.listings.count_documents({"seller_id": user_id})
-        active_listings = await db.listings.count_documents({"seller_id": user_id, "status": "active"})
-        
-        # Get user's deals/orders statistics  
-        buyer_orders = await db.orders.count_documents({"buyer_id": user_id})
-        seller_orders = await db.orders.count_documents({"seller_id": user_id})
-        completed_deals = await db.orders.count_documents({
-            "$or": [{"buyer_id": user_id}, {"seller_id": user_id}],
-            "status": {"$in": ["approved", "completed"]}
-        })
-        
-        # Get favorites count
-        total_favorites = await db.favorites.count_documents({"user_id": user_id})
-        
-        # Calculate total revenue (as seller)
-        revenue_pipeline = [
-            {"$match": {"seller_id": user_id, "status": {"$in": ["approved", "completed"]}}},
-            {"$lookup": {
-                "from": "listings",
-                "localField": "listing_id", 
-                "foreignField": "id",
-                "as": "listing"
-            }},
-            {"$unwind": {"path": "$listing", "preserveNullAndEmptyArrays": True}},
-            {"$group": {"_id": None, "total_revenue": {"$sum": "$listing.price"}}}
-        ]
-        
-        revenue_result = await db.orders.aggregate(revenue_pipeline).to_list(length=1)
-        total_revenue = revenue_result[0]["total_revenue"] if revenue_result else 0
-        
-        # Get rating statistics
-        rating_stats = await get_user_rating_stats(user_id)
-        
-        # Get join date
-        join_date = user.get("created_at")
-        if isinstance(join_date, str):
-            join_date = datetime.fromisoformat(join_date.replace('Z', '+00:00'))
-        elif not isinstance(join_date, datetime):
-            join_date = datetime.utcnow()
-        
-        # Calculate days since joining
-        days_since_joining = (datetime.utcnow() - join_date.replace(tzinfo=None)).days
-        
-        # Get recent activity
-        recent_messages = await db.user_messages.count_documents({
-            "$or": [{"sender_id": user_id}, {"recipient_id": user_id}],
-            "created_at": {"$gte": (datetime.utcnow() - timedelta(days=30)).isoformat()}
-        })
-        
-        return {
-            "user_info": {
-                "id": user_id,
-                "username": user.get("username", "Unknown"),
-                "full_name": user.get("full_name", "Unknown User"),
-                "email": user.get("email", ""),
-                "badge": user.get("badge", "User"),
-                "user_role": user.get("user_role", "User-Buyer"),
-                "is_business": user.get("is_business", False),
-                "join_date": join_date.isoformat(),
-                "days_since_joining": days_since_joining
-            },
-            "statistics": {
-                "total_listings": total_listings,
-                "active_listings": active_listings,
-                "total_deals": buyer_orders + seller_orders,
-                "completed_deals": completed_deals,
-                "total_revenue": total_revenue,
-                "total_favorites": total_favorites,
-                "as_buyer": {
-                    "orders_placed": buyer_orders,
-                    "orders_completed": await db.orders.count_documents({"buyer_id": user_id, "status": {"$in": ["approved", "completed"]}})
-                },
-                "as_seller": {
-                    "orders_received": seller_orders,
-                    "orders_completed": await db.orders.count_documents({"seller_id": user_id, "status": {"$in": ["approved", "completed"]}}),
-                    "total_revenue": total_revenue
-                }
-            },
-            "ratings": rating_stats,
-            "activity": {
-                "recent_messages": recent_messages,
-                "last_active": user.get("last_seen", user.get("updated_at", join_date.isoformat()))
-            }
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch profile statistics: {str(e)}")
-
-@app.post("/api/auth/profile/{user_id}/export")
-async def export_user_data(user_id: str):
-    """Export user data as PDF"""
-    try:
-        # Get user profile and statistics
-        profile_stats = await get_profile_statistics(user_id)
-        
-        # Get user's listings
-        listings = await db.listings.find({"seller_id": user_id}).to_list(length=None)
-        
-        # Get user's orders
-        orders = await db.orders.find({
-            "$or": [{"buyer_id": user_id}, {"seller_id": user_id}]
-        }).to_list(length=None)
-        
-        # Get user's ratings
-        ratings = await get_user_ratings(user_id)
-        
-        # Create PDF export (basic implementation)
-        from reportlab.pdfgen import canvas
-        from reportlab.lib.pagesizes import letter
-        import io
-        
-        buffer = io.BytesIO()
-        p = canvas.Canvas(buffer, pagesize=letter)
-        
-        # Title
-        p.setFont("Helvetica-Bold", 16)
-        p.drawString(50, 750, f"User Data Export - {profile_stats['user_info']['full_name']}")
-        
-        # User Information
-        p.setFont("Helvetica-Bold", 12)
-        p.drawString(50, 720, "User Information:")
-        p.setFont("Helvetica", 10)
-        y = 700
-        
-        for key, value in profile_stats['user_info'].items():
-            p.drawString(70, y, f"{key.replace('_', ' ').title()}: {value}")
-            y -= 15
-        
-        # Statistics
-        p.setFont("Helvetica-Bold", 12)
-        p.drawString(50, y-20, "Statistics:")
-        y -= 35
-        p.setFont("Helvetica", 10)
-        
-        for key, value in profile_stats['statistics'].items():
-            if isinstance(value, dict):
-                p.drawString(70, y, f"{key.replace('_', ' ').title()}:")
-                y -= 15
-                for sub_key, sub_value in value.items():
-                    p.drawString(90, y, f"  {sub_key.replace('_', ' ').title()}: {sub_value}")
-                    y -= 15
-            else:
-                p.drawString(70, y, f"{key.replace('_', ' ').title()}: {value}")
-                y -= 15
-        
-        p.save()
-        buffer.seek(0)
-        
-        # Convert to base64 for response
-        pdf_data = base64.b64encode(buffer.read()).decode()
-        
-        return {
-            "message": "Data export successful",
-            "pdf_data": pdf_data,
-            "filename": f"user_data_export_{user_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.pdf"
-        }
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to export user data: {str(e)}")
-
-@app.delete("/api/auth/profile/{user_id}/delete-account")
-async def delete_user_account(user_id: str, verification_data: dict):
-    """Delete user account with verification"""
-    try:
-        password = verification_data.get("password", "")
-        confirmation = verification_data.get("confirmation", "")
-        
-        if confirmation.lower() != "delete my account":
-            raise HTTPException(status_code=400, detail="Confirmation text must be 'delete my account'")
-        
-        # Check if user has active listings or pending orders
-        active_listings = await db.listings.count_documents({"seller_id": user_id, "status": "active"})
-        pending_orders = await db.orders.count_documents({
-            "$or": [{"buyer_id": user_id}, {"seller_id": user_id}],
-            "status": "pending"
-        })
-        
-        if active_listings > 0:
-            raise HTTPException(status_code=400, detail=f"Cannot delete account. You have {active_listings} active listings. Please remove them first.")
-        
-        if pending_orders > 0:
-            raise HTTPException(status_code=400, detail=f"Cannot delete account. You have {pending_orders} pending orders. Please complete them first.")
-        
-        # Soft delete user (preserve for data integrity)
-        result = await db.users.update_one(
-            {"id": user_id},
-            {"$set": {
-                "is_active": False,
-                "deleted_at": datetime.utcnow().isoformat(),
-                "username": f"deleted_user_{user_id[:8]}",
-                "email": f"deleted_{user_id}@cataloro.com",
-                "full_name": "Deleted User"
-            }}
-        )
-        
-        if result.matched_count == 0:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        # Also mark related data as deleted
-        await db.user_messages.update_many(
-            {"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]},
-            {"$set": {"is_deleted": True, "deleted_at": datetime.utcnow().isoformat()}}
-        )
-        
-        return {"message": "Account deleted successfully"}
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete account: {str(e)}")
-
-@app.get("/api/profile/{user_id}/public")
-async def get_public_profile(user_id: str):
-    """Get public profile information"""
-    try:
-        # Get user info - try both id field and _id field
-        user = await db.users.find_one({"id": user_id, "is_active": True})
-        if not user:
-            # Try with _id in case it's stored differently
-            try:
-                from bson import ObjectId
-                user = await db.users.find_one({"_id": ObjectId(user_id), "is_active": True})
-            except:
-                pass
-        
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        # Check if profile is public
-        if not user.get("settings", {}).get("public_profile", True):
-            return {
-                "public": False,
-                "message": "This profile is private"
-            }
-        
-        # Get public statistics
-        stats = await get_profile_statistics(user_id)
-        
-        # Get recent listings (public ones only)
-        recent_listings = await db.listings.find({
-            "seller_id": user_id,
-            "status": "active"
-        }).sort("created_at", -1).limit(6).to_list(length=None)
-        
-        # Sanitize listings data
-        for listing in recent_listings:
-            listing = serialize_doc(listing)
-        
-        return {
-            "public": True,
-            "user": {
-                "id": user_id,
-                "username": user.get("username", "Unknown"),
-                "full_name": user.get("full_name", "Unknown User"),
-                "badge": user.get("badge", "User"),
-                "is_business": user.get("is_business", False),
-                "company_name": user.get("company_name", "") if user.get("is_business") else "",
-                "join_date": stats["user_info"]["join_date"],
-                "days_since_joining": stats["user_info"]["days_since_joining"]
-            },
-            "statistics": {
-                "total_listings": stats["statistics"]["total_listings"],
-                "completed_deals": stats["statistics"]["completed_deals"],
-                "as_seller": stats["statistics"]["as_seller"]
-            },
-            "ratings": stats["ratings"],
-            "recent_listings": recent_listings
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch public profile: {str(e)}")
-
 # Marketplace Endpoints
 @app.get("/api/marketplace/browse")
 async def browse_listings(
     type: str = "all",  # Filter by seller type: "all", "Private", "Business"
     price_from: int = 0,  # Minimum price filter
     price_to: int = 999999,  # Maximum price filter
-    bid_status: str = "all",  # New filter: "all", "highest_bidder", "not_bid_yet"
     page: int = 1,  # Page number for pagination
-    limit: int = 40  # Items per page - changed from 100 to 40 for better performance
+    limit: int = 20  # Items per page
 ):
     """Browse available listings with seller information, filters, and pagination"""
     try:
         # Create cache key based on parameters
-        cache_key = f"{type}_{price_from}_{price_to}_{bid_status}_{page}_{limit}"
+        cache_key = f"{type}_{price_from}_{price_to}_{page}_{limit}"
         
         # Try to get cached results first
         cached_listings = await cache_service.get_cached_listings(cache_key)
         if cached_listings:
             logger.info(f"📋 Returning cached listings for key: {cache_key}")
-            # Add cache headers for client-side caching
-            return JSONResponse(
-                content=cached_listings,
-                headers={
-                    "Cache-Control": "public, max-age=300, s-maxage=600",  # 5 min client, 10 min CDN
-                    "ETag": f'"{hash(str(cached_listings))}"',
-                    "X-Cache-Status": "HIT"
-                }
-            )
+            return cached_listings
         
         # Build query for active listings
         query = {"status": "active"}
@@ -1380,24 +991,8 @@ async def browse_listings(
             if price_to < 999999:
                 query["price"]["$lte"] = price_to
         
-        # New bid status filter
-        if bid_status == "highest_bidder":
-            # Listings where current user has the highest bid
-            query["bid_info.has_bids"] = True
-            query["bid_info.highest_bidder"] = {"$exists": True}
-        elif bid_status == "not_bid_yet":
-            # Listings with no bids yet
-            query["$or"] = [
-                {"bid_info.has_bids": False},
-                {"bid_info": {"$exists": False}}
-            ]
-        
         # Calculate pagination
         skip = (page - 1) * limit
-        
-        # Get total count for pagination info
-        total_count = await db.listings.count_documents(query)
-        total_pages = (total_count + limit - 1) // limit  # Ceiling division
         
         # Get filtered listings with pagination - use optimized query with indexes
         listings = await db.listings.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(length=None)
@@ -1586,37 +1181,11 @@ async def browse_listings(
             elif type == "Business":
                 enriched_listings = [listing for listing in enriched_listings if listing.get('seller', {}).get('is_business', False)]
         
-        # Cache the results for better performance (5 minutes)
-        result = {
-            "listings": enriched_listings,
-            "pagination": {
-                "current_page": page,
-                "total_pages": total_pages,
-                "total_items": total_count,
-                "items_per_page": limit,
-                "has_next": page < total_pages,
-                "has_prev": page > 1
-            },
-            "filters_applied": {
-                "type": type,
-                "price_from": price_from,
-                "price_to": price_to,
-                "bid_status": bid_status
-            },
-            "success": True
-        }
+        # Cache the results for better performance
+        await cache_service.cache_listings(cache_key, enriched_listings)
         
-        await cache_service.set(f"browse_listings_{cache_key}", result, ttl=300)  # 5 minutes
-        
-        # Return with cache headers for client-side caching
-        return JSONResponse(
-            content=result,
-            headers={
-                "Cache-Control": "public, max-age=300, s-maxage=600",  # 5 min client, 10 min CDN
-                "ETag": f'"{hash(str(result))}"',
-                "X-Cache-Status": "MISS"
-            }
-        )
+        logger.info(f"📋 Cached {len(enriched_listings)} listings for key: {cache_key}")
+        return enriched_listings
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to browse listings: {str(e)}")
 
@@ -2740,9 +2309,11 @@ async def generate_custom_report(report_config: dict):
         logger.error(f"Custom report generation failed: {e}")
         raise HTTPException(status_code=500, detail=f"Custom report failed: {str(e)}")
 
-# Include Advanced Features endpoints (consolidated Phase 5 + Phase 6)
-from advanced_features_endpoints import advanced_features_router
-app.include_router(advanced_features_router)
+# Include Phase 5 endpoints
+from phase5_endpoints import phase5_router
+from phase6_endpoints import phase6_router
+app.include_router(phase5_router)
+app.include_router(phase6_router)
 
 @app.post("/api/admin/users/bulk-action")
 async def bulk_user_action(action_data: dict):
@@ -2950,7 +2521,6 @@ async def get_site_settings():
                 "logo_url": "/favicon.ico",
                 "logo_light_url": "",
                 "logo_dark_url": "",
-                "pdf_logo_url": "",
                 "theme_color": "#3B82F6",
                 "allow_registration": True,
                 "require_approval": False,
@@ -2975,7 +2545,6 @@ async def get_site_settings():
             "logo_url": "/favicon.ico",
             "logo_light_url": "",
             "logo_dark_url": "",
-            "pdf_logo_url": "",
             "theme_color": "#3B82F6",
             "hero_display_mode": "full_width",
             "hero_background_style": "gradient",
@@ -3208,212 +2777,6 @@ async def backup_current_content():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create backup: {str(e)}")
 
-# PDF Export Endpoint
-@app.post("/api/admin/export/basket-pdf")
-async def export_basket_pdf(export_data: dict):
-    """Export basket/inventory data to PDF with company logo"""
-    try:
-        from reportlab.pdfgen import canvas
-        from reportlab.lib.pagesizes import letter, A4
-        from reportlab.lib.units import inch
-        from reportlab.lib.colors import HexColor
-        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
-        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-        from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
-        import requests
-        from PIL import Image as PILImage
-        import tempfile
-        import os
-        
-        # Get site settings for PDF logo
-        settings = await db.site_settings.find_one({"type": "site_branding"})
-        pdf_logo_url = settings.get("pdf_logo_url") if settings else None
-        site_name = settings.get("site_name", "Cataloro") if settings else "Cataloro"
-        
-        # Create temporary file for PDF
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
-        pdf_path = temp_file.name
-        temp_file.close()
-        
-        # Create PDF document
-        doc = SimpleDocTemplate(pdf_path, pagesize=A4)
-        story = []
-        styles = getSampleStyleSheet()
-        
-        # Custom styles
-        title_style = ParagraphStyle(
-            'CustomTitle',
-            parent=styles['Heading1'],
-            fontSize=24,
-            spaceAfter=30,
-            alignment=TA_CENTER,
-            textColor=HexColor('#2563EB')
-        )
-        
-        header_style = ParagraphStyle(
-            'CustomHeader',
-            parent=styles['Heading2'],
-            fontSize=16,
-            spaceAfter=12,
-            textColor=HexColor('#1F2937')
-        )
-        
-        # Add logo if available (instead of text title)
-        logo_added = False
-        if pdf_logo_url and pdf_logo_url.startswith('http'):
-            try:
-                # Download and add logo
-                logo_response = requests.get(pdf_logo_url, timeout=10)
-                if logo_response.status_code == 200:
-                    logo_temp = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
-                    logo_temp.write(logo_response.content)
-                    logo_temp.close()
-                    
-                    # Add logo to PDF (larger size for header)
-                    logo = Image(logo_temp.name, width=3*inch, height=1.5*inch)
-                    logo.hAlign = 'CENTER'
-                    story.append(logo)
-                    story.append(Spacer(1, 30))
-                    logo_added = True
-                    
-                    # Clean up logo file
-                    os.unlink(logo_temp.name)
-            except Exception as e:
-                logger.warning(f"Could not add logo to PDF: {e}")
-        
-        # Only add text title if logo wasn't added
-        if not logo_added:
-            title = Paragraph("Basket Export", title_style)
-            story.append(title)
-            story.append(Spacer(1, 20))
-        
-        # Add export date
-        export_date = datetime.now().strftime("%B %d, %Y at %I:%M %p")
-        date_para = Paragraph(f"Generated on: {export_date}", styles['Normal'])
-        story.append(date_para)
-        story.append(Spacer(1, 20))
-        
-        # Process basket items
-        items = export_data.get('items', [])
-        if not items:
-            no_items = Paragraph("No items found in basket.", styles['Normal'])
-            story.append(no_items)
-        else:
-            # Add items header
-            items_header = Paragraph("Basket Items", header_style)
-            story.append(items_header)
-            
-            # Create table data
-            table_data = [
-                ['Item', 'Price', 'Pt (g)', 'Pd (g)', 'Rh (g)', 'Total Value']
-            ]
-            
-            total_value = 0
-            total_pt = 0
-            total_pd = 0
-            total_rh = 0
-            
-            for item in items:
-                name = item.get('name', 'Unknown Item')
-                price = float(item.get('price', 0))
-                pt_g = float(item.get('pt_g', 0))
-                pd_g = float(item.get('pd_g', 0))
-                rh_g = float(item.get('rh_g', 0))
-                
-                total_value += price
-                total_pt += pt_g
-                total_pd += pd_g
-                total_rh += rh_g
-                
-                table_data.append([
-                    name,
-                    f"€{price:.2f}",
-                    f"{pt_g:.2f}",
-                    f"{pd_g:.2f}",
-                    f"{rh_g:.2f}",
-                    f"€{price:.2f}"
-                ])
-            
-            # Create table with improved formatting and wider columns
-            table = Table(table_data, colWidths=[2.5*inch, 1*inch, 0.8*inch, 0.8*inch, 0.8*inch, 1*inch])
-            table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), HexColor('#F3F4F6')),
-                ('TEXTCOLOR', (0, 0), (-1, 0), HexColor('#1F2937')),
-                ('ALIGN', (0, 0), (0, -1), 'LEFT'),  # Item names left-aligned
-                ('ALIGN', (1, 0), (-1, -1), 'CENTER'),  # Numbers centered
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 12),
-                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-                ('FONTSIZE', (0, 1), (-1, -1), 10),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('TOPPADDING', (0, 0), (-1, -1), 8),
-                ('BOTTOMPADDING', (0, 1), (-1, -1), 8),
-                ('LEFTPADDING', (0, 0), (-1, -1), 12),
-                ('RIGHTPADDING', (0, 0), (-1, -1), 12),
-                ('GRID', (0, 0), (-1, -1), 1, HexColor('#E5E7EB')),
-                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ]))
-            
-            story.append(table)
-            story.append(Spacer(1, 25))
-            
-            # Add summary with better formatting
-            summary_header = Paragraph("Summary", header_style)
-            story.append(summary_header)
-            
-            summary_data = [
-                ['Total Items:', str(len(items))],
-                ['Total Value:', f"€{total_value:.2f}"],
-                ['Total Platinum (Pt):', f"{total_pt:.2f}g"],
-                ['Total Palladium (Pd):', f"{total_pd:.2f}g"],
-                ['Total Rhodium (Rh):', f"{total_rh:.2f}g"],
-            ]
-            
-            summary_table = Table(summary_data, colWidths=[2.5*inch, 2*inch])
-            summary_table.setStyle(TableStyle([
-                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-                ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
-                ('FONTSIZE', (0, 0), (-1, -1), 12),
-                ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
-                ('TOPPADDING', (0, 0), (-1, -1), 10),
-                ('LEFTPADDING', (0, 0), (-1, -1), 0),
-            ]))
-            
-            story.append(summary_table)
-        
-        # Add footer with just "Cataloro"
-        story.append(Spacer(1, 40))
-        footer = Paragraph("This document was automatically generated by Cataloro", styles['Normal'])
-        story.append(footer)
-        
-        # Build PDF
-        doc.build(story)
-        
-        # Read PDF content
-        with open(pdf_path, 'rb') as pdf_file:
-            pdf_content = pdf_file.read()
-        
-        # Clean up temporary file
-        os.unlink(pdf_path)
-        
-        # Return PDF as base64
-        import base64
-        pdf_base64 = base64.b64encode(pdf_content).decode('utf-8')
-        
-        return {
-            "success": True,
-            "message": "PDF generated successfully",
-            "pdf_data": pdf_base64,
-            "filename": f"basket_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-            "items_count": len(items),
-            "total_value": total_value if items else 0
-        }
-        
-    except Exception as e:
-        logger.error(f"PDF export failed: {e}")
-        raise HTTPException(status_code=500, detail=f"PDF export failed: {str(e)}")
-
 # Marketplace Listings Endpoints
 @app.get("/api/listings")
 async def get_all_listings(
@@ -3539,7 +2902,7 @@ async def create_listing(request: Request, listing_data: dict):
         
         # Log audit event for listing creation
         security_service.log_audit_event(
-            user_id=listing_data.get("seller_id", "unknown"),
+            user_id=seller_id,
             action="listing_created",
             resource="listings",
             details={
@@ -6179,461 +5542,6 @@ async def get_search_history(user_id: str, limit: int = 20):
         return {"history": []}
 
 # ============================================================================
-# USER-TO-USER RATING SYSTEM - TRANSACTION-BASED RATINGS ONLY
-@app.post("/api/user-ratings/create")
-async def create_user_rating(rating_data: dict):
-    """Create a user-to-user rating (only for completed transactions)"""
-    try:
-        rater_id = rating_data.get("rater_id")
-        rated_user_id = rating_data.get("rated_user_id") 
-        transaction_id = rating_data.get("transaction_id")  # Deal/Order ID
-        rating_score = rating_data.get("rating", 5)
-        comment = rating_data.get("comment", "")
-        
-        # Validate rating score
-        if not (1 <= rating_score <= 5):
-            raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
-        
-        # Verify transaction exists and both users were involved
-        transaction = await db.orders.find_one({"id": transaction_id, "status": {"$in": ["approved", "completed"]}})
-        if not transaction:
-            raise HTTPException(status_code=404, detail="Transaction not found or not completed")
-        
-        # Verify the rater was involved in this transaction
-        if rater_id not in [transaction.get("buyer_id"), transaction.get("seller_id")]:
-            raise HTTPException(status_code=403, detail="You can only rate users from your completed transactions")
-        
-        # Verify the rated user was the other party in the transaction
-        if rated_user_id not in [transaction.get("buyer_id"), transaction.get("seller_id")] or rated_user_id == rater_id:
-            raise HTTPException(status_code=400, detail="Invalid user to rate for this transaction")
-        
-        # Check if rating already exists for this transaction pair
-        existing_rating = await db.user_ratings.find_one({
-            "rater_id": rater_id,
-            "rated_user_id": rated_user_id, 
-            "transaction_id": transaction_id
-        })
-        
-        if existing_rating:
-            raise HTTPException(status_code=400, detail="You have already rated this user for this transaction")
-        
-        # Create the rating
-        rating = {
-            "id": generate_id(),
-            "rater_id": rater_id,
-            "rated_user_id": rated_user_id,
-            "transaction_id": transaction_id,
-            "listing_id": transaction.get("listing_id"),
-            "rating": rating_score,
-            "comment": comment,
-            "rating_type": "seller" if rated_user_id == transaction.get("seller_id") else "buyer",
-            "created_at": datetime.utcnow().isoformat(),
-            "is_verified": True  # Always verified since based on actual transactions
-        }
-        
-        await db.user_ratings.insert_one(rating)
-        
-        # Update user's rating statistics
-        await update_user_rating_stats(rated_user_id)
-        
-        return {"message": "Rating created successfully", "rating_id": rating["id"]}
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create rating: {str(e)}")
-
-@app.get("/api/user-ratings/{user_id}")
-async def get_user_ratings(user_id: str, as_seller: bool = None, limit: int = 50):
-    """Get ratings received by a user"""
-    try:
-        query = {"rated_user_id": user_id}
-        
-        # Filter by rating type if specified
-        if as_seller is not None:
-            query["rating_type"] = "seller" if as_seller else "buyer"
-        
-        ratings = await db.user_ratings.find(query).sort("created_at", -1).limit(limit).to_list(length=None)
-        
-        # Enrich with rater information
-        enriched_ratings = []
-        for rating in ratings:
-            rating = serialize_doc(rating)
-            
-            # Get rater info
-            rater = await db.users.find_one({"id": rating["rater_id"]})
-            if rater:
-                rating["rater"] = {
-                    "id": rater["id"],
-                    "username": rater.get("username", "Unknown"),
-                    "full_name": rater.get("full_name", "Unknown User")
-                }
-            
-            # Get transaction/listing info
-            if rating.get("listing_id"):
-                listing = await db.listings.find_one({"id": rating["listing_id"]})
-                if listing:
-                    rating["listing_title"] = listing.get("title", "Unknown Listing")
-            
-            enriched_ratings.append(rating)
-        
-        return enriched_ratings
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch ratings: {str(e)}")
-
-@app.get("/api/user-ratings/{user_id}/stats")
-async def get_user_rating_stats(user_id: str):
-    """Get user's rating statistics"""
-    try:
-        # Get all ratings for this user
-        ratings = await db.user_ratings.find({"rated_user_id": user_id}).to_list(length=None)
-        
-        if not ratings:
-            return {
-                "total_ratings": 0,
-                "average_rating": 0,
-                "seller_rating": 0,
-                "buyer_rating": 0,
-                "rating_distribution": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
-                "seller_stats": {"count": 0, "average": 0},
-                "buyer_stats": {"count": 0, "average": 0}
-            }
-        
-        # Calculate overall statistics
-        total_ratings = len(ratings)
-        total_score = sum(r["rating"] for r in ratings)
-        average_rating = round(total_score / total_ratings, 1)
-        
-        # Calculate rating distribution
-        rating_distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-        for rating in ratings:
-            rating_distribution[rating["rating"]] += 1
-        
-        # Calculate seller vs buyer stats
-        seller_ratings = [r for r in ratings if r["rating_type"] == "seller"]
-        buyer_ratings = [r for r in ratings if r["rating_type"] == "buyer"]
-        
-        seller_stats = {
-            "count": len(seller_ratings),
-            "average": round(sum(r["rating"] for r in seller_ratings) / len(seller_ratings), 1) if seller_ratings else 0
-        }
-        
-        buyer_stats = {
-            "count": len(buyer_ratings), 
-            "average": round(sum(r["rating"] for r in buyer_ratings) / len(buyer_ratings), 1) if buyer_ratings else 0
-        }
-        
-        return {
-            "total_ratings": total_ratings,
-            "average_rating": average_rating,
-            "seller_rating": seller_stats["average"],
-            "buyer_rating": buyer_stats["average"],
-            "rating_distribution": rating_distribution,
-            "seller_stats": seller_stats,
-            "buyer_stats": buyer_stats
-        }
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch rating stats: {str(e)}")
-
-@app.get("/api/user-ratings/can-rate/{user_id}/{target_user_id}")
-async def can_rate_user(user_id: str, target_user_id: str):
-    """Check if user can rate another user (if they have completed transactions)"""
-    try:
-        # Find completed transactions between these users
-        transactions = await db.orders.find({
-            "$or": [
-                {"buyer_id": user_id, "seller_id": target_user_id},
-                {"buyer_id": target_user_id, "seller_id": user_id}
-            ],
-            "status": {"$in": ["approved", "completed"]}
-        }).to_list(length=None)
-        
-        if not transactions:
-            return {"can_rate": False, "reason": "No completed transactions between users"}
-        
-        # Check if rating already exists for any transaction
-        ratable_transactions = []
-        for transaction in transactions:
-            existing_rating = await db.user_ratings.find_one({
-                "rater_id": user_id,
-                "rated_user_id": target_user_id,
-                "transaction_id": transaction["id"]
-            })
-            
-            if not existing_rating:
-                ratable_transactions.append({
-                    "transaction_id": transaction["id"],
-                    "listing_id": transaction.get("listing_id"),
-                    "created_at": transaction.get("created_at")
-                })
-        
-        return {
-            "can_rate": len(ratable_transactions) > 0,
-            "reason": "Can rate from completed transactions" if ratable_transactions else "Already rated all transactions",
-            "available_transactions": ratable_transactions
-        }
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to check rating availability: {str(e)}")
-
-async def update_user_rating_stats(user_id: str):
-    """Update user's cached rating statistics"""
-    try:
-        stats = await get_user_rating_stats(user_id)
-        
-        # Update user document with rating stats
-        await db.users.update_one(
-            {"id": user_id},
-            {"$set": {
-                "rating_stats": stats,
-                "seller_rating": stats["seller_rating"],
-                "buyer_rating": stats["buyer_rating"], 
-                "total_ratings": stats["total_ratings"],
-                "updated_at": datetime.utcnow().isoformat()
-            }}
-        )
-        
-    except Exception as e:
-        logger.error(f"Failed to update user rating stats: {e}")
-
-# ENHANCED MESSAGING SYSTEM - STATE-OF-THE-ART FUNCTIONALITY
-@app.get("/api/messages/conversations/{user_id}")
-async def get_user_conversations(user_id: str):
-    """Get user's conversations with enhanced features"""
-    try:
-        # Get all messages involving this user
-        messages = await db.user_messages.find({
-            "$or": [{"sender_id": user_id}, {"recipient_id": user_id}]
-        }).sort("created_at", -1).to_list(length=None)
-        
-        # Group messages into conversations
-        conversations = {}
-        
-        for message in messages:
-            # Determine the other user in the conversation
-            other_user_id = message["recipient_id"] if message["sender_id"] == user_id else message["sender_id"]
-            
-            if other_user_id not in conversations:
-                # Get other user info
-                other_user = await db.users.find_one({"id": other_user_id})
-                conversations[other_user_id] = {
-                    "id": other_user_id,
-                    "user": {
-                        "id": other_user_id,
-                        "username": other_user.get("username", "Unknown") if other_user else "Unknown",
-                        "full_name": other_user.get("full_name", "Unknown User") if other_user else "Unknown User",
-                        "badge": other_user.get("badge", "User") if other_user else "User",
-                        "is_online": False,  # Will be updated by WebSocket service
-                        "last_seen": other_user.get("last_seen") if other_user else None
-                    },
-                    "messages": [],
-                    "unread_count": 0,
-                    "last_message": None,
-                    "last_activity": None
-                }
-            
-            # Add message to conversation
-            message_data = serialize_doc(message)
-            conversations[other_user_id]["messages"].append(message_data)
-            
-            # Update unread count
-            if message["sender_id"] != user_id and not message.get("is_read", False):
-                conversations[other_user_id]["unread_count"] += 1
-            
-            # Update last message
-            if not conversations[other_user_id]["last_message"] or message["created_at"] > conversations[other_user_id]["last_message"]["created_at"]:
-                conversations[other_user_id]["last_message"] = message_data
-                conversations[other_user_id]["last_activity"] = message["created_at"]
-        
-        # Convert to list and sort by last activity
-        conversation_list = list(conversations.values())
-        conversation_list.sort(key=lambda x: x["last_activity"] or "", reverse=True)
-        
-        return {
-            "conversations": conversation_list,
-            "total_conversations": len(conversation_list),
-            "total_unread": sum(c["unread_count"] for c in conversation_list)
-        }
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch conversations: {str(e)}")
-
-@app.get("/api/messages/conversation/{user_id}/{other_user_id}")
-async def get_conversation_messages(user_id: str, other_user_id: str, limit: int = 50, offset: int = 0):
-    """Get messages in a specific conversation with pagination"""
-    try:
-        messages = await db.user_messages.find({
-            "$or": [
-                {"sender_id": user_id, "recipient_id": other_user_id},
-                {"sender_id": other_user_id, "recipient_id": user_id}
-            ]
-        }).sort("created_at", -1).skip(offset).limit(limit).to_list(length=None)
-        
-        # Enrich messages with sender info
-        enriched_messages = []
-        for message in messages:
-            message_data = serialize_doc(message)
-            
-            # Get sender info
-            sender = await db.users.find_one({"id": message["sender_id"]})
-            if sender:
-                message_data["sender"] = {
-                    "id": sender["id"],
-                    "username": sender.get("username", "Unknown"),
-                    "full_name": sender.get("full_name", "Unknown User"),
-                    "badge": sender.get("badge", "User")
-                }
-            
-            enriched_messages.append(message_data)
-        
-        # Mark messages as read (messages sent to current user)
-        await db.user_messages.update_many(
-            {"sender_id": other_user_id, "recipient_id": user_id, "is_read": {"$ne": True}},
-            {"$set": {"is_read": True, "read_at": datetime.utcnow().isoformat()}}
-        )
-        
-        # Reverse to show oldest first
-        enriched_messages.reverse()
-        
-        return {
-            "messages": enriched_messages,
-            "has_more": len(enriched_messages) == limit
-        }
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch conversation: {str(e)}")
-
-@app.post("/api/messages/send")
-async def send_enhanced_message(message_data: dict):
-    """Send a message with enhanced features"""
-    try:
-        sender_id = message_data.get("sender_id")
-        recipient_id = message_data.get("recipient_id")
-        content = message_data.get("content", "").strip()
-        
-        if not content:
-            raise HTTPException(status_code=400, detail="Message content cannot be empty")
-        
-        if sender_id == recipient_id:
-            raise HTTPException(status_code=400, detail="Cannot send message to yourself")
-        
-        # Verify recipient exists
-        recipient = await db.users.find_one({"id": recipient_id})
-        if not recipient:
-            raise HTTPException(status_code=404, detail="Recipient not found")
-        
-        message = {
-            "id": generate_id(),
-            "sender_id": sender_id,
-            "recipient_id": recipient_id,
-            "content": content,
-            "message_type": message_data.get("message_type", "text"),  # text, image, file
-            "is_read": False,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat(),
-            "metadata": message_data.get("metadata", {}),  # For attachments, etc.
-            "is_deleted": False,
-            "reply_to": message_data.get("reply_to")  # For threaded replies
-        }
-        
-        await db.user_messages.insert_one(message)
-        
-        # Trigger real-time notification via WebSocket if available
-        if websocket_service:
-            try:
-                await websocket_service.send_message_notification(recipient_id, {
-                    "type": "new_message",
-                    "message": serialize_doc(message),
-                    "sender": {
-                        "id": sender_id,
-                        "username": (await db.users.find_one({"id": sender_id}))["username"]
-                    }
-                })
-            except Exception as ws_error:
-                logger.warning(f"WebSocket notification failed: {ws_error}")
-        
-        return {"message": "Message sent successfully", "message_id": message["id"]}
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to send message: {str(e)}")
-
-@app.delete("/api/messages/{message_id}")
-async def delete_message(message_id: str, user_id: str):
-    """Delete a message (soft delete)"""
-    try:
-        result = await db.user_messages.update_one(
-            {"id": message_id, "sender_id": user_id},
-            {"$set": {"is_deleted": True, "deleted_at": datetime.utcnow().isoformat()}}
-        )
-        
-        if result.matched_count == 0:
-            raise HTTPException(status_code=404, detail="Message not found or not authorized")
-        
-        return {"message": "Message deleted successfully"}
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete message: {str(e)}")
-
-@app.put("/api/messages/{message_id}/read")
-async def mark_message_as_read(message_id: str, user_id: str):
-    """Mark a specific message as read"""
-    try:
-        result = await db.user_messages.update_one(
-            {"id": message_id, "recipient_id": user_id},
-            {"$set": {"is_read": True, "read_at": datetime.utcnow().isoformat()}}
-        )
-        
-        if result.matched_count == 0:
-            raise HTTPException(status_code=404, detail="Message not found")
-        
-        return {"message": "Message marked as read"}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to mark message as read: {str(e)}")
-
-@app.get("/api/messages/search/{user_id}")
-async def search_messages(user_id: str, q: str = "", limit: int = 20):
-    """Search messages for a user"""
-    try:
-        if not q.strip():
-            return {"results": []}
-        
-        messages = await db.user_messages.find({
-            "$and": [
-                {"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]},
-                {"content": {"$regex": q, "$options": "i"}},
-                {"is_deleted": {"$ne": True}}
-            ]
-        }).sort("created_at", -1).limit(limit).to_list(length=None)
-        
-        # Enrich with user info
-        enriched_messages = []
-        for message in messages:
-            message_data = serialize_doc(message)
-            
-            # Get sender info
-            sender = await db.users.find_one({"id": message["sender_id"]})
-            if sender:
-                message_data["sender_name"] = sender.get("full_name", sender.get("username", "Unknown"))
-            
-            # Get recipient info  
-            recipient = await db.users.find_one({"id": message["recipient_id"]})
-            if recipient:
-                message_data["recipient_name"] = recipient.get("full_name", recipient.get("username", "Unknown"))
-            
-            enriched_messages.append(message_data)
-        
-        return {"results": enriched_messages}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to search messages: {str(e)}")
-
 # REVIEW & RATING SYSTEM - PHASE 2: ENHANCED SOCIAL COMMERCE
 # ============================================================================
 
@@ -7750,290 +6658,31 @@ async def unassign_item_from_basket(item_id: str):
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to unassign item: {str(e)}")
 
-# Webhook Management API Endpoints
-@app.get("/api/admin/webhooks")
-async def get_webhooks():
-    """Get all webhooks"""
-    try:
-        webhook_service = get_webhook_service()
-        webhooks = await webhook_service.get_webhooks()
-        return {"success": True, "webhooks": webhooks}
-    except Exception as e:
-        logger.error(f"Failed to get webhooks: {str(e)}")
-        return {"success": False, "error": str(e)}
-
-@app.post("/api/admin/webhooks")
-async def create_webhook(webhook_data: dict):
-    """Create a new webhook"""
-    try:
-        # Validate required fields
-        if not webhook_data.get("url"):
-            raise HTTPException(status_code=400, detail="URL is required")
-        if not webhook_data.get("events"):
-            raise HTTPException(status_code=400, detail="Events are required")
-        
-        webhook_service = get_webhook_service()
-        webhook = await webhook_service.create_webhook(webhook_data)
-        
-        return {"success": True, "webhook": webhook}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Failed to create webhook: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/admin/webhooks/{webhook_id}")
-async def get_webhook(webhook_id: str):
-    """Get a specific webhook"""
-    try:
-        webhook_service = get_webhook_service()
-        webhook = await webhook_service.get_webhook(webhook_id)
-        
-        if not webhook:
-            raise HTTPException(status_code=404, detail="Webhook not found")
-        
-        return {"success": True, "webhook": webhook}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Failed to get webhook: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.put("/api/admin/webhooks/{webhook_id}")
-async def update_webhook(webhook_id: str, update_data: dict):
-    """Update a webhook"""
-    try:
-        webhook_service = get_webhook_service()
-        webhook = await webhook_service.update_webhook(webhook_id, update_data)
-        
-        if not webhook:
-            raise HTTPException(status_code=404, detail="Webhook not found")
-        
-        return {"success": True, "webhook": webhook}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Failed to update webhook: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.delete("/api/admin/webhooks/{webhook_id}")
-async def delete_webhook(webhook_id: str):
-    """Delete a webhook"""
-    try:
-        webhook_service = get_webhook_service()
-        success = await webhook_service.delete_webhook(webhook_id)
-        
-        if not success:
-            raise HTTPException(status_code=404, detail="Webhook not found")
-        
-        return {"success": True, "message": "Webhook deleted successfully"}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Failed to delete webhook: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/admin/webhooks/{webhook_id}/deliveries")
-async def get_webhook_deliveries(webhook_id: str, limit: int = 50, offset: int = 0):
-    """Get webhook delivery history"""
-    try:
-        webhook_service = get_webhook_service()
-        deliveries = await webhook_service.get_webhook_deliveries(webhook_id, limit, offset)
-        
-        return {"success": True, "deliveries": deliveries}
-    except Exception as e:
-        logger.error(f"Failed to get webhook deliveries: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/api/admin/webhook-events")
-async def get_supported_webhook_events():
-    """Get list of supported webhook events"""
-    try:
-        webhook_service = get_webhook_service()
-        events = await webhook_service.get_supported_events()
-        
-        return {"success": True, "events": events}
-    except Exception as e:
-        logger.error(f"Failed to get supported events: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/admin/webhooks/{webhook_id}/test")
-async def test_webhook(webhook_id: str):
-    """Test a webhook by sending a test event"""
-    try:
-        webhook_service = get_webhook_service()
-        webhook = await webhook_service.get_webhook(webhook_id)
-        
-        if not webhook:
-            raise HTTPException(status_code=404, detail="Webhook not found")
-        
-        # Send a test event
-        test_data = {
-            "test": True,
-            "webhook_id": webhook_id,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "message": "This is a test webhook delivery from Cataloro Marketplace"
-        }
-        
-        await webhook_service.trigger_event("test.webhook", test_data)
-        
-        return {"success": True, "message": "Test webhook sent successfully"}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Failed to test webhook: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
 # ============================================================================
-# MEDIA MANAGEMENT API ENDPOINTS
+# STARTUP EVENT
 # ============================================================================
 
-@app.get("/api/admin/media/files")
-async def get_media_files():
-    """Get all uploaded media files from uploads directory"""
+@app.on_event("startup")
+async def startup_event():
+    """Initialize application on startup"""
     try:
-        import os
-        import mimetypes
-        from pathlib import Path
+        # Test database connection
+        await client.admin.command('ping')
+        print("✅ Connected to MongoDB successfully")
         
-        uploads_dir = Path("/app/backend/uploads")
-        media_files = []
-        
-        # Scan all subdirectories in uploads
-        for root, dirs, files in os.walk(uploads_dir):
-            for file in files:
-                file_path = Path(root) / file
-                
-                # Skip non-image files for now (can be extended later)
-                mime_type, _ = mimetypes.guess_type(str(file_path))
-                if not mime_type or not mime_type.startswith('image/'):
-                    continue
-                
-                # Get file stats
-                stat = file_path.stat()
-                
-                # Create relative URL path
-                relative_path = file_path.relative_to(Path("/app/backend"))
-                url = f"/api/{relative_path}"
-                
-                # Extract category from directory name
-                category = file_path.parent.name if file_path.parent.name != "uploads" else "general"
-                
-                # Generate file info
-                file_info = {
-                    "id": str(hash(str(file_path))),  # Simple hash-based ID
-                    "filename": file,
-                    "url": url,
-                    "type": mime_type,
-                    "size": stat.st_size,
-                    "uploadedBy": "admin",  # Default since we don't track this yet
-                    "uploadedAt": datetime.fromtimestamp(stat.st_mtime, timezone.utc).isoformat(),
-                    "category": category,
-                    "description": f"Uploaded {mime_type.split('/')[1]} file"
-                }
-                
-                media_files.append(file_info)
-        
-        # Sort by upload date (newest first)
-        media_files.sort(key=lambda x: x["uploadedAt"], reverse=True)
-        
-        return {
-            "success": True,
-            "files": media_files,
-            "total": len(media_files)
-        }
-        
+        # Test AI service
+        try:
+            api_key = os.environ.get('EMERGENT_LLM_KEY')
+            if api_key:
+                print("✅ AI service configured successfully")
+            else:
+                print("⚠️ AI service not configured - search will use fallback mode")
+        except Exception as e:
+            print(f"⚠️ AI service initialization warning: {e}")
+            
     except Exception as e:
-        logger.error(f"Failed to get media files: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/admin/media/upload")
-async def upload_media_file(
-    file: UploadFile = File(...),
-    category: str = Form("general"),
-    description: str = Form("")
-):
-    """Upload a new media file"""
-    try:
-        import os
-        from pathlib import Path
-        import uuid
-        
-        # Validate file type
-        if not file.content_type.startswith('image/'):
-            raise HTTPException(status_code=400, detail="Only image files are allowed")
-        
-        # Create upload directory
-        upload_dir = Path(f"/app/backend/uploads/{category}")
-        upload_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Generate unique filename
-        file_extension = Path(file.filename).suffix
-        unique_filename = f"{uuid.uuid4().hex}{file_extension}"
-        file_path = upload_dir / unique_filename
-        
-        # Save file
-        content = await file.read()
-        with open(file_path, "wb") as f:
-            f.write(content)
-        
-        # Get file stats
-        stat = file_path.stat()
-        
-        # Create file info
-        file_info = {
-            "id": str(hash(str(file_path))),
-            "filename": unique_filename,
-            "original_filename": file.filename,
-            "url": f"/api/uploads/{category}/{unique_filename}",
-            "type": file.content_type,
-            "size": stat.st_size,
-            "uploadedBy": "admin",
-            "uploadedAt": datetime.now(timezone.utc).isoformat(),
-            "category": category,
-            "description": description or f"Uploaded {file.content_type.split('/')[1]} file"
-        }
-        
-        return {
-            "success": True,
-            "file": file_info,
-            "message": "File uploaded successfully"
-        }
-        
-    except HTTPException:
+        print(f"❌ Failed to connect to MongoDB: {e}")
         raise
-    except Exception as e:
-        logger.error(f"Failed to upload media file: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.delete("/api/admin/media/files/{file_id}")
-async def delete_media_file(file_id: str):
-    """Delete a media file"""
-    try:
-        import os
-        from pathlib import Path
-        
-        uploads_dir = Path("/app/backend/uploads")
-        
-        # Find file by ID (hash)
-        for root, dirs, files in os.walk(uploads_dir):
-            for file in files:
-                file_path = Path(root) / file
-                if str(hash(str(file_path))) == file_id:
-                    # Delete the file
-                    os.remove(file_path)
-                    return {
-                        "success": True,
-                        "message": "File deleted successfully"
-                    }
-        
-        raise HTTPException(status_code=404, detail="File not found")
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Failed to delete media file: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 # Run server
 if __name__ == "__main__":

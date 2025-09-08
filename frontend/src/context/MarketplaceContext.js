@@ -19,7 +19,6 @@ const initialState = {
     type: 'all', // Changed from category to type (Private/Business)
     priceFrom: 0, // Changed from priceRange array to separate from/to values
     priceTo: 10000,
-    bidStatus: 'all', // New filter: 'all', 'highest_bidder', 'not_bid_yet'
     rating: 0,
     location: 'all'
     // Removed condition filter
@@ -29,16 +28,6 @@ const initialState = {
   allProducts: [],
   filteredProducts: [],
   categories: [],
-  
-  // Pagination
-  pagination: {
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    itemsPerPage: 40,
-    hasNext: false,
-    hasPrev: false
-  },
   
   // User Interactions
   recentlyViewed: [],
@@ -82,10 +71,6 @@ const ACTIONS = {
   SET_FILTERS: 'SET_FILTERS',
   SET_SORT_BY: 'SET_SORT_BY',
   SET_VIEW_MODE: 'SET_VIEW_MODE',
-  
-  // Pagination Actions
-  SET_PAGINATION: 'SET_PAGINATION',
-  SET_CURRENT_PAGE: 'SET_CURRENT_PAGE',
   
   // UI Actions
   SET_LOADING: 'SET_LOADING',
@@ -223,21 +208,6 @@ function marketplaceReducer(state, action) {
         isLoading: action.payload
       };
     
-    case ACTIONS.SET_PAGINATION:
-      return {
-        ...state,
-        pagination: action.payload
-      };
-    
-    case ACTIONS.SET_CURRENT_PAGE:
-      return {
-        ...state,
-        pagination: {
-          ...state.pagination,
-          currentPage: action.payload
-        }
-      };
-    
     default:
       return state;
   }
@@ -287,21 +257,16 @@ export function MarketplaceProvider({ children }) {
     localStorage.setItem('cataloro_favorites', JSON.stringify(state.favorites));
   }, [state.favorites]);
 
-  const loadInitialProducts = async (filters = null, page = 1) => {
+  const loadInitialProducts = async (filters = null) => {
     // Set loading state
     dispatch({ type: ACTIONS.SET_LOADING, payload: true });
     
     try {
       // Use provided filters or current state filters
       const currentFilters = filters || state.activeFilters;
-      const currentPage = page || state.pagination.currentPage;
       
       // Convert filter format for API call
-      const apiFilters = {
-        page: currentPage,
-        limit: 40 // Set items per page
-      };
-      
+      const apiFilters = {};
       if (currentFilters.type && currentFilters.type !== 'all') {
         apiFilters.type = currentFilters.type;
       }
@@ -311,32 +276,17 @@ export function MarketplaceProvider({ children }) {
       if (currentFilters.priceTo < 10000) {
         apiFilters.price_to = currentFilters.priceTo;
       }
-      if (currentFilters.bidStatus && currentFilters.bidStatus !== 'all') {
-        apiFilters.bid_status = currentFilters.bidStatus;
-      }
       
       // Try to fetch real listings from API using marketplaceService
       const apiResponse = await marketplaceService.browseListings(apiFilters);
       console.log('✅ Loaded real listings from API with filters:', apiFilters, apiResponse);
       
-      // Handle both array format (old) and structured format (new with pagination)
-      let apiListings, paginationInfo;
+      // The browse endpoint returns array format directly
+      let apiListings;
       if (Array.isArray(apiResponse)) {
-        // Old array format
         apiListings = apiResponse;
-        paginationInfo = null;
-      } else if (apiResponse && apiResponse.listings) {
-        // New structured format with pagination
-        apiListings = apiResponse.listings;
-        paginationInfo = apiResponse.pagination;
-        console.log('📋 Pagination info:', paginationInfo);
-        
-        // Update pagination state
-        if (paginationInfo) {
-          dispatch({ type: ACTIONS.SET_PAGINATION, payload: paginationInfo });
-        }
       } else {
-        throw new Error('Invalid API response format');
+        throw new Error('Invalid API response format: expected array');
       }
       
       console.log('📋 Processing listings:', apiListings.length);
@@ -664,44 +614,12 @@ export function MarketplaceProvider({ children }) {
       const newFilters = { ...state.activeFilters, ...filters };
       dispatch({ type: ACTIONS.SET_FILTERS, payload: filters });
       
-      // For type, price, and bid status filters, reload from backend
-      if (filters.type !== undefined || filters.priceFrom !== undefined || filters.priceTo !== undefined || filters.bidStatus !== undefined) {
-        await loadInitialProducts(newFilters, 1); // Reset to page 1 when filters change
+      // For type and price filters, reload from backend
+      if (filters.type !== undefined || filters.priceFrom !== undefined || filters.priceTo !== undefined) {
+        await loadInitialProducts(newFilters);
       } else {
         // For other filters (search, sorting), use local filtering
         applyFiltersAndSearch(state.searchQuery, newFilters, state.sortBy);
-      }
-    },
-    
-    // Pagination actions
-    setCurrentPage: async (page) => {
-      dispatch({ type: ACTIONS.SET_CURRENT_PAGE, payload: page });
-      await loadInitialProducts(state.activeFilters, page);
-    },
-    
-    goToNextPage: async () => {
-      if (state.pagination.hasNext) {
-        const nextPage = state.pagination.currentPage + 1;
-        await actions.setCurrentPage(nextPage);
-      }
-    },
-    
-    goToPrevPage: async () => {
-      if (state.pagination.hasPrev) {
-        const prevPage = state.pagination.currentPage - 1;
-        await actions.setCurrentPage(prevPage);
-      }
-    },
-    
-    goToFirstPage: async () => {
-      if (state.pagination.currentPage !== 1) {
-        await actions.setCurrentPage(1);
-      }
-    },
-    
-    goToLastPage: async () => {
-      if (state.pagination.currentPage !== state.pagination.totalPages) {
-        await actions.setCurrentPage(state.pagination.totalPages);
       }
     },
     

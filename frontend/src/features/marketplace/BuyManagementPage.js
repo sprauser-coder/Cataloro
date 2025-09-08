@@ -18,7 +18,6 @@ import {
   DollarSign,
   Tag,
   User,
-  FileText,
   MapPin,
   Clock,
   ExternalLink,
@@ -47,7 +46,6 @@ function BuyManagementPage() {
   const [showCreateBasket, setShowCreateBasket] = useState(false);
   const [showEditBasket, setShowEditBasket] = useState(false);
   const [basketForm, setBasketForm] = useState({ name: '', description: '' });
-
 
   // Load bought items
   const loadBoughtItems = async () => {
@@ -367,8 +365,6 @@ function BuyManagementPage() {
     
     return { valuePaid, ptG, pdG, rhG };
   };
-
-
 
   if (!permissions.ui.showBuyingFeatures && user?.user_role !== 'Admin' && user?.user_role !== 'Admin-Manager') {
     return (
@@ -793,7 +789,6 @@ function BasketCard({ basket, totals, onEdit, onDelete, onUnassignFromBasket, on
           </div>
           
           <div className="flex items-center space-x-2">
-
             <button
               onClick={onEdit}
               className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"

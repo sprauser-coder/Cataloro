@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import UnifiedAnalyticsDashboard from '../analytics/UnifiedAnalyticsDashboard';
+import AnalyticsDashboard from '../analytics/AnalyticsDashboard';
 import PerformanceDashboard from '../performance/PerformanceDashboard';
 import SecurityDashboard from '../security/SecurityDashboard';
 import EnhancedSearchInterface from '../search/EnhancedSearchInterface';
@@ -443,7 +443,7 @@ const DashboardHub = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeDashboard === 'overview' && renderOverview()}
-        {activeDashboard === 'analytics' && <UnifiedAnalyticsDashboard />}
+        {activeDashboard === 'analytics' && <AnalyticsDashboard />}
         {activeDashboard === 'performance' && <PerformanceDashboard />}
         {activeDashboard === 'security' && <SecurityDashboard />}
         {activeDashboard === 'search' && <EnhancedSearchInterface />}

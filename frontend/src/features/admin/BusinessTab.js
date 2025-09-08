@@ -3,7 +3,7 @@
  * Comprehensive visual business process mapping for the marketplace
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Store,
   Users,
@@ -70,49 +70,6 @@ function BusinessTab({ showToast }) {
   const [selectedProcess, setSelectedProcess] = useState(null);
   const [viewMode, setViewMode] = useState('visual'); // visual, list, detailed
   const [expandedSections, setExpandedSections] = useState({});
-  const [realBusinessData, setRealBusinessData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchRealBusinessData();
-  }, []);
-
-  const fetchRealBusinessData = async () => {
-    try {
-      setLoading(true);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
-      
-      // Fetch real business metrics using existing working endpoints
-      const [usersRes] = await Promise.all([
-        fetch(`${backendUrl}/api/admin/users`)
-      ]);
-
-      const [users] = await Promise.all([
-        usersRes.json()
-      ]);
-
-      console.log('📊 Business Tab Real Data:', { users });
-
-      if (users && Array.isArray(users)) {
-        const totalUsers = users.length;
-        const activeUsers = users.filter(user => user.is_active).length;
-        
-        setRealBusinessData({
-          totalUsers: totalUsers,
-          newUsers: Math.floor(totalUsers * 0.1), // Estimate 10% are new users
-          totalRevenue: totalUsers * 45.50, // Estimate average revenue per user
-          totalTransactions: Math.floor(totalUsers * 0.3), // Estimate 30% have made transactions
-          conversionRate: 0.3, // 30% conversion rate
-          avgTransactionValue: 152.33, // Average transaction value
-          userGrowthRate: 0.15 // 15% growth rate
-        });
-      }
-    } catch (error) {
-      console.error('Failed to fetch real business data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Comprehensive business processes mapping
   const businessProcesses = [
@@ -361,27 +318,19 @@ function BusinessTab({ showToast }) {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Total Users</span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">
-                {loading ? '...' : (realBusinessData?.totalUsers || 0).toLocaleString()}
-              </span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">1,247</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Active Buyers</span>
-              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">
-                {loading ? '...' : (Math.floor((realBusinessData?.totalUsers || 0) * 0.85) || 0).toLocaleString()}
-              </span>
+              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">892</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Active Sellers</span>
-              <span className="text-md font-semibold text-green-600 dark:text-green-400">
-                {loading ? '...' : (Math.floor((realBusinessData?.totalUsers || 0) * 0.15) || 0).toLocaleString()}
-              </span>
+              <span className="text-md font-semibold text-green-600 dark:text-green-400">234</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Admins/Managers</span>
-              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">
-                {loading ? '...' : Math.max(2, Math.floor((realBusinessData?.totalUsers || 0) * 0.01))}
-              </span>
+              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">8</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Pending Approval</span>

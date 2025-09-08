@@ -32,4 +32,3 @@ python-multipart==0.0.6
 pycryptodome==3.19.0
 qrcode==7.4.2
 reportlab==4.0.7
-aiohttp==3.9.1

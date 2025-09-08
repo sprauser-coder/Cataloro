@@ -87,12 +87,6 @@ function ProfilePage() {
   const [showCountrySuggestions, setShowCountrySuggestions] = useState(false);
   const [showBusinessCountrySuggestions, setShowBusinessCountrySuggestions] = useState(false);
 
-  const [usernameStatus, setUsernameStatus] = useState({
-    isChecking: false,
-    isAvailable: null,
-    message: ''
-  });
-
   const [preferences, setPreferences] = useState({
     emailNotifications: true,
     smsNotifications: false,
@@ -117,45 +111,8 @@ function ProfilePage() {
     totalFavorites: 0,
     profileViews: 0,
     joinDate: '',
-    lastActive: 'Loading...'
+    lastActive: ''
   });
-
-  useEffect(() => {
-    loadProfileData();
-  }, [user]);
-
-  const loadProfileData = async () => {
-    if (!user?.id) return;
-    
-    try {
-      // Load profile statistics from backend
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/profile/${user.id}/stats`);
-      if (response.ok) {
-        const stats = await response.json();
-        
-        setAccountStats({
-          totalListings: stats.statistics.total_listings || 0,
-          activeListings: stats.statistics.active_listings || 0,
-          totalDeals: stats.statistics.total_deals || 0,
-          completedDeals: stats.statistics.completed_deals || 0,
-          totalRevenue: stats.statistics.total_revenue || 0,
-          totalFavorites: stats.statistics.total_favorites || 0,
-          profileViews: 0, // This would need a separate tracking system
-          lastActive: stats.activity.last_active ? new Date(stats.activity.last_active).toLocaleDateString() : 'Unknown'
-        });
-
-        // Update seller rating from real data
-        if (stats.user_info && stats.ratings) {
-          setProfileData(prev => ({
-            ...prev,
-            seller_rating: stats.ratings.seller_rating || 0
-          }));
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load profile statistics:', error);
-    }
-  };
 
   // Popular European cities for suggestions
   const popularCities = [
@@ -319,79 +276,8 @@ function ProfilePage() {
     });
   };
 
-  // Username verification function
-  const checkUsernameAvailability = async (username) => {
-    if (!username || username === user?.username) {
-      setUsernameStatus({ isChecking: false, isAvailable: null, message: '' });
-      return;
-    }
-
-    if (username.length < 3) {
-      setUsernameStatus({ 
-        isChecking: false, 
-        isAvailable: false, 
-        message: 'Username must be at least 3 characters' 
-      });
-      return;
-    }
-
-    setUsernameStatus({ isChecking: true, isAvailable: null, message: 'Checking availability...' });
-
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/check-username`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username })
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        setUsernameStatus({
-          isChecking: false,
-          isAvailable: result.available,
-          message: result.available ? '✅ Username is available' : '❌ Username is already taken'
-        });
-      } else {
-        throw new Error('Failed to check username');
-      }
-    } catch (error) {
-      console.error('Username check error:', error);
-      setUsernameStatus({
-        isChecking: false,
-        isAvailable: false,
-        message: 'Error checking username availability'
-      });
-    }
-  };
-
-  // Debounced username check
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (profileData.username && profileData.username !== user?.username) {
-        checkUsernameAvailability(profileData.username);
-      }
-    }, 1000);
-
-    return () => clearTimeout(timeoutId);
-  }, [profileData.username, user?.username]);
-
   const handleSaveProfile = async () => {
     try {
-      // Check username availability if username was changed
-      if (profileData.username !== user?.username) {
-        if (usernameStatus.isChecking) {
-          showToast('Please wait for username verification to complete', 'warning');
-          return;
-        }
-        
-        if (!usernameStatus.isAvailable) {
-          showToast('Please choose an available username', 'error');
-          return;
-        }
-      }
-
       // Check if account type changed
       const accountTypeChanged = user?.is_business !== profileData.is_business;
       
@@ -402,15 +288,19 @@ function ProfilePage() {
       const updatedUser = { ...user, ...profileData };
       localStorage.setItem('cataloro_user', JSON.stringify(updatedUser));
       
-      // Update auth context
-      updateUser(updatedUser);
+      // Also update the auth context to reflect changes immediately
+      // This ensures the user object is updated across the entire app
+      if (typeof updateUser === 'function') {
+        updateUser(updatedUser);
+      }
       
       setIsEditing(false);
+      showToast('Profile updated successfully!', 'success');
       
+      // If account type changed, refresh marketplace listings to update badges
       if (accountTypeChanged) {
-        showToast('Profile updated! Account type change may take a few minutes to take effect.', 'success');
-      } else {
-        showToast('Profile updated successfully!', 'success');
+        refreshListings();
+        showToast(`Account switched to ${profileData.is_business ? 'Business' : 'Private'}`, 'success');
       }
     } catch (error) {
       showToast('Failed to update profile', 'error');
@@ -474,87 +364,6 @@ function ProfilePage() {
       showToast('Failed to upload image', 'error');
     } finally {
       setIsUploading(false);
-    }
-  };
-
-  const handleExportData = async () => {
-    if (!user?.id) return;
-    
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/profile/${user.id}/export`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Convert base64 to blob and download
-        const byteCharacters = atob(data.pdf_data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: 'application/pdf' });
-        
-        // Create download link
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = data.filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        showToast('Data exported successfully', 'success');
-      } else {
-        throw new Error('Export failed');
-      }
-    } catch (error) {
-      console.error('Failed to export data:', error);
-      showToast('Failed to export data', 'error');
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    const password = prompt('Please enter your password to confirm account deletion:');
-    if (!password) return;
-    
-    const confirmation = prompt('Type "delete my account" to confirm:');
-    if (confirmation?.toLowerCase() !== 'delete my account') {
-      showToast('Account deletion cancelled - incorrect confirmation', 'info');
-      return;
-    }
-
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/profile/${user.id}/delete-account`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          password: password,
-          confirmation: 'delete my account'
-        })
-      });
-      
-      if (response.ok) {
-        showToast('Account deleted successfully. You will be logged out.', 'success');
-        // Redirect to login or logout
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 2000);
-      } else {
-        const error = await response.json();
-        throw new Error(error.detail || 'Account deletion failed');
-      }
-    } catch (error) {
-      console.error('Failed to delete account:', error);
-      showToast(error.message || 'Failed to delete account', 'error');
     }
   };
 
@@ -718,43 +527,15 @@ function ProfilePage() {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Username
                     </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        name="username"
-                        value={profileData.username}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                        className={`cataloro-input ${!isEditing ? 'cursor-not-allowed' : ''} ${
-                          usernameStatus.isAvailable === false ? 'border-red-500 focus:ring-red-500' : 
-                          usernameStatus.isAvailable === true ? 'border-green-500 focus:ring-green-500' : ''
-                        }`}
-                        placeholder="Enter your username"
-                      />
-                      {isEditing && usernameStatus.isChecking && (
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <RefreshCw className="w-4 h-4 animate-spin text-gray-400" />
-                        </div>
-                      )}
-                      {isEditing && usernameStatus.isAvailable === true && (
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <CheckCircle className="w-4 h-4 text-green-500" />
-                        </div>
-                      )}
-                      {isEditing && usernameStatus.isAvailable === false && (
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <X className="w-4 h-4 text-red-500" />
-                        </div>
-                      )}
-                    </div>
-                    {isEditing && usernameStatus.message && (
-                      <p className={`text-xs mt-1 ${
-                        usernameStatus.isAvailable === true ? 'text-green-600' : 
-                        usernameStatus.isAvailable === false ? 'text-red-600' : 'text-gray-500'
-                      }`}>
-                        {usernameStatus.message}
-                      </p>
-                    )}
+                    <input
+                      type="text"
+                      name="username"
+                      value={profileData.username}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      className={`cataloro-input ${!isEditing ? 'cursor-not-allowed' : ''}`}
+                      placeholder="Enter your username"
+                    />
                   </div>
                 </div>
 
@@ -1369,10 +1150,7 @@ function ProfilePage() {
             </h3>
             
             <div className="space-y-3">
-              <button 
-                onClick={handleExportData}
-                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              >
+              <button className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
                 <Download className="w-5 h-5 text-gray-400" />
                 <span className="text-gray-700 dark:text-gray-300">Export Data</span>
               </button>
@@ -1382,10 +1160,7 @@ function ProfilePage() {
                 <span className="text-gray-700 dark:text-gray-300">Privacy Settings</span>
               </button>
               
-              <button 
-                onClick={handleDeleteAccount}
-                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-red-600 dark:text-red-400"
-              >
+              <button className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-red-600 dark:text-red-400">
                 <AlertCircle className="w-5 h-5" />
                 <span>Delete Account</span>
               </button>

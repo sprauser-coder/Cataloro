@@ -32,8 +32,8 @@ import InfoPage from './features/info/InfoPage';
 import TenderManagementPage from './features/marketplace/TenderManagementPage';
 import BuyManagementPage from './features/marketplace/BuyManagementPage';
 import DashboardHub from './components/admin/DashboardHub';
-import UnifiedAnalyticsDashboard from './components/analytics/UnifiedAnalyticsDashboard';
-import UnifiedEnterpriseDashboard from './components/enterprise/UnifiedEnterpriseDashboard';
+import Phase5Dashboard from './components/phase5/Phase5Dashboard';
+import Phase6Dashboard from './components/phase6/Phase6Dashboard';
 
 // Import centralized configuration
 import { APP_ROUTES } from './config/directions';
@@ -95,15 +95,14 @@ function App() {
                   <Route path="messages" element={<MessagesPage />} />
                   <Route path={APP_ROUTES.TENDERS.substring(1)} element={<TenderManagementPage />} />
                   <Route path="buy-management" element={<BuyManagementPage />} />
-                  <Route path="inventory" element={<BuyManagementPage />} />
                   <Route path="analytics" element={<AdminPanel />} />
                   <Route path="performance" element={<AdminPanel />} />
                   <Route path={APP_ROUTES.ADMIN_PANEL} element={<AdminPanel />} />
                   <Route path="admin/analytics" element={<AdminPanel />} />
                   <Route path="admin/users" element={<AdminPanel />} />
                   <Route path="admin/dashboard" element={<DashboardHub />} />
-                  <Route path="admin/analytics" element={<UnifiedAnalyticsDashboard currentUser={null} />} />
-                  <Route path="admin/enterprise" element={<UnifiedEnterpriseDashboard currentUser={null} />} />
+                  <Route path="admin/phase5" element={<Phase5Dashboard currentUser={null} />} />
+                  <Route path="admin/phase6" element={<Phase6Dashboard currentUser={null} />} />
                   <Route path={APP_ROUTES.FAVORITES} element={<FavoritesPage />} />
                   <Route path={APP_ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
                   <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
