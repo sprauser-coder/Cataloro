@@ -19,7 +19,10 @@ import {
   RefreshCw,
   Plus,
   Settings,
-  Info
+  Info,
+  Check,
+  Square,
+  CheckSquare
 } from 'lucide-react';
 
 const MediaBrowserDashboard = ({ className = '' }) => {
