@@ -3367,7 +3367,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
           title="Browse Page Ad's"
           description="Configure advertisements displayed on the browse listings page"
           icon={Package}
-          adConfig={siteConfig.adsManager?.browse}
+          adConfig={siteConfig.adsManager?.browse || { active: false, image: null, description: '', runtime: '1 month' }}
           handleConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
           showToast={showToast}
@@ -3380,7 +3380,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
           title="Favorite Ad's"
           description="Configure advertisements displayed on the favorites page"
           icon={Heart}
-          adConfig={siteConfig.adsManager?.favorite}
+          adConfig={siteConfig.adsManager?.favorite || { active: false, image: null, description: '', runtime: '1 month' }}
           handleConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
           showToast={showToast}
@@ -3393,7 +3393,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
           title="Messenger Ad's"
           description="Configure advertisements displayed in the messaging interface"
           icon={MessageCircle}
-          adConfig={siteConfig.adsManager?.messenger}
+          adConfig={siteConfig.adsManager?.messenger || { active: false, image: null, description: '', runtime: '1 month' }}
           handleConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
           showToast={showToast}
@@ -3406,7 +3406,7 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
           title="Footer Ad's"
           description="Configure advertisements displayed in the page footer"
           icon={Layout}
-          adConfig={siteConfig.adsManager?.footer}
+          adConfig={siteConfig.adsManager?.footer || { active: false, image: null, description: '', runtime: '1 month' }}
           handleConfigChange={handleAdConfigChange}
           handleImageUpload={handleImageUpload}
           showToast={showToast}
