@@ -112,6 +112,7 @@ import DocumentationDashboard from '../../components/admin/DocumentationDashboar
 import MediaBrowserDashboard from '../../components/admin/MediaBrowserDashboard';
 import MediaSelector from '../../components/admin/MediaSelector';
 import EditSideMenuDashboard from '../../components/admin/EditSideMenuDashboard';
+import ExportManagerDashboard from '../../components/admin/ExportManagerDashboard';
 
 // System Notifications List Component
 function SystemNotificationsList() {
