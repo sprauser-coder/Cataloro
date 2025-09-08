@@ -150,23 +150,38 @@ const MediaBrowserDashboard = ({ className = '' }) => {
   };
 
   const deleteFile = async (fileId) => {
+    if (!confirm('Are you sure you want to delete this file? This action cannot be undone.')) {
+      return;
+    }
+    
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
       
-      const response = await fetch(`${backendUrl}/api/admin/media/${fileId}`, {
+      // Use the correct API endpoint for deleting files
+      const response = await fetch(`${backendUrl}/api/admin/media/files/${fileId}`, {
         method: 'DELETE'
       });
       
       if (response.ok) {
-        setMediaFiles(prev => prev.filter(file => file.id !== fileId));
+        const result = await response.json();
+        if (result.success) {
+          // Remove from local state
+          setMediaFiles(prev => prev.filter(file => file.id !== fileId));
+          console.log('✅ File deleted successfully');
+          
+          // Optionally refresh the entire list to ensure sync
+          setTimeout(() => fetchMediaFiles(), 500);
+        } else {
+          console.error('Delete failed:', result.message);
+          alert('Failed to delete file: ' + (result.message || 'Unknown error'));
+        }
       } else {
-        // Simulate successful deletion for demo
-        setMediaFiles(prev => prev.filter(file => file.id !== fileId));
+        console.error('Delete request failed:', response.status);
+        alert('Failed to delete file. Please try again.');
       }
     } catch (error) {
-      console.error('Delete failed:', error);
-      // Still remove from UI for demo
-      setMediaFiles(prev => prev.filter(file => file.id !== fileId));
+      console.error('Failed to delete file:', error);
+      alert('Failed to delete file: ' + error.message);
     }
   };
 
