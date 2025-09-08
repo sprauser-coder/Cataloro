@@ -877,12 +877,28 @@ function BasketCard({ basket, totals, onEdit, onDelete, onUnassignFromBasket, on
           </div>
           
           <div className="flex items-center space-x-2">
+            {/* Enhanced Export PDF Button with Loading State */}
             <button
               onClick={onExportPDF}
-              className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-              title="Export basket to PDF"
+              disabled={isExporting}
+              className={`relative px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center space-x-2 ${
+                isExporting
+                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 cursor-wait'
+                  : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+              }`}
+              title={isExporting ? "Generating PDF..." : "Export basket to PDF"}
             >
-              <FileText className="w-4 h-4" />
+              {isExporting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent animate-spin rounded-full"></div>
+                  <span>Exporting...</span>
+                </>
+              ) : (
+                <>
+                  <FileText className="w-4 h-4" />
+                  <span>Export PDF</span>
+                </>
+              )}
             </button>
             <button
               onClick={onEdit}
