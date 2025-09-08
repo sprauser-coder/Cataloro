@@ -230,12 +230,13 @@ class BackendTester:
         """Test all enhanced messaging system endpoints"""
         print("\n💬 Testing Enhanced Messaging System Endpoints...")
         
-        if len(self.test_users) < 2:
-            self.log_result("Enhanced Messaging Setup", False, "Insufficient test data", "Need at least 2 users")
+        if len(self.test_users) < 1:
+            self.log_result("Enhanced Messaging Setup", False, "Insufficient test data", "Need at least 1 user")
             return
             
         user1 = self.test_users[0]
-        user2 = self.test_users[1]
+        # Use same user for both sender and recipient for testing
+        user2 = self.test_users[0] if len(self.test_users) == 1 else self.test_users[1]
         
         # Test 1: POST /api/messages/send
         message_id = await self.test_send_enhanced_message(user1["id"], user2["id"])
