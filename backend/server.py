@@ -984,8 +984,9 @@ async def browse_listings(
     type: str = "all",  # Filter by seller type: "all", "Private", "Business"
     price_from: int = 0,  # Minimum price filter
     price_to: int = 999999,  # Maximum price filter
+    bid_status: str = "all",  # New filter: "all", "highest_bidder", "not_bid_yet"
     page: int = 1,  # Page number for pagination
-    limit: int = 100  # Items per page - increased from 20 to show more listings
+    limit: int = 40  # Items per page - changed from 100 to 40 for better performance
 ):
     """Browse available listings with seller information, filters, and pagination"""
     try:
