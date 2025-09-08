@@ -205,7 +205,8 @@ function EditSideMenuDashboard() {
 
   const resetToDefault = () => {
     if (window.confirm('Are you sure you want to reset the menu to default configuration? This will undo all customizations.')) {
-      setMenuItems(defaultMenuItems);
+      const realMenuItems = generateRealMenuItems(permissions);
+      setMenuItems(realMenuItems);
       setHasChanges(true);
       showToast('Menu reset to default configuration', 'info');
     }
