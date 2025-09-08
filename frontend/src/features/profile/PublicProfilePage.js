@@ -137,9 +137,9 @@ function PublicProfilePage() {
       <div className="max-w-6xl mx-auto p-6">
         <div className="text-center py-12">
           <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Profile Not Found</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Profile Not Available</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {error || 'This profile does not exist or is private.'}
+            {error || 'This profile is currently unavailable or private.'}
           </p>
           <button
             onClick={() => window.history.back()}
