@@ -2414,8 +2414,10 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
   const [formData, setFormData] = useState(settings);
   const [logoLightFile, setLogoLightFile] = useState(null);
   const [logoDarkFile, setLogoDarkFile] = useState(null);
+  const [pdfLogoFile, setPdfLogoFile] = useState(null);
   const [logoLightPreview, setLogoLightPreview] = useState('');
   const [logoDarkPreview, setLogoDarkPreview] = useState('');
+  const [pdfLogoPreview, setPdfLogoPreview] = useState('');
   const [showMediaSelector, setShowMediaSelector] = useState(false);
   const [mediaSelectorType, setMediaSelectorType] = useState('light'); // 'light' or 'dark'
 
