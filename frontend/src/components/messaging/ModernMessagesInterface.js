@@ -101,11 +101,7 @@ class ModernMessageService {
     return response.json();
   }
 
-  async searchUsers(query) {
-    const response = await fetch(`${this.baseURL}/api/users/search?q=${encodeURIComponent(query)}`);
-    if (!response.ok) throw new Error('Failed to search users');
-    return response.json();
-  }
+  // Note: User search method removed - conversations only start through sales
 }
 
 function ModernMessagesInterface() {
