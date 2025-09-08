@@ -367,6 +367,75 @@ function BuyManagementPage() {
     return { valuePaid, ptG, pdG, rhG };
   };
 
+  // PDF Export function for baskets
+  const handleExportBasketsPDF = async (basketsToExport) => {
+    try {
+      if (!basketsToExport || basketsToExport.length === 0) {
+        showToast('No baskets available for export', 'error');
+        return;
+      }
+
+      showToast('Generating PDF export...', 'info');
+      
+      // Prepare data for all baskets
+      const exportData = {
+        items: []
+      };
+
+      basketsToExport.forEach(basket => {
+        if (basket.items && basket.items.length > 0) {
+          basket.items.forEach(item => {
+            const totals = calculateTotals([item]);
+            exportData.items.push({
+              name: `${item.product_name || item.name || 'Unknown Item'} (${basket.name})`,
+              price: totals.valuePaid || 0,
+              pt_g: totals.ptG || 0,
+              pd_g: totals.pdG || 0,
+              rh_g: totals.rhG || 0
+            });
+          });
+        }
+      });
+
+      if (exportData.items.length === 0) {
+        showToast('No items found in baskets to export', 'error');
+        return;
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/export/basket-pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(exportData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Convert base64 to blob and download
+        const pdfBlob = new Blob([
+          Uint8Array.from(atob(result.pdf_data), c => c.charCodeAt(0))
+        ], { type: 'application/pdf' });
+        
+        const url = window.URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = result.filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        showToast(`✅ PDF exported successfully! ${result.items_count} items, Total: €${result.total_value.toFixed(2)}`, 'success');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to generate PDF');
+      }
+    } catch (error) {
+      console.error('PDF export error:', error);
+      showToast(`❌ Failed to export PDF: ${error.message}`, 'error');
+    }
+  };
+
   if (!permissions.ui.showBuyingFeatures && user?.user_role !== 'Admin' && user?.user_role !== 'Admin-Manager') {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
