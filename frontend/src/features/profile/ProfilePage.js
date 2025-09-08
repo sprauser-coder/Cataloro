@@ -379,6 +379,19 @@ function ProfilePage() {
 
   const handleSaveProfile = async () => {
     try {
+      // Check username availability if username was changed
+      if (profileData.username !== user?.username) {
+        if (usernameStatus.isChecking) {
+          showToast('Please wait for username verification to complete', 'warning');
+          return;
+        }
+        
+        if (!usernameStatus.isAvailable) {
+          showToast('Please choose an available username', 'error');
+          return;
+        }
+      }
+
       // Check if account type changed
       const accountTypeChanged = user?.is_business !== profileData.is_business;
       
@@ -389,19 +402,15 @@ function ProfilePage() {
       const updatedUser = { ...user, ...profileData };
       localStorage.setItem('cataloro_user', JSON.stringify(updatedUser));
       
-      // Also update the auth context to reflect changes immediately
-      // This ensures the user object is updated across the entire app
-      if (typeof updateUser === 'function') {
-        updateUser(updatedUser);
-      }
+      // Update auth context
+      updateUser(updatedUser);
       
       setIsEditing(false);
-      showToast('Profile updated successfully!', 'success');
       
-      // If account type changed, refresh marketplace listings to update badges
       if (accountTypeChanged) {
-        refreshListings();
-        showToast(`Account switched to ${profileData.is_business ? 'Business' : 'Private'}`, 'success');
+        showToast('Profile updated! Account type change may take a few minutes to take effect.', 'success');
+      } else {
+        showToast('Profile updated successfully!', 'success');
       }
     } catch (error) {
       showToast('Failed to update profile', 'error');
