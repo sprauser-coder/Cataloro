@@ -26,7 +26,8 @@ import {
   BookOpen,
   Eye,
   Settings,
-  Archive
+  Archive,
+  Download
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
