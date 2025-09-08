@@ -64,11 +64,13 @@ const MediaSelector = ({
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
       
+      let uploadCount = 0;
+      
       for (const file of files) {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('category', 'uploads');
-        formData.append('description', file.name);
+        formData.append('description', `Uploaded via media selector: ${file.name}`);
 
         const response = await fetch(`${backendUrl}/api/admin/media/upload`, {
           method: 'POST',
@@ -78,16 +80,22 @@ const MediaSelector = ({
         if (response.ok) {
           const data = await response.json();
           if (data.success) {
-            // Add the new file to the list
-            setMediaFiles(prev => [data.file, ...prev]);
+            uploadCount++;
+            console.log(`✅ MediaSelector uploaded: ${data.file.filename}`);
           }
+        } else {
+          console.error(`Failed to upload: ${file.name}`, response.status);
         }
       }
       
-      // Refresh the media list
-      await fetchMediaFiles();
+      // Refresh the media list to show new uploads
+      if (uploadCount > 0) {
+        await fetchMediaFiles();
+        console.log(`✅ MediaSelector: Successfully uploaded ${uploadCount} of ${files.length} files`);
+      }
+      
     } catch (error) {
-      console.error('Upload failed:', error);
+      console.error('MediaSelector: Upload failed:', error);
     } finally {
       setUploading(false);
     }
