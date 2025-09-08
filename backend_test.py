@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for New User Rating System and Enhanced Messaging Endpoints
-Testing Agent: Focused testing of newly implemented features
+Comprehensive Backend Testing for Individual Basket PDF Export Functionality
+Testing Agent: Focused testing of newly implemented basket export features
 """
 
 import asyncio
