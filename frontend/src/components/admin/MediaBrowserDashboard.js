@@ -475,6 +475,16 @@ const MediaBrowserDashboard = ({ className = '' }) => {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
               {filteredFiles.map((file) => (
                 <div key={file.id} className="group relative bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden">
+                  {/* Selection Checkbox */}
+                  <div className="absolute top-2 left-2 z-10">
+                    <input
+                      type="checkbox"
+                      checked={selectedFiles.includes(file.id)}
+                      onChange={() => toggleFileSelection(file.id)}
+                      className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 shadow-lg"
+                    />
+                  </div>
+                  
                   <div className="aspect-square">
                     {file.type.startsWith('image/') ? (
                       <img
