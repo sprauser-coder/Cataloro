@@ -111,7 +111,7 @@ function ProfilePage() {
     totalFavorites: 0,
     profileViews: 0,
     joinDate: '',
-    lastActive: ''
+    lastActive: 'Loading...'
   });
 
   // Popular European cities for suggestions
