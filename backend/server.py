@@ -969,10 +969,10 @@ async def browse_listings(
     page: int = 1,  # Page number for pagination
     limit: int = 20  # Items per page
 ):
-    """Browse available listings with seller information, filters, and pagination"""
+    """Browse available listings with seller information, filters, and pagination - OPTIMIZED VERSION"""
     try:
         # Create cache key based on parameters
-        cache_key = f"{type}_{price_from}_{price_to}_{page}_{limit}"
+        cache_key = f"browse_v2_{type}_{price_from}_{price_to}_{page}_{limit}"
         
         # Try to get cached results first
         cached_listings = await cache_service.get_cached_listings(cache_key)
@@ -980,148 +980,228 @@ async def browse_listings(
             logger.info(f"📋 Returning cached listings for key: {cache_key}")
             return cached_listings
         
-        # Build query for active listings
-        query = {"status": "active"}
-        
-        # Apply price range filter
-        if price_from > 0 or price_to < 999999:
-            query["price"] = {}
-            if price_from > 0:
-                query["price"]["$gte"] = price_from
-            if price_to < 999999:
-                query["price"]["$lte"] = price_to
-        
         # Calculate pagination
         skip = (page - 1) * limit
         
-        # Get filtered listings with pagination - use optimized query with indexes
-        listings = await db.listings.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(length=None)
-        
-        # Enrich listings with seller information
-        enriched_listings = []
-        for listing in listings:
-            # Ensure consistent ID format (use UUID 'id' field, not ObjectId '_id')
-            if 'id' not in listing and '_id' in listing:
-                listing['id'] = str(listing['_id'])
-            elif 'id' in listing:
-                listing['id'] = listing['id']  # Keep existing UUID
-            
-            # Remove MongoDB ObjectId to avoid confusion
-            listing.pop('_id', None)
-            
-            # Fetch seller information from users collection
-            seller_id = listing.get('seller_id')
-            if seller_id:
-                try:
-                    # Try to find user by id field first, then by _id (same as profile endpoint)
-                    seller_profile = await db.users.find_one({"id": seller_id})
-                    if not seller_profile:
-                        # Try with _id in case it's stored differently
-                        try:
-                            from bson import ObjectId
-                            seller_profile = await db.users.find_one({"_id": ObjectId(seller_id)})
-                        except:
-                            pass
-                    
-                    if seller_profile:
-                        print(f"DEBUG: Seller profile data: {seller_profile}")
-                        # Enrich listing with seller information
-                        listing['seller'] = {
-                            "name": seller_profile.get('username') or seller_profile.get('name') or seller_profile.get('email', 'Unknown'),
-                            "username": seller_profile.get('username') or seller_profile.get('name') or 'Unknown',
-                            "email": seller_profile.get('email', ''),
-                            "is_business": seller_profile.get('is_business', False),
-                            "business_name": seller_profile.get('company_name', ''),
-                            "verified": seller_profile.get('verified', False),
-                            "location": listing.get('address', {}).get('city', '') + 
-                                      (', ' + listing.get('address', {}).get('country', '') if listing.get('address', {}).get('country') else '') or
-                                      seller_profile.get('city', '') + 
-                                      (', ' + seller_profile.get('country', '') if seller_profile.get('country') else '') or
-                                      'Location not specified'
+        # Build optimized aggregation pipeline to eliminate N+1 queries
+        pipeline = [
+            # Stage 1: Match active listings with price filter
+            {
+                "$match": {
+                    "status": "active",
+                    **({
+                        "price": {
+                            **({} if price_from <= 0 else {"$gte": price_from}),
+                            **({} if price_to >= 999999 else {"$lte": price_to})
                         }
-                    else:
-                        # Fallback seller info if profile not found
-                        listing['seller'] = {
-                            "name": "Unknown User",
-                            "username": "Unknown",
-                            "email": "",
-                            "is_business": False,
-                            "business_name": "",
-                            "verified": False,
-                            "location": "Location not specified"
-                        }
-                except Exception as seller_error:
-                    print(f"Error fetching seller info for {seller_id}: {seller_error}")
-                    # Fallback seller info
-                    listing['seller'] = {
-                        "name": "Unknown User",
-                        "username": "Unknown", 
-                        "email": "",
-                        "is_business": False,
-                        "business_name": "",
-                        "verified": False,
-                        "location": "Location not specified"
-                    }
-            else:
-                # No seller_id found
-                listing['seller'] = {
-                    "name": "Unknown User",
-                    "username": "Unknown",
-                    "email": "",
-                    "is_business": False,
-                    "business_name": "",
-                    "verified": False,
-                    "location": "Location not specified"
+                    } if price_from > 0 or price_to < 999999 else {})
                 }
+            },
             
-            enriched_listings.append(listing)
-        
-        # Enrich with tender/bid information for each listing
-        for listing in enriched_listings:
-            listing_id = listing.get('id')
-            if listing_id:
-                try:
-                    # Get all tenders for this listing
-                    tenders = await db.tenders.find({"listing_id": listing_id}).to_list(length=None)
-                    
-                    if tenders:
-                        # Sort by offer amount to find highest bid
-                        tenders.sort(key=lambda x: x.get('offer_amount', 0), reverse=True)
-                        highest_tender = tenders[0]
-                        
-                        listing['bid_info'] = {
-                            "has_bids": True,
-                            "total_bids": len(tenders),
-                            "highest_bid": highest_tender.get('offer_amount', 0),
-                            "highest_bidder_id": highest_tender.get('buyer_id', '')
+            # Stage 2: Sort by creation date
+            {"$sort": {"created_at": -1}},
+            
+            # Stage 3: Apply pagination
+            {"$skip": skip},
+            {"$limit": limit},
+            
+            # Stage 4: Lookup seller information (SINGLE QUERY - NO N+1)
+            {
+                "$lookup": {
+                    "from": "users",
+                    "let": {"seller_id": "$seller_id"},
+                    "pipeline": [
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$or": [
+                                        {"$eq": ["$id", "$$seller_id"]},
+                                        {"$eq": [{"$toString": "$_id"}, "$$seller_id"]}
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$project": {
+                                "username": 1,
+                                "name": 1,
+                                "email": 1,
+                                "is_business": 1,
+                                "company_name": 1,
+                                "verified": 1,
+                                "city": 1,
+                                "country": 1
+                            }
                         }
-                    else:
-                        listing['bid_info'] = {
-                            "has_bids": False,
-                            "total_bids": 0,
-                            "highest_bid": listing.get('price', 0),  # Use starting price
-                            "highest_bidder_id": ''
-                        }
-                except Exception as bid_error:
-                    print(f"Error fetching bid info for listing {listing_id}: {bid_error}")
-                    # Fallback bid info
-                    listing['bid_info'] = {
-                        "has_bids": False,
-                        "total_bids": 0,
-                        "highest_bid": listing.get('price', 0),
-                        "highest_bidder_id": ''
-                    }
-            else:
-                listing['bid_info'] = {
-                    "has_bids": False,
-                    "total_bids": 0,
-                    "highest_bid": listing.get('price', 0),
-                    "highest_bidder_id": ''
+                    ],
+                    "as": "seller_data"
                 }
+            },
+            
+            # Stage 5: Lookup tender/bid information (SINGLE QUERY - NO N+1)
+            {
+                "$lookup": {
+                    "from": "tenders",
+                    "localField": "id",
+                    "foreignField": "listing_id",
+                    "as": "tenders"
+                }
+            },
+            
+            # Stage 6: Transform data structure
+            {
+                "$addFields": {
+                    # Format listing ID consistently
+                    "id": {
+                        "$cond": {
+                            "if": {"$ne": ["$id", None]},
+                            "then": "$id",
+                            "else": {"$toString": "$_id"}
+                        }
+                    },
+                    
+                    # Process seller information
+                    "seller": {
+                        "$cond": {
+                            "if": {"$gt": [{"$size": "$seller_data"}, 0]},
+                            "then": {
+                                "$let": {
+                                    "vars": {"seller": {"$arrayElemAt": ["$seller_data", 0]}},
+                                    "in": {
+                                        "name": {
+                                            "$ifNull": [
+                                                "$$seller.username",
+                                                {"$ifNull": ["$$seller.name", {"$ifNull": ["$$seller.email", "Unknown"]}]}
+                                            ]
+                                        },
+                                        "username": {
+                                            "$ifNull": [
+                                                "$$seller.username",
+                                                {"$ifNull": ["$$seller.name", "Unknown"]}
+                                            ]
+                                        },
+                                        "email": {"$ifNull": ["$$seller.email", ""]},
+                                        "is_business": {"$ifNull": ["$$seller.is_business", False]},
+                                        "business_name": {"$ifNull": ["$$seller.company_name", ""]},
+                                        "verified": {"$ifNull": ["$$seller.verified", False]},
+                                        "location": {
+                                            "$cond": {
+                                                "if": {"$and": [{"$ne": ["$address.city", None]}, {"$ne": ["$address.city", ""]}]},
+                                                "then": {
+                                                    "$concat": [
+                                                        "$address.city",
+                                                        {
+                                                            "$cond": {
+                                                                "if": {"$and": [{"$ne": ["$address.country", None]}, {"$ne": ["$address.country", ""]}]},
+                                                                "then": {"$concat": [", ", "$address.country"]},
+                                                                "else": ""
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "else": {
+                                                    "$cond": {
+                                                        "if": {"$and": [{"$ne": ["$$seller.city", None]}, {"$ne": ["$$seller.city", ""]}]},
+                                                        "then": {
+                                                            "$concat": [
+                                                                "$$seller.city",
+                                                                {
+                                                                    "$cond": {
+                                                                        "if": {"$and": [{"$ne": ["$$seller.country", None]}, {"$ne": ["$$seller.country", ""]}]},
+                                                                        "then": {"$concat": [", ", "$$seller.country"]},
+                                                                        "else": ""
+                                                                    }
+                                                                }
+                                                            ]
+                                                        },
+                                                        "else": "Location not specified"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "else": {
+                                "name": "Unknown User",
+                                "username": "Unknown",
+                                "email": "",
+                                "is_business": False,
+                                "business_name": "",
+                                "verified": False,
+                                "location": "Location not specified"
+                            }
+                        }
+                    },
+                    
+                    # Process bid information
+                    "bid_info": {
+                        "$cond": {
+                            "if": {"$gt": [{"$size": "$tenders"}, 0]},
+                            "then": {
+                                "$let": {
+                                    "vars": {
+                                        "sorted_tenders": {
+                                            "$sortArray": {
+                                                "input": "$tenders",
+                                                "sortBy": {"offer_amount": -1}
+                                            }
+                                        }
+                                    },
+                                    "in": {
+                                        "has_bids": True,
+                                        "total_bids": {"$size": "$tenders"},
+                                        "highest_bid": {"$arrayElemAt": ["$$sorted_tenders.offer_amount", 0]},
+                                        "highest_bidder_id": {"$arrayElemAt": ["$$sorted_tenders.buyer_id", 0]}
+                                    }
+                                }
+                            },
+                            "else": {
+                                "has_bids": False,
+                                "total_bids": 0,
+                                "highest_bid": "$price",
+                                "highest_bidder_id": ""
+                            }
+                        }
+                    },
+                    
+                    # Process time information
+                    "time_info": {
+                        "$cond": {
+                            "if": {"$eq": ["$has_time_limit", True]},
+                            "then": {
+                                # This will be processed in post-aggregation for complex date logic
+                                "has_time_limit": True,
+                                "expires_at": "$expires_at"
+                            },
+                            "else": {
+                                "has_time_limit": False,
+                                "is_expired": False,
+                                "time_remaining_seconds": None,
+                                "expires_at": None,
+                                "status_text": None
+                            }
+                        }
+                    }
+                }
+            },
+            
+            # Stage 7: Remove temporary fields and MongoDB ObjectId
+            {
+                "$project": {
+                    "_id": 0,
+                    "seller_data": 0,
+                    "tenders": 0
+                }
+            }
+        ]
         
-        # Add time limit information and check for expired listings
+        # Execute optimized aggregation query
+        enriched_listings = await db.listings.aggregate(pipeline).to_list(length=None)
+        
+        # Post-process time information (complex date logic requires Python)
         for listing in enriched_listings:
-            if listing.get('has_time_limit', False):
+            if listing.get('time_info', {}).get('has_time_limit', False):
                 try:
                     expires_at = datetime.fromisoformat(listing['expires_at'])
                     current_time = datetime.utcnow()
@@ -1142,7 +1222,6 @@ async def browse_listings(
                         
                         # Auto-expire if not already marked
                         if not listing.get('is_expired', False):
-                            # Call expiration check endpoint internally
                             await check_listing_expiration(listing['id'])
                             listing['is_expired'] = True
                     else:
@@ -1155,8 +1234,7 @@ async def browse_listings(
                             "status_text": format_time_remaining(total_seconds)
                         }
                 except Exception as time_error:
-                    print(f"Error processing time info for listing {listing.get('id')}: {time_error}")
-                    # Fallback time info
+                    logger.warning(f"Error processing time info for listing {listing.get('id')}: {time_error}")
                     listing['time_info'] = {
                         "has_time_limit": True,
                         "is_expired": False,
@@ -1164,29 +1242,22 @@ async def browse_listings(
                         "expires_at": listing.get('expires_at', ''),
                         "status_text": "Time limit error"
                     }
-            else:
-                # No time limit
-                listing['time_info'] = {
-                    "has_time_limit": False,
-                    "is_expired": False,
-                    "time_remaining_seconds": None,
-                    "expires_at": None,
-                    "status_text": None
-                }
         
-        # Apply seller type filter after enrichment (since we need seller info)
+        # Apply seller type filter after enrichment (if needed)
         if type != "all":
             if type == "Private":
                 enriched_listings = [listing for listing in enriched_listings if not listing.get('seller', {}).get('is_business', False)]
             elif type == "Business":
                 enriched_listings = [listing for listing in enriched_listings if listing.get('seller', {}).get('is_business', False)]
         
-        # Cache the results for better performance
+        # Cache the results for better performance (30 minutes TTL)
         await cache_service.cache_listings(cache_key, enriched_listings)
         
-        logger.info(f"📋 Cached {len(enriched_listings)} listings for key: {cache_key}")
+        logger.info(f"📋 Optimized query cached {len(enriched_listings)} listings for key: {cache_key}")
         return enriched_listings
+        
     except Exception as e:
+        logger.error(f"Error in browse_listings: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to browse listings: {str(e)}")
 
 @app.get("/api/marketplace/search")
