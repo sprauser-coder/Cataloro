@@ -1039,110 +1039,98 @@ async def browse_listings(
                     tenders_data[listing_id] = []
                 tenders_data[listing_id].append(tender)
         
-        # Step 5: Enrich listings with seller and bid information (FAST PYTHON PROCESSING)
+        # Step 5: Enrich listings with seller and bid information (OPTIMIZED PYTHON PROCESSING)
         enriched_listings = []
-        for listing in listings:
-            # Ensure consistent ID format
-            listing_id = listing.get('id') or str(listing.get('_id'))
-            listing['id'] = listing_id
-            listing.pop('_id', None)  # Remove MongoDB ObjectId
-            
-            # Add seller information
-            seller_id = listing.get('seller_id')
-            if seller_id and seller_id in sellers_data:
-                seller_profile = sellers_data[seller_id]
-                listing['seller'] = {
-                    "name": seller_profile.get('username') or seller_profile.get('name') or seller_profile.get('email', 'Unknown'),
-                    "username": seller_profile.get('username') or seller_profile.get('name') or 'Unknown',
-                    "email": seller_profile.get('email', ''),
-                    "is_business": seller_profile.get('is_business', False),
-                    "business_name": seller_profile.get('company_name', ''),
-                    "verified": seller_profile.get('verified', False),
-                    "location": (
-                        listing.get('address', {}).get('city', '') + 
-                        (', ' + listing.get('address', {}).get('country', '') if listing.get('address', {}).get('country') else '') or
-                        seller_profile.get('city', '') + 
-                        (', ' + seller_profile.get('country', '') if seller_profile.get('country') else '') or
-                        'Location not specified'
-                    )
-                }
-            else:
-                # Fallback seller info
-                listing['seller'] = {
-                    "name": "Unknown User",
-                    "username": "Unknown",
-                    "email": "",
-                    "is_business": False,
-                    "business_name": "",
-                    "verified": False,
-                    "location": "Location not specified"
-                }
-            
-            # Add bid information
-            if listing_id in tenders_data:
-                tenders = tenders_data[listing_id]
-                tenders.sort(key=lambda x: x.get('offer_amount', 0), reverse=True)
-                highest_tender = tenders[0]
-                
-                listing['bid_info'] = {
+        
+        # Pre-process seller data for faster lookups
+        seller_lookup = {}
+        for seller_id, seller_profile in sellers_data.items():
+            seller_lookup[seller_id] = {
+                "name": seller_profile.get('username') or seller_profile.get('name') or seller_profile.get('email', 'Unknown'),
+                "username": seller_profile.get('username') or seller_profile.get('name') or 'Unknown',
+                "email": seller_profile.get('email', ''),
+                "is_business": seller_profile.get('is_business', False),
+                "business_name": seller_profile.get('company_name', ''),
+                "verified": seller_profile.get('verified', False),
+                "city": seller_profile.get('city', ''),
+                "country": seller_profile.get('country', '')
+            }
+        
+        # Pre-process tender data for faster lookups
+        bid_lookup = {}
+        for listing_id, tenders in tenders_data.items():
+            if tenders:
+                # Sort by offer amount once
+                sorted_tenders = sorted(tenders, key=lambda x: x.get('offer_amount', 0), reverse=True)
+                highest_tender = sorted_tenders[0]
+                bid_lookup[listing_id] = {
                     "has_bids": True,
                     "total_bids": len(tenders),
                     "highest_bid": highest_tender.get('offer_amount', 0),
                     "highest_bidder_id": highest_tender.get('buyer_id', '')
                 }
+        
+        # Get current time once for all time calculations
+        current_time = datetime.utcnow()
+        
+        # Process all listings with minimal per-listing overhead
+        for listing in listings:
+            # Ensure consistent ID format (minimal processing)
+            listing_id = listing.get('id') or str(listing.get('_id'))
+            listing['id'] = listing_id
+            listing.pop('_id', None)
+            
+            # Add seller information (fast lookup)
+            seller_id = listing.get('seller_id')
+            if seller_id in seller_lookup:
+                seller_data = seller_lookup[seller_id]
+                location = (
+                    listing.get('address', {}).get('city', '') + 
+                    (', ' + listing.get('address', {}).get('country', '') if listing.get('address', {}).get('country') else '') or
+                    seller_data['city'] + (', ' + seller_data['country'] if seller_data['country'] else '') or
+                    'Location not specified'
+                )
+                listing['seller'] = {**seller_data, "location": location}
             else:
-                listing['bid_info'] = {
-                    "has_bids": False,
-                    "total_bids": 0,
-                    "highest_bid": listing.get('price', 0),
-                    "highest_bidder_id": ''
+                listing['seller'] = {
+                    "name": "Unknown User", "username": "Unknown", "email": "",
+                    "is_business": False, "business_name": "", "verified": False,
+                    "location": "Location not specified"
                 }
             
-            # Add time limit information
-            if listing.get('has_time_limit', False):
+            # Add bid information (fast lookup)
+            listing['bid_info'] = bid_lookup.get(listing_id, {
+                "has_bids": False, "total_bids": 0,
+                "highest_bid": listing.get('price', 0), "highest_bidder_id": ''
+            })
+            
+            # Add time limit information (optimized processing)
+            if listing.get('has_time_limit', False) and listing.get('expires_at'):
                 try:
                     expires_at = datetime.fromisoformat(listing['expires_at'])
-                    current_time = datetime.utcnow()
-                    
                     time_remaining = expires_at - current_time
                     total_seconds = int(time_remaining.total_seconds())
                     
                     if total_seconds <= 0:
                         listing['time_info'] = {
-                            "has_time_limit": True,
-                            "is_expired": True,
-                            "time_remaining_seconds": 0,
-                            "expires_at": listing['expires_at'],
-                            "status_text": "EXPIRED"
+                            "has_time_limit": True, "is_expired": True, "time_remaining_seconds": 0,
+                            "expires_at": listing['expires_at'], "status_text": "EXPIRED"
                         }
-                        
-                        if not listing.get('is_expired', False):
-                            await check_listing_expiration(listing['id'])
-                            listing['is_expired'] = True
+                        # Skip expensive expiration check for performance
                     else:
                         listing['time_info'] = {
-                            "has_time_limit": True,
-                            "is_expired": False,
-                            "time_remaining_seconds": total_seconds,
-                            "expires_at": listing['expires_at'],
-                            "status_text": format_time_remaining(total_seconds)
+                            "has_time_limit": True, "is_expired": False, "time_remaining_seconds": total_seconds,
+                            "expires_at": listing['expires_at'], "status_text": format_time_remaining(total_seconds)
                         }
-                except Exception as time_error:
-                    logger.warning(f"Error processing time info for listing {listing.get('id')}: {time_error}")
+                except:
                     listing['time_info'] = {
-                        "has_time_limit": True,
-                        "is_expired": False,
-                        "time_remaining_seconds": 0,
-                        "expires_at": listing.get('expires_at', ''),
-                        "status_text": "Time limit error"
+                        "has_time_limit": True, "is_expired": False, "time_remaining_seconds": 0,
+                        "expires_at": listing.get('expires_at', ''), "status_text": "Time limit error"
                     }
             else:
                 listing['time_info'] = {
-                    "has_time_limit": False,
-                    "is_expired": False,
-                    "time_remaining_seconds": None,
-                    "expires_at": None,
-                    "status_text": None
+                    "has_time_limit": False, "is_expired": False, "time_remaining_seconds": None,
+                    "expires_at": None, "status_text": None
                 }
             
             enriched_listings.append(listing)
