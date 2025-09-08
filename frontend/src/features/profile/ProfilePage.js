@@ -114,6 +114,43 @@ function ProfilePage() {
     lastActive: 'Loading...'
   });
 
+  useEffect(() => {
+    loadProfileData();
+  }, [user]);
+
+  const loadProfileData = async () => {
+    if (!user?.id) return;
+    
+    try {
+      // Load profile statistics from backend
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/profile/${user.id}/stats`);
+      if (response.ok) {
+        const stats = await response.json();
+        
+        setAccountStats({
+          totalListings: stats.statistics.total_listings || 0,
+          activeListings: stats.statistics.active_listings || 0,
+          totalDeals: stats.statistics.total_deals || 0,
+          completedDeals: stats.statistics.completed_deals || 0,
+          totalRevenue: stats.statistics.total_revenue || 0,
+          totalFavorites: stats.statistics.total_favorites || 0,
+          profileViews: 0, // This would need a separate tracking system
+          lastActive: stats.activity.last_active ? new Date(stats.activity.last_active).toLocaleDateString() : 'Unknown'
+        });
+
+        // Update seller rating from real data
+        if (stats.user_info && stats.ratings) {
+          setProfileData(prev => ({
+            ...prev,
+            seller_rating: stats.ratings.seller_rating || 0
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load profile statistics:', error);
+    }
+  };
+
   // Popular European cities for suggestions
   const popularCities = [
     // Germany
