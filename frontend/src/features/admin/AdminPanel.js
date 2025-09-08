@@ -243,6 +243,8 @@ function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState('');
+  const [showMediaSelector, setShowMediaSelector] = useState(false);
+  const [mediaSelectorType, setMediaSelectorType] = useState('light'); // 'light' or 'dark'
   
   const { allProducts, favorites, notifications } = useMarketplace();
   const { showToast } = useNotifications();
