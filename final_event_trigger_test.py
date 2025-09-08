@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://marketplace-central.preview.emergentagent.com/api"
+BACKEND_URL = "https://mega-dashboard.preview.emergentagent.com/api"
 
 class EventTriggerDisplayTester:
     def __init__(self):

@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://marketplace-central.preview.emergentagent.com/api"
+BASE_URL = "https://mega-dashboard.preview.emergentagent.com/api"
 
 class TestDataCreator:
     def __init__(self):

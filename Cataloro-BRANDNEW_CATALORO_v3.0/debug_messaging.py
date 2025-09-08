@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_messaging():
-    base_url = "https://marketplace-central.preview.emergentagent.com"
+    base_url = "https://mega-dashboard.preview.emergentagent.com"
     
     # Create a test user
     user_data = {

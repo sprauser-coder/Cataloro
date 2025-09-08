@@ -20,7 +20,7 @@ import psutil
 import gc
 
 # Backend URL from environment
-BACKEND_URL = "https://marketplace-central.preview.emergentagent.com/api"
+BACKEND_URL = "https://mega-dashboard.preview.emergentagent.com/api"
 
 class StressTestMetrics:
     def __init__(self):

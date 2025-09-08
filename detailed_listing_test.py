@@ -9,7 +9,7 @@ import json
 
 def test_listing_creation_detailed():
     """Test the exact scenario users are reporting"""
-    base_url = "https://marketplace-central.preview.emergentagent.com"
+    base_url = "https://mega-dashboard.preview.emergentagent.com"
     
     print("🔍 DETAILED LISTING CREATION ANALYSIS")
     print("=" * 50)

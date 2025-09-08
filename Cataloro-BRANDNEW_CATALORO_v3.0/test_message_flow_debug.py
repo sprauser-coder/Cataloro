@@ -7,7 +7,7 @@ import requests
 import json
 
 def test_complete_flow():
-    base_url = "https://marketplace-central.preview.emergentagent.com"
+    base_url = "https://mega-dashboard.preview.emergentagent.com"
     
     # Create two test users
     user1_data = {
