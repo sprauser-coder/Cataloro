@@ -573,11 +573,11 @@ function AdminPanel() {
           
           {activeTab === 'ads-manager' && (
             <div className="p-8 space-y-8">
-              {/* Consolidated Ads Manager - Enhanced with better organization */}
-              <ConsolidatedAdsManagerSection 
+              {/* Ads Manager - Original working version */}
+              <AdsManagerSection 
                 siteConfig={settings} 
                 handleConfigChange={(field, value) => {
-                  console.log('🔧 Config change in Consolidated Ads Manager:', field, value);
+                  console.log('🔧 Config change in Ads Manager:', field, value);
                   // Update the settings state
                   setSettings(prev => ({
                     ...prev,
