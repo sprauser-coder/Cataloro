@@ -991,7 +991,7 @@ async def browse_listings(
     """Browse available listings with seller information, filters, and pagination"""
     try:
         # Create cache key based on parameters
-        cache_key = f"{type}_{price_from}_{price_to}_{page}_{limit}"
+        cache_key = f"{type}_{price_from}_{price_to}_{bid_status}_{page}_{limit}"
         
         # Try to get cached results first
         cached_listings = await cache_service.get_cached_listings(cache_key)
