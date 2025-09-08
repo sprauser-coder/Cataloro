@@ -3165,11 +3165,10 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
   const [expandedAdType, setExpandedAdType] = React.useState(null);
   
   const adTypes = [
-    { key: 'browse', label: 'Browse Page Ad', icon: Globe, description: 'Displayed on the main browse/marketplace page' },
-    { key: 'product', label: 'Product Detail Ad', icon: Package, description: 'Shown on individual product pages' },
+    { key: 'browsePageAd', label: 'Browse Page Ad', icon: Globe, description: 'Displayed on the main browse/marketplace page' },
     { key: 'messengerAd', label: 'Messenger Ad', icon: MessageCircle, description: 'Integrated into the messaging interface' },
-    { key: 'profileAd', label: 'Profile Ad', icon: User, description: 'Displayed on user profile pages' },
-    { key: 'inventoryAd', label: 'Inventory Ad', icon: Database, description: 'Shown in user inventory/basket sections' }
+    { key: 'favoriteAd', label: 'Favorites Page Ad', icon: Heart, description: 'Shown on the favorites/wishlist page' },
+    { key: 'footerAd', label: 'Footer Ad', icon: Monitor, description: 'Displayed in the website footer' }
   ];
   
   const handleAdConfigChange = (adType, field, value) => {
