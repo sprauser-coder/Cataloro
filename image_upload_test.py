@@ -33,35 +33,57 @@ API_BASE = f"{BASE_URL}/api"
 
 class ImageUploadTester:
     def __init__(self):
+        self.session = None
         self.test_results = []
-        self.total_tests = 0
-        self.passed_tests = 0
-        self.failed_tests = 0
+        self.uploaded_files = []
         
-    def log_test(self, test_name, success, details="", error_msg=""):
-        """Log test results"""
-        self.total_tests += 1
-        if success:
-            self.passed_tests += 1
-            status = "✅ PASS"
-        else:
-            self.failed_tests += 1
-            status = "❌ FAIL"
+    async def setup_session(self):
+        """Setup HTTP session"""
+        connector = aiohttp.TCPConnector(ssl=False)
+        timeout = aiohttp.ClientTimeout(total=30)
+        self.session = aiohttp.ClientSession(connector=connector, timeout=timeout)
+        
+    async def cleanup_session(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
             
+    def log_result(self, test_name, success, details="", error=""):
+        """Log test result"""
         result = {
             "test": test_name,
-            "status": status,
+            "success": success,
             "details": details,
-            "error": error_msg,
+            "error": error,
             "timestamp": datetime.now().isoformat()
         }
         self.test_results.append(result)
-        print(f"{status}: {test_name}")
-        if details:
-            print(f"   Details: {details}")
-        if error_msg:
-            print(f"   Error: {error_msg}")
-        print()
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}: {details}")
+        if error:
+            print(f"   Error: {error}")
+            
+    def create_test_image(self, filename="test_image.jpg", size=(100, 100)):
+        """Create a test image file in memory"""
+        try:
+            from PIL import Image
+            
+            # Create a simple test image
+            img = Image.new('RGB', size, color='red')
+            
+            # Save to bytes buffer
+            img_buffer = io.BytesIO()
+            img.save(img_buffer, format='JPEG')
+            img_buffer.seek(0)
+            
+            return img_buffer, filename
+        except ImportError:
+            # Fallback: create a minimal JPEG-like file
+            # This is a minimal valid JPEG header
+            jpeg_header = b'\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t\x08\n\x0c\x14\r\x0c\x0b\x0b\x0c\x19\x12\x13\x0f\x14\x1d\x1a\x1f\x1e\x1d\x1a\x1c\x1c $.\' ",#\x1c\x1c(7),01444\x1f\'9=82<.342\xff\xc0\x00\x11\x08\x00d\x00d\x03\x01"\x00\x02\x11\x01\x03\x11\x01\xff\xc4\x00\x14\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\xff\xc4\x00\x14\x10\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xda\x00\x0c\x03\x01\x00\x02\x11\x03\x11\x00\x3f\x00\xaa\xff\xd9'
+            
+            img_buffer = io.BytesIO(jpeg_header)
+            return img_buffer, filename
 
     def create_test_image(self, width=800, height=600, format='PNG'):
         """Create a test image in memory for upload testing"""
