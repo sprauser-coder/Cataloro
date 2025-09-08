@@ -2507,23 +2507,90 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
 
   const handleSaveSettings = async () => {
     try {
+      let updatedFormData = { ...formData };
+      
+      // Upload PDF logo if a file was selected
+      if (pdfLogoFile) {
+        showToast('Uploading PDF logo...', 'info');
+        const formDataUpload = new FormData();
+        formDataUpload.append('image', pdfLogoFile);
+        formDataUpload.append('section', 'settings');
+        formDataUpload.append('field', 'pdf_logo');
+        
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload-image`, {
+          method: 'POST',
+          body: formDataUpload
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          updatedFormData.pdf_logo_url = `${process.env.REACT_APP_BACKEND_URL}${result.imageUrl}`;
+        } else {
+          throw new Error('Failed to upload PDF logo');
+        }
+      }
+      
+      // Upload other logos as before...
+      if (logoLightFile) {
+        showToast('Uploading light mode logo...', 'info');
+        const formDataUpload = new FormData();
+        formDataUpload.append('image', logoLightFile);
+        formDataUpload.append('section', 'settings');
+        formDataUpload.append('field', 'logo_light');
+        
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload-image`, {
+          method: 'POST',
+          body: formDataUpload
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          updatedFormData.logo_light_url = `${process.env.REACT_APP_BACKEND_URL}${result.imageUrl}`;
+        }
+      }
+
+      if (logoDarkFile) {
+        showToast('Uploading dark mode logo...', 'info');
+        const formDataUpload = new FormData();
+        formDataUpload.append('image', logoDarkFile);
+        formDataUpload.append('section', 'settings');
+        formDataUpload.append('field', 'logo_dark');
+        
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload-image`, {
+          method: 'POST',
+          body: formDataUpload
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          updatedFormData.logo_dark_url = `${process.env.REACT_APP_BACKEND_URL}${result.imageUrl}`;
+        }
+      }
+      
       // Store settings in localStorage for immediate use
-      localStorage.setItem('cataloro_site_branding', JSON.stringify(formData));
+      localStorage.setItem('cataloro_site_branding', JSON.stringify(updatedFormData));
+      
+      // Clear file states after successful upload
+      setLogoLightFile(null);
+      setLogoDarkFile(null);
+      setPdfLogoFile(null);
+      setLogoLightPreview('');
+      setLogoDarkPreview('');
+      setPdfLogoPreview('');
       
       // Trigger custom event to update header
       window.dispatchEvent(new CustomEvent('brandingUpdated'));
       
       // Apply logo changes to the site immediately
-      applyLogoChanges(formData);
+      applyLogoChanges(updatedFormData);
       
       // Try to save to backend
-      await adminService.updateSettings(formData);
-      showToast('✅ Site branding saved and applied successfully! Logos now visible in header.', 'success');
+      await adminService.updateSettings(updatedFormData);
+      showToast('✅ Site branding and PDF logo saved successfully! Ready for PDF export.', 'success');
       onUpdateSettings();
     } catch (error) {
-      // Even if backend fails, apply changes locally
-      applyLogoChanges(formData);
-      showToast('✅ Site branding applied locally! Changes visible in header.', 'success');
+      console.error('Save error:', error);
+      showToast('❌ Failed to save settings: ' + error.message, 'error');
     }
   };
 
