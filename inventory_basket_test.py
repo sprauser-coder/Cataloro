@@ -235,42 +235,28 @@ class InventoryBasketTester:
     
     async def test_pdf_export_endpoint(self):
         """Test /api/admin/export/basket-pdf endpoint (CRITICAL)"""
-        # Prepare basket data for PDF export
-        if hasattr(self, 'test_basket') and self.test_basket:
-            basket_data = self.test_basket
-        else:
-            # Use mock data if no basket available
-            basket_data = {
-                "id": "mock_basket_pdf_test",
-                "name": "PDF Export Test Basket",
-                "user_id": self.test_user_id,
-                "items": [
-                    {
-                        "id": "pdf_test_item_1",
-                        "title": "Platinum Catalyst for PDF",
-                        "weight": 9.10,
-                        "pt_ppm": 2500.0,
-                        "pd_ppm": 1200.0,
-                        "rh_ppm": 180.0,
-                        "price": 1850.00,
-                        "renumeration_pt": 45.50,
-                        "renumeration_pd": 28.80,
-                        "renumeration_rh": 32.40
-                    },
-                    {
-                        "id": "pdf_test_item_2",
-                        "title": "Palladium Catalyst for PDF",
-                        "weight": 7.50,
-                        "pt_ppm": 800.0,
-                        "pd_ppm": 3200.0,
-                        "rh_ppm": 150.0,
-                        "price": 920.00,
-                        "renumeration_pt": 18.20,
-                        "renumeration_pd": 57.60,
-                        "renumeration_rh": 27.00
-                    }
-                ]
-            }
+        # Prepare basket data for PDF export (based on server code format)
+        basket_data = {
+            "id": "pdf_test_basket",
+            "name": "PDF Export Test Basket",
+            "user_id": self.test_user_id,
+            "items": [
+                {
+                    "name": "Platinum Catalyst Sample",
+                    "price": 1850.00,
+                    "pt_g": 9.10,
+                    "pd_g": 7.50,
+                    "rh_g": 1.80
+                },
+                {
+                    "name": "Palladium Catalyst Sample", 
+                    "price": 920.00,
+                    "pt_g": 3.20,
+                    "pd_g": 12.50,
+                    "rh_g": 0.95
+                }
+            ]
+        }
         
         response = await self.make_request("POST", "/admin/export/basket-pdf", data=basket_data)
         
