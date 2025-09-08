@@ -6926,6 +6926,157 @@ async def test_webhook(webhook_id: str):
         logger.error(f"Failed to test webhook: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================================================
+# MEDIA MANAGEMENT API ENDPOINTS
+# ============================================================================
+
+@app.get("/api/admin/media/files")
+async def get_media_files():
+    """Get all uploaded media files from uploads directory"""
+    try:
+        import os
+        import mimetypes
+        from pathlib import Path
+        
+        uploads_dir = Path("/app/backend/uploads")
+        media_files = []
+        
+        # Scan all subdirectories in uploads
+        for root, dirs, files in os.walk(uploads_dir):
+            for file in files:
+                file_path = Path(root) / file
+                
+                # Skip non-image files for now (can be extended later)
+                mime_type, _ = mimetypes.guess_type(str(file_path))
+                if not mime_type or not mime_type.startswith('image/'):
+                    continue
+                
+                # Get file stats
+                stat = file_path.stat()
+                
+                # Create relative URL path
+                relative_path = file_path.relative_to(Path("/app/backend"))
+                url = f"/api/{relative_path}"
+                
+                # Extract category from directory name
+                category = file_path.parent.name if file_path.parent.name != "uploads" else "general"
+                
+                # Generate file info
+                file_info = {
+                    "id": str(hash(str(file_path))),  # Simple hash-based ID
+                    "filename": file,
+                    "url": url,
+                    "type": mime_type,
+                    "size": stat.st_size,
+                    "uploadedBy": "admin",  # Default since we don't track this yet
+                    "uploadedAt": datetime.fromtimestamp(stat.st_mtime, timezone.utc).isoformat(),
+                    "category": category,
+                    "description": f"Uploaded {mime_type.split('/')[1]} file"
+                }
+                
+                media_files.append(file_info)
+        
+        # Sort by upload date (newest first)
+        media_files.sort(key=lambda x: x["uploadedAt"], reverse=True)
+        
+        return {
+            "success": True,
+            "files": media_files,
+            "total": len(media_files)
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get media files: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/admin/media/upload")
+async def upload_media_file(
+    file: UploadFile = File(...),
+    category: str = Form("general"),
+    description: str = Form("")
+):
+    """Upload a new media file"""
+    try:
+        import os
+        from pathlib import Path
+        import uuid
+        
+        # Validate file type
+        if not file.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="Only image files are allowed")
+        
+        # Create upload directory
+        upload_dir = Path(f"/app/backend/uploads/{category}")
+        upload_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Generate unique filename
+        file_extension = Path(file.filename).suffix
+        unique_filename = f"{uuid.uuid4().hex}{file_extension}"
+        file_path = upload_dir / unique_filename
+        
+        # Save file
+        content = await file.read()
+        with open(file_path, "wb") as f:
+            f.write(content)
+        
+        # Get file stats
+        stat = file_path.stat()
+        
+        # Create file info
+        file_info = {
+            "id": str(hash(str(file_path))),
+            "filename": unique_filename,
+            "original_filename": file.filename,
+            "url": f"/api/uploads/{category}/{unique_filename}",
+            "type": file.content_type,
+            "size": stat.st_size,
+            "uploadedBy": "admin",
+            "uploadedAt": datetime.now(timezone.utc).isoformat(),
+            "category": category,
+            "description": description or f"Uploaded {file.content_type.split('/')[1]} file"
+        }
+        
+        return {
+            "success": True,
+            "file": file_info,
+            "message": "File uploaded successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to upload media file: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/admin/media/files/{file_id}")
+async def delete_media_file(file_id: str):
+    """Delete a media file"""
+    try:
+        import os
+        from pathlib import Path
+        
+        uploads_dir = Path("/app/backend/uploads")
+        
+        # Find file by ID (hash)
+        for root, dirs, files in os.walk(uploads_dir):
+            for file in files:
+                file_path = Path(root) / file
+                if str(hash(str(file_path))) == file_id:
+                    # Delete the file
+                    os.remove(file_path)
+                    return {
+                        "success": True,
+                        "message": "File deleted successfully"
+                    }
+        
+        raise HTTPException(status_code=404, detail="File not found")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to delete media file: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Run server
 if __name__ == "__main__":
     import uvicorn
