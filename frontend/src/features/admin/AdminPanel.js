@@ -395,8 +395,6 @@ function AdminPanel() {
       permission: 'canAccessListingsManagement' },
     { id: 'ads-manager', label: 'Ads Manager', shortLabel: 'Ads', icon: Target,
       adminOnly: true, consolidated: true },
-    { id: 'advanced-features', label: 'Advanced Features', shortLabel: 'Advanced', icon: Zap,
-      adminOnly: true },
     { id: 'cats', label: "Cat's", shortLabel: "Cat's", icon: Database, 
       permission: 'canAccessDatDatabase' },
     { id: 'site-settings', label: 'Site Settings', shortLabel: 'Settings', icon: Settings, 
