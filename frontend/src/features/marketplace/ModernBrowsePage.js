@@ -654,6 +654,22 @@ function ModernBrowsePage() {
               </select>
             </div>
 
+            {/* Bid Status Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Bid Status
+              </label>
+              <select
+                value={filters.bidStatus || 'all'}
+                onChange={(e) => updateFilters({...filters, bidStatus: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white h-10 leading-none"
+              >
+                <option value="all">All Listings</option>
+                <option value="not_bid_yet">Not Bid Yet</option>
+                <option value="highest_bidder">My Highest Bids</option>
+              </select>
+            </div>
+
             {/* Price Range (from-to inputs) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
