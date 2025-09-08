@@ -365,6 +365,9 @@ class BackendTester:
         user = self.test_users[0]
         user_id = user["id"]
         
+        # First verify basic profile endpoint works
+        await self.test_basic_profile_access(user_id)
+        
         # Test 1: GET /api/auth/profile/{user_id}/stats
         await self.test_get_profile_statistics(user_id)
         
@@ -373,6 +376,16 @@ class BackendTester:
         
         # Test 3: GET /api/profile/{user_id}/public
         await self.test_get_public_profile(user_id)
+        
+    async def test_basic_profile_access(self, user_id):
+        """Test basic profile endpoint to verify user exists"""
+        response, status = await self.make_request("GET", f"/auth/profile/{user_id}")
+        
+        if status == 200:
+            username = response.get("username", "Unknown")
+            self.log_result("Basic Profile Access", True, f"Profile accessible for user: {username}")
+        else:
+            self.log_result("Basic Profile Access", False, f"Status: {status}", response.get("detail", "Unknown error"))
         
     async def test_get_profile_statistics(self, user_id):
         """Test fetching comprehensive profile statistics"""
