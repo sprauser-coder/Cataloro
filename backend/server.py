@@ -6896,32 +6896,6 @@ async def test_webhook(webhook_id: str):
         logger.error(f"Failed to test webhook: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# ============================================================================
-# STARTUP EVENT
-# ============================================================================
-
-@app.on_event("startup")
-async def startup_event():
-    """Initialize application on startup"""
-    try:
-        # Test database connection
-        await client.admin.command('ping')
-        print("✅ Connected to MongoDB successfully")
-        
-        # Test AI service
-        try:
-            api_key = os.environ.get('EMERGENT_LLM_KEY')
-            if api_key:
-                print("✅ AI service configured successfully")
-            else:
-                print("⚠️ AI service not configured - search will use fallback mode")
-        except Exception as e:
-            print(f"⚠️ AI service initialization warning: {e}")
-            
-    except Exception as e:
-        print(f"❌ Failed to connect to MongoDB: {e}")
-        raise
-
 # Run server
 if __name__ == "__main__":
     import uvicorn
