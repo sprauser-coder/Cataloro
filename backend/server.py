@@ -1046,6 +1046,284 @@ async def update_profile(user_id: str, profile_data: dict):
         print(f"Error updating profile: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to update profile: {str(e)}")
 
+@app.get("/api/auth/profile/{user_id}/stats")
+async def get_profile_statistics(user_id: str):
+    """Get comprehensive profile statistics with real backend data"""
+    try:
+        # Get user info
+        user = await db.users.find_one({"id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get user's listings statistics
+        total_listings = await db.listings.count_documents({"seller_id": user_id})
+        active_listings = await db.listings.count_documents({"seller_id": user_id, "status": "active"})
+        
+        # Get user's deals/orders statistics  
+        buyer_orders = await db.orders.count_documents({"buyer_id": user_id})
+        seller_orders = await db.orders.count_documents({"seller_id": user_id})
+        completed_deals = await db.orders.count_documents({
+            "$or": [{"buyer_id": user_id}, {"seller_id": user_id}],
+            "status": {"$in": ["approved", "completed"]}
+        })
+        
+        # Get favorites count
+        total_favorites = await db.favorites.count_documents({"user_id": user_id})
+        
+        # Calculate total revenue (as seller)
+        revenue_pipeline = [
+            {"$match": {"seller_id": user_id, "status": {"$in": ["approved", "completed"]}}},
+            {"$lookup": {
+                "from": "listings",
+                "localField": "listing_id", 
+                "foreignField": "id",
+                "as": "listing"
+            }},
+            {"$unwind": {"path": "$listing", "preserveNullAndEmptyArrays": True}},
+            {"$group": {"_id": None, "total_revenue": {"$sum": "$listing.price"}}}
+        ]
+        
+        revenue_result = await db.orders.aggregate(revenue_pipeline).to_list(length=1)
+        total_revenue = revenue_result[0]["total_revenue"] if revenue_result else 0
+        
+        # Get rating statistics
+        rating_stats = await get_user_rating_stats(user_id)
+        
+        # Get join date
+        join_date = user.get("created_at")
+        if isinstance(join_date, str):
+            join_date = datetime.fromisoformat(join_date.replace('Z', '+00:00'))
+        elif not isinstance(join_date, datetime):
+            join_date = datetime.utcnow()
+        
+        # Calculate days since joining
+        days_since_joining = (datetime.utcnow() - join_date.replace(tzinfo=None)).days
+        
+        # Get recent activity
+        recent_messages = await db.user_messages.count_documents({
+            "$or": [{"sender_id": user_id}, {"recipient_id": user_id}],
+            "created_at": {"$gte": (datetime.utcnow() - timedelta(days=30)).isoformat()}
+        })
+        
+        return {
+            "user_info": {
+                "id": user_id,
+                "username": user.get("username", "Unknown"),
+                "full_name": user.get("full_name", "Unknown User"),
+                "email": user.get("email", ""),
+                "badge": user.get("badge", "User"),
+                "user_role": user.get("user_role", "User-Buyer"),
+                "is_business": user.get("is_business", False),
+                "join_date": join_date.isoformat(),
+                "days_since_joining": days_since_joining
+            },
+            "statistics": {
+                "total_listings": total_listings,
+                "active_listings": active_listings,
+                "total_deals": buyer_orders + seller_orders,
+                "completed_deals": completed_deals,
+                "total_revenue": total_revenue,
+                "total_favorites": total_favorites,
+                "as_buyer": {
+                    "orders_placed": buyer_orders,
+                    "orders_completed": await db.orders.count_documents({"buyer_id": user_id, "status": {"$in": ["approved", "completed"]}})
+                },
+                "as_seller": {
+                    "orders_received": seller_orders,
+                    "orders_completed": await db.orders.count_documents({"seller_id": user_id, "status": {"$in": ["approved", "completed"]}}),
+                    "total_revenue": total_revenue
+                }
+            },
+            "ratings": rating_stats,
+            "activity": {
+                "recent_messages": recent_messages,
+                "last_active": user.get("last_seen", user.get("updated_at", join_date.isoformat()))
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch profile statistics: {str(e)}")
+
+@app.post("/api/auth/profile/{user_id}/export")
+async def export_user_data(user_id: str):
+    """Export user data as PDF"""
+    try:
+        # Get user profile and statistics
+        profile_stats = await get_profile_statistics(user_id)
+        
+        # Get user's listings
+        listings = await db.listings.find({"seller_id": user_id}).to_list(length=None)
+        
+        # Get user's orders
+        orders = await db.orders.find({
+            "$or": [{"buyer_id": user_id}, {"seller_id": user_id}]
+        }).to_list(length=None)
+        
+        # Get user's ratings
+        ratings = await get_user_ratings(user_id)
+        
+        # Create PDF export (basic implementation)
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import letter
+        import io
+        
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer, pagesize=letter)
+        
+        # Title
+        p.setFont("Helvetica-Bold", 16)
+        p.drawString(50, 750, f"User Data Export - {profile_stats['user_info']['full_name']}")
+        
+        # User Information
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(50, 720, "User Information:")
+        p.setFont("Helvetica", 10)
+        y = 700
+        
+        for key, value in profile_stats['user_info'].items():
+            p.drawString(70, y, f"{key.replace('_', ' ').title()}: {value}")
+            y -= 15
+        
+        # Statistics
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(50, y-20, "Statistics:")
+        y -= 35
+        p.setFont("Helvetica", 10)
+        
+        for key, value in profile_stats['statistics'].items():
+            if isinstance(value, dict):
+                p.drawString(70, y, f"{key.replace('_', ' ').title()}:")
+                y -= 15
+                for sub_key, sub_value in value.items():
+                    p.drawString(90, y, f"  {sub_key.replace('_', ' ').title()}: {sub_value}")
+                    y -= 15
+            else:
+                p.drawString(70, y, f"{key.replace('_', ' ').title()}: {value}")
+                y -= 15
+        
+        p.save()
+        buffer.seek(0)
+        
+        # Convert to base64 for response
+        pdf_data = base64.b64encode(buffer.read()).decode()
+        
+        return {
+            "message": "Data export successful",
+            "pdf_data": pdf_data,
+            "filename": f"user_data_export_{user_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.pdf"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to export user data: {str(e)}")
+
+@app.delete("/api/auth/profile/{user_id}/delete-account")
+async def delete_user_account(user_id: str, verification_data: dict):
+    """Delete user account with verification"""
+    try:
+        password = verification_data.get("password", "")
+        confirmation = verification_data.get("confirmation", "")
+        
+        if confirmation.lower() != "delete my account":
+            raise HTTPException(status_code=400, detail="Confirmation text must be 'delete my account'")
+        
+        # Check if user has active listings or pending orders
+        active_listings = await db.listings.count_documents({"seller_id": user_id, "status": "active"})
+        pending_orders = await db.orders.count_documents({
+            "$or": [{"buyer_id": user_id}, {"seller_id": user_id}],
+            "status": "pending"
+        })
+        
+        if active_listings > 0:
+            raise HTTPException(status_code=400, detail=f"Cannot delete account. You have {active_listings} active listings. Please remove them first.")
+        
+        if pending_orders > 0:
+            raise HTTPException(status_code=400, detail=f"Cannot delete account. You have {pending_orders} pending orders. Please complete them first.")
+        
+        # Soft delete user (preserve for data integrity)
+        result = await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "is_active": False,
+                "deleted_at": datetime.utcnow().isoformat(),
+                "username": f"deleted_user_{user_id[:8]}",
+                "email": f"deleted_{user_id}@cataloro.com",
+                "full_name": "Deleted User"
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Also mark related data as deleted
+        await db.user_messages.update_many(
+            {"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]},
+            {"$set": {"is_deleted": True, "deleted_at": datetime.utcnow().isoformat()}}
+        )
+        
+        return {"message": "Account deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete account: {str(e)}")
+
+@app.get("/api/profile/{user_id}/public")
+async def get_public_profile(user_id: str):
+    """Get public profile information"""
+    try:
+        # Get user info
+        user = await db.users.find_one({"id": user_id, "is_active": True})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Check if profile is public
+        if not user.get("settings", {}).get("public_profile", True):
+            return {
+                "public": False,
+                "message": "This profile is private"
+            }
+        
+        # Get public statistics
+        stats = await get_profile_statistics(user_id)
+        
+        # Get recent listings (public ones only)
+        recent_listings = await db.listings.find({
+            "seller_id": user_id,
+            "status": "active"
+        }).sort("created_at", -1).limit(6).to_list(length=None)
+        
+        # Sanitize listings data
+        for listing in recent_listings:
+            listing = serialize_doc(listing)
+        
+        return {
+            "public": True,
+            "user": {
+                "id": user_id,
+                "username": user.get("username", "Unknown"),
+                "full_name": user.get("full_name", "Unknown User"),
+                "badge": user.get("badge", "User"),
+                "is_business": user.get("is_business", False),
+                "company_name": user.get("company_name", "") if user.get("is_business") else "",
+                "join_date": stats["user_info"]["join_date"],
+                "days_since_joining": stats["user_info"]["days_since_joining"]
+            },
+            "statistics": {
+                "total_listings": stats["statistics"]["total_listings"],
+                "completed_deals": stats["statistics"]["completed_deals"],
+                "as_seller": stats["statistics"]["as_seller"]
+            },
+            "ratings": stats["ratings"],
+            "recent_listings": recent_listings
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch public profile: {str(e)}")
+
 # Marketplace Endpoints
 @app.get("/api/marketplace/browse")
 async def browse_listings(
