@@ -651,7 +651,7 @@ function BoughtItemsTab({ items, baskets, searchTerm, setSearchTerm, assignmentF
 }
 
 // Baskets Tab Component
-function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, onUnassignFromBasket, onReassignToBasket, calculateTotals, loading }) {
+function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, onUnassignFromBasket, onReassignToBasket, onExportBasketsPDF, calculateTotals, loading }) {
   return (
     <div className="space-y-6">
       {/* Header with Create Button */}
