@@ -1303,7 +1303,16 @@ async def browse_listings(
         }
         
         await cache_service.set(f"browse_listings_{cache_key}", result, ttl=300)  # 5 minutes
-        return result
+        
+        # Return with cache headers for client-side caching
+        return JSONResponse(
+            content=result,
+            headers={
+                "Cache-Control": "public, max-age=300, s-maxage=600",  # 5 min client, 10 min CDN
+                "ETag": f'"{hash(str(result))}"',
+                "X-Cache-Status": "MISS"
+            }
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to browse listings: {str(e)}")
 
