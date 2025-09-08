@@ -310,7 +310,7 @@ function EditSideMenuDashboard() {
               <Menu className="w-8 h-8 mr-3" />
               Edit Side Menu
             </h1>
-            <p className="text-indigo-100">Customize navigation menu with drag-and-drop functionality</p>
+            <p className="text-indigo-100">Customize the real application navigation menu with drag-and-drop functionality</p>
           </div>
           
           <div className="flex items-center space-x-3">
