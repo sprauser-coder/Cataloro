@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://marketplace-admin-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
 
 class DashboardAccuracyTester:
     def __init__(self):

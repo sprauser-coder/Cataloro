@@ -13,7 +13,7 @@ import sys
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://marketplace-admin-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
 
 class WebhookBackendTester:
     def __init__(self):

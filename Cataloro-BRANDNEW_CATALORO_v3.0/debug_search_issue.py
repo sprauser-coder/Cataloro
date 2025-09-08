@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_search():
-    base_url = "https://marketplace-admin-1.preview.emergentagent.com"
+    base_url = "https://cataloro-menueditor.preview.emergentagent.com"
     
     # Create a test user
     user_data = {

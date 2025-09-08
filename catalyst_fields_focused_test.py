@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://marketplace-admin-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
 
 class FocusedCatalystFieldsTester:
     def __init__(self):

@@ -18,7 +18,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Backend URL from environment
-BACKEND_URL = "https://marketplace-admin-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
 
 class InventoryBasketTester:
     def __init__(self):

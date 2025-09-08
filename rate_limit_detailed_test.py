@@ -7,7 +7,7 @@ import requests
 import time
 import json
 
-BACKEND_URL = "https://marketplace-admin-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-menueditor.preview.emergentagent.com/api"
 
 def test_same_email_rate_limiting():
     """Test rate limiting with same email"""
