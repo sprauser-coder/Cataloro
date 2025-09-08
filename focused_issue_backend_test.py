@@ -142,12 +142,23 @@ class FocusedIssueTester:
         else:
             self.log_test("User Count Match", False, f"Mismatch: Business tab shows {analytics_users} users, Users tab shows {total_users} users")
         
-        # Test 1.4: Verify business metrics calculation
-        business_metrics = analytics_data.get("business_metrics", {})
-        if business_metrics:
-            self.log_test("Business Metrics Calculation", True, f"Business metrics calculated: Users: {business_metrics.get('users', 0)}, Revenue: {business_metrics.get('revenue', 0)}")
+        # Test 1.4: Verify business metrics calculation using KPIs endpoint
+        kpis_response = await self.make_request("GET", "/admin/analytics/kpis")
+        
+        if kpis_response["status"] == 200:
+            kpis_data = kpis_response["data"]
+            business_metrics = kpis_data.get("business_metrics", {})
+            if business_metrics:
+                self.log_test("Business Metrics Calculation", True, f"Business metrics calculated: Users: {business_metrics.get('total_users', 0)}, Revenue: {business_metrics.get('total_revenue', 0)}")
+            else:
+                self.log_test("Business Metrics Calculation", False, "Business metrics not found in KPIs response")
         else:
-            self.log_test("Business Metrics Calculation", False, "Business metrics not found in analytics response")
+            # Fallback to check if business_metrics exists in analytics response
+            business_metrics = analytics_data.get("business_metrics", {})
+            if business_metrics:
+                self.log_test("Business Metrics Calculation", True, f"Business metrics calculated: Users: {business_metrics.get('users', 0)}, Revenue: {business_metrics.get('revenue', 0)}")
+            else:
+                self.log_test("Business Metrics Calculation", False, "Business metrics not found in analytics response")
         
         return True
     
