@@ -87,6 +87,8 @@ import {
   AlertCircle,
   Info,
   HelpCircle,
+  ChevronDown,
+  ChevronUp,
   BookOpen,
   Layers,
   GitBranch,
