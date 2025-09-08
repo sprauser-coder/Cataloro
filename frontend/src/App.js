@@ -101,8 +101,8 @@ function App() {
                   <Route path="admin/analytics" element={<AdminPanel />} />
                   <Route path="admin/users" element={<AdminPanel />} />
                   <Route path="admin/dashboard" element={<DashboardHub />} />
-                  <Route path="admin/phase5" element={<Phase5Dashboard currentUser={null} />} />
-                  <Route path="admin/phase6" element={<Phase6Dashboard currentUser={null} />} />
+                  <Route path="admin/analytics" element={<AdvancedAnalyticsDashboard />} />
+                  <Route path="admin/performance" element={<PerformanceDashboard />} />
                   <Route path={APP_ROUTES.FAVORITES} element={<FavoritesPage />} />
                   <Route path={APP_ROUTES.NOTIFICATIONS} element={<NotificationsPage />} />
                   <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
