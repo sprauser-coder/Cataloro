@@ -718,15 +718,43 @@ function ProfilePage() {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Username
                     </label>
-                    <input
-                      type="text"
-                      name="username"
-                      value={profileData.username}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className={`cataloro-input ${!isEditing ? 'cursor-not-allowed' : ''}`}
-                      placeholder="Enter your username"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        name="username"
+                        value={profileData.username}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className={`cataloro-input ${!isEditing ? 'cursor-not-allowed' : ''} ${
+                          usernameStatus.isAvailable === false ? 'border-red-500 focus:ring-red-500' : 
+                          usernameStatus.isAvailable === true ? 'border-green-500 focus:ring-green-500' : ''
+                        }`}
+                        placeholder="Enter your username"
+                      />
+                      {isEditing && usernameStatus.isChecking && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <RefreshCw className="w-4 h-4 animate-spin text-gray-400" />
+                        </div>
+                      )}
+                      {isEditing && usernameStatus.isAvailable === true && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                        </div>
+                      )}
+                      {isEditing && usernameStatus.isAvailable === false && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <X className="w-4 h-4 text-red-500" />
+                        </div>
+                      )}
+                    </div>
+                    {isEditing && usernameStatus.message && (
+                      <p className={`text-xs mt-1 ${
+                        usernameStatus.isAvailable === true ? 'text-green-600' : 
+                        usernameStatus.isAvailable === false ? 'text-red-600' : 'text-gray-500'
+                      }`}>
+                        {usernameStatus.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
