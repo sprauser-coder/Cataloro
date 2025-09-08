@@ -556,18 +556,6 @@ function AdminPanel() {
             />
           )}
           
-          {activeTab === 'business' && (
-            <BusinessTab 
-              showToast={showToast}
-            />
-          )}
-          
-          {activeTab === 'advanced-features' && (
-            <AdvancedFeaturesTab 
-              showToast={showToast}
-            />
-          )}
-          
           {activeTab === 'cats' && (
             <CatDatabaseTab 
               showToast={showToast}
