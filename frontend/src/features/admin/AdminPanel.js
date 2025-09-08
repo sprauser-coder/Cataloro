@@ -515,11 +515,6 @@ function AdminPanel() {
           showToast={showToast}
         />
       )}
-
-      {/* PDF Export Center Section */}
-      {activeTab === 'pdf-export' && (
-        <PDFExportCenter showToast={showToast} />
-      )}
     </div>
   );
 }
