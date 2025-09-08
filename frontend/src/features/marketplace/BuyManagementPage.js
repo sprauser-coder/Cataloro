@@ -522,6 +522,7 @@ function BuyManagementPage() {
                   setShowEditBasket(true);
                 }}
                 onDeleteBasket={deleteBasket}
+                onExportBasket={exportBasketPDF}
                 onUnassignFromBasket={unassignItemFromBasket}
                 onReassignToBasket={reassignItemToBasket}
                 calculateTotals={calculateBasketTotals}
