@@ -512,10 +512,10 @@ function AdminPanel() {
         </div>
       </div>
 
-      {/* Main Content Area - positioned below header and beside sidebar - MATCHING NON-ADMIN WIDTH */}
+      {/* Main Content Area - positioned below header and beside sidebar - FULL WIDTH */}
       <div className="ml-48 sm:ml-48 md:ml-56 lg:ml-64 pt-20 min-h-screen">
-        {/* Content Container matching non-admin pages exactly */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Content Container using full available width minus sidebar */}
+        <div className="px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
