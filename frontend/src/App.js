@@ -32,7 +32,6 @@ import InfoPage from './features/info/InfoPage';
 import TenderManagementPage from './features/marketplace/TenderManagementPage';
 import BuyManagementPage from './features/marketplace/BuyManagementPage';
 import DashboardHub from './components/admin/DashboardHub';
-import AdvancedAnalyticsDashboard from './components/analytics/AdvancedAnalyticsDashboard';
 import PerformanceDashboard from './components/performance/PerformanceDashboard';
 
 // Import centralized configuration
