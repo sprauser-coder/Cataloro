@@ -120,7 +120,7 @@ async def startup_event():
         print("🚀 Starting Cataloro Marketplace Backend...")
         
         # Test database connection
-        await db.admin.command('ping')
+        await client.admin.command('ping')
         print("✅ Connected to MongoDB successfully")
         
         # Create optimized indexes for pagination and filtering
