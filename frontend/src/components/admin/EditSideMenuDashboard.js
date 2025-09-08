@@ -85,19 +85,41 @@ const availableIcons = {
   Database, Building, Zap, Globe, DollarSign, Star, Bell, Search, Filter, Download, Upload,
   Palette, BookOpen, Layers, GitBranch, Monitor, Smartphone, Code, Server, Wifi, Lock,
   Mail, Calendar, Camera, Image, Video, Music, FileText, Folder, Archive, Link, Tag,
-  Flag, Award, Trophy, Crown, Gem, Rocket, Lightning, Fire, Sun, Moon, Cloud, Umbrella, Mountain
+  Flag, Award, Trophy, Crown, Gem, Rocket, Lightning, Fire, Sun, Moon, Cloud, Umbrella, Mountain, Store
 };
 
-// Default menu structure
-const defaultMenuItems = [
-  { id: 'browse', label: 'Browse', icon: 'Package', path: '/browse', visible: true, type: 'page' },
-  { id: 'messages', label: 'Messages', icon: 'MessageCircle', path: '/messages', visible: true, type: 'page' },
-  { id: 'favorites', label: 'Favorites', icon: 'Heart', path: '/favorites', visible: true, type: 'page' },
-  { id: 'profile', label: 'Profile', icon: 'User', path: '/profile', visible: true, type: 'page' },
-  { id: 'inventory', label: 'Inventory', icon: 'ShoppingCart', path: '/inventory', visible: true, type: 'page' },
-  { id: 'deals', label: 'Deals', icon: 'DollarSign', path: '/deals', visible: true, type: 'page' },
-  { id: 'notifications', label: 'Notifications', icon: 'Bell', path: '/notifications', visible: true, type: 'page' }
-];
+// Generate real menu items based on application structure and permissions
+const generateRealMenuItems = (permissions) => {
+  const menuItems = [
+    // Core navigation items (always visible)
+    { id: 'about', label: 'About', icon: 'Globe', path: '/info', visible: true, type: 'page' },
+    { id: 'browse', label: 'Browse', icon: 'Store', path: '/browse', visible: true, type: 'page' },
+    
+    // Role-based navigation items
+    ...(permissions?.ui?.showTenderManagementLink || permissions?.ui?.showMyTendersLink ? [
+      { id: 'tenders', label: 'Tenders', icon: 'DollarSign', path: APP_ROUTES.TENDERS, visible: true, type: 'page' }
+    ] : []),
+    
+    ...(permissions?.ui?.showBuyingFeatures || permissions?.ui?.showAdminPanelLink ? [
+      { id: 'inventory', label: 'Inventory', icon: 'ShoppingCart', path: '/inventory', visible: true, type: 'page' }
+    ] : []),
+    
+    ...(permissions?.ui?.showAdminPanelLink ? [
+      { id: 'admin', label: 'Admin', icon: 'Shield', path: '/admin', visible: true, type: 'page' }
+    ] : []),
+    
+    // Action items
+    { id: 'messages', label: 'Messages', icon: 'MessageCircle', path: '/messages', visible: true, type: 'action' },
+    { id: 'favorites', label: 'Favorites', icon: 'Heart', path: '/favorites', visible: true, type: 'action' },
+    { id: 'notifications', label: 'Notifications', icon: 'Bell', path: '/notifications', visible: true, type: 'action' },
+    { id: 'profile', label: 'Profile', icon: 'User', path: '/profile', visible: true, type: 'action' },
+    
+    // Add Listing - This is what user was missing!
+    { id: 'add-listing', label: 'Add Listing', icon: 'Plus', path: '/create-listing', visible: true, type: 'action' }
+  ];
+  
+  return menuItems;
+};
 
 function EditSideMenuDashboard() {
   const { showToast } = useNotifications();
