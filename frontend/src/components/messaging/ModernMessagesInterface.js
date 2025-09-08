@@ -270,45 +270,8 @@ function ModernMessagesInterface() {
     }
   };
 
-  // Search users for new conversations
-  const searchUsers = async (query) => {
-    if (!query.trim() || query.length < 2) {
-      setUserSearchResults([]);
-      return;
-    }
-
-    try {
-      const users = await messageService.searchUsers(query);
-      setUserSearchResults(users.filter(u => u.id !== user.id));
-    } catch (error) {
-      console.error('User search failed:', error);
-      setUserSearchResults([]);
-    }
-  };
-
-  // Start new conversation
-  const startNewConversation = (selectedUser) => {
-    const newConversation = {
-      id: selectedUser.id,
-      user: {
-        id: selectedUser.id,
-        username: selectedUser.username,
-        full_name: selectedUser.full_name || selectedUser.display_name,
-        badge: 'User',
-        is_online: false
-      },
-      messages: [],
-      unread_count: 0,
-      last_message: null,
-      last_activity: null
-    };
-
-    setSelectedConversation(newConversation);
-    setMessages([]);
-    setShowUserSearch(false);
-    setUserSearchQuery('');
-    setUserSearchResults([]);
-  };
+  // Note: Direct user search and new conversation features removed
+  // Messages can only be initiated through sales transactions
 
   // Delete message
   const deleteMessage = async (messageId) => {
