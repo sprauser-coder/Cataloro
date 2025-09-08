@@ -34,27 +34,13 @@ import UserRatingSystem from '../../components/ratings/UserRatingSystem';
 
 function PublicProfilePage() {
   const { userId } = useParams();
-  const { user: currentUser } = useAuth();
-  const { allProducts } = useMarketplace();
-  const { getUserDisplay } = usePermissions();
-  const [profileUser, setProfileUser] = useState(null);
+  const { user } = useAuth();
+  const { showToast } = useNotifications();
+  
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [userStats, setUserStats] = useState({
-    totalListings: 0,
-    activeListings: 0,
-    totalSales: 0,
-    avgRating: 0,
-    responseRate: 0,
-    memberSince: '',
-    lastActive: ''
-  });
-  const [userListings, setUserListings] = useState([]);
-
-  const [interactions, setInteractions] = useState({
-    messages: [],
-    deals: [],
-    totalInteractions: 0
-  });
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Helper function to get user badge info (mock implementation for demo)
   const getUserBadgeInfo = (user) => {
