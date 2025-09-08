@@ -89,68 +89,45 @@ class BackendTester:
         """Setup test users and transactions for rating system testing"""
         print("\n🔧 Setting up test data...")
         
-        # Create test users
-        test_user_1 = {
-            "username": f"test_buyer_{uuid.uuid4().hex[:8]}",
-            "email": f"buyer_{uuid.uuid4().hex[:8]}@test.com",
-            "full_name": "Test Buyer User",
-            "account_type": "buyer"
-        }
+        # Use admin user for testing
+        admin_login_response, admin_status = await self.make_request("POST", "/auth/login", {
+            "email": "admin@cataloro.com",
+            "password": "admin123"
+        })
         
-        test_user_2 = {
-            "username": f"test_seller_{uuid.uuid4().hex[:8]}",
-            "email": f"seller_{uuid.uuid4().hex[:8]}@test.com", 
-            "full_name": "Test Seller User",
-            "account_type": "seller"
-        }
+        if admin_status == 200 and "user" in admin_login_response:
+            admin_user = admin_login_response["user"]
+            self.test_users.append(admin_user)
+            print(f"✅ Admin user logged in: {admin_user.get('username', 'admin')}")
         
-        # Register test users
-        for user_data in [test_user_1, test_user_2]:
-            response, status = await self.make_request("POST", "/auth/register", user_data)
-            if status == 200:
-                user_id = response.get("user_id")
-                if user_id:
-                    # Login to get full user data
-                    login_response, login_status = await self.make_request("POST", "/auth/login", {
-                        "email": user_data["email"],
-                        "password": "test123"
-                    })
-                    if login_status == 200 and "user" in login_response:
-                        self.test_users.append(login_response["user"])
-                        
-        print(f"✅ Created {len(self.test_users)} test users")
+        # Create a demo user for testing
+        demo_login_response, demo_status = await self.make_request("POST", "/auth/login", {
+            "email": "demo@test.com",
+            "password": "demo123"
+        })
         
-        # Create test transaction (order) for rating system
-        if len(self.test_users) >= 2:
-            buyer = self.test_users[0]
-            seller = self.test_users[1]
+        if demo_status == 200 and "user" in demo_login_response:
+            demo_user = demo_login_response["user"]
+            self.test_users.append(demo_user)
+            print(f"✅ Demo user logged in: {demo_user.get('username', 'demo')}")
+        
+        print(f"✅ Setup {len(self.test_users)} test users")
+        
+        # Create mock transaction data for testing
+        if len(self.test_users) >= 1:
+            user = self.test_users[0]
             
-            # Create a test listing first
-            listing_data = {
-                "title": "Test Catalyst for Rating",
-                "description": "Test catalyst for rating system testing",
-                "price": 100.0,
-                "category": "Automotive",
-                "condition": "Used",
-                "seller_id": seller["id"]
+            # Create mock transaction for rating system testing
+            mock_transaction = {
+                "id": str(uuid.uuid4()),
+                "buyer_id": user["id"],
+                "seller_id": user["id"],  # Same user for simplicity
+                "listing_id": str(uuid.uuid4()),
+                "status": "completed"
             }
             
-            listing_response, listing_status = await self.make_request("POST", "/listings/create", listing_data)
-            if listing_status == 200:
-                listing_id = listing_response.get("listing_id")
-                
-                # Create a test order
-                order_data = {
-                    "id": str(uuid.uuid4()),
-                    "buyer_id": buyer["id"],
-                    "seller_id": seller["id"],
-                    "listing_id": listing_id,
-                    "status": "completed"  # Completed status for rating eligibility
-                }
-                
-                # Simulate order creation by direct database insertion (for testing)
-                self.test_transactions.append(order_data)
-                print(f"✅ Created test transaction: {order_data['id']}")
+            self.test_transactions.append(mock_transaction)
+            print(f"✅ Created mock transaction: {mock_transaction['id']}")
                 
     async def test_user_rating_system(self):
         """Test all user rating system endpoints"""
