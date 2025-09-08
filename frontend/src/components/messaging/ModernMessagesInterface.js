@@ -395,13 +395,7 @@ function ModernMessagesInterface() {
                 <option value="unread">Unread Only</option>
               </select>
               
-              <button
-                onClick={() => setShowUserSearch(true)}
-                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-200 flex items-center space-x-2 text-sm font-medium"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span>New</span>
-              </button>
+              {/* New conversation button removed - conversations start through sales */}
             </div>
           </div>
 
