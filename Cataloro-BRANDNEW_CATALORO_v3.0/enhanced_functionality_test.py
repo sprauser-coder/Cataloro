@@ -12,7 +12,7 @@ import time
 from datetime import datetime
 
 class EnhancedFunctionalityTester:
-    def __init__(self, base_url="https://mega-dashboard.preview.emergentagent.com"):
+    def __init__(self, base_url="https://marketplace-admin-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_user = None
         self.regular_user = None

@@ -30,7 +30,7 @@ from typing import Dict, List, Any
 from pathlib import Path
 
 # Backend URL from environment
-BACKEND_URL = "https://mega-dashboard.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-admin-1.preview.emergentagent.com/api"
 
 class MediaManagementTester:
     def __init__(self):

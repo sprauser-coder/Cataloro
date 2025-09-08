@@ -59,7 +59,7 @@ origins = [
     "https://217.154.0.82",
     "http://localhost:3000",  # Development
     "http://localhost:3001",  # Development alternative
-    "https://mega-dashboard.preview.emergentagent.com",  # Emergent preview domain
+    "https://marketplace-admin-1.preview.emergentagent.com",  # Emergent preview domain
     "*"  # Allow all origins temporarily for debugging
 ]
 

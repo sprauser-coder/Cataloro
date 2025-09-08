@@ -9,7 +9,7 @@ import json
 import base64
 
 # Backend URL from environment
-BACKEND_URL = "https://mega-dashboard.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-admin-1.preview.emergentagent.com/api"
 
 async def test_pdf_improvements():
     """Test the improved PDF export functionality"""

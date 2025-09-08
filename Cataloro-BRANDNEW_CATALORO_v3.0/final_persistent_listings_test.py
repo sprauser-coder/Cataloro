@@ -10,7 +10,7 @@ import json
 import time
 
 class PersistentListingsTest:
-    def __init__(self, base_url="https://mega-dashboard.preview.emergentagent.com"):
+    def __init__(self, base_url="https://marketplace-admin-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
         self.admin_user = None
