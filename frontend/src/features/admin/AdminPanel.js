@@ -504,10 +504,10 @@ function AdminPanel() {
         </div>
       </div>
 
-      {/* Main Content Area - positioned below header and beside sidebar */}
-      <div className="ml-64 pt-20 min-h-screen">
-        {/* Content Container with reduced spacing */}
-        <div className="px-8 py-4">
+      {/* Main Content Area - positioned below header and beside sidebar - INCREASED WIDTH */}
+      <div className="ml-64 pt-20 min-h-screen w-full">
+        {/* Content Container with increased width and reduced spacing */}
+        <div className="px-12 py-4 max-w-none">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
