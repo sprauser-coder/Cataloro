@@ -223,6 +223,21 @@ function marketplaceReducer(state, action) {
         isLoading: action.payload
       };
     
+    case ACTIONS.SET_PAGINATION:
+      return {
+        ...state,
+        pagination: action.payload
+      };
+    
+    case ACTIONS.SET_CURRENT_PAGE:
+      return {
+        ...state,
+        pagination: {
+          ...state.pagination,
+          currentPage: action.payload
+        }
+      };
+    
     default:
       return state;
   }
