@@ -3491,15 +3491,69 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Ad Image URL
+                          Ad Image
                         </label>
-                        <input
-                          type="url"
-                          value={ad.image || ''}
-                          onChange={(e) => handleAdConfigChange(adType.key, 'image', e.target.value)}
-                          placeholder="https://example.com/ad-image.jpg"
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
-                        />
+                        
+                        {/* Image Upload Area */}
+                        <div className="space-y-4">
+                          {/* Current Image Preview */}
+                          {ad.image && (
+                            <div className="relative">
+                              <img
+                                src={ad.image}
+                                alt={ad.title || 'Ad Preview'}
+                                className="w-full max-w-xs h-32 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                              <button
+                                onClick={() => handleAdConfigChange(adType.key, 'image', '')}
+                                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          )}
+                          
+                          {/* File Upload Drag & Drop Area */}
+                          <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-purple-500 dark:hover:border-purple-400 transition-colors">
+                            <input
+                              type="file"
+                              id={`ad-upload-${adType.key}`}
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(adType.key, e.target.files[0])}
+                              className="hidden"
+                            />
+                            <label
+                              htmlFor={`ad-upload-${adType.key}`}
+                              className="cursor-pointer block"
+                            >
+                              <div className="space-y-2">
+                                <Upload className="w-8 h-8 text-gray-400 mx-auto" />
+                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                  <span className="font-medium text-purple-600 dark:text-purple-400">Click to upload</span> or drag and drop
+                                </div>
+                                <div className="text-xs text-gray-500 dark:text-gray-500">
+                                  PNG, JPG, GIF up to 10MB
+                                </div>
+                              </div>
+                            </label>
+                          </div>
+                          
+                          {/* Manual URL Input (Alternative) */}
+                          <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+                            — OR —
+                          </div>
+                          
+                          <input
+                            type="text"
+                            value={ad.image || ''}
+                            onChange={(e) => handleAdConfigChange(adType.key, 'image', e.target.value)}
+                            placeholder="Paste image URL here..."
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white text-sm"
+                          />
+                        </div>
                       </div>
                       
                       <div className="grid grid-cols-2 gap-4">
