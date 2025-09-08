@@ -2720,6 +2720,10 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
       // Try to save to backend with explicit PDF logo field
       console.log('🔧 Calling adminService.updateSettings with:', updatedFormData);
       await adminService.updateSettings(updatedFormData);
+      
+      // Update form data with the saved values to ensure UI stays consistent
+      setFormData(updatedFormData);
+      
       showToast('✅ Site branding and PDF logo saved successfully! Ready for PDF export.', 'success');
       onUpdateSettings();
     } catch (error) {
