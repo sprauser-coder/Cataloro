@@ -4753,8 +4753,8 @@ function FooterAdConfigPanel({ adConfig, adType, handleAdConfigChange, handleIma
 }
 
 // Site Administration Tab Component
-function SiteAdministrationTab({ showToast }) {
-  const [activeSection, setActiveSection] = React.useState('appearance');
+function SiteAdministrationTab({ showToast, initialSection = 'appearance' }) {
+  const [activeSection, setActiveSection] = React.useState(initialSection);
   const [isSaving, setIsSaving] = React.useState(false);
   const [settingsSaved, setSettingsSaved] = React.useState(false);
   
