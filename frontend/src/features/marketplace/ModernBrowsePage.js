@@ -1403,21 +1403,7 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
           </h3>
         </div>
 
-        {/* 2. Price Display with Currency Converter */}
-        <div className="mb-3">
-          <CurrencyPriceDisplay 
-            price={(item.bid_info?.has_bids && item.bid_info?.highest_bid) ? item.bid_info.highest_bid : item.price}
-            baseCurrency="EUR"
-            className="mb-2"
-          />
-          {item.bid_info?.has_bids && (
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              <span className="line-through">€{item.price.toFixed(2)} starting</span>
-            </div>
-          )}
-        </div>
-
-        {/* 3. Market Range - Show for catalyst items */}
+        {/* 2. Market Range - Show for catalyst items */}
         {item.category === 'Catalysts' && (
           <div className="mb-3">
             {loadingSuggestion ? (
