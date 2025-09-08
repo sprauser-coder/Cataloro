@@ -384,10 +384,12 @@ function BuyManagementPage() {
 
       basketsToExport.forEach(basket => {
         if (basket.items && basket.items.length > 0) {
-          const totals = calculateBasketTotals(basket);
           basket.items.forEach(item => {
+            // Use the best available name for the item
+            const itemName = item.listing_title || item.product_name || item.title || item.name || 'Listing Item';
+            
             exportData.items.push({
-              name: `${item.product_name || item.name || 'Unknown Item'} (${basket.name})`,
+              name: itemName, // Remove basket name from item name for cleaner display
               price: item.price || 0,
               pt_g: item.pt_g || 0,
               pd_g: item.pd_g || 0,
