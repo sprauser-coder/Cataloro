@@ -2912,6 +2912,202 @@ async def backup_current_content():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create backup: {str(e)}")
 
+# PDF Export Endpoint
+@app.post("/api/admin/export/basket-pdf")
+async def export_basket_pdf(export_data: dict):
+    """Export basket/inventory data to PDF with company logo"""
+    try:
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import letter, A4
+        from reportlab.lib.units import inch
+        from reportlab.lib.colors import HexColor
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+        import requests
+        from PIL import Image as PILImage
+        import tempfile
+        import os
+        
+        # Get site settings for PDF logo
+        settings = await db.site_settings.find_one({"type": "site_branding"})
+        pdf_logo_url = settings.get("pdf_logo_url") if settings else None
+        site_name = settings.get("site_name", "Cataloro") if settings else "Cataloro"
+        
+        # Create temporary file for PDF
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
+        pdf_path = temp_file.name
+        temp_file.close()
+        
+        # Create PDF document
+        doc = SimpleDocTemplate(pdf_path, pagesize=A4)
+        story = []
+        styles = getSampleStyleSheet()
+        
+        # Custom styles
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            spaceAfter=30,
+            alignment=TA_CENTER,
+            textColor=HexColor('#2563EB')
+        )
+        
+        header_style = ParagraphStyle(
+            'CustomHeader',
+            parent=styles['Heading2'],
+            fontSize=16,
+            spaceAfter=12,
+            textColor=HexColor('#1F2937')
+        )
+        
+        # Add logo if available
+        if pdf_logo_url and pdf_logo_url.startswith('http'):
+            try:
+                # Download and add logo
+                logo_response = requests.get(pdf_logo_url, timeout=10)
+                if logo_response.status_code == 200:
+                    logo_temp = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+                    logo_temp.write(logo_response.content)
+                    logo_temp.close()
+                    
+                    # Add logo to PDF
+                    logo = Image(logo_temp.name, width=2*inch, height=1*inch)
+                    logo.hAlign = 'CENTER'
+                    story.append(logo)
+                    story.append(Spacer(1, 20))
+                    
+                    # Clean up logo file
+                    os.unlink(logo_temp.name)
+            except Exception as e:
+                logger.warning(f"Could not add logo to PDF: {e}")
+        
+        # Add title
+        title = Paragraph(f"{site_name} - Basket Export", title_style)
+        story.append(title)
+        
+        # Add export date
+        export_date = datetime.now().strftime("%B %d, %Y at %I:%M %p")
+        date_para = Paragraph(f"Generated on: {export_date}", styles['Normal'])
+        story.append(date_para)
+        story.append(Spacer(1, 20))
+        
+        # Process basket items
+        items = export_data.get('items', [])
+        if not items:
+            no_items = Paragraph("No items found in basket.", styles['Normal'])
+            story.append(no_items)
+        else:
+            # Add items header
+            items_header = Paragraph("Basket Items", header_style)
+            story.append(items_header)
+            
+            # Create table data
+            table_data = [
+                ['Item', 'Price', 'Pt (g)', 'Pd (g)', 'Rh (g)', 'Total Value']
+            ]
+            
+            total_value = 0
+            total_pt = 0
+            total_pd = 0
+            total_rh = 0
+            
+            for item in items:
+                name = item.get('name', 'Unknown Item')
+                price = float(item.get('price', 0))
+                pt_g = float(item.get('pt_g', 0))
+                pd_g = float(item.get('pd_g', 0))
+                rh_g = float(item.get('rh_g', 0))
+                
+                total_value += price
+                total_pt += pt_g
+                total_pd += pd_g
+                total_rh += rh_g
+                
+                table_data.append([
+                    name,
+                    f"€{price:.2f}",
+                    f"{pt_g:.2f}",
+                    f"{pd_g:.2f}",
+                    f"{rh_g:.2f}",
+                    f"€{price:.2f}"
+                ])
+            
+            # Create table
+            table = Table(table_data)
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), HexColor('#F3F4F6')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), HexColor('#1F2937')),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('GRID', (0, 0), (-1, -1), 1, HexColor('#E5E7EB')),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ]))
+            
+            story.append(table)
+            story.append(Spacer(1, 20))
+            
+            # Add summary
+            summary_header = Paragraph("Summary", header_style)
+            story.append(summary_header)
+            
+            summary_data = [
+                ['Total Items:', str(len(items))],
+                ['Total Value:', f"€{total_value:.2f}"],
+                ['Total Platinum (Pt):', f"{total_pt:.2f}g"],
+                ['Total Palladium (Pd):', f"{total_pd:.2f}g"],
+                ['Total Rhodium (Rh):', f"{total_rh:.2f}g"],
+            ]
+            
+            summary_table = Table(summary_data, colWidths=[3*inch, 2*inch])
+            summary_table.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+                ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 0), (-1, -1), 11),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+                ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ]))
+            
+            story.append(summary_table)
+        
+        # Add footer
+        story.append(Spacer(1, 30))
+        footer = Paragraph(f"This document was automatically generated by {site_name}", styles['Normal'])
+        story.append(footer)
+        
+        # Build PDF
+        doc.build(story)
+        
+        # Read PDF content
+        with open(pdf_path, 'rb') as pdf_file:
+            pdf_content = pdf_file.read()
+        
+        # Clean up temporary file
+        os.unlink(pdf_path)
+        
+        # Return PDF as base64
+        import base64
+        pdf_base64 = base64.b64encode(pdf_content).decode('utf-8')
+        
+        return {
+            "success": True,
+            "message": "PDF generated successfully",
+            "pdf_data": pdf_base64,
+            "filename": f"basket_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+            "items_count": len(items),
+            "total_value": total_value if items else 0
+        }
+        
+    except Exception as e:
+        logger.error(f"PDF export failed: {e}")
+        raise HTTPException(status_code=500, detail=f"PDF export failed: {str(e)}")
+
 # Marketplace Listings Endpoints
 @app.get("/api/listings")
 async def get_all_listings(
