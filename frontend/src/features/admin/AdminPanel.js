@@ -393,7 +393,6 @@ function AdminPanel() {
       permission: 'canAccessUserManagement' },
     { id: 'listings', label: 'Listings', shortLabel: 'Listings', icon: Package, 
       permission: 'canAccessListingsManagement' },
-    { id: 'business', label: 'Business', shortLabel: 'Business', icon: Building },
     { id: 'ads-manager', label: 'Ads Manager', shortLabel: 'Ads', icon: Target,
       adminOnly: true, consolidated: true },
     { id: 'advanced-features', label: 'Advanced Features', shortLabel: 'Advanced', icon: Zap,
