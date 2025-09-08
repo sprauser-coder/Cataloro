@@ -438,8 +438,8 @@ function AdminPanel() {
           }
         `}
       </style>
-      {/* Left Sidebar Navigation - positioned below header */}
-      <div className="fixed top-20 left-0 bottom-0 z-40 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-lg overflow-y-auto">
+      {/* Left Sidebar Navigation - positioned below header - RESPONSIVE */}
+      <div className="fixed top-20 left-0 bottom-0 z-40 w-64 lg:w-64 md:w-56 sm:w-48 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-lg overflow-y-auto">
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-12 px-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-2">
