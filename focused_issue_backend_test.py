@@ -131,7 +131,8 @@ class FocusedIssueTester:
             return False
         
         analytics_data = analytics_response["data"]
-        analytics_users = analytics_data.get("overview", {}).get("users", 0)
+        # Check both possible locations for user count
+        analytics_users = analytics_data.get("overview", {}).get("total_users", 0) or analytics_data.get("overview", {}).get("users", 0)
         
         self.log_test("Business Analytics", True, f"Analytics shows {analytics_users} users")
         
