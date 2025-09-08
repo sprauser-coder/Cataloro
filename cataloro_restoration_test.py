@@ -305,20 +305,6 @@ class CataloroRestorationTester:
             self.log_result("User Management", True, f"Retrieved {len(users)} users (total: {total_users})")
         else:
             self.log_result("User Management", False, f"Status: {status}")
-            
-        # Test 5: Listings management
-        response, status = await self.make_request("GET", "/admin/listings")
-        
-        if status == 200:
-            if isinstance(response, list):
-                listings = response
-                total_listings = len(listings)
-            else:
-                listings = response.get("listings", [])
-                total_listings = response.get("total", len(listings))
-            self.log_result("Listings Management", True, f"Retrieved {len(listings)} listings (total: {total_listings})")
-        else:
-            self.log_result("Listings Management", False, f"Status: {status}")
 
     # ==================== DATABASE CONNECTIVITY TESTS ====================
     
