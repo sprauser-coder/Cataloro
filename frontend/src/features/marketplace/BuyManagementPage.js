@@ -47,6 +47,7 @@ function BuyManagementPage() {
   const [showCreateBasket, setShowCreateBasket] = useState(false);
   const [showEditBasket, setShowEditBasket] = useState(false);
   const [basketForm, setBasketForm] = useState({ name: '', description: '' });
+  const [exportingBaskets, setExportingBaskets] = useState(new Set()); // Track which baskets are being exported
 
   // Load bought items
   const loadBoughtItems = async () => {
