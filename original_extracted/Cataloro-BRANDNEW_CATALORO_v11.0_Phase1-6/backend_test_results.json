@@ -1,0 +1,151 @@
+{
+  "total_tests": 24,
+  "passed_tests": 24,
+  "failed_tests": 0,
+  "test_details": [
+    {
+      "test": "Health Check",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:14.548614"
+    },
+    {
+      "test": "User Authentication",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:14.574936"
+    },
+    {
+      "test": "Admin Authentication",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:14.592933"
+    },
+    {
+      "test": "Profile Retrieval",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:14.645822"
+    },
+    {
+      "test": "Browse Listings",
+      "status": "PASS",
+      "details": "Found 20 listings",
+      "timestamp": "2025-09-05T14:17:14.707561"
+    },
+    {
+      "test": "Browse with Filters",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:14.764060"
+    },
+    {
+      "test": "Price Range Settings",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:14.781385"
+    },
+    {
+      "test": "Create Listing",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:14.840902"
+    },
+    {
+      "test": "Retrieve Listing",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:14.852750"
+    },
+    {
+      "test": "My Listings",
+      "status": "PASS",
+      "details": "Found 1 user listings",
+      "timestamp": "2025-09-05T14:17:14.904916"
+    },
+    {
+      "test": "Time Extension",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:14.918029"
+    },
+    {
+      "test": "Expiration Check",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:14.929742"
+    },
+    {
+      "test": "Submit Tender",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:15.019122"
+    },
+    {
+      "test": "Seller Tender Overview",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:15.034680"
+    },
+    {
+      "test": "Buyer Tenders",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:15.091354"
+    },
+    {
+      "test": "Listing Tenders",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:15.105541"
+    },
+    {
+      "test": "Get Messages",
+      "status": "PASS",
+      "details": "Found 0 messages",
+      "timestamp": "2025-09-05T14:17:15.169640"
+    },
+    {
+      "test": "Get Notifications",
+      "status": "PASS",
+      "details": "Found 2 notifications",
+      "timestamp": "2025-09-05T14:17:15.189291"
+    },
+    {
+      "test": "Admin Dashboard",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:15.249441"
+    },
+    {
+      "test": "Admin Users",
+      "status": "PASS",
+      "details": "Found 69 users",
+      "timestamp": "2025-09-05T14:17:15.262992"
+    },
+    {
+      "test": "Admin Settings",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:15.288569"
+    },
+    {
+      "test": "Catalyst Price Settings",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:15.299140"
+    },
+    {
+      "test": "Admin Content",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:15.319831"
+    },
+    {
+      "test": "Cleanup Test Listing",
+      "status": "PASS",
+      "details": "",
+      "timestamp": "2025-09-05T14:17:15.335825"
+    }
+  ]
+}
