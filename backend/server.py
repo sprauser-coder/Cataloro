@@ -3421,8 +3421,17 @@ async def get_all_listings(
     limit: int = None,  # No default limit - let frontend specify
     offset: int = 0
 ):
-    """Get all listings with optional filtering - defaults to active listings only"""
+    """Get all listings with optional filtering - OPTIMIZED with Redis caching"""
     try:
+        # Create cache key for this specific query
+        cache_key = f"listings_v2_{category or 'all'}_{min_price or 0}_{max_price or 999999}_{condition or 'all'}_{search or ''}_{status}_{limit or 'all'}_{offset}"
+        
+        # Try to get cached results first
+        cached_listings = await cache_service.get_cached_listings(cache_key)
+        if cached_listings:
+            logger.info(f"📋 Returning cached listings for key: {cache_key[:50]}...")
+            return cached_listings
+        
         query = {}
         
         # Status filtering - default to active only for admin listings management
@@ -3441,6 +3450,14 @@ async def get_all_listings(
             else:
                 query['price'] = {'$lte': max_price}
         
+        # Add search functionality if provided
+        if search:
+            query['$or'] = [
+                {'title': {'$regex': search, '$options': 'i'}},
+                {'description': {'$regex': search, '$options': 'i'}},
+                {'category': {'$regex': search, '$options': 'i'}}
+            ]
+        
         # Get listings from database
         listings_cursor = db.listings.find(query).sort("created_at", -1).skip(offset)
         
@@ -3451,12 +3468,22 @@ async def get_all_listings(
         listings = []
         
         async for listing in listings_cursor:
-            listing['_id'] = str(listing['_id'])
+            # Ensure consistent ID format
+            if 'id' not in listing and '_id' in listing:
+                listing['id'] = str(listing['_id'])
+            
+            # Remove MongoDB ObjectId
+            listing.pop('_id', None)
             listings.append(listing)
         
+        # Cache the results for 10 minutes (frequent updates expected)
+        await cache_service.cache_listings(cache_key, listings, ttl=600)
+        
+        logger.info(f"📋 Cached {len(listings)} listings for query: {cache_key[:50]}...")
         return listings
         
     except Exception as e:
+        logger.error(f"Error in get_all_listings: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch listings: {str(e)}")
 
 @app.post("/api/listings")
