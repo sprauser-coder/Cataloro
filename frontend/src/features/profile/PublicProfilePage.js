@@ -42,286 +42,48 @@ function PublicProfilePage() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Helper function to get user badge info (mock implementation for demo)
-  const getUserBadgeInfo = (user) => {
-    // If it's the current user, get from permissions
-    if (user?.id === currentUser?.id) {
-      const currentUserDisplay = getUserDisplay();
-      return {
-        badge: currentUserDisplay?.badge || 'Buyer',
-        role: currentUserDisplay?.role || 'User-Buyer'
-      };
-    }
-    
-    // Mock badge assignment based on user data patterns for demo
-    const email = user?.email || '';
-    const name = user?.full_name || user?.username || '';
-    
-    if (email.includes('admin') || user?.role === 'admin') {
-      return { badge: 'Admin', role: 'Admin' };
-    } else if (name.toLowerCase().includes('seller') || user?.user_role === 'User-Seller') {
-      return { badge: 'Seller', role: 'User-Seller' };
-    } else if (user?.user_role === 'Admin-Manager') {
-      return { badge: 'Manager', role: 'Admin-Manager' };
-    } else {
-      return { badge: 'Buyer', role: 'User-Buyer' };
-    }
-  };
-
-  // Helper function to get badge styling
-  const getBadgeStyle = (badge) => {
-    switch (badge) {
-      case 'Admin':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800';
-      case 'Manager':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800';
-      case 'Seller':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border border-green-200 dark:border-green-800';
-      case 'Buyer':
-      default:
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800';
-    }
-  };
-
-  // Load real interactions (messages and deals) with this user
-  const loadUserInteractions = async (targetUserId) => {
-    try {
-      const realInteractions = {
-        messages: [],
-        deals: []
-      };
-      
-      // Fetch real messages with this user
-      try {
-        const messagesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/messages/conversations/${currentUser?.id}`);
-        if (messagesResponse.ok) {
-          const conversations = await messagesResponse.json();
-          // Filter conversations with the target user
-          const userConversations = conversations.filter(conv => 
-            conv.participants?.some(p => p.id === targetUserId) ||
-            conv.user_id === targetUserId ||
-            conv.id === targetUserId
-          );
-          
-          realInteractions.messages = userConversations.slice(0, 3).map(conv => ({
-            id: conv.id || conv.conversation_id,
-            subject: conv.subject || 'Message conversation',
-            last_message: conv.last_message || conv.messages?.[0]?.content || 'Chat conversation',
-            created_at: conv.created_at || conv.last_message_at || new Date().toISOString()
-          }));
-        }
-      } catch (error) {
-        console.log('Could not fetch real messages:', error);
-      }
-      
-      // Fetch real deals with this user
-      try {
-        const dealsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/my-deals/${currentUser?.id}`);
-        if (dealsResponse.ok) {
-          const allDeals = await dealsResponse.json();
-          // Filter deals involving the target user
-          const userDeals = allDeals.filter(deal => 
-            deal.buyer_id === targetUserId || 
-            deal.seller_id === targetUserId ||
-            deal.buyer?.id === targetUserId ||
-            deal.seller?.id === targetUserId
-          );
-          
-          realInteractions.deals = userDeals.slice(0, 3).map(deal => ({
-            id: deal.id,
-            item_title: deal.listing?.title || 'Deal item',
-            amount: deal.amount || deal.listing?.price || 0,
-            status: deal.status || 'completed',
-            date: deal.approved_at || deal.created_at || new Date().toISOString()
-          }));
-        }
-      } catch (error) {
-        console.log('Could not fetch real deals:', error);
-      }
-      
-      // If no real data found, show empty state - NO DUMMY DATA
-      setInteractions({
-        ...realInteractions,
-        totalInteractions: realInteractions.messages.length + realInteractions.deals.length
-      });
-      
-    } catch (error) {
-      console.error('Failed to load user interactions:', error);
-      // Set empty interactions instead of dummy data
-      setInteractions({
-        messages: [],
-        deals: [],
-        totalInteractions: 0
-      });
-    }
-  };
-
   useEffect(() => {
-    const loadPublicProfile = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch real user data from backend based on userId parameter
-        let fetchedUser = null;
-        
-        try {
-          // First try to get profile from auth/profile endpoint (this is working according to backend tests)
-          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/profile/${userId}`);
-          if (response.ok) {
-            fetchedUser = await response.json();
-            console.log('Fetched user data:', fetchedUser);
-          } else {
-            console.log('Primary profile endpoint failed, trying user endpoint...');
-            // Fallback to user endpoint  
-            const altResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}`);
-            if (altResponse.ok) {
-              fetchedUser = await altResponse.json();
-            } else {
-              console.log('Both profile endpoints failed, trying listings endpoint...');
-              // Additional fallback - try to get user info from listings
-              const listingsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings?seller_id=${userId}`);
-              if (listingsResponse.ok) {
-                const listingsData = await listingsResponse.json();
-                if (listingsData.length > 0 && listingsData[0].seller) {
-                  fetchedUser = listingsData[0].seller;
-                  // Also set the listings data since we have it
-                  const listings = listingsData.filter(p => 
-                    p.seller === fetchedUser.username || 
-                    p.seller === fetchedUser.full_name ||
-                    p.seller_id === userId
-                  );
-                  setUserListings(listings.slice(0, 6));
-                }
-              }
-            }
-          }
-        } catch (error) {
-          console.log('Backend API error:', error);
-        }
-        
-        // If no backend data found, return error - NO DUMMY DATA
-        if (!fetchedUser) {
-          setProfileUser(null);
-          setLoading(false);
-          return;
-        }
-        
-        // Use the actual fetched user data
-        const realUserData = {
-          id: fetchedUser.id,
-          full_name: fetchedUser.full_name || fetchedUser.name || 'Unknown User',
-          username: fetchedUser.username || fetchedUser.email?.split('@')[0] || 'unknown',
-          email: fetchedUser.email,
-          bio: fetchedUser.bio || `${fetchedUser.full_name || 'User'} is a marketplace member.`,
-          avatar_url: fetchedUser.avatar_url || '',
-          city: fetchedUser.city || 'Not specified',
-          country: fetchedUser.country || 'Not specified',
-          date_joined: fetchedUser.date_joined || fetchedUser.created_at || '2023-01-01',
-          verified: fetchedUser.verified || false,
-          is_business: fetchedUser.is_business || false,
-          company_name: fetchedUser.company_name || '',
-          seller_rating: fetchedUser.seller_rating || 0,
-          phone: fetchedUser.phone || '',
-          publicProfile: fetchedUser.publicProfile !== false, // Default to true unless explicitly false
-          showEmail: fetchedUser.showEmail || false,
-          showPhone: fetchedUser.showPhone || false
-        };
-        
-        setProfileUser(realUserData);
-        
-        // Load real interactions with this user if it's not current user
-        if (userId !== currentUser?.id) {
-          await loadUserInteractions(userId);
-        }
-        
-        // Calculate user listings and stats
-        const listings = allProducts.filter(p => 
-          p.seller === fetchedUser.username || 
-          p.seller === fetchedUser.full_name ||
-          p.seller_id === userId
-        );
-        
-        setUserListings(listings.slice(0, 6)); // Show first 6 listings
-        
-        // Calculate real statistics from user data and deals
-        let realTotalSales = 0;
-        let realResponseRate = 0;
-        let realLastActive = 'Active today';
-
-        try {
-          // Fetch real sales data
-          const salesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/my-deals/${userId}`);
-          if (salesResponse.ok) {
-            const salesData = await salesResponse.json();
-            const completedSales = salesData.filter(deal => 
-              deal.seller_id === userId && deal.status === 'completed'
-            );
-            realTotalSales = completedSales.length;
-          }
-
-          // Fetch response time data from messages
-          const messagesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/messages/conversations/${userId}`);
-          if (messagesResponse.ok) {
-            const conversations = await messagesResponse.json();
-            // Calculate response rate based on conversations
-            const totalConversations = conversations.length;
-            const respondedConversations = conversations.filter(conv => 
-              conv.messages && conv.messages.length > 1
-            ).length;
-            realResponseRate = totalConversations > 0 ? Math.round((respondedConversations / totalConversations) * 100) : 95;
-          } else {
-            realResponseRate = 95; // Default high response rate
-          }
-
-          // Calculate last active from recent activity
-          if (listings.length > 0) {
-            const latestListing = listings.sort((a, b) => 
-              new Date(b.created_at || b.date_added || 0) - new Date(a.created_at || a.date_added || 0)
-            )[0];
-            
-            const listingDate = new Date(latestListing.created_at || latestListing.date_added);
-            const daysSince = Math.floor((new Date() - listingDate) / (1000 * 60 * 60 * 24));
-            
-            if (daysSince === 0) realLastActive = 'Active today';
-            else if (daysSince === 1) realLastActive = 'Active yesterday';
-            else if (daysSince < 7) realLastActive = `Active ${daysSince} days ago`;
-            else if (daysSince < 30) realLastActive = `Active ${Math.floor(daysSince/7)} weeks ago`;
-            else realLastActive = 'Active over a month ago';
-          }
-
-        } catch (error) {
-          console.log('Could not fetch additional stats:', error);
-          realTotalSales = 0;
-          realResponseRate = 95;
-        }
-
-        const stats = {
-          totalListings: listings.length,
-          activeListings: listings.filter(p => p.inStock !== false && p.status === 'active').length,
-          totalSales: realTotalSales,
-          avgRating: fetchedUser.seller_rating || 4.5,
-          responseRate: realResponseRate,
-          memberSince: fetchedUser.date_joined,
-          lastActive: realLastActive
-        };
-        
-        setUserStats(stats);
-        
-      } catch (error) {
-        console.error('Failed to load public profile:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (userId) {
       loadPublicProfile();
     }
-  }, [userId, allProducts]);
+  }, [userId]);
 
-  const handleMessageUser = () => {
-    // Navigate to messages with this user
-    window.location.href = `/messages?user=${userId}`;
+  const loadPublicProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/profile/${userId}/public`);
+      
+      if (!response.ok) {
+        throw new Error('Profile not found');
+      }
+      
+      const data = await response.json();
+      setProfile(data);
+    } catch (error) {
+      console.error('Failed to load public profile:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startConversation = () => {
+    // Redirect to messages with this user
+    window.location.href = `/messages?user_id=${userId}`;
+  };
+
+  const getBadgeStyle = (badge) => {
+    switch (badge) {
+      case 'Admin':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+      case 'Manager':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300';
+      case 'Seller':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+      case 'Buyer':
+      default:
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+    }
   };
 
   if (loading) {
