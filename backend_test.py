@@ -250,16 +250,21 @@ class BackendTester:
         """Test basic basket PDF export with sample data"""
         basket = self.test_baskets[0]  # Use the basket with items
         
-        response, status = await self.make_request("POST", "/user/export-basket-pdf", basket)
-        
-        if status == 200:
-            # Check if response is a streaming response (PDF file)
-            if hasattr(response, 'read') or isinstance(response, bytes):
-                self.log_result("Basic Basket PDF Export", True, f"PDF generated for basket: {basket['basketName']}")
-            else:
-                self.log_result("Basic Basket PDF Export", False, "Response is not a valid PDF file")
-        else:
-            self.log_result("Basic Basket PDF Export", False, f"Status: {status}", str(response))
+        try:
+            url = f"{API_BASE}/user/export-basket-pdf"
+            async with self.session.post(url, json=basket) as response:
+                if response.status == 200:
+                    pdf_content = await response.read()
+                    
+                    # Validate PDF header
+                    if pdf_content.startswith(b'%PDF'):
+                        self.log_result("Basic Basket PDF Export", True, f"PDF generated successfully for basket: {basket['basketName']} ({len(pdf_content)} bytes)")
+                    else:
+                        self.log_result("Basic Basket PDF Export", False, "Response is not a valid PDF file")
+                else:
+                    self.log_result("Basic Basket PDF Export", False, f"Status: {response.status}")
+        except Exception as e:
+            self.log_result("Basic Basket PDF Export", False, f"Request failed: {str(e)}")
             
     async def test_empty_basket_pdf_export(self):
         """Test PDF export with empty basket (edge case)"""
@@ -269,12 +274,20 @@ class BackendTester:
             
         empty_basket = self.test_baskets[1]  # Use the empty basket
         
-        response, status = await self.make_request("POST", "/user/export-basket-pdf", empty_basket)
-        
-        if status == 200:
-            self.log_result("Empty Basket PDF Export", True, "PDF generated successfully for empty basket")
-        else:
-            self.log_result("Empty Basket PDF Export", False, f"Status: {status}", str(response))
+        try:
+            url = f"{API_BASE}/user/export-basket-pdf"
+            async with self.session.post(url, json=empty_basket) as response:
+                if response.status == 200:
+                    pdf_content = await response.read()
+                    
+                    if pdf_content.startswith(b'%PDF'):
+                        self.log_result("Empty Basket PDF Export", True, f"PDF generated successfully for empty basket ({len(pdf_content)} bytes)")
+                    else:
+                        self.log_result("Empty Basket PDF Export", False, "Response is not a valid PDF file")
+                else:
+                    self.log_result("Empty Basket PDF Export", False, f"Status: {response.status}")
+        except Exception as e:
+            self.log_result("Empty Basket PDF Export", False, f"Request failed: {str(e)}")
             
     async def test_pdf_content_validation(self):
         """Test PDF content structure and data accuracy"""
