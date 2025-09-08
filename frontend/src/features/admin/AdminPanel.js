@@ -2463,6 +2463,24 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
     }
   };
 
+  const handleMediaSelection = (selectedMedia) => {
+    if (selectedMedia) {
+      const logoField = mediaSelectorType === 'light' ? 'logo_light_url' : 'logo_dark_url';
+      setFormData(prev => ({
+        ...prev,
+        [logoField]: selectedMedia.url
+      }));
+      
+      showToast(`${mediaSelectorType} logo selected from media library`, 'success');
+    }
+    setShowMediaSelector(false);
+  };
+
+  const openMediaSelector = (mode) => {
+    setMediaSelectorType(mode);
+    setShowMediaSelector(true);
+  };
+
   const handleSaveSettings = async () => {
     try {
       // Store settings in localStorage for immediate use
