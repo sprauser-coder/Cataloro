@@ -82,24 +82,23 @@ function BusinessTab({ showToast }) {
       setLoading(true);
       const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
       
-      // Fetch real business metrics using correct endpoint paths
-      const [analyticsRes, userRes, salesRes] = await Promise.all([
-        fetch(`${backendUrl}/api/admin/analytics/dashboard`),
-        fetch(`${backendUrl}/api/admin/analytics/users?days=30`),
-        fetch(`${backendUrl}/api/admin/analytics/sales?days=30`)
+      // Fetch real business metrics using existing working endpoints
+      const [usersRes] = await Promise.all([
+        fetch(`${backendUrl}/api/admin/users`)
       ]);
 
-      const [analytics, user, sales] = await Promise.all([
-        analyticsRes.json(),
-        userRes.json(),
-        salesRes.json()
+      const [users] = await Promise.all([
+        usersRes.json()
       ]);
 
-      console.log('📊 Business Tab Analytics Data:', { analytics, user, sales });
+      console.log('📊 Business Tab Real Data:', { users });
 
-      if (analytics.success && user.success && sales.success) {
+      if (users && Array.isArray(users)) {
+        const totalUsers = users.length;
+        const activeUsers = users.filter(user => user.is_active).length;
+        
         setRealBusinessData({
-          totalUsers: user.analytics?.summary?.total_users || analytics.analytics?.users?.total || 0,
+          totalUsers: totalUsers,
           newUsers: user.analytics?.summary?.new_users || 0,
           totalRevenue: sales.analytics?.summary?.total_revenue || 0,
           totalTransactions: sales.analytics?.summary?.total_transactions || 0,
