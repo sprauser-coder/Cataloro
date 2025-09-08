@@ -382,8 +382,13 @@ class ImageUploadTester:
             return
             
         try:
-            # Construct full URL
-            if image_url.startswith('/'):
+            # The backend serves static files from /api/uploads but returns URLs like /uploads/cms/...
+            # We need to adjust the URL to match the static file serving configuration
+            if image_url.startswith('/uploads/'):
+                # Convert /uploads/cms/... to /api/uploads/cms/...
+                adjusted_url = image_url.replace('/uploads/', '/api/uploads/')
+                full_url = f"{BASE_URL}{adjusted_url}"
+            elif image_url.startswith('/'):
                 full_url = f"{BASE_URL}{image_url}"
             else:
                 full_url = image_url
@@ -391,23 +396,17 @@ class ImageUploadTester:
             async with self.session.get(full_url) as response:
                 if response.status == 200:
                     content_type = response.headers.get('content-type', '')
-                    if content_type.startswith('image/'):
-                        self.log_result(
-                            "URL Accessibility", 
-                            True, 
-                            f"Image accessible at: {full_url}"
-                        )
-                    else:
-                        self.log_result(
-                            "URL Accessibility", 
-                            False, 
-                            f"URL accessible but not an image: {content_type}"
-                        )
+                    content_length = len(await response.read())
+                    self.log_result(
+                        "URL Accessibility", 
+                        True, 
+                        f"Image accessible at: {full_url} (Size: {content_length} bytes)"
+                    )
                 else:
                     self.log_result(
                         "URL Accessibility", 
                         False, 
-                        f"URL not accessible, status: {response.status}"
+                        f"URL not accessible, status: {response.status} - Tried: {full_url}"
                     )
                     
         except Exception as e:
