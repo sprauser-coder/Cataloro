@@ -18,6 +18,7 @@ import {
   DollarSign,
   Tag,
   User,
+  FileText,
   MapPin,
   Clock,
   ExternalLink,
