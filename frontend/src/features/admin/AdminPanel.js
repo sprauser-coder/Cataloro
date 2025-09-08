@@ -2449,8 +2449,10 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
 
       if (mode === 'light') {
         setLogoLightFile(file);
-      } else {
+      } else if (mode === 'dark') {
         setLogoDarkFile(file);
+      } else if (mode === 'pdf') {
+        setPdfLogoFile(file);
       }
       
       // Create preview
@@ -2464,17 +2466,24 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
             ...prev,
             logo_light_url: result
           }));
-        } else {
+        } else if (mode === 'dark') {
           setLogoDarkPreview(result);
           setFormData(prev => ({
             ...prev,
             logo_dark_url: result
           }));
+        } else if (mode === 'pdf') {
+          setPdfLogoPreview(result);
+          setFormData(prev => ({
+            ...prev,
+            pdf_logo_url: result
+          }));
         }
       };
       reader.readAsDataURL(file);
       
-      showToast(`${mode === 'light' ? 'Light' : 'Dark'} mode logo ready - click Save Settings to apply`, 'info');
+      const logoType = mode === 'light' ? 'Light' : mode === 'dark' ? 'Dark' : 'PDF Export';
+      showToast(`${logoType} mode logo ready - click Save Settings to apply`, 'info');
     }
   };
 
