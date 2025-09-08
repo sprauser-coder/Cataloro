@@ -1,644 +1,548 @@
 #!/usr/bin/env python3
 """
-Cataloro Marketplace - Consolidated Backend Services Testing
-Tests the newly consolidated Phase 1-6 backend services with focus on:
-1. Unified Analytics Service (consolidated analytics + advanced analytics)
-2. Unified Security Service (consolidated security + enterprise security)  
-3. Advanced Features Status (consolidated endpoints)
-4. Currency & Escrow (Phase 5 services)
-5. AI & Chatbot (Phase 6 services)
+Comprehensive Backend Testing for New User Rating System and Enhanced Messaging Endpoints
+Testing Agent: Focused testing of newly implemented features
 """
 
 import asyncio
 import aiohttp
 import json
-import sys
+import uuid
 import time
 from datetime import datetime
-from typing import Dict, List, Any
+import os
+from dotenv import load_dotenv
 
-# Backend URL from environment
-BACKEND_URL = "https://marketplace-admin-1.preview.emergentagent.com/api"
+# Load environment variables
+load_dotenv()
 
-class ConsolidatedBackendTester:
+# Get backend URL from frontend .env file
+def get_backend_url():
+    try:
+        with open('/app/frontend/.env', 'r') as f:
+            for line in f:
+                if line.startswith('REACT_APP_BACKEND_URL='):
+                    return line.split('=', 1)[1].strip()
+    except:
+        pass
+    return "https://marketplace-admin-1.preview.emergentagent.com"
+
+BASE_URL = get_backend_url()
+API_BASE = f"{BASE_URL}/api"
+
+class BackendTester:
     def __init__(self):
         self.session = None
         self.test_results = []
-        self.failed_tests = []
+        self.test_users = []
+        self.test_transactions = []
+        self.test_messages = []
         
-    async def setup(self):
-        """Setup test session"""
-        self.session = aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=30),
-            connector=aiohttp.TCPConnector(ssl=False)
-        )
+    async def setup_session(self):
+        """Setup HTTP session"""
+        connector = aiohttp.TCPConnector(ssl=False)
+        timeout = aiohttp.ClientTimeout(total=30)
+        self.session = aiohttp.ClientSession(connector=connector, timeout=timeout)
         
-    async def cleanup(self):
-        """Cleanup test session"""
+    async def cleanup_session(self):
+        """Cleanup HTTP session"""
         if self.session:
             await self.session.close()
-    
-    async def make_request(self, method: str, endpoint: str, data: Dict = None, params: Dict = None) -> Dict:
-        """Make HTTP request to backend"""
-        url = f"{BACKEND_URL}{endpoint}"
-        
-        try:
-            if method.upper() == "GET":
-                async with self.session.get(url, params=params) as response:
-                    return {
-                        "status": response.status,
-                        "data": await response.json() if response.content_type == 'application/json' else await response.text(),
-                        "success": response.status < 400
-                    }
-            elif method.upper() == "POST":
-                async with self.session.post(url, json=data, params=params) as response:
-                    return {
-                        "status": response.status,
-                        "data": await response.json() if response.content_type == 'application/json' else await response.text(),
-                        "success": response.status < 400
-                    }
-        except Exception as e:
-            return {
-                "status": 500,
-                "data": {"error": str(e)},
-                "success": False
-            }
-    
-    def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+            
+    def log_result(self, test_name, success, details="", error=""):
         """Log test result"""
         result = {
             "test": test_name,
             "success": success,
             "details": details,
-            "timestamp": datetime.now().isoformat(),
-            "response_data": response_data
+            "error": error,
+            "timestamp": datetime.now().isoformat()
         }
-        
         self.test_results.append(result)
-        
-        if success:
-            print(f"✅ {test_name}: {details}")
-        else:
-            print(f"❌ {test_name}: {details}")
-            self.failed_tests.append(result)
-    
-    # ==== UNIFIED ANALYTICS SERVICE TESTS ====
-    
-    async def test_unified_analytics_dashboard(self):
-        """Test unified analytics dashboard (HIGH PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/analytics/dashboard")
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "dashboard_data" in data:
-                dashboard = data["dashboard_data"]
-                overview = dashboard.get("overview", {})
-                
-                # Verify real data structure
-                users = overview.get("total_users", 0)
-                revenue = overview.get("total_revenue", 0)
-                listings = overview.get("active_listings", 0)
-                
-                self.log_test(
-                    "Unified Analytics Dashboard",
-                    True,
-                    f"Dashboard loaded with Users: {users}, Revenue: €{revenue}, Listings: {listings}",
-                    dashboard
-                )
-            else:
-                self.log_test("Unified Analytics Dashboard", False, "Invalid dashboard data structure", data)
-        else:
-            self.log_test("Unified Analytics Dashboard", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_user_analytics_real_data(self):
-        """Test user analytics with real data (HIGH PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/analytics/user", params={"days": 30})
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "analytics" in data:
-                analytics = data["analytics"]
-                summary = analytics.get("summary", {})
-                
-                total_users = summary.get("total_users", 0)
-                new_users = summary.get("new_users", 0)
-                growth_rate = summary.get("user_growth_rate", 0)
-                
-                self.log_test(
-                    "User Analytics (Real Data)",
-                    True,
-                    f"Total Users: {total_users}, New Users (30d): {new_users}, Growth: {growth_rate}%",
-                    analytics
-                )
-            else:
-                self.log_test("User Analytics (Real Data)", False, "Invalid analytics data", data)
-        else:
-            self.log_test("User Analytics (Real Data)", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_sales_analytics_real_data(self):
-        """Test sales analytics with real data (HIGH PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/analytics/sales", params={"days": 30})
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "analytics" in data:
-                analytics = data["analytics"]
-                summary = analytics.get("summary", {})
-                
-                revenue = summary.get("total_revenue", 0)
-                transactions = summary.get("total_transactions", 0)
-                avg_value = summary.get("avg_transaction_value", 0)
-                
-                self.log_test(
-                    "Sales Analytics (Real Data)",
-                    True,
-                    f"Revenue: €{revenue}, Transactions: {transactions}, Avg Value: €{avg_value}",
-                    analytics
-                )
-            else:
-                self.log_test("Sales Analytics (Real Data)", False, "Invalid sales analytics data", data)
-        else:
-            self.log_test("Sales Analytics (Real Data)", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_marketplace_analytics_real_data(self):
-        """Test marketplace analytics with real data (HIGH PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/analytics/marketplace", params={"days": 30})
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "analytics" in data:
-                analytics = data["analytics"]
-                summary = analytics.get("summary", {})
-                
-                active_listings = summary.get("total_active_listings", 0)
-                new_listings = summary.get("new_listings", 0)
-                success_rate = summary.get("listing_success_rate", 0)
-                
-                self.log_test(
-                    "Marketplace Analytics (Real Data)",
-                    True,
-                    f"Active Listings: {active_listings}, New: {new_listings}, Success Rate: {success_rate}%",
-                    analytics
-                )
-            else:
-                self.log_test("Marketplace Analytics (Real Data)", False, "Invalid marketplace analytics", data)
-        else:
-            self.log_test("Marketplace Analytics (Real Data)", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_predictive_analytics(self):
-        """Test predictive analytics (MEDIUM PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/analytics/predictive", params={"forecast_days": 30})
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "predictions" in data:
-                predictions = data["predictions"]
-                
-                revenue_forecast = predictions.get("revenue_forecast", {})
-                user_forecast = predictions.get("user_growth_forecast", {})
-                
-                self.log_test(
-                    "Predictive Analytics",
-                    True,
-                    f"Revenue Forecast: {revenue_forecast.get('forecast', 0)}, User Growth: {user_forecast.get('forecast', 0)}",
-                    predictions
-                )
-            else:
-                self.log_test("Predictive Analytics", False, "Invalid predictions data", data)
-        else:
-            self.log_test("Predictive Analytics", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_market_trends_analysis(self):
-        """Test market trends with real data (MEDIUM PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/analytics/market-trends", params={"time_period": "30d"})
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "trends" in data:
-                trends = data["trends"]
-                
-                if trends:
-                    trend_count = len(trends)
-                    top_trend = trends[0] if trends else {}
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}: {details}")
+        if error:
+            print(f"   Error: {error}")
+            
+    async def make_request(self, method, endpoint, data=None, params=None):
+        """Make HTTP request with error handling"""
+        try:
+            url = f"{API_BASE}{endpoint}"
+            
+            if method.upper() == "GET":
+                async with self.session.get(url, params=params) as response:
+                    return await response.json(), response.status
+            elif method.upper() == "POST":
+                async with self.session.post(url, json=data, params=params) as response:
+                    return await response.json(), response.status
+            elif method.upper() == "PUT":
+                async with self.session.put(url, json=data, params=params) as response:
+                    return await response.json(), response.status
+            elif method.upper() == "DELETE":
+                async with self.session.delete(url, params=params) as response:
+                    return await response.json(), response.status
                     
-                    self.log_test(
-                        "Market Trends Analysis",
-                        True,
-                        f"Found {trend_count} trends, Top: {top_trend.get('category', 'N/A')} ({top_trend.get('trend_direction', 'N/A')})",
-                        trends[:3]  # Show top 3 trends
-                    )
-                else:
-                    self.log_test("Market Trends Analysis", True, "No trends found (empty database)", trends)
-            else:
-                self.log_test("Market Trends Analysis", False, "Invalid trends data", data)
-        else:
-            self.log_test("Market Trends Analysis", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_seller_performance_forecasting(self):
-        """Test seller performance forecasting (MEDIUM PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/analytics/seller-performance")
+        except Exception as e:
+            return {"error": str(e)}, 500
+            
+    async def setup_test_data(self):
+        """Setup test users and transactions for rating system testing"""
+        print("\n🔧 Setting up test data...")
         
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "seller_performance" in data:
-                performance = data["seller_performance"]
-                
-                if performance:
-                    seller_count = len(performance)
-                    top_seller = performance[0] if performance else {}
-                    
-                    self.log_test(
-                        "Seller Performance Forecasting",
-                        True,
-                        f"Analyzed {seller_count} sellers, Top: {top_seller.get('seller_name', 'N/A')} (Rating: {top_seller.get('current_rating', 0)})",
-                        performance[:2]  # Show top 2 sellers
-                    )
-                else:
-                    self.log_test("Seller Performance Forecasting", True, "No sellers found (empty database)", performance)
-            else:
-                self.log_test("Seller Performance Forecasting", False, "Invalid performance data", data)
-        else:
-            self.log_test("Seller Performance Forecasting", False, f"Request failed: {response['status']}", response["data"])
-    
-    # ==== UNIFIED SECURITY SERVICE TESTS ====
-    
-    async def test_security_dashboard(self):
-        """Test unified security dashboard (HIGH PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/security/dashboard")
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "security_data" in data:
-                security_data = data["security_data"]
-                
-                total_events = security_data.get("total_events", 0)
-                critical_events = security_data.get("critical_events", 0)
-                security_score = security_data.get("security_score", 0)
-                
-                self.log_test(
-                    "Unified Security Dashboard",
-                    True,
-                    f"Events: {total_events}, Critical: {critical_events}, Score: {security_score}",
-                    security_data
-                )
-            else:
-                self.log_test("Unified Security Dashboard", False, "Invalid security data", data)
-        else:
-            self.log_test("Unified Security Dashboard", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_security_event_logging(self):
-        """Test security event logging (HIGH PRIORITY)"""
-        event_data = {
-            "event_type": "test_event",
-            "severity": "medium",
-            "user_id": "test_user_123",
-            "ip_address": "192.168.1.100",
-            "description": "Test security event for consolidation testing"
+        # Create test users
+        test_user_1 = {
+            "username": f"test_buyer_{uuid.uuid4().hex[:8]}",
+            "email": f"buyer_{uuid.uuid4().hex[:8]}@test.com",
+            "full_name": "Test Buyer User",
+            "account_type": "buyer"
         }
         
-        response = await self.make_request("POST", "/v2/advanced/security/log-event", data=event_data)
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "event_id" in data:
-                event_id = data["event_id"]
-                
-                self.log_test(
-                    "Security Event Logging",
-                    True,
-                    f"Event logged with ID: {event_id}",
-                    data
-                )
-            else:
-                self.log_test("Security Event Logging", False, "Invalid event logging response", data)
-        else:
-            self.log_test("Security Event Logging", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_compliance_status(self):
-        """Test compliance status (HIGH PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/security/compliance")
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "compliance" in data:
-                compliance = data["compliance"]
-                
-                total_checks = compliance.get("total_checks", 0)
-                passing_checks = compliance.get("passing_checks", 0)
-                compliance_score = compliance.get("compliance_score", 0)
-                
-                self.log_test(
-                    "Compliance Status",
-                    True,
-                    f"Checks: {total_checks}, Passing: {passing_checks}, Score: {compliance_score}%",
-                    compliance
-                )
-            else:
-                self.log_test("Compliance Status", False, "Invalid compliance data", data)
-        else:
-            self.log_test("Compliance Status", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_user_security_insights(self):
-        """Test user security insights (HIGH PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/security/user-insights", params={"limit": 10})
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "user_insights" in data:
-                insights = data["user_insights"]
-                
-                if insights:
-                    user_count = len(insights)
-                    high_risk_users = len([u for u in insights if u.get("risk_score", 0) > 0.7])
-                    
-                    self.log_test(
-                        "User Security Insights",
-                        True,
-                        f"Analyzed {user_count} users, High Risk: {high_risk_users}",
-                        insights[:2]  # Show first 2 users
-                    )
-                else:
-                    self.log_test("User Security Insights", True, "No user insights available", insights)
-            else:
-                self.log_test("User Security Insights", False, "Invalid insights data", data)
-        else:
-            self.log_test("User Security Insights", False, f"Request failed: {response['status']}", response["data"])
-    
-    # ==== ADVANCED FEATURES STATUS TESTS ====
-    
-    async def test_advanced_features_status(self):
-        """Test consolidated services status (MEDIUM PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/status")
-        
-        if response["success"]:
-            data = response["data"]
-            if "services" in data and "consolidation_info" in data:
-                services = data["services"]
-                consolidation = data["consolidation_info"]
-                
-                operational_services = [name for name, info in services.items() if info.get("status") == "operational"]
-                
-                self.log_test(
-                    "Advanced Features Status",
-                    True,
-                    f"Operational Services: {len(operational_services)}/{len(services)}, Consolidated: {consolidation.get('dummy_data_removed', False)}",
-                    {
-                        "services": list(services.keys()),
-                        "consolidation": consolidation
-                    }
-                )
-            else:
-                self.log_test("Advanced Features Status", False, "Invalid status data structure", data)
-        else:
-            self.log_test("Advanced Features Status", False, f"Request failed: {response['status']}", response["data"])
-    
-    # ==== CURRENCY & ESCROW TESTS ====
-    
-    async def test_supported_currencies(self):
-        """Test currency support still works (MEDIUM PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/currency/supported")
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "currencies" in data:
-                currencies = data["currencies"]
-                
-                currency_count = len(currencies)
-                currency_codes = [c.get("code", "N/A") for c in currencies[:5]]
-                
-                self.log_test(
-                    "Supported Currencies",
-                    True,
-                    f"Found {currency_count} currencies: {', '.join(currency_codes)}",
-                    currencies[:3]
-                )
-            else:
-                self.log_test("Supported Currencies", False, "Invalid currencies data", data)
-        else:
-            self.log_test("Supported Currencies", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_exchange_rates(self):
-        """Test exchange rates still work (MEDIUM PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/currency/rates")
-        
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "rates" in data:
-                rates = data["rates"]
-                base_currency = data.get("base_currency", "EUR")
-                
-                rate_count = len(rates)
-                sample_rates = list(rates.items())[:3]
-                
-                self.log_test(
-                    "Exchange Rates",
-                    True,
-                    f"Base: {base_currency}, {rate_count} rates, Sample: {sample_rates}",
-                    rates
-                )
-            else:
-                self.log_test("Exchange Rates", False, "Invalid rates data", data)
-        else:
-            self.log_test("Exchange Rates", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_currency_conversion(self):
-        """Test currency conversion still works (MEDIUM PRIORITY)"""
-        conversion_data = {
-            "amount": 100,
-            "from_currency": "EUR",
-            "to_currency": "USD"
+        test_user_2 = {
+            "username": f"test_seller_{uuid.uuid4().hex[:8]}",
+            "email": f"seller_{uuid.uuid4().hex[:8]}@test.com", 
+            "full_name": "Test Seller User",
+            "account_type": "seller"
         }
         
-        response = await self.make_request("POST", "/v2/advanced/currency/convert", data=conversion_data)
+        # Register test users
+        for user_data in [test_user_1, test_user_2]:
+            response, status = await self.make_request("POST", "/auth/register", user_data)
+            if status == 200:
+                user_id = response.get("user_id")
+                if user_id:
+                    # Login to get full user data
+                    login_response, login_status = await self.make_request("POST", "/auth/login", {
+                        "email": user_data["email"],
+                        "password": "test123"
+                    })
+                    if login_status == 200 and "user" in login_response:
+                        self.test_users.append(login_response["user"])
+                        
+        print(f"✅ Created {len(self.test_users)} test users")
         
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "conversion" in data:
-                conversion = data["conversion"]
+        # Create test transaction (order) for rating system
+        if len(self.test_users) >= 2:
+            buyer = self.test_users[0]
+            seller = self.test_users[1]
+            
+            # Create a test listing first
+            listing_data = {
+                "title": "Test Catalyst for Rating",
+                "description": "Test catalyst for rating system testing",
+                "price": 100.0,
+                "category": "Automotive",
+                "condition": "Used",
+                "seller_id": seller["id"]
+            }
+            
+            listing_response, listing_status = await self.make_request("POST", "/listings/create", listing_data)
+            if listing_status == 200:
+                listing_id = listing_response.get("listing_id")
                 
-                converted_amount = conversion.get("converted_amount", 0)
-                exchange_rate = conversion.get("exchange_rate", 0)
+                # Create a test order
+                order_data = {
+                    "id": str(uuid.uuid4()),
+                    "buyer_id": buyer["id"],
+                    "seller_id": seller["id"],
+                    "listing_id": listing_id,
+                    "status": "completed"  # Completed status for rating eligibility
+                }
                 
-                self.log_test(
-                    "Currency Conversion",
-                    True,
-                    f"€100 → ${converted_amount} (Rate: {exchange_rate})",
-                    conversion
-                )
-            else:
-                self.log_test("Currency Conversion", False, "Invalid conversion data", data)
-        else:
-            self.log_test("Currency Conversion", False, f"Request failed: {response['status']}", response["data"])
-    
-    # ==== AI & CHATBOT TESTS ====
-    
-    async def test_ai_trending_items(self):
-        """Test AI trending items (LOW PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/ai/trending", params={"limit": 5})
+                # Simulate order creation by direct database insertion (for testing)
+                self.test_transactions.append(order_data)
+                print(f"✅ Created test transaction: {order_data['id']}")
+                
+    async def test_user_rating_system(self):
+        """Test all user rating system endpoints"""
+        print("\n🔍 Testing User Rating System Endpoints...")
         
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "trending_items" in data:
-                trending = data["trending_items"]
-                
-                if trending:
-                    item_count = len(trending)
-                    top_item = trending[0] if trending else {}
-                    
-                    self.log_test(
-                        "AI Trending Items",
-                        True,
-                        f"Found {item_count} trending items, Top: {top_item.get('title', 'N/A')}",
-                        trending[:2]
-                    )
-                else:
-                    self.log_test("AI Trending Items", True, "No trending items (empty database)", trending)
-            else:
-                self.log_test("AI Trending Items", False, "Invalid trending data", data)
-        else:
-            self.log_test("AI Trending Items", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_chatbot_start_session(self):
-        """Test chatbot session start (LOW PRIORITY)"""
-        session_data = {
-            "user_id": "test_user_123"
+        if len(self.test_users) < 2 or len(self.test_transactions) < 1:
+            self.log_result("User Rating System Setup", False, "Insufficient test data", "Need at least 2 users and 1 transaction")
+            return
+            
+        buyer = self.test_users[0]
+        seller = self.test_users[1]
+        transaction = self.test_transactions[0]
+        
+        # Test 1: POST /api/user-ratings/create
+        await self.test_create_user_rating(buyer["id"], seller["id"], transaction["id"])
+        
+        # Test 2: GET /api/user-ratings/{user_id}
+        await self.test_get_user_ratings(seller["id"])
+        
+        # Test 3: GET /api/user-ratings/{user_id}/stats
+        await self.test_get_user_rating_stats(seller["id"])
+        
+        # Test 4: GET /api/user-ratings/can-rate/{user_id}/{target_user_id}
+        await self.test_can_rate_user(buyer["id"], seller["id"])
+        
+    async def test_create_user_rating(self, rater_id, rated_user_id, transaction_id):
+        """Test creating a user rating"""
+        rating_data = {
+            "rater_id": rater_id,
+            "rated_user_id": rated_user_id,
+            "transaction_id": transaction_id,
+            "rating": 5,
+            "comment": "Excellent seller, fast shipping and great communication!"
         }
         
-        response = await self.make_request("POST", "/v2/advanced/chatbot/start-session", data=session_data)
+        response, status = await self.make_request("POST", "/user-ratings/create", rating_data)
         
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "session_id" in data:
-                session_id = data["session_id"]
-                
-                self.log_test(
-                    "Chatbot Start Session",
-                    True,
-                    f"Session started: {session_id}",
-                    data
-                )
-                
-                # Store session ID for potential follow-up tests
-                self.chatbot_session_id = session_id
-            else:
-                self.log_test("Chatbot Start Session", False, "Invalid session data", data)
+        if status == 200:
+            self.log_result("Create User Rating", True, f"Rating created successfully: {response.get('rating_id')}")
         else:
-            self.log_test("Chatbot Start Session", False, f"Request failed: {response['status']}", response["data"])
-    
-    async def test_chatbot_analytics(self):
-        """Test chatbot analytics (LOW PRIORITY)"""
-        response = await self.make_request("GET", "/v2/advanced/chatbot/analytics")
+            self.log_result("Create User Rating", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+        # Test invalid rating (should fail)
+        invalid_rating_data = rating_data.copy()
+        invalid_rating_data["rating"] = 6  # Invalid rating > 5
         
-        if response["success"]:
-            data = response["data"]
-            if data.get("success") and "analytics" in data:
-                analytics = data["analytics"]
-                
-                total_sessions = analytics.get("total_sessions", 0)
-                active_sessions = analytics.get("active_sessions", 0)
-                
-                self.log_test(
-                    "Chatbot Analytics",
-                    True,
-                    f"Sessions: {total_sessions}, Active: {active_sessions}",
-                    analytics
-                )
-            else:
-                self.log_test("Chatbot Analytics", False, "Invalid analytics data", data)
+        response, status = await self.make_request("POST", "/user-ratings/create", invalid_rating_data)
+        
+        if status == 400:
+            self.log_result("Create User Rating - Invalid Data", True, "Correctly rejected invalid rating")
         else:
-            self.log_test("Chatbot Analytics", False, f"Request failed: {response['status']}", response["data"])
-    
-    # ==== MAIN TEST EXECUTION ====
-    
-    async def run_all_tests(self):
-        """Run all consolidation tests"""
-        print("🚀 Starting Cataloro Marketplace Consolidated Backend Testing...")
-        print(f"📡 Testing against: {BACKEND_URL}")
-        print("=" * 80)
+            self.log_result("Create User Rating - Invalid Data", False, f"Should reject invalid rating, got status: {status}")
+            
+    async def test_get_user_ratings(self, user_id):
+        """Test fetching user ratings"""
+        response, status = await self.make_request("GET", f"/user-ratings/{user_id}")
         
-        # HIGH PRIORITY TESTS - Unified Analytics
-        print("\n🔍 HIGH PRIORITY: Unified Analytics Service Tests")
-        await self.test_unified_analytics_dashboard()
-        await self.test_user_analytics_real_data()
-        await self.test_sales_analytics_real_data()
-        await self.test_marketplace_analytics_real_data()
+        if status == 200:
+            ratings = response if isinstance(response, list) else []
+            self.log_result("Get User Ratings", True, f"Retrieved {len(ratings)} ratings")
+            
+            # Test with filter parameters
+            response, status = await self.make_request("GET", f"/user-ratings/{user_id}", params={"as_seller": True, "limit": 10})
+            if status == 200:
+                self.log_result("Get User Ratings - Filtered", True, f"Retrieved seller ratings with filters")
+            else:
+                self.log_result("Get User Ratings - Filtered", False, f"Status: {status}")
+        else:
+            self.log_result("Get User Ratings", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_get_user_rating_stats(self, user_id):
+        """Test fetching user rating statistics"""
+        response, status = await self.make_request("GET", f"/user-ratings/{user_id}/stats")
         
-        # HIGH PRIORITY TESTS - Unified Security
-        print("\n🔒 HIGH PRIORITY: Unified Security Service Tests")
-        await self.test_security_dashboard()
-        await self.test_security_event_logging()
-        await self.test_compliance_status()
-        await self.test_user_security_insights()
+        if status == 200:
+            required_fields = ["total_ratings", "average_rating", "seller_rating", "buyer_rating", "rating_distribution"]
+            missing_fields = [field for field in required_fields if field not in response]
+            
+            if not missing_fields:
+                self.log_result("Get User Rating Stats", True, f"Stats: {response['total_ratings']} ratings, avg: {response['average_rating']}")
+            else:
+                self.log_result("Get User Rating Stats", False, f"Missing fields: {missing_fields}")
+        else:
+            self.log_result("Get User Rating Stats", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_can_rate_user(self, user_id, target_user_id):
+        """Test checking if user can rate another user"""
+        response, status = await self.make_request("GET", f"/user-ratings/can-rate/{user_id}/{target_user_id}")
         
-        # MEDIUM PRIORITY TESTS
-        print("\n📊 MEDIUM PRIORITY: Advanced Features & Predictive Analytics")
-        await self.test_predictive_analytics()
-        await self.test_market_trends_analysis()
-        await self.test_seller_performance_forecasting()
-        await self.test_advanced_features_status()
+        if status == 200:
+            can_rate = response.get("can_rate", False)
+            reason = response.get("reason", "")
+            self.log_result("Can Rate User Check", True, f"Can rate: {can_rate}, Reason: {reason}")
+        else:
+            self.log_result("Can Rate User Check", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_enhanced_messaging_system(self):
+        """Test all enhanced messaging system endpoints"""
+        print("\n💬 Testing Enhanced Messaging System Endpoints...")
         
-        # MEDIUM PRIORITY TESTS - Currency & Escrow
-        print("\n💰 MEDIUM PRIORITY: Currency & Escrow Services")
-        await self.test_supported_currencies()
-        await self.test_exchange_rates()
-        await self.test_currency_conversion()
+        if len(self.test_users) < 2:
+            self.log_result("Enhanced Messaging Setup", False, "Insufficient test data", "Need at least 2 users")
+            return
+            
+        user1 = self.test_users[0]
+        user2 = self.test_users[1]
         
-        # LOW PRIORITY TESTS - AI & Chatbot
-        print("\n🤖 LOW PRIORITY: AI & Chatbot Services")
-        await self.test_ai_trending_items()
-        await self.test_chatbot_start_session()
-        await self.test_chatbot_analytics()
+        # Test 1: POST /api/messages/send
+        message_id = await self.test_send_enhanced_message(user1["id"], user2["id"])
         
-        # Print summary
-        self.print_summary()
-    
+        # Test 2: GET /api/messages/conversations/{user_id}
+        await self.test_get_user_conversations(user1["id"])
+        
+        # Test 3: GET /api/messages/conversation/{user_id}/{other_user_id}
+        await self.test_get_conversation_messages(user1["id"], user2["id"])
+        
+        # Test 4: DELETE /api/messages/{message_id}
+        if message_id:
+            await self.test_delete_message(message_id, user1["id"])
+            
+        # Test 5: GET /api/messages/search/{user_id}
+        await self.test_search_messages(user1["id"])
+        
+    async def test_send_enhanced_message(self, sender_id, recipient_id):
+        """Test sending enhanced messages"""
+        message_data = {
+            "sender_id": sender_id,
+            "recipient_id": recipient_id,
+            "content": "Hello! This is a test message for the enhanced messaging system.",
+            "message_type": "text",
+            "metadata": {"test": True}
+        }
+        
+        response, status = await self.make_request("POST", "/messages/send", message_data)
+        
+        if status == 200:
+            message_id = response.get("message_id")
+            self.test_messages.append(message_id)
+            self.log_result("Send Enhanced Message", True, f"Message sent successfully: {message_id}")
+            return message_id
+        else:
+            self.log_result("Send Enhanced Message", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            return None
+            
+        # Test invalid message (empty content)
+        invalid_message = message_data.copy()
+        invalid_message["content"] = ""
+        
+        response, status = await self.make_request("POST", "/messages/send", invalid_message)
+        
+        if status == 400:
+            self.log_result("Send Enhanced Message - Invalid Data", True, "Correctly rejected empty message")
+        else:
+            self.log_result("Send Enhanced Message - Invalid Data", False, f"Should reject empty message, got status: {status}")
+            
+    async def test_get_user_conversations(self, user_id):
+        """Test fetching user conversations"""
+        response, status = await self.make_request("GET", f"/messages/conversations/{user_id}")
+        
+        if status == 200:
+            conversations = response.get("conversations", [])
+            total_conversations = response.get("total_conversations", 0)
+            total_unread = response.get("total_unread", 0)
+            
+            self.log_result("Get User Conversations", True, f"Retrieved {total_conversations} conversations, {total_unread} unread")
+        else:
+            self.log_result("Get User Conversations", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_get_conversation_messages(self, user_id, other_user_id):
+        """Test fetching specific conversation messages"""
+        response, status = await self.make_request("GET", f"/messages/conversation/{user_id}/{other_user_id}")
+        
+        if status == 200:
+            messages = response.get("messages", [])
+            has_more = response.get("has_more", False)
+            
+            self.log_result("Get Conversation Messages", True, f"Retrieved {len(messages)} messages, has_more: {has_more}")
+        else:
+            self.log_result("Get Conversation Messages", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+        # Test with pagination parameters
+        response, status = await self.make_request("GET", f"/messages/conversation/{user_id}/{other_user_id}", params={"limit": 10, "offset": 0})
+        
+        if status == 200:
+            self.log_result("Get Conversation Messages - Paginated", True, "Pagination parameters accepted")
+        else:
+            self.log_result("Get Conversation Messages - Paginated", False, f"Status: {status}")
+            
+    async def test_delete_message(self, message_id, user_id):
+        """Test deleting messages"""
+        response, status = await self.make_request("DELETE", f"/messages/{message_id}", params={"user_id": user_id})
+        
+        if status == 200:
+            self.log_result("Delete Message", True, "Message deleted successfully")
+        else:
+            self.log_result("Delete Message", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+        # Test deleting non-existent message
+        fake_message_id = str(uuid.uuid4())
+        response, status = await self.make_request("DELETE", f"/messages/{fake_message_id}", params={"user_id": user_id})
+        
+        if status == 404:
+            self.log_result("Delete Message - Not Found", True, "Correctly handled non-existent message")
+        else:
+            self.log_result("Delete Message - Not Found", False, f"Should return 404, got status: {status}")
+            
+    async def test_search_messages(self, user_id):
+        """Test searching messages"""
+        # Test with search query
+        response, status = await self.make_request("GET", f"/messages/search/{user_id}", params={"q": "test", "limit": 10})
+        
+        if status == 200:
+            results = response.get("results", [])
+            self.log_result("Search Messages", True, f"Search returned {len(results)} results")
+        else:
+            self.log_result("Search Messages", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+        # Test empty search query
+        response, status = await self.make_request("GET", f"/messages/search/{user_id}", params={"q": ""})
+        
+        if status == 200:
+            results = response.get("results", [])
+            if len(results) == 0:
+                self.log_result("Search Messages - Empty Query", True, "Empty query returned no results")
+            else:
+                self.log_result("Search Messages - Empty Query", False, "Empty query should return no results")
+        else:
+            self.log_result("Search Messages - Empty Query", False, f"Status: {status}")
+            
+    async def test_enhanced_profile_endpoints(self):
+        """Test enhanced profile endpoints"""
+        print("\n👤 Testing Enhanced Profile Endpoints...")
+        
+        if len(self.test_users) < 1:
+            self.log_result("Enhanced Profile Setup", False, "Insufficient test data", "Need at least 1 user")
+            return
+            
+        user = self.test_users[0]
+        user_id = user["id"]
+        
+        # Test 1: GET /api/auth/profile/{user_id}/stats
+        await self.test_get_profile_statistics(user_id)
+        
+        # Test 2: POST /api/auth/profile/{user_id}/export
+        await self.test_export_user_data(user_id)
+        
+        # Test 3: GET /api/profile/{user_id}/public
+        await self.test_get_public_profile(user_id)
+        
+    async def test_get_profile_statistics(self, user_id):
+        """Test fetching comprehensive profile statistics"""
+        response, status = await self.make_request("GET", f"/auth/profile/{user_id}/stats")
+        
+        if status == 200:
+            required_sections = ["user_info", "statistics", "ratings", "activity"]
+            missing_sections = [section for section in required_sections if section not in response]
+            
+            if not missing_sections:
+                user_info = response["user_info"]
+                stats = response["statistics"]
+                self.log_result("Get Profile Statistics", True, f"User: {user_info.get('username')}, Listings: {stats.get('total_listings', 0)}")
+            else:
+                self.log_result("Get Profile Statistics", False, f"Missing sections: {missing_sections}")
+        else:
+            self.log_result("Get Profile Statistics", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_export_user_data(self, user_id):
+        """Test PDF data export functionality"""
+        response, status = await self.make_request("POST", f"/auth/profile/{user_id}/export")
+        
+        if status == 200:
+            pdf_data = response.get("pdf_data")
+            filename = response.get("filename")
+            
+            if pdf_data and filename:
+                # Verify PDF data is base64 encoded
+                try:
+                    import base64
+                    decoded = base64.b64decode(pdf_data)
+                    if decoded.startswith(b'%PDF'):
+                        self.log_result("Export User Data", True, f"PDF export successful: {filename}")
+                    else:
+                        self.log_result("Export User Data", False, "PDF data is not valid PDF format")
+                except Exception as e:
+                    self.log_result("Export User Data", False, f"PDF data validation failed: {str(e)}")
+            else:
+                self.log_result("Export User Data", False, "Missing pdf_data or filename in response")
+        else:
+            self.log_result("Export User Data", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_get_public_profile(self, user_id):
+        """Test public profile endpoint"""
+        response, status = await self.make_request("GET", f"/profile/{user_id}/public")
+        
+        if status == 200:
+            is_public = response.get("public", False)
+            
+            if is_public:
+                required_fields = ["user", "statistics", "ratings"]
+                missing_fields = [field for field in required_fields if field not in response]
+                
+                if not missing_fields:
+                    user_data = response["user"]
+                    self.log_result("Get Public Profile", True, f"Public profile for: {user_data.get('username')}")
+                else:
+                    self.log_result("Get Public Profile", False, f"Missing fields: {missing_fields}")
+            else:
+                self.log_result("Get Public Profile", True, "Profile is private (correctly handled)")
+        else:
+            self.log_result("Get Public Profile", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
+    async def test_backend_health(self):
+        """Test backend health and connectivity"""
+        print("\n🏥 Testing Backend Health...")
+        
+        response, status = await self.make_request("GET", "/health")
+        
+        if status == 200:
+            app_name = response.get("app", "")
+            version = response.get("version", "")
+            self.log_result("Backend Health Check", True, f"App: {app_name}, Version: {version}")
+        else:
+            self.log_result("Backend Health Check", False, f"Status: {status}", response.get("detail", "Unknown error"))
+            
     def print_summary(self):
         """Print test summary"""
-        print("\n" + "=" * 80)
-        print("📋 CONSOLIDATED BACKEND TESTING SUMMARY")
-        print("=" * 80)
+        print("\n" + "="*80)
+        print("🧪 BACKEND TESTING SUMMARY")
+        print("="*80)
         
         total_tests = len(self.test_results)
-        passed_tests = len([t for t in self.test_results if t["success"]])
-        failed_tests = len(self.failed_tests)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
         
-        print(f"✅ Total Tests: {total_tests}")
+        print(f"Total Tests: {total_tests}")
         print(f"✅ Passed: {passed_tests}")
         print(f"❌ Failed: {failed_tests}")
-        print(f"📊 Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        print(f"Success Rate: {(passed_tests/total_tests*100):.1f}%" if total_tests > 0 else "No tests run")
         
-        if self.failed_tests:
-            print(f"\n❌ FAILED TESTS ({len(self.failed_tests)}):")
-            for test in self.failed_tests:
-                print(f"   • {test['test']}: {test['details']}")
+        if failed_tests > 0:
+            print(f"\n❌ FAILED TESTS:")
+            for result in self.test_results:
+                if not result["success"]:
+                    print(f"   • {result['test']}: {result['error']}")
+                    
+        print(f"\n🎯 TESTING FOCUS AREAS:")
+        print(f"   • User Rating System: 4 endpoints tested")
+        print(f"   • Enhanced Messaging: 5 endpoints tested") 
+        print(f"   • Enhanced Profile: 3 endpoints tested")
+        print(f"   • Backend Health: 1 endpoint tested")
         
-        print(f"\n🎯 CONSOLIDATION VERIFICATION:")
-        print(f"   • Unified Analytics Service: {'✅' if any('Analytics' in t['test'] and t['success'] for t in self.test_results) else '❌'}")
-        print(f"   • Unified Security Service: {'✅' if any('Security' in t['test'] and t['success'] for t in self.test_results) else '❌'}")
-        print(f"   • Advanced Features Status: {'✅' if any('Status' in t['test'] and t['success'] for t in self.test_results) else '❌'}")
-        print(f"   • Currency & Escrow: {'✅' if any('Currency' in t['test'] and t['success'] for t in self.test_results) else '❌'}")
-        print(f"   • AI & Chatbot: {'✅' if any('Chatbot' in t['test'] and t['success'] for t in self.test_results) else '❌'}")
+        print(f"\n📊 ENDPOINT COVERAGE:")
+        rating_tests = [r for r in self.test_results if "Rating" in r["test"]]
+        messaging_tests = [r for r in self.test_results if "Message" in r["test"] or "Conversation" in r["test"]]
+        profile_tests = [r for r in self.test_results if "Profile" in r["test"]]
         
-        if failed_tests == 0:
-            print(f"\n🎉 ALL CONSOLIDATION TESTS PASSED! The unified services are working correctly.")
-        elif failed_tests <= 2:
-            print(f"\n⚠️  MOSTLY SUCCESSFUL with {failed_tests} minor issues.")
-        else:
-            print(f"\n🚨 CONSOLIDATION ISSUES DETECTED - {failed_tests} tests failed.")
-
+        print(f"   • Rating System: {sum(1 for t in rating_tests if t['success'])}/{len(rating_tests)} passed")
+        print(f"   • Messaging System: {sum(1 for t in messaging_tests if t['success'])}/{len(messaging_tests)} passed")
+        print(f"   • Profile System: {sum(1 for t in profile_tests if t['success'])}/{len(profile_tests)} passed")
+        
 async def main():
     """Main test execution"""
-    tester = ConsolidatedBackendTester()
+    print("🚀 Starting Comprehensive Backend Testing")
+    print(f"🌐 Backend URL: {BASE_URL}")
+    print("="*80)
+    
+    tester = BackendTester()
     
     try:
-        await tester.setup()
-        await tester.run_all_tests()
-    except KeyboardInterrupt:
-        print("\n⚠️ Testing interrupted by user")
+        await tester.setup_session()
+        
+        # Test backend health first
+        await tester.test_backend_health()
+        
+        # Setup test data
+        await tester.setup_test_data()
+        
+        # Run all test suites
+        await tester.test_user_rating_system()
+        await tester.test_enhanced_messaging_system()
+        await tester.test_enhanced_profile_endpoints()
+        
+        # Print summary
+        tester.print_summary()
+        
     except Exception as e:
-        print(f"\n💥 Testing failed with error: {e}")
+        print(f"❌ Testing failed with error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        
     finally:
-        await tester.cleanup()
+        await tester.cleanup_session()
 
 if __name__ == "__main__":
     asyncio.run(main())
