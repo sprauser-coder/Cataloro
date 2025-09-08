@@ -539,6 +539,7 @@ function BuyManagementPage() {
                 onDeleteBasket={deleteBasket}
                 onUnassignFromBasket={unassignItemFromBasket}
                 onReassignToBasket={reassignItemToBasket}
+                onExportBasketsPDF={handleExportBasketsPDF}
                 calculateTotals={calculateBasketTotals}
                 loading={loading}
               />
