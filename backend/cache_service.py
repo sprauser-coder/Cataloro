@@ -132,10 +132,10 @@ class CacheService:
         return await self.delete(key)
     
     # Listings Caching
-    async def cache_listings(self, cache_key: str, listings: List[Dict]) -> bool:
-        """Cache listings data"""
+    async def cache_listings(self, cache_key: str, listings: List[Dict], ttl: int = None) -> bool:
+        """Cache listings data with optional custom TTL"""
         key = self._get_key("listings", cache_key)
-        return await self.set(key, listings, self.TTL_SHORT)
+        return await self.set(key, listings, ttl or self.TTL_SHORT)
     
     async def get_cached_listings(self, cache_key: str) -> Optional[List[Dict]]:
         """Get cached listings"""
