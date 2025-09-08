@@ -585,9 +585,13 @@ function AdminPanel() {
           )}
           
           {activeTab === 'ads-manager' && (
-            <AdsManagerTab 
-              showToast={showToast}
-            />
+            <div className="p-8 space-y-8">
+              {/* Use the existing ads manager from administration */}
+              <SiteAdministrationTab 
+                showToast={showToast}
+                initialSection="ads-manager"
+              />
+            </div>
           )}
           
           {activeTab === 'administration' && (
