@@ -5885,6 +5885,461 @@ async def get_search_history(user_id: str, limit: int = 20):
         return {"history": []}
 
 # ============================================================================
+# USER-TO-USER RATING SYSTEM - TRANSACTION-BASED RATINGS ONLY
+@app.post("/api/user-ratings/create")
+async def create_user_rating(rating_data: dict):
+    """Create a user-to-user rating (only for completed transactions)"""
+    try:
+        rater_id = rating_data.get("rater_id")
+        rated_user_id = rating_data.get("rated_user_id") 
+        transaction_id = rating_data.get("transaction_id")  # Deal/Order ID
+        rating_score = rating_data.get("rating", 5)
+        comment = rating_data.get("comment", "")
+        
+        # Validate rating score
+        if not (1 <= rating_score <= 5):
+            raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+        
+        # Verify transaction exists and both users were involved
+        transaction = await db.orders.find_one({"id": transaction_id, "status": {"$in": ["approved", "completed"]}})
+        if not transaction:
+            raise HTTPException(status_code=404, detail="Transaction not found or not completed")
+        
+        # Verify the rater was involved in this transaction
+        if rater_id not in [transaction.get("buyer_id"), transaction.get("seller_id")]:
+            raise HTTPException(status_code=403, detail="You can only rate users from your completed transactions")
+        
+        # Verify the rated user was the other party in the transaction
+        if rated_user_id not in [transaction.get("buyer_id"), transaction.get("seller_id")] or rated_user_id == rater_id:
+            raise HTTPException(status_code=400, detail="Invalid user to rate for this transaction")
+        
+        # Check if rating already exists for this transaction pair
+        existing_rating = await db.user_ratings.find_one({
+            "rater_id": rater_id,
+            "rated_user_id": rated_user_id, 
+            "transaction_id": transaction_id
+        })
+        
+        if existing_rating:
+            raise HTTPException(status_code=400, detail="You have already rated this user for this transaction")
+        
+        # Create the rating
+        rating = {
+            "id": generate_id(),
+            "rater_id": rater_id,
+            "rated_user_id": rated_user_id,
+            "transaction_id": transaction_id,
+            "listing_id": transaction.get("listing_id"),
+            "rating": rating_score,
+            "comment": comment,
+            "rating_type": "seller" if rated_user_id == transaction.get("seller_id") else "buyer",
+            "created_at": datetime.utcnow().isoformat(),
+            "is_verified": True  # Always verified since based on actual transactions
+        }
+        
+        await db.user_ratings.insert_one(rating)
+        
+        # Update user's rating statistics
+        await update_user_rating_stats(rated_user_id)
+        
+        return {"message": "Rating created successfully", "rating_id": rating["id"]}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create rating: {str(e)}")
+
+@app.get("/api/user-ratings/{user_id}")
+async def get_user_ratings(user_id: str, as_seller: bool = None, limit: int = 50):
+    """Get ratings received by a user"""
+    try:
+        query = {"rated_user_id": user_id}
+        
+        # Filter by rating type if specified
+        if as_seller is not None:
+            query["rating_type"] = "seller" if as_seller else "buyer"
+        
+        ratings = await db.user_ratings.find(query).sort("created_at", -1).limit(limit).to_list(length=None)
+        
+        # Enrich with rater information
+        enriched_ratings = []
+        for rating in ratings:
+            rating = serialize_doc(rating)
+            
+            # Get rater info
+            rater = await db.users.find_one({"id": rating["rater_id"]})
+            if rater:
+                rating["rater"] = {
+                    "id": rater["id"],
+                    "username": rater.get("username", "Unknown"),
+                    "full_name": rater.get("full_name", "Unknown User")
+                }
+            
+            # Get transaction/listing info
+            if rating.get("listing_id"):
+                listing = await db.listings.find_one({"id": rating["listing_id"]})
+                if listing:
+                    rating["listing_title"] = listing.get("title", "Unknown Listing")
+            
+            enriched_ratings.append(rating)
+        
+        return enriched_ratings
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch ratings: {str(e)}")
+
+@app.get("/api/user-ratings/{user_id}/stats")
+async def get_user_rating_stats(user_id: str):
+    """Get user's rating statistics"""
+    try:
+        # Get all ratings for this user
+        ratings = await db.user_ratings.find({"rated_user_id": user_id}).to_list(length=None)
+        
+        if not ratings:
+            return {
+                "total_ratings": 0,
+                "average_rating": 0,
+                "seller_rating": 0,
+                "buyer_rating": 0,
+                "rating_distribution": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+                "seller_stats": {"count": 0, "average": 0},
+                "buyer_stats": {"count": 0, "average": 0}
+            }
+        
+        # Calculate overall statistics
+        total_ratings = len(ratings)
+        total_score = sum(r["rating"] for r in ratings)
+        average_rating = round(total_score / total_ratings, 1)
+        
+        # Calculate rating distribution
+        rating_distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        for rating in ratings:
+            rating_distribution[rating["rating"]] += 1
+        
+        # Calculate seller vs buyer stats
+        seller_ratings = [r for r in ratings if r["rating_type"] == "seller"]
+        buyer_ratings = [r for r in ratings if r["rating_type"] == "buyer"]
+        
+        seller_stats = {
+            "count": len(seller_ratings),
+            "average": round(sum(r["rating"] for r in seller_ratings) / len(seller_ratings), 1) if seller_ratings else 0
+        }
+        
+        buyer_stats = {
+            "count": len(buyer_ratings), 
+            "average": round(sum(r["rating"] for r in buyer_ratings) / len(buyer_ratings), 1) if buyer_ratings else 0
+        }
+        
+        return {
+            "total_ratings": total_ratings,
+            "average_rating": average_rating,
+            "seller_rating": seller_stats["average"],
+            "buyer_rating": buyer_stats["average"],
+            "rating_distribution": rating_distribution,
+            "seller_stats": seller_stats,
+            "buyer_stats": buyer_stats
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch rating stats: {str(e)}")
+
+@app.get("/api/user-ratings/can-rate/{user_id}/{target_user_id}")
+async def can_rate_user(user_id: str, target_user_id: str):
+    """Check if user can rate another user (if they have completed transactions)"""
+    try:
+        # Find completed transactions between these users
+        transactions = await db.orders.find({
+            "$or": [
+                {"buyer_id": user_id, "seller_id": target_user_id},
+                {"buyer_id": target_user_id, "seller_id": user_id}
+            ],
+            "status": {"$in": ["approved", "completed"]}
+        }).to_list(length=None)
+        
+        if not transactions:
+            return {"can_rate": False, "reason": "No completed transactions between users"}
+        
+        # Check if rating already exists for any transaction
+        ratable_transactions = []
+        for transaction in transactions:
+            existing_rating = await db.user_ratings.find_one({
+                "rater_id": user_id,
+                "rated_user_id": target_user_id,
+                "transaction_id": transaction["id"]
+            })
+            
+            if not existing_rating:
+                ratable_transactions.append({
+                    "transaction_id": transaction["id"],
+                    "listing_id": transaction.get("listing_id"),
+                    "created_at": transaction.get("created_at")
+                })
+        
+        return {
+            "can_rate": len(ratable_transactions) > 0,
+            "reason": "Can rate from completed transactions" if ratable_transactions else "Already rated all transactions",
+            "available_transactions": ratable_transactions
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to check rating availability: {str(e)}")
+
+async def update_user_rating_stats(user_id: str):
+    """Update user's cached rating statistics"""
+    try:
+        stats = await get_user_rating_stats(user_id)
+        
+        # Update user document with rating stats
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "rating_stats": stats,
+                "seller_rating": stats["seller_rating"],
+                "buyer_rating": stats["buyer_rating"], 
+                "total_ratings": stats["total_ratings"],
+                "updated_at": datetime.utcnow().isoformat()
+            }}
+        )
+        
+    except Exception as e:
+        logger.error(f"Failed to update user rating stats: {e}")
+
+# ENHANCED MESSAGING SYSTEM - STATE-OF-THE-ART FUNCTIONALITY
+@app.get("/api/messages/conversations/{user_id}")
+async def get_user_conversations(user_id: str):
+    """Get user's conversations with enhanced features"""
+    try:
+        # Get all messages involving this user
+        messages = await db.user_messages.find({
+            "$or": [{"sender_id": user_id}, {"recipient_id": user_id}]
+        }).sort("created_at", -1).to_list(length=None)
+        
+        # Group messages into conversations
+        conversations = {}
+        
+        for message in messages:
+            # Determine the other user in the conversation
+            other_user_id = message["recipient_id"] if message["sender_id"] == user_id else message["sender_id"]
+            
+            if other_user_id not in conversations:
+                # Get other user info
+                other_user = await db.users.find_one({"id": other_user_id})
+                conversations[other_user_id] = {
+                    "id": other_user_id,
+                    "user": {
+                        "id": other_user_id,
+                        "username": other_user.get("username", "Unknown") if other_user else "Unknown",
+                        "full_name": other_user.get("full_name", "Unknown User") if other_user else "Unknown User",
+                        "badge": other_user.get("badge", "User") if other_user else "User",
+                        "is_online": False,  # Will be updated by WebSocket service
+                        "last_seen": other_user.get("last_seen") if other_user else None
+                    },
+                    "messages": [],
+                    "unread_count": 0,
+                    "last_message": None,
+                    "last_activity": None
+                }
+            
+            # Add message to conversation
+            message_data = serialize_doc(message)
+            conversations[other_user_id]["messages"].append(message_data)
+            
+            # Update unread count
+            if message["sender_id"] != user_id and not message.get("is_read", False):
+                conversations[other_user_id]["unread_count"] += 1
+            
+            # Update last message
+            if not conversations[other_user_id]["last_message"] or message["created_at"] > conversations[other_user_id]["last_message"]["created_at"]:
+                conversations[other_user_id]["last_message"] = message_data
+                conversations[other_user_id]["last_activity"] = message["created_at"]
+        
+        # Convert to list and sort by last activity
+        conversation_list = list(conversations.values())
+        conversation_list.sort(key=lambda x: x["last_activity"] or "", reverse=True)
+        
+        return {
+            "conversations": conversation_list,
+            "total_conversations": len(conversation_list),
+            "total_unread": sum(c["unread_count"] for c in conversation_list)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch conversations: {str(e)}")
+
+@app.get("/api/messages/conversation/{user_id}/{other_user_id}")
+async def get_conversation_messages(user_id: str, other_user_id: str, limit: int = 50, offset: int = 0):
+    """Get messages in a specific conversation with pagination"""
+    try:
+        messages = await db.user_messages.find({
+            "$or": [
+                {"sender_id": user_id, "recipient_id": other_user_id},
+                {"sender_id": other_user_id, "recipient_id": user_id}
+            ]
+        }).sort("created_at", -1).skip(offset).limit(limit).to_list(length=None)
+        
+        # Enrich messages with sender info
+        enriched_messages = []
+        for message in messages:
+            message_data = serialize_doc(message)
+            
+            # Get sender info
+            sender = await db.users.find_one({"id": message["sender_id"]})
+            if sender:
+                message_data["sender"] = {
+                    "id": sender["id"],
+                    "username": sender.get("username", "Unknown"),
+                    "full_name": sender.get("full_name", "Unknown User"),
+                    "badge": sender.get("badge", "User")
+                }
+            
+            enriched_messages.append(message_data)
+        
+        # Mark messages as read (messages sent to current user)
+        await db.user_messages.update_many(
+            {"sender_id": other_user_id, "recipient_id": user_id, "is_read": {"$ne": True}},
+            {"$set": {"is_read": True, "read_at": datetime.utcnow().isoformat()}}
+        )
+        
+        # Reverse to show oldest first
+        enriched_messages.reverse()
+        
+        return {
+            "messages": enriched_messages,
+            "has_more": len(enriched_messages) == limit
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch conversation: {str(e)}")
+
+@app.post("/api/messages/send")
+async def send_enhanced_message(message_data: dict):
+    """Send a message with enhanced features"""
+    try:
+        sender_id = message_data.get("sender_id")
+        recipient_id = message_data.get("recipient_id")
+        content = message_data.get("content", "").strip()
+        
+        if not content:
+            raise HTTPException(status_code=400, detail="Message content cannot be empty")
+        
+        if sender_id == recipient_id:
+            raise HTTPException(status_code=400, detail="Cannot send message to yourself")
+        
+        # Verify recipient exists
+        recipient = await db.users.find_one({"id": recipient_id})
+        if not recipient:
+            raise HTTPException(status_code=404, detail="Recipient not found")
+        
+        message = {
+            "id": generate_id(),
+            "sender_id": sender_id,
+            "recipient_id": recipient_id,
+            "content": content,
+            "message_type": message_data.get("message_type", "text"),  # text, image, file
+            "is_read": False,
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat(),
+            "metadata": message_data.get("metadata", {}),  # For attachments, etc.
+            "is_deleted": False,
+            "reply_to": message_data.get("reply_to")  # For threaded replies
+        }
+        
+        await db.user_messages.insert_one(message)
+        
+        # Trigger real-time notification via WebSocket if available
+        if websocket_service:
+            try:
+                await websocket_service.send_message_notification(recipient_id, {
+                    "type": "new_message",
+                    "message": serialize_doc(message),
+                    "sender": {
+                        "id": sender_id,
+                        "username": (await db.users.find_one({"id": sender_id}))["username"]
+                    }
+                })
+            except Exception as ws_error:
+                logger.warning(f"WebSocket notification failed: {ws_error}")
+        
+        return {"message": "Message sent successfully", "message_id": message["id"]}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to send message: {str(e)}")
+
+@app.delete("/api/messages/{message_id}")
+async def delete_message(message_id: str, user_id: str):
+    """Delete a message (soft delete)"""
+    try:
+        result = await db.user_messages.update_one(
+            {"id": message_id, "sender_id": user_id},
+            {"$set": {"is_deleted": True, "deleted_at": datetime.utcnow().isoformat()}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Message not found or not authorized")
+        
+        return {"message": "Message deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete message: {str(e)}")
+
+@app.put("/api/messages/{message_id}/read")
+async def mark_message_as_read(message_id: str, user_id: str):
+    """Mark a specific message as read"""
+    try:
+        result = await db.user_messages.update_one(
+            {"id": message_id, "recipient_id": user_id},
+            {"$set": {"is_read": True, "read_at": datetime.utcnow().isoformat()}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Message not found")
+        
+        return {"message": "Message marked as read"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark message as read: {str(e)}")
+
+@app.get("/api/messages/search/{user_id}")
+async def search_messages(user_id: str, q: str = "", limit: int = 20):
+    """Search messages for a user"""
+    try:
+        if not q.strip():
+            return {"results": []}
+        
+        messages = await db.user_messages.find({
+            "$and": [
+                {"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]},
+                {"content": {"$regex": q, "$options": "i"}},
+                {"is_deleted": {"$ne": True}}
+            ]
+        }).sort("created_at", -1).limit(limit).to_list(length=None)
+        
+        # Enrich with user info
+        enriched_messages = []
+        for message in messages:
+            message_data = serialize_doc(message)
+            
+            # Get sender info
+            sender = await db.users.find_one({"id": message["sender_id"]})
+            if sender:
+                message_data["sender_name"] = sender.get("full_name", sender.get("username", "Unknown"))
+            
+            # Get recipient info  
+            recipient = await db.users.find_one({"id": message["recipient_id"]})
+            if recipient:
+                message_data["recipient_name"] = recipient.get("full_name", recipient.get("username", "Unknown"))
+            
+            enriched_messages.append(message_data)
+        
+        return {"results": enriched_messages}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to search messages: {str(e)}")
+
 # REVIEW & RATING SYSTEM - PHASE 2: ENHANCED SOCIAL COMMERCE
 # ============================================================================
 
