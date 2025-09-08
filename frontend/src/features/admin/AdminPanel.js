@@ -6108,14 +6108,7 @@ function SiteAdministrationTab({ showToast, initialSection = 'appearance' }) {
           </div>
         )}
 
-        {/* Ad's Manager Section */}
-        {activeSection === 'ads-manager' && (
-          <AdsManagerSection 
-            siteConfig={siteConfig} 
-            handleConfigChange={handleConfigChange} 
-            showToast={showToast}
-          />
-        )}
+
 
         {/* System Notifications Section */}
         {activeSection === 'system-notifications' && (
