@@ -2579,13 +2579,31 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
 
   const handleMediaSelection = (selectedMedia) => {
     if (selectedMedia) {
-      const logoField = mediaSelectorType === 'light' ? 'logo_light_url' : 'logo_dark_url';
+      let logoField;
+      let logoType;
+      
+      if (mediaSelectorType === 'light') {
+        logoField = 'logo_light_url';
+        logoType = 'Light';
+      } else if (mediaSelectorType === 'dark') {
+        logoField = 'logo_dark_url';
+        logoType = 'Dark';
+      } else if (mediaSelectorType === 'pdf') {
+        logoField = 'pdf_logo_url';
+        logoType = 'PDF Export';
+      }
+      
       setFormData(prev => ({
         ...prev,
         [logoField]: selectedMedia.url
       }));
       
-      showToast(`${mediaSelectorType} logo selected from media library`, 'success');
+      // Update preview for PDF logo
+      if (mediaSelectorType === 'pdf') {
+        setPdfLogoPreview(selectedMedia.url);
+      }
+      
+      showToast(`${logoType} logo selected from media library`, 'success');
     }
     setShowMediaSelector(false);
   };
