@@ -516,7 +516,7 @@ function AdminPanel() {
       )}
 
       {/* PDF Export Center Section */}
-      {activeSection === 'pdf-export' && (
+      {activeTab === 'pdf-export' && (
         <PDFExportCenter showToast={showToast} />
       )}
     </div>
