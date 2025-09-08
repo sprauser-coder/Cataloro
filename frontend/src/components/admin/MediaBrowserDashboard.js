@@ -395,6 +395,36 @@ const MediaBrowserDashboard = ({ className = '' }) => {
               </button>
             </div>
 
+            {/* Bulk Operations */}
+            {selectedFiles.length > 0 && (
+              <div className="flex items-center space-x-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                  {selectedFiles.length} selected
+                </span>
+                <button
+                  onClick={bulkDownloadFiles}
+                  className="p-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded transition-colors"
+                  title="Download selected files"
+                >
+                  <Download className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={bulkDeleteFiles}
+                  className="p-1 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+                  title="Delete selected files"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setSelectedFiles([])}
+                  className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                  title="Clear selection"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
             <button
               onClick={fetchMediaFiles}
               className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
