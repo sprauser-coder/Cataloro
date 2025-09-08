@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_messaging():
-    base_url = "https://marketplace-repair-1.preview.emergentagent.com"
+    base_url = "https://listing-repair-4.preview.emergentagent.com"
     
     # Create a test user
     user_data = {

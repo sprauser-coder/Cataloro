@@ -8,7 +8,7 @@ import json
 
 def test_fixed_listing_creation():
     """Test listing creation after configuration fix"""
-    base_url = "https://marketplace-repair-1.preview.emergentagent.com"
+    base_url = "https://listing-repair-4.preview.emergentagent.com"
     
     print("🔍 FINAL LISTING CREATION TEST")
     print("=" * 40)

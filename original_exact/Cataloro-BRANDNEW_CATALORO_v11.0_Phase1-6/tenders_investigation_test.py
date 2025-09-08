@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://marketplace-repair-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://listing-repair-4.preview.emergentagent.com/api"
 
 class TendersInvestigator:
     def __init__(self):

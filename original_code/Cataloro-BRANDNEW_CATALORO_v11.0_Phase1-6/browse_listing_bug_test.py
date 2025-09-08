@@ -17,7 +17,7 @@ import uuid
 from datetime import datetime
 
 class BrowseListingBugTester:
-    def __init__(self, base_url="https://marketplace-repair-1.preview.emergentagent.com"):
+    def __init__(self, base_url="https://listing-repair-4.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
         self.test_user = None

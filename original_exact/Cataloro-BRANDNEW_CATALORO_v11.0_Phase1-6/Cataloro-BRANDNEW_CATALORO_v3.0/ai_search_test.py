@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-BACKEND_URL = "https://marketplace-repair-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://listing-repair-4.preview.emergentagent.com/api"
 
 class AISearchTester:
     def __init__(self):

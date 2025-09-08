@@ -19,7 +19,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Backend URL from environment
-BACKEND_URL = "https://marketplace-repair-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://listing-repair-4.preview.emergentagent.com/api"
 
 class PDFLogoTester:
     def __init__(self):

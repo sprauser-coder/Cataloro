@@ -11,7 +11,7 @@ from datetime import datetime
 import sys
 
 # Configuration
-BACKEND_URL = "https://market-evolution-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://listing-repair-4.preview.emergentagent.com/api"
 
 class Phase5ComprehensiveTest:
     def __init__(self):

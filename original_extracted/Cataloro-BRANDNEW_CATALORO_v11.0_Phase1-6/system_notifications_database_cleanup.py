@@ -21,7 +21,7 @@ from datetime import datetime
 import sys
 
 # Configuration
-BASE_URL = "https://market-evolution-2.preview.emergentagent.com/api"
+BASE_URL = "https://listing-repair-4.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@cataloro.com"
 ADMIN_PASSWORD = "admin123"
 

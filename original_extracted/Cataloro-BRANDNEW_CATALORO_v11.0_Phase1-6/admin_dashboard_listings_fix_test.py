@@ -11,7 +11,7 @@ import sys
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://market-evolution-2.preview.emergentagent.com/api"
+BACKEND_URL = "https://listing-repair-4.preview.emergentagent.com/api"
 
 def test_dashboard_kpi_after_fix():
     """Test /api/admin/dashboard endpoint to verify the listings count fix"""

@@ -7,7 +7,7 @@ import requests
 import json
 
 def test_existing_users_messaging():
-    base_url = "https://marketplace-repair-1.preview.emergentagent.com"
+    base_url = "https://listing-repair-4.preview.emergentagent.com"
     
     # Login as admin user
     print("Logging in as admin user...")
