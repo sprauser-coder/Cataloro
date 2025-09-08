@@ -10,9 +10,19 @@ class MarketplaceService {
   async browseListings(filters = {}) {
     try {
       const params = new URLSearchParams(filters);
-      // Use the browse endpoint that returns array format instead of listings endpoint
+      // Use the browse endpoint that now returns structured object with pagination
       const response = await axios.get(`${ENV_CONFIG.API_BASE_URL}/marketplace/browse?${params}`);
-      return response.data;
+      
+      // Handle both old array format and new structured format
+      if (Array.isArray(response.data)) {
+        // Old format - return as-is for backward compatibility
+        return response.data;
+      } else if (response.data && response.data.listings) {
+        // New format with pagination - return the structured data
+        return response.data;
+      } else {
+        throw new Error('Invalid API response format');
+      }
     } catch (error) {
       throw new Error(error.response?.data?.detail || 'Failed to fetch listings');
     }
