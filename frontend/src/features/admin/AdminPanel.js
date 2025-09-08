@@ -586,10 +586,11 @@ function AdminPanel() {
           
           {activeTab === 'ads-manager' && (
             <div className="p-8 space-y-8">
-              {/* Use the existing ads manager from administration */}
-              <SiteAdministrationTab 
+              {/* Direct Ads Manager - Individual Ad Tags without Administration Sections */}
+              <AdsManagerSection 
+                siteConfig={settings} 
+                handleConfigChange={() => {}} 
                 showToast={showToast}
-                initialSection="ads-manager"
               />
             </div>
           )}
