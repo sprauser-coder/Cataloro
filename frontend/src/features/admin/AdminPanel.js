@@ -3276,8 +3276,27 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
 
   // Handle image upload for ads
   const handleImageUpload = async (adType, file, field = 'image') => {
+    // CRITICAL: Validate file exists
+    if (!file) {
+      showToast('Please select a file to upload', 'warning');
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select an image file (PNG, JPG, GIF)', 'error');
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('File size must be less than 5MB', 'error');
+      return;
+    }
+
     try {
-      console.log(`🔧 Starting image upload for ${adType}.${field}`);
+      console.log(`🔧 Starting image upload for ${adType}.${field}`, file);
+      showToast('Uploading image...', 'info');
       
       const formData = new FormData();
       formData.append('image', file);  // Backend expects 'image', not 'file'
