@@ -2695,13 +2695,21 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
       // Store settings in localStorage for immediate use
       localStorage.setItem('cataloro_site_branding', JSON.stringify(updatedFormData));
       
-      // Clear file states after successful upload
+      // Clear file states after successful upload, but preserve previews for saved URLs
       setLogoLightFile(null);
       setLogoDarkFile(null);
       setPdfLogoFile(null);
-      setLogoLightPreview('');
-      setLogoDarkPreview('');
-      setPdfLogoPreview('');
+      
+      // Only clear previews if no URL is saved, otherwise keep the preview
+      if (!updatedFormData.logo_light_url) {
+        setLogoLightPreview('');
+      }
+      if (!updatedFormData.logo_dark_url) {
+        setLogoDarkPreview('');
+      }
+      if (!updatedFormData.pdf_logo_url) {
+        setPdfLogoPreview('');
+      }
       
       // Trigger custom event to update header
       window.dispatchEvent(new CustomEvent('brandingUpdated'));
