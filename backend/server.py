@@ -1281,8 +1281,16 @@ async def delete_user_account(user_id: str, verification_data: dict):
 async def get_public_profile(user_id: str):
     """Get public profile information"""
     try:
-        # Get user info
+        # Get user info - try both id field and _id field
         user = await db.users.find_one({"id": user_id, "is_active": True})
+        if not user:
+            # Try with _id in case it's stored differently
+            try:
+                from bson import ObjectId
+                user = await db.users.find_one({"_id": ObjectId(user_id), "is_active": True})
+            except:
+                pass
+        
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
