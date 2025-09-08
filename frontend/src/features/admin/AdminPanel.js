@@ -3132,22 +3132,62 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
         </div>
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-center space-x-1 bg-gray-100/50 dark:bg-gray-800/50 rounded-lg p-1 overflow-x-auto">
-          {adTabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveAdTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-                  activeAdTab === tab.id
-                    ? 'bg-purple-600 text-white shadow-lg'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700/50'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
+      {/* Ads Configuration Content - Direct display without tabs */}
+      <div className="space-y-8">
+        {/* Browse Page Ads */}
+        <AdTypeSection 
+          adType="browse"
+          title="Browse Page Ad's"
+          description="Configure advertisements displayed on the browse listings page"
+          icon={Package}
+          adConfig={siteConfig.adsManager?.browse}
+          handleConfigChange={handleAdConfigChange}
+          handleImageUpload={handleImageUpload}
+          showToast={showToast}
+          runtimeOptions={runtimeOptions}
+        />
+
+        {/* Favorite Ads */}
+        <AdTypeSection 
+          adType="favorite"
+          title="Favorite Ad's"
+          description="Configure advertisements displayed on the favorites page"
+          icon={Heart}
+          adConfig={siteConfig.adsManager?.favorite}
+          handleConfigChange={handleAdConfigChange}
+          handleImageUpload={handleImageUpload}
+          showToast={showToast}
+          runtimeOptions={runtimeOptions}
+        />
+
+        {/* Messenger Ads */}
+        <AdTypeSection 
+          adType="messenger"
+          title="Messenger Ad's"
+          description="Configure advertisements displayed in the messaging interface"
+          icon={MessageCircle}
+          adConfig={siteConfig.adsManager?.messenger}
+          handleConfigChange={handleAdConfigChange}
+          handleImageUpload={handleImageUpload}
+          showToast={showToast}
+          runtimeOptions={runtimeOptions}
+        />
+
+        {/* Footer Ads */}
+        <AdTypeSection 
+          adType="footer"
+          title="Footer Ad's"
+          description="Configure advertisements displayed in the page footer"
+          icon={Layout}
+          adConfig={siteConfig.adsManager?.footer}
+          handleConfigChange={handleAdConfigChange}
+          handleImageUpload={handleImageUpload}
+          showToast={showToast}
+          runtimeOptions={runtimeOptions}
+        />
+      </div>
+    </div>
+  );
                 <span>{tab.label}</span>
               </button>
             );
