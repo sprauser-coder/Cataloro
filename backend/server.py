@@ -158,7 +158,10 @@ async def startup_event():
         await db.messages.create_index([("listing_id", 1), ("created_at", -1)])
         
         # Favorites collection indexes
-        await db.favorites.create_index([("user_id", 1), ("listing_id", 1)], unique=True)
+        try:
+            await db.favorites.create_index([("user_id", 1), ("listing_id", 1)], unique=True)
+        except Exception:
+            pass  # Index might already exist
         await db.favorites.create_index([("user_id", 1), ("created_at", -1)])
         
         # Webhooks collection indexes
