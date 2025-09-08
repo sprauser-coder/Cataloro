@@ -862,6 +862,13 @@ function BasketCard({ basket, totals, onEdit, onDelete, onUnassignFromBasket, on
           
           <div className="flex items-center space-x-2">
             <button
+              onClick={onExportPDF}
+              className="p-2 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              title="Export basket to PDF"
+            >
+              <FileText className="w-4 h-4" />
+            </button>
+            <button
               onClick={onEdit}
               className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
