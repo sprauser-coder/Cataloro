@@ -2620,6 +2620,256 @@ async def export_comprehensive_pdf(export_data: dict):
         logger.error(f"PDF export failed: {e}")
         raise HTTPException(status_code=500, detail=f"PDF export failed: {str(e)}")
 
+@app.post("/api/user/export-basket-pdf")
+async def export_basket_pdf(export_data: dict):
+    """Generate individual basket PDF export with Cataloro branding"""
+    try:
+        from reportlab.lib.pagesizes import letter, A4
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Image
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import inch
+        from reportlab.lib import colors
+        from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+        from fastapi.responses import StreamingResponse
+        import tempfile
+        
+        # Extract basket data
+        basket_id = export_data.get("basketId")
+        basket_name = export_data.get("basketName", "Unnamed Basket")
+        basket_description = export_data.get("basketDescription", "")
+        totals = export_data.get("totals", {})
+        items = export_data.get("items", [])
+        user_id = export_data.get("userId")
+        export_date = export_data.get("exportDate")
+        
+        logger.info(f"Generating basket PDF for basket: {basket_name}")
+        
+        # Create temporary file for PDF
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+            pdf_filename = tmp_file.name
+        
+        # Initialize PDF document
+        doc = SimpleDocTemplate(
+            pdf_filename,
+            pagesize=A4,
+            rightMargin=72,
+            leftMargin=72,
+            topMargin=72,
+            bottomMargin=72
+        )
+        
+        # Get sample styles
+        styles = getSampleStyleSheet()
+        
+        # Create custom styles
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=20,
+            spaceAfter=20,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor('#2563eb')
+        )
+        
+        heading_style = ParagraphStyle(
+            'CustomHeading',
+            parent=styles['Heading2'],
+            fontSize=14,
+            spaceAfter=12,
+            spaceBefore=16,
+            textColor=colors.HexColor('#1f2937')
+        )
+        
+        # Story container for PDF content
+        story = []
+        
+        # Add Cataloro Logo and Header
+        try:
+            # Try to find the logo file in the uploads directory
+            logo_path = None
+            logo_dirs = ['/app/backend/uploads', '/app/frontend/public', '/app/uploads']
+            
+            for logo_dir in logo_dirs:
+                if os.path.exists(logo_dir):
+                    for filename in os.listdir(logo_dir):
+                        if 'logo' in filename.lower() and filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+                            logo_path = os.path.join(logo_dir, filename)
+                            break
+                    if logo_path:
+                        break
+            
+            if logo_path and os.path.exists(logo_path):
+                # Add logo
+                logo = Image(logo_path, width=120, height=40)  # Adjust size as needed
+                logo.hAlign = 'CENTER'
+                story.append(logo)
+                story.append(Spacer(1, 20))
+        except Exception as e:
+            logger.warning(f"Could not add logo: {e}")
+        
+        # Title
+        story.append(Paragraph("CATALORO MARKETPLACE", title_style))
+        story.append(Paragraph("Basket Export Report", styles['Title']))
+        story.append(Spacer(1, 30))
+        
+        # Basket Information Header
+        story.append(Paragraph("Basket Information", heading_style))
+        
+        basket_info_data = [
+            ["Basket Name", basket_name],
+            ["Total Items", str(len(items))],
+            ["Total Value Paid", f"€{totals.get('valuePaid', 0):.2f}"],
+            ["Total Pt (grams)", f"{totals.get('ptG', 0):.4f}"],
+            ["Total Pd (grams)", f"{totals.get('pdG', 0):.4f}"],
+            ["Total Rh (grams)", f"{totals.get('rhG', 0):.4f}"],
+            ["Export Date", datetime.now(timezone.utc).strftime("%B %d, %Y at %H:%M UTC")]
+        ]
+        
+        if basket_description:
+            basket_info_data.insert(1, ["Description", basket_description])
+        
+        basket_info_table = Table(basket_info_data, colWidths=[2.5*inch, 3.5*inch])
+        basket_info_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f3f4f6')),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#1f2937')),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e5e7eb'))
+        ]))
+        
+        story.append(basket_info_table)
+        story.append(Spacer(1, 30))
+        
+        # Items List
+        if items:
+            story.append(Paragraph("Basket Items", heading_style))
+            
+            # Prepare items data
+            items_data = [["Title", "Price", "Seller", "Date of Buying", "Pt (g)", "Pd (g)", "Rh (g)"]]
+            
+            for item in items:
+                # Format the date of buying
+                date_bought = item.get('created_at', item.get('purchase_date', 'N/A'))
+                if isinstance(date_bought, str) and date_bought != 'N/A':
+                    try:
+                        date_bought = datetime.fromisoformat(date_bought.replace('Z', '+00:00')).strftime("%Y-%m-%d")
+                    except:
+                        date_bought = 'N/A'
+                
+                # Get precious metal values
+                pt_g = item.get('pt_g', 0)
+                pd_g = item.get('pd_g', 0) 
+                rh_g = item.get('rh_g', 0)
+                
+                # If direct values aren't available, try calculating from PPM and weight
+                if pt_g == 0 and item.get('pt_ppm') and item.get('weight'):
+                    pt_g = (item.get('weight', 0) * item.get('pt_ppm', 0) / 1000) * item.get('renumeration_pt', 0)
+                if pd_g == 0 and item.get('pd_ppm') and item.get('weight'):
+                    pd_g = (item.get('weight', 0) * item.get('pd_ppm', 0) / 1000) * item.get('renumeration_pd', 0)
+                if rh_g == 0 and item.get('rh_ppm') and item.get('weight'):
+                    rh_g = (item.get('weight', 0) * item.get('rh_ppm', 0) / 1000) * item.get('renumeration_rh', 0)
+                
+                items_data.append([
+                    item.get('title', 'N/A')[:30],  # Truncate long titles
+                    f"€{item.get('price', 0):.2f}",
+                    item.get('seller', item.get('seller_name', 'N/A'))[:20],
+                    date_bought,
+                    f"{pt_g:.4f}",
+                    f"{pd_g:.4f}",
+                    f"{rh_g:.4f}"
+                ])
+            
+            # Create items table
+            items_table = Table(items_data, colWidths=[2*inch, 0.8*inch, 1.2*inch, 1*inch, 0.6*inch, 0.6*inch, 0.6*inch])
+            items_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2563eb')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('ALIGN', (1, 1), (1, -1), 'RIGHT'),  # Price column right-aligned
+                ('ALIGN', (4, 1), (-1, -1), 'RIGHT'),  # Metal columns right-aligned
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 9),
+                ('FONTSIZE', (0, 1), (-1, -1), 8),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+                ('TOPPADDING', (0, 0), (-1, 0), 8),
+                ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
+                ('TOPPADDING', (0, 1), (-1, -1), 6),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e5e7eb')),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f9fafb')])
+            ]))
+            
+            story.append(items_table)
+            story.append(Spacer(1, 20))
+            
+            # Summary totals at the bottom
+            story.append(Paragraph("Summary Totals", heading_style))
+            
+            summary_data = [
+                ["Total Items", str(len(items))],
+                ["Total Value Paid", f"€{totals.get('valuePaid', 0):.2f}"],
+                ["Total Platinum", f"{totals.get('ptG', 0):.4f} grams"],
+                ["Total Palladium", f"{totals.get('pdG', 0):.4f} grams"],  
+                ["Total Rhodium", f"{totals.get('rhG', 0):.4f} grams"]
+            ]
+            
+            summary_table = Table(summary_data, colWidths=[2*inch, 2*inch])
+            summary_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#10b981')),
+                ('BACKGROUND', (1, 0), (1, -1), colors.HexColor('#ecfdf5')),
+                ('TEXTCOLOR', (0, 0), (0, -1), colors.white),
+                ('TEXTCOLOR', (1, 0), (1, -1), colors.HexColor('#065f46')),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+                ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+                ('FONTNAME', (1, 0), (1, -1), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 11),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+                ('TOPPADDING', (0, 0), (-1, -1), 10),
+                ('GRID', (0, 0), (-1, -1), 2, colors.HexColor('#065f46'))
+            ]))
+            
+            story.append(summary_table)
+        else:
+            story.append(Paragraph("No items found in this basket.", styles['Normal']))
+        
+        story.append(Spacer(1, 30))
+        
+        # Footer
+        story.append(Paragraph(
+            f"This report was generated by Cataloro Marketplace on {datetime.now(timezone.utc).strftime('%B %d, %Y at %H:%M UTC')}.",
+            styles['Normal']
+        ))
+        story.append(Paragraph("For questions about this data, please contact support.", styles['Normal']))
+        
+        # Build PDF
+        doc.build(story)
+        
+        # Read the PDF file and return as streaming response
+        def iterfile():
+            with open(pdf_filename, mode="rb") as file_like:
+                yield from file_like
+        
+        # Clean up temp file after response
+        import atexit
+        atexit.register(lambda: os.unlink(pdf_filename) if os.path.exists(pdf_filename) else None)
+        
+        return StreamingResponse(
+            iterfile(),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=cataloro-basket-{basket_name.replace(' ', '_')}-{datetime.now().strftime('%Y%m%d-%H%M%S')}.pdf"
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"Basket PDF export failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Basket PDF export failed: {str(e)}")
+
 # Include Phase 5 endpoints
 from phase5_endpoints import phase5_router
 from phase6_endpoints import phase6_router
