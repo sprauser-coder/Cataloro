@@ -8972,6 +8972,431 @@ function UserEditModal({ user, onClose, onSave }) {
       </div>
     </div>
   );
-}
+// Webhook Management Component
+function WebhookManagement({ showToast }) {
+  const [webhooks, setWebhooks] = useState([]);
+  const [supportedEvents, setSupportedEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedWebhook, setSelectedWebhook] = useState(null);
+  const [webhookDeliveries, setWebhookDeliveries] = useState({});
+  const [formData, setFormData] = useState({
+    name: '',
+    url: '',
+    events: [],
+    secret: '',
+    active: true
+  });
 
-export default AdminPanel;
+  useEffect(() => {
+    fetchWebhooks();
+    fetchSupportedEvents();
+  }, []);
+
+  const fetchWebhooks = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/webhooks`);
+      const data = await response.json();
+      if (data.success) {
+        setWebhooks(data.webhooks);
+      }
+    } catch (error) {
+      console.error('Failed to fetch webhooks:', error);
+      showToast('Failed to fetch webhooks', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchSupportedEvents = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/webhook-events`);
+      const data = await response.json();
+      if (data.success) {
+        setSupportedEvents(data.events);
+      }
+    } catch (error) {
+      console.error('Failed to fetch supported events:', error);
+    }
+  };
+
+  const fetchWebhookDeliveries = async (webhookId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/webhooks/${webhookId}/deliveries?limit=10`);
+      const data = await response.json();
+      if (data.success) {
+        setWebhookDeliveries(prev => ({
+          ...prev,
+          [webhookId]: data.deliveries
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch webhook deliveries:', error);
+    }
+  };
+
+  const handleCreateWebhook = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/webhooks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setWebhooks([data.webhook, ...webhooks]);
+        setShowCreateModal(false);
+        setFormData({ name: '', url: '', events: [], secret: '', active: true });
+        showToast('Webhook created successfully', 'success');
+      } else {
+        showToast(data.error || 'Failed to create webhook', 'error');
+      }
+    } catch (error) {
+      console.error('Failed to create webhook:', error);
+      showToast('Failed to create webhook', 'error');
+    }
+  };
+
+  const handleUpdateWebhook = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/webhooks/${selectedWebhook.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setWebhooks(webhooks.map(w => w.id === selectedWebhook.id ? data.webhook : w));
+        setShowEditModal(false);
+        setSelectedWebhook(null);
+        setFormData({ name: '', url: '', events: [], secret: '', active: true });
+        showToast('Webhook updated successfully', 'success');
+      } else {
+        showToast(data.error || 'Failed to update webhook', 'error');
+      }
+    } catch (error) {
+      console.error('Failed to update webhook:', error);
+      showToast('Failed to update webhook', 'error');
+    }
+  };
+
+  const handleDeleteWebhook = async (webhookId) => {
+    if (!confirm('Are you sure you want to delete this webhook?')) return;
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/webhooks/${webhookId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setWebhooks(webhooks.filter(w => w.id !== webhookId));
+        showToast('Webhook deleted successfully', 'success');
+      } else {
+        showToast(data.error || 'Failed to delete webhook', 'error');
+      }
+    } catch (error) {
+      console.error('Failed to delete webhook:', error);
+      showToast('Failed to delete webhook', 'error');
+    }
+  };
+
+  const handleTestWebhook = async (webhookId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/webhooks/${webhookId}/test`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        showToast('Test webhook sent successfully', 'success');
+        // Refresh deliveries to show the test
+        setTimeout(() => fetchWebhookDeliveries(webhookId), 1000);
+      } else {
+        showToast(data.error || 'Failed to test webhook', 'error');
+      }
+    } catch (error) {
+      console.error('Failed to test webhook:', error);
+      showToast('Failed to test webhook', 'error');
+    }
+  };
+
+  const openEditModal = (webhook) => {
+    setSelectedWebhook(webhook);
+    setFormData({
+      name: webhook.name,
+      url: webhook.url,
+      events: webhook.events,
+      secret: webhook.secret || '',
+      active: webhook.active
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEventToggle = (eventType) => {
+    setFormData(prev => ({
+      ...prev,
+      events: prev.events.includes(eventType)
+        ? prev.events.filter(e => e !== eventType)
+        : [...prev.events, eventType]
+    }));
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
+        <span className="ml-2 text-gray-600 dark:text-gray-400">Loading webhooks...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Webhook Management</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Configure webhooks for external integrations and real-time notifications
+          </p>
+        </div>
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Add Webhook</span>
+        </button>
+      </div>
+
+      {/* Webhooks List */}
+      <div className="space-y-4">
+        {webhooks.length === 0 ? (
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow border text-center">
+            <RefreshCw className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Webhooks Configured</h4>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Get started by creating your first webhook to receive real-time notifications.
+            </p>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Create First Webhook
+            </button>
+          </div>
+        ) : (
+          webhooks.map((webhook) => (
+            <div key={webhook.id} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow border">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-3">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{webhook.name}</h4>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      webhook.active 
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                        : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                    }`}>
+                      {webhook.active ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{webhook.url}</p>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {webhook.events.map(event => (
+                      <span key={event} className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded text-xs">
+                        {event}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleTestWebhook(webhook.id)}
+                    className="px-3 py-1 text-sm bg-green-100 hover:bg-green-200 text-green-800 rounded dark:bg-green-900/30 dark:text-green-300"
+                  >
+                    Test
+                  </button>
+                  <button
+                    onClick={() => openEditModal(webhook)}
+                    className="px-3 py-1 text-sm bg-blue-100 hover:bg-blue-200 text-blue-800 rounded dark:bg-blue-900/30 dark:text-blue-300"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteWebhook(webhook.id)}
+                    className="px-3 py-1 text-sm bg-red-100 hover:bg-red-200 text-red-800 rounded dark:bg-red-900/30 dark:text-red-300"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              {/* Delivery History */}
+              <div className="border-t pt-4">
+                <div className="flex justify-between items-center mb-2">
+                  <h5 className="text-sm font-medium text-gray-900 dark:text-white">Recent Deliveries</h5>
+                  <button
+                    onClick={() => fetchWebhookDeliveries(webhook.id)}
+                    className="text-xs text-blue-600 hover:text-blue-700"
+                  >
+                    Refresh
+                  </button>
+                </div>
+                {webhookDeliveries[webhook.id] && webhookDeliveries[webhook.id].length > 0 ? (
+                  <div className="space-y-2">
+                    {webhookDeliveries[webhook.id].slice(0, 3).map(delivery => (
+                      <div key={delivery.delivery_id} className="flex justify-between items-center text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">
+                          {new Date(delivery.created_at).toLocaleString()}
+                        </span>
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          delivery.status === 'success' 
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                            : delivery.status === 'failed'
+                            ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                        }`}>
+                          {delivery.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No deliveries yet</p>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Create/Edit Modal */}
+      {(showCreateModal || showEditModal) && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {showCreateModal ? 'Create Webhook' : 'Edit Webhook'}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setShowEditModal(false);
+                  setSelectedWebhook(null);
+                  setFormData({ name: '', url: '', events: [], secret: '', active: true });
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Webhook Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="e.g., Slack Notifications"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Webhook URL
+                </label>
+                <input
+                  type="url"
+                  value={formData.url}
+                  onChange={(e) => setFormData({...formData, url: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="https://your-service.com/webhook"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Secret (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={formData.secret}
+                  onChange={(e) => setFormData({...formData, secret: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="Webhook secret for security"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Events to Subscribe
+                </label>
+                <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg p-3">
+                  {supportedEvents.map(event => (
+                    <label key={event.event} className="flex items-center space-x-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={formData.events.includes(event.event)}
+                        onChange={() => handleEventToggle(event.event)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white">{event.event}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{event.description}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="active"
+                  checked={formData.active}
+                  onChange={(e) => setFormData({...formData, active: e.target.checked})}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor="active" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Active
+                </label>
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setShowEditModal(false);
+                  setSelectedWebhook(null);
+                  setFormData({ name: '', url: '', events: [], secret: '', active: true });
+                }}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={showCreateModal ? handleCreateWebhook : handleUpdateWebhook}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                {showCreateModal ? 'Create' : 'Update'} Webhook
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
