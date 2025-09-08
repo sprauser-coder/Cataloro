@@ -131,10 +131,7 @@ function ModernMessagesInterface() {
   const [typingUsers, setTypingUsers] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState(new Set());
   
-  // User search for new conversations
-  const [showUserSearch, setShowUserSearch] = useState(false);
-  const [userSearchQuery, setUserSearchQuery] = useState('');
-  const [userSearchResults, setUserSearchResults] = useState([]);
+  // Note: Direct messaging removed - messages only through sales transactions
   
   // Refs
   const messagesEndRef = useRef(null);
