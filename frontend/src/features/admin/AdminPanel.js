@@ -3579,13 +3579,87 @@ function ConsolidatedAdsManagerSection({ siteConfig, handleConfigChange, showToa
       )}
 
       {activeAdTab === 'analytics' && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <div className="text-center py-12">
-            <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Analytics Coming Soon</h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Advanced analytics and performance metrics for your ad campaigns will be available here.
-            </p>
+        <div className="space-y-6">
+          {/* Analytics Overview */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Ad Performance Analytics</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {adTypes.map((adType) => {
+                const ad = siteConfig.adsManager?.[adType.key] || {};
+                return (
+                  <div key={adType.key} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <adType.icon className="w-5 h-5 text-purple-600" />
+                      <h4 className="font-medium text-gray-900 dark:text-white">{adType.label}</h4>
+                    </div>
+                    
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Status:</span>
+                        <span className={ad.active ? 'text-green-600 dark:text-green-400' : 'text-gray-500'}>
+                          {ad.active ? 'Active' : 'Inactive'}
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-400">Total Clicks:</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{ad.clicks || 0}</span>
+                      </div>
+                      
+                      {ad.startDate && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 dark:text-gray-400">Running Since:</span>
+                          <span className="text-gray-900 dark:text-white">
+                            {new Date(ad.startDate).toLocaleDateString()}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {ad.expirationDate && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600 dark:text-gray-400">Expires:</span>
+                          <span className="text-gray-900 dark:text-white">
+                            {new Date(ad.expirationDate).toLocaleDateString()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Summary Stats */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Overall Performance</h3>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.active}</div>
+                <div className="text-sm text-blue-600 dark:text-blue-400">Active Ads</div>
+              </div>
+              
+              <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {Object.values(siteConfig.adsManager || {}).reduce((total, ad) => total + (ad.clicks || 0), 0)}
+                </div>
+                <div className="text-sm text-green-600 dark:text-green-400">Total Clicks</div>
+              </div>
+              
+              <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.configured}</div>
+                <div className="text-sm text-purple-600 dark:text-purple-400">Configured</div>
+              </div>
+              
+              <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                  {Math.round((stats.active / stats.total) * 100)}%
+                </div>
+                <div className="text-sm text-orange-600 dark:text-orange-400">Utilization</div>
+              </div>
+            </div>
           </div>
         </div>
       )}
