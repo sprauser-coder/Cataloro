@@ -388,6 +388,14 @@ class BackendTester:
                 self.log_result("Get Profile Statistics", True, f"User: {user_info.get('username')}, Listings: {stats.get('total_listings', 0)}")
             else:
                 self.log_result("Get Profile Statistics", False, f"Missing sections: {missing_sections}")
+        elif status == 404:
+            # Try with the user's actual ID format - check if user exists first
+            profile_response, profile_status = await self.make_request("GET", f"/auth/profile/{user_id}")
+            if profile_status == 200:
+                # User exists, but stats endpoint has an issue
+                self.log_result("Get Profile Statistics", False, f"User exists but stats endpoint returned 404")
+            else:
+                self.log_result("Get Profile Statistics", False, f"User not found in system")
         else:
             self.log_result("Get Profile Statistics", False, f"Status: {status}", response.get("detail", "Unknown error"))
             
