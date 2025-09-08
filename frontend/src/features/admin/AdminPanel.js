@@ -5776,6 +5776,12 @@ function SiteAdministrationTab({ showToast, initialSection = 'appearance' }) {
       icon: FileText,
       description: 'Manage info page content with rich text editing capabilities'
     },
+    { 
+      id: 'export-manager', 
+      label: 'Export Manager', 
+      icon: Download,
+      description: 'Manage all PDF export functions and templates with extensive editing system'
+    },
 
     { 
       id: 'system-notifications', 
