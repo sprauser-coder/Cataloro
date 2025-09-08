@@ -689,6 +689,7 @@ function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, onU
               onDelete={() => onDeleteBasket(basket.id)}
               onUnassignFromBasket={onUnassignFromBasket}
               onReassignToBasket={onReassignToBasket}
+              onExportPDF={() => onExportBasketsPDF([basket])}
               allBaskets={baskets}
             />
           ))}
