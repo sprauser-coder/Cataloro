@@ -273,7 +273,7 @@ function MobileFilters({
                       }`}
                     >
                       <span className="text-sm">{category}</span>
-                      {localFilters.category === category && <Check className="w-4 h-4" />}
+                      {localFilters?.category === category && <Check className="w-4 h-4" />}
                     </button>
                   ))}
                 </div>
