@@ -205,7 +205,6 @@ function ModernBrowsePage() {
 
   // Mobile-specific state
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [quickStats, setQuickStats] = useState({});
 
   // Check if item is in favorites
