@@ -57,18 +57,16 @@ function MobileNav({ isOpen, onClose }) {
       title: 'My Account',
       items: [
         { label: 'My Listings', path: '/my-listings', icon: Package },
-        { label: 'My Deals', path: '/my-deals', icon: DollarSign },
+        { label: 'Buy Management', path: '/buy-management', icon: ShoppingCart },
         { label: 'Messages', path: '/messages', icon: MessageCircle },
-        { label: 'Favorites', path: '/favorites', icon: Heart },
-        { label: 'Cart', path: '/cart', icon: ShoppingCart }
+        { label: 'Favorites', path: '/favorites', icon: Heart }
       ]
     },
     {
       title: 'Selling',
       items: [
         { label: 'Create Listing', path: '/create-listing', icon: Plus },
-        { label: 'Seller Analytics', path: '/analytics', icon: BarChart3 },
-        { label: 'Performance', path: '/performance', icon: Award }
+        { label: 'Pending Sales', path: '/pending-sales', icon: DollarSign }
       ]
     }
   ];
