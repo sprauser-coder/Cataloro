@@ -97,12 +97,12 @@ function MobileLayout() {
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 ${darkMode ? 'dark' : ''}`}>
       
       {/* Mobile Header Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-30">
-        <div className="flex items-center justify-between px-4 py-3">
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-30 safe-top">
+        <div className="flex items-center justify-between px-4 py-3 h-14">
           {/* Left: Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(true)}
-            className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors touch-manipulation"
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -120,7 +120,7 @@ function MobileLayout() {
             {user && user.role === 'admin' && (
               <button
                 onClick={() => setIsAdminDrawerOpen(true)}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded-lg transition-colors touch-manipulation"
               >
                 <Shield className="w-5 h-5" />
               </button>
@@ -139,7 +139,7 @@ function MobileLayout() {
       </div>
 
       {/* Mobile Top Padding */}
-      <div className="h-16 lg:hidden"></div>
+      <div className="h-14 lg:hidden safe-top-padding"></div>
 
       {/* Main Content */}
       <main className="min-h-[calc(100vh-8rem)] lg:min-h-screen">
