@@ -24,7 +24,18 @@ function MobileFilters({
   onFiltersChange, 
   availableFilters = {} 
 }) {
-  const [localFilters, setLocalFilters] = useState(filters);
+  // Default filters structure to prevent undefined errors
+  const defaultFilters = {
+    category: '',
+    priceRange: { min: 0, max: 1000 },
+    location: '',
+    condition: '',
+    dateRange: '',
+    rating: 0,
+    sortBy: 'newest'
+  };
+
+  const [localFilters, setLocalFilters] = useState(filters || defaultFilters);
   const [expandedSections, setExpandedSections] = useState({
     price: false,
     location: false,
@@ -35,7 +46,11 @@ function MobileFilters({
   });
 
   useEffect(() => {
-    setLocalFilters(filters);
+    // Ensure filters is properly merged with defaults
+    setLocalFilters(prevFilters => ({
+      ...defaultFilters,
+      ...filters
+    }));
   }, [filters]);
 
   const toggleSection = (section) => {
