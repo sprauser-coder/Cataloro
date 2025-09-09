@@ -1615,6 +1615,8 @@ async def get_my_deals(user_id: str):
             deals.append(deal)
         
         return deals
+    except HTTPException:
+        raise  # Re-raise HTTPException (like 403 for suspended users)
     except Exception as e:
         print(f"Error fetching deals: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch deals: {str(e)}")
