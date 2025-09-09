@@ -43,6 +43,19 @@ import adsExpirationService from './services/adsExpirationService';
 import './App.css';
 
 function App() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   useEffect(() => {
     // Initialize ads configuration on app startup
     loadAndApplyAdsConfiguration();
