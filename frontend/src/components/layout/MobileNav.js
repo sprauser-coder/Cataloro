@@ -30,6 +30,23 @@ import { useAuth } from '../../context/AuthContext';
 function MobileNav({ isOpen, onClose }) {
   const [user, setUser] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      onClose();
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force logout even if API call fails
+      localStorage.removeItem('cataloro_token');
+      localStorage.removeItem('cataloro_user');
+      onClose();
+      navigate('/login');
+    }
+  };
 
   useEffect(() => {
     const userData = localStorage.getItem('cataloro_user');
