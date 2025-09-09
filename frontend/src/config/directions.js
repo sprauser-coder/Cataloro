@@ -4,20 +4,20 @@
  * NO HARDCODED PATHS ALLOWED IN OTHER FILES!
  */
 
-// Environment Detection - Force development for localhost
-const isDevelopment = true; // Always use development in this environment
-const isProduction = false;
+// Environment Detection - Use actual environment variables
+const isDevelopment = process.env.NODE_ENV === 'development';
+const isProduction = process.env.NODE_ENV === 'production';
 
 // API Configuration
 export const API_CONFIG = {
   // Development URLs (Emergent environment)  
   development: {
     BACKEND_URL: process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001',
-    FRONTEND_URL: 'https://cataloro-speedup.preview.emergentagent.com'
+    FRONTEND_URL: process.env.REACT_APP_BACKEND_URL || 'https://cataloro-speedup.preview.emergentagent.com'
   },
   // Production URLs (Your server)
   production: {
-    BACKEND_URL: 'http://217.154.0.82/api',
+    BACKEND_URL: process.env.REACT_APP_BACKEND_URL || 'http://217.154.0.82/api',
     FRONTEND_URL: 'http://217.154.0.82'
   }
 };
