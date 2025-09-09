@@ -194,7 +194,7 @@ function SimpleLoginPage() {
 
                 <div className="space-y-3 pt-4">
                   <button
-                    onClick={() => window.location.href = '/browse'}
+                    onClick={() => navigate('/browse')}
                     className="w-full h-14 rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold text-lg hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl group overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
