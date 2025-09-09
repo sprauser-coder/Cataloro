@@ -1288,6 +1288,485 @@ class BrowseEndpointTester:
         finally:
             await self.cleanup()
 
+class BasketExportTester:
+    def __init__(self):
+        self.session = None
+        self.test_results = []
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                # Handle PDF response differently
+                if response.headers.get('content-type') == 'application/pdf':
+                    pdf_data = await response.read()
+                    return {
+                        "success": response.status in [200, 201],
+                        "response_time_ms": response_time_ms,
+                        "data": pdf_data,
+                        "status": response.status,
+                        "content_type": "application/pdf",
+                        "content_length": len(pdf_data)
+                    }
+                else:
+                    try:
+                        response_data = await response.json()
+                    except:
+                        response_data = await response.text()
+                    
+                    return {
+                        "success": response.status in [200, 201],
+                        "response_time_ms": response_time_ms,
+                        "data": response_data,
+                        "status": response.status
+                    }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def test_basket_export_endpoint_basic(self) -> Dict:
+        """Test basic basket export PDF functionality"""
+        print("📄 Testing basket export PDF endpoint - Basic functionality...")
+        
+        # Create sample basket data for testing
+        sample_basket_data = {
+            "basketId": "test-basket-123",
+            "basketName": "Test Basket Export",
+            "basketDescription": "Testing basket PDF export functionality",
+            "userId": "test-user-456",
+            "exportDate": datetime.now().isoformat(),
+            "totals": {
+                "valuePaid": 1250.75,
+                "ptG": 2.5678,
+                "pdG": 1.2345,
+                "rhG": 0.8901
+            },
+            "items": [
+                {
+                    "title": "BMW Catalytic Converter",
+                    "price": 450.25,
+                    "seller": "AutoParts Pro",
+                    "seller_name": "AutoParts Pro",
+                    "created_at": "2024-01-15T10:30:00Z",
+                    "pt_g": 1.2345,
+                    "pd_g": 0.6789,
+                    "rh_g": 0.4567,
+                    "weight": 850.0,
+                    "pt_ppm": 1450,
+                    "pd_ppm": 800,
+                    "rh_ppm": 537,
+                    "renumeration_pt": 1.0,
+                    "renumeration_pd": 1.0,
+                    "renumeration_rh": 1.0
+                },
+                {
+                    "title": "Mercedes Catalytic Converter",
+                    "price": 800.50,
+                    "seller": "Premium Cats",
+                    "seller_name": "Premium Cats",
+                    "created_at": "2024-01-16T14:45:00Z",
+                    "pt_g": 1.3333,
+                    "pd_g": 0.5556,
+                    "rh_g": 0.4334,
+                    "weight": 920.0,
+                    "pt_ppm": 1650,
+                    "pd_ppm": 750,
+                    "rh_ppm": 471,
+                    "renumeration_pt": 1.0,
+                    "renumeration_pd": 1.0,
+                    "renumeration_rh": 1.0
+                }
+            ]
+        }
+        
+        result = await self.make_request("/user/export-basket-pdf", "POST", data=sample_basket_data)
+        
+        if result["success"]:
+            pdf_data = result["data"]
+            content_length = result.get("content_length", 0)
+            
+            print(f"  ✅ PDF export successful")
+            print(f"  ⏱️ Response time: {result['response_time_ms']:.0f}ms")
+            print(f"  📊 PDF size: {content_length} bytes")
+            print(f"  📋 Content type: {result.get('content_type', 'unknown')}")
+            
+            # Validate PDF content
+            is_valid_pdf = isinstance(pdf_data, bytes) and pdf_data.startswith(b'%PDF')
+            has_reasonable_size = content_length > 1000  # PDF should be at least 1KB
+            
+            return {
+                "test_name": "Basket Export PDF - Basic Functionality",
+                "endpoint_working": True,
+                "response_time_ms": result["response_time_ms"],
+                "pdf_generated": True,
+                "pdf_size_bytes": content_length,
+                "is_valid_pdf": is_valid_pdf,
+                "has_reasonable_size": has_reasonable_size,
+                "content_type_correct": result.get("content_type") == "application/pdf",
+                "sample_items_count": len(sample_basket_data["items"]),
+                "test_data_processed": True
+            }
+        else:
+            print(f"  ❌ PDF export failed: {result.get('error', 'Unknown error')}")
+            return {
+                "test_name": "Basket Export PDF - Basic Functionality",
+                "endpoint_working": False,
+                "error": result.get("error", "PDF export failed"),
+                "response_time_ms": result["response_time_ms"],
+                "status": result["status"]
+            }
+    
+    async def test_basket_export_response_time(self) -> Dict:
+        """Test response time performance for basket export"""
+        print("⏱️ Testing basket export response time performance...")
+        
+        # Test with different basket sizes to understand performance characteristics
+        test_scenarios = [
+            {"name": "Small basket (1 item)", "item_count": 1},
+            {"name": "Medium basket (5 items)", "item_count": 5},
+            {"name": "Large basket (10 items)", "item_count": 10},
+            {"name": "Extra large basket (20 items)", "item_count": 20}
+        ]
+        
+        response_times = []
+        scenario_results = []
+        
+        for scenario in test_scenarios:
+            # Generate test data with specified number of items
+            items = []
+            for i in range(scenario["item_count"]):
+                items.append({
+                    "title": f"Test Catalytic Converter {i+1}",
+                    "price": 100.0 + (i * 50),
+                    "seller": f"Seller {i+1}",
+                    "seller_name": f"Seller {i+1}",
+                    "created_at": datetime.now().isoformat(),
+                    "pt_g": 1.0 + (i * 0.1),
+                    "pd_g": 0.5 + (i * 0.05),
+                    "rh_g": 0.3 + (i * 0.03),
+                    "weight": 800.0 + (i * 10),
+                    "pt_ppm": 1400 + (i * 50),
+                    "pd_ppm": 700 + (i * 25),
+                    "rh_ppm": 500 + (i * 15),
+                    "renumeration_pt": 1.0,
+                    "renumeration_pd": 1.0,
+                    "renumeration_rh": 1.0
+                })
+            
+            basket_data = {
+                "basketId": f"test-basket-{scenario['item_count']}-items",
+                "basketName": f"Performance Test Basket ({scenario['item_count']} items)",
+                "basketDescription": f"Testing export performance with {scenario['item_count']} items",
+                "userId": "performance-test-user",
+                "exportDate": datetime.now().isoformat(),
+                "totals": {
+                    "valuePaid": sum(item["price"] for item in items),
+                    "ptG": sum(item["pt_g"] for item in items),
+                    "pdG": sum(item["pd_g"] for item in items),
+                    "rhG": sum(item["rh_g"] for item in items)
+                },
+                "items": items
+            }
+            
+            print(f"  Testing: {scenario['name']}")
+            result = await self.make_request("/user/export-basket-pdf", "POST", data=basket_data)
+            
+            if result["success"]:
+                response_time = result["response_time_ms"]
+                response_times.append(response_time)
+                pdf_size = result.get("content_length", 0)
+                
+                scenario_results.append({
+                    "scenario": scenario["name"],
+                    "item_count": scenario["item_count"],
+                    "response_time_ms": response_time,
+                    "pdf_size_bytes": pdf_size,
+                    "success": True
+                })
+                
+                print(f"    ✅ {response_time:.0f}ms, PDF size: {pdf_size} bytes")
+            else:
+                scenario_results.append({
+                    "scenario": scenario["name"],
+                    "item_count": scenario["item_count"],
+                    "error": result.get("error"),
+                    "success": False
+                })
+                print(f"    ❌ Failed: {result.get('error')}")
+        
+        # Calculate performance metrics
+        successful_tests = [r for r in scenario_results if r["success"]]
+        avg_response_time = statistics.mean(response_times) if response_times else 0
+        max_response_time = max(response_times) if response_times else 0
+        min_response_time = min(response_times) if response_times else 0
+        
+        # Performance thresholds for loading state validation
+        acceptable_response_time = 5000  # 5 seconds should be acceptable for PDF generation
+        fast_response_time = 2000  # Under 2 seconds is fast
+        
+        return {
+            "test_name": "Basket Export Response Time Performance",
+            "total_scenarios_tested": len(test_scenarios),
+            "successful_scenarios": len(successful_tests),
+            "avg_response_time_ms": avg_response_time,
+            "max_response_time_ms": max_response_time,
+            "min_response_time_ms": min_response_time,
+            "performance_acceptable": max_response_time < acceptable_response_time,
+            "performance_fast": avg_response_time < fast_response_time,
+            "loading_state_justified": avg_response_time > 500,  # Loading state makes sense if >500ms
+            "detailed_scenario_results": scenario_results
+        }
+    
+    async def test_basket_export_data_validation(self) -> Dict:
+        """Test basket export with various data scenarios"""
+        print("🔍 Testing basket export data validation...")
+        
+        test_cases = [
+            {
+                "name": "Empty basket",
+                "data": {
+                    "basketId": "empty-basket",
+                    "basketName": "Empty Test Basket",
+                    "basketDescription": "Testing empty basket export",
+                    "userId": "test-user",
+                    "exportDate": datetime.now().isoformat(),
+                    "totals": {"valuePaid": 0, "ptG": 0, "pdG": 0, "rhG": 0},
+                    "items": []
+                },
+                "should_succeed": True
+            },
+            {
+                "name": "Minimal data",
+                "data": {
+                    "basketId": "minimal-basket",
+                    "basketName": "Minimal Basket",
+                    "totals": {"valuePaid": 100, "ptG": 1, "pdG": 0.5, "rhG": 0.2},
+                    "items": [{"title": "Basic Item", "price": 100}]
+                },
+                "should_succeed": True
+            },
+            {
+                "name": "Missing required fields",
+                "data": {
+                    "basketName": "Incomplete Basket"
+                    # Missing basketId, totals, items
+                },
+                "should_succeed": False  # Should handle gracefully
+            },
+            {
+                "name": "Large basket name",
+                "data": {
+                    "basketId": "large-name-basket",
+                    "basketName": "A" * 200,  # Very long name
+                    "basketDescription": "Testing with very long basket name",
+                    "totals": {"valuePaid": 500, "ptG": 2, "pdG": 1, "rhG": 0.5},
+                    "items": [{"title": "Test Item", "price": 500}]
+                },
+                "should_succeed": True
+            }
+        ]
+        
+        validation_results = []
+        
+        for test_case in test_cases:
+            print(f"  Testing: {test_case['name']}")
+            
+            result = await self.make_request("/user/export-basket-pdf", "POST", data=test_case["data"])
+            
+            success = result["success"]
+            expected_success = test_case["should_succeed"]
+            
+            validation_results.append({
+                "test_case": test_case["name"],
+                "expected_success": expected_success,
+                "actual_success": success,
+                "validation_passed": success == expected_success,
+                "response_time_ms": result["response_time_ms"],
+                "error": result.get("error") if not success else None,
+                "pdf_size": result.get("content_length", 0) if success else 0
+            })
+            
+            if success == expected_success:
+                print(f"    ✅ Validation passed (success: {success})")
+            else:
+                print(f"    ❌ Validation failed (expected: {expected_success}, got: {success})")
+        
+        # Calculate validation success rate
+        passed_validations = [r for r in validation_results if r["validation_passed"]]
+        validation_success_rate = len(passed_validations) / len(validation_results) * 100
+        
+        return {
+            "test_name": "Basket Export Data Validation",
+            "total_validation_tests": len(test_cases),
+            "passed_validations": len(passed_validations),
+            "validation_success_rate": validation_success_rate,
+            "handles_empty_baskets": any(r["test_case"] == "Empty basket" and r["actual_success"] for r in validation_results),
+            "handles_minimal_data": any(r["test_case"] == "Minimal data" and r["actual_success"] for r in validation_results),
+            "handles_invalid_data": any(r["test_case"] == "Missing required fields" and not r["actual_success"] for r in validation_results),
+            "handles_edge_cases": validation_success_rate >= 75,
+            "detailed_validation_results": validation_results
+        }
+    
+    async def test_basket_export_concurrent_requests(self) -> Dict:
+        """Test concurrent basket export requests"""
+        print("⚡ Testing concurrent basket export requests...")
+        
+        # Create test data for concurrent requests
+        base_basket_data = {
+            "basketId": "concurrent-test-basket",
+            "basketName": "Concurrent Test Basket",
+            "basketDescription": "Testing concurrent PDF exports",
+            "userId": "concurrent-test-user",
+            "exportDate": datetime.now().isoformat(),
+            "totals": {"valuePaid": 750.0, "ptG": 1.5, "pdG": 0.8, "rhG": 0.4},
+            "items": [
+                {
+                    "title": "Concurrent Test Item 1",
+                    "price": 375.0,
+                    "seller": "Test Seller 1",
+                    "pt_g": 0.75,
+                    "pd_g": 0.4,
+                    "rh_g": 0.2
+                },
+                {
+                    "title": "Concurrent Test Item 2", 
+                    "price": 375.0,
+                    "seller": "Test Seller 2",
+                    "pt_g": 0.75,
+                    "pd_g": 0.4,
+                    "rh_g": 0.2
+                }
+            ]
+        }
+        
+        # Test with 3 concurrent requests
+        concurrent_count = 3
+        start_time = time.time()
+        
+        # Create concurrent requests with slightly different data
+        tasks = []
+        for i in range(concurrent_count):
+            basket_data = base_basket_data.copy()
+            basket_data["basketId"] = f"concurrent-test-basket-{i+1}"
+            basket_data["basketName"] = f"Concurrent Test Basket {i+1}"
+            
+            task = self.make_request("/user/export-basket-pdf", "POST", data=basket_data)
+            tasks.append(task)
+        
+        # Execute all requests concurrently
+        results = await asyncio.gather(*tasks)
+        end_time = time.time()
+        
+        total_time_ms = (end_time - start_time) * 1000
+        successful_requests = [r for r in results if r["success"]]
+        
+        if successful_requests:
+            avg_individual_time = statistics.mean([r["response_time_ms"] for r in successful_requests])
+            max_individual_time = max([r["response_time_ms"] for r in successful_requests])
+            
+            print(f"  {len(successful_requests)}/{concurrent_count} requests successful")
+            print(f"  Total time: {total_time_ms:.0f}ms")
+            print(f"  Avg individual: {avg_individual_time:.0f}ms")
+            print(f"  Max individual: {max_individual_time:.0f}ms")
+            
+            return {
+                "test_name": "Basket Export Concurrent Requests",
+                "concurrent_requests": concurrent_count,
+                "successful_requests": len(successful_requests),
+                "total_time_ms": total_time_ms,
+                "avg_individual_time_ms": avg_individual_time,
+                "max_individual_time_ms": max_individual_time,
+                "concurrent_performance_acceptable": total_time_ms < 15000,  # 15 seconds for 3 PDFs
+                "system_handles_concurrent_exports": len(successful_requests) == concurrent_count,
+                "no_timeout_issues": max_individual_time < 10000  # No individual request over 10 seconds
+            }
+        else:
+            return {
+                "test_name": "Basket Export Concurrent Requests",
+                "error": "All concurrent requests failed",
+                "successful_requests": 0,
+                "concurrent_requests": concurrent_count,
+                "system_handles_concurrent_exports": False
+            }
+    
+    async def run_comprehensive_basket_export_test(self) -> Dict:
+        """Run all basket export tests"""
+        print("🚀 Starting Cataloro Basket Export Functionality Testing")
+        print("=" * 60)
+        
+        await self.setup()
+        
+        try:
+            # Run all test suites
+            basic_functionality = await self.test_basket_export_endpoint_basic()
+            response_time_performance = await self.test_basket_export_response_time()
+            data_validation = await self.test_basket_export_data_validation()
+            concurrent_requests = await self.test_basket_export_concurrent_requests()
+            
+            # Compile overall results
+            all_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "basic_functionality": basic_functionality,
+                "response_time_performance": response_time_performance,
+                "data_validation": data_validation,
+                "concurrent_requests": concurrent_requests
+            }
+            
+            # Calculate overall success metrics
+            test_results = [
+                basic_functionality.get("endpoint_working", False),
+                response_time_performance.get("performance_acceptable", False),
+                data_validation.get("handles_edge_cases", False),
+                concurrent_requests.get("system_handles_concurrent_exports", False)
+            ]
+            
+            overall_success_rate = sum(test_results) / len(test_results) * 100
+            
+            all_results["summary"] = {
+                "overall_success_rate": overall_success_rate,
+                "basic_functionality_working": basic_functionality.get("endpoint_working", False),
+                "pdf_generation_working": basic_functionality.get("pdf_generated", False),
+                "response_time_acceptable": response_time_performance.get("performance_acceptable", False),
+                "loading_state_justified": response_time_performance.get("loading_state_justified", False),
+                "data_validation_robust": data_validation.get("handles_edge_cases", False),
+                "concurrent_export_supported": concurrent_requests.get("system_handles_concurrent_exports", False),
+                "all_tests_passed": overall_success_rate == 100
+            }
+            
+            return all_results
+            
+        finally:
+            await self.cleanup()
+
+
 class CatalystDataTester:
     def __init__(self):
         self.session = None
