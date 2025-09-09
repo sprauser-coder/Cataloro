@@ -254,13 +254,21 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
 
         {/* Conversations List */}
         <div className="flex-1 overflow-y-auto">
-          {filteredConversations.length === 0 ? (
+          {loading ? (
+            <div className="flex flex-col items-center justify-center h-64 text-center px-4">
+              <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4 animate-pulse">
+                <Search className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Loading conversations...</h3>
+              <p className="text-gray-500 dark:text-gray-400">Please wait while we fetch your messages</p>
+            </div>
+          ) : filteredConversations.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-center px-4">
               <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
                 <Search className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No conversations found</h3>
-              <p className="text-gray-500 dark:text-gray-400">Try adjusting your search terms</p>
+              <p className="text-gray-500 dark:text-gray-400">Try adjusting your search terms or start a new conversation</p>
             </div>
           ) : (
             filteredConversations.map((conversation) => (
@@ -273,10 +281,10 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
                 <div className="relative">
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                     <span className="text-white font-medium">
-                      {conversation.user.initials}
+                      {conversation.initials}
                     </span>
                   </div>
-                  {conversation.user.online && (
+                  {conversation.online && (
                     <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
                   )}
                 </div>
@@ -285,15 +293,19 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-1">
                     <h3 className="font-medium text-gray-900 dark:text-white truncate">
-                      {conversation.user.name}
+                      {conversation.name}
                     </h3>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {formatTime(conversation.lastMessage.timestamp)}
+                      {conversation.lastMessage ? formatTime(new Date(conversation.lastMessage.created_at)) : ''}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                    {conversation.lastMessage.sender === 'me' ? 'You: ' : ''}
-                    {conversation.lastMessage.text}
+                    {conversation.lastMessage ? (
+                      <>
+                        {conversation.lastMessage.sender_id === user?.id ? 'You: ' : ''}
+                        {conversation.lastMessage.content}
+                      </>
+                    ) : 'No messages yet'}
                   </p>
                 </div>
 
