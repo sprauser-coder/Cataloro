@@ -136,19 +136,21 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
   const handleSendMessage = async () => {
     if (!message.trim() || !currentConversation) return;
     
+    const messageText = message;
+    const tempId = Date.now();
+    
+    const newMessageObj = {
+      id: tempId,
+      text: messageText,
+      sender: 'me',
+      timestamp: new Date(),
+      status: 'sending'
+    };
+    
+    setMessages(prev => [...prev, newMessageObj]);
+    setMessage('');
+    
     try {
-      const newMessageObj = {
-        id: Date.now(), // Temporary ID
-        text: message,
-        sender: 'me',
-        timestamp: new Date(),
-        status: 'sending'
-      };
-      
-      setMessages([...messages, newMessageObj]);
-      const messageText = message;
-      setMessage('');
-      
       // Send message via backend
       await liveService.sendMessage({
         recipient_id: currentConversation.id,
@@ -158,7 +160,7 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
       
       // Update message status
       setMessages(prev => prev.map(msg => 
-        msg.id === newMessageObj.id ? { ...msg, status: 'sent' } : msg
+        msg.id === tempId ? { ...msg, status: 'sent' } : msg
       ));
       
       // Reload conversations to update last message
@@ -169,7 +171,7 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
       showToast('Failed to send message', 'error');
       
       // Remove failed message
-      setMessages(prev => prev.filter(msg => msg.id !== newMessageObj.id));
+      setMessages(prev => prev.filter(msg => msg.id !== tempId));
     }
   };
 
