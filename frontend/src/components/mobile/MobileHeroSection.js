@@ -80,8 +80,8 @@ function MobileHeroSection({
     
     const baseStyle = {
       height: `${heroContent.height}px`,
-      minHeight: '180px',
-      maxHeight: '250px', // Limit mobile height
+      minHeight: '220px', // Increased minimum height to prevent text cutoff
+      maxHeight: '280px', // Slightly increased max height
       marginTop: '-1rem',
       marginBottom: '1rem',
       marginLeft: 'calc(-50vw + 50%)',
