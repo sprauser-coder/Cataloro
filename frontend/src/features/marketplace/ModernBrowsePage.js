@@ -540,17 +540,7 @@ function ModernBrowsePage() {
       {/* Full-Width Hero Section - Breaks out of container */}
       <div 
         className="hero-section relative text-white overflow-hidden w-screen"
-        style={{ 
-          height: '400px',
-          minHeight: '300px',
-          background: 'linear-gradient(to right, #3f6ec7, #a855f7, #ec4899)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          marginLeft: 'calc(-50vw + 50%)',
-          marginRight: 'calc(-50vw + 50%)',
-          marginTop: '-2rem', // Offset the container padding
-          marginBottom: '2rem'
-        }}
+        style={getHeroBackgroundStyle()}
       >
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative z-10 text-center flex flex-col justify-center h-full px-8 max-w-7xl mx-auto">
