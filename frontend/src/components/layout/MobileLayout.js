@@ -137,10 +137,38 @@ function MobileLayout() {
 
           {/* Center: Logo */}
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">C</span>
-            </div>
-            <h1 className="text-lg font-bold text-gray-900 dark:text-white">Cataloro</h1>
+            {(siteBranding.logo_light_url || siteBranding.logo_dark_url || siteBranding.logo_url) ? (
+              // Custom Logo Mode
+              <Link to="/browse" className="flex items-center space-x-2 header-logo">
+                <img
+                  src={darkMode ? (siteBranding.logo_dark_url || siteBranding.logo_url) : (siteBranding.logo_light_url || siteBranding.logo_url)}
+                  alt={siteBranding.site_name || 'Cataloro'}
+                  className="h-8 w-auto object-contain"
+                  onError={(e) => {
+                    // Fallback to default if logo fails to load
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                {/* Hidden fallback that shows on error */}
+                <div className="hidden w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg items-center justify-center">
+                  <span className="text-white font-bold text-sm">C</span>
+                </div>
+                {siteBranding.site_name && (
+                  <h1 className="text-lg font-bold text-gray-900 dark:text-white truncate max-w-32">
+                    {siteBranding.site_name}
+                  </h1>
+                )}
+              </Link>
+            ) : (
+              // Default Logo Mode
+              <Link to="/browse" className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">C</span>
+                </div>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">Cataloro</h1>
+              </Link>
+            )}
           </div>
 
           {/* Right: Admin Access (if admin) */}
