@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-01-09",
+  "data_integrity": {
+    "overall_score": 100.0,
+    "seller_info_complete": true,
+    "bid_info_complete": true,
+    "time_info_complete": true,
+    "no_n1_issues": true,
+    "detailed_results": {
+      "seller_info_populated": 5,
+      "bid_info_calculated": 5,
+      "time_limit_processing": 5,
+      "no_n1_queries": true,
+      "total_listings": 8
+    }
+  },
+  "performance_scenarios": [
+    {
+      "scenario": "Empty filters",
+      "response_time_ms": 830.9040069580078,
+      "listing_count": 8,
+      "under_1_second": true,
+      "success": true
+    },
+    {
+      "scenario": "First call (cold)",
+      "response_time_ms": 816.8928623199463,
+      "listing_count": 8,
+      "under_1_second": true,
+      "success": true
+    },
+    {
+      "scenario": "Second call (cached)",
+      "response_time_ms": 820.7519054412842,
+      "listing_count": 8,
+      "under_1_second": true,
+      "success": true
+    },
+    {
+      "scenario": "Different page",
+      "response_time_ms": 23.561716079711914,
+      "listing_count": 0,
+      "under_1_second": true,
+      "success": true
+    }
+  ]
+}
