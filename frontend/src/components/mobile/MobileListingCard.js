@@ -150,13 +150,6 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
           </div>
         </Link>
       </div>
-
-      {/* Swipe hints - Updated for favorite only */}
-      {!isDragging && (
-        <div className="absolute -bottom-6 left-0 right-0 flex justify-center px-4 text-xs text-gray-400">
-          <span>← Swipe right to favorite</span>
-        </div>
-      )}
     </div>
   );
 }
