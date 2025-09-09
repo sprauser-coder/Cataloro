@@ -331,9 +331,9 @@ function MobileFilters({
                   {conditions.map((condition) => (
                     <button
                       key={condition}
-                      onClick={() => updateFilter('condition', condition === localFilters.condition ? '' : condition)}
+                      onClick={() => updateFilter('condition', condition === localFilters?.condition ? '' : condition)}
                       className={`p-3 text-sm rounded-lg border transition-colors ${
-                        localFilters.condition === condition
+                        localFilters?.condition === condition
                           ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300'
                           : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
                       }`}
