@@ -173,24 +173,24 @@ function MobileFilters({
             <div>
               <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Sort By</h3>
               <div className="grid grid-cols-2 gap-2">
-                {[
-                  { key: 'newest', label: 'Newest' },
-                  { key: 'oldest', label: 'Oldest' },
-                  { key: 'price_low', label: 'Price: Low to High' },
-                  { key: 'price_high', label: 'Price: High to Low' }
-                ].map((option) => (
-                  <button
-                    key={option.key}
-                    onClick={() => updateFilter('sortBy', option.key)}
-                    className={`p-3 text-sm rounded-lg border transition-colors ${
-                      localFilters.sortBy === option.key
-                        ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300'
-                        : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+                  {[
+                    { key: 'newest', label: 'Newest' },
+                    { key: 'oldest', label: 'Oldest' },
+                    { key: 'price_low', label: 'Price: Low to High' },
+                    { key: 'price_high', label: 'Price: High to Low' }
+                  ].map((option) => (
+                    <button
+                      key={option.key}
+                      onClick={() => updateFilter('sortBy', option.key)}
+                      className={`p-3 text-sm rounded-lg border transition-colors ${
+                        localFilters?.sortBy === option.key
+                          ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300'
+                          : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
               </div>
             </div>
 
