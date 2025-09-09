@@ -684,6 +684,7 @@ function BasketsTab({ baskets, onCreateBasket, onEditBasket, onDeleteBasket, onE
               onUnassignFromBasket={onUnassignFromBasket}
               onReassignToBasket={onReassignToBasket}
               allBaskets={baskets}
+              isExporting={exportingBaskets[basket.id] || false}
             />
           ))}
         </div>
