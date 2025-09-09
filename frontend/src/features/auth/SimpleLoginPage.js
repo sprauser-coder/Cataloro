@@ -84,10 +84,14 @@ function SimpleLoginPage() {
   };
 
   const handleDemoLogin = async (role = 'user') => {
+    console.log('🔄 handleDemoLogin called with role:', role);
+    
     const demoCredentials = {
       email: role === 'admin' ? 'admin@cataloro.com' : 'user@cataloro.com',
       password: 'demo123'
     };
+    
+    console.log('📝 Demo credentials:', demoCredentials);
     
     // Fill form and submit
     setFormData(demoCredentials);
@@ -98,6 +102,8 @@ function SimpleLoginPage() {
     setError(null);
     
     try {
+      console.log('🌐 Making login request to:', `${process.env.REACT_APP_BACKEND_URL}/api/auth/login`);
+      
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
@@ -106,23 +112,32 @@ function SimpleLoginPage() {
         body: JSON.stringify(demoCredentials)
       });
 
+      console.log('📡 Response received:', response.status, response.statusText);
+
       if (!response.ok) {
         throw new Error(`Demo login failed: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log('✅ Login data received:', data);
       
       localStorage.setItem('cataloro_token', data.token);
       localStorage.setItem('cataloro_user', JSON.stringify(data.user));
       
+      console.log('💾 Data saved to localStorage');
+      console.log('🚀 Attempting navigation...');
+      
       // Check if user is admin and redirect accordingly
       if (data?.user?.role === 'admin' || data?.user?.email === 'admin@cataloro.com') {
+        console.log('👑 Admin user, navigating to /admin');
         navigate('/admin');
       } else {
+        console.log('👤 Regular user, navigating to /browse');
         navigate('/browse');
       }
       
     } catch (error) {
+      console.error('❌ Demo login error:', error);
       setError(`Demo login failed: ${error.message}`);
     } finally {
       setIsLoading(false);
