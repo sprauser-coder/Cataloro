@@ -7449,8 +7449,16 @@ async def get_all_ads():
 async def get_active_ads():
     """Get only active ads for public display"""
     try:
-        active_ads = await db.ads.find({"is_active": True}).sort("created_at", -1).to_list(length=None)
-        return active_ads
+        # Convert MongoDB cursor to list first
+        ads_cursor = db.ads.find({"is_active": True}).sort("created_at", -1)
+        ads_list = await ads_cursor.to_list(length=None)
+        
+        # Convert ObjectIds to strings to avoid serialization issues
+        for ad in ads_list:
+            if "_id" in ad:
+                ad["_id"] = str(ad["_id"])
+        
+        return ads_list
     except Exception as e:
         logger.error(f"Error fetching active ads: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch active ads: {str(e)}")
