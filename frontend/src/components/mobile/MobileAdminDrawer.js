@@ -21,7 +21,8 @@ import {
   TrendingUp,
   Activity,
   ChevronRight,
-  Grid3X3
+  Grid3X3,
+  Clock
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
