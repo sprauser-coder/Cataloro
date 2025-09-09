@@ -82,7 +82,6 @@ import {
   Clock,
   CheckSquare,
   Calendar,
-  Target,
   TrendingDown,
   AlertCircle,
   Info,
