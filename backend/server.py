@@ -1026,26 +1026,9 @@ async def suspend_user(user_id: str):
 @app.put("/api/auth/profile/{user_id}")
 async def update_profile(user_id: str, profile_data: dict):
     """Update user profile with persistent data"""
-    try:
-        # First, check if user exists and is active
-        user = await db.users.find_one({"id": user_id})
-        if not user:
-            # Try with ObjectId for backward compatibility
-            try:
-                from bson import ObjectId
-                user = await db.users.find_one({"_id": ObjectId(user_id)})
-            except:
-                pass
-        
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        # Check if user is active (not suspended)
-        if not user.get("is_active", True):
-            raise HTTPException(
-                status_code=403, 
-                detail="Your account has been suspended. Please contact support for assistance."
-            )
+    try:        
+        # Check if user exists and is active (this function handles both checks)
+        user = await check_user_active_status(user_id)
         
         # Prepare update data with timestamp
         update_data = {
