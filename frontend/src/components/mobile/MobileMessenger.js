@@ -108,74 +108,37 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
     }
   };
 
-  // Mock messages for active conversation
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      text: 'Hi! I\'m interested in your BMW catalytic converter listing.',
-      sender: 'them',
-      timestamp: new Date(Date.now() - 3600000),
-      status: 'read'
-    },
-    {
-      id: 2,
-      text: 'Hello! Yes, it\'s still available. It\'s in excellent condition.',
-      sender: 'me',
-      timestamp: new Date(Date.now() - 3500000),
-      status: 'read'
-    },
-    {
-      id: 3,
-      text: 'Great! What\'s the mileage on the original vehicle?',
-      sender: 'them',
-      timestamp: new Date(Date.now() - 3400000),
-      status: 'read'
-    },
-    {
-      id: 4,
-      text: 'It had about 45,000 miles. Very low mileage for the year.',
-      sender: 'me',
-      timestamp: new Date(Date.now() - 3300000),
-      status: 'read'
-    },
-    {
-      id: 5,
-      text: 'Perfect! Is the catalytic converter still available?',
-      sender: 'them',
-      timestamp: new Date(Date.now() - 10000),
-      status: 'delivered'
+  // Mock messages for active conversation - replace with real message loading
+  const [messages, setMessages] = useState([]);
+
+  // Load conversation messages when conversation is selected
+  const loadConversationMessages = async (conversation) => {
+    if (conversation && conversation.messages) {
+      // Convert backend message format to component format
+      const formattedMessages = conversation.messages.map(msg => ({
+        id: msg.id,
+        text: msg.content,
+        sender: msg.sender_id === user.id ? 'me' : 'them',
+        timestamp: new Date(msg.created_at),
+        status: msg.is_read ? 'read' : 'delivered'
+      }));
+      
+      setMessages(formattedMessages);
     }
-  ]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
-      minute: '2-digit',
-      hour12: true 
-    });
+  const handleConversationSelect = (conversation) => {
+    setCurrentConversation(conversation);
+    setView('conversation');
+    loadConversationMessages(conversation);
   };
 
-  const formatLastSeen = (date) => {
-    const now = new Date();
-    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+  const handleSendMessage = async () => {
+    if (!message.trim() || !currentConversation) return;
     
-    if (diffInHours < 1) return 'Active now';
-    if (diffInHours < 24) return `Active ${diffInHours}h ago`;
-    return `Active ${Math.floor(diffInHours / 24)}d ago`;
-  };
-
-  const handleSendMessage = () => {
-    if (message.trim()) {
+    try {
       const newMessage = {
-        id: messages.length + 1,
+        id: Date.now(), // Temporary ID
         text: message,
         sender: 'me',
         timestamp: new Date(),
@@ -185,28 +148,32 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
       setMessages([...messages, newMessage]);
       setMessage('');
       
-      // Simulate message status updates
-      setTimeout(() => {
-        setMessages(prev => prev.map(msg => 
-          msg.id === newMessage.id ? { ...msg, status: 'sent' } : msg
-        ));
-      }, 500);
+      // Send message via backend
+      await liveService.sendMessage({
+        recipient_id: currentConversation.id,
+        content: message,
+        sender_id: user.id
+      });
       
-      setTimeout(() => {
-        setMessages(prev => prev.map(msg => 
-          msg.id === newMessage.id ? { ...msg, status: 'delivered' } : msg
-        ));
-      }, 1000);
+      // Update message status
+      setMessages(prev => prev.map(msg => 
+        msg.id === newMessage.id ? { ...msg, status: 'sent' } : msg
+      ));
+      
+      // Reload conversations to update last message
+      loadConversations();
+      
+    } catch (error) {
+      console.error('Error sending message:', error);
+      showToast('Failed to send message', 'error');
+      
+      // Remove failed message
+      setMessages(prev => prev.filter(msg => msg.id !== newMessage.id));
     }
   };
 
-  const handleConversationSelect = (conversation) => {
-    setCurrentConversation(conversation);
-    setView('conversation');
-  };
-
-  const filteredConversations = mockConversations.filter(conv =>
-    conv.user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredConversations = realConversations.filter(conv =>
+    conv.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const renderMessageStatus = (status) => {
