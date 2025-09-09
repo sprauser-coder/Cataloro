@@ -235,7 +235,7 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
               <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Messages</h1>
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              {mockConversations.filter(c => c.unreadCount > 0).length} unread
+              {realConversations.filter(c => c.unreadCount > 0).length} unread
             </div>
           </div>
           
