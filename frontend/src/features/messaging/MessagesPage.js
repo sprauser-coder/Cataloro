@@ -136,6 +136,12 @@ function MessagesPage() {
     };
   }, []); // Empty dependency array to prevent infinite loop
 
+  useEffect(() => {
+    if (user) {
+      loadMessages();
+    }
+  }, [user]);
+
   // CONDITIONAL RETURN AFTER ALL HOOKS
   if (isMobile) {
     return (
