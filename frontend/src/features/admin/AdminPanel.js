@@ -2467,15 +2467,39 @@ function HeroSelectionTab({ showToast }) {
           style={{ 
             height: `${heroContent.height || 400}px`,
             minHeight: '300px',
-            background: heroContent.background_type === 'solid' 
-              ? heroContent.background_color
-              : heroContent.background_type === 'gradient'
-                ? `linear-gradient(to right, ${heroContent.background_gradient_from}, ${heroContent.background_gradient_to})`
-                : heroContent.background_type === 'image' && heroContent.background_image
-                  ? `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${heroContent.background_image})`
-                : heroContent.background_type === 'image-gradient' && heroContent.background_image
-                  ? `linear-gradient(to right, ${heroContent.background_gradient_from || 'rgba(59, 130, 246, 0.8)'}, ${heroContent.background_gradient_to || 'rgba(236, 72, 153, 0.8)'}), url(${heroContent.background_image})`
-                : 'linear-gradient(to right, #3B82F6, #EC4899)',
+            background: (() => {
+              // Convert hex color to rgba with opacity
+              const hexToRgba = (hex, opacity) => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                if (!result) return hex;
+                const r = parseInt(result[1], 16);
+                const g = parseInt(result[2], 16);
+                const b = parseInt(result[3], 16);
+                return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+              };
+
+              const gradientOpacity = heroContent.gradient_opacity || 0.8;
+              
+              switch (heroContent.background_type) {
+                case 'gradient':
+                  return `linear-gradient(to right, ${heroContent.background_gradient_from || '#3f6ec7'}, ${heroContent.background_gradient_to || '#ec4899'})`;
+                case 'solid':
+                  return heroContent.background_color || '#3B82F6';
+                case 'image':
+                  return heroContent.background_image 
+                    ? `linear-gradient(rgba(0,0,0,${gradientOpacity * 0.5}), rgba(0,0,0,${gradientOpacity * 0.5})), url(${heroContent.background_image})`
+                    : 'linear-gradient(to right, #3f6ec7, #a855f7, #ec4899)';
+                case 'image-gradient':
+                  const gradientFromRgba = hexToRgba(heroContent.background_gradient_from || '#3f6ec7', gradientOpacity);
+                  const gradientToRgba = hexToRgba(heroContent.background_gradient_to || '#ec4899', gradientOpacity);
+                  
+                  return heroContent.background_image 
+                    ? `linear-gradient(to right, ${gradientFromRgba}, ${gradientToRgba}), url(${heroContent.background_image})`
+                    : `linear-gradient(to right, ${heroContent.background_gradient_from || '#3f6ec7'}, ${heroContent.background_gradient_to || '#ec4899'})`;
+                default:
+                  return 'linear-gradient(to right, #3B82F6, #EC4899)';
+              }
+            })(),
             backgroundSize: (heroContent.background_type === 'image' || heroContent.background_type === 'image-gradient') ? 'cover' : 'auto',
             backgroundPosition: (heroContent.background_type === 'image' || heroContent.background_type === 'image-gradient') ? 'center' : 'auto',
             borderRadius: heroContent.display_mode === 'full_width' ? '0' : '1rem',
