@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import { Outlet, Navigate, useLocation, Link } from 'react-router-dom';
 import { Menu, Shield } from 'lucide-react';
 import MobileBottomNav from './MobileBottomNav';
 import MobileNav from './MobileNav';
