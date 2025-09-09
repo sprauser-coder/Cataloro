@@ -7439,8 +7439,16 @@ async def unassign_item_from_basket(item_id: str):
 async def get_all_ads():
     """Get all ads for management (admin only)"""
     try:
-        ads = await db.ads.find().sort("created_at", -1).to_list(length=None)
-        return ads
+        # Convert MongoDB cursor to list first
+        ads_cursor = db.ads.find().sort("created_at", -1)
+        ads_list = await ads_cursor.to_list(length=None)
+        
+        # Convert ObjectIds to strings to avoid serialization issues
+        for ad in ads_list:
+            if "_id" in ad:
+                ad["_id"] = str(ad["_id"])
+        
+        return ads_list
     except Exception as e:
         logger.error(f"Error fetching ads: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch ads: {str(e)}")
