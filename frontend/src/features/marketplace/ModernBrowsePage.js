@@ -543,6 +543,18 @@ function ModernBrowsePage() {
         style={getHeroBackgroundStyle()}
       >
         <div className="absolute inset-0 bg-black/20"></div>
+        
+        {/* Hero Image - positioned as background overlay if image_url exists */}
+        {heroContent.image_url && (
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${heroContent.image_url})`,
+              opacity: '0.3'
+            }}
+          />
+        )}
+        
         <div className="relative z-10 text-center flex flex-col justify-center h-full px-8 max-w-7xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             {heroContent.title || 'Discover Amazing Products'}
