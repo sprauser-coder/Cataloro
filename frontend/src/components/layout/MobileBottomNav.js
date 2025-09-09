@@ -116,7 +116,7 @@ function MobileBottomNav() {
       label: 'Profile',
       path: '/profile',
       icon: User,
-      badge: favoritesCount > 0 ? favoritesCount : null // Add favorites badge to profile
+      badge: null // No badge for profile
     }
   ];
 
