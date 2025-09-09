@@ -133,9 +133,15 @@ class LiveService {
     }
   }
 
-  async sendMessage(userId, messageData) {
+  async sendMessage(messageData) {
     try {
-      const response = await fetch(`${this.baseURL}/user/${userId}/messages`, {
+      // Extract sender_id from messageData for the URL path
+      const senderId = messageData.sender_id;
+      if (!senderId) {
+        throw new Error('sender_id is required in messageData');
+      }
+      
+      const response = await fetch(`${this.baseURL}/user/${senderId}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
