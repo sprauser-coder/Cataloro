@@ -107,22 +107,22 @@ function MobileNav({ isOpen, onClose }) {
         } lg:hidden`}
       >
       {/* Header */}
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-lg">C</span>
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-base">C</span>
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Cataloro</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Modern Marketplace</p>
+            <h2 className="text-base font-bold text-gray-900 dark:text-white">Cataloro</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Modern Marketplace</p>
           </div>
         </div>
         
         {user && (
-          <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-medium text-sm">
+              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-medium text-xs">
                   {user.full_name?.charAt(0) || user.username?.charAt(0) || 'U'}
                 </span>
               </div>
