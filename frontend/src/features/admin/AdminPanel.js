@@ -58,8 +58,6 @@ import {
   Type,
   Image as ImageIcon,
   Link as LinkIcon,
-  Play,
-  Pause,
   Power,
   Wrench,
   Bug,
