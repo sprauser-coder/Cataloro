@@ -112,9 +112,15 @@ function MobileBottomNav() {
                 <div className="relative">
                   <Icon className={`${item.highlight ? 'w-6 h-6' : 'w-5 h-5'}`} />
                   
-                  {/* Badge for counts */}
+                  {/* Enhanced Badge for counts */}
                   {item.badge && (
-                    <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                    <div className={`absolute -top-2 -right-2 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-medium shadow-md ${
+                      item.label === 'Messages' 
+                        ? 'bg-red-500 animate-pulse' // Red pulsing for messages
+                        : item.label === 'Cart'
+                        ? 'bg-blue-500' // Blue for cart
+                        : 'bg-green-500' // Green for others (like favorites)
+                    }`}>
                       {item.badge > 99 ? '99+' : item.badge}
                     </div>
                   )}
