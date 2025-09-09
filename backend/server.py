@@ -391,6 +391,65 @@ async def create_listing_expiration_notification(listing_id: str, seller_id: str
 async def health_check():
     return {"status": "healthy", "app": "Cataloro Marketplace", "version": "1.0.0"}
 
+@app.post("/api/admin/cache/clear")
+async def clear_all_cache():
+    """Clear ALL Redis cache - URGENT endpoint for data consistency"""
+    try:
+        # Clear all cache patterns
+        cleared_counts = {}
+        
+        # Clear listings cache
+        listings_cleared = await cache_service.invalidate_listings_cache()
+        cleared_counts["listings"] = listings_cleared
+        
+        # Clear dashboard cache
+        dashboard_cleared = await cache_service.invalidate_dashboard_cache()
+        cleared_counts["dashboard"] = 1 if dashboard_cleared else 0
+        
+        # Clear all user sessions
+        sessions_cleared = await cache_service.delete_pattern("cataloro:session:*")
+        cleared_counts["sessions"] = sessions_cleared
+        
+        # Clear all user profiles
+        profiles_cleared = await cache_service.delete_pattern("cataloro:profile:*")
+        cleared_counts["profiles"] = profiles_cleared
+        
+        # Clear all search results
+        search_cleared = await cache_service.delete_pattern("cataloro:search:*")
+        cleared_counts["search"] = search_cleared
+        
+        # Clear all baskets
+        baskets_cleared = await cache_service.delete_pattern("cataloro:baskets:*")
+        cleared_counts["baskets"] = baskets_cleared
+        
+        # Clear all notifications
+        notifications_cleared = await cache_service.delete_pattern("cataloro:notifications:*")
+        cleared_counts["notifications"] = notifications_cleared
+        
+        # Clear browse cache specifically (for phantom listings)
+        browse_cleared = await cache_service.delete_pattern("cataloro:listings:browse_v3_*")
+        cleared_counts["browse_cache"] = browse_cleared
+        
+        total_cleared = sum(cleared_counts.values())
+        
+        logger.info(f"🧹 CACHE CLEARED: {total_cleared} keys removed - {cleared_counts}")
+        
+        return {
+            "message": "All Redis cache cleared successfully",
+            "total_keys_cleared": total_cleared,
+            "breakdown": cleared_counts,
+            "cache_status": await cache_service.health_check(),
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Cache clear error: {e}")
+        return {
+            "message": "Cache clear failed",
+            "error": str(e),
+            "cache_status": await cache_service.health_check()
+        }
+
 @app.get("/api/admin/performance")
 async def get_performance_metrics():
     """Get performance metrics and optimization status"""
