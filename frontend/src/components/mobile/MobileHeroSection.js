@@ -140,24 +140,24 @@ function MobileHeroSection({
       >
         <div className="absolute inset-0 bg-black/20"></div>
         
-        <div className="relative z-10 flex flex-col justify-center h-full px-4 max-w-7xl mx-auto">
+        <div className="relative z-10 flex flex-col justify-center h-full px-6 py-6 max-w-7xl mx-auto">
           {/* Hero Image - displayed over text if image_url exists */}
           {heroContent.image_url && (
-            <div className="mb-4 flex justify-center">
+            <div className="mb-3 flex justify-center">
               <img 
                 src={heroContent.image_url} 
                 alt="Hero" 
-                className="max-h-16 max-w-32 object-contain" 
+                className="max-h-14 max-w-28 object-contain" 
               />
             </div>
           )}
           
-          {/* Title and Description - More compact for mobile */}
-          <div className="text-center mb-4">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">
+          {/* Title and Description - Better spacing for mobile */}
+          <div className="text-center mb-5">
+            <h1 className="text-2xl md:text-3xl font-bold mb-3 leading-tight">
               {heroContent.title || 'Find Catalysts'}
             </h1>
-            <p className="text-sm opacity-90 max-w-sm mx-auto">
+            <p className="text-base opacity-95 max-w-xs mx-auto leading-relaxed">
               {heroContent.description || 'Discover quality catalytic converters'}
             </p>
           </div>
