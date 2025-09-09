@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Store,
   Package,
@@ -22,8 +22,10 @@ import {
   Search,
   TrendingUp,
   Award,
-  Globe
+  Globe,
+  LogOut
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 function MobileNav({ isOpen, onClose }) {
   const [user, setUser] = useState(null);
