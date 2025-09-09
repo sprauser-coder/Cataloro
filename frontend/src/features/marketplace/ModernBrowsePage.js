@@ -203,6 +203,11 @@ function ModernBrowsePage() {
     success: false
   });
 
+  // Mobile-specific state
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [quickStats, setQuickStats] = useState({});
+
   // Check if item is in favorites
   const isInFavorites = (itemId) => {
     return favorites.some(fav => fav.id === itemId);
