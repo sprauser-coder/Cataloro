@@ -1640,6 +1640,139 @@ class CatalystDataTester:
             "acceptable_data_quality": data_quality_score >= 75
         }
     
+    async def test_enhanced_search_functionality(self) -> Dict:
+        """Test enhanced search functionality for CreateListingPage with add_info field"""
+        print("🔍 Testing enhanced search functionality with add_info field...")
+        
+        result = await self.make_request("/admin/catalyst/unified-calculations")
+        
+        if not result["success"]:
+            return {
+                "test_name": "Enhanced Search Functionality",
+                "success": False,
+                "error": "Failed to get catalyst data",
+                "response_time_ms": result["response_time_ms"]
+            }
+        
+        data = result["data"]
+        
+        # Test 1: Verify add_info field is populated
+        print("  📝 Testing add_info field population...")
+        entries_with_add_info = 0
+        meaningful_add_info_count = 0
+        sample_add_info_entries = []
+        
+        for entry in data[:100]:  # Sample first 100 entries
+            add_info = entry.get('add_info', '')
+            if add_info:
+                entries_with_add_info += 1
+                # Check if add_info contains meaningful information (more than just whitespace)
+                if len(add_info.strip()) > 10:  # Meaningful content threshold
+                    meaningful_add_info_count += 1
+                    if len(sample_add_info_entries) < 5:
+                        sample_add_info_entries.append({
+                            "name": entry.get('name', 'N/A'),
+                            "cat_id": entry.get('cat_id', 'N/A'),
+                            "add_info": add_info[:200] + '...' if len(add_info) > 200 else add_info
+                        })
+        
+        add_info_population_rate = (entries_with_add_info / min(100, len(data))) * 100
+        meaningful_info_rate = (meaningful_add_info_count / min(100, len(data))) * 100
+        
+        print(f"    📊 Add_info populated: {entries_with_add_info}/100 entries ({add_info_population_rate:.1f}%)")
+        print(f"    📊 Meaningful add_info: {meaningful_add_info_count}/100 entries ({meaningful_info_rate:.1f}%)")
+        
+        # Test 2: Verify searchable fields structure
+        print("  🔍 Testing searchable fields structure...")
+        searchable_fields_present = True
+        required_search_fields = ["name", "cat_id", "add_info"]
+        missing_search_fields = []
+        
+        if data:
+            first_entry = data[0]
+            for field in required_search_fields:
+                if field not in first_entry:
+                    searchable_fields_present = False
+                    missing_search_fields.append(field)
+        
+        print(f"    🔍 Searchable fields: {'✅' if searchable_fields_present else '❌'}")
+        if missing_search_fields:
+            print(f"      Missing: {missing_search_fields}")
+        
+        # Test 3: Sample meaningful add_info content
+        print("  📋 Sample add_info entries for search verification:")
+        for i, sample in enumerate(sample_add_info_entries, 1):
+            print(f"    {i}. {sample['name']} ({sample['cat_id']})")
+            print(f"       Add Info: {sample['add_info']}")
+        
+        # Test 4: Performance with enhanced search capability
+        print("  ⚡ Testing performance for enhanced search...")
+        performance_times = []
+        
+        # Test multiple calls to measure consistent performance
+        for i in range(3):
+            perf_result = await self.make_request("/admin/catalyst/unified-calculations")
+            if perf_result["success"]:
+                performance_times.append(perf_result["response_time_ms"])
+        
+        avg_performance = sum(performance_times) / len(performance_times) if performance_times else 0
+        performance_acceptable = avg_performance < 3000  # 3 seconds for enhanced search data
+        
+        print(f"    ⏱️ Average response time: {avg_performance:.0f}ms")
+        print(f"    ⚡ Performance acceptable: {'✅' if performance_acceptable else '❌'}")
+        
+        # Test 5: Data structure validation for enhanced search
+        print("  🔬 Validating data structure for enhanced search...")
+        search_ready_entries = 0
+        
+        for entry in data[:50]:  # Check first 50 entries
+            has_name = bool(entry.get('name', '').strip())
+            has_cat_id = bool(entry.get('cat_id', '').strip())
+            has_searchable_content = has_name or has_cat_id or bool(entry.get('add_info', '').strip())
+            
+            if has_searchable_content:
+                search_ready_entries += 1
+        
+        search_readiness_rate = (search_ready_entries / min(50, len(data))) * 100
+        
+        print(f"    📊 Search-ready entries: {search_ready_entries}/50 ({search_readiness_rate:.1f}%)")
+        
+        # Overall assessment
+        enhanced_search_ready = (
+            len(data) == 4496 and  # Correct entry count
+            searchable_fields_present and  # All search fields present
+            add_info_population_rate >= 50 and  # At least 50% have add_info
+            meaningful_info_rate >= 30 and  # At least 30% have meaningful add_info
+            performance_acceptable and  # Performance is acceptable
+            search_readiness_rate >= 90  # At least 90% entries are search-ready
+        )
+        
+        return {
+            "test_name": "Enhanced Search Functionality",
+            "success": True,
+            "response_time_ms": result["response_time_ms"],
+            "total_entries": len(data),
+            "expected_entries": 4496,
+            "correct_entry_count": len(data) == 4496,
+            "add_info_population_rate": add_info_population_rate,
+            "meaningful_info_rate": meaningful_info_rate,
+            "searchable_fields_present": searchable_fields_present,
+            "missing_search_fields": missing_search_fields,
+            "sample_add_info_entries": sample_add_info_entries,
+            "average_performance_ms": avg_performance,
+            "performance_acceptable": performance_acceptable,
+            "search_readiness_rate": search_readiness_rate,
+            "enhanced_search_ready": enhanced_search_ready,
+            "requirements_summary": {
+                "entry_count_4496": len(data) == 4496,
+                "add_info_field_populated": add_info_population_rate >= 50,
+                "meaningful_add_info_content": meaningful_info_rate >= 30,
+                "searchable_structure": searchable_fields_present,
+                "performance_acceptable": performance_acceptable,
+                "search_ready_data": search_readiness_rate >= 90
+            }
+        }
+    
     async def run_comprehensive_catalyst_test(self) -> Dict:
         """Run all catalyst data tests"""
         print("🚀 Starting Catalyst Data Endpoint Testing")
