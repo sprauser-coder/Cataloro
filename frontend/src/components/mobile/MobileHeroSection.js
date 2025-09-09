@@ -152,17 +152,7 @@ function MobileHeroSection({
             </div>
           )}
           
-          {/* Title and Description - Better spacing for mobile */}
-          <div className="text-center mb-5">
-            <h1 className="text-2xl md:text-3xl font-bold mb-3 leading-tight">
-              {heroContent.title || 'Find Catalysts'}
-            </h1>
-            <p className="text-base opacity-95 max-w-xs mx-auto leading-relaxed">
-              {heroContent.description || 'Discover quality catalytic converters'}
-            </p>
-          </div>
-          
-          {/* Mobile Search Bar */}
+          {/* Mobile Search Bar - Only element in hero */}
           <div className="mb-4">
             <MobileSearchBar
               onSearch={onSearch}
