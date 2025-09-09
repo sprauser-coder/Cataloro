@@ -7,7 +7,7 @@ import subprocess
 import json
 import time
 
-BACKEND_URL = "https://basket-loader.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-mobile-ui.preview.emergentagent.com/api"
 
 def run_curl(method, endpoint, data=None):
     """Run curl command and return response"""

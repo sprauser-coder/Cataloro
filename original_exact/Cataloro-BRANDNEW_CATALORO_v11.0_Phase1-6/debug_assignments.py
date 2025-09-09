@@ -7,7 +7,7 @@ import requests
 import json
 from datetime import datetime
 
-BACKEND_URL = "https://basket-loader.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-mobile-ui.preview.emergentagent.com/api"
 
 def get_demo_user():
     """Get demo user for testing"""
