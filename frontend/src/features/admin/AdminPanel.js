@@ -2419,6 +2419,35 @@ function HeroSelectionTab({ showToast }) {
                     ))}
                   </div>
                 </div>
+
+                {/* Gradient Opacity Control (for image and image-gradient backgrounds) */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    Overlay Opacity
+                  </label>
+                  <div className="space-y-3">
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value={heroContent.gradient_opacity || 0.8}
+                      onChange={(e) => handleInputChange('gradient_opacity', parseFloat(e.target.value))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                    />
+                    <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                      <span>Transparent (0%)</span>
+                      <span className="font-medium">{Math.round((heroContent.gradient_opacity || 0.8) * 100)}%</span>
+                      <span>Opaque (100%)</span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {heroContent.background_type === 'image' 
+                        ? 'Controls the darkness of the overlay on the background image'
+                        : 'Controls the opacity of the gradient overlay on the background image'
+                      }
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           )}
