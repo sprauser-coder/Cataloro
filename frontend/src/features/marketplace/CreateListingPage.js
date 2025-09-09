@@ -684,7 +684,7 @@ function CreateListingPage() {
                   Title *
                   <span className="text-blue-600 dark:text-blue-400 text-xs ml-2 flex items-center">
                     <Database className="w-3 h-3 mr-1" />
-                    (Type to search Cat Database - {catalystData.length} catalysts available)
+                    (Type to search Cat Database - {unifiedCalculations.length} catalysts available)
                   </span>
                 </label>
                 <input
