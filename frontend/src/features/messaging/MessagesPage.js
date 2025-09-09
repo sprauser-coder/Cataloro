@@ -222,18 +222,6 @@ function MessagesPage() {
   //   scrollToBottom();
   // }, [conversationMessages]);
 
-  useEffect(() => {
-    if (user) {
-      loadMessages();
-    }
-  }, [user]);
-
-  // Auto-resize textarea
-  const autoResizeTextarea = (element) => {
-    element.style.height = 'auto';
-    element.style.height = Math.min(element.scrollHeight, 120) + 'px';
-  };
-
   // User search functionality
   const handleUserSearch = async (query) => {
     setUserSearchQuery(query);
