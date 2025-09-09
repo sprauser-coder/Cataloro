@@ -1,6 +1,7 @@
 /**
  * CATALORO - Comprehensive Messaging System
  * Full messaging functionality with real-time updates and enhanced UX
+ * Mobile-responsive with dedicated mobile interface
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -36,6 +37,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { liveService } from '../../services/liveService';
 import usePermissions from '../../hooks/usePermissions';
+import MobileMessenger from '../../components/mobile/MobileMessenger';
+import { useNavigate } from 'react-router-dom';
 
 // Hook to get ads configuration
 function useAdsConfig() {
