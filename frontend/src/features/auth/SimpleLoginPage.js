@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Store, ArrowRight, Shield, User, Sparkles } from 'lucide-react';
 import { UI_CONFIG } from '../../config/directions';
 
