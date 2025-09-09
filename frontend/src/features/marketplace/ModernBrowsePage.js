@@ -568,25 +568,27 @@ function ModernBrowsePage() {
 
   return (
     <>
-      {/* Full-Width Hero Section - Breaks out of container */}
+      {/* Hero Section - Dynamic width based on display mode */}
       <div 
-        className="hero-section relative text-white overflow-hidden w-screen"
+        className={`hero-section relative text-white overflow-hidden ${
+          heroContent.display_mode === 'full_width' ? 'w-screen' : 'w-full'
+        }`}
         style={getHeroBackgroundStyle()}
       >
         <div className="absolute inset-0 bg-black/20"></div>
         
-        {/* Hero Image - positioned as background overlay if image_url exists */}
-        {heroContent.image_url && (
-          <div 
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${heroContent.image_url})`,
-              opacity: '0.3'
-            }}
-          />
-        )}
-        
         <div className="relative z-10 text-center flex flex-col justify-center h-full px-8 max-w-7xl mx-auto">
+          {/* Hero Image - displayed over text if image_url exists */}
+          {heroContent.image_url && (
+            <div className="mb-6 flex justify-center">
+              <img 
+                src={heroContent.image_url} 
+                alt="Hero" 
+                className="max-h-24 max-w-48 object-contain" 
+              />
+            </div>
+          )}
+          
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             {heroContent.title || 'Discover Amazing Products'}
           </h1>
@@ -594,7 +596,7 @@ function ModernBrowsePage() {
             {heroContent.description || 'From electronics to fashion, find everything you need in one place'}
           </p>
           
-          {/* Hero Search Bar - FULL WIDTH */}
+          {/* Hero Search Bar - Responsive width */}
           <div className="w-full">
             <div className="search-bar-container relative bg-white/10 backdrop-blur-sm rounded-2xl p-2 border border-white/20 max-w-4xl mx-auto">
               <div className="flex items-center">
