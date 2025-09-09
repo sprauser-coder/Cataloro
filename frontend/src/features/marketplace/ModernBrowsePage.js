@@ -663,13 +663,79 @@ function ModernBrowsePage() {
 
   return (
     <>
-      {/* Hero Section - Dynamic width based on display mode */}
-      <div 
-        className={`hero-section relative text-white overflow-hidden ${
-          heroContent.display_mode === 'full_width' ? 'w-screen' : 'w-full'
-        }`}
-        style={getHeroBackgroundStyle()}
-      >
+      {/* Mobile Layout */}
+      {isMobile && (
+        <>
+          {/* Mobile Hero Section */}
+          <MobileHeroSection
+            onSearch={handleMobileSearch}
+            onFilterToggle={handleMobileFiltersToggle}
+            quickStats={quickStats}
+          />
+
+          {/* Mobile Filters */}
+          <MobileFilters
+            isOpen={isMobileFiltersOpen}
+            onClose={() => setIsMobileFiltersOpen(false)}
+            filters={filters}
+            onFiltersChange={handleMobileFiltersChange}
+            availableFilters={{
+              categories: ['Catalytic Converters', 'Diesel Particulate Filters', 'Ceramic Catalysts'],
+              locations: ['Germany', 'France', 'United Kingdom', 'Netherlands'],
+              conditions: ['New', 'Like New', 'Good', 'Fair', 'Used']
+            }}
+          />
+
+          {/* Mobile Listings */}
+          <div className="px-4 pb-4">
+            {filteredListings.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                  No catalysts found
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Try adjusting your search or filters
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredListings.map((listing) => (
+                  <MobileListingCard
+                    key={listing.id}
+                    listing={listing}
+                    onFavorite={handleMobileFavorite}
+                    onContact={handleMobileContact}
+                    onQuickView={handleMobileQuickView}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Load More Button for Mobile */}
+            {filteredListings.length > 0 && filteredListings.length % 10 === 0 && (
+              <div className="mt-6 text-center">
+                <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                  Load More Results
+                </button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Desktop Layout */}
+      {!isMobile && (
+        <>
+          {/* Desktop Hero Section - Dynamic width based on display mode */}
+          <div 
+            className={`hero-section relative text-white overflow-hidden ${
+              heroContent.display_mode === 'full_width' ? 'w-screen' : 'w-full'
+            }`}
+            style={getHeroBackgroundStyle()}
+          >
         <div className="absolute inset-0 bg-black/20"></div>
         
         <div className="relative z-10 text-center flex flex-col justify-center h-full px-8 max-w-7xl mx-auto">
