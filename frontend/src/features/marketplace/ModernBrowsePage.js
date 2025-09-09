@@ -1,6 +1,6 @@
 /**
- * CATALORO - Ultra-Modern Browse Page
- * Advanced marketplace browsing with filters, search, and modern UI
+ * CATALORO - Modern Browse Page (Desktop + Mobile Responsive)
+ * Comprehensive marketplace with desktop and mobile optimizations
  */
 
 import React, { useState, useEffect } from 'react';
