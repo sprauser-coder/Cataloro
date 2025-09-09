@@ -158,7 +158,7 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
     try {
       console.log('📤 Calling liveService.sendMessage...');
       
-      // Send message via backend
+      // Send message via backend with correct API format
       const response = await liveService.sendMessage({
         recipient_id: currentConversation.id,
         content: messageText,
