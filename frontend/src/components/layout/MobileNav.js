@@ -100,54 +100,62 @@ function MobileNav({ isOpen, onClose }) {
         />
       )}
       
-      {/* Navigation Drawer */}
+      {/* Navigation Drawer - Completely Redesigned for Mobile */}
       <div
-        className={`fixed top-0 left-0 h-full w-72 max-w-[85vw] bg-white dark:bg-gray-900 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 h-full w-64 max-w-[70vw] bg-white dark:bg-gray-900 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:hidden`}
       >
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-base">C</span>
+        {/* Compact Header */}
+        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-600 to-purple-600">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">C</span>
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-white">Cataloro</h2>
+                <p className="text-xs text-white/80">Marketplace</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-1 text-white/80 hover:text-white hover:bg-white/20 rounded-md transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <div>
-            <h2 className="text-base font-bold text-gray-900 dark:text-white">Cataloro</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Modern Marketplace</p>
-          </div>
-        </div>
-        
-        {user && (
-          <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+          
+          {/* Compact User Info */}
+          {user && (
+            <div className="mt-2 flex items-center space-x-2 p-2 bg-white/10 rounded-md">
+              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                 <span className="text-white font-medium text-xs">
                   {user.full_name?.charAt(0) || user.username?.charAt(0) || 'U'}
                 </span>
               </div>
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white text-sm">
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-white text-xs truncate">
                   {user.full_name || user.username}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {user.role?.toUpperCase()}
+                <p className="text-xs text-white/70 uppercase">
+                  {user.role}
                 </p>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* Navigation */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-3 space-y-4">
+        {/* Compact Navigation */}
+        <div className="flex-1 overflow-y-auto py-2">
           {navigationSections.map((section) => (
-            <div key={section.title}>
-              <h3 className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mb-2 px-3">
+            <div key={section.title} className="mb-3">
+              <h3 className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 font-semibold mb-1 px-4">
                 {section.title}
               </h3>
-              <div className="space-y-1">
+              <div className="space-y-0">
                 {section.items.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -155,13 +163,13 @@ function MobileNav({ isOpen, onClose }) {
                       key={item.path}
                       to={item.path}
                       onClick={onClose}
-                      className={`flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 touch-manipulation ${
+                      className={`flex items-center space-x-3 px-4 py-2 text-sm font-medium transition-all duration-200 touch-manipulation ${
                         isActive(item.path)
-                          ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
+                          ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-r-2 border-blue-600'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700'
                       }`}
                     >
-                      <Icon className="w-5 h-5 flex-shrink-0" />
+                      <Icon className="w-4 h-4 flex-shrink-0" />
                       <span className="truncate">{item.label}</span>
                     </Link>
                   );
@@ -170,16 +178,13 @@ function MobileNav({ isOpen, onClose }) {
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-        <div className="text-center">
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Cataloro v2.0 - Ultra Modern
+        {/* Compact Footer */}
+        <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+            Cataloro v2.0
           </p>
         </div>
-      </div>
       </div>
     </>
   );
