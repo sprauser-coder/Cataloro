@@ -381,6 +381,8 @@ function AdminPanel() {
     { id: 'business', label: 'Business', shortLabel: 'Business', icon: Building },
     { id: 'cats', label: "Cat's", shortLabel: "Cat's", icon: Database, 
       permission: 'canAccessDatDatabase' },
+    { id: 'ads', label: 'Ads Management', shortLabel: 'Ads', icon: Target, 
+      adminOnly: true },
     { id: 'site-settings', label: 'Site Settings', shortLabel: 'Settings', icon: Settings, 
       adminOnly: true },
     { id: 'administration', label: 'Administration', shortLabel: 'Admin', icon: Shield, 
