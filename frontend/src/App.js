@@ -79,8 +79,9 @@ function App() {
     };
   }, []);
 
-  // Choose layout based on screen size
+  // Choose layout and components based on screen size
   const LayoutComponent = isMobile ? MobileLayout : ModernLayout;
+  const BrowsePageComponent = isMobile ? MobileBrowsePage : ModernBrowsePage;
 
   return (
     <div className="App">
