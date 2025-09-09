@@ -204,6 +204,9 @@ function BuyManagementPage() {
 
   // Export basket as PDF
   const exportBasketPDF = async (basket, totals) => {
+    // Set loading state for the specific basket
+    setExportingBaskets(prev => ({ ...prev, [basket.id]: true }));
+    
     try {
       showToast('Generating PDF export...', 'info');
       
@@ -253,6 +256,9 @@ function BuyManagementPage() {
     } catch (error) {
       console.error('Export error:', error);
       showToast(`Export failed: ${error.message}`, 'error');
+    } finally {
+      // Clear loading state for the specific basket
+      setExportingBaskets(prev => ({ ...prev, [basket.id]: false }));
     }
   };
 
