@@ -742,25 +742,8 @@ async def get_profile(user_id: str):
             )
         return cached_profile
     
-    # Try to find user by id field first, then by _id
-    user = await db.users.find_one({"id": user_id})
-    if not user:
-        # Try with _id in case it's stored differently
-        try:
-            from bson import ObjectId
-            user = await db.users.find_one({"_id": ObjectId(user_id)})
-        except:
-            pass
-    
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    # Check if user is active (not suspended)
-    if not user.get("is_active", True):
-        raise HTTPException(
-            status_code=403, 
-            detail="Your account has been suspended. Please contact support for assistance."
-        )
+    # Check if user exists and is active (this function handles both checks)
+    user = await check_user_active_status(user_id)
     
     profile_data = serialize_doc(user)
     
