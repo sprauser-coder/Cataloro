@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_search():
-    base_url = "https://market-mobile-ui.preview.emergentagent.com"
+    base_url = "https://mobi-market.preview.emergentagent.com"
     
     # Create a test user
     user_data = {
