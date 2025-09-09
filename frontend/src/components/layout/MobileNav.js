@@ -48,9 +48,7 @@ function MobileNav({ isOpen, onClose }) {
       title: 'Marketplace',
       items: [
         { label: 'About Platform', path: '/info', icon: Globe },
-        { label: 'Browse All', path: '/browse', icon: Store },
-        { label: 'Search', path: '/search', icon: Search },
-        { label: 'Trending', path: '/trending', icon: TrendingUp }
+        { label: 'Browse All', path: '/browse', icon: Store }
       ]
     },
     {
@@ -63,10 +61,10 @@ function MobileNav({ isOpen, onClose }) {
       ]
     },
     {
-      title: 'Selling',
+      title: 'Settings',
       items: [
-        { label: 'Create Listing', path: '/create-listing', icon: Plus },
-        { label: 'Pending Sales', path: '/pending-sales', icon: DollarSign }
+        { label: 'Profile', path: '/profile', icon: User },
+        { label: 'Notifications', path: '/notifications', icon: Bell }
       ]
     }
   ];
