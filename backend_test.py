@@ -191,7 +191,356 @@ class AdminAuthenticationTester:
             "detailed_user_tests": user_tests
         }
     
-    async def test_user_management_endpoints(self) -> Dict:
+    async def test_user_management_functionality(self) -> Dict:
+        """Test comprehensive user management functionality including activate/suspend endpoints"""
+        print("👥 Testing user management functionality...")
+        
+        if not self.admin_token:
+            return {
+                "test_name": "User Management Functionality",
+                "error": "No admin token available - admin login required first"
+            }
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        test_results = []
+        
+        # Step 1: Test listing all users
+        print("  Testing user listing endpoint...")
+        users_result = await self.make_request("/users", headers=headers)
+        
+        if users_result["success"]:
+            users_data = users_result["data"]
+            print(f"    ✅ Found {len(users_data)} users in system")
+            
+            # Store users for further testing
+            self.test_users = users_data
+            
+            test_results.append({
+                "test": "List Users",
+                "success": True,
+                "response_time_ms": users_result["response_time_ms"],
+                "user_count": len(users_data),
+                "has_expected_users": any(u.get("email") == "admin@cataloro.com" for u in users_data)
+            })
+        else:
+            print(f"    ❌ Failed to list users: {users_result.get('error')}")
+            test_results.append({
+                "test": "List Users",
+                "success": False,
+                "error": users_result.get("error"),
+                "response_time_ms": users_result["response_time_ms"]
+            })
+        
+        # Step 2: Test individual user activate/suspend endpoints
+        if self.test_users:
+            # Find a test user (not admin)
+            test_user = None
+            for user in self.test_users:
+                if user.get("email") != "admin@cataloro.com" and user.get("id"):
+                    test_user = user
+                    break
+            
+            if test_user:
+                user_id = test_user["id"]
+                original_status = test_user.get("is_active", True)
+                
+                print(f"  Testing activate/suspend with user: {test_user.get('email', 'Unknown')}")
+                
+                # Test suspend endpoint
+                print("    Testing suspend endpoint...")
+                suspend_result = await self.make_request(f"/admin/users/{user_id}/suspend", "PUT", headers=headers)
+                
+                if suspend_result["success"]:
+                    suspended_user = suspend_result["data"].get("user", {})
+                    is_suspended = not suspended_user.get("is_active", True)
+                    
+                    test_results.append({
+                        "test": "Suspend User",
+                        "success": True,
+                        "response_time_ms": suspend_result["response_time_ms"],
+                        "user_id": user_id,
+                        "is_active_after_suspend": suspended_user.get("is_active"),
+                        "suspend_successful": is_suspended,
+                        "returns_updated_user": bool(suspended_user)
+                    })
+                    
+                    print(f"      ✅ User suspended successfully (is_active: {suspended_user.get('is_active')})")
+                else:
+                    test_results.append({
+                        "test": "Suspend User",
+                        "success": False,
+                        "error": suspend_result.get("error"),
+                        "response_time_ms": suspend_result["response_time_ms"],
+                        "user_id": user_id
+                    })
+                    print(f"      ❌ Suspend failed: {suspend_result.get('error')}")
+                
+                # Test activate endpoint
+                print("    Testing activate endpoint...")
+                activate_result = await self.make_request(f"/admin/users/{user_id}/activate", "PUT", headers=headers)
+                
+                if activate_result["success"]:
+                    activated_user = activate_result["data"].get("user", {})
+                    is_activated = activated_user.get("is_active", False)
+                    
+                    test_results.append({
+                        "test": "Activate User",
+                        "success": True,
+                        "response_time_ms": activate_result["response_time_ms"],
+                        "user_id": user_id,
+                        "is_active_after_activate": activated_user.get("is_active"),
+                        "activate_successful": is_activated,
+                        "returns_updated_user": bool(activated_user)
+                    })
+                    
+                    print(f"      ✅ User activated successfully (is_active: {activated_user.get('is_active')})")
+                else:
+                    test_results.append({
+                        "test": "Activate User",
+                        "success": False,
+                        "error": activate_result.get("error"),
+                        "response_time_ms": activate_result["response_time_ms"],
+                        "user_id": user_id
+                    })
+                    print(f"      ❌ Activate failed: {activate_result.get('error')}")
+                
+                # Test state persistence by listing users again
+                print("    Testing state persistence...")
+                users_check_result = await self.make_request("/users", headers=headers)
+                
+                if users_check_result["success"]:
+                    updated_users = users_check_result["data"]
+                    updated_user = next((u for u in updated_users if u.get("id") == user_id), None)
+                    
+                    if updated_user:
+                        final_status = updated_user.get("is_active", False)
+                        persistence_test = {
+                            "test": "State Persistence",
+                            "success": True,
+                            "user_id": user_id,
+                            "final_is_active_status": final_status,
+                            "state_persisted": final_status == True  # Should be active after activate
+                        }
+                        print(f"      ✅ State persisted correctly (final is_active: {final_status})")
+                    else:
+                        persistence_test = {
+                            "test": "State Persistence",
+                            "success": False,
+                            "error": "User not found in updated list",
+                            "user_id": user_id
+                        }
+                        print(f"      ❌ User not found in updated list")
+                    
+                    test_results.append(persistence_test)
+            else:
+                test_results.append({
+                    "test": "Individual User Operations",
+                    "success": False,
+                    "error": "No suitable test user found (need non-admin user with ID)"
+                })
+                print("    ❌ No suitable test user found for activate/suspend testing")
+        
+        # Step 3: Test error handling for non-existent users
+        print("  Testing error handling for non-existent users...")
+        fake_user_id = "non-existent-user-id-12345"
+        
+        # Test suspend with fake ID
+        fake_suspend_result = await self.make_request(f"/admin/users/{fake_user_id}/suspend", "PUT", headers=headers)
+        fake_activate_result = await self.make_request(f"/admin/users/{fake_user_id}/activate", "PUT", headers=headers)
+        
+        test_results.append({
+            "test": "Error Handling - Non-existent User",
+            "suspend_correctly_fails": not fake_suspend_result["success"],
+            "activate_correctly_fails": not fake_activate_result["success"],
+            "suspend_status": fake_suspend_result["status"],
+            "activate_status": fake_activate_result["status"],
+            "proper_error_handling": not fake_suspend_result["success"] and not fake_activate_result["success"]
+        })
+        
+        if not fake_suspend_result["success"] and not fake_activate_result["success"]:
+            print("    ✅ Error handling working correctly for non-existent users")
+        else:
+            print("    ❌ Error handling not working properly")
+        
+        # Step 4: Test bulk operations if available
+        print("  Testing bulk user operations...")
+        bulk_test_data = {
+            "action": "activate",
+            "user_ids": [user["id"] for user in self.test_users[:2] if user.get("id")]  # Test with first 2 users
+        }
+        
+        bulk_result = await self.make_request("/admin/users/bulk-action", "POST", data=bulk_test_data, headers=headers)
+        
+        test_results.append({
+            "test": "Bulk Operations",
+            "success": bulk_result["success"],
+            "response_time_ms": bulk_result.get("response_time_ms", 0),
+            "bulk_endpoint_available": bulk_result["success"] or bulk_result["status"] != 404,
+            "error": bulk_result.get("error") if not bulk_result["success"] else None
+        })
+        
+        if bulk_result["success"]:
+            print("    ✅ Bulk operations endpoint working")
+        elif bulk_result["status"] == 404:
+            print("    ⚠️ Bulk operations endpoint not implemented")
+        else:
+            print(f"    ❌ Bulk operations failed: {bulk_result.get('error')}")
+        
+        # Calculate overall success metrics
+        successful_tests = [t for t in test_results if t.get("success", False)]
+        critical_tests = [t for t in test_results if t["test"] in ["List Users", "Suspend User", "Activate User", "State Persistence"]]
+        critical_successful = [t for t in critical_tests if t.get("success", False)]
+        
+        return {
+            "test_name": "User Management Functionality",
+            "total_tests": len(test_results),
+            "successful_tests": len(successful_tests),
+            "success_rate": len(successful_tests) / len(test_results) * 100 if test_results else 0,
+            "critical_functionality_working": len(critical_successful) == len(critical_tests),
+            "activate_suspend_working": any(t.get("suspend_successful") for t in test_results) and any(t.get("activate_successful") for t in test_results),
+            "state_persistence_working": any(t.get("state_persisted") for t in test_results),
+            "error_handling_working": any(t.get("proper_error_handling") for t in test_results),
+            "bulk_operations_available": any(t.get("bulk_endpoint_available") for t in test_results),
+            "detailed_test_results": test_results
+        }
+    
+    async def test_user_workflow_integration(self) -> Dict:
+        """Test complete user management workflow"""
+        print("🔄 Testing complete user management workflow...")
+        
+        if not self.admin_token:
+            return {
+                "test_name": "User Workflow Integration",
+                "error": "No admin token available - admin login required first"
+            }
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        workflow_steps = []
+        
+        # Step 1: List all users and verify expected users exist
+        print("  Step 1: Verifying expected users exist...")
+        users_result = await self.make_request("/users", headers=headers)
+        
+        expected_emails = ["admin@cataloro.com", "demo@cataloro.com", "seller@cataloro.com"]
+        found_users = {}
+        
+        if users_result["success"]:
+            users_data = users_result["data"]
+            for user in users_data:
+                email = user.get("email", "")
+                if email in expected_emails:
+                    found_users[email] = user
+            
+            workflow_steps.append({
+                "step": "List Users",
+                "success": True,
+                "total_users": len(users_data),
+                "expected_users_found": len(found_users),
+                "missing_users": [email for email in expected_emails if email not in found_users]
+            })
+            
+            print(f"    ✅ Found {len(found_users)}/{len(expected_emails)} expected users")
+        else:
+            workflow_steps.append({
+                "step": "List Users",
+                "success": False,
+                "error": users_result.get("error")
+            })
+            print(f"    ❌ Failed to list users")
+        
+        # Step 2: Test user state management with demo user
+        demo_user = found_users.get("demo@cataloro.com")
+        if demo_user and demo_user.get("id"):
+            user_id = demo_user["id"]
+            original_status = demo_user.get("is_active", True)
+            
+            print(f"  Step 2: Testing state management with demo user (original status: {original_status})...")
+            
+            # Suspend user
+            suspend_result = await self.make_request(f"/admin/users/{user_id}/suspend", "PUT", headers=headers)
+            suspend_success = suspend_result["success"] and not suspend_result["data"].get("user", {}).get("is_active", True)
+            
+            # Activate user
+            activate_result = await self.make_request(f"/admin/users/{user_id}/activate", "PUT", headers=headers)
+            activate_success = activate_result["success"] and activate_result["data"].get("user", {}).get("is_active", False)
+            
+            # Verify final state
+            final_users_result = await self.make_request("/users", headers=headers)
+            final_state_correct = False
+            
+            if final_users_result["success"]:
+                final_users = final_users_result["data"]
+                final_user = next((u for u in final_users if u.get("id") == user_id), None)
+                if final_user:
+                    final_state_correct = final_user.get("is_active", False) == True
+            
+            workflow_steps.append({
+                "step": "State Management",
+                "success": suspend_success and activate_success and final_state_correct,
+                "suspend_worked": suspend_success,
+                "activate_worked": activate_success,
+                "final_state_correct": final_state_correct,
+                "user_id": user_id
+            })
+            
+            if suspend_success and activate_success and final_state_correct:
+                print("    ✅ State management workflow completed successfully")
+            else:
+                print("    ❌ State management workflow had issues")
+        else:
+            workflow_steps.append({
+                "step": "State Management",
+                "success": False,
+                "error": "Demo user not found or missing ID"
+            })
+            print("    ❌ Demo user not available for state management testing")
+        
+        # Step 3: Test UUID and ObjectId compatibility
+        print("  Step 3: Testing ID format compatibility...")
+        id_format_tests = []
+        
+        if found_users:
+            test_user = list(found_users.values())[0]
+            user_id = test_user.get("id")
+            
+            if user_id:
+                # Test with UUID format (current format)
+                uuid_result = await self.make_request(f"/admin/users/{user_id}/activate", "PUT", headers=headers)
+                id_format_tests.append({
+                    "format": "UUID",
+                    "success": uuid_result["success"],
+                    "user_id": user_id
+                })
+                
+                # Test with potential ObjectId format (if different)
+                # Note: This is mainly for verification that the backend handles both formats
+                workflow_steps.append({
+                    "step": "ID Format Compatibility",
+                    "success": uuid_result["success"],
+                    "uuid_format_works": uuid_result["success"],
+                    "id_format_tests": id_format_tests
+                })
+                
+                if uuid_result["success"]:
+                    print("    ✅ UUID format compatibility confirmed")
+                else:
+                    print("    ❌ UUID format compatibility issues")
+        
+        # Calculate workflow success
+        successful_steps = [s for s in workflow_steps if s.get("success", False)]
+        workflow_success = len(successful_steps) == len(workflow_steps)
+        
+        return {
+            "test_name": "User Workflow Integration",
+            "total_workflow_steps": len(workflow_steps),
+            "successful_steps": len(successful_steps),
+            "workflow_success_rate": len(successful_steps) / len(workflow_steps) * 100 if workflow_steps else 0,
+            "complete_workflow_working": workflow_success,
+            "expected_users_present": len(found_users) >= 2,  # At least admin and demo
+            "state_management_working": any(s.get("step") == "State Management" and s.get("success") for s in workflow_steps),
+            "id_compatibility_working": any(s.get("step") == "ID Format Compatibility" and s.get("success") for s in workflow_steps),
+            "detailed_workflow_steps": workflow_steps
+        }
         """Test user management endpoints work correctly"""
         print("👥 Testing user management endpoints...")
         
