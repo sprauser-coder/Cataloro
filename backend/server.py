@@ -890,6 +890,98 @@ async def update_user_role(user_id: str, role_data: dict):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update user role: {str(e)}")
 
+@app.put("/api/admin/users/{user_id}/activate")
+async def activate_user(user_id: str):
+    """Activate a user account"""
+    try:
+        # Activate user - try UUID id field first, then ObjectId
+        result = await db.users.update_one(
+            {"id": user_id},
+            {"$set": {"is_active": True}}
+        )
+        
+        if result.matched_count == 0:
+            # Try with ObjectId for backward compatibility
+            try:
+                from bson import ObjectId
+                result = await db.users.update_one(
+                    {"_id": ObjectId(user_id)},
+                    {"$set": {"is_active": True}}
+                )
+            except:
+                pass
+        
+        if result.matched_count > 0:
+            # Get updated user
+            user = await db.users.find_one({"id": user_id})
+            if not user:
+                try:
+                    from bson import ObjectId
+                    user = await db.users.find_one({"_id": ObjectId(user_id)})
+                    if user:
+                        user['id'] = str(user['_id'])
+                except:
+                    pass
+            
+            if user and '_id' in user:
+                del user['_id']
+            
+            return {"message": "User activated successfully", "user": user}
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"User activation error: {e}")
+        raise HTTPException(status_code=500, detail=f"User activation failed: {str(e)}")
+
+@app.put("/api/admin/users/{user_id}/suspend")
+async def suspend_user(user_id: str):
+    """Suspend a user account"""
+    try:
+        # Suspend user - try UUID id field first, then ObjectId
+        result = await db.users.update_one(
+            {"id": user_id},
+            {"$set": {"is_active": False}}
+        )
+        
+        if result.matched_count == 0:
+            # Try with ObjectId for backward compatibility
+            try:
+                from bson import ObjectId
+                result = await db.users.update_one(
+                    {"_id": ObjectId(user_id)},
+                    {"$set": {"is_active": False}}
+                )
+            except:
+                pass
+        
+        if result.matched_count > 0:
+            # Get updated user
+            user = await db.users.find_one({"id": user_id})
+            if not user:
+                try:
+                    from bson import ObjectId
+                    user = await db.users.find_one({"_id": ObjectId(user_id)})
+                    if user:
+                        user['id'] = str(user['_id'])
+                except:
+                    pass
+            
+            if user and '_id' in user:
+                del user['_id']
+            
+            return {"message": "User suspended successfully", "user": user}
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"User suspension error: {e}")
+        raise HTTPException(status_code=500, detail=f"User suspension failed: {str(e)}")
+
 @app.put("/api/auth/profile/{user_id}")
 async def update_profile(user_id: str, profile_data: dict):
     """Update user profile with persistent data"""
