@@ -1392,6 +1392,10 @@ class CatalystDataTester:
                 print(f"    Pd g: {first_entry.get('pd_g', 'N/A')}")
                 print(f"    Rh g: {first_entry.get('rh_g', 'N/A')}")
                 print(f"    Total Price: {first_entry.get('total_price', 'N/A')}")
+                add_info_preview = str(first_entry.get('add_info', 'N/A'))[:100]
+                if len(str(first_entry.get('add_info', ''))) > 100:
+                    add_info_preview += '...'
+                print(f"    Add Info: {add_info_preview}")
             
             # Performance check
             performance_acceptable = result["response_time_ms"] < 5000  # 5 seconds for 4496 entries
