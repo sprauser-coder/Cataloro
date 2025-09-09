@@ -77,6 +77,9 @@ function App() {
     };
   }, []);
 
+  // Choose layout based on screen size
+  const LayoutComponent = isMobile ? MobileLayout : ModernLayout;
+
   return (
     <div className="App">
       <AuthProvider>
