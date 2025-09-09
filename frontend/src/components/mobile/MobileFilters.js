@@ -78,16 +78,7 @@ function MobileFilters({
   };
 
   const clearFilters = () => {
-    const clearedFilters = {
-      category: '',
-      priceRange: { min: 0, max: 1000 },
-      location: '',
-      condition: '',
-      dateRange: '',
-      rating: 0,
-      sortBy: 'newest'
-    };
-    setLocalFilters(clearedFilters);
+    setLocalFilters(defaultFilters);
   };
 
   const applyFilters = () => {
