@@ -10,6 +10,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import { MarketplaceProvider } from './context/MarketplaceContext';
 import WebSocketProvider from './components/realtime/WebSocketProvider';
 import ModernLayout from './components/layout/ModernLayout';
+import MobileLayout from './components/layout/MobileLayout';
 
 // Modern Feature Components
 import ModernBrowsePage from './features/marketplace/ModernBrowsePage';
