@@ -191,6 +191,62 @@ class AdminAuthenticationTester:
             "detailed_user_tests": user_tests
         }
     
+    async def test_user_management_endpoints(self) -> Dict:
+        """Test user management endpoints work correctly"""
+        print("👥 Testing user management endpoints...")
+        
+        if not self.admin_token:
+            return {
+                "test_name": "User Management Endpoints",
+                "error": "No admin token available - admin login required first"
+            }
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        endpoint_tests = []
+        
+        # Test admin dashboard
+        print("  Testing admin dashboard...")
+        dashboard_result = await self.make_request("/admin/dashboard", headers=headers)
+        endpoint_tests.append({
+            "endpoint": "/admin/dashboard",
+            "success": dashboard_result["success"],
+            "response_time_ms": dashboard_result["response_time_ms"],
+            "has_data": bool(dashboard_result.get("data")) if dashboard_result["success"] else False
+        })
+        
+        # Test performance metrics
+        print("  Testing performance metrics...")
+        performance_result = await self.make_request("/admin/performance", headers=headers)
+        endpoint_tests.append({
+            "endpoint": "/admin/performance",
+            "success": performance_result["success"],
+            "response_time_ms": performance_result["response_time_ms"],
+            "has_data": bool(performance_result.get("data")) if performance_result["success"] else False
+        })
+        
+        # Test health check (public endpoint)
+        print("  Testing health check...")
+        health_result = await self.make_request("/health")
+        endpoint_tests.append({
+            "endpoint": "/health",
+            "success": health_result["success"],
+            "response_time_ms": health_result["response_time_ms"],
+            "has_data": bool(health_result.get("data")) if health_result["success"] else False
+        })
+        
+        successful_endpoints = [t for t in endpoint_tests if t["success"]]
+        avg_response_time = statistics.mean([t["response_time_ms"] for t in successful_endpoints]) if successful_endpoints else 0
+        
+        return {
+            "test_name": "User Management Endpoints",
+            "total_endpoints_tested": len(endpoint_tests),
+            "successful_endpoints": len(successful_endpoints),
+            "success_rate": (len(successful_endpoints) / len(endpoint_tests)) * 100,
+            "avg_response_time_ms": avg_response_time,
+            "all_endpoints_working": len(successful_endpoints) == len(endpoint_tests),
+            "detailed_endpoint_tests": endpoint_tests
+        }
+    
     async def test_user_management_functionality(self) -> Dict:
         """Test comprehensive user management functionality including activate/suspend endpoints"""
         print("👥 Testing user management functionality...")
