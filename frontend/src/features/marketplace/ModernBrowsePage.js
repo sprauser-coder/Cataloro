@@ -424,17 +424,6 @@ function ModernBrowsePage() {
     };
   }, []);
 
-  // Mobile detection
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   // Load quick stats for mobile hero
   useEffect(() => {
     const calculateQuickStats = () => {
