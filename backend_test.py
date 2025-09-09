@@ -1855,6 +1855,7 @@ async def main():
     structure_test = catalyst_results["data_structure_validation"]
     performance_test = catalyst_results["performance_testing"]
     consistency_test = catalyst_results["data_consistency"]
+    enhanced_search_test = catalyst_results["enhanced_search_functionality"]
     
     print(f"🎯 Overall Success Rate: {catalyst_summary.get('overall_success_rate', 0):.0f}%")
     print()
@@ -1867,6 +1868,15 @@ async def main():
     print(f"{endpoint_status} Endpoint Functionality: Working")
     print(f"   {count_status} Entry Count: {entry_count}/{expected_count} entries")
     print(f"   ⏱️ Response Time: {endpoint_test.get('response_time_ms', 0):.0f}ms")
+    
+    # Enhanced Search Functionality
+    search_status = "✅" if enhanced_search_test.get("enhanced_search_ready") else "❌"
+    add_info_rate = enhanced_search_test.get("add_info_population_rate", 0)
+    meaningful_rate = enhanced_search_test.get("meaningful_info_rate", 0)
+    print(f"{search_status} Enhanced Search Functionality: Ready")
+    print(f"   📝 Add_info Population: {add_info_rate:.1f}%")
+    print(f"   💡 Meaningful Content: {meaningful_rate:.1f}%")
+    print(f"   🔍 Searchable Fields: {'✅' if enhanced_search_test.get('searchable_fields_present') else '❌'}")
     
     # Data Structure
     structure_status = "✅" if structure_test.get("validation_passed") else "❌"
@@ -1890,9 +1900,9 @@ async def main():
     print()
     print("🏆 CATALYST ENDPOINT TEST RESULTS:")
     overall_status = "✅ ALL TESTS PASSED" if catalyst_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
-    fix_verified = "✅ CREATELISTINGPAGE FIX VERIFIED" if catalyst_summary.get("createlistingpage_fix_verified") else "❌ FIX VERIFICATION FAILED"
+    search_verified = "✅ ENHANCED SEARCH VERIFIED" if catalyst_summary.get("createlistingpage_enhanced_search_verified") else "❌ ENHANCED SEARCH VERIFICATION FAILED"
     print(f"   {overall_status}")
-    print(f"   {fix_verified}")
+    print(f"   {search_verified}")
     print(f"   Success Rate: {catalyst_summary.get('overall_success_rate', 0):.0f}%")
     
     # Run Admin Authentication & Database Consistency Tests
