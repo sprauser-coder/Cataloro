@@ -117,9 +117,9 @@ function SimpleLoginPage() {
       
       // Check if user is admin and redirect accordingly
       if (data?.user?.role === 'admin' || data?.user?.email === 'admin@cataloro.com') {
-        window.location.href = '/admin';
+        navigate('/admin');
       } else {
-        window.location.href = '/browse';
+        navigate('/browse');
       }
       
     } catch (error) {
