@@ -104,6 +104,7 @@ import { applySiteConfiguration } from '../../utils/siteConfiguration';
 import { getTimeRemaining, isAdExpired, activateAd, deactivateExpiredAds, calculateExpirationDate } from '../../utils/adsConfiguration';
 import BusinessTab from './BusinessTab';
 import PDFExportCenter from './PDFExportCenter';
+import AdsManagement from '../../components/admin/AdsManagement';
 
 // System Notifications List Component
 function SystemNotificationsList() {
