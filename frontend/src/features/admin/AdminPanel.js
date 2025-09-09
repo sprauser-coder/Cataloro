@@ -2451,6 +2451,231 @@ function HeroSelectionTab({ showToast }) {
                     </p>
                   </div>
                 </div>
+
+                {/* Background Image Styling Options */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    Background Image Styling
+                  </label>
+                  
+                  {/* Background Size */}
+                  <div className="space-y-3 mb-4">
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Image Size</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => handleInputChange('background_size', 'cover')}
+                        className={`p-3 border-2 rounded-lg text-sm transition-colors ${
+                          (heroContent.background_size || 'cover') === 'cover'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className="w-8 h-6 bg-blue-500 rounded mb-1 mx-auto"></div>
+                          <span className="font-medium">Cover</span>
+                          <p className="text-xs opacity-75 mt-1">Fill area</p>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_size', 'contain')}
+                        className={`p-3 border-2 rounded-lg text-sm transition-colors ${
+                          heroContent.background_size === 'contain'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className="w-6 h-6 bg-blue-500 rounded border-2 border-gray-300 mb-1 mx-auto"></div>
+                          <span className="font-medium">Contain</span>
+                          <p className="text-xs opacity-75 mt-1">Fit image</p>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_size', 'auto')}
+                        className={`p-3 border-2 rounded-lg text-sm transition-colors ${
+                          heroContent.background_size === 'auto'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className="w-4 h-4 bg-blue-500 rounded mb-1 mx-auto"></div>
+                          <span className="font-medium">Auto</span>
+                          <p className="text-xs opacity-75 mt-1">Original</p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Background Repeat */}
+                  <div className="space-y-3 mb-4">
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Image Repeat</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => handleInputChange('background_repeat', 'no-repeat')}
+                        className={`p-3 border-2 rounded-lg text-sm transition-colors ${
+                          (heroContent.background_repeat || 'no-repeat') === 'no-repeat'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className="w-6 h-6 bg-blue-500 rounded mb-1 mx-auto"></div>
+                          <span className="font-medium">No Repeat</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_repeat', 'repeat')}
+                        className={`p-3 border-2 rounded-lg text-sm transition-colors ${
+                          heroContent.background_repeat === 'repeat'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className="grid grid-cols-2 gap-px w-6 h-6 mx-auto mb-1">
+                            <div className="bg-blue-500 rounded-tl"></div>
+                            <div className="bg-blue-500 rounded-tr"></div>
+                            <div className="bg-blue-500 rounded-bl"></div>
+                            <div className="bg-blue-500 rounded-br"></div>
+                          </div>
+                          <span className="font-medium">Repeat</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_repeat', 'repeat-x')}
+                        className={`p-3 border-2 rounded-lg text-sm transition-colors ${
+                          heroContent.background_repeat === 'repeat-x'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className="flex gap-px w-8 h-4 mx-auto mb-1">
+                            <div className="bg-blue-500 rounded-l flex-1"></div>
+                            <div className="bg-blue-500 flex-1"></div>
+                            <div className="bg-blue-500 rounded-r flex-1"></div>
+                          </div>
+                          <span className="font-medium">Repeat X</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_repeat', 'repeat-y')}
+                        className={`p-3 border-2 rounded-lg text-sm transition-colors ${
+                          heroContent.background_repeat === 'repeat-y'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className="flex flex-col gap-px w-4 h-8 mx-auto mb-1">
+                            <div className="bg-blue-500 rounded-t flex-1"></div>
+                            <div className="bg-blue-500 flex-1"></div>
+                            <div className="bg-blue-500 rounded-b flex-1"></div>
+                          </div>
+                          <span className="font-medium">Repeat Y</span>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Background Position */}
+                  <div className="space-y-3">
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Image Position</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => handleInputChange('background_position', 'top-left')}
+                        className={`p-2 border-2 rounded text-xs transition-colors ${
+                          heroContent.background_position === 'top-left'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        }`}
+                      >
+                        Top Left
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_position', 'top')}
+                        className={`p-2 border-2 rounded text-xs transition-colors ${
+                          heroContent.background_position === 'top'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        }`}
+                      >
+                        Top
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_position', 'top-right')}
+                        className={`p-2 border-2 rounded text-xs transition-colors ${
+                          heroContent.background_position === 'top-right'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        }`}
+                      >
+                        Top Right
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_position', 'left')}
+                        className={`p-2 border-2 rounded text-xs transition-colors ${
+                          heroContent.background_position === 'left'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        }`}
+                      >
+                        Left
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_position', 'center')}
+                        className={`p-2 border-2 rounded text-xs transition-colors ${
+                          (heroContent.background_position || 'center') === 'center'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        }`}
+                      >
+                        Center
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_position', 'right')}
+                        className={`p-2 border-2 rounded text-xs transition-colors ${
+                          heroContent.background_position === 'right'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        }`}
+                      >
+                        Right
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_position', 'bottom-left')}
+                        className={`p-2 border-2 rounded text-xs transition-colors ${
+                          heroContent.background_position === 'bottom-left'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        }`}
+                      >
+                        Bottom Left
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_position', 'bottom')}
+                        className={`p-2 border-2 rounded text-xs transition-colors ${
+                          heroContent.background_position === 'bottom'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        }`}
+                      >
+                        Bottom
+                      </button>
+                      <button
+                        onClick={() => handleInputChange('background_position', 'bottom-right')}
+                        className={`p-2 border-2 rounded text-xs transition-colors ${
+                          heroContent.background_position === 'bottom-right'
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        }`}
+                      >
+                        Bottom Right
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
