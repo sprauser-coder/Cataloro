@@ -858,10 +858,19 @@ function BasketCard({ basket, totals, onEdit, onDelete, onExport, onUnassignFrom
           <div className="flex items-center space-x-2">
             <button
               onClick={onExport}
-              className="p-2 text-gray-400 hover:text-green-600 dark:hover:text-green-400"
-              title="Export basket as PDF"
+              disabled={isExporting}
+              className={`p-2 transition-colors ${
+                isExporting 
+                  ? 'text-green-600 dark:text-green-400 cursor-not-allowed' 
+                  : 'text-gray-400 hover:text-green-600 dark:hover:text-green-400'
+              }`}
+              title={isExporting ? "Exporting PDF..." : "Export basket as PDF"}
             >
-              <Download className="w-4 h-4" />
+              {isExporting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
             </button>
             <button
               onClick={onEdit}
