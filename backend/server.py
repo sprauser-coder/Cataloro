@@ -1533,6 +1533,9 @@ async def get_similar_listings(listing_id: str, limit: int = 5):
 async def get_my_listings(user_id: str):
     """Get user's listings - only active listings for consistency with browse"""
     try:
+        # Check if user exists and is active
+        await check_user_active_status(user_id)
+        
         # Only return active listings to match browse page behavior
         listings = await db.listings.find({"seller_id": user_id, "status": "active"}).sort("created_at", -1).to_list(length=None)
         
@@ -1550,6 +1553,8 @@ async def get_my_listings(user_id: str):
 async def get_my_deals(user_id: str):
     """Get all deals (approved orders) for a user - both as buyer and seller"""
     try:
+        # Check if user exists and is active
+        await check_user_active_status(user_id)
         # Get all orders where user is buyer or seller and status is approved
         orders_cursor = db.orders.find({
             "$and": [
