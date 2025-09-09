@@ -160,6 +160,20 @@ function MobileNav({ isOpen, onClose }) {
               <div className="space-y-0">
                 {section.items.map((item) => {
                   const Icon = item.icon;
+                  
+                  if (item.isButton && item.action === 'logout') {
+                    return (
+                      <button
+                        key={item.action}
+                        onClick={handleLogout}
+                        className="flex items-center space-x-3 px-4 py-2 text-sm font-medium transition-all duration-200 touch-manipulation text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:bg-red-100 dark:active:bg-red-900/30 w-full text-left"
+                      >
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{item.label}</span>
+                      </button>
+                    );
+                  }
+                  
                   return (
                     <Link
                       key={item.path}
