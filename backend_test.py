@@ -715,8 +715,8 @@ class AdminAuthenticationTester:
         return (passed_checks / total_checks) * 100 if total_checks > 0 else 0
     
     async def run_comprehensive_admin_test(self) -> Dict:
-        """Run all admin authentication and database consistency tests"""
-        print("🚀 Starting Cataloro Admin Authentication & Database Consistency Testing")
+        """Run all admin authentication and user management tests"""
+        print("🚀 Starting Cataloro Admin Authentication & User Management Testing")
         print("=" * 70)
         
         await self.setup()
@@ -725,7 +725,9 @@ class AdminAuthenticationTester:
             # Run all test suites
             admin_auth = await self.test_admin_user_authentication()
             db_consistency = await self.test_database_user_consistency()
-            user_management = await self.test_user_management_endpoints()
+            user_management_endpoints = await self.test_user_management_endpoints()
+            user_management_functionality = await self.test_user_management_functionality()
+            user_workflow = await self.test_user_workflow_integration()
             browse_performance = await self.test_browse_endpoint_performance()
             admin_functionality = await self.test_admin_functionality()
             
@@ -734,7 +736,9 @@ class AdminAuthenticationTester:
                 "test_timestamp": datetime.now().isoformat(),
                 "admin_authentication": admin_auth,
                 "database_consistency": db_consistency,
-                "user_management_endpoints": user_management,
+                "user_management_endpoints": user_management_endpoints,
+                "user_management_functionality": user_management_functionality,
+                "user_workflow_integration": user_workflow,
                 "browse_endpoint_performance": browse_performance,
                 "admin_functionality": admin_functionality
             }
@@ -743,7 +747,9 @@ class AdminAuthenticationTester:
             test_results = [
                 admin_auth.get("all_admin_properties_correct", False),
                 db_consistency.get("all_users_consistent", False),
-                user_management.get("all_endpoints_working", False),
+                user_management_endpoints.get("all_endpoints_working", False),
+                user_management_functionality.get("critical_functionality_working", False),
+                user_workflow.get("complete_workflow_working", False),
                 browse_performance.get("endpoint_working", False),
                 admin_functionality.get("all_admin_features_working", False)
             ]
@@ -754,7 +760,11 @@ class AdminAuthenticationTester:
                 "overall_success_rate": overall_success_rate,
                 "admin_authentication_working": admin_auth.get("all_admin_properties_correct", False),
                 "database_consistency_verified": db_consistency.get("all_users_consistent", False),
-                "user_management_operational": user_management.get("all_endpoints_working", False),
+                "user_management_endpoints_operational": user_management_endpoints.get("all_endpoints_working", False),
+                "activate_suspend_functionality_working": user_management_functionality.get("activate_suspend_working", False),
+                "state_persistence_working": user_management_functionality.get("state_persistence_working", False),
+                "error_handling_working": user_management_functionality.get("error_handling_working", False),
+                "complete_user_workflow_working": user_workflow.get("complete_workflow_working", False),
                 "browse_endpoint_functional": browse_performance.get("endpoint_working", False),
                 "admin_features_accessible": admin_functionality.get("all_admin_features_working", False),
                 "all_tests_passed": overall_success_rate == 100
