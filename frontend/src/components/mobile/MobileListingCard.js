@@ -3,8 +3,8 @@
  * Swipeable listing card optimized for mobile with touch gestures
  */
 
-import React, { useState, useRef } from 'react';
-import { Heart, MessageCircle, Eye, Clock, MapPin, Star, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Heart, Eye, Clock, MapPin, Star, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 function MobileListingCard({ listing, onFavorite, onQuickView }) {
