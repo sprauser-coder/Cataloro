@@ -7432,6 +7432,177 @@ async def unassign_item_from_basket(item_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to unassign item: {str(e)}")
 
 # ============================================================================
+# ADS MANAGEMENT ENDPOINTS - INACTIVE BY DEFAULT
+# ============================================================================
+
+@app.get("/api/admin/ads")
+async def get_all_ads():
+    """Get all ads for management (admin only)"""
+    try:
+        ads = await db.ads.find().sort("created_at", -1).to_list(length=None)
+        return ads
+    except Exception as e:
+        logger.error(f"Error fetching ads: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch ads: {str(e)}")
+
+@app.get("/api/ads/active")
+async def get_active_ads():
+    """Get only active ads for public display"""
+    try:
+        active_ads = await db.ads.find({"is_active": True}).sort("created_at", -1).to_list(length=None)
+        return active_ads
+    except Exception as e:
+        logger.error(f"Error fetching active ads: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch active ads: {str(e)}")
+
+@app.post("/api/admin/ads")
+async def create_ad(ad_data: dict):
+    """Create a new ad (inactive by default)"""
+    try:
+        ad = {
+            "id": str(uuid.uuid4()),
+            "title": ad_data.get("title"),
+            "description": ad_data.get("description"),
+            "content": ad_data.get("content"),
+            "image_url": ad_data.get("image_url"),
+            "link_url": ad_data.get("link_url"),
+            "target_audience": ad_data.get("target_audience", "all"),
+            "placement": ad_data.get("placement", "banner"), # banner, sidebar, popup, etc.
+            "is_active": False,  # INACTIVE BY DEFAULT
+            "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+            "updated_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+            "created_by": ad_data.get("created_by"),
+            "click_count": 0,
+            "impression_count": 0
+        }
+        
+        await db.ads.insert_one(ad)
+        return {"message": "Ad created successfully (inactive by default)", "id": ad["id"]}
+    except Exception as e:
+        logger.error(f"Error creating ad: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create ad: {str(e)}")
+
+@app.put("/api/admin/ads/{ad_id}/activate")
+async def activate_ad(ad_id: str):
+    """Activate an ad (admin only)"""
+    try:
+        result = await db.ads.update_one(
+            {"id": ad_id},
+            {
+                "$set": {
+                    "is_active": True,
+                    "updated_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Ad not found")
+            
+        return {"message": "Ad activated successfully"}
+    except Exception as e:
+        logger.error(f"Error activating ad: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to activate ad: {str(e)}")
+
+@app.put("/api/admin/ads/{ad_id}/deactivate")
+async def deactivate_ad(ad_id: str):
+    """Deactivate an ad (admin only)"""
+    try:
+        result = await db.ads.update_one(
+            {"id": ad_id},
+            {
+                "$set": {
+                    "is_active": False,
+                    "updated_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Ad not found")
+            
+        return {"message": "Ad deactivated successfully"}
+    except Exception as e:
+        logger.error(f"Error deactivating ad: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to deactivate ad: {str(e)}")
+
+@app.delete("/api/admin/ads/{ad_id}")
+async def delete_ad(ad_id: str):
+    """Delete an ad (admin only)"""
+    try:
+        result = await db.ads.delete_one({"id": ad_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Ad not found")
+            
+        return {"message": "Ad deleted successfully"}
+    except Exception as e:
+        logger.error(f"Error deleting ad: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete ad: {str(e)}")
+
+@app.put("/api/admin/ads/{ad_id}")
+async def update_ad(ad_id: str, ad_data: dict):
+    """Update an ad (admin only)"""
+    try:
+        update_data = {
+            "title": ad_data.get("title"),
+            "description": ad_data.get("description"),
+            "content": ad_data.get("content"),
+            "image_url": ad_data.get("image_url"),
+            "link_url": ad_data.get("link_url"),
+            "target_audience": ad_data.get("target_audience"),
+            "placement": ad_data.get("placement"),
+            "updated_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat()
+        }
+        
+        # Remove None values
+        update_data = {k: v for k, v in update_data.items() if v is not None}
+        
+        result = await db.ads.update_one(
+            {"id": ad_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Ad not found")
+            
+        return {"message": "Ad updated successfully"}
+    except Exception as e:
+        logger.error(f"Error updating ad: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to update ad: {str(e)}")
+
+@app.post("/api/ads/{ad_id}/click")
+async def track_ad_click(ad_id: str):
+    """Track ad click for analytics"""
+    try:
+        await db.ads.update_one(
+            {"id": ad_id},
+            {"$inc": {"click_count": 1}}
+        )
+        return {"message": "Click tracked successfully"}
+    except Exception as e:
+        logger.error(f"Error tracking ad click: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to track ad click: {str(e)}")
+
+@app.post("/api/ads/{ad_id}/impression")
+async def track_ad_impression(ad_id: str):
+    """Track ad impression for analytics"""
+    try:
+        await db.ads.update_one(
+            {"id": ad_id},
+            {"$inc": {"impression_count": 1}}
+        )
+        return {"message": "Impression tracked successfully"}
+    except Exception as e:
+        logger.error(f"Error tracking ad impression: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to track ad impression: {str(e)}")
+
+
+# ============================================================================
+# END ADS MANAGEMENT ENDPOINTS
+# ============================================================================
+
+# ============================================================================
 # STARTUP EVENT
 # ============================================================================
 
