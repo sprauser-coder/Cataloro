@@ -7514,8 +7514,16 @@ async def activate_ad(ad_id: str):
         
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Ad not found")
+        
+        # Fetch and return the updated ad
+        updated_ad = await db.ads.find_one({"id": ad_id})
+        if updated_ad and "_id" in updated_ad:
+            updated_ad["_id"] = str(updated_ad["_id"])
             
-        return {"message": "Ad activated successfully"}
+        return {
+            "message": "Ad activated successfully",
+            "ad": updated_ad
+        }
     except Exception as e:
         logger.error(f"Error activating ad: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to activate ad: {str(e)}")
