@@ -31,6 +31,11 @@ import { liveService } from '../../services/liveService';
 import { trackAdClick } from '../../utils/adsConfiguration';
 import usePermissions from '../../hooks/usePermissions';
 
+// Mobile Components
+import MobileHeroSection from '../../components/mobile/MobileHeroSection';
+import MobileFilters from '../../components/mobile/MobileFilters';
+import MobileListingCard from '../../components/mobile/MobileListingCard';
+
 // Hook to get ads configuration
 function useAdsConfig() {
   const [adsConfig, setAdsConfig] = useState(null);
