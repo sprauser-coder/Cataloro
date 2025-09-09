@@ -286,7 +286,17 @@ function ModernBrowsePage() {
     description: 'From electronics to fashion, find everything you need in one place',
     height: 400,
     image_url: '',
-    search_placeholder: 'Search for anything you need...'
+    search_placeholder: 'Search for anything you need...',
+    display_mode: 'boxed',
+    background_type: 'gradient',
+    background_color: '#3B82F6',
+    background_gradient_from: '#3f6ec7',
+    background_gradient_to: '#ec4899',
+    background_image: '',
+    gradient_opacity: 0.8,
+    background_size: 'cover',
+    background_repeat: 'no-repeat',
+    background_position: 'center'
   });
   
   // Use global search and filter states from context
