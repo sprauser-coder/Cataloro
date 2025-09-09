@@ -91,16 +91,9 @@ function MobileListingCard({ listing, onFavorite, onContact, onQuickView }) {
 
   return (
     <div className="relative mb-4">
-      {/* Swipe Actions Background */}
+      {/* Swipe Actions Background - Simplified to only favorite */}
       <div className="absolute inset-0 rounded-xl overflow-hidden">
-        {/* Left swipe action (Contact) */}
-        <div className={`absolute right-0 top-0 bottom-0 bg-blue-500 flex items-center justify-center px-6 transition-all duration-200 ${
-          swipeDirection === 'left' ? 'w-24' : 'w-0'
-        }`}>
-          <MessageCircle className="w-6 h-6 text-white" />
-        </div>
-        
-        {/* Right swipe action (Favorite) */}
+        {/* Right swipe action (Favorite only) */}
         <div className={`absolute left-0 top-0 bottom-0 bg-red-500 flex items-center justify-center px-6 transition-all duration-200 ${
           swipeDirection === 'right' ? 'w-24' : 'w-0'
         }`}>
