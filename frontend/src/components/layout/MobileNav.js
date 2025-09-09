@@ -86,8 +86,7 @@ function MobileNav({ isOpen, onClose }) {
     title: 'Settings',
     items: [
       { label: 'Profile', path: '/profile', icon: User },
-      { label: 'Notifications', path: '/notifications', icon: Bell },
-      { label: 'Settings', path: '/settings', icon: Settings }
+      { label: 'Notifications', path: '/notifications', icon: Bell }
     ]
   });
 
