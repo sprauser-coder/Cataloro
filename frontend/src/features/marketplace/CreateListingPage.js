@@ -1199,10 +1199,10 @@ function CreateListingPage() {
                   Review all information above and click create to publish your listing to the marketplace.
                 </p>
               </div>
-              <div className="flex justify-end space-x-4">
+              <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4">
                 <Link
                   to="/browse"
-                  className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors"
+                  className="w-full sm:w-auto px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors text-center"
                 >
                   Cancel
                 </Link>
@@ -1212,7 +1212,7 @@ function CreateListingPage() {
                   type="button"
                   onClick={handleSaveDraft}
                   disabled={isSavingDraft || isSubmitting}
-                  className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 disabled:bg-yellow-400 text-white rounded-lg font-medium transition-colors flex items-center space-x-2 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-6 py-3 bg-yellow-500 hover:bg-yellow-600 disabled:bg-yellow-400 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 disabled:cursor-not-allowed"
                 >
                   {isSavingDraft ? (
                     <>
@@ -1230,7 +1230,7 @@ function CreateListingPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting || isSavingDraft}
-                  className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-semibold transition-colors flex items-center space-x-2 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <>
