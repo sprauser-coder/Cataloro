@@ -85,8 +85,8 @@ function MobileLayout() {
     );
   }
 
-  // Allow public access to certain routes like public profiles
-  const publicRoutes = ['/profile/'];
+  // Allow public access to certain routes like public profiles and messages for testing
+  const publicRoutes = ['/profile/', '/messages'];
   const isPublicRoute = publicRoutes.some(route => location.pathname.startsWith(route));
   
   if (!isAuthenticated && !isPublicRoute) {
