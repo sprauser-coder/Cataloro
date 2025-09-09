@@ -139,7 +139,7 @@ function MessagesPage() {
   // CONDITIONAL RETURN AFTER ALL HOOKS
   if (isMobile) {
     return (
-      <div className="h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="fixed inset-0 z-50 bg-gray-50 dark:bg-gray-900">
         <MobileMessenger onBack={() => navigate('/browse')} />
       </div>
     );
