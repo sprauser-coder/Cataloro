@@ -142,7 +142,7 @@ function MobileLayout() {
       <div className="h-14 lg:hidden safe-top-padding"></div>
 
       {/* Main Content */}
-      <main className="min-h-[calc(100vh-8rem)] lg:min-h-screen">
+      <main className="min-h-[calc(100vh-8rem)] lg:min-h-screen pb-20">
         <Outlet />
       </main>
 
