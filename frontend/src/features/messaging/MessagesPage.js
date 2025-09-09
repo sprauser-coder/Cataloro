@@ -87,23 +87,6 @@ function MessagesPage() {
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false);
   
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  
-  // If mobile, render mobile messenger
-  if (isMobile) {
-    return (
-      <MobileMessenger onBack={() => navigate('/browse')} />
-    );
-  }
-  
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [conversationMessages, setConversationMessages] = useState([]);
@@ -134,6 +117,23 @@ function MessagesPage() {
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const messageRefs = useRef({}); // New ref for individual messages
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // If mobile, render mobile messenger
+  if (isMobile) {
+    return (
+      <MobileMessenger onBack={() => navigate('/browse')} />
+    );
+  }
 
   // Reset read status when component unmounts (leaving messages area)
   useEffect(() => {
