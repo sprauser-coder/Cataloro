@@ -125,7 +125,6 @@ function MessagesPage() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Reset read status when component unmounts (leaving messages area)
   useEffect(() => {
     return () => {
       console.log('🔄 Leaving Messages area - resetting read status');
@@ -136,10 +135,6 @@ function MessagesPage() {
       window.dispatchEvent(new CustomEvent('messagesSessionReset'));
     };
   }, []); // Empty dependency array to prevent infinite loop
-
-  useEffect(() => {
-    loadConversations();
-  }, []);
 
   // CONDITIONAL RETURN AFTER ALL HOOKS
   if (isMobile) {
