@@ -341,10 +341,10 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
               <div className="relative">
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-medium text-sm">
-                    {currentConversation?.user?.initials || 'SW'}
+                    {currentConversation?.initials || 'UN'}
                   </span>
                 </div>
-                {currentConversation?.user?.online && (
+                {currentConversation?.online && (
                   <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></div>
                 )}
               </div>
