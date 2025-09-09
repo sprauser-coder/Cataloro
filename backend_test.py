@@ -1246,13 +1246,15 @@ async def main():
     
     # Print Admin Test Summary
     print("\n" + "=" * 60)
-    print("📊 ADMIN AUTHENTICATION & DATABASE CONSISTENCY SUMMARY")
+    print("📊 ADMIN AUTHENTICATION & USER MANAGEMENT SUMMARY")
     print("=" * 60)
     
     admin_summary = admin_results["summary"]
     admin_auth = admin_results["admin_authentication"]
     db_consistency = admin_results["database_consistency"]
-    user_mgmt = admin_results["user_management_endpoints"]
+    user_mgmt_endpoints = admin_results["user_management_endpoints"]
+    user_mgmt_functionality = admin_results["user_management_functionality"]
+    user_workflow = admin_results["user_workflow_integration"]
     browse_perf = admin_results["browse_endpoint_performance"]
     admin_func = admin_results["admin_functionality"]
     
@@ -1274,9 +1276,31 @@ async def main():
     print(f"   👥 Users Found: {db_consistency.get('users_found_in_database', 0)}/{db_consistency.get('total_expected_users', 0)}")
     
     # User Management Endpoints
-    mgmt_status = "✅" if user_mgmt.get("all_endpoints_working") else "❌"
-    mgmt_success = user_mgmt.get("success_rate", 0)
-    print(f"{mgmt_status} User Management Endpoints: {mgmt_success:.0f}% success rate")
+    mgmt_endpoints_status = "✅" if user_mgmt_endpoints.get("all_endpoints_working") else "❌"
+    mgmt_endpoints_success = user_mgmt_endpoints.get("success_rate", 0)
+    print(f"{mgmt_endpoints_status} User Management Endpoints: {mgmt_endpoints_success:.0f}% success rate")
+    
+    # User Management Functionality (NEW)
+    mgmt_func_status = "✅" if user_mgmt_functionality.get("critical_functionality_working") else "❌"
+    mgmt_func_success = user_mgmt_functionality.get("success_rate", 0)
+    print(f"{mgmt_func_status} User Management Functionality: {mgmt_func_success:.0f}% success rate")
+    
+    # Activate/Suspend Functionality
+    activate_suspend_status = "✅" if user_mgmt_functionality.get("activate_suspend_working") else "❌"
+    print(f"   {activate_suspend_status} Activate/Suspend: {user_mgmt_functionality.get('activate_suspend_working', False)}")
+    
+    # State Persistence
+    persistence_status = "✅" if user_mgmt_functionality.get("state_persistence_working") else "❌"
+    print(f"   {persistence_status} State Persistence: {user_mgmt_functionality.get('state_persistence_working', False)}")
+    
+    # Error Handling
+    error_handling_status = "✅" if user_mgmt_functionality.get("error_handling_working") else "❌"
+    print(f"   {error_handling_status} Error Handling: {user_mgmt_functionality.get('error_handling_working', False)}")
+    
+    # User Workflow Integration (NEW)
+    workflow_status = "✅" if user_workflow.get("complete_workflow_working") else "❌"
+    workflow_success = user_workflow.get("workflow_success_rate", 0)
+    print(f"{workflow_status} User Workflow Integration: {workflow_success:.0f}% success rate")
     
     # Browse Endpoint Performance
     browse_status = "✅" if browse_perf.get("endpoint_working") else "❌"
@@ -1289,16 +1313,24 @@ async def main():
     print(f"{func_status} Admin Functionality: {func_success:.0f}% features working")
     
     print()
-    print("🏆 OVERALL ADMIN TEST RESULTS:")
+    print("🏆 OVERALL USER MANAGEMENT TEST RESULTS:")
     overall_status = "✅ ALL TESTS PASSED" if admin_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
     print(f"   {overall_status}")
     print(f"   Success Rate: {admin_summary.get('overall_success_rate', 0):.0f}%")
     
+    # Detailed User Management Results
+    print()
+    print("📋 USER MANAGEMENT DETAILED RESULTS:")
+    print(f"   🔄 Activate/Suspend Working: {'✅' if admin_summary.get('activate_suspend_functionality_working') else '❌'}")
+    print(f"   💾 State Persistence: {'✅' if admin_summary.get('state_persistence_working') else '❌'}")
+    print(f"   🚫 Error Handling: {'✅' if admin_summary.get('error_handling_working') else '❌'}")
+    print(f"   🔗 Complete Workflow: {'✅' if admin_summary.get('complete_user_workflow_working') else '❌'}")
+    
     # Save detailed results
-    with open("/app/admin_authentication_test_results.json", "w") as f:
+    with open("/app/user_management_test_results.json", "w") as f:
         json.dump(admin_results, f, indent=2, default=str)
     
-    print(f"\n📄 Admin test results saved to: /app/admin_authentication_test_results.json")
+    print(f"\n📄 User management test results saved to: /app/user_management_test_results.json")
     
     # Run Browse Performance Tests (if requested)
     run_browse_tests = input("\n🤔 Run additional browse performance tests? (y/N): ").lower().strip() == 'y'
