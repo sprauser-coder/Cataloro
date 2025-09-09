@@ -661,6 +661,47 @@ class AIRecommendationService:
         listing.pop("_id", None)
         return listing
     
+    async def _calculate_item_similarity(self, listing1: Dict, listing2: Dict) -> float:
+        """Calculate similarity between two listings"""
+        try:
+            similarity_score = 0.0
+            
+            # Category similarity (high weight)
+            if listing1.get("category") == listing2.get("category"):
+                similarity_score += 0.4
+            
+            # Price similarity (normalized difference)
+            price1 = float(listing1.get("price", 0))
+            price2 = float(listing2.get("price", 0))
+            if price1 > 0 and price2 > 0:
+                price_diff = abs(price1 - price2) / max(price1, price2)
+                price_similarity = max(0, 1 - price_diff)
+                similarity_score += price_similarity * 0.2
+            
+            # Title similarity (simple keyword matching)
+            title1 = listing1.get("title", "").lower().split()
+            title2 = listing2.get("title", "").lower().split()
+            if title1 and title2:
+                common_words = set(title1).intersection(set(title2))
+                title_similarity = len(common_words) / max(len(set(title1)), len(set(title2)))
+                similarity_score += title_similarity * 0.2
+            
+            # Condition similarity
+            if listing1.get("condition") == listing2.get("condition"):
+                similarity_score += 0.1
+            
+            # Location similarity (simplified)
+            loc1 = listing1.get("address", {}).get("city", "")
+            loc2 = listing2.get("address", {}).get("city", "")
+            if loc1 and loc2 and loc1 == loc2:
+                similarity_score += 0.1
+            
+            return min(similarity_score, 1.0)
+            
+        except Exception as e:
+            logger.error(f"Error calculating item similarity: {e}")
+            return 0.0
+    
     async def get_recommendation_analytics(self) -> Dict[str, Any]:
         """Get recommendation service analytics"""
         try:
