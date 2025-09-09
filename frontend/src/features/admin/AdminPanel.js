@@ -2178,7 +2178,7 @@ function HeroSelectionTab({ showToast }) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Background Style
             </label>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => handleInputChange('background_type', 'solid')}
                 className={`p-4 border-2 rounded-lg transition-colors ${
@@ -2215,9 +2215,28 @@ function HeroSelectionTab({ showToast }) {
               >
                 <div className="text-center">
                   <div className="w-12 h-8 bg-gray-300 dark:bg-gray-600 rounded mb-2 mx-auto flex items-center justify-center">
-                    <Camera className="w-3 h-3" />
+                    <svg className="w-6 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-7 3 4 2-2 3 5z" clipRule="evenodd"/>
+                    </svg>
                   </div>
-                  <span className="text-sm font-medium">Image</span>
+                  <span className="text-sm font-medium">Image Only</span>
+                </div>
+              </button>
+              <button
+                onClick={() => handleInputChange('background_type', 'image-gradient')}
+                className={`p-4 border-2 rounded-lg transition-colors ${
+                  heroContent.background_type === 'image-gradient'
+                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="w-12 h-8 bg-gradient-to-r from-blue-500/70 to-purple-500/70 rounded mb-2 mx-auto flex items-center justify-center relative">
+                    <svg className="w-6 h-4 text-white relative z-10" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-7 3 4 2-2 3 5z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium">Image + Gradient</span>
                 </div>
               </button>
             </div>
