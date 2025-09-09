@@ -55,10 +55,14 @@ function App() {
       const isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
       const isMobileViewport = width < 1024;
       
-      // Force mobile if viewport is small OR if it's a mobile user agent
-      const shouldUseMobile = isMobileViewport || isMobileUserAgent || width <= 768;
+      // Check for URL parameter to force mobile mode (for testing)
+      const urlParams = new URLSearchParams(window.location.search);
+      const forceMobile = urlParams.get('mobile') === 'true';
       
-      console.log(`🔍 Mobile detection: width=${width}, userAgent=${isMobileUserAgent}, shouldUseMobile=${shouldUseMobile}`);
+      // Force mobile if viewport is small OR if it's a mobile user agent OR if forced via URL
+      const shouldUseMobile = isMobileViewport || isMobileUserAgent || width <= 768 || forceMobile;
+      
+      console.log(`🔍 Mobile detection: width=${width}, userAgent=${isMobileUserAgent}, forceMobile=${forceMobile}, shouldUseMobile=${shouldUseMobile}`);
       setIsMobile(shouldUseMobile);
     };
 
