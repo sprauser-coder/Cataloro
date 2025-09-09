@@ -265,9 +265,9 @@ function MobileFilters({
                   {categories.map((category) => (
                     <button
                       key={category}
-                      onClick={() => updateFilter('category', category === localFilters.category ? '' : category)}
+                      onClick={() => updateFilter('category', category === localFilters?.category ? '' : category)}
                       className={`flex items-center justify-between w-full p-3 rounded-lg border transition-colors ${
-                        localFilters.category === category
+                        localFilters?.category === category
                           ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300'
                           : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
