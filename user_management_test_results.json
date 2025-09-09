@@ -1,9 +1,9 @@
 {
-  "test_timestamp": "2025-09-09T11:41:53.052118",
+  "test_timestamp": "2025-09-09T12:35:46.126954",
   "admin_authentication": {
     "test_name": "Admin User Authentication",
     "login_successful": true,
-    "response_time_ms": 29.109716415405273,
+    "response_time_ms": 52.38842964172363,
     "admin_email_correct": true,
     "admin_username_correct": true,
     "admin_role_correct": true,
@@ -89,25 +89,25 @@
     "total_endpoints_tested": 3,
     "successful_endpoints": 3,
     "success_rate": 100.0,
-    "avg_response_time_ms": 14.519532521565756,
+    "avg_response_time_ms": 36.09569867451986,
     "all_endpoints_working": true,
     "detailed_endpoint_tests": [
       {
         "endpoint": "/admin/dashboard",
         "success": true,
-        "response_time_ms": 15.550613403320312,
+        "response_time_ms": 41.33915901184082,
         "has_data": true
       },
       {
         "endpoint": "/admin/performance",
         "success": true,
-        "response_time_ms": 19.210100173950195,
+        "response_time_ms": 19.870519638061523,
         "has_data": true
       },
       {
         "endpoint": "/health",
         "success": true,
-        "response_time_ms": 8.797883987426758,
+        "response_time_ms": 47.07741737365723,
         "has_data": true
       }
     ]
@@ -126,14 +126,14 @@
       {
         "test": "List Users",
         "success": true,
-        "response_time_ms": 49.77846145629883,
+        "response_time_ms": 7.662534713745117,
         "user_count": 4,
         "has_expected_users": true
       },
       {
         "test": "Suspend User",
         "success": true,
-        "response_time_ms": 52.80613899230957,
+        "response_time_ms": 50.30035972595215,
         "user_id": "68bff520d28a1097d72b925c",
         "is_active_after_suspend": false,
         "suspend_successful": true,
@@ -142,7 +142,7 @@
       {
         "test": "Activate User",
         "success": true,
-        "response_time_ms": 12.228250503540039,
+        "response_time_ms": 9.964704513549805,
         "user_id": "68bff520d28a1097d72b925c",
         "is_active_after_activate": true,
         "activate_successful": true,
@@ -166,7 +166,7 @@
       {
         "test": "Bulk Operations",
         "success": true,
-        "response_time_ms": 12.369871139526367,
+        "response_time_ms": 10.306358337402344,
         "bulk_endpoint_available": true,
         "error": null
       }
@@ -214,7 +214,7 @@
   "browse_endpoint_performance": {
     "test_name": "Browse Endpoint Performance",
     "endpoint_working": true,
-    "response_time_ms": 16.113996505737305,
+    "response_time_ms": 9.803533554077148,
     "listings_count": 3,
     "data_integrity_score": 100.0,
     "meets_performance_target": true,
@@ -230,13 +230,13 @@
       {
         "feature": "Admin Dashboard",
         "success": true,
-        "response_time_ms": 19.599199295043945,
+        "response_time_ms": 24.99556541442871,
         "has_kpis": false
       },
       {
         "feature": "Performance Metrics",
         "success": true,
-        "response_time_ms": 19.32382583618164,
+        "response_time_ms": 20.778179168701172,
         "has_metrics": true
       }
     ]
