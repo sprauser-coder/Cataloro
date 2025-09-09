@@ -20,6 +20,9 @@ import {
   Info
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
+import { liveService } from '../../services/liveService';
 
 function MobileMessenger({ conversations = [], activeConversation = null, onBack }) {
   const [view, setView] = useState(activeConversation ? 'conversation' : 'list'); // 'list' or 'conversation'
