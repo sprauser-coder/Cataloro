@@ -262,7 +262,7 @@ class AdminAuthenticationTester:
         
         # Step 1: Test listing all users
         print("  Testing user listing endpoint...")
-        users_result = await self.make_request("/users", headers=headers)
+        users_result = await self.make_request("/admin/users", headers=headers)
         
         if users_result["success"]:
             users_data = users_result["data"]
