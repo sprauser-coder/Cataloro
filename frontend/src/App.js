@@ -41,6 +41,7 @@ import { loadAndApplyAdsConfiguration } from './utils/adsConfiguration';
 import adsExpirationService from './services/adsExpirationService';
 
 import './App.css';
+import './styles/mobile.css';
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
