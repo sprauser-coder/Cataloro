@@ -136,14 +136,14 @@ function MobileLayout() {
           </button>
 
           {/* Center: Logo */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-center flex-1">
             {(siteBranding.logo_light_url || siteBranding.logo_dark_url || siteBranding.logo_url) ? (
-              // Custom Logo Mode
-              <Link to="/browse" className="flex items-center space-x-2 header-logo">
+              // Custom Logo Mode - LOGO ONLY (no text)
+              <Link to="/browse" className="header-logo">
                 <img
                   src={darkMode ? (siteBranding.logo_dark_url || siteBranding.logo_url) : (siteBranding.logo_light_url || siteBranding.logo_url)}
                   alt={siteBranding.site_name || 'Cataloro'}
-                  className="h-8 w-auto object-contain"
+                  className="h-8 w-auto object-contain max-w-40"
                   onError={(e) => {
                     // Fallback to default if logo fails to load
                     e.target.style.display = 'none';
@@ -151,17 +151,15 @@ function MobileLayout() {
                   }}
                 />
                 {/* Hidden fallback that shows on error */}
-                <div className="hidden w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg items-center justify-center">
-                  <span className="text-white font-bold text-sm">C</span>
+                <div className="hidden items-center space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">C</span>
+                  </div>
+                  <h1 className="text-lg font-bold text-gray-900 dark:text-white">Cataloro</h1>
                 </div>
-                {siteBranding.site_name && (
-                  <h1 className="text-lg font-bold text-gray-900 dark:text-white truncate max-w-32">
-                    {siteBranding.site_name}
-                  </h1>
-                )}
               </Link>
             ) : (
-              // Default Logo Mode
+              // Default Logo Mode - Icon + Text
               <Link to="/browse" className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">C</span>
