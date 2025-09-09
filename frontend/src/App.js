@@ -99,11 +99,11 @@ function App() {
                 {/* Protected Routes with Dynamic Layout */}
                 <Route path="/" element={<LayoutComponent />}>
                   <Route index element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
-                  <Route path={APP_ROUTES.BROWSE} element={<ModernBrowsePage />} />
+                  <Route path={APP_ROUTES.BROWSE} element={<BrowsePageComponent />} />
 
                   <Route path="product/:productId" element={<ProductDetailPage />} />
-                  <Route path="search" element={<ModernBrowsePage />} />
-                  <Route path="trending" element={<ModernBrowsePage />} />
+                  <Route path="search" element={<BrowsePageComponent />} />
+                  <Route path="trending" element={<BrowsePageComponent />} />
                   <Route path="create-listing" element={<CreateListingPage />} />
                   <Route path="edit-listing/:id" element={<EditListingPage />} />
                   <Route path="pending-sales" element={<PendingSalesPage />} />
