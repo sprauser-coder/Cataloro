@@ -33,11 +33,9 @@ function MobileListingCard({ listing, onFavorite, onContact, onQuickView }) {
     if (deltaY < 50) {
       setDragOffset(deltaX);
       
-      // Determine swipe direction
+      // Determine swipe direction - only right for favorite
       if (deltaX > 50) {
         setSwipeDirection('right'); // Favorite action
-      } else if (deltaX < -50) {
-        setSwipeDirection('left'); // Contact action
       } else {
         setSwipeDirection(null);
       }
