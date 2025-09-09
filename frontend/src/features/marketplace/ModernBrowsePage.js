@@ -425,6 +425,74 @@ function ModernBrowsePage() {
     };
   }, []);
 
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Load quick stats for mobile hero
+  useEffect(() => {
+    const calculateQuickStats = () => {
+      const stats = {
+        totalListings: filteredListings.length,
+        newToday: filteredListings.filter(item => {
+          const createdDate = new Date(item.created_at);
+          const today = new Date();
+          return createdDate.toDateString() === today.toDateString();
+        }).length,
+        hotDeals: filteredListings.filter(item => item.isHotDeal || item.discount > 0).length,
+        avgPrice: filteredListings.length > 0 
+          ? Math.round(filteredListings.reduce((sum, item) => sum + (item.price || 0), 0) / filteredListings.length)
+          : 0
+      };
+      setQuickStats(stats);
+    };
+
+    calculateQuickStats();
+  }, [filteredListings]);
+
+  // Mobile handlers
+  const handleMobileSearch = (query) => {
+    updateSearchQuery(query);
+  };
+
+  const handleMobileFiltersToggle = () => {
+    setIsMobileFiltersOpen(true);
+  };
+
+  const handleMobileFiltersChange = (newFilters) => {
+    updateFilters(newFilters);
+  };
+
+  const handleMobileFavorite = async (listingId, isFavorited) => {
+    try {
+      if (isFavorited) {
+        await addToFavorites(listingId);
+        showToast('Added to favorites', 'success');
+      } else {
+        await removeFromFavorites(listingId);
+        showToast('Removed from favorites', 'success');
+      }
+    } catch (error) {
+      showToast('Error updating favorites', 'error');
+    }
+  };
+
+  const handleMobileContact = (listing) => {
+    // Navigate to messaging or show contact modal
+    showToast(`Contact seller for ${listing.title}`, 'info');
+  };
+
+  const handleMobileQuickView = (listing) => {
+    // Show quick view modal or navigate to product detail
+    window.location.href = `/listing/${listing.id}`;
+  };
   // Fetch price range settings and user active bids
   useEffect(() => {
     const fetchPriceRangeSettings = async () => {
