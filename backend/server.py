@@ -7544,8 +7544,16 @@ async def deactivate_ad(ad_id: str):
         
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Ad not found")
+        
+        # Fetch and return the updated ad
+        updated_ad = await db.ads.find_one({"id": ad_id})
+        if updated_ad and "_id" in updated_ad:
+            updated_ad["_id"] = str(updated_ad["_id"])
             
-        return {"message": "Ad deactivated successfully"}
+        return {
+            "message": "Ad deactivated successfully",
+            "ad": updated_ad
+        }
     except Exception as e:
         logger.error(f"Error deactivating ad: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to deactivate ad: {str(e)}")
