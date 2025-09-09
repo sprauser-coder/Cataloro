@@ -2728,8 +2728,15 @@ function HeroSelectionTab({ showToast }) {
                   return 'linear-gradient(to right, #3B82F6, #EC4899)';
               }
             })(),
-            backgroundSize: (heroContent.background_type === 'image' || heroContent.background_type === 'image-gradient') ? 'cover' : 'auto',
-            backgroundPosition: (heroContent.background_type === 'image' || heroContent.background_type === 'image-gradient') ? 'center' : 'auto',
+            backgroundSize: (heroContent.background_type === 'image' || heroContent.background_type === 'image-gradient') 
+              ? (heroContent.background_size || 'cover') 
+              : 'auto',
+            backgroundPosition: (heroContent.background_type === 'image' || heroContent.background_type === 'image-gradient') 
+              ? (heroContent.background_position || 'center') 
+              : 'auto',
+            backgroundRepeat: (heroContent.background_type === 'image' || heroContent.background_type === 'image-gradient') 
+              ? (heroContent.background_repeat || 'no-repeat') 
+              : 'no-repeat',
             borderRadius: heroContent.display_mode === 'full_width' ? '0' : '1rem',
             marginLeft: heroContent.display_mode === 'full_width' ? '-2rem' : '0',
             marginRight: heroContent.display_mode === 'full_width' ? '-2rem' : '0'
