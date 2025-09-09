@@ -96,12 +96,14 @@ function MobileFilters({
   };
 
   const getActiveFiltersCount = () => {
+    if (!localFilters) return 0;
+    
     let count = 0;
     if (localFilters.category) count++;
     if (localFilters.location) count++;
     if (localFilters.condition) count++;
     if (localFilters.dateRange) count++;
-    if (localFilters.rating > 0) count++;
+    if (localFilters.rating && localFilters.rating > 0) count++;
     if (localFilters.priceRange?.min > 0 || localFilters.priceRange?.max < 1000) count++;
     return count;
   };
