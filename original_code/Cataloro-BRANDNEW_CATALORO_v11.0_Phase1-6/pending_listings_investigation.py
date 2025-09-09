@@ -12,7 +12,7 @@ from datetime import datetime
 from collections import Counter
 
 # Get backend URL from environment
-BACKEND_URL = "https://cataloro-boost.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-enhancement.preview.emergentagent.com/api"
 
 class PendingListingsInvestigator:
     def __init__(self):
