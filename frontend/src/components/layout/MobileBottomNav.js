@@ -84,8 +84,8 @@ function MobileBottomNav() {
   return (
     <>
       {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 z-40 lg:hidden">
-        <div className="flex items-center justify-around px-2 py-2">
+      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 z-40 lg:hidden safe-area-pb">
+        <div className="flex items-center justify-around px-1 py-1">
           {bottomNavItems.map((item, index) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -94,12 +94,12 @@ function MobileBottomNav() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`relative flex flex-col items-center justify-center px-3 py-2 rounded-xl min-w-0 flex-1 transition-all duration-200 ${
+                className={`relative flex flex-col items-center justify-center px-2 py-2 rounded-xl min-w-0 flex-1 transition-all duration-200 touch-manipulation ${
                   item.highlight
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-110 -mt-2'
                     : active
                     ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 active:bg-gray-100 dark:active:bg-gray-800'
                 }`}
                 style={item.highlight ? { 
                   marginTop: '-8px',
@@ -107,7 +107,7 @@ function MobileBottomNav() {
                   width: '56px',
                   height: '56px',
                   minWidth: '56px'
-                } : {}}
+                } : { minHeight: '44px' }}
               >
                 <div className="relative">
                   <Icon className={`${item.highlight ? 'w-6 h-6' : 'w-5 h-5'}`} />
