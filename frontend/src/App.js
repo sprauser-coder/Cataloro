@@ -47,18 +47,33 @@ import './styles/mobile.css';
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 
-  // Mobile detection with enhanced logic
+  // Enhanced mobile detection with multiple checks
   useEffect(() => {
     const checkMobile = () => {
       const width = window.innerWidth;
+      const userAgent = navigator.userAgent;
+      const isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
       const isMobileViewport = width < 1024;
-      console.log(`🔍 Mobile detection: width=${width}, isMobile=${isMobileViewport}`);
-      setIsMobile(isMobileViewport);
+      
+      // Force mobile if viewport is small OR if it's a mobile user agent
+      const shouldUseMobile = isMobileViewport || isMobileUserAgent || width <= 768;
+      
+      console.log(`🔍 Mobile detection: width=${width}, userAgent=${isMobileUserAgent}, shouldUseMobile=${shouldUseMobile}`);
+      setIsMobile(shouldUseMobile);
     };
 
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    
+    // Also check on orientation change for mobile devices
+    window.addEventListener('orientationchange', () => {
+      setTimeout(checkMobile, 100);
+    });
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('orientationchange', checkMobile);
+    };
   }, []);
 
   useEffect(() => {
