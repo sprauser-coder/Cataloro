@@ -342,17 +342,17 @@ function ModernBrowsePage() {
       case 'gradient':
         return {
           ...baseStyle,
-          background: `linear-gradient(to right, ${heroContent.background_gradient_from || '#3f6ec7'}, ${heroContent.background_gradient_to || '#ec4899'})`
+          backgroundImage: `linear-gradient(to right, ${heroContent.background_gradient_from || '#3f6ec7'}, ${heroContent.background_gradient_to || '#ec4899'})`
         };
       case 'solid':
         return {
           ...baseStyle,
-          background: heroContent.background_color || '#3B82F6'
+          backgroundColor: heroContent.background_color || '#3B82F6'
         };
       case 'image':
         return {
           ...baseStyle,
-          background: heroContent.background_image 
+          backgroundImage: heroContent.background_image 
             ? `linear-gradient(rgba(0,0,0,${gradientOpacity * 0.5}), rgba(0,0,0,${gradientOpacity * 0.5})), url(${heroContent.background_image})`
             : 'linear-gradient(to right, #3f6ec7, #a855f7, #ec4899)'
         };
@@ -362,14 +362,14 @@ function ModernBrowsePage() {
         
         return {
           ...baseStyle,
-          background: heroContent.background_image 
+          backgroundImage: heroContent.background_image 
             ? `linear-gradient(to right, ${gradientFromRgba}, ${gradientToRgba}), url(${heroContent.background_image})`
             : `linear-gradient(to right, ${heroContent.background_gradient_from || '#3f6ec7'}, ${heroContent.background_gradient_to || '#ec4899'})`
         };
       default:
         return {
           ...baseStyle,
-          background: 'linear-gradient(to right, #3f6ec7, #a855f7, #ec4899)'
+          backgroundImage: 'linear-gradient(to right, #3f6ec7, #a855f7, #ec4899)'
         };
     }
   };
