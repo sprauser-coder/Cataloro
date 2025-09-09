@@ -1,9 +1,9 @@
 {
-  "test_timestamp": "2025-09-09T09:57:23.274955",
+  "test_timestamp": "2025-09-09T09:57:43.990082",
   "admin_authentication": {
     "test_name": "Admin User Authentication",
     "login_successful": true,
-    "response_time_ms": 86.7605209350586,
+    "response_time_ms": 51.98025703430176,
     "admin_email_correct": true,
     "admin_username_correct": true,
     "admin_role_correct": true,
@@ -88,25 +88,25 @@
     "total_endpoints_tested": 3,
     "successful_endpoints": 3,
     "success_rate": 100.0,
-    "avg_response_time_ms": 27.571360270182293,
+    "avg_response_time_ms": 27.31434504191081,
     "all_endpoints_working": true,
     "detailed_endpoint_tests": [
       {
         "endpoint": "/admin/dashboard",
         "success": true,
-        "response_time_ms": 56.52642250061035,
+        "response_time_ms": 16.304492950439453,
         "has_data": true
       },
       {
         "endpoint": "/admin/performance",
         "success": true,
-        "response_time_ms": 18.56231689453125,
+        "response_time_ms": 18.67079734802246,
         "has_data": true
       },
       {
         "endpoint": "/health",
         "success": true,
-        "response_time_ms": 7.625341415405273,
+        "response_time_ms": 46.96774482727051,
         "has_data": true
       }
     ]
@@ -114,7 +114,7 @@
   "browse_endpoint_performance": {
     "test_name": "Browse Endpoint Performance",
     "endpoint_working": true,
-    "response_time_ms": 10.344982147216797,
+    "response_time_ms": 10.30421257019043,
     "listings_count": 3,
     "data_integrity_score": 100.0,
     "meets_performance_target": true,
@@ -130,13 +130,13 @@
       {
         "feature": "Admin Dashboard",
         "success": true,
-        "response_time_ms": 15.523433685302734,
+        "response_time_ms": 12.008428573608398,
         "has_kpis": false
       },
       {
         "feature": "Performance Metrics",
         "success": true,
-        "response_time_ms": 18.44477653503418,
+        "response_time_ms": 20.409345626831055,
         "has_metrics": true
       }
     ]

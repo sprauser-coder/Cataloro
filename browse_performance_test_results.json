@@ -1,12 +1,12 @@
 {
-  "test_timestamp": "2025-09-09T09:20:53.568393",
+  "test_timestamp": "2025-09-09T09:57:44.529196",
   "performance_target_ms": 1000,
   "cache_improvement_target_percent": 20,
   "basic_performance": {
     "test_name": "Basic Browse Performance",
-    "avg_response_time_ms": 672.4959850311279,
-    "min_response_time_ms": 649.6372222900391,
-    "max_response_time_ms": 731.3263416290283,
+    "avg_response_time_ms": 11.926841735839844,
+    "min_response_time_ms": 9.142875671386719,
+    "max_response_time_ms": 22.413969039916992,
     "meets_performance_target": true,
     "target_ms": 1000,
     "data_integrity_score": 100.0,
@@ -15,10 +15,10 @@
   },
   "cache_performance": {
     "test_name": "Cache Performance",
-    "cold_cache_ms": 651.6752243041992,
-    "warm_cache_ms": 652.8418064117432,
-    "warm_cache_2_ms": 657.7026844024658,
-    "cache_improvement_percent": -0.5519652993937052,
+    "cold_cache_ms": 9.389400482177734,
+    "warm_cache_ms": 10.607481002807617,
+    "warm_cache_2_ms": 11.313199996948242,
+    "cache_improvement_percent": -16.73099385506069,
     "meets_cache_target": false,
     "cache_target_percent": 20,
     "data_consistent": true,
@@ -29,70 +29,70 @@
     "total_filter_tests": 8,
     "successful_tests": 8,
     "success_rate": 100.0,
-    "avg_response_time_ms": 382.07319378852844,
+    "avg_response_time_ms": 19.50213313102722,
     "avg_data_integrity": 100.0,
     "all_filters_under_target": true,
     "detailed_results": [
       {
         "filter_name": "No filters",
-        "response_time_ms": 654.9842357635498,
-        "listing_count": 8,
-        "data_integrity_score": 100.0,
-        "filter_validation_passed": true,
-        "success": true
-      },
-      {
-        "filter_name": "Private sellers",
-        "response_time_ms": 650.4356861114502,
-        "listing_count": 8,
-        "data_integrity_score": 100.0,
-        "filter_validation_passed": true,
-        "success": true
-      },
-      {
-        "filter_name": "Business sellers",
-        "response_time_ms": 47.01423645019531,
-        "listing_count": 0,
-        "data_integrity_score": 100.0,
-        "filter_validation_passed": true,
-        "success": true
-      },
-      {
-        "filter_name": "Price range 100-500",
-        "response_time_ms": 650.048017501831,
-        "listing_count": 7,
-        "data_integrity_score": 100.0,
-        "filter_validation_passed": true,
-        "success": true
-      },
-      {
-        "filter_name": "Price range 0-100",
-        "response_time_ms": 87.73398399353027,
-        "listing_count": 1,
-        "data_integrity_score": 100.0,
-        "filter_validation_passed": true,
-        "success": true
-      },
-      {
-        "filter_name": "Page 2",
-        "response_time_ms": 245.71537971496582,
+        "response_time_ms": 10.516881942749023,
         "listing_count": 3,
         "data_integrity_score": 100.0,
         "filter_validation_passed": true,
         "success": true
       },
       {
+        "filter_name": "Private sellers",
+        "response_time_ms": 50.02570152282715,
+        "listing_count": 0,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
+        "filter_name": "Business sellers",
+        "response_time_ms": 10.360479354858398,
+        "listing_count": 3,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
+        "filter_name": "Price range 100-500",
+        "response_time_ms": 51.576852798461914,
+        "listing_count": 1,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
+        "filter_name": "Price range 0-100",
+        "response_time_ms": 7.293701171875,
+        "listing_count": 0,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
+        "filter_name": "Page 2",
+        "response_time_ms": 7.622718811035156,
+        "listing_count": 0,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
         "filter_name": "Large limit",
-        "response_time_ms": 648.9942073822021,
-        "listing_count": 8,
+        "response_time_ms": 9.018182754516602,
+        "listing_count": 3,
         "data_integrity_score": 100.0,
         "filter_validation_passed": true,
         "success": true
       },
       {
         "filter_name": "Combined filters",
-        "response_time_ms": 71.65980339050293,
-        "listing_count": 0,
+        "response_time_ms": 9.602546691894531,
+        "listing_count": 3,
         "data_integrity_score": 100.0,
         "filter_validation_passed": true,
         "success": true
@@ -103,11 +103,11 @@
     "test_name": "Concurrent Performance",
     "concurrent_requests": 5,
     "successful_requests": 5,
-    "total_time_ms": 975.468635559082,
-    "avg_individual_time_ms": 478.9233684539795,
-    "max_individual_time_ms": 682.3515892028809,
-    "min_individual_time_ms": 411.00406646728516,
-    "throughput_requests_per_second": 5.125741431075629,
+    "total_time_ms": 66.99466705322266,
+    "avg_individual_time_ms": 38.291263580322266,
+    "max_individual_time_ms": 65.86194038391113,
+    "min_individual_time_ms": 17.388582229614258,
+    "throughput_requests_per_second": 74.6328061609418,
     "all_under_target": true,
     "concurrent_performance_acceptable": true
   },
@@ -115,45 +115,45 @@
     "test_name": "Pagination Performance",
     "pages_tested": 5,
     "successful_pages": 5,
-    "avg_response_time_ms": 289.0364170074463,
-    "max_response_time_ms": 1398.449420928955,
-    "all_pages_under_target": false,
-    "pagination_consistent": false,
+    "avg_response_time_ms": 24.126911163330078,
+    "max_response_time_ms": 48.36320877075195,
+    "all_pages_under_target": true,
+    "pagination_consistent": true,
     "detailed_results": [
       {
         "page": 1,
-        "response_time_ms": 1398.449420928955,
-        "listing_count": 8,
+        "response_time_ms": 9.929656982421875,
+        "listing_count": 3,
         "success": true
       },
       {
         "page": 2,
-        "response_time_ms": 14.414548873901367,
+        "response_time_ms": 7.763385772705078,
         "listing_count": 0,
         "success": true
       },
       {
         "page": 3,
-        "response_time_ms": 10.271310806274414,
+        "response_time_ms": 48.36320877075195,
         "listing_count": 0,
         "success": true
       },
       {
         "page": 4,
-        "response_time_ms": 13.616323471069336,
+        "response_time_ms": 48.28596115112305,
         "listing_count": 0,
         "success": true
       },
       {
         "page": 5,
-        "response_time_ms": 8.43048095703125,
+        "response_time_ms": 6.2923431396484375,
         "listing_count": 0,
         "success": true
       }
     ]
   },
   "summary": {
-    "overall_performance_success_rate": 75.0,
+    "overall_performance_success_rate": 100.0,
     "cache_functionality_working": false,
     "average_data_integrity_score": 100.0,
     "performance_target_met": true,
