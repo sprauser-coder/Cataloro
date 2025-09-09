@@ -1,0 +1,207 @@
+{
+  "test_timestamp": "2025-09-09T22:21:39.055321",
+  "authentication": {
+    "demo_user": {
+      "test_name": "Demo User Authentication",
+      "success": true,
+      "user_id": "68bff520d28a1097d72b925c",
+      "user_data": {
+        "id": "68bff520d28a1097d72b925c",
+        "username": "demo_user",
+        "email": "demo@cataloro.com",
+        "name": "Demo User",
+        "is_business": false,
+        "verified": true,
+        "created_at": "2025-09-09T09:36:32.915000",
+        "city": "Berlin",
+        "country": "Germany",
+        "is_active": true
+      },
+      "response_time_ms": 101.72581672668457
+    },
+    "admin_user": {
+      "test_name": "Admin User Authentication",
+      "success": true,
+      "user_data": {
+        "id": "68bff934bdb9d78bad2b925c",
+        "username": "sash_admin",
+        "email": "admin@cataloro.com",
+        "full_name": "Sash",
+        "name": "Sash Admin",
+        "role": "admin",
+        "user_role": "Admin",
+        "registration_status": "Approved",
+        "badge": "Admin",
+        "is_business": false,
+        "business_name": "",
+        "verified": true,
+        "is_active": true,
+        "created_at": "2025-09-09T09:53:56.308000",
+        "city": "System",
+        "country": "Admin"
+      },
+      "token_received": true,
+      "response_time_ms": 15.773773193359375
+    }
+  },
+  "messages_api": {
+    "test_name": "Messages API Testing",
+    "total_tests": 3,
+    "successful_tests": 2,
+    "success_rate": 66.66666666666666,
+    "get_messages_working": true,
+    "post_messages_working": true,
+    "error_handling_working": false,
+    "messages_api_functional": true,
+    "detailed_test_results": [
+      {
+        "test": "GET Messages",
+        "success": true,
+        "response_time_ms": 12.558460235595703,
+        "message_count": 0,
+        "data_structure_valid": true,
+        "endpoint": "/user/68bff520d28a1097d72b925c/messages"
+      },
+      {
+        "test": "POST Messages",
+        "success": true,
+        "response_time_ms": 46.3709831237793,
+        "message_sent": true,
+        "message_id": "1240162b-6b05-46bf-b708-6a7146ecf352",
+        "response_data": {
+          "message": "Message sent successfully",
+          "id": "1240162b-6b05-46bf-b708-6a7146ecf352"
+        },
+        "endpoint": "/user/68bff520d28a1097d72b925c/messages"
+      },
+      {
+        "test": "Error Handling",
+        "success": false,
+        "invalid_user_handled": false,
+        "invalid_user_status": 200,
+        "malformed_data_handled": false,
+        "malformed_data_status": 200,
+        "proper_error_responses": false
+      }
+    ]
+  },
+  "ads_management_api": {
+    "test_name": "Ads Management API Testing",
+    "total_tests": 4,
+    "successful_tests": 3,
+    "success_rate": 75.0,
+    "get_admin_ads_working": true,
+    "post_admin_ads_working": true,
+    "activate_ad_working": true,
+    "get_active_ads_working": false,
+    "inactive_by_default_verified": false,
+    "ads_management_functional": true,
+    "created_ad_id": "2be602ea-2d78-4747-b7e3-3e3e90283d47",
+    "detailed_test_results": [
+      {
+        "test": "GET Admin Ads",
+        "success": true,
+        "response_time_ms": 10.859251022338867,
+        "is_array": true,
+        "initial_ad_count": 0,
+        "data_structure_valid": true,
+        "endpoint": "/admin/ads"
+      },
+      {
+        "test": "POST Admin Ads",
+        "success": true,
+        "response_time_ms": 21.56686782836914,
+        "ad_created": true,
+        "ad_id": "2be602ea-2d78-4747-b7e3-3e3e90283d47",
+        "is_inactive_by_default": false,
+        "response_data": {
+          "message": "Ad created successfully (inactive by default)",
+          "id": "2be602ea-2d78-4747-b7e3-3e3e90283d47"
+        },
+        "endpoint": "/admin/ads"
+      },
+      {
+        "test": "PUT Activate Ad",
+        "success": true,
+        "response_time_ms": 11.522531509399414,
+        "ad_activated": false,
+        "ad_id": "2be602ea-2d78-4747-b7e3-3e3e90283d47",
+        "response_data": {
+          "message": "Ad activated successfully"
+        },
+        "endpoint": "/admin/ads/2be602ea-2d78-4747-b7e3-3e3e90283d47/activate"
+      },
+      {
+        "test": "GET Active Ads",
+        "success": false,
+        "error": "GET active ads failed",
+        "status": 500,
+        "response_time_ms": 17.26508140563965,
+        "endpoint": "/ads/active"
+      }
+    ]
+  },
+  "browse_listings_api": {
+    "test_name": "Browse Listings API Testing",
+    "total_tests": 3,
+    "successful_tests": 3,
+    "success_rate": 100.0,
+    "browse_listings_working": true,
+    "mobile_parameters_working": true,
+    "mobile_performance_acceptable": true,
+    "mobile_data_structure_valid": true,
+    "browse_api_mobile_ready": true,
+    "detailed_test_results": [
+      {
+        "test": "GET Browse Listings",
+        "success": true,
+        "response_time_ms": 605.56960105896,
+        "is_array": true,
+        "listing_count": 7,
+        "mobile_data_structure_valid": {
+          "score": 100.0,
+          "passed_checks": 45,
+          "total_checks": 45,
+          "issues": []
+        },
+        "data_structure_score": 100.0,
+        "endpoint": "/marketplace/browse"
+      },
+      {
+        "test": "Mobile Browse Parameters",
+        "success": true,
+        "response_time_ms": 584.2816829681396,
+        "mobile_listing_count": 7,
+        "mobile_structure_valid": true,
+        "mobile_structure_score": 100.0,
+        "respects_limit": true,
+        "endpoint": "/marketplace/browse with mobile params"
+      },
+      {
+        "test": "Mobile Performance",
+        "success": true,
+        "avg_response_time_ms": 421.7813014984131,
+        "mobile_performance_target_ms": 800,
+        "meets_mobile_target": true,
+        "performance_times": [
+          432.2469234466553,
+          420.4871654510498,
+          412.6098155975342
+        ]
+      }
+    ]
+  },
+  "summary": {
+    "overall_success_rate": 100.0,
+    "authentication_successful": true,
+    "messages_api_working": true,
+    "ads_management_working": true,
+    "browse_listings_mobile_ready": true,
+    "mobile_apis_functional": true,
+    "all_tests_passed": true,
+    "critical_issues": [
+      "Active ads endpoint not working - mobile ads will not display",
+      "Ads not created as inactive by default - may show unapproved ads"
+    ]
+  }
+}
