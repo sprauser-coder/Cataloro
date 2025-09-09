@@ -170,29 +170,15 @@ function MobileHeroSection({
             />
           </div>
 
-          {/* Quick Actions Row */}
-          <div className="flex justify-center space-x-3">
+          {/* Quick Actions Row - Simplified for mobile */}
+          <div className="flex justify-center">
             <button
               onClick={onFilterToggle}
-              className="flex items-center space-x-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-colors"
+              className="flex items-center space-x-2 px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-colors"
             >
               <Filter className="w-4 h-4" />
               <span className="text-sm">Filters</span>
             </button>
-            
-            {quickStats.hotDeals > 0 && (
-              <div className="flex items-center space-x-2 px-4 py-2 bg-red-500/80 backdrop-blur-sm text-white rounded-lg">
-                <Zap className="w-4 h-4" />
-                <span className="text-sm">{quickStats.hotDeals} Hot Deals</span>
-              </div>
-            )}
-            
-            {quickStats.trending > 0 && (
-              <div className="flex items-center space-x-2 px-4 py-2 bg-green-500/80 backdrop-blur-sm text-white rounded-lg">
-                <TrendingUp className="w-4 h-4" />
-                <span className="text-sm">Trending</span>
-              </div>
-            )}
           </div>
         </div>
       </div>
