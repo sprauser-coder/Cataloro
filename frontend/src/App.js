@@ -14,6 +14,7 @@ import MobileLayout from './components/layout/MobileLayout';
 
 // Modern Feature Components
 import ModernBrowsePage from './features/marketplace/ModernBrowsePage';
+import MobileBrowsePage from './features/marketplace/MobileBrowsePage';
 
 import ProductDetailPage from './features/marketplace/ProductDetailPage';
 import MyListingsPage from './features/marketplace/MyListingsPage';
