@@ -2446,8 +2446,8 @@ function HeroSelectionTab({ showToast }) {
                 : heroContent.background_type === 'image-gradient' && heroContent.background_image
                   ? `linear-gradient(to right, ${heroContent.background_gradient_from || 'rgba(59, 130, 246, 0.8)'}, ${heroContent.background_gradient_to || 'rgba(236, 72, 153, 0.8)'}), url(${heroContent.background_image})`
                 : 'linear-gradient(to right, #3B82F6, #EC4899)',
-            backgroundSize: heroContent.background_type === 'image' ? 'cover' : 'auto',
-            backgroundPosition: heroContent.background_type === 'image' ? 'center' : 'auto',
+            backgroundSize: (heroContent.background_type === 'image' || heroContent.background_type === 'image-gradient') ? 'cover' : 'auto',
+            backgroundPosition: (heroContent.background_type === 'image' || heroContent.background_type === 'image-gradient') ? 'center' : 'auto',
             borderRadius: heroContent.display_mode === 'full_width' ? '0' : '1rem',
             marginLeft: heroContent.display_mode === 'full_width' ? '-2rem' : '0',
             marginRight: heroContent.display_mode === 'full_width' ? '-2rem' : '0'
