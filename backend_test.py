@@ -2321,7 +2321,75 @@ async def main():
     print("🔧 Cataloro Marketplace Testing Suite")
     print("=" * 50)
     
-    # Run Catalyst Data Endpoint Tests (Primary focus)
+    # Run Basket Export Tests (Primary focus for this review)
+    print("\n📄 BASKET EXPORT FUNCTIONALITY TESTING")
+    print("=" * 60)
+    
+    basket_tester = BasketExportTester()
+    basket_results = await basket_tester.run_comprehensive_basket_export_test()
+    
+    # Print Basket Export Test Summary
+    print("\n" + "=" * 60)
+    print("📊 BASKET EXPORT FUNCTIONALITY SUMMARY")
+    print("=" * 60)
+    
+    basket_summary = basket_results["summary"]
+    basic_func = basket_results["basic_functionality"]
+    response_time = basket_results["response_time_performance"]
+    data_validation = basket_results["data_validation"]
+    concurrent = basket_results["concurrent_requests"]
+    
+    print(f"🎯 Overall Success Rate: {basket_summary.get('overall_success_rate', 0):.0f}%")
+    print()
+    
+    # Basic Functionality
+    basic_status = "✅" if basic_func.get("endpoint_working") else "❌"
+    pdf_status = "✅" if basic_func.get("pdf_generated") else "❌"
+    print(f"{basic_status} Endpoint Functionality: Working")
+    print(f"{pdf_status} PDF Generation: {'Working' if basic_func.get('pdf_generated') else 'Failed'}")
+    print(f"   ⏱️ Response Time: {basic_func.get('response_time_ms', 0):.0f}ms")
+    print(f"   📊 PDF Size: {basic_func.get('pdf_size_bytes', 0)} bytes")
+    print(f"   📋 Valid PDF: {'✅' if basic_func.get('is_valid_pdf') else '❌'}")
+    
+    # Response Time Performance
+    perf_status = "✅" if response_time.get("performance_acceptable") else "❌"
+    loading_justified = "✅" if response_time.get("loading_state_justified") else "❌"
+    avg_time = response_time.get("avg_response_time_ms", 0)
+    max_time = response_time.get("max_response_time_ms", 0)
+    print(f"{perf_status} Response Time Performance: {avg_time:.0f}ms avg, {max_time:.0f}ms max")
+    print(f"{loading_justified} Loading State Justified: {'Yes' if response_time.get('loading_state_justified') else 'No'}")
+    
+    # Data Validation
+    validation_status = "✅" if data_validation.get("handles_edge_cases") else "❌"
+    validation_rate = data_validation.get("validation_success_rate", 0)
+    print(f"{validation_status} Data Validation: {validation_rate:.0f}% success rate")
+    print(f"   📝 Empty Baskets: {'✅' if data_validation.get('handles_empty_baskets') else '❌'}")
+    print(f"   📊 Minimal Data: {'✅' if data_validation.get('handles_minimal_data') else '❌'}")
+    print(f"   🚫 Invalid Data: {'✅' if data_validation.get('handles_invalid_data') else '❌'}")
+    
+    # Concurrent Requests
+    concurrent_status = "✅" if concurrent.get("system_handles_concurrent_exports") else "❌"
+    concurrent_success = concurrent.get("successful_requests", 0)
+    concurrent_total = concurrent.get("concurrent_requests", 0)
+    print(f"{concurrent_status} Concurrent Exports: {concurrent_success}/{concurrent_total} successful")
+    
+    print()
+    print("🏆 BASKET EXPORT TEST RESULTS:")
+    overall_status = "✅ ALL TESTS PASSED" if basket_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
+    print(f"   {overall_status}")
+    print(f"   Success Rate: {basket_summary.get('overall_success_rate', 0):.0f}%")
+    print(f"   PDF Generation: {'✅ Working' if basket_summary.get('pdf_generation_working') else '❌ Failed'}")
+    print(f"   Loading State: {'✅ Justified' if basket_summary.get('loading_state_justified') else '❌ Not Needed'}")
+    print(f"   Data Validation: {'✅ Robust' if basket_summary.get('data_validation_robust') else '❌ Needs Work'}")
+    print(f"   Concurrent Support: {'✅ Working' if basket_summary.get('concurrent_export_supported') else '❌ Issues'}")
+    
+    # Save detailed results
+    with open("/app/basket_export_test_results.json", "w") as f:
+        json.dump(basket_results, f, indent=2, default=str)
+    
+    print(f"\n📄 Basket export test results saved to: /app/basket_export_test_results.json")
+    
+    # Run Catalyst Data Endpoint Tests (Secondary)
     print("\n🧪 CATALYST DATA ENDPOINT TESTING")
     print("=" * 60)
     
