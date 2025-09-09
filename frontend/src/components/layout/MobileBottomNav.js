@@ -55,10 +55,10 @@ function MobileBottomNav() {
       badge: null
     },
     {
-      label: 'Search',
-      path: '/search',
-      icon: Search,
-      badge: null
+      label: 'Messages',
+      path: '/messages',
+      icon: MessageCircle,
+      badge: unreadMessages > 0 ? unreadMessages : null
     },
     {
       label: 'Create',
