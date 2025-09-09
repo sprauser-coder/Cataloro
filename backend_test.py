@@ -23,6 +23,399 @@ ADMIN_USERNAME = "sash_admin"
 ADMIN_ROLE = "admin"
 ADMIN_ID = "admin_user_1"
 
+class AdminAuthenticationTester:
+    def __init__(self):
+        self.session = None
+        self.test_results = []
+        self.admin_token = None
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def test_admin_user_authentication(self) -> Dict:
+        """Test admin user login with admin@cataloro.com"""
+        print("🔐 Testing admin user authentication...")
+        
+        # Test admin login
+        login_data = {
+            "email": ADMIN_EMAIL,
+            "password": "admin_password"  # Mock password for testing
+        }
+        
+        result = await self.make_request("/auth/login", "POST", data=login_data)
+        
+        if result["success"]:
+            user_data = result["data"].get("user", {})
+            token = result["data"].get("token", "")
+            
+            # Store token for subsequent requests
+            self.admin_token = token
+            
+            # Verify admin user properties
+            email_correct = user_data.get("email") == ADMIN_EMAIL
+            username_correct = user_data.get("username") == ADMIN_USERNAME
+            role_correct = user_data.get("role") == ADMIN_ROLE or user_data.get("user_role") == "Admin"
+            
+            print(f"  ✅ Admin login successful")
+            print(f"  📧 Email: {user_data.get('email')} ({'✅' if email_correct else '❌'})")
+            print(f"  👤 Username: {user_data.get('username')} ({'✅' if username_correct else '❌'})")
+            print(f"  🔑 Role: {user_data.get('role', user_data.get('user_role'))} ({'✅' if role_correct else '❌'})")
+            
+            return {
+                "test_name": "Admin User Authentication",
+                "login_successful": True,
+                "response_time_ms": result["response_time_ms"],
+                "admin_email_correct": email_correct,
+                "admin_username_correct": username_correct,
+                "admin_role_correct": role_correct,
+                "user_data": user_data,
+                "token_received": bool(token),
+                "all_admin_properties_correct": email_correct and username_correct and role_correct
+            }
+        else:
+            print(f"  ❌ Admin login failed: {result.get('error', 'Unknown error')}")
+            return {
+                "test_name": "Admin User Authentication",
+                "login_successful": False,
+                "response_time_ms": result["response_time_ms"],
+                "error": result.get("error", "Login failed"),
+                "status": result["status"]
+            }
+    
+    async def test_database_user_consistency(self) -> Dict:
+        """Test that all expected users exist in database"""
+        print("🗄️ Testing database user consistency...")
+        
+        expected_users = [
+            {"email": "admin@cataloro.com", "username": "sash_admin", "role": "admin"},
+            {"email": "demo@cataloro.com", "username": "demo_user", "role": "user"},
+        ]
+        
+        user_tests = []
+        
+        for expected_user in expected_users:
+            print(f"  Testing user: {expected_user['email']}")
+            
+            # Try to login to verify user exists
+            login_data = {
+                "email": expected_user["email"],
+                "password": "test_password"
+            }
+            
+            result = await self.make_request("/auth/login", "POST", data=login_data)
+            
+            if result["success"]:
+                user_data = result["data"].get("user", {})
+                
+                email_match = user_data.get("email") == expected_user["email"]
+                username_match = user_data.get("username") == expected_user["username"]
+                role_match = (user_data.get("role") == expected_user["role"] or 
+                             (expected_user["role"] == "admin" and user_data.get("user_role") == "Admin"))
+                
+                user_tests.append({
+                    "email": expected_user["email"],
+                    "exists_in_database": True,
+                    "email_correct": email_match,
+                    "username_correct": username_match,
+                    "role_correct": role_match,
+                    "user_data": user_data,
+                    "all_properties_correct": email_match and username_match and role_match
+                })
+                
+                print(f"    ✅ User exists and properties match")
+            else:
+                user_tests.append({
+                    "email": expected_user["email"],
+                    "exists_in_database": False,
+                    "error": result.get("error", "User not found"),
+                    "status": result["status"]
+                })
+                print(f"    ❌ User not found or login failed")
+        
+        # Calculate overall consistency
+        existing_users = [u for u in user_tests if u.get("exists_in_database", False)]
+        correct_users = [u for u in existing_users if u.get("all_properties_correct", False)]
+        
+        return {
+            "test_name": "Database User Consistency",
+            "total_expected_users": len(expected_users),
+            "users_found_in_database": len(existing_users),
+            "users_with_correct_properties": len(correct_users),
+            "database_consistency_score": (len(correct_users) / len(expected_users)) * 100,
+            "all_users_consistent": len(correct_users) == len(expected_users),
+            "detailed_user_tests": user_tests
+        }
+    
+    async def test_user_management_endpoints(self) -> Dict:
+        """Test user management endpoints work correctly"""
+        print("👥 Testing user management endpoints...")
+        
+        if not self.admin_token:
+            return {
+                "test_name": "User Management Endpoints",
+                "error": "No admin token available - admin login required first"
+            }
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        endpoint_tests = []
+        
+        # Test admin dashboard
+        print("  Testing admin dashboard...")
+        dashboard_result = await self.make_request("/admin/dashboard", headers=headers)
+        endpoint_tests.append({
+            "endpoint": "/admin/dashboard",
+            "success": dashboard_result["success"],
+            "response_time_ms": dashboard_result["response_time_ms"],
+            "has_data": bool(dashboard_result.get("data")) if dashboard_result["success"] else False
+        })
+        
+        # Test performance metrics
+        print("  Testing performance metrics...")
+        performance_result = await self.make_request("/admin/performance", headers=headers)
+        endpoint_tests.append({
+            "endpoint": "/admin/performance",
+            "success": performance_result["success"],
+            "response_time_ms": performance_result["response_time_ms"],
+            "has_data": bool(performance_result.get("data")) if performance_result["success"] else False
+        })
+        
+        # Test health check (public endpoint)
+        print("  Testing health check...")
+        health_result = await self.make_request("/health")
+        endpoint_tests.append({
+            "endpoint": "/health",
+            "success": health_result["success"],
+            "response_time_ms": health_result["response_time_ms"],
+            "has_data": bool(health_result.get("data")) if health_result["success"] else False
+        })
+        
+        successful_endpoints = [t for t in endpoint_tests if t["success"]]
+        avg_response_time = statistics.mean([t["response_time_ms"] for t in successful_endpoints]) if successful_endpoints else 0
+        
+        return {
+            "test_name": "User Management Endpoints",
+            "total_endpoints_tested": len(endpoint_tests),
+            "successful_endpoints": len(successful_endpoints),
+            "success_rate": (len(successful_endpoints) / len(endpoint_tests)) * 100,
+            "avg_response_time_ms": avg_response_time,
+            "all_endpoints_working": len(successful_endpoints) == len(endpoint_tests),
+            "detailed_endpoint_tests": endpoint_tests
+        }
+    
+    async def test_browse_endpoint_performance(self) -> Dict:
+        """Test browse endpoint still works after database reset"""
+        print("🔍 Testing browse endpoint performance...")
+        
+        # Test basic browse functionality
+        result = await self.make_request("/marketplace/browse")
+        
+        if result["success"]:
+            listings = result["data"]
+            
+            # Check data structure integrity
+            data_integrity_score = self.check_browse_data_integrity(listings)
+            
+            print(f"  ✅ Browse endpoint working: {len(listings)} listings found")
+            print(f"  ⏱️ Response time: {result['response_time_ms']:.0f}ms")
+            print(f"  📊 Data integrity: {data_integrity_score:.1f}%")
+            
+            return {
+                "test_name": "Browse Endpoint Performance",
+                "endpoint_working": True,
+                "response_time_ms": result["response_time_ms"],
+                "listings_count": len(listings),
+                "data_integrity_score": data_integrity_score,
+                "meets_performance_target": result["response_time_ms"] < PERFORMANCE_TARGET_MS,
+                "data_structure_valid": data_integrity_score >= 80
+            }
+        else:
+            print(f"  ❌ Browse endpoint failed: {result.get('error', 'Unknown error')}")
+            return {
+                "test_name": "Browse Endpoint Performance",
+                "endpoint_working": False,
+                "error": result.get("error", "Browse endpoint failed"),
+                "response_time_ms": result["response_time_ms"],
+                "status": result["status"]
+            }
+    
+    async def test_admin_functionality(self) -> Dict:
+        """Test admin-specific features"""
+        print("⚙️ Testing admin functionality...")
+        
+        if not self.admin_token:
+            return {
+                "test_name": "Admin Functionality",
+                "error": "No admin token available - admin login required first"
+            }
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        admin_tests = []
+        
+        # Test admin dashboard access
+        dashboard_result = await self.make_request("/admin/dashboard", headers=headers)
+        admin_tests.append({
+            "feature": "Admin Dashboard",
+            "success": dashboard_result["success"],
+            "response_time_ms": dashboard_result["response_time_ms"],
+            "has_kpis": False
+        })
+        
+        if dashboard_result["success"]:
+            dashboard_data = dashboard_result["data"]
+            # Check for KPI data
+            has_kpis = any(key in dashboard_data for key in ["total_users", "total_revenue", "total_listings"])
+            admin_tests[-1]["has_kpis"] = has_kpis
+            
+            print(f"  ✅ Admin dashboard accessible with KPIs: {has_kpis}")
+        
+        # Test performance metrics access
+        performance_result = await self.make_request("/admin/performance", headers=headers)
+        admin_tests.append({
+            "feature": "Performance Metrics",
+            "success": performance_result["success"],
+            "response_time_ms": performance_result["response_time_ms"],
+            "has_metrics": False
+        })
+        
+        if performance_result["success"]:
+            performance_data = performance_result["data"]
+            has_metrics = any(key in performance_data for key in ["performance_status", "database", "cache"])
+            admin_tests[-1]["has_metrics"] = has_metrics
+            
+            print(f"  ✅ Performance metrics accessible: {has_metrics}")
+        
+        successful_features = [t for t in admin_tests if t["success"]]
+        
+        return {
+            "test_name": "Admin Functionality",
+            "total_admin_features_tested": len(admin_tests),
+            "successful_admin_features": len(successful_features),
+            "admin_success_rate": (len(successful_features) / len(admin_tests)) * 100,
+            "all_admin_features_working": len(successful_features) == len(admin_tests),
+            "detailed_admin_tests": admin_tests
+        }
+    
+    def check_browse_data_integrity(self, listings: List[Dict]) -> float:
+        """Check data integrity of browse listings"""
+        if not listings:
+            return 100.0  # Empty result is valid
+        
+        total_checks = 0
+        passed_checks = 0
+        
+        for listing in listings:
+            # Check required fields
+            required_fields = ["id", "title", "price"]
+            for field in required_fields:
+                total_checks += 1
+                if field in listing and listing[field] is not None:
+                    passed_checks += 1
+            
+            # Check seller information
+            total_checks += 1
+            if "seller" in listing and isinstance(listing["seller"], dict):
+                seller = listing["seller"]
+                if "name" in seller or "username" in seller:
+                    passed_checks += 1
+        
+        return (passed_checks / total_checks) * 100 if total_checks > 0 else 0
+    
+    async def run_comprehensive_admin_test(self) -> Dict:
+        """Run all admin authentication and database consistency tests"""
+        print("🚀 Starting Cataloro Admin Authentication & Database Consistency Testing")
+        print("=" * 70)
+        
+        await self.setup()
+        
+        try:
+            # Run all test suites
+            admin_auth = await self.test_admin_user_authentication()
+            db_consistency = await self.test_database_user_consistency()
+            user_management = await self.test_user_management_endpoints()
+            browse_performance = await self.test_browse_endpoint_performance()
+            admin_functionality = await self.test_admin_functionality()
+            
+            # Compile overall results
+            all_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "admin_authentication": admin_auth,
+                "database_consistency": db_consistency,
+                "user_management_endpoints": user_management,
+                "browse_endpoint_performance": browse_performance,
+                "admin_functionality": admin_functionality
+            }
+            
+            # Calculate overall success metrics
+            test_results = [
+                admin_auth.get("all_admin_properties_correct", False),
+                db_consistency.get("all_users_consistent", False),
+                user_management.get("all_endpoints_working", False),
+                browse_performance.get("endpoint_working", False),
+                admin_functionality.get("all_admin_features_working", False)
+            ]
+            
+            overall_success_rate = sum(test_results) / len(test_results) * 100
+            
+            all_results["summary"] = {
+                "overall_success_rate": overall_success_rate,
+                "admin_authentication_working": admin_auth.get("all_admin_properties_correct", False),
+                "database_consistency_verified": db_consistency.get("all_users_consistent", False),
+                "user_management_operational": user_management.get("all_endpoints_working", False),
+                "browse_endpoint_functional": browse_performance.get("endpoint_working", False),
+                "admin_features_accessible": admin_functionality.get("all_admin_features_working", False),
+                "all_tests_passed": overall_success_rate == 100
+            }
+            
+            return all_results
+            
+        finally:
+            await self.cleanup()
+
+
 class BrowseEndpointTester:
     def __init__(self):
         self.session = None
