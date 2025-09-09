@@ -1,9 +1,9 @@
 {
-  "test_timestamp": "2025-09-09T10:24:17.894425",
+  "test_timestamp": "2025-09-09T10:25:32.417763",
   "admin_authentication": {
     "test_name": "Admin User Authentication",
     "login_successful": true,
-    "response_time_ms": 68.85814666748047,
+    "response_time_ms": 108.84976387023926,
     "admin_email_correct": true,
     "admin_username_correct": true,
     "admin_role_correct": true,
@@ -89,45 +89,71 @@
     "total_endpoints_tested": 3,
     "successful_endpoints": 3,
     "success_rate": 100.0,
-    "avg_response_time_ms": 14.749924341837565,
+    "avg_response_time_ms": 27.48282750447591,
     "all_endpoints_working": true,
     "detailed_endpoint_tests": [
       {
         "endpoint": "/admin/dashboard",
         "success": true,
-        "response_time_ms": 16.790390014648438,
+        "response_time_ms": 17.793655395507812,
         "has_data": true
       },
       {
         "endpoint": "/admin/performance",
         "success": true,
-        "response_time_ms": 19.103527069091797,
+        "response_time_ms": 18.199920654296875,
         "has_data": true
       },
       {
         "endpoint": "/health",
         "success": true,
-        "response_time_ms": 8.355855941772461,
+        "response_time_ms": 46.45490646362305,
         "has_data": true
       }
     ]
   },
   "user_management_functionality": {
     "test_name": "User Management Functionality",
-    "total_tests": 3,
-    "successful_tests": 0,
-    "success_rate": 0.0,
-    "critical_functionality_working": false,
-    "activate_suspend_working": false,
-    "state_persistence_working": false,
+    "total_tests": 6,
+    "successful_tests": 5,
+    "success_rate": 83.33333333333334,
+    "critical_functionality_working": true,
+    "activate_suspend_working": true,
+    "state_persistence_working": true,
     "error_handling_working": true,
     "bulk_operations_available": true,
     "detailed_test_results": [
       {
         "test": "List Users",
-        "success": false,
-        "error": null,
-        "response_time_ms": 13.521909713745117
+        "success": true,
+        "response_time_ms": 7.138490676879883,
+        "user_count": 4,
+        "has_expected_users": true
+      },
+      {
+        "test": "Suspend User",
+        "success": true,
+        "response_time_ms": 12.328863143920898,
+        "user_id": "68bff520d28a1097d72b925c",
+        "is_active_after_suspend": false,
+        "suspend_successful": true,
+        "returns_updated_user": true
+      },
+      {
+        "test": "Activate User",
+        "success": true,
+        "response_time_ms": 8.848428726196289,
+        "user_id": "68bff520d28a1097d72b925c",
+        "is_active_after_activate": true,
+        "activate_successful": true,
+        "returns_updated_user": true
+      },
+      {
+        "test": "State Persistence",
+        "success": true,
+        "user_id": "68bff520d28a1097d72b925c",
+        "final_is_active_status": true,
+        "state_persisted": true
       },
       {
         "test": "Error Handling - Non-existent User",
@@ -139,8 +165,8 @@
       },
       {
         "test": "Bulk Operations",
-        "success": false,
-        "response_time_ms": 11.341571807861328,
+        "success": true,
+        "response_time_ms": 9.124040603637695,
         "bulk_endpoint_available": true,
         "error": null
       }
@@ -148,30 +174,47 @@
   },
   "user_workflow_integration": {
     "test_name": "User Workflow Integration",
-    "total_workflow_steps": 2,
-    "successful_steps": 0,
-    "workflow_success_rate": 0.0,
-    "complete_workflow_working": false,
-    "expected_users_present": false,
-    "state_management_working": false,
-    "id_compatibility_working": false,
+    "total_workflow_steps": 3,
+    "successful_steps": 3,
+    "workflow_success_rate": 100.0,
+    "complete_workflow_working": true,
+    "expected_users_present": true,
+    "state_management_working": true,
+    "id_compatibility_working": true,
     "detailed_workflow_steps": [
       {
         "step": "List Users",
-        "success": false,
-        "error": null
+        "success": true,
+        "total_users": 4,
+        "expected_users_found": 3,
+        "missing_users": []
       },
       {
         "step": "State Management",
-        "success": false,
-        "error": "Demo user not found or missing ID"
+        "success": true,
+        "suspend_worked": true,
+        "activate_worked": true,
+        "final_state_correct": true,
+        "user_id": "68bff520d28a1097d72b925c"
+      },
+      {
+        "step": "ID Format Compatibility",
+        "success": true,
+        "uuid_format_works": true,
+        "id_format_tests": [
+          {
+            "format": "UUID",
+            "success": true,
+            "user_id": "68bff520d28a1097d72b925c"
+          }
+        ]
       }
     ]
   },
   "browse_endpoint_performance": {
     "test_name": "Browse Endpoint Performance",
     "endpoint_working": true,
-    "response_time_ms": 11.900186538696289,
+    "response_time_ms": 9.591102600097656,
     "listings_count": 3,
     "data_integrity_score": 100.0,
     "meets_performance_target": true,
@@ -187,26 +230,26 @@
       {
         "feature": "Admin Dashboard",
         "success": true,
-        "response_time_ms": 18.738508224487305,
+        "response_time_ms": 12.48621940612793,
         "has_kpis": false
       },
       {
         "feature": "Performance Metrics",
         "success": true,
-        "response_time_ms": 19.500732421875,
+        "response_time_ms": 16.378164291381836,
         "has_metrics": true
       }
     ]
   },
   "summary": {
-    "overall_success_rate": 57.14285714285714,
+    "overall_success_rate": 85.71428571428571,
     "admin_authentication_working": true,
     "database_consistency_verified": false,
     "user_management_endpoints_operational": true,
-    "activate_suspend_functionality_working": false,
-    "state_persistence_working": false,
+    "activate_suspend_functionality_working": true,
+    "state_persistence_working": true,
     "error_handling_working": true,
-    "complete_user_workflow_working": false,
+    "complete_user_workflow_working": true,
     "browse_endpoint_functional": true,
     "admin_features_accessible": true,
     "all_tests_passed": false
