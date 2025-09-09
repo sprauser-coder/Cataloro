@@ -707,6 +707,12 @@ async def get_profile(user_id: str):
     # Try to get cached profile first
     cached_profile = await cache_service.get_cached_user_profile(user_id)
     if cached_profile:
+        # Check if cached user is active
+        if not cached_profile.get("is_active", True):
+            raise HTTPException(
+                status_code=403, 
+                detail="Your account has been suspended. Please contact support for assistance."
+            )
         return cached_profile
     
     # Try to find user by id field first, then by _id
@@ -721,6 +727,13 @@ async def get_profile(user_id: str):
     
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if user is active (not suspended)
+    if not user.get("is_active", True):
+        raise HTTPException(
+            status_code=403, 
+            detail="Your account has been suspended. Please contact support for assistance."
+        )
     
     profile_data = serialize_doc(user)
     
