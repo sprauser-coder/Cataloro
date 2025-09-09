@@ -295,7 +295,7 @@
 
 **6. Pagination Performance** ✅ EXCELLENT - Pagination working efficiently across pages: Page Success Rate: 5/5 pages successful (100%) ✅, First Page Performance: 1398ms (acceptable for full data load) ✅, Subsequent Pages: 8-14ms (excellent caching/optimization) ✅, Pagination Consistency: Stable performance across pages ✅, Large Result Sets: Proper handling of different page sizes ✅.
 
-**7. URL Configuration Verification** ✅ PERFECT - Production URL working correctly: Target URL: `https://market-enhancement.preview.emergentagent.com/api/marketplace/browse` accessible ✅, Response time: 1.02s (within acceptable range) ✅, Status code: 200 (successful) ✅, Data structure: Complete with all required fields ✅, Frontend URL configuration: Fixed and working correctly ✅.
+**7. URL Configuration Verification** ✅ PERFECT - Production URL working correctly: Target URL: `https://basket-loader.preview.emergentagent.com/api/marketplace/browse` accessible ✅, Response time: 1.02s (within acceptable range) ✅, Status code: 200 (successful) ✅, Data structure: Complete with all required fields ✅, Frontend URL configuration: Fixed and working correctly ✅.
 
 **CRITICAL FINDINGS:**
 - ✅ Performance target achieved: 672ms average (well under 1000ms target)
@@ -315,7 +315,7 @@
 - Data Structure: All required fields (seller, bid_info, time_info) properly populated
 - Filter Processing: All filter types (price, seller type, pagination) working correctly
 - Concurrent Handling: System stable under concurrent load with excellent throughput
-- URL Configuration: Production endpoint `https://market-enhancement.preview.emergentagent.com/api/marketplace/browse` working correctly
+- URL Configuration: Production endpoint `https://basket-loader.preview.emergentagent.com/api/marketplace/browse` working correctly
 
 **PERFORMANCE ANALYSIS:**
 The hybrid optimization has successfully achieved the performance targets with the browse endpoint consistently responding under 1000ms (672ms average). Redis caching is functional and providing data consistency. The system shows excellent performance for filtered queries, pagination, and concurrent handling. The URL configuration fixes have resolved the frontend connectivity issues.
@@ -2344,7 +2344,7 @@ agent_communication:
     -agent: "testing"
     -message: "✅ UNIFIED CALCULATIONS ENDPOINT COMPREHENSIVE TESTING COMPLETED: Executed comprehensive testing of the new /api/admin/catalyst/unified-calculations endpoint as requested in review. ALL 9/10 TESTS PASSED (90% success rate). KEY FINDINGS: (1) Endpoint accessible and returns unified data combining price and content calculations, (2) All required fields present: catalyst_id, cat_id, name, weight, total_price, pt_g, pd_g, rh_g, is_override, (3) Database_id properly hidden from response, (4) Content calculations accurate using formula (weight * ppm / 1000 * renumeration), (5) Price calculations working for both standard and override scenarios, (6) Handles large datasets efficiently (4496 items), (7) 100% data completeness. Minor issue: 0.01 EUR floating-point precision difference vs old endpoint (acceptable). Unified endpoint provides significant advantages: single request efficiency, enhanced data with content values, security improvement, consistent naming, transparency, override support, scalability. All requirements verified working perfectly."
     -agent: "testing"
-    -message: "✅ CATALYST LISTING CREATION FOR PRODUCTDETAILPAGE VERIFICATION COMPLETED: Executed comprehensive testing of catalyst listing creation to verify ProductDetailPage displays content values correctly as requested in review. ALL 5/5 TESTS PASSED (100% success rate). KEY ACHIEVEMENTS: (1) Successfully logged in as demo admin user (sash_admin) with Admin role permissions, (2) Retrieved comprehensive catalyst data from unified calculations endpoint (4496 entries), (3) Created test listing with comprehensive catalyst data including content values (pt_g: 0.6712, pd_g: 0.0, rh_g: 0.0), (4) Verified all 9 catalyst fields properly stored including catalyst_specs object, (5) Confirmed listing appears in browse endpoint with catalyst data intact. CREATED LISTING ID: 3215645c-64c4-441d-a18b-2aa2c9ce256f for ProductDetailPage testing. Frontend URL: https://market-enhancement.preview.emergentagent.com/listing/3215645c-64c4-441d-a18b-2aa2c9ce256f. All requirements from the review request have been successfully verified and are working perfectly."
+    -message: "✅ CATALYST LISTING CREATION FOR PRODUCTDETAILPAGE VERIFICATION COMPLETED: Executed comprehensive testing of catalyst listing creation to verify ProductDetailPage displays content values correctly as requested in review. ALL 5/5 TESTS PASSED (100% success rate). KEY ACHIEVEMENTS: (1) Successfully logged in as demo admin user (sash_admin) with Admin role permissions, (2) Retrieved comprehensive catalyst data from unified calculations endpoint (4496 entries), (3) Created test listing with comprehensive catalyst data including content values (pt_g: 0.6712, pd_g: 0.0, rh_g: 0.0), (4) Verified all 9 catalyst fields properly stored including catalyst_specs object, (5) Confirmed listing appears in browse endpoint with catalyst data intact. CREATED LISTING ID: 3215645c-64c4-441d-a18b-2aa2c9ce256f for ProductDetailPage testing. Frontend URL: https://basket-loader.preview.emergentagent.com/listing/3215645c-64c4-441d-a18b-2aa2c9ce256f. All requirements from the review request have been successfully verified and are working perfectly."
     -agent: "testing"
     -message: "✅ CONTENT DISPLAY FUNCTIONALITY END-TO-END TESTING COMPLETED: Executed comprehensive end-to-end testing of content display functionality as requested in review. ALL 7/7 TESTS PASSED (100% success rate). MAJOR FINDINGS: (1) Found 3971 catalysts with significant content values (Pt g > 0.1 OR Pd g > 0.1 OR Rh g > 0.1), (2) Top catalyst identified: MercedesA0004900514 with Pt=10.161g, Pd=59.331g, Rh=0.000g, Weight=5.04g, Price=€3096.64, (3) Admin permissions fix verified - Admin users can see content values correctly, (4) Created test listing with comprehensive catalyst data saving including catalyst_specs for inventory management, (5) Browse verification confirms data integrity maintained. CATALYST DETAILS FOR FRONTEND TESTING: Primary - MercedesA0004900514 (Cat ID: 36515, Catalyst ID: 5b836436-a558-4282-be4a-ab65c98afe11), Secondary options available. Complete flow from catalyst selection to content display working perfectly. All requirements from the review request have been successfully verified and are working perfectly."
 
@@ -3109,7 +3109,7 @@ The backend time limit functionality is working perfectly. The issue appears to 
 
 **CREATED LISTING DETAILS:**
 - **Listing ID**: 3215645c-64c4-441d-a18b-2aa2c9ce256f
-- **Frontend URL**: https://market-enhancement.preview.emergentagent.com/listing/3215645c-64c4-441d-a18b-2aa2c9ce256f
+- **Frontend URL**: https://basket-loader.preview.emergentagent.com/listing/3215645c-64c4-441d-a18b-2aa2c9ce256f
 - **Catalyst Name**: MazdaRF4SOK14
 - **Content Values**: PT: 0.6712g, PD: 0.0g, RH: 0.0g
 - **Weight**: 1.32g ceramic weight
@@ -4037,7 +4037,7 @@ The user reported issue "Can create baskets but cannot assign items" appears to 
 
 **8. Tender Endpoints Discovery** ✅ ENDPOINTS EXIST AND WORKING - Found and tested tender creation workflow: Tender submission endpoint: POST /api/tenders/submit working ✅, Tender acceptance endpoint: PUT /api/tenders/{tender_id}/accept working ✅, Requires seller_id in acceptance data for security ✅, Complete tender workflow functional ✅.
 
-**9. Frontend-Backend URL Consistency** ✅ VERIFIED CORRECT - API endpoints using correct production URL: Backend URL: https://market-enhancement.preview.emergentagent.com/api ✅, All API calls successful with proper CORS headers ✅, No URL configuration issues found ✅, Frontend should use same backend URL ✅.
+**9. Frontend-Backend URL Consistency** ✅ VERIFIED CORRECT - API endpoints using correct production URL: Backend URL: https://basket-loader.preview.emergentagent.com/api ✅, All API calls successful with proper CORS headers ✅, No URL configuration issues found ✅, Frontend should use same backend URL ✅.
 
 **10. Complete Workflow Testing** ✅ END-TO-END SUCCESS - Full buy management workflow now functional: Listing creation → Tender submission → Tender acceptance → Bought item creation ✅, All APIs working correctly with proper data flow ✅, Buy Management page should now display real data ✅, Issue resolved through proper test data creation ✅.
 
@@ -5860,7 +5860,7 @@ const formatDate = (listing) => {
 **6. Specific Element Verification** ✅ ALL ELEMENTS PRESENT AND FUNCTIONAL - Individual component testing completed: Pictures display at top of each tile with proper aspect ratio ✅, Titles clearly visible with appropriate font sizing ✅, Prices show current highest bid or starting price correctly ✅, Market Range badges appear for catalyst items (TRPSAK333: €135-€165, VW074131701G: €196-€240) ✅, Seller information with avatars and usernames displayed ✅, Location information shows "Location not specified" appropriately ✅, Input fields with proper placeholders (Min: €150.00, Min: €200.00, etc.) ✅, Dates positioned at bottom of tiles ✅.
 
 **TECHNICAL VERIFICATION:**
-- Browse page URL: https://market-enhancement.preview.emergentagent.com/browse accessible and functional
+- Browse page URL: https://basket-loader.preview.emergentagent.com/browse accessible and functional
 - Total listings displayed: 22 results with consistent structure
 - Grid layout: Professional 4-column desktop layout with responsive behavior
 - Visual elements: 54 business/private badges, 39 market range badges, proper color coding
@@ -6831,7 +6831,7 @@ if not seller:
    - All services healthy and responsive
 
 3. **Environment Configuration** ✅ PASSED
-   - Backend URL: https://market-enhancement.preview.emergentagent.com ✅ WORKING
+   - Backend URL: https://basket-loader.preview.emergentagent.com ✅ WORKING
    - MongoDB URL: mongodb://localhost:27017 ✅ WORKING
    - All API routes properly prefixed with '/api'
 
