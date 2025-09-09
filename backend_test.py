@@ -521,7 +521,7 @@ class AdminAuthenticationTester:
             activate_success = activate_result["success"] and activate_result["data"].get("user", {}).get("is_active", False)
             
             # Verify final state
-            final_users_result = await self.make_request("/users", headers=headers)
+            final_users_result = await self.make_request("/admin/users", headers=headers)
             final_state_correct = False
             
             if final_users_result["success"]:
