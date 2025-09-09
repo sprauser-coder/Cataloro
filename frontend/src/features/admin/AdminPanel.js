@@ -2312,8 +2312,8 @@ function HeroSelectionTab({ showToast }) {
             </div>
           )}
 
-          {/* Background Image (for image) */}
-          {heroContent.background_type === 'image' && (
+          {/* Background Image (for image and image-gradient) */}
+          {(heroContent.background_type === 'image' || heroContent.background_type === 'image-gradient') && (
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                 Background Image
