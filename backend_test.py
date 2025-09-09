@@ -1288,10 +1288,468 @@ class BrowseEndpointTester:
         finally:
             await self.cleanup()
 
+class CatalystDataTester:
+    def __init__(self):
+        self.session = None
+        self.test_results = []
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def test_catalyst_unified_calculations_endpoint(self) -> Dict:
+        """Test GET /api/admin/catalyst/unified-calculations endpoint"""
+        print("🧪 Testing catalyst unified calculations endpoint...")
+        
+        result = await self.make_request("/admin/catalyst/unified-calculations")
+        
+        if result["success"]:
+            data = result["data"]
+            
+            # Verify it's a list
+            if not isinstance(data, list):
+                return {
+                    "test_name": "Catalyst Unified Calculations Endpoint",
+                    "success": False,
+                    "error": "Response is not a list",
+                    "response_time_ms": result["response_time_ms"],
+                    "data_type": type(data).__name__
+                }
+            
+            # Check entry count
+            entry_count = len(data)
+            expected_count = 4496
+            count_matches = entry_count == expected_count
+            
+            print(f"  📊 Found {entry_count} entries (expected: {expected_count})")
+            print(f"  ⏱️ Response time: {result['response_time_ms']:.0f}ms")
+            
+            # Verify response structure for first few entries
+            structure_valid = True
+            required_fields = ["name", "cat_id", "weight", "pt_g", "pd_g", "rh_g", "total_price"]
+            missing_fields = []
+            
+            if data:  # Check first entry structure
+                first_entry = data[0]
+                for field in required_fields:
+                    if field not in first_entry:
+                        structure_valid = False
+                        missing_fields.append(field)
+                
+                print(f"  🔍 Structure validation: {'✅' if structure_valid else '❌'}")
+                if missing_fields:
+                    print(f"    Missing fields: {missing_fields}")
+                
+                # Sample first entry for verification
+                print(f"  📝 Sample entry:")
+                print(f"    Name: {first_entry.get('name', 'N/A')}")
+                print(f"    Cat ID: {first_entry.get('cat_id', 'N/A')}")
+                print(f"    Weight: {first_entry.get('weight', 'N/A')}")
+                print(f"    Pt g: {first_entry.get('pt_g', 'N/A')}")
+                print(f"    Pd g: {first_entry.get('pd_g', 'N/A')}")
+                print(f"    Rh g: {first_entry.get('rh_g', 'N/A')}")
+                print(f"    Total Price: {first_entry.get('total_price', 'N/A')}")
+            
+            # Performance check
+            performance_acceptable = result["response_time_ms"] < 5000  # 5 seconds for 4496 entries
+            
+            return {
+                "test_name": "Catalyst Unified Calculations Endpoint",
+                "success": True,
+                "response_time_ms": result["response_time_ms"],
+                "entry_count": entry_count,
+                "expected_count": expected_count,
+                "count_matches_expected": count_matches,
+                "structure_valid": structure_valid,
+                "missing_fields": missing_fields,
+                "required_fields_present": len(required_fields) - len(missing_fields),
+                "total_required_fields": len(required_fields),
+                "performance_acceptable": performance_acceptable,
+                "sample_entry": data[0] if data else None,
+                "all_requirements_met": count_matches and structure_valid and performance_acceptable
+            }
+        else:
+            print(f"  ❌ Endpoint failed: {result.get('error', 'Unknown error')}")
+            return {
+                "test_name": "Catalyst Unified Calculations Endpoint",
+                "success": False,
+                "error": result.get("error", "Endpoint failed"),
+                "response_time_ms": result["response_time_ms"],
+                "status": result["status"]
+            }
+    
+    async def test_catalyst_data_structure_validation(self) -> Dict:
+        """Test detailed data structure validation for catalyst calculations"""
+        print("🔬 Testing catalyst data structure validation...")
+        
+        result = await self.make_request("/admin/catalyst/unified-calculations")
+        
+        if not result["success"]:
+            return {
+                "test_name": "Catalyst Data Structure Validation",
+                "success": False,
+                "error": "Could not fetch data for validation"
+            }
+        
+        data = result["data"]
+        if not isinstance(data, list) or not data:
+            return {
+                "test_name": "Catalyst Data Structure Validation",
+                "success": False,
+                "error": "No data available for validation"
+            }
+        
+        # Detailed validation of multiple entries
+        validation_results = {
+            "total_entries": len(data),
+            "entries_validated": min(10, len(data)),  # Validate first 10 entries
+            "field_validation": {},
+            "data_type_validation": {},
+            "value_range_validation": {}
+        }
+        
+        required_fields = {
+            "name": str,
+            "cat_id": str,
+            "weight": (int, float),
+            "pt_g": (int, float),
+            "pd_g": (int, float),
+            "rh_g": (int, float),
+            "total_price": (int, float)
+        }
+        
+        entries_to_validate = data[:validation_results["entries_validated"]]
+        
+        for field, expected_type in required_fields.items():
+            field_present_count = 0
+            correct_type_count = 0
+            
+            for entry in entries_to_validate:
+                if field in entry:
+                    field_present_count += 1
+                    if isinstance(entry[field], expected_type):
+                        correct_type_count += 1
+            
+            validation_results["field_validation"][field] = {
+                "present_count": field_present_count,
+                "correct_type_count": correct_type_count,
+                "field_present_rate": (field_present_count / len(entries_to_validate)) * 100,
+                "correct_type_rate": (correct_type_count / len(entries_to_validate)) * 100 if field_present_count > 0 else 0
+            }
+        
+        # Validate value ranges for numeric fields
+        numeric_fields = ["weight", "pt_g", "pd_g", "rh_g", "total_price"]
+        for field in numeric_fields:
+            values = [entry.get(field, 0) for entry in entries_to_validate if field in entry and isinstance(entry[field], (int, float))]
+            
+            if values:
+                validation_results["value_range_validation"][field] = {
+                    "min_value": min(values),
+                    "max_value": max(values),
+                    "avg_value": sum(values) / len(values),
+                    "non_negative_count": sum(1 for v in values if v >= 0),
+                    "non_negative_rate": (sum(1 for v in values if v >= 0) / len(values)) * 100
+                }
+        
+        # Overall validation score
+        all_fields_present = all(
+            validation_results["field_validation"][field]["field_present_rate"] == 100
+            for field in required_fields
+        )
+        
+        all_types_correct = all(
+            validation_results["field_validation"][field]["correct_type_rate"] >= 95
+            for field in required_fields
+        )
+        
+        print(f"  📊 Validated {validation_results['entries_validated']} entries")
+        print(f"  ✅ All required fields present: {all_fields_present}")
+        print(f"  🔢 All data types correct: {all_types_correct}")
+        
+        return {
+            "test_name": "Catalyst Data Structure Validation",
+            "success": True,
+            "validation_results": validation_results,
+            "all_fields_present": all_fields_present,
+            "all_types_correct": all_types_correct,
+            "validation_passed": all_fields_present and all_types_correct
+        }
+    
+    async def test_catalyst_endpoint_performance(self) -> Dict:
+        """Test performance characteristics of catalyst endpoint"""
+        print("⚡ Testing catalyst endpoint performance...")
+        
+        # Test multiple calls to get performance statistics
+        response_times = []
+        
+        for i in range(3):
+            result = await self.make_request("/admin/catalyst/unified-calculations")
+            if result["success"]:
+                response_times.append(result["response_time_ms"])
+                print(f"  Call {i+1}: {result['response_time_ms']:.0f}ms")
+            else:
+                print(f"  Call {i+1}: FAILED")
+        
+        if not response_times:
+            return {
+                "test_name": "Catalyst Endpoint Performance",
+                "success": False,
+                "error": "All performance test calls failed"
+            }
+        
+        avg_response_time = statistics.mean(response_times)
+        min_response_time = min(response_times)
+        max_response_time = max(response_times)
+        
+        # Performance thresholds for 4496 entries
+        excellent_threshold = 1000  # Under 1 second is excellent
+        acceptable_threshold = 3000  # Under 3 seconds is acceptable
+        
+        performance_rating = "excellent" if avg_response_time < excellent_threshold else \
+                           "acceptable" if avg_response_time < acceptable_threshold else \
+                           "poor"
+        
+        print(f"  📊 Average response time: {avg_response_time:.0f}ms")
+        print(f"  🎯 Performance rating: {performance_rating}")
+        
+        return {
+            "test_name": "Catalyst Endpoint Performance",
+            "success": True,
+            "avg_response_time_ms": avg_response_time,
+            "min_response_time_ms": min_response_time,
+            "max_response_time_ms": max_response_time,
+            "performance_rating": performance_rating,
+            "meets_excellent_threshold": avg_response_time < excellent_threshold,
+            "meets_acceptable_threshold": avg_response_time < acceptable_threshold,
+            "response_times": response_times
+        }
+    
+    async def test_catalyst_data_consistency(self) -> Dict:
+        """Test data consistency and calculations"""
+        print("🔍 Testing catalyst data consistency and calculations...")
+        
+        result = await self.make_request("/admin/catalyst/unified-calculations")
+        
+        if not result["success"]:
+            return {
+                "test_name": "Catalyst Data Consistency",
+                "success": False,
+                "error": "Could not fetch data for consistency testing"
+            }
+        
+        data = result["data"]
+        if not isinstance(data, list) or not data:
+            return {
+                "test_name": "Catalyst Data Consistency",
+                "success": False,
+                "error": "No data available for consistency testing"
+            }
+        
+        # Test data consistency
+        consistency_checks = {
+            "unique_cat_ids": len(set(entry.get("cat_id", "") for entry in data)),
+            "total_entries": len(data),
+            "entries_with_names": sum(1 for entry in data if entry.get("name", "").strip()),
+            "entries_with_weights": sum(1 for entry in data if isinstance(entry.get("weight"), (int, float)) and entry.get("weight", 0) > 0),
+            "entries_with_prices": sum(1 for entry in data if isinstance(entry.get("total_price"), (int, float)) and entry.get("total_price", 0) >= 0),
+            "entries_with_pt_content": sum(1 for entry in data if isinstance(entry.get("pt_g"), (int, float)) and entry.get("pt_g", 0) >= 0),
+            "entries_with_pd_content": sum(1 for entry in data if isinstance(entry.get("pd_g"), (int, float)) and entry.get("pd_g", 0) >= 0),
+            "entries_with_rh_content": sum(1 for entry in data if isinstance(entry.get("rh_g"), (int, float)) and entry.get("rh_g", 0) >= 0)
+        }
+        
+        # Calculate consistency percentages
+        total_entries = consistency_checks["total_entries"]
+        consistency_percentages = {
+            "unique_cat_id_rate": (consistency_checks["unique_cat_ids"] / total_entries) * 100 if total_entries > 0 else 0,
+            "name_completion_rate": (consistency_checks["entries_with_names"] / total_entries) * 100 if total_entries > 0 else 0,
+            "weight_completion_rate": (consistency_checks["entries_with_weights"] / total_entries) * 100 if total_entries > 0 else 0,
+            "price_completion_rate": (consistency_checks["entries_with_prices"] / total_entries) * 100 if total_entries > 0 else 0,
+            "pt_content_rate": (consistency_checks["entries_with_pt_content"] / total_entries) * 100 if total_entries > 0 else 0,
+            "pd_content_rate": (consistency_checks["entries_with_pd_content"] / total_entries) * 100 if total_entries > 0 else 0,
+            "rh_content_rate": (consistency_checks["entries_with_rh_content"] / total_entries) * 100 if total_entries > 0 else 0
+        }
+        
+        # Overall data quality score
+        data_quality_score = statistics.mean([
+            consistency_percentages["name_completion_rate"],
+            consistency_percentages["weight_completion_rate"],
+            consistency_percentages["price_completion_rate"],
+            consistency_percentages["pt_content_rate"],
+            consistency_percentages["pd_content_rate"],
+            consistency_percentages["rh_content_rate"]
+        ])
+        
+        print(f"  📊 Total entries: {total_entries}")
+        print(f"  🆔 Unique cat_ids: {consistency_checks['unique_cat_ids']}")
+        print(f"  📝 Name completion: {consistency_percentages['name_completion_rate']:.1f}%")
+        print(f"  ⚖️ Weight completion: {consistency_percentages['weight_completion_rate']:.1f}%")
+        print(f"  💰 Price completion: {consistency_percentages['price_completion_rate']:.1f}%")
+        print(f"  🧪 Precious metals content completion: Pt {consistency_percentages['pt_content_rate']:.1f}%, Pd {consistency_percentages['pd_content_rate']:.1f}%, Rh {consistency_percentages['rh_content_rate']:.1f}%")
+        print(f"  🎯 Overall data quality score: {data_quality_score:.1f}%")
+        
+        return {
+            "test_name": "Catalyst Data Consistency",
+            "success": True,
+            "consistency_checks": consistency_checks,
+            "consistency_percentages": consistency_percentages,
+            "data_quality_score": data_quality_score,
+            "high_data_quality": data_quality_score >= 90,
+            "acceptable_data_quality": data_quality_score >= 75
+        }
+    
+    async def run_comprehensive_catalyst_test(self) -> Dict:
+        """Run all catalyst data tests"""
+        print("🚀 Starting Catalyst Data Endpoint Testing")
+        print("=" * 60)
+        
+        await self.setup()
+        
+        try:
+            # Run all catalyst tests
+            endpoint_test = await self.test_catalyst_unified_calculations_endpoint()
+            structure_test = await self.test_catalyst_data_structure_validation()
+            performance_test = await self.test_catalyst_endpoint_performance()
+            consistency_test = await self.test_catalyst_data_consistency()
+            
+            # Compile overall results
+            all_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "endpoint_functionality": endpoint_test,
+                "data_structure_validation": structure_test,
+                "performance_testing": performance_test,
+                "data_consistency": consistency_test
+            }
+            
+            # Calculate overall success metrics
+            test_results = [
+                endpoint_test.get("all_requirements_met", False),
+                structure_test.get("validation_passed", False),
+                performance_test.get("meets_acceptable_threshold", False),
+                consistency_test.get("acceptable_data_quality", False)
+            ]
+            
+            overall_success_rate = sum(test_results) / len(test_results) * 100
+            
+            all_results["summary"] = {
+                "overall_success_rate": overall_success_rate,
+                "endpoint_working": endpoint_test.get("success", False),
+                "correct_entry_count": endpoint_test.get("count_matches_expected", False),
+                "structure_valid": structure_test.get("validation_passed", False),
+                "performance_acceptable": performance_test.get("meets_acceptable_threshold", False),
+                "data_quality_good": consistency_test.get("acceptable_data_quality", False),
+                "all_tests_passed": overall_success_rate == 100,
+                "createlistingpage_fix_verified": endpoint_test.get("count_matches_expected", False) and endpoint_test.get("structure_valid", False)
+            }
+            
+            return all_results
+            
+        finally:
+            await self.cleanup()
+
 async def main():
     """Main test execution"""
     print("🔧 Cataloro Marketplace Testing Suite")
     print("=" * 50)
+    
+    # Run Catalyst Data Endpoint Tests (Primary focus)
+    print("\n🧪 CATALYST DATA ENDPOINT TESTING")
+    print("=" * 60)
+    
+    catalyst_tester = CatalystDataTester()
+    catalyst_results = await catalyst_tester.run_comprehensive_catalyst_test()
+    
+    # Print Catalyst Test Summary
+    print("\n" + "=" * 60)
+    print("📊 CATALYST DATA ENDPOINT SUMMARY")
+    print("=" * 60)
+    
+    catalyst_summary = catalyst_results["summary"]
+    endpoint_test = catalyst_results["endpoint_functionality"]
+    structure_test = catalyst_results["data_structure_validation"]
+    performance_test = catalyst_results["performance_testing"]
+    consistency_test = catalyst_results["data_consistency"]
+    
+    print(f"🎯 Overall Success Rate: {catalyst_summary.get('overall_success_rate', 0):.0f}%")
+    print()
+    
+    # Endpoint Functionality
+    endpoint_status = "✅" if endpoint_test.get("success") else "❌"
+    entry_count = endpoint_test.get("entry_count", 0)
+    expected_count = endpoint_test.get("expected_count", 4496)
+    count_status = "✅" if endpoint_test.get("count_matches_expected") else "❌"
+    print(f"{endpoint_status} Endpoint Functionality: Working")
+    print(f"   {count_status} Entry Count: {entry_count}/{expected_count} entries")
+    print(f"   ⏱️ Response Time: {endpoint_test.get('response_time_ms', 0):.0f}ms")
+    
+    # Data Structure
+    structure_status = "✅" if structure_test.get("validation_passed") else "❌"
+    print(f"{structure_status} Data Structure: Valid")
+    if structure_test.get("success"):
+        validation_results = structure_test.get("validation_results", {})
+        print(f"   📊 Fields Present: {structure_test.get('all_fields_present', False)}")
+        print(f"   🔢 Types Correct: {structure_test.get('all_types_correct', False)}")
+    
+    # Performance
+    performance_status = "✅" if performance_test.get("meets_acceptable_threshold") else "❌"
+    performance_rating = performance_test.get("performance_rating", "unknown")
+    avg_time = performance_test.get("avg_response_time_ms", 0)
+    print(f"{performance_status} Performance: {performance_rating} ({avg_time:.0f}ms avg)")
+    
+    # Data Consistency
+    consistency_status = "✅" if consistency_test.get("acceptable_data_quality") else "❌"
+    quality_score = consistency_test.get("data_quality_score", 0)
+    print(f"{consistency_status} Data Quality: {quality_score:.1f}%")
+    
+    print()
+    print("🏆 CATALYST ENDPOINT TEST RESULTS:")
+    overall_status = "✅ ALL TESTS PASSED" if catalyst_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
+    fix_verified = "✅ CREATELISTINGPAGE FIX VERIFIED" if catalyst_summary.get("createlistingpage_fix_verified") else "❌ FIX VERIFICATION FAILED"
+    print(f"   {overall_status}")
+    print(f"   {fix_verified}")
+    print(f"   Success Rate: {catalyst_summary.get('overall_success_rate', 0):.0f}%")
     
     # Run Admin Authentication & Database Consistency Tests
     print("\n🔐 ADMIN AUTHENTICATION & DATABASE CONSISTENCY TESTS")
