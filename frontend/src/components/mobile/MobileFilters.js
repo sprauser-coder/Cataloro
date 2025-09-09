@@ -306,7 +306,7 @@ function MobileFilters({
                       }`}
                     >
                       <span className="text-sm">{location}</span>
-                      {localFilters.location === location && <Check className="w-4 h-4" />}
+                      {localFilters?.location === location && <Check className="w-4 h-4" />}
                     </button>
                   ))}
                 </div>
