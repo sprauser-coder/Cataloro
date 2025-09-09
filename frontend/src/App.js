@@ -93,8 +93,8 @@ function App() {
                 <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
                 <Route path="/info" element={<InfoPage />} />
                 
-                {/* Protected Routes with Modern Layout */}
-                <Route path="/" element={<ModernLayout />}>
+                {/* Protected Routes with Dynamic Layout */}
+                <Route path="/" element={<LayoutComponent />}>
                   <Route index element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
                   <Route path={APP_ROUTES.BROWSE} element={<ModernBrowsePage />} />
 
