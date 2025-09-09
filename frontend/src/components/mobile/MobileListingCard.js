@@ -7,61 +7,12 @@ import React, { useState, useRef } from 'react';
 import { Heart, MessageCircle, Eye, Clock, MapPin, Star, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-function MobileListingCard({ listing, onFavorite, onContact, onQuickView }) {
+function MobileListingCard({ listing, onFavorite, onQuickView }) {
   const [isFavorited, setIsFavorited] = useState(listing.favorited || false);
-  const [swipeDirection, setSwipeDirection] = useState(null);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const cardRef = useRef(null);
-  const startPos = useRef({ x: 0, y: 0 });
-
-  // Touch event handlers for swipe gestures
-  const handleTouchStart = (e) => {
-    const touch = e.touches[0];
-    startPos.current = { x: touch.clientX, y: touch.clientY };
-    setIsDragging(true);
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isDragging) return;
-    
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - startPos.current.x;
-    const deltaY = Math.abs(touch.clientY - startPos.current.y);
-    
-    // Only allow horizontal swipe if it's predominantly horizontal
-    if (deltaY < 50) {
-      setDragOffset(deltaX);
-      
-      // Determine swipe direction - only right for favorite
-      if (deltaX > 50) {
-        setSwipeDirection('right'); // Favorite action
-      } else {
-        setSwipeDirection(null);
-      }
-    }
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-    
-    // Execute action based on swipe - only favorite now
-    if (swipeDirection === 'right' && dragOffset > 100) {
-      handleFavorite();
-    }
-    
-    // Reset swipe state
-    setDragOffset(0);
-    setSwipeDirection(null);
-  };
 
   const handleFavorite = () => {
     setIsFavorited(!isFavorited);
     onFavorite?.(listing.id, !isFavorited);
-  };
-
-  const handleContact = () => {
-    onContact?.(listing);
   };
 
   const handleQuickView = () => {
