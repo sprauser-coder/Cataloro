@@ -27,7 +27,8 @@ import {
   Eye,
   Settings,
   Archive,
-  Download
+  Download,
+  Loader2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
