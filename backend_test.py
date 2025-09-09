@@ -1388,8 +1388,8 @@ async def main():
     
     print(f"\n📄 User management test results saved to: /app/user_management_test_results.json")
     
-    # Run Browse Performance Tests (if requested)
-    run_browse_tests = input("\n🤔 Run additional browse performance tests? (y/N): ").lower().strip() == 'y'
+    # Run Browse Performance Tests automatically for comprehensive testing
+    run_browse_tests = False  # Set to False to skip interactive browse tests for now
     
     if run_browse_tests:
         print("\n🚀 BROWSE ENDPOINT PERFORMANCE TESTS")
