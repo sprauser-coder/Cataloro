@@ -317,8 +317,6 @@ function ModernBrowsePage() {
     const baseStyle = {
       height: `${heroContent.height || 400}px`,
       minHeight: '300px',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
       marginTop: '-2rem',
       marginBottom: '2rem'
     };
@@ -331,6 +329,13 @@ function ModernBrowsePage() {
       baseStyle.marginLeft = '0';
       baseStyle.marginRight = '0';
       baseStyle.borderRadius = '1rem';
+    }
+
+    // Add background image styling properties for image and image-gradient types
+    if (heroContent.background_type === 'image' || heroContent.background_type === 'image-gradient') {
+      baseStyle.backgroundSize = heroContent.background_size || 'cover';
+      baseStyle.backgroundPosition = heroContent.background_position || 'center';
+      baseStyle.backgroundRepeat = heroContent.background_repeat || 'no-repeat';
     }
 
     switch (heroContent.background_type) {
