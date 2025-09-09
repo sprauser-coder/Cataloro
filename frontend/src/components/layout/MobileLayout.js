@@ -20,6 +20,34 @@ function MobileLayout() {
   const [darkMode, setDarkMode] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAdminDrawerOpen, setIsAdminDrawerOpen] = useState(false);
+  const [siteBranding, setSiteBranding] = useState({});
+
+  // Load site branding configuration
+  useEffect(() => {
+    const loadSiteBranding = () => {
+      try {
+        const savedBranding = localStorage.getItem('cataloro_site_branding');
+        if (savedBranding) {
+          const parsedBranding = JSON.parse(savedBranding);
+          setSiteBranding(parsedBranding);
+        }
+      } catch (error) {
+        console.warn('Failed to load site branding:', error);
+      }
+    };
+
+    loadSiteBranding();
+
+    // Listen for branding updates
+    const handleBrandingUpdate = (event) => {
+      if (event.detail) {
+        setSiteBranding(event.detail);
+      }
+    };
+
+    window.addEventListener('siteBrandingUpdated', handleBrandingUpdate);
+    return () => window.removeEventListener('siteBrandingUpdated', handleBrandingUpdate);
+  }, []);
   const location = useLocation();
 
   useEffect(() => {
