@@ -1770,7 +1770,10 @@ function HeroSelectionTab({ showToast }) {
     background_gradient_from: '#3B82F6',
     background_gradient_to: '#EC4899',
     background_image: '',
-    gradient_opacity: 0.8
+    gradient_opacity: 0.8,
+    background_size: 'cover', // cover, contain, auto
+    background_repeat: 'no-repeat', // no-repeat, repeat, repeat-x, repeat-y
+    background_position: 'center' // center, top, bottom, left, right, top-left, top-right, bottom-left, bottom-right
   });
   const [heroImageFile, setHeroImageFile] = useState(null);
   const [heroImagePreview, setHeroImagePreview] = useState('');
