@@ -1,0 +1,214 @@
+{
+  "test_timestamp": "2025-09-09T10:23:51.749798",
+  "admin_authentication": {
+    "test_name": "Admin User Authentication",
+    "login_successful": true,
+    "response_time_ms": 62.558650970458984,
+    "admin_email_correct": true,
+    "admin_username_correct": true,
+    "admin_role_correct": true,
+    "user_data": {
+      "id": "68bff934bdb9d78bad2b925c",
+      "username": "sash_admin",
+      "email": "admin@cataloro.com",
+      "full_name": "Sash",
+      "name": "Sash Admin",
+      "role": "admin",
+      "user_role": "Admin",
+      "registration_status": "Approved",
+      "badge": "Admin",
+      "is_business": false,
+      "business_name": "",
+      "verified": true,
+      "is_active": true,
+      "created_at": "2025-09-09T09:53:56.308000",
+      "city": "System",
+      "country": "Admin"
+    },
+    "token_received": true,
+    "all_admin_properties_correct": true
+  },
+  "database_consistency": {
+    "test_name": "Database User Consistency",
+    "total_expected_users": 2,
+    "users_found_in_database": 2,
+    "users_with_correct_properties": 1,
+    "database_consistency_score": 50.0,
+    "all_users_consistent": false,
+    "detailed_user_tests": [
+      {
+        "email": "admin@cataloro.com",
+        "exists_in_database": true,
+        "email_correct": true,
+        "username_correct": true,
+        "role_correct": true,
+        "user_data": {
+          "id": "68bff934bdb9d78bad2b925c",
+          "username": "sash_admin",
+          "email": "admin@cataloro.com",
+          "full_name": "Sash",
+          "name": "Sash Admin",
+          "role": "admin",
+          "user_role": "Admin",
+          "registration_status": "Approved",
+          "badge": "Admin",
+          "is_business": false,
+          "business_name": "",
+          "verified": true,
+          "is_active": true,
+          "created_at": "2025-09-09T09:53:56.308000",
+          "city": "System",
+          "country": "Admin"
+        },
+        "all_properties_correct": true
+      },
+      {
+        "email": "demo@cataloro.com",
+        "exists_in_database": true,
+        "email_correct": true,
+        "username_correct": true,
+        "role_correct": false,
+        "user_data": {
+          "id": "68bff520d28a1097d72b925c",
+          "username": "demo_user",
+          "email": "demo@cataloro.com",
+          "name": "Demo User",
+          "is_business": false,
+          "verified": true,
+          "created_at": "2025-09-09T09:36:32.915000",
+          "city": "Berlin",
+          "country": "Germany",
+          "is_active": true
+        },
+        "all_properties_correct": false
+      }
+    ]
+  },
+  "user_management_endpoints": {
+    "test_name": "User Management Endpoints",
+    "total_endpoints_tested": 3,
+    "successful_endpoints": 3,
+    "success_rate": 100.0,
+    "avg_response_time_ms": 18.754005432128906,
+    "all_endpoints_working": true,
+    "detailed_endpoint_tests": [
+      {
+        "endpoint": "/admin/dashboard",
+        "success": true,
+        "response_time_ms": 24.860620498657227,
+        "has_data": true
+      },
+      {
+        "endpoint": "/admin/performance",
+        "success": true,
+        "response_time_ms": 21.94952964782715,
+        "has_data": true
+      },
+      {
+        "endpoint": "/health",
+        "success": true,
+        "response_time_ms": 9.451866149902344,
+        "has_data": true
+      }
+    ]
+  },
+  "user_management_functionality": {
+    "test_name": "User Management Functionality",
+    "total_tests": 3,
+    "successful_tests": 0,
+    "success_rate": 0.0,
+    "critical_functionality_working": false,
+    "activate_suspend_working": false,
+    "state_persistence_working": false,
+    "error_handling_working": true,
+    "bulk_operations_available": true,
+    "detailed_test_results": [
+      {
+        "test": "List Users",
+        "success": false,
+        "error": null,
+        "response_time_ms": 13.904809951782227
+      },
+      {
+        "test": "Error Handling - Non-existent User",
+        "suspend_correctly_fails": true,
+        "activate_correctly_fails": true,
+        "suspend_status": 404,
+        "activate_status": 404,
+        "proper_error_handling": true
+      },
+      {
+        "test": "Bulk Operations",
+        "success": false,
+        "response_time_ms": 14.793634414672852,
+        "bulk_endpoint_available": true,
+        "error": null
+      }
+    ]
+  },
+  "user_workflow_integration": {
+    "test_name": "User Workflow Integration",
+    "total_workflow_steps": 2,
+    "successful_steps": 0,
+    "workflow_success_rate": 0.0,
+    "complete_workflow_working": false,
+    "expected_users_present": false,
+    "state_management_working": false,
+    "id_compatibility_working": false,
+    "detailed_workflow_steps": [
+      {
+        "step": "List Users",
+        "success": false,
+        "error": null
+      },
+      {
+        "step": "State Management",
+        "success": false,
+        "error": "Demo user not found or missing ID"
+      }
+    ]
+  },
+  "browse_endpoint_performance": {
+    "test_name": "Browse Endpoint Performance",
+    "endpoint_working": true,
+    "response_time_ms": 13.684511184692383,
+    "listings_count": 3,
+    "data_integrity_score": 100.0,
+    "meets_performance_target": true,
+    "data_structure_valid": true
+  },
+  "admin_functionality": {
+    "test_name": "Admin Functionality",
+    "total_admin_features_tested": 2,
+    "successful_admin_features": 2,
+    "admin_success_rate": 100.0,
+    "all_admin_features_working": true,
+    "detailed_admin_tests": [
+      {
+        "feature": "Admin Dashboard",
+        "success": true,
+        "response_time_ms": 17.52161979675293,
+        "has_kpis": false
+      },
+      {
+        "feature": "Performance Metrics",
+        "success": true,
+        "response_time_ms": 20.822763442993164,
+        "has_metrics": true
+      }
+    ]
+  },
+  "summary": {
+    "overall_success_rate": 57.14285714285714,
+    "admin_authentication_working": true,
+    "database_consistency_verified": false,
+    "user_management_endpoints_operational": true,
+    "activate_suspend_functionality_working": false,
+    "state_persistence_working": false,
+    "error_handling_working": true,
+    "complete_user_workflow_working": false,
+    "browse_endpoint_functional": true,
+    "admin_features_accessible": true,
+    "all_tests_passed": false
+  }
+}
