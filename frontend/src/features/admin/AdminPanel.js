@@ -89,7 +89,8 @@ import {
   BookOpen,
   Layers,
   GitBranch,
-  RotateCcw
+  RotateCcw,
+  Target
 } from 'lucide-react';
 import { adminService } from '../../services/adminService';
 import { useAuth } from '../../context/AuthContext';
