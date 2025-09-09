@@ -176,22 +176,22 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
   };
 
   const scrollToBottom = () => {
-    // Use scrollTop instead of scrollIntoView to prevent page scrolling
-    if (messagesEndRef.current) {
-      const messagesContainer = messagesEndRef.current.parentElement;
-      if (messagesContainer) {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      }
+    // Use scrollTop on the messages container to prevent page scrolling
+    const messagesContainer = document.getElementById('messages-container');
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
   };
 
   useEffect(() => {
-    // Delay the scroll slightly to ensure messages are rendered
-    const timeoutId = setTimeout(() => {
-      scrollToBottom();
-    }, 100);
-    
-    return () => clearTimeout(timeoutId);
+    // Only scroll when new messages are added, with a small delay
+    if (messages.length > 0) {
+      const timeoutId = setTimeout(() => {
+        scrollToBottom();
+      }, 50);
+      
+      return () => clearTimeout(timeoutId);
+    }
   }, [messages]);
 
   const formatTime = (date) => {
