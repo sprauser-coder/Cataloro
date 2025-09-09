@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Cataloro Marketplace Admin Authentication & Database Consistency Testing
-Testing admin user authentication and database integrity after recent fixes
+URGENT: Redis Cache Clearing & Data Consistency Testing
+Testing cache clearing, phantom listings detection, and data consistency issues
 """
 
 import asyncio
@@ -16,6 +16,9 @@ from typing import Dict, List, Any
 BACKEND_URL = "https://basket-loader.preview.emergentagent.com/api"
 PERFORMANCE_TARGET_MS = 1000  # Browse endpoint should respond in under 1 second
 CACHE_IMPROVEMENT_TARGET = 20  # Cached responses should be at least 20% faster
+
+# Phantom listings to check for (from review request)
+PHANTOM_LISTINGS = ["BMW 320d", "Mercedes E-Class", "Audi A4"]
 
 # Admin User Configuration (from review request)
 ADMIN_EMAIL = "admin@cataloro.com"
