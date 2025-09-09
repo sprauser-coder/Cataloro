@@ -4012,6 +4012,16 @@ async def mark_message_read(user_id: str, message_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to mark message as read: {str(e)}")
 
+@app.get("/api/users")
+async def get_users():
+    """Get all users"""
+    try:
+        cursor = db.users.find({}).sort("created_at", -1)
+        users = await cursor.to_list(length=None)
+        return users
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching users: {str(e)}")
+
 @app.get("/api/users/search")
 async def search_users(q: str = ""):
     """Search users by username or full name for messaging"""
