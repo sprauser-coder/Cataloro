@@ -1816,8 +1816,16 @@ class CatalystDataTester:
                 "structure_valid": structure_test.get("validation_passed", False),
                 "performance_acceptable": performance_test.get("meets_acceptable_threshold", False),
                 "data_quality_good": consistency_test.get("acceptable_data_quality", False),
+                "enhanced_search_ready": enhanced_search_test.get("enhanced_search_ready", False),
+                "add_info_populated": enhanced_search_test.get("add_info_population_rate", 0) >= 50,
+                "meaningful_add_info": enhanced_search_test.get("meaningful_info_rate", 0) >= 30,
+                "searchable_fields_present": enhanced_search_test.get("searchable_fields_present", False),
                 "all_tests_passed": overall_success_rate == 100,
-                "createlistingpage_fix_verified": endpoint_test.get("count_matches_expected", False) and endpoint_test.get("structure_valid", False)
+                "createlistingpage_enhanced_search_verified": (
+                    endpoint_test.get("count_matches_expected", False) and 
+                    endpoint_test.get("structure_valid", False) and
+                    enhanced_search_test.get("enhanced_search_ready", False)
+                )
             }
             
             return all_results
