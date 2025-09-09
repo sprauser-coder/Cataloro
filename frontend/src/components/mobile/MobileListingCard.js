@@ -38,28 +38,8 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
 
   return (
     <div className="relative mb-4">
-      {/* Swipe Actions Background - Simplified to only favorite */}
-      <div className="absolute inset-0 rounded-xl overflow-hidden">
-        {/* Right swipe action (Favorite only) */}
-        <div className={`absolute left-0 top-0 bottom-0 bg-red-500 flex items-center justify-center px-6 transition-all duration-200 ${
-          swipeDirection === 'right' ? 'w-24' : 'w-0'
-        }`}>
-          <Heart className={`w-6 h-6 text-white ${isFavorited ? 'fill-current' : ''}`} />
-        </div>
-      </div>
-
-      {/* Main Card */}
-      <div
-        ref={cardRef}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-transform duration-200"
-        style={{
-          transform: `translateX(${dragOffset}px)`,
-          zIndex: isDragging ? 10 : 1
-        }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
+      {/* Main Card - Simplified without swipe functionality */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         <Link to={`/listing/${listing.id}`} className="block">
           {/* Image */}
           <div className="relative aspect-video bg-gray-100 dark:bg-gray-700">
