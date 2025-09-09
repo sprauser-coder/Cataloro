@@ -1546,6 +1546,8 @@ async def get_my_listings(user_id: str):
             listing.pop('_id', None)
         
         return listings
+    except HTTPException:
+        raise  # Re-raise HTTPException (like 403 for suspended users)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch user listings: {str(e)}")
 
