@@ -69,24 +69,8 @@ function MobileNav({ isOpen, onClose }) {
     }
   ];
 
-  if (isAdmin) {
-    navigationSections.push({
-      title: 'Admin',
-      items: [
-        { label: 'Admin Dashboard', path: '/admin', icon: Shield },
-        { label: 'Site Analytics', path: '/admin/analytics', icon: BarChart3 },
-        { label: 'User Management', path: '/admin/users', icon: User }
-      ]
-    });
-  }
-
-  navigationSections.push({
-    title: 'Settings',
-    items: [
-      { label: 'Profile', path: '/profile', icon: User },
-      { label: 'Notifications', path: '/notifications', icon: Bell }
-    ]
-  });
+  // Admin users can access admin panel through separate dedicated button/icon
+  // Removed admin section from mobile nav to keep it clean
 
   return (
     <>
