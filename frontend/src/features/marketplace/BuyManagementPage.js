@@ -836,7 +836,7 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket,
 }
 
 // Basket Card Component
-function BasketCard({ basket, totals, onEdit, onDelete, onExport, onUnassignFromBasket, onReassignToBasket, allBaskets }) {
+function BasketCard({ basket, totals, onEdit, onDelete, onExport, onUnassignFromBasket, onReassignToBasket, allBaskets, isExporting }) {
   const [showReassignMenu, setShowReassignMenu] = useState(null); // Track which item's menu is open
 
   return (
