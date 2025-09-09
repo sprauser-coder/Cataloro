@@ -1201,8 +1201,6 @@ function ModernBrowsePage() {
         </div>
       )}
       </div>
-        </>
-      )}
     </>
   );
 }
