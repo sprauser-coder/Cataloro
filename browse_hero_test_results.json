@@ -1,0 +1,179 @@
+{
+  "test_timestamp": "2025-09-09T13:41:04.265153",
+  "browse_basic": {
+    "test_name": "Browse Endpoint Basic",
+    "success": true,
+    "response_time_ms": 73.78888130187988,
+    "listings_count": 3,
+    "has_seller_info": true,
+    "has_bid_info": true,
+    "has_time_info": true,
+    "data_structure_complete": true
+  },
+  "browse_filters": {
+    "test_name": "Browse Endpoint Filters",
+    "total_filter_tests": 5,
+    "successful_tests": 5,
+    "success_rate": 100.0,
+    "all_filters_working": true,
+    "detailed_results": [
+      {
+        "filter_name": "All listings",
+        "success": true,
+        "response_time_ms": 15.948772430419922,
+        "listings_count": 3
+      },
+      {
+        "filter_name": "Private sellers",
+        "success": true,
+        "response_time_ms": 13.168573379516602,
+        "listings_count": 3
+      },
+      {
+        "filter_name": "Business sellers",
+        "success": true,
+        "response_time_ms": 11.987447738647461,
+        "listings_count": 0
+      },
+      {
+        "filter_name": "Price range",
+        "success": true,
+        "response_time_ms": 15.405654907226562,
+        "listings_count": 1
+      },
+      {
+        "filter_name": "Pagination",
+        "success": true,
+        "response_time_ms": 14.055728912353516,
+        "listings_count": 3
+      }
+    ]
+  },
+  "hero_endpoints": {
+    "test_name": "Hero Related Endpoints",
+    "total_endpoints_tested": 11,
+    "existing_endpoints": 0,
+    "hero_endpoints_found": [],
+    "no_hero_endpoints": true,
+    "detailed_results": [
+      {
+        "endpoint": "/hero",
+        "exists": false,
+        "status": 404
+      },
+      {
+        "endpoint": "/hero/data",
+        "exists": false,
+        "status": 404
+      },
+      {
+        "endpoint": "/hero/content",
+        "exists": false,
+        "status": 404
+      },
+      {
+        "endpoint": "/hero/banner",
+        "exists": false,
+        "status": 404
+      },
+      {
+        "endpoint": "/hero/featured",
+        "exists": false,
+        "status": 404
+      },
+      {
+        "endpoint": "/marketplace/hero",
+        "exists": false,
+        "status": 404
+      },
+      {
+        "endpoint": "/marketplace/featured",
+        "exists": false,
+        "status": 404
+      },
+      {
+        "endpoint": "/marketplace/banner",
+        "exists": false,
+        "status": 404
+      },
+      {
+        "endpoint": "/content/hero",
+        "exists": false,
+        "status": 404
+      },
+      {
+        "endpoint": "/admin/hero",
+        "exists": false,
+        "status": 404
+      },
+      {
+        "endpoint": "/admin/hero/settings",
+        "exists": false,
+        "status": 404
+      }
+    ]
+  },
+  "health_check": {
+    "test_name": "API Health Check",
+    "success": true,
+    "response_time_ms": 6.6776275634765625,
+    "status": "healthy",
+    "app_name": "Cataloro Marketplace",
+    "version": "1.0.0"
+  },
+  "marketplace_search": {
+    "test_name": "Marketplace Search",
+    "total_search_tests": 4,
+    "successful_tests": 4,
+    "success_rate": 100.0,
+    "all_searches_working": true,
+    "detailed_results": [
+      {
+        "search_name": "Empty search",
+        "success": true,
+        "response_time_ms": 10.915756225585938,
+        "results_count": 3
+      },
+      {
+        "search_name": "Text search",
+        "success": true,
+        "response_time_ms": 54.50105667114258,
+        "results_count": 3
+      },
+      {
+        "search_name": "Category search",
+        "success": true,
+        "response_time_ms": 21.884679794311523,
+        "results_count": 0
+      },
+      {
+        "search_name": "Price range search",
+        "success": true,
+        "response_time_ms": 11.432170867919922,
+        "results_count": 1
+      }
+    ]
+  },
+  "performance_consistency": {
+    "test_name": "Performance Consistency",
+    "success": true,
+    "total_calls": 5,
+    "avg_response_time_ms": 12.996339797973633,
+    "min_response_time_ms": 11.110544204711914,
+    "max_response_time_ms": 17.53973960876465,
+    "std_deviation_ms": 2.6491515866636144,
+    "performance_consistent": true,
+    "all_calls_under_1s": true
+  },
+  "summary": {
+    "overall_success_rate": 100.0,
+    "browse_endpoint_working": true,
+    "browse_filters_working": true,
+    "hero_endpoints_found": 0,
+    "api_health_good": true,
+    "search_functionality_working": true,
+    "performance_consistent": true,
+    "all_tests_passed": true,
+    "backend_stable_after_hero_changes": true
+  }
+}
