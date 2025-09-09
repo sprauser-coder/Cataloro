@@ -2266,8 +2266,8 @@ function HeroSelectionTab({ showToast }) {
             </div>
           )}
 
-          {/* Background Gradient (for gradient) */}
-          {(heroContent.background_type === 'gradient' || !heroContent.background_type) && (
+          {/* Background Gradient (for gradient and image-gradient) */}
+          {(heroContent.background_type === 'gradient' || heroContent.background_type === 'image-gradient' || !heroContent.background_type) && (
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
