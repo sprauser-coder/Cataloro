@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-09-09T10:26:44.221801",
+  "results": {
+    "success_rate": 100.0,
+    "tests_passed": 7,
+    "total_tests": 7,
+    "activate_suspend_working": true,
+    "state_persistence_working": true,
+    "error_handling_working": true,
+    "bulk_operations_working": true,
+    "expected_users_found": true
+  }
+}
