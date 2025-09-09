@@ -9,6 +9,7 @@ import { Mail, Lock, Eye, EyeOff, Store, ArrowRight, Shield, User, Sparkles } fr
 import { UI_CONFIG } from '../../config/directions';
 
 function SimpleLoginPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
