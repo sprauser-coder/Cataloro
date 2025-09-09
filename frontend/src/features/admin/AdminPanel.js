@@ -1765,7 +1765,7 @@ function HeroSelectionTab({ showToast }) {
     image_url: '',
     search_placeholder: 'Search for anything you need...',
     display_mode: 'boxed', // boxed, full_width
-    background_type: 'gradient', // gradient, solid, image
+    background_type: 'gradient', // gradient, solid, image, image-gradient
     background_color: '#3B82F6',
     background_gradient_from: '#3B82F6',
     background_gradient_to: '#EC4899',
