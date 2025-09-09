@@ -24,41 +24,41 @@ function MobileBottomNav() {
   const location = useLocation();
 
   useEffect(() => {
-    // Load user data
-    const userData = localStorage.getItem('cataloro_user');
-    if (userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
-    }
-
-    // Load REAL counts from backend and localStorage
-    const loadRealCounts = async () => {
-      try {
-        // Load real cart count
-        const savedCart = localStorage.getItem('cataloro_cart_count');
-        if (savedCart) {
-          setCartCount(parseInt(savedCart, 10) || 0);
-        }
-
-        // Load real unread messages count from backend
-        if (userData) {
+    const loadRealData = async () => {
+      // Load user data
+      const userData = localStorage.getItem('cataloro_user');
+      if (userData) {
+        try {
           const user = JSON.parse(userData);
-          // This should be replaced with actual API call to get unread messages
-          // For now, check localStorage for real message count
-          const savedMessages = localStorage.getItem('cataloro_unread_messages');
-          if (savedMessages) {
-            setUnreadMessages(parseInt(savedMessages, 10) || 0);
+          setUser(user);
+          
+          // Load real unread message count
+          try {
+            const messages = await liveService.getUserMessages(user.id);
+            const unreadCount = messages.filter(msg => !msg.is_read && msg.recipient_id === user.id).length;
+            setUnreadMessages(unreadCount);
+            localStorage.setItem('cataloro_unread_messages', unreadCount.toString());
+          } catch (error) {
+            console.error('Error loading messages:', error);
+            // Fallback to localStorage
+            const savedMessages = localStorage.getItem('cataloro_unread_messages');
+            if (savedMessages) {
+              setUnreadMessages(parseInt(savedMessages, 10) || 0);
+            }
           }
+        } catch (error) {
+          console.error('Error parsing user data:', error);
         }
-      } catch (error) {
-        console.error('Error loading real counts:', error);
+      }
+
+      // Load real cart count
+      const savedCart = localStorage.getItem('cataloro_cart_count');
+      if (savedCart) {
+        setCartCount(parseInt(savedCart, 10) || 0);
       }
     };
 
-    loadRealCounts();
+    loadRealData();
 
     // Listen for real badge updates from the app
     const handleBadgeUpdate = (event) => {
