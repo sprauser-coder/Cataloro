@@ -103,7 +103,7 @@ function MobileBottomNav() {
                 }`}
                 style={item.highlight ? { 
                   marginTop: '-8px',
-                  borderRadius: '50%',
+                  borderRadius: '12px', // Changed from 50% to 12px for square with rounded edges
                   width: '56px',
                   height: '56px',
                   minWidth: '56px'
