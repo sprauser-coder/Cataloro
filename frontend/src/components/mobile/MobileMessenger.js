@@ -134,7 +134,12 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
   };
 
   const handleSendMessage = async () => {
-    if (!message.trim() || !currentConversation) return;
+    if (!message.trim() || !currentConversation) {
+      alert('No message or conversation selected');
+      return;
+    }
+    
+    console.log('🔄 Sending message:', message, 'to conversation:', currentConversation.id);
     
     const messageText = message;
     const tempId = Date.now();
@@ -151,12 +156,16 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
     setMessage('');
     
     try {
+      console.log('📤 Calling liveService.sendMessage...');
+      
       // Send message via backend
-      await liveService.sendMessage({
+      const response = await liveService.sendMessage({
         recipient_id: currentConversation.id,
         content: messageText,
         sender_id: user.id
       });
+      
+      console.log('✅ Message sent successfully:', response);
       
       // Update message status
       setMessages(prev => prev.map(msg => 
@@ -167,11 +176,14 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
       loadConversations();
       
     } catch (error) {
-      console.error('Error sending message:', error);
-      showToast('Failed to send message', 'error');
+      console.error('❌ Error sending message:', error);
+      showToast('Failed to send message: ' + error.message, 'error');
       
       // Remove failed message
       setMessages(prev => prev.filter(msg => msg.id !== tempId));
+      
+      // Restore message text for user to retry
+      setMessage(messageText);
     }
   };
 
