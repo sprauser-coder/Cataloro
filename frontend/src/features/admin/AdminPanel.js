@@ -504,6 +504,12 @@ function AdminPanel() {
         />
       )}
       
+      {activeTab === 'ads' && (
+        <AdsManagement 
+          showToast={showToast}
+        />
+      )}
+      
       {activeTab === 'site-settings' && (
         <SettingsTab 
           settings={settings}
