@@ -180,7 +180,8 @@ function MobileNav({ isOpen, onClose }) {
           </p>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
