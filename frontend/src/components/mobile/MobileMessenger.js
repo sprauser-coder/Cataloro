@@ -25,64 +25,88 @@ import { useNotifications } from '../../context/NotificationContext';
 import { liveService } from '../../services/liveService';
 
 function MobileMessenger({ conversations = [], activeConversation = null, onBack }) {
+  const { user } = useAuth();
+  const { showToast } = useNotifications();
+  
   const [view, setView] = useState(activeConversation ? 'conversation' : 'list'); // 'list' or 'conversation'
   const [currentConversation, setCurrentConversation] = useState(activeConversation);
   const [message, setMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [realConversations, setRealConversations] = useState([]);
+  const [conversationMessages, setConversationMessages] = useState([]);
   const messagesEndRef = useRef(null);
 
-  // Mock conversations for demo
-  const [mockConversations] = useState([
-    {
-      id: 1,
-      user: {
-        name: 'Sarah Wilson',
-        avatar: null,
-        initials: 'SW',
-        online: true
-      },
-      lastMessage: {
-        text: 'Is the catalytic converter still available?',
-        timestamp: new Date(Date.now() - 10000),
-        unread: true,
-        sender: 'them'
-      },
-      unreadCount: 2
-    },
-    {
-      id: 2,
-      user: {
-        name: 'Mike Chen',
-        avatar: null,
-        initials: 'MC',
-        online: false
-      },
-      lastMessage: {
-        text: 'Thank you for the quick delivery!',
-        timestamp: new Date(Date.now() - 3600000),
-        unread: false,
-        sender: 'them'
-      },
-      unreadCount: 0
-    },
-    {
-      id: 3,
-      user: {
-        name: 'Emma Davis',
-        avatar: null,
-        initials: 'ED',
-        online: true
-      },
-      lastMessage: {
-        text: 'Can we schedule a pickup time?',
-        timestamp: new Date(Date.now() - 7200000),
-        unread: false,
-        sender: 'me'
-      },
-      unreadCount: 0
+  // Load real conversations from backend
+  useEffect(() => {
+    loadConversations();
+  }, [user]);
+
+  const loadConversations = async () => {
+    if (!user) return;
+    
+    try {
+      setLoading(true);
+      const userMessages = await liveService.getUserMessages(user.id);
+      
+      // Group messages into conversations (same logic as desktop version)
+      const conversationsMap = new Map();
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      
+      userMessages.forEach(msg => {
+        const messageDate = new Date(msg.created_at);
+        
+        // Skip messages older than 7 days
+        if (messageDate < sevenDaysAgo) {
+          return;
+        }
+        
+        const otherUserId = msg.sender_id === user.id ? msg.recipient_id : msg.sender_id;
+        const otherUserName = msg.sender_id === user.id ? msg.recipient_name : msg.sender_name;
+        
+        if (!conversationsMap.has(otherUserId)) {
+          conversationsMap.set(otherUserId, {
+            id: otherUserId,
+            name: otherUserName || 'Unknown User',
+            initials: (otherUserName || 'UN').substring(0, 2).toUpperCase(),
+            messages: [],
+            lastMessage: null,
+            unreadCount: 0,
+            online: Math.random() > 0.5 // Mock online status
+          });
+        }
+        
+        const conversation = conversationsMap.get(otherUserId);
+        conversation.messages.push(msg);
+        
+        // Update last message and unread count
+        if (!conversation.lastMessage || new Date(msg.created_at) > new Date(conversation.lastMessage.created_at)) {
+          conversation.lastMessage = msg;
+        }
+        
+        if (!msg.is_read && msg.sender_id !== user.id) {
+          conversation.unreadCount++;
+        }
+      });
+      
+      // Convert to array and sort by last message time
+      const conversationsList = Array.from(conversationsMap.values()).sort((a, b) => {
+        if (!a.lastMessage && !b.lastMessage) return 0;
+        if (!a.lastMessage) return 1;
+        if (!b.lastMessage) return -1;
+        return new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at);
+      });
+      
+      setRealConversations(conversationsList);
+      
+    } catch (error) {
+      console.error('Error loading conversations:', error);
+      showToast('Error loading conversations', 'error');
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
   // Mock messages for active conversation
   const [messages, setMessages] = useState([
