@@ -84,9 +84,8 @@ function MessagesPage() {
   const adsConfig = useAdsConfig();
   const navigate = useNavigate();
   
-  // Mobile detection
+  // ALL STATE DECLARATIONS FIRST
   const [isMobile, setIsMobile] = useState(false);
-  
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [conversationMessages, setConversationMessages] = useState([]);
@@ -102,22 +101,20 @@ function MessagesPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
   const [sending, setSending] = useState(false);
-  const [isFullPageChat, setIsFullPageChat] = useState(false); // New state for full page chat
-  const [highlightedMessageId, setHighlightedMessageId] = useState(null); // New state for message highlighting
-  
-  // Track read messages in current session (reset when leaving messages area)
+  const [isFullPageChat, setIsFullPageChat] = useState(false);
+  const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const [sessionReadMessages, setSessionReadMessages] = useState(new Set());
-  
-  // User search for compose
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [userSearchResults, setUserSearchResults] = useState([]);
   const [showUserSearch, setShowUserSearch] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   
+  // ALL REFS
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
-  const messageRefs = useRef({}); // New ref for individual messages
+  const messageRefs = useRef({});
 
+  // ALL EFFECTS BEFORE CONDITIONAL RETURN
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
@@ -127,13 +124,6 @@ function MessagesPage() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
-  // If mobile, render mobile messenger
-  if (isMobile) {
-    return (
-      <MobileMessenger onBack={() => navigate('/browse')} />
-    );
-  }
 
   // Reset read status when component unmounts (leaving messages area)
   useEffect(() => {
@@ -146,6 +136,17 @@ function MessagesPage() {
       window.dispatchEvent(new CustomEvent('messagesSessionReset'));
     };
   }, []); // Empty dependency array to prevent infinite loop
+
+  useEffect(() => {
+    loadConversations();
+  }, []);
+
+  // CONDITIONAL RETURN AFTER ALL HOOKS
+  if (isMobile) {
+    return (
+      <MobileMessenger onBack={() => navigate('/browse')} />
+    );
+  }
 
   // Helper function to get user badge info (mocked for demo)
   const getUserBadgeInfo = (userId, userName) => {
