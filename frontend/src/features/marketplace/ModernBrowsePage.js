@@ -299,6 +299,45 @@ function ModernBrowsePage() {
 
   // Removed categories array since we're using type filter instead
 
+  // Generate dynamic hero background style based on heroContent
+  const getHeroBackgroundStyle = () => {
+    const baseStyle = {
+      height: `${heroContent.height || 400}px`,
+      minHeight: '300px',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      marginLeft: 'calc(-50vw + 50%)',
+      marginRight: 'calc(-50vw + 50%)',
+      marginTop: '-2rem',
+      marginBottom: '2rem'
+    };
+
+    switch (heroContent.background_type) {
+      case 'gradient':
+        return {
+          ...baseStyle,
+          background: `linear-gradient(to right, ${heroContent.background_gradient_from || '#3f6ec7'}, ${heroContent.background_gradient_to || '#ec4899'})`
+        };
+      case 'solid':
+        return {
+          ...baseStyle,
+          background: heroContent.background_color || '#3B82F6'
+        };
+      case 'image':
+        return {
+          ...baseStyle,
+          background: heroContent.background_image 
+            ? `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${heroContent.background_image})`
+            : 'linear-gradient(to right, #3f6ec7, #a855f7, #ec4899)'
+        };
+      default:
+        return {
+          ...baseStyle,
+          background: 'linear-gradient(to right, #3f6ec7, #a855f7, #ec4899)'
+        };
+    }
+  };
+
   // Load hero content from localStorage on mount and listen for updates
   useEffect(() => {
     const loadHeroContent = () => {
