@@ -47,10 +47,13 @@ import './styles/mobile.css';
 function App() {
   const [isMobile, setIsMobile] = useState(false);
 
-  // Mobile detection
+  // Mobile detection with enhanced logic
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
+      const width = window.innerWidth;
+      const isMobileViewport = width < 1024;
+      console.log(`🔍 Mobile detection: width=${width}, isMobile=${isMobileViewport}`);
+      setIsMobile(isMobileViewport);
     };
 
     checkMobile();
