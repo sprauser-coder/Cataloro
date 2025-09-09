@@ -47,11 +47,9 @@ function MobileListingCard({ listing, onFavorite, onContact, onQuickView }) {
   const handleTouchEnd = () => {
     setIsDragging(false);
     
-    // Execute action based on swipe
+    // Execute action based on swipe - only favorite now
     if (swipeDirection === 'right' && dragOffset > 100) {
       handleFavorite();
-    } else if (swipeDirection === 'left' && dragOffset < -100) {
-      handleContact();
     }
     
     // Reset swipe state
