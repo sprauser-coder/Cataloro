@@ -362,7 +362,7 @@ class AdminAuthenticationTester:
                 
                 # Test state persistence by listing users again
                 print("    Testing state persistence...")
-                users_check_result = await self.make_request("/users", headers=headers)
+                users_check_result = await self.make_request("/admin/users", headers=headers)
                 
                 if users_check_result["success"]:
                     updated_users = users_check_result["data"]
