@@ -534,6 +534,7 @@ function BuyManagementPage() {
                 onReassignToBasket={reassignItemToBasket}
                 calculateTotals={calculateBasketTotals}
                 loading={loading}
+                exportingBaskets={exportingBaskets}
               />
             )}
           </div>
