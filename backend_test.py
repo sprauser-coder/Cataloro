@@ -874,69 +874,142 @@ class BrowseEndpointTester:
 
 async def main():
     """Main test execution"""
-    tester = BrowseEndpointTester()
-    results = await tester.run_comprehensive_test()
+    print("🔧 Cataloro Marketplace Testing Suite")
+    print("=" * 50)
     
-    # Print summary
-    print("\n" + "=" * 60)
-    print("📊 PERFORMANCE TEST SUMMARY")
+    # Run Admin Authentication & Database Consistency Tests
+    print("\n🔐 ADMIN AUTHENTICATION & DATABASE CONSISTENCY TESTS")
     print("=" * 60)
     
-    summary = results["summary"]
-    basic = results["basic_performance"]
-    cache = results["cache_performance"]
-    filtering = results["filtering_performance"]
-    concurrent = results["concurrent_performance"]
-    pagination = results["pagination_performance"]
+    admin_tester = AdminAuthenticationTester()
+    admin_results = await admin_tester.run_comprehensive_admin_test()
     
-    print(f"🎯 Performance Target: {results['performance_target_ms']}ms")
-    print(f"📈 Cache Improvement Target: {results['cache_improvement_target_percent']}%")
+    # Print Admin Test Summary
+    print("\n" + "=" * 60)
+    print("📊 ADMIN AUTHENTICATION & DATABASE CONSISTENCY SUMMARY")
+    print("=" * 60)
+    
+    admin_summary = admin_results["summary"]
+    admin_auth = admin_results["admin_authentication"]
+    db_consistency = admin_results["database_consistency"]
+    user_mgmt = admin_results["user_management_endpoints"]
+    browse_perf = admin_results["browse_endpoint_performance"]
+    admin_func = admin_results["admin_functionality"]
+    
+    print(f"🎯 Overall Success Rate: {admin_summary.get('overall_success_rate', 0):.0f}%")
     print()
     
-    # Basic Performance
-    status = "✅" if basic.get("meets_performance_target") else "❌"
-    print(f"{status} Basic Browse Performance: {basic.get('avg_response_time_ms', 0):.0f}ms avg")
+    # Admin Authentication
+    auth_status = "✅" if admin_auth.get("all_admin_properties_correct") else "❌"
+    print(f"{auth_status} Admin Authentication: {admin_auth.get('login_successful', False)}")
+    if admin_auth.get("login_successful"):
+        print(f"   📧 Email: {admin_auth.get('admin_email_correct', False)}")
+        print(f"   👤 Username: {admin_auth.get('admin_username_correct', False)}")
+        print(f"   🔑 Role: {admin_auth.get('admin_role_correct', False)}")
     
-    # Cache Performance
-    cache_status = "✅" if cache.get("cache_working") else "❌"
-    improvement = cache.get("cache_improvement_percent", 0)
-    print(f"{cache_status} Cache Performance: {improvement:.1f}% improvement")
+    # Database Consistency
+    db_status = "✅" if db_consistency.get("all_users_consistent") else "❌"
+    db_score = db_consistency.get("database_consistency_score", 0)
+    print(f"{db_status} Database Consistency: {db_score:.0f}%")
+    print(f"   👥 Users Found: {db_consistency.get('users_found_in_database', 0)}/{db_consistency.get('total_expected_users', 0)}")
     
-    # Data Integrity
-    integrity_status = "✅" if summary.get("data_integrity_excellent") else "❌"
-    integrity = summary.get("average_data_integrity_score", 0)
-    print(f"{integrity_status} Data Integrity: {integrity:.1f}%")
+    # User Management Endpoints
+    mgmt_status = "✅" if user_mgmt.get("all_endpoints_working") else "❌"
+    mgmt_success = user_mgmt.get("success_rate", 0)
+    print(f"{mgmt_status} User Management Endpoints: {mgmt_success:.0f}% success rate")
     
-    # Filtering
-    filter_status = "✅" if filtering.get("all_filters_under_target") else "❌"
-    filter_success = filtering.get("success_rate", 0)
-    print(f"{filter_status} Filtering Options: {filter_success:.0f}% success rate")
+    # Browse Endpoint Performance
+    browse_status = "✅" if browse_perf.get("endpoint_working") else "❌"
+    browse_time = browse_perf.get("response_time_ms", 0)
+    print(f"{browse_status} Browse Endpoint: {browse_time:.0f}ms response time")
     
-    # Concurrent Performance
-    concurrent_status = "✅" if concurrent.get("all_under_target") else "❌"
-    throughput = concurrent.get("throughput_requests_per_second", 0)
-    print(f"{concurrent_status} Concurrent Performance: {throughput:.1f} req/sec")
-    
-    # Pagination
-    pagination_status = "✅" if pagination.get("all_pages_under_target") else "❌"
-    pagination_success = pagination.get("successful_pages", 0)
-    print(f"{pagination_status} Pagination: {pagination_success}/5 pages successful")
+    # Admin Functionality
+    func_status = "✅" if admin_func.get("all_admin_features_working") else "❌"
+    func_success = admin_func.get("admin_success_rate", 0)
+    print(f"{func_status} Admin Functionality: {func_success:.0f}% features working")
     
     print()
-    print("🏆 OVERALL RESULTS:")
-    overall_status = "✅ EXCELLENT" if summary.get("performance_target_met") and summary.get("cache_target_met") else "⚠️ NEEDS IMPROVEMENT"
+    print("🏆 OVERALL ADMIN TEST RESULTS:")
+    overall_status = "✅ ALL TESTS PASSED" if admin_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
     print(f"   {overall_status}")
-    print(f"   Performance Success Rate: {summary.get('overall_performance_success_rate', 0):.0f}%")
-    print(f"   Cache Working: {'Yes' if summary.get('cache_functionality_working') else 'No'}")
-    print(f"   Data Integrity: {summary.get('average_data_integrity_score', 0):.0f}%")
+    print(f"   Success Rate: {admin_summary.get('overall_success_rate', 0):.0f}%")
     
     # Save detailed results
-    with open("/app/browse_performance_test_results.json", "w") as f:
-        json.dump(results, f, indent=2, default=str)
+    with open("/app/admin_authentication_test_results.json", "w") as f:
+        json.dump(admin_results, f, indent=2, default=str)
     
-    print(f"\n📄 Detailed results saved to: /app/browse_performance_test_results.json")
+    print(f"\n📄 Admin test results saved to: /app/admin_authentication_test_results.json")
     
-    return results
+    # Run Browse Performance Tests (if requested)
+    run_browse_tests = input("\n🤔 Run additional browse performance tests? (y/N): ").lower().strip() == 'y'
+    
+    if run_browse_tests:
+        print("\n🚀 BROWSE ENDPOINT PERFORMANCE TESTS")
+        print("=" * 50)
+        
+        browse_tester = BrowseEndpointTester()
+        browse_results = await browse_tester.run_comprehensive_test()
+        
+        # Print Browse Test Summary
+        print("\n" + "=" * 60)
+        print("📊 BROWSE PERFORMANCE TEST SUMMARY")
+        print("=" * 60)
+        
+        browse_summary = browse_results["summary"]
+        basic = browse_results["basic_performance"]
+        cache = browse_results["cache_performance"]
+        filtering = browse_results["filtering_performance"]
+        concurrent = browse_results["concurrent_performance"]
+        pagination = browse_results["pagination_performance"]
+        
+        print(f"🎯 Performance Target: {browse_results['performance_target_ms']}ms")
+        print(f"📈 Cache Improvement Target: {browse_results['cache_improvement_target_percent']}%")
+        print()
+        
+        # Basic Performance
+        status = "✅" if basic.get("meets_performance_target") else "❌"
+        print(f"{status} Basic Browse Performance: {basic.get('avg_response_time_ms', 0):.0f}ms avg")
+        
+        # Cache Performance
+        cache_status = "✅" if cache.get("cache_working") else "❌"
+        improvement = cache.get("cache_improvement_percent", 0)
+        print(f"{cache_status} Cache Performance: {improvement:.1f}% improvement")
+        
+        # Data Integrity
+        integrity_status = "✅" if browse_summary.get("data_integrity_excellent") else "❌"
+        integrity = browse_summary.get("average_data_integrity_score", 0)
+        print(f"{integrity_status} Data Integrity: {integrity:.1f}%")
+        
+        # Filtering
+        filter_status = "✅" if filtering.get("all_filters_under_target") else "❌"
+        filter_success = filtering.get("success_rate", 0)
+        print(f"{filter_status} Filtering Options: {filter_success:.0f}% success rate")
+        
+        # Concurrent Performance
+        concurrent_status = "✅" if concurrent.get("all_under_target") else "❌"
+        throughput = concurrent.get("throughput_requests_per_second", 0)
+        print(f"{concurrent_status} Concurrent Performance: {throughput:.1f} req/sec")
+        
+        # Pagination
+        pagination_status = "✅" if pagination.get("all_pages_under_target") else "❌"
+        pagination_success = pagination.get("successful_pages", 0)
+        print(f"{pagination_status} Pagination: {pagination_success}/5 pages successful")
+        
+        print()
+        print("🏆 BROWSE PERFORMANCE RESULTS:")
+        browse_overall_status = "✅ EXCELLENT" if browse_summary.get("performance_target_met") and browse_summary.get("cache_target_met") else "⚠️ NEEDS IMPROVEMENT"
+        print(f"   {browse_overall_status}")
+        print(f"   Performance Success Rate: {browse_summary.get('overall_performance_success_rate', 0):.0f}%")
+        print(f"   Cache Working: {'Yes' if browse_summary.get('cache_functionality_working') else 'No'}")
+        print(f"   Data Integrity: {browse_summary.get('average_data_integrity_score', 0):.0f}%")
+        
+        # Save detailed results
+        with open("/app/browse_performance_test_results.json", "w") as f:
+            json.dump(browse_results, f, indent=2, default=str)
+        
+        print(f"\n📄 Browse test results saved to: /app/browse_performance_test_results.json")
+    
+    return admin_results
 
 if __name__ == "__main__":
     asyncio.run(main())
