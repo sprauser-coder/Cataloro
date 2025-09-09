@@ -291,6 +291,8 @@ function ModernBrowsePage() {
   };
 
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Hero content state
   const [heroContent, setHeroContent] = useState({
     title: 'Discover Amazing Products',
     description: 'From electronics to fashion, find everything you need in one place',
