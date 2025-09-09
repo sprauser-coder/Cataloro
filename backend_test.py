@@ -1369,7 +1369,7 @@ class CatalystDataTester:
             
             # Verify response structure for first few entries
             structure_valid = True
-            required_fields = ["name", "cat_id", "weight", "pt_g", "pd_g", "rh_g", "total_price"]
+            required_fields = ["name", "cat_id", "weight", "pt_g", "pd_g", "rh_g", "total_price", "add_info"]
             missing_fields = []
             
             if data:  # Check first entry structure
