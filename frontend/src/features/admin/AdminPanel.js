@@ -51,8 +51,7 @@ import {
   Target,
   ExternalLink,
   Play,
-  Pause
-  ToggleRight,
+  Pause,
   Calculator,
   Sliders,
   Layout,
