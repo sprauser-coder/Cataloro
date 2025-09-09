@@ -1,9 +1,9 @@
 {
-  "test_timestamp": "2025-09-09T10:23:51.749798",
+  "test_timestamp": "2025-09-09T10:24:17.894425",
   "admin_authentication": {
     "test_name": "Admin User Authentication",
     "login_successful": true,
-    "response_time_ms": 62.558650970458984,
+    "response_time_ms": 68.85814666748047,
     "admin_email_correct": true,
     "admin_username_correct": true,
     "admin_role_correct": true,
@@ -89,25 +89,25 @@
     "total_endpoints_tested": 3,
     "successful_endpoints": 3,
     "success_rate": 100.0,
-    "avg_response_time_ms": 18.754005432128906,
+    "avg_response_time_ms": 14.749924341837565,
     "all_endpoints_working": true,
     "detailed_endpoint_tests": [
       {
         "endpoint": "/admin/dashboard",
         "success": true,
-        "response_time_ms": 24.860620498657227,
+        "response_time_ms": 16.790390014648438,
         "has_data": true
       },
       {
         "endpoint": "/admin/performance",
         "success": true,
-        "response_time_ms": 21.94952964782715,
+        "response_time_ms": 19.103527069091797,
         "has_data": true
       },
       {
         "endpoint": "/health",
         "success": true,
-        "response_time_ms": 9.451866149902344,
+        "response_time_ms": 8.355855941772461,
         "has_data": true
       }
     ]
@@ -127,7 +127,7 @@
         "test": "List Users",
         "success": false,
         "error": null,
-        "response_time_ms": 13.904809951782227
+        "response_time_ms": 13.521909713745117
       },
       {
         "test": "Error Handling - Non-existent User",
@@ -140,7 +140,7 @@
       {
         "test": "Bulk Operations",
         "success": false,
-        "response_time_ms": 14.793634414672852,
+        "response_time_ms": 11.341571807861328,
         "bulk_endpoint_available": true,
         "error": null
       }
@@ -171,7 +171,7 @@
   "browse_endpoint_performance": {
     "test_name": "Browse Endpoint Performance",
     "endpoint_working": true,
-    "response_time_ms": 13.684511184692383,
+    "response_time_ms": 11.900186538696289,
     "listings_count": 3,
     "data_integrity_score": 100.0,
     "meets_performance_target": true,
@@ -187,13 +187,13 @@
       {
         "feature": "Admin Dashboard",
         "success": true,
-        "response_time_ms": 17.52161979675293,
+        "response_time_ms": 18.738508224487305,
         "has_kpis": false
       },
       {
         "feature": "Performance Metrics",
         "success": true,
-        "response_time_ms": 20.822763442993164,
+        "response_time_ms": 19.500732421875,
         "has_metrics": true
       }
     ]
