@@ -282,12 +282,13 @@ function CreateListingPage() {
     setFormData(prev => ({...prev, title: value}));
 
     if (value.length > 0) {
-      // Filter unified calculations based on title input, name, cat_id
+      // Filter unified calculations based on title input, name, cat_id, and additional info
       const filtered = unifiedCalculations.filter(catalyst => {
         const searchTerm = value.toLowerCase();
         return (
           catalyst.name?.toLowerCase().includes(searchTerm) ||
-          catalyst.cat_id?.toLowerCase().includes(searchTerm)
+          catalyst.cat_id?.toLowerCase().includes(searchTerm) ||
+          catalyst.add_info?.toLowerCase().includes(searchTerm)
         );
       }).slice(0, 8); // Limit to 8 suggestions for better UX
 
