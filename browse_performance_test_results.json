@@ -1,0 +1,163 @@
+{
+  "test_timestamp": "2025-09-09T08:33:29.224270",
+  "performance_target_ms": 1000,
+  "cache_improvement_target_percent": 20,
+  "basic_performance": {
+    "test_name": "Basic Browse Performance",
+    "avg_response_time_ms": 1033.4715843200684,
+    "min_response_time_ms": 766.9785022735596,
+    "max_response_time_ms": 1809.1120719909668,
+    "meets_performance_target": false,
+    "target_ms": 1000,
+    "data_integrity_score": 100.0,
+    "total_calls": 5,
+    "success_rate": 100.0
+  },
+  "cache_performance": {
+    "test_name": "Cache Performance",
+    "cold_cache_ms": 881.1845779418945,
+    "warm_cache_ms": 762.9244327545166,
+    "warm_cache_2_ms": 802.8624057769775,
+    "cache_improvement_percent": 11.154434738941697,
+    "meets_cache_target": false,
+    "cache_target_percent": 20,
+    "data_consistent": true,
+    "cache_working": true
+  },
+  "filtering_performance": {
+    "test_name": "Filtering Options",
+    "total_filter_tests": 8,
+    "successful_tests": 8,
+    "success_rate": 100.0,
+    "avg_response_time_ms": 485.30495166778564,
+    "avg_data_integrity": 100.0,
+    "all_filters_under_target": true,
+    "detailed_results": [
+      {
+        "filter_name": "No filters",
+        "response_time_ms": 807.6672554016113,
+        "listing_count": 8,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
+        "filter_name": "Private sellers",
+        "response_time_ms": 874.0215301513672,
+        "listing_count": 8,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
+        "filter_name": "Business sellers",
+        "response_time_ms": 46.9508171081543,
+        "listing_count": 0,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
+        "filter_name": "Price range 100-500",
+        "response_time_ms": 843.3976173400879,
+        "listing_count": 7,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
+        "filter_name": "Price range 0-100",
+        "response_time_ms": 107.4378490447998,
+        "listing_count": 1,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
+        "filter_name": "Page 2",
+        "response_time_ms": 322.7198123931885,
+        "listing_count": 3,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
+        "filter_name": "Large limit",
+        "response_time_ms": 814.0616416931152,
+        "listing_count": 8,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      },
+      {
+        "filter_name": "Combined filters",
+        "response_time_ms": 66.18309020996094,
+        "listing_count": 0,
+        "data_integrity_score": 100.0,
+        "filter_validation_passed": true,
+        "success": true
+      }
+    ]
+  },
+  "concurrent_performance": {
+    "test_name": "Concurrent Performance",
+    "concurrent_requests": 5,
+    "successful_requests": 5,
+    "total_time_ms": 1041.4047241210938,
+    "avg_individual_time_ms": 563.9949321746826,
+    "max_individual_time_ms": 771.9881534576416,
+    "min_individual_time_ms": 489.06683921813965,
+    "throughput_requests_per_second": 4.80120733485227,
+    "all_under_target": true,
+    "concurrent_performance_acceptable": true
+  },
+  "pagination_performance": {
+    "test_name": "Pagination Performance",
+    "pages_tested": 5,
+    "successful_pages": 5,
+    "avg_response_time_ms": 166.11003875732422,
+    "max_response_time_ms": 787.5490188598633,
+    "all_pages_under_target": true,
+    "pagination_consistent": false,
+    "detailed_results": [
+      {
+        "page": 1,
+        "response_time_ms": 787.5490188598633,
+        "listing_count": 8,
+        "success": true
+      },
+      {
+        "page": 2,
+        "response_time_ms": 8.602380752563477,
+        "listing_count": 0,
+        "success": true
+      },
+      {
+        "page": 3,
+        "response_time_ms": 14.854907989501953,
+        "listing_count": 0,
+        "success": true
+      },
+      {
+        "page": 4,
+        "response_time_ms": 9.006023406982422,
+        "listing_count": 0,
+        "success": true
+      },
+      {
+        "page": 5,
+        "response_time_ms": 10.537862777709961,
+        "listing_count": 0,
+        "success": true
+      }
+    ]
+  },
+  "summary": {
+    "overall_performance_success_rate": 75.0,
+    "cache_functionality_working": true,
+    "average_data_integrity_score": 100.0,
+    "performance_target_met": true,
+    "cache_target_met": false,
+    "data_integrity_excellent": true
+  }
+}
