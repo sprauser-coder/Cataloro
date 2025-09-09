@@ -14,6 +14,7 @@ import {
   Search,
   MessageCircle
 } from 'lucide-react';
+import { liveService } from '../../services/liveService';
 
 function MobileBottomNav() {
   const [user, setUser] = useState(null);
