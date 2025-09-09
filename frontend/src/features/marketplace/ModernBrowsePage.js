@@ -330,6 +330,13 @@ function ModernBrowsePage() {
             ? `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${heroContent.background_image})`
             : 'linear-gradient(to right, #3f6ec7, #a855f7, #ec4899)'
         };
+      case 'image-gradient':
+        return {
+          ...baseStyle,
+          background: heroContent.background_image 
+            ? `linear-gradient(to right, ${heroContent.background_gradient_from || 'rgba(63, 110, 199, 0.8)'}, ${heroContent.background_gradient_to || 'rgba(236, 72, 153, 0.8)'}), url(${heroContent.background_image})`
+            : `linear-gradient(to right, ${heroContent.background_gradient_from || '#3f6ec7'}, ${heroContent.background_gradient_to || '#ec4899'})`
+        };
       default:
         return {
           ...baseStyle,
