@@ -288,6 +288,33 @@ def format_time_remaining(total_seconds):
     else:
         return f"{seconds}s"
 
+async def check_user_active_status(user_id: str) -> dict:
+    """
+    Utility function to check if a user exists and is active.
+    Returns the user document if active, raises HTTPException if suspended or not found.
+    """
+    # Try to find user by id field first, then by _id
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        # Try with ObjectId for backward compatibility
+        try:
+            from bson import ObjectId
+            user = await db.users.find_one({"_id": ObjectId(user_id)})
+        except:
+            pass
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if user is active (not suspended)
+    if not user.get("is_active", True):
+        raise HTTPException(
+            status_code=403, 
+            detail="Your account has been suspended. Please contact support for assistance."
+        )
+    
+    return user
+
 async def trigger_system_notifications(user_id: str, event_type: str):
     """Trigger system notifications based on user events"""
     try:
