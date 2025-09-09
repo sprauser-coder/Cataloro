@@ -1,0 +1,212 @@
+{
+  "test_timestamp": "2025-09-09T17:21:14.762707",
+  "mobile_performance_target_ms": 800,
+  "mobile_timeout_ms": 5000,
+  "authentication_apis": {
+    "test_name": "Mobile Authentication APIs",
+    "total_tests": 3,
+    "successful_tests": 3,
+    "success_rate": 100.0,
+    "mobile_performance_tests": 3,
+    "mobile_performance_rate": 100.0,
+    "admin_login_working": true,
+    "demo_login_working": true,
+    "profile_api_working": true,
+    "detailed_results": [
+      {
+        "test": "Admin Login",
+        "success": true,
+        "response_time_ms": 80.98077774047852,
+        "mobile_performance_ok": true,
+        "has_admin_role": true,
+        "token_received": true
+      },
+      {
+        "test": "Demo User Login",
+        "success": true,
+        "response_time_ms": 11.474609375,
+        "mobile_performance_ok": true,
+        "user_id": "68bff520d28a1097d72b925c",
+        "token_received": true
+      },
+      {
+        "test": "Profile API",
+        "success": true,
+        "response_time_ms": 10.57744026184082,
+        "mobile_performance_ok": true,
+        "has_user_data": true,
+        "has_email": true
+      }
+    ]
+  },
+  "browse_marketplace_apis": {
+    "test_name": "Mobile Browse/Marketplace APIs",
+    "total_tests": 3,
+    "successful_tests": 3,
+    "success_rate": 100.0,
+    "mobile_performance_tests": 3,
+    "mobile_performance_rate": 100.0,
+    "browse_api_working": true,
+    "filtered_browse_working": true,
+    "search_api_working": true,
+    "detailed_results": [
+      {
+        "test": "Basic Browse API",
+        "success": true,
+        "response_time_ms": 497.90048599243164,
+        "mobile_performance_ok": true,
+        "listings_count": 6,
+        "mobile_data_complete": true,
+        "has_seller_info": true,
+        "has_bid_info": true
+      },
+      {
+        "test": "Mobile Filtered Browse",
+        "success": true,
+        "response_time_ms": 483.02364349365234,
+        "mobile_performance_ok": true,
+        "listings_count": 6,
+        "respects_limit": true,
+        "mobile_optimized": true
+      },
+      {
+        "test": "Mobile Search API",
+        "success": true,
+        "response_time_ms": 417.1576499938965,
+        "mobile_performance_ok": true,
+        "search_results_count": 5,
+        "has_search_results": true
+      }
+    ]
+  },
+  "admin_apis": {
+    "test_name": "Mobile Admin APIs",
+    "total_tests": 3,
+    "successful_tests": 3,
+    "success_rate": 100.0,
+    "mobile_performance_tests": 3,
+    "mobile_performance_rate": 100.0,
+    "dashboard_working": true,
+    "user_management_working": true,
+    "performance_metrics_working": true,
+    "detailed_results": [
+      {
+        "test": "Admin Dashboard",
+        "success": true,
+        "response_time_ms": 119.32086944580078,
+        "mobile_performance_ok": true,
+        "has_kpis": false,
+        "mobile_friendly": false
+      },
+      {
+        "test": "User Management",
+        "success": true,
+        "response_time_ms": 7.536411285400391,
+        "mobile_performance_ok": true,
+        "users_count": 4,
+        "has_user_data": true
+      },
+      {
+        "test": "Performance Metrics",
+        "success": true,
+        "response_time_ms": 19.432544708251953,
+        "mobile_performance_ok": true,
+        "has_metrics": true
+      }
+    ]
+  },
+  "user_management_apis": {
+    "test_name": "Mobile User Management APIs",
+    "total_tests": 4,
+    "successful_tests": 4,
+    "success_rate": 100.0,
+    "mobile_performance_tests": 4,
+    "mobile_performance_rate": 100.0,
+    "profile_management_working": true,
+    "user_listings_working": true,
+    "user_deals_working": true,
+    "health_check_working": true,
+    "detailed_results": [
+      {
+        "test": "User Profile Management",
+        "success": true,
+        "response_time_ms": 26.319026947021484,
+        "mobile_performance_ok": true,
+        "has_profile_data": true,
+        "has_mobile_fields": true
+      },
+      {
+        "test": "User Listings",
+        "success": true,
+        "response_time_ms": 54.56948280334473,
+        "mobile_performance_ok": true,
+        "listings_count": 0,
+        "mobile_optimized": true
+      },
+      {
+        "test": "User Deals",
+        "success": true,
+        "response_time_ms": 16.004085540771484,
+        "mobile_performance_ok": true,
+        "deals_count": 0,
+        "mobile_optimized": true
+      },
+      {
+        "test": "Health Check",
+        "success": true,
+        "response_time_ms": 5.274057388305664,
+        "mobile_performance_ok": true,
+        "status_healthy": true
+      }
+    ]
+  },
+  "mobile_performance_analysis": {
+    "test_name": "Mobile Performance Analysis",
+    "total_endpoints_tested": 3,
+    "mobile_ready_endpoints": 3,
+    "mobile_performance_rate": 100.0,
+    "mobile_target_ms": 800,
+    "all_endpoints_mobile_ready": true,
+    "performance_acceptable": true,
+    "detailed_results": [
+      {
+        "endpoint": "Browse API",
+        "avg_response_time_ms": 502.69246101379395,
+        "min_response_time_ms": 464.5814895629883,
+        "max_response_time_ms": 563.2867813110352,
+        "success_rate": 100.0,
+        "mobile_performance_ok": true,
+        "mobile_target_ms": 800
+      },
+      {
+        "endpoint": "Health Check",
+        "avg_response_time_ms": 5.476474761962891,
+        "min_response_time_ms": 4.856348037719727,
+        "max_response_time_ms": 5.964756011962891,
+        "success_rate": 100.0,
+        "mobile_performance_ok": true,
+        "mobile_target_ms": 800
+      },
+      {
+        "endpoint": "Search API",
+        "avg_response_time_ms": 21.310806274414062,
+        "min_response_time_ms": 7.43556022644043,
+        "max_response_time_ms": 48.79593849182129,
+        "success_rate": 100.0,
+        "mobile_performance_ok": true,
+        "mobile_target_ms": 800
+      }
+    ]
+  },
+  "summary": {
+    "overall_success_rate": 100.0,
+    "overall_mobile_performance_rate": 100.0,
+    "authentication_working": true,
+    "browse_marketplace_working": true,
+    "admin_apis_working": true,
+    "user_management_working": true,
+    "mobile_performance_acceptable": true,
+    "all_mobile_apis_working": true,
+    "mobile_ready": true
+  }
+}
