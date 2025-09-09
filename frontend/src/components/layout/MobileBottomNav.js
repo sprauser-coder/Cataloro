@@ -23,6 +23,7 @@ function MobileBottomNav() {
   const location = useLocation();
 
   useEffect(() => {
+    // Load user data
     const userData = localStorage.getItem('cataloro_user');
     if (userData) {
       try {
@@ -40,6 +41,38 @@ function MobileBottomNav() {
     if (savedCart) setCartCount(parseInt(savedCart, 10) || 0);
     if (savedFavorites) setFavoritesCount(parseInt(savedFavorites, 10) || 0);
     if (savedMessages) setUnreadMessages(parseInt(savedMessages, 10) || 0);
+
+    // Listen for badge updates
+    const handleBadgeUpdate = (event) => {
+      const { type, count } = event.detail;
+      switch (type) {
+        case 'messages':
+          setUnreadMessages(count);
+          localStorage.setItem('cataloro_unread_messages', count.toString());
+          break;
+        case 'cart':
+          setCartCount(count);
+          localStorage.setItem('cataloro_cart_count', count.toString());
+          break;
+        case 'favorites':
+          setFavoritesCount(count);
+          localStorage.setItem('cataloro_favorites_count', count.toString());
+          break;
+      }
+    };
+
+    window.addEventListener('updateMobileBadge', handleBadgeUpdate);
+    
+    // For demo purposes, set some example badges
+    setTimeout(() => {
+      setUnreadMessages(2); // Demo: 2 unread messages
+      setCartCount(1); // Demo: 1 item in cart
+      setFavoritesCount(3); // Demo: 3 favorites
+    }, 2000);
+
+    return () => {
+      window.removeEventListener('updateMobileBadge', handleBadgeUpdate);
+    };
   }, []);
 
   const isActive = (path) => {
