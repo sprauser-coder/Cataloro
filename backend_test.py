@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Cataloro Marketplace Browse Endpoint Performance Testing
-Testing performance and functionality after recent optimizations
+Cataloro Marketplace Admin Authentication & Database Consistency Testing
+Testing admin user authentication and database integrity after recent fixes
 """
 
 import asyncio
@@ -16,6 +16,12 @@ from typing import Dict, List, Any
 BACKEND_URL = "https://cataloro-boost.preview.emergentagent.com/api"
 PERFORMANCE_TARGET_MS = 1000  # Browse endpoint should respond in under 1 second
 CACHE_IMPROVEMENT_TARGET = 20  # Cached responses should be at least 20% faster
+
+# Admin User Configuration (from review request)
+ADMIN_EMAIL = "admin@cataloro.com"
+ADMIN_USERNAME = "sash_admin"
+ADMIN_ROLE = "admin"
+ADMIN_ID = "admin_user_1"
 
 class BrowseEndpointTester:
     def __init__(self):
