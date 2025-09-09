@@ -351,10 +351,10 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
               
               <div>
                 <h2 className="font-medium text-gray-900 dark:text-white">
-                  {currentConversation?.user?.name || 'Sarah Wilson'}
+                  {currentConversation?.name || 'Unknown User'}
                 </h2>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {currentConversation?.user?.online ? 'Active now' : formatLastSeen(new Date(Date.now() - 3600000))}
+                  {currentConversation?.online ? 'Active now' : formatLastSeen(new Date(Date.now() - 3600000))}
                 </p>
               </div>
             </div>
