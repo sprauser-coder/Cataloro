@@ -33,16 +33,33 @@ function MobileBottomNav() {
       }
     }
 
-    // Load counts from localStorage or context
-    const savedCart = localStorage.getItem('cataloro_cart_count');
-    const savedFavorites = localStorage.getItem('cataloro_favorites_count');
-    const savedMessages = localStorage.getItem('cataloro_unread_messages');
-    
-    if (savedCart) setCartCount(parseInt(savedCart, 10) || 0);
-    if (savedFavorites) setFavoritesCount(parseInt(savedFavorites, 10) || 0);
-    if (savedMessages) setUnreadMessages(parseInt(savedMessages, 10) || 0);
+    // Load REAL counts from backend and localStorage
+    const loadRealCounts = async () => {
+      try {
+        // Load real cart count
+        const savedCart = localStorage.getItem('cataloro_cart_count');
+        if (savedCart) {
+          setCartCount(parseInt(savedCart, 10) || 0);
+        }
 
-    // Listen for badge updates
+        // Load real unread messages count from backend
+        if (userData) {
+          const user = JSON.parse(userData);
+          // This should be replaced with actual API call to get unread messages
+          // For now, check localStorage for real message count
+          const savedMessages = localStorage.getItem('cataloro_unread_messages');
+          if (savedMessages) {
+            setUnreadMessages(parseInt(savedMessages, 10) || 0);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading real counts:', error);
+      }
+    };
+
+    loadRealCounts();
+
+    // Listen for real badge updates from the app
     const handleBadgeUpdate = (event) => {
       const { type, count } = event.detail;
       switch (type) {
@@ -54,21 +71,10 @@ function MobileBottomNav() {
           setCartCount(count);
           localStorage.setItem('cataloro_cart_count', count.toString());
           break;
-        case 'favorites':
-          setFavoritesCount(count);
-          localStorage.setItem('cataloro_favorites_count', count.toString());
-          break;
       }
     };
 
     window.addEventListener('updateMobileBadge', handleBadgeUpdate);
-    
-    // For demo purposes, set some example badges
-    setTimeout(() => {
-      setUnreadMessages(2); // Demo: 2 unread messages
-      setCartCount(1); // Demo: 1 item in cart
-      setFavoritesCount(3); // Demo: 3 favorites
-    }, 2000);
 
     return () => {
       window.removeEventListener('updateMobileBadge', handleBadgeUpdate);
