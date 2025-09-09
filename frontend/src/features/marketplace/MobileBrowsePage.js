@@ -124,8 +124,13 @@ function MobileBrowsePage() {
         }}
       />
 
-      {/* Mobile Listings */}
+      {/* Mobile Listings - Debug info */}
       <div className="px-4 pb-20">
+        <div className="mb-4 p-2 bg-yellow-100 text-yellow-800 text-xs rounded">
+          DEBUG: filteredProducts.length = {filteredProducts.length}, 
+          isLoading = {isLoading.toString()}
+        </div>
+        
         {filteredProducts.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
