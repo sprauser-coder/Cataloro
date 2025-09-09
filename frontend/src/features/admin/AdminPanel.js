@@ -1769,7 +1769,8 @@ function HeroSelectionTab({ showToast }) {
     background_color: '#3B82F6',
     background_gradient_from: '#3B82F6',
     background_gradient_to: '#EC4899',
-    background_image: ''
+    background_image: '',
+    gradient_opacity: 0.8
   });
   const [heroImageFile, setHeroImageFile] = useState(null);
   const [heroImagePreview, setHeroImagePreview] = useState('');
