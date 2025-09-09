@@ -137,7 +137,7 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
     if (!message.trim() || !currentConversation) return;
     
     try {
-      const newMessage = {
+      const newMessageObj = {
         id: Date.now(), // Temporary ID
         text: message,
         sender: 'me',
@@ -145,19 +145,20 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
         status: 'sending'
       };
       
-      setMessages([...messages, newMessage]);
+      setMessages([...messages, newMessageObj]);
+      const messageText = message;
       setMessage('');
       
       // Send message via backend
       await liveService.sendMessage({
         recipient_id: currentConversation.id,
-        content: message,
+        content: messageText,
         sender_id: user.id
       });
       
       // Update message status
       setMessages(prev => prev.map(msg => 
-        msg.id === newMessage.id ? { ...msg, status: 'sent' } : msg
+        msg.id === newMessageObj.id ? { ...msg, status: 'sent' } : msg
       ));
       
       // Reload conversations to update last message
@@ -168,8 +169,33 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
       showToast('Failed to send message', 'error');
       
       // Remove failed message
-      setMessages(prev => prev.filter(msg => msg.id !== newMessage.id));
+      setMessages(prev => prev.filter(msg => msg.id !== newMessageObj.id));
     }
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  };
+
+  const formatLastSeen = (date) => {
+    const now = new Date();
+    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Active now';
+    if (diffInHours < 24) return `Active ${diffInHours}h ago`;
+    return `Active ${Math.floor(diffInHours / 24)}d ago`;
   };
 
   const filteredConversations = realConversations.filter(conv =>
