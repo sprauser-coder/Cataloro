@@ -200,29 +200,19 @@ function MobileListingCard({ listing, onFavorite, onContact, onQuickView }) {
               )}
             </div>
 
-            {/* Action Bar */}
+            {/* Action Bar - Simplified without contact */}
             <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
-              <div className="flex space-x-4">
-                <button
-                  onClick={(e) => { e.preventDefault(); handleFavorite(); }}
-                  className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
-                    isFavorited
-                      ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
-                  <span className="text-sm">Save</span>
-                </button>
-
-                <button
-                  onClick={(e) => { e.preventDefault(); handleContact(); }}
-                  className="flex items-center space-x-1 px-3 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span className="text-sm">Contact</span>
-                </button>
-              </div>
+              <button
+                onClick={(e) => { e.preventDefault(); handleFavorite(); }}
+                className={`flex items-center space-x-1 px-4 py-2 rounded-lg transition-colors ${
+                  isFavorited
+                    ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
+                <span className="text-sm">Save</span>
+              </button>
 
               <ChevronRight className="w-5 h-5 text-gray-400" />
             </div>
