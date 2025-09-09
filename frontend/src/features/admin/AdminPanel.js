@@ -49,6 +49,11 @@ import {
   Filter,
   ToggleLeft,
   ToggleRight,
+  Target,
+  ExternalLink,
+  Play,
+  Pause
+  ToggleRight,
   Calculator,
   Sliders,
   Layout,
