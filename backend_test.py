@@ -28,6 +28,7 @@ class AdminAuthenticationTester:
         self.session = None
         self.test_results = []
         self.admin_token = None
+        self.test_users = []  # Store test users for management testing
         
     async def setup(self):
         """Initialize HTTP session"""
