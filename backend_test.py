@@ -475,7 +475,7 @@ class AdminAuthenticationTester:
         
         # Step 1: List all users and verify expected users exist
         print("  Step 1: Verifying expected users exist...")
-        users_result = await self.make_request("/users", headers=headers)
+        users_result = await self.make_request("/admin/users", headers=headers)
         
         expected_emails = ["admin@cataloro.com", "demo@cataloro.com", "seller@cataloro.com"]
         found_users = {}
