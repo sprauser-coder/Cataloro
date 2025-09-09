@@ -1,13 +1,13 @@
 {
-  "test_timestamp": "2025-09-09T08:33:29.224270",
+  "test_timestamp": "2025-09-09T09:20:53.568393",
   "performance_target_ms": 1000,
   "cache_improvement_target_percent": 20,
   "basic_performance": {
     "test_name": "Basic Browse Performance",
-    "avg_response_time_ms": 1033.4715843200684,
-    "min_response_time_ms": 766.9785022735596,
-    "max_response_time_ms": 1809.1120719909668,
-    "meets_performance_target": false,
+    "avg_response_time_ms": 672.4959850311279,
+    "min_response_time_ms": 649.6372222900391,
+    "max_response_time_ms": 731.3263416290283,
+    "meets_performance_target": true,
     "target_ms": 1000,
     "data_integrity_score": 100.0,
     "total_calls": 5,
@@ -15,27 +15,27 @@
   },
   "cache_performance": {
     "test_name": "Cache Performance",
-    "cold_cache_ms": 881.1845779418945,
-    "warm_cache_ms": 762.9244327545166,
-    "warm_cache_2_ms": 802.8624057769775,
-    "cache_improvement_percent": 11.154434738941697,
+    "cold_cache_ms": 651.6752243041992,
+    "warm_cache_ms": 652.8418064117432,
+    "warm_cache_2_ms": 657.7026844024658,
+    "cache_improvement_percent": -0.5519652993937052,
     "meets_cache_target": false,
     "cache_target_percent": 20,
     "data_consistent": true,
-    "cache_working": true
+    "cache_working": false
   },
   "filtering_performance": {
     "test_name": "Filtering Options",
     "total_filter_tests": 8,
     "successful_tests": 8,
     "success_rate": 100.0,
-    "avg_response_time_ms": 485.30495166778564,
+    "avg_response_time_ms": 382.07319378852844,
     "avg_data_integrity": 100.0,
     "all_filters_under_target": true,
     "detailed_results": [
       {
         "filter_name": "No filters",
-        "response_time_ms": 807.6672554016113,
+        "response_time_ms": 654.9842357635498,
         "listing_count": 8,
         "data_integrity_score": 100.0,
         "filter_validation_passed": true,
@@ -43,7 +43,7 @@
       },
       {
         "filter_name": "Private sellers",
-        "response_time_ms": 874.0215301513672,
+        "response_time_ms": 650.4356861114502,
         "listing_count": 8,
         "data_integrity_score": 100.0,
         "filter_validation_passed": true,
@@ -51,7 +51,7 @@
       },
       {
         "filter_name": "Business sellers",
-        "response_time_ms": 46.9508171081543,
+        "response_time_ms": 47.01423645019531,
         "listing_count": 0,
         "data_integrity_score": 100.0,
         "filter_validation_passed": true,
@@ -59,7 +59,7 @@
       },
       {
         "filter_name": "Price range 100-500",
-        "response_time_ms": 843.3976173400879,
+        "response_time_ms": 650.048017501831,
         "listing_count": 7,
         "data_integrity_score": 100.0,
         "filter_validation_passed": true,
@@ -67,7 +67,7 @@
       },
       {
         "filter_name": "Price range 0-100",
-        "response_time_ms": 107.4378490447998,
+        "response_time_ms": 87.73398399353027,
         "listing_count": 1,
         "data_integrity_score": 100.0,
         "filter_validation_passed": true,
@@ -75,7 +75,7 @@
       },
       {
         "filter_name": "Page 2",
-        "response_time_ms": 322.7198123931885,
+        "response_time_ms": 245.71537971496582,
         "listing_count": 3,
         "data_integrity_score": 100.0,
         "filter_validation_passed": true,
@@ -83,7 +83,7 @@
       },
       {
         "filter_name": "Large limit",
-        "response_time_ms": 814.0616416931152,
+        "response_time_ms": 648.9942073822021,
         "listing_count": 8,
         "data_integrity_score": 100.0,
         "filter_validation_passed": true,
@@ -91,7 +91,7 @@
       },
       {
         "filter_name": "Combined filters",
-        "response_time_ms": 66.18309020996094,
+        "response_time_ms": 71.65980339050293,
         "listing_count": 0,
         "data_integrity_score": 100.0,
         "filter_validation_passed": true,
@@ -103,11 +103,11 @@
     "test_name": "Concurrent Performance",
     "concurrent_requests": 5,
     "successful_requests": 5,
-    "total_time_ms": 1041.4047241210938,
-    "avg_individual_time_ms": 563.9949321746826,
-    "max_individual_time_ms": 771.9881534576416,
-    "min_individual_time_ms": 489.06683921813965,
-    "throughput_requests_per_second": 4.80120733485227,
+    "total_time_ms": 975.468635559082,
+    "avg_individual_time_ms": 478.9233684539795,
+    "max_individual_time_ms": 682.3515892028809,
+    "min_individual_time_ms": 411.00406646728516,
+    "throughput_requests_per_second": 5.125741431075629,
     "all_under_target": true,
     "concurrent_performance_acceptable": true
   },
@@ -115,38 +115,38 @@
     "test_name": "Pagination Performance",
     "pages_tested": 5,
     "successful_pages": 5,
-    "avg_response_time_ms": 166.11003875732422,
-    "max_response_time_ms": 787.5490188598633,
-    "all_pages_under_target": true,
+    "avg_response_time_ms": 289.0364170074463,
+    "max_response_time_ms": 1398.449420928955,
+    "all_pages_under_target": false,
     "pagination_consistent": false,
     "detailed_results": [
       {
         "page": 1,
-        "response_time_ms": 787.5490188598633,
+        "response_time_ms": 1398.449420928955,
         "listing_count": 8,
         "success": true
       },
       {
         "page": 2,
-        "response_time_ms": 8.602380752563477,
+        "response_time_ms": 14.414548873901367,
         "listing_count": 0,
         "success": true
       },
       {
         "page": 3,
-        "response_time_ms": 14.854907989501953,
+        "response_time_ms": 10.271310806274414,
         "listing_count": 0,
         "success": true
       },
       {
         "page": 4,
-        "response_time_ms": 9.006023406982422,
+        "response_time_ms": 13.616323471069336,
         "listing_count": 0,
         "success": true
       },
       {
         "page": 5,
-        "response_time_ms": 10.537862777709961,
+        "response_time_ms": 8.43048095703125,
         "listing_count": 0,
         "success": true
       }
@@ -154,7 +154,7 @@
   },
   "summary": {
     "overall_performance_success_rate": 75.0,
-    "cache_functionality_working": true,
+    "cache_functionality_working": false,
     "average_data_integrity_score": 100.0,
     "performance_target_met": true,
     "cache_target_met": false,
