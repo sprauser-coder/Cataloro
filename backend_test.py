@@ -1774,18 +1774,19 @@ class CatalystDataTester:
         }
     
     async def run_comprehensive_catalyst_test(self) -> Dict:
-        """Run all catalyst data tests"""
-        print("🚀 Starting Catalyst Data Endpoint Testing")
-        print("=" * 60)
+        """Run all catalyst data tests including enhanced search functionality"""
+        print("🚀 Starting Catalyst Data Endpoint Testing - Enhanced Search Verification")
+        print("=" * 70)
         
         await self.setup()
         
         try:
-            # Run all catalyst tests
+            # Run all catalyst tests including enhanced search
             endpoint_test = await self.test_catalyst_unified_calculations_endpoint()
             structure_test = await self.test_catalyst_data_structure_validation()
             performance_test = await self.test_catalyst_endpoint_performance()
             consistency_test = await self.test_catalyst_data_consistency()
+            enhanced_search_test = await self.test_enhanced_search_functionality()
             
             # Compile overall results
             all_results = {
@@ -1793,7 +1794,8 @@ class CatalystDataTester:
                 "endpoint_functionality": endpoint_test,
                 "data_structure_validation": structure_test,
                 "performance_testing": performance_test,
-                "data_consistency": consistency_test
+                "data_consistency": consistency_test,
+                "enhanced_search_functionality": enhanced_search_test
             }
             
             # Calculate overall success metrics
@@ -1801,7 +1803,8 @@ class CatalystDataTester:
                 endpoint_test.get("all_requirements_met", False),
                 structure_test.get("validation_passed", False),
                 performance_test.get("meets_acceptable_threshold", False),
-                consistency_test.get("acceptable_data_quality", False)
+                consistency_test.get("acceptable_data_quality", False),
+                enhanced_search_test.get("enhanced_search_ready", False)
             ]
             
             overall_success_rate = sum(test_results) / len(test_results) * 100
