@@ -335,26 +335,28 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
               </div>
             )}
 
-            {/* Metadata */}
-            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  <span>{listing.location || 'Location'}</span>
+            {/* Metadata - Clickable for navigation */}
+            <Link to={`/listing/${listing.id}`}>
+              <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-2 -m-2 transition-colors">
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center">
+                    <MapPin className="w-4 h-4 mr-1" />
+                    <span>{listing.location || 'Location'}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Clock className="w-4 h-4 mr-1" />
+                    <span>{formatTimeAgo(listing.created_at)}</span>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <Clock className="w-4 h-4 mr-1" />
-                  <span>{formatTimeAgo(listing.created_at)}</span>
-                </div>
+                
+                {listing.rating && (
+                  <div className="flex items-center">
+                    <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                    <span>{listing.rating}</span>
+                  </div>
+                )}
               </div>
-              
-              {listing.rating && (
-                <div className="flex items-center">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
-                  <span>{listing.rating}</span>
-                </div>
-              )}
-            </div>
+            </Link>
 
             {/* Quick Bid Input Field - Always Visible */}
             <div className="mb-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
