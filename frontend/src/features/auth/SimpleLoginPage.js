@@ -34,19 +34,41 @@ function SimpleLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Check if user is already logged in
-  React.useEffect(() => {
+  // Fetch admin logo and check if user is already logged in
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/admin/logo`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.logo_url) {
+            setLogoUrl(data.logo_url);
+          }
+        }
+      } catch (error) {
+        console.log('No admin logo found, using default');
+      }
+    };
+
+    // Check if user is already logged in
     const token = localStorage.getItem('cataloro_token');
     const user = localStorage.getItem('cataloro_user');
     if (token && user) {
       try {
-        setLoggedInUser(JSON.parse(user));
+        const userData = JSON.parse(user);
+        if (userData.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/browse');
+        }
       } catch (e) {
         localStorage.removeItem('cataloro_token');
         localStorage.removeItem('cataloro_user');
       }
     }
-  }, []);
+
+    fetchLogo();
+  }, [navigate]);
 
   const handleInputChange = (e) => {
     setFormData({
