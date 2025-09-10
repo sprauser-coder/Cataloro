@@ -9,10 +9,12 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 
-function MobileListingCard({ listing, onFavorite, onQuickView }) {
+function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
   const { user } = useAuth();
   const { showToast } = useNotifications();
   
+  // Local state for real-time updates
+  const [currentListing, setCurrentListing] = useState(listing);
   const [isFavorited, setIsFavorited] = useState(listing.favorited || false);
   const [bidAmount, setBidAmount] = useState('');
   const [isSubmittingBid, setIsSubmittingBid] = useState(false);
