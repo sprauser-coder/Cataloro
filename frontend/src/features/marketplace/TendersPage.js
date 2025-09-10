@@ -89,7 +89,7 @@ function TendersPage() {
 
   // Handle URL parameters for specific listing expansion
   useEffect(() => {
-    if (listingId && activeTab === 'manage') {
+    if (listingId && activeTab === 'listings') {
       // Auto-expand the specific listing when URL contains listing parameter
       setSelectedListing(listingId);
     }
