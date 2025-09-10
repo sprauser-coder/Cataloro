@@ -1203,22 +1203,19 @@ async def browse_listings():
             # CRITICAL: Optimize images for browse view performance
             if listing.get('images'):
                 optimized_images = []
-                has_actual_images = False
                 
                 for img in listing['images']:
                     if isinstance(img, str):
                         # If it's a base64 data URL (from old uploads)
                         if img.startswith('data:'):
-                            # For browse view, keep smaller version or use actual file if available
-                            # For now, use a smaller thumbnail approach
-                            # TODO: In production, create proper thumbnails
-                            has_actual_images = True
-                            # Keep actual images but add note that they might be large
-                            optimized_images.append(img)
+                            # Create a thumbnail URL instead of full base64
+                            listing_id = listing.get('id', 'unknown')
+                            img_index = len(optimized_images)
+                            thumbnail_url = f'/api/listings/{listing_id}/thumbnail/{img_index}'
+                            optimized_images.append(thumbnail_url)
                         elif img.startswith('/uploads/') or img.startswith('/static/'):
                             # Keep file URLs as they're already efficient
                             optimized_images.append(img)
-                            has_actual_images = True
                         else:
                             # For any other format, use placeholder
                             optimized_images.append('/api/placeholder-image.jpg')
@@ -1226,7 +1223,6 @@ async def browse_listings():
                         # Non-string image data, use placeholder
                         optimized_images.append('/api/placeholder-image.jpg')
                 
-                # If we have actual images, keep them for now
                 listing['images'] = optimized_images if optimized_images else ['/api/placeholder-image.jpg']
             else:
                 # No images, provide placeholder
