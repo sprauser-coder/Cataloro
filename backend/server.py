@@ -3439,8 +3439,22 @@ async def upload_logo(file: UploadFile = File(...), mode: str = "light"):
         file_data = base64.b64encode(contents).decode()
         file_url = f"data:{file.content_type};base64,{file_data}"
         
-        # In production, you would save to a file system or cloud storage
-        # and return the public URL
+        # Store logo in database for persistence
+        logo_doc = {
+            "type": "logo",
+            "logo_url": file_url,
+            "mode": mode,
+            "filename": file.filename,
+            "size": len(contents),
+            "uploaded_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Update or insert logo document
+        await db.site_settings.update_one(
+            {"type": "logo"},
+            {"$set": logo_doc},
+            upsert=True
+        )
         
         return {
             "message": "Logo uploaded successfully",
