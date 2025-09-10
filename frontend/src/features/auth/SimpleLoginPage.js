@@ -12,15 +12,27 @@ import { adminService } from '../../services/adminService';
 function SimpleLoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [formData, setFormData] = useState({
+  const [activeTab, setActiveTab] = useState('login'); // 'login' or 'register'
+  const [logoUrl, setLogoUrl] = useState(null);
+  
+  // Login form state
+  const [loginData, setLoginData] = useState({
     email: '',
     password: ''
   });
+  
+  // Registration form state
+  const [registerData, setRegisterData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    fullName: ''
+  });
+  
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [loggedInUser, setLoggedInUser] = useState(null);
-  const [isAnimating, setIsAnimating] = useState(false);
 
   // Check if user is already logged in
   React.useEffect(() => {
