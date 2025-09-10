@@ -809,11 +809,10 @@ function MessagesPage() {
 
                 {/* Messages - Clean design without headers */}
                 <div id="desktop-messages-container" className="flex-1 overflow-y-auto p-6 space-y-3 bg-gradient-to-b from-gray-50/30 to-white/50 dark:from-gray-900/30 dark:to-gray-800/50">
-                  {/* Messages - newest at bottom */}
+                  {/* Messages - chronological order (oldest first, newest at bottom) */}
                   {conversationMessages
                     .slice() // Create a copy to avoid mutating original array
-                    .reverse() // Reverse so newest messages are at bottom
-                    .map((message, index, reversedArray) => {
+                    .map((message, index, messageArray) => {
                     const isOwn = message.sender_id === user?.id;
                     const showAvatar = index === 0 || reversedArray[index - 1].sender_id !== message.sender_id;
                     const isHighlighted = highlightedMessageId === message.id;
