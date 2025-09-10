@@ -162,7 +162,7 @@ function MobileTendersPage() {
         {activeTab === 'my-bids' ? (
           <MyBidsSection bids={myBids} />
         ) : (
-          <SellingSection tenders={sellingTenders} />
+          <SellingSection tenders={sellingTenders} onRefresh={loadTendersData} />
         )}
       </div>
     </div>
