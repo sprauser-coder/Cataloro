@@ -1,13 +1,13 @@
 /**
- * CATALORO - Ultra-Modern Login Page
- * Premium glassmorphism design with advanced animations
+ * CATALORO - Clean Modern Login Page
+ * Professional design with admin logo integration
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Store, ArrowRight, Shield, User, Sparkles } from 'lucide-react';
-import { UI_CONFIG } from '../../config/directions';
+import { Mail, Lock, Eye, EyeOff, Store, ArrowRight, User, UserPlus } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { adminService } from '../../services/adminService';
 
 function SimpleLoginPage() {
   const navigate = useNavigate();
