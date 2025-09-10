@@ -352,6 +352,70 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
               )}
             </div>
 
+            {/* Quick Bid Input Field - Always Visible */}
+            <div className="mb-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+              <div className="flex items-center space-x-2 mb-2">
+                <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Bid</span>
+                {listing.bid_info?.has_bids && (
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Min: {formatPrice(getMinimumBid())}
+                  </span>
+                )}
+              </div>
+              
+              <form onSubmit={handleSubmitBid} className="space-y-2">
+                <div className="flex space-x-2">
+                  <div className="flex-1 relative">
+                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="number"
+                      min={getMinimumBid()}
+                      step="1"
+                      value={bidAmount}
+                      onChange={(e) => {
+                        setBidAmount(e.target.value);
+                        setBidError('');
+                      }}
+                      placeholder={`Min: €${getMinimumBid()}`}
+                      className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      disabled={!canUserBid() && user}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={buttonState.disabled}
+                    className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors flex items-center ${buttonState.color}`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {isSubmittingBid && (
+                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-1"></div>
+                    )}
+                    {bidSuccess && (
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                    )}
+                    <span className="text-xs">{buttonState.text}</span>
+                  </button>
+                </div>
+                
+                {/* Error/Success Messages */}
+                {bidError && (
+                  <div className="flex items-center text-red-600 dark:text-red-400 text-xs">
+                    <AlertCircle className="w-3 h-3 mr-1" />
+                    {bidError}
+                  </div>
+                )}
+                
+                {bidSuccess && (
+                  <div className="flex items-center text-green-600 dark:text-green-400 text-xs">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Bid submitted successfully!
+                  </div>
+                )}
+              </form>
+            </div>
+
             {/* Action Bar - Simplified without contact */}
             <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
               <button
