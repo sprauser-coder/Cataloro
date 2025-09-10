@@ -4949,16 +4949,23 @@ async def get_listing_tenders(listing_id: str):
 
 @app.get("/api/tenders/buyer/{buyer_id}")
 async def get_buyer_tenders(buyer_id: str):
-    """Get all tenders submitted by a buyer"""
+    """Get all tenders submitted by a buyer (OPTIMIZED)"""
     try:
         tenders = await db.tenders.find({
             "buyer_id": buyer_id
         }).sort("created_at", -1).to_list(length=None)
         
-        # Enrich with listing information
+        # OPTIMIZATION: Collect all listing IDs to minimize database queries
+        listing_ids = list(set(tender["listing_id"] for tender in tenders))
+        
+        # OPTIMIZATION: Single query to get all listing information
+        listings_list = await db.listings.find({"id": {"$in": listing_ids}}).to_list(length=None)
+        listings_dict = {listing['id']: listing for listing in listings_list}
+        
+        # Enrich with listing information from cached lookup
         enriched_tenders = []
         for tender in tenders:
-            listing = await db.listings.find_one({"id": tender["listing_id"]})
+            listing = listings_dict.get(tender["listing_id"])
             if not listing:
                 continue
                 
