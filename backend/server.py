@@ -4142,35 +4142,52 @@ async def remove_from_cart(user_id: str, item_id: str):
 # Messages endpoints
 @app.get("/api/user/{user_id}/messages")
 async def get_user_messages(user_id: str):
-    """Get user's messages with sender/recipient information"""
+    """Get user's messages with sender/recipient information (OPTIMIZED)"""
     try:
+        # Get messages for user
         messages = await db.user_messages.find({"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]}).sort("created_at", -1).to_list(length=None)
+        
+        # OPTIMIZATION: Collect all unique user IDs to minimize database queries
+        user_ids = set()
+        for message in messages:
+            user_ids.add(message['sender_id'])
+            user_ids.add(message['recipient_id'])
+        
+        # OPTIMIZATION: Single query to get all user information
+        users_list = await db.users.find({"id": {"$in": list(user_ids)}}).to_list(length=None)
+        users_dict = {user['id']: user for user in users_list}
+        
+        # Fallback lookup with ObjectId for users not found (try both approaches in one query)
+        missing_user_ids = user_ids - set(users_dict.keys())
+        if missing_user_ids:
+            try:
+                from bson import ObjectId
+                # Try to find by ObjectId
+                oid_list = []
+                for uid in missing_user_ids:
+                    try:
+                        oid_list.append(ObjectId(uid))
+                    except:
+                        continue
+                
+                if oid_list:
+                    fallback_users = await db.users.find({"_id": {"$in": oid_list}}).to_list(length=None)
+                    for user in fallback_users:
+                        users_dict[str(user['_id'])] = user
+            except Exception as fallback_error:
+                print(f"Fallback user lookup error: {fallback_error}")
         
         # Enrich messages with user information
         enriched_messages = []
         for message in messages:
             message['_id'] = str(message['_id'])
             
-            # Add sender information with fallback lookup
-            sender = await db.users.find_one({"id": message['sender_id']})
-            if not sender:
-                # Try with _id in case it's stored differently
-                try:
-                    from bson import ObjectId
-                    sender = await db.users.find_one({"_id": ObjectId(message['sender_id'])})
-                except:
-                    pass
+            # Add sender information from cached lookup
+            sender = users_dict.get(message['sender_id'])
             message['sender_name'] = sender.get('full_name', sender.get('username', 'Unknown')) if sender else 'Unknown'
             
-            # Add recipient information with fallback lookup
-            recipient = await db.users.find_one({"id": message['recipient_id']})
-            if not recipient:
-                # Try with _id in case it's stored differently
-                try:
-                    from bson import ObjectId
-                    recipient = await db.users.find_one({"_id": ObjectId(message['recipient_id'])})
-                except:
-                    pass
+            # Add recipient information from cached lookup
+            recipient = users_dict.get(message['recipient_id'])
             message['recipient_name'] = recipient.get('full_name', recipient.get('username', 'Unknown')) if recipient else 'Unknown'
             
             enriched_messages.append(message)
