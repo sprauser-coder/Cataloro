@@ -55,23 +55,37 @@ function MobileBrowsePage() {
 
   // Refresh listings when page becomes visible (for updated prices after bidding)
   useEffect(() => {
+    let refreshTimeout;
+    
     const handleVisibilityChange = () => {
-      if (!document.hidden) {
+      if (!document.hidden && !refreshTimeout) {
         // Page is visible, refresh listings to get updated bid prices
         console.log('📱 Mobile browse page visible, refreshing listings for updated prices');
-        refreshListings();
+        
+        // Throttle refreshes to prevent infinite loop
+        refreshTimeout = setTimeout(() => {
+          refreshListings();
+          refreshTimeout = null;
+        }, 1000);
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
-    // Also refresh when component mounts
-    refreshListings();
+    // Initial refresh when component mounts, but only once
+    let mounted = false;
+    if (!mounted) {
+      refreshListings();
+      mounted = true;
+    }
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (refreshTimeout) {
+        clearTimeout(refreshTimeout);
+      }
     };
-  }, [refreshListings]);
+  }, []); // Remove refreshListings dependency to prevent loops
 
   // Mobile event handlers
   const handleMobileSearch = (query) => {
