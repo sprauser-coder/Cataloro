@@ -1683,6 +1683,24 @@ async def get_similar_listings(listing_id: str, limit: int = 5):
         logger.error(f"Similar listings failed: {e}")
         return {"similar_listings": [], "error": str(e)}
 
+async def get_user_associated_ids(user_id: str) -> list:
+    """Get all IDs associated with a user (current and legacy)"""
+    user_ids = [user_id]
+    
+    # For admin users, check for legacy admin IDs
+    if user_id == "admin_user_1":
+        # Add known legacy admin IDs
+        legacy_admin_ids = ["68bff934bdb9d78bad2b925c", "admin", "sash_admin"]
+        user_ids.extend(legacy_admin_ids)
+    
+    # For demo users, check for alternative demo IDs  
+    elif user_id == "68bfff790e4e46bc28d43631":
+        # Add known demo user variations
+        demo_ids = ["demo_user", "demo_user_1", "user"]
+        user_ids.extend(demo_ids)
+    
+    return user_ids
+
 @app.get("/api/user/my-listings/{user_id}")
 async def get_my_listings(user_id: str):
     """Get user's listings - only active listings for consistency with browse"""
@@ -1690,8 +1708,14 @@ async def get_my_listings(user_id: str):
         # Check if user exists and is active
         await check_user_active_status(user_id)
         
-        # Only return active listings to match browse page behavior
-        listings = await db.listings.find({"seller_id": user_id, "status": "active"}).sort("created_at", -1).to_list(length=None)
+        # Get all associated user IDs (current and legacy)
+        associated_ids = await get_user_associated_ids(user_id)
+        
+        # Find listings using any of the associated IDs
+        listings = await db.listings.find({
+            "seller_id": {"$in": associated_ids}, 
+            "status": "active"
+        }).sort("created_at", -1).to_list(length=None)
         
         # Ensure consistent ID format
         for listing in listings:
