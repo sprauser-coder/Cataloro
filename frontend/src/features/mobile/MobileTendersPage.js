@@ -242,6 +242,7 @@ function BidCard({ bid }) {
       case 'rejected':
         return <XCircle className="w-4 h-4 text-red-500" />;
       case 'pending':
+      case 'active':
         return <Clock className="w-4 h-4 text-orange-500" />;
       default:
         return <Clock className="w-4 h-4 text-gray-500" />;
@@ -255,6 +256,7 @@ function BidCard({ bid }) {
       case 'rejected':
         return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
       case 'pending':
+      case 'active':
         return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300';
       default:
         return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
@@ -266,16 +268,19 @@ function BidCard({ bid }) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-            {bid.listing_title || 'Unknown Item'}
+            {bid.listing?.title || 'Unknown Item'}
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Bid placed on {bid.created_at ? new Date(bid.created_at).toLocaleDateString() : 'N/A'}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Seller: {bid.seller?.username || 'Unknown'}
           </p>
         </div>
         <div className="flex items-center">
           {getStatusIcon(bid.status)}
           <span className={`ml-1 text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(bid.status)}`}>
-            {bid.status?.charAt(0).toUpperCase() + bid.status?.slice(1) || 'Pending'}
+            {bid.status?.charAt(0).toUpperCase() + bid.status?.slice(1) || 'Active'}
           </span>
         </div>
       </div>
@@ -288,18 +293,16 @@ function BidCard({ bid }) {
               €{bid.offer_amount || 0}
             </p>
           </div>
-          {bid.highest_bid && (
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Highest Bid</p>
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                €{bid.highest_bid}
-              </p>
-            </div>
-          )}
+          <div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Listing Price</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">
+              €{bid.listing?.price || 0}
+            </p>
+          </div>
         </div>
 
         <Link
-          to={`/listing/${bid.listing_id}`}
+          to={`/listing/${bid.listing?.id}`}
           className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
         >
           View Item
