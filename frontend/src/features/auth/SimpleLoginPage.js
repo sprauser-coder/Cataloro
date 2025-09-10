@@ -99,8 +99,8 @@ function SimpleLoginPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: formData.email,
-          password: formData.password
+          email: loginData.email,
+          password: loginData.password
         })
       });
 
