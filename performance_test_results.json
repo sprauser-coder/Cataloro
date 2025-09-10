@@ -1,0 +1,294 @@
+{
+  "test_timestamp": "2025-09-10T21:24:15.620325",
+  "test_type": "Comprehensive Performance Verification",
+  "authentication": {
+    "demo_authenticated": true,
+    "admin_authenticated": true,
+    "demo_response_time_ms": 77.34036445617676,
+    "admin_response_time_ms": 14.343500137329102
+  },
+  "database_performance": {
+    "test_name": "Database Performance Testing",
+    "total_endpoints_tested": 6,
+    "critical_endpoints_optimized": false,
+    "all_endpoints_meet_targets": false,
+    "avg_performance_improvement_percent": 72.68612384796143,
+    "detailed_results": [
+      {
+        "endpoint_name": "Demo User My-Listings",
+        "endpoint_path": "/user/my-listings/68bfff790e4e46bc28d43631",
+        "avg_response_time_ms": 651.8548329671224,
+        "min_response_time_ms": 592.1957492828369,
+        "max_response_time_ms": 755.2206516265869,
+        "target_ms": 500,
+        "meets_target": false,
+        "success_rate": 100.0,
+        "description": "Should be <500ms (was 5+ seconds)",
+        "is_critical": true
+      },
+      {
+        "endpoint_name": "Admin User My-Listings",
+        "endpoint_path": "/user/my-listings/admin_user_1",
+        "avg_response_time_ms": 99.47435061136882,
+        "min_response_time_ms": 96.41838073730469,
+        "max_response_time_ms": 102.08678245544434,
+        "target_ms": 500,
+        "meets_target": true,
+        "success_rate": 100.0,
+        "description": "Should be <500ms (was 5+ seconds)",
+        "is_critical": true
+      },
+      {
+        "endpoint_name": "Admin Catalyst Calculations",
+        "endpoint_path": "/admin/catalyst/calculations",
+        "avg_response_time_ms": 12.249946594238281,
+        "min_response_time_ms": 10.88857650756836,
+        "max_response_time_ms": 14.71567153930664,
+        "target_ms": 1000,
+        "meets_target": true,
+        "success_rate": 100.0,
+        "description": "Should be <1s (was 6+ seconds)",
+        "is_critical": true
+      },
+      {
+        "endpoint_name": "Browse Listings",
+        "endpoint_path": "/marketplace/browse",
+        "avg_response_time_ms": 92.56068865458171,
+        "min_response_time_ms": 84.34915542602539,
+        "max_response_time_ms": 108.16645622253418,
+        "target_ms": 1000,
+        "meets_target": true,
+        "success_rate": 100.0,
+        "description": "Main browse endpoint",
+        "is_critical": false
+      },
+      {
+        "endpoint_name": "Health Check",
+        "endpoint_path": "/health",
+        "avg_response_time_ms": 5.87161382039388,
+        "min_response_time_ms": 5.780696868896484,
+        "max_response_time_ms": 5.967617034912109,
+        "target_ms": 200,
+        "meets_target": true,
+        "success_rate": 100.0,
+        "description": "System health",
+        "is_critical": false
+      },
+      {
+        "endpoint_name": "Performance Metrics",
+        "endpoint_path": "/admin/performance",
+        "avg_response_time_ms": 19.07070477803548,
+        "min_response_time_ms": 16.978979110717773,
+        "max_response_time_ms": 22.399425506591797,
+        "target_ms": 1000,
+        "meets_target": true,
+        "success_rate": 100.0,
+        "description": "Performance monitoring",
+        "is_critical": false
+      }
+    ]
+  },
+  "database_connection_health": {
+    "test_name": "Database Connection Health",
+    "connection_stable": true,
+    "successful_health_checks": 4,
+    "total_health_checks": 4,
+    "no_namespace_errors": true,
+    "database_responding": true,
+    "detailed_health_tests": [
+      {
+        "test": "Health Check",
+        "success": true,
+        "response_time_ms": 47.21403121948242,
+        "data": {
+          "status": "healthy",
+          "app": "Cataloro Marketplace",
+          "version": "1.0.0"
+        }
+      },
+      {
+        "test": "Database Statistics",
+        "success": true,
+        "response_time_ms": 16.214609146118164,
+        "database_name": "cataloro_marketplace",
+        "collections_count": 16,
+        "has_indexes": true
+      },
+      {
+        "test": "Data Query Validation",
+        "success": true,
+        "response_time_ms": 82.64541625976562,
+        "has_listings_data": true,
+        "listings_count": 24
+      },
+      {
+        "test": "Namespace Error Check",
+        "success": true,
+        "response_time_ms": 567.9769515991211,
+        "no_ns_errors": true,
+        "error": ""
+      }
+    ]
+  },
+  "memory_usage_verification": {
+    "test_name": "Memory Usage Verification",
+    "memory_optimizations_detected": false,
+    "system_responsive": true,
+    "performance_consistent": true,
+    "no_memory_leak_indicators": true,
+    "service_restart_effective": true,
+    "detailed_memory_tests": [
+      {
+        "test": "Memory Optimization Status",
+        "success": true,
+        "memory_optimizations_active": false,
+        "optimization_details": {
+          "database_indexes": "\u2705 80+ indexes created",
+          "query_optimization": "\u2705 Compound indexes for complex queries",
+          "pagination": "\u2705 Implemented with skip/limit",
+          "caching": "\u26a0\ufe0f Redis fallback mode (database-only caching)",
+          "performance_improvement": "\ud83d\ude80 50-90% faster queries"
+        }
+      },
+      {
+        "test": "Memory Usage Information",
+        "success": true,
+        "memory_usage_status": "Low-memory operations",
+        "scalability_info": {
+          "current_capacity": "10,000+ users",
+          "query_performance": "Optimized with indexes",
+          "memory_usage": "Low-memory operations",
+          "concurrent_users": "High throughput ready"
+        }
+      },
+      {
+        "test": "System Responsiveness",
+        "success": true,
+        "avg_response_time_ms": 13.96331787109375,
+        "response_time_variance": 40.673017501831055,
+        "consistent_performance": true,
+        "indicates_healthy_memory": true
+      }
+    ]
+  },
+  "api_response_consistency": {
+    "test_name": "API Response Consistency",
+    "all_users_consistent": true,
+    "all_responses_fast": false,
+    "demo_user_working": false,
+    "admin_user_working": true,
+    "walker351631A_visible": true,
+    "detailed_consistency_tests": [
+      {
+        "user": "Demo User",
+        "user_id": "68bfff790e4e46bc28d43631",
+        "all_calls_successful": true,
+        "data_consistent": true,
+        "avg_response_time_ms": 566.9764677683512,
+        "meets_performance_target": false,
+        "listing_counts": [
+          15,
+          15,
+          15
+        ]
+      },
+      {
+        "user": "Admin User",
+        "user_id": "admin_user_1",
+        "all_calls_successful": true,
+        "data_consistent": true,
+        "avg_response_time_ms": 96.83442115783691,
+        "meets_performance_target": true,
+        "walker351631A_found": true,
+        "listing_counts": [
+          4,
+          4,
+          4
+        ]
+      }
+    ]
+  },
+  "cross_platform_data_loading": {
+    "test_name": "Cross-Platform Data Loading",
+    "mobile_desktop_consistency": true,
+    "all_platforms_accessible": true,
+    "browse_cross_platform_working": true,
+    "messaging_cross_platform_working": true,
+    "detailed_platform_tests": [
+      {
+        "test": "Browse Endpoint Cross-Platform",
+        "mobile_success": true,
+        "desktop_success": true,
+        "mobile_response_time_ms": 82.82828330993652,
+        "desktop_response_time_ms": 81.43091201782227,
+        "data_consistent": true,
+        "mobile_listings_count": 24,
+        "desktop_listings_count": 24
+      },
+      {
+        "test": "Messages Endpoint Cross-Platform",
+        "mobile_success": true,
+        "desktop_success": true,
+        "mobile_response_time_ms": 11.53421401977539,
+        "desktop_response_time_ms": 10.032176971435547,
+        "data_consistent": true,
+        "mobile_messages_count": 22,
+        "desktop_messages_count": 22
+      }
+    ]
+  },
+  "index_effectiveness": {
+    "test_name": "Index Effectiveness Testing",
+    "all_queries_use_indexes_effectively": true,
+    "sufficient_indexes_created": true,
+    "total_indexes_detected": 31,
+    "index_distribution": {
+      "listings_indexes": 13,
+      "users_indexes": 8,
+      "tenders_indexes": 10
+    },
+    "detailed_index_tests": [
+      {
+        "test": "Seller ID Filtering",
+        "success": true,
+        "response_time_ms": 83.20140838623047,
+        "uses_index_effectively": true,
+        "results_count": 24
+      },
+      {
+        "test": "Status-Based Filtering",
+        "success": true,
+        "response_time_ms": 82.08870887756348,
+        "uses_index_effectively": true,
+        "results_count": 24
+      },
+      {
+        "test": "Created At Sorting",
+        "success": true,
+        "response_time_ms": 84.70535278320312,
+        "uses_index_effectively": true,
+        "results_count": 24
+      },
+      {
+        "test": "Complex Multi-Filter Query",
+        "success": true,
+        "response_time_ms": 82.61871337890625,
+        "uses_index_effectively": true,
+        "results_count": 24
+      }
+    ]
+  },
+  "summary": {
+    "overall_success_rate": 62.5,
+    "performance_optimization_successful": false,
+    "critical_endpoints_under_500ms": false,
+    "all_endpoints_under_1s": false,
+    "database_connection_healthy": true,
+    "memory_leaks_cleared": true,
+    "walker351631A_now_visible": true,
+    "demo_user_listings_fast": false,
+    "cross_platform_consistent": true,
+    "database_indexes_effective": true,
+    "system_ready_for_production": false
+  }
+}
