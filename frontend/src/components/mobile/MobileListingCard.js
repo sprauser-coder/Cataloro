@@ -149,9 +149,9 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
     }
 
     if (!canUserBid()) {
-      if (listing.seller?.username === user.username || listing.seller_id === user.id) {
+      if (currentListing.seller?.username === user.username || currentListing.seller_id === user.id) {
         showToast('You cannot bid on your own listing', 'error');
-      } else if (listing.bid_info?.highest_bidder_id === user.id) {
+      } else if (currentListing.bid_info?.highest_bidder_id === user.id) {
         showToast('You are already the highest bidder', 'info');
       }
       return;
