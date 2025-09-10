@@ -70,9 +70,17 @@ function SimpleLoginPage() {
     fetchLogo();
   }, [navigate]);
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
+  const handleLoginChange = (e) => {
+    setLoginData({
+      ...loginData,
+      [e.target.name]: e.target.value
+    });
+    setError(null);
+  };
+
+  const handleRegisterChange = (e) => {
+    setRegisterData({
+      ...registerData,
       [e.target.name]: e.target.value
     });
     setError(null);
