@@ -112,13 +112,13 @@ function MobileBottomNav() {
     {
       label: 'Tenders',
       path: '/mobile-tenders',
-      icon: ShoppingCart,
+      icon: DollarSign,
       badge: null
     },
     {
       label: 'Listings',
       path: '/mobile-my-listings',
-      icon: User,
+      icon: Package,
       badge: null
     }
   ];
