@@ -128,6 +128,34 @@ function MobileBrowsePage() {
         </div>
       </div>
 
+      {/* Stats Bar */}
+      <div className="px-4 mb-6">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-white p-4">
+          <div className="grid grid-cols-4 gap-4 text-center">
+            <div>
+              <Package className="w-5 h-5 mx-auto mb-1 opacity-80" />
+              <div className="text-lg font-bold">{quickStats.totalListings}</div>
+              <div className="text-xs opacity-80">Total</div>
+            </div>
+            <div>
+              <Clock className="w-5 h-5 mx-auto mb-1 opacity-80" />
+              <div className="text-lg font-bold">{quickStats.newToday}</div>
+              <div className="text-xs opacity-80">New Today</div>
+            </div>
+            <div>
+              <TrendingUp className="w-5 h-5 mx-auto mb-1 opacity-80" />
+              <div className="text-lg font-bold">{quickStats.hotDeals}</div>
+              <div className="text-xs opacity-80">Hot Deals</div>
+            </div>
+            <div>
+              <DollarSign className="w-5 h-5 mx-auto mb-1 opacity-80" />
+              <div className="text-lg font-bold">€{quickStats.avgPrice}</div>
+              <div className="text-xs opacity-80">Avg Price</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Listings Grid */}
       <div className="px-4">
         {filteredListings.length === 0 ? (
