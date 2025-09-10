@@ -40,6 +40,7 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
   const [loading, setLoading] = useState(true);
   const [realConversations, setRealConversations] = useState([]);
   const [conversationMessages, setConversationMessages] = useState([]);
+  const messagesEndRef = useRef(null);
   const [preventInitialFocus, setPreventInitialFocus] = useState(true);
 
   // Prevent auto-focus for the first few seconds after component loads
