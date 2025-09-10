@@ -144,6 +144,16 @@ function MessagesPage() {
     }
   }, [user, isMobile]);
 
+  // Auto-scroll effect - MOVED BEFORE CONDITIONAL RETURN TO FIX HOOKS VIOLATION
+  useEffect(() => {
+    // Auto-scroll to bottom when messages change (for desktop consistency with mobile)
+    if (conversationMessages.length > 0 && !isMobile) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [conversationMessages, isMobile]);
+
   // CONDITIONAL RETURN AFTER ALL HOOKS
   if (isMobile) {
     return (
