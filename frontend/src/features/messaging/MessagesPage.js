@@ -375,8 +375,8 @@ function MessagesPage() {
     console.log('🎯 selectConversation called for:', conversation.name);
     
     setSelectedConversation(conversation);
-    // Sort messages with newest first (reverse chronological order)
-    const sortedMessages = conversation.messages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    // Sort messages chronologically (oldest first, newest at bottom) - consistent with mobile
+    const sortedMessages = conversation.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
     setConversationMessages(sortedMessages);
     
     // Immediately update conversation display to remove red badge
