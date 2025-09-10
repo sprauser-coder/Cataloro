@@ -464,8 +464,8 @@ function MessagesPage() {
         created_at: new Date().toISOString()
       };
       
-      // Add new message to the beginning (top) of the conversation
-      setConversationMessages(prev => [newMessage, ...prev]);
+      // Add new message to the end (bottom) of the conversation for chronological order
+      setConversationMessages(prev => [...prev, newMessage]);
       
       // Reload messages in background to sync with server
       setTimeout(() => loadMessages(), 1000);
