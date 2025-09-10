@@ -98,10 +98,12 @@ function TendersPage() {
   // Update tab when URL parameters change
   useEffect(() => {
     const urlTab = searchParams.get('tab');
-    if (urlTab === 'my-tenders') {
-      setActiveTab('my-tenders');
-    } else if (urlTab === 'manage') {
-      setActiveTab('manage');
+    if (urlTab === 'tenders') {
+      setActiveTab('tenders');
+    } else if (urlTab === 'sold') {
+      setActiveTab('sold');
+    } else if (urlTab === 'listings') {
+      setActiveTab('listings');
     }
   }, [searchParams]);
 
