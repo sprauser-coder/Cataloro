@@ -171,7 +171,11 @@ function MobileBrowsePage() {
         ) : (
           <div className="grid gap-4">
             {filteredListings.map((listing) => (
-              <MobileListingCard key={listing.id} listing={listing} />
+              <MobileListingCard 
+                key={listing.id} 
+                listing={listing} 
+                onBidUpdate={handleBidUpdate}
+              />
             ))}
           </div>
         )}
