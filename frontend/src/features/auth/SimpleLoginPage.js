@@ -37,7 +37,7 @@ function SimpleLoginPage() {
   useEffect(() => {
     const fetchLogo = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/admin/logo`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/admin/logo`);
         if (response.ok) {
           const data = await response.json();
           if (data.logo_url) {
