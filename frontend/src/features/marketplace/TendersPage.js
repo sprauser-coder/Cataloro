@@ -61,13 +61,27 @@ function TendersPage() {
     thisMonth: 0
   });
 
+  // Cache management
+  const [lastLoadTime, setLastLoadTime] = useState({
+    listings: null,
+    tenders: null,
+    sold: null
+  });
+  
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+  const shouldRefreshData = (tabName) => {
+    const lastLoad = lastLoadTime[tabName];
+    return !lastLoad || (Date.now() - lastLoad) > CACHE_DURATION;
+  };
+
   useEffect(() => {
     if (user) {
-      if (activeTab === 'listings') {
+      if (activeTab === 'listings' && shouldRefreshData('listings')) {
         loadTendersOverview();
-      } else if (activeTab === 'tenders') {
+      } else if (activeTab === 'tenders' && shouldRefreshData('tenders')) {
         loadMyTenders();
-      } else if (activeTab === 'sold') {
+      } else if (activeTab === 'sold' && shouldRefreshData('sold')) {
         loadSoldItems();
       }
     }
