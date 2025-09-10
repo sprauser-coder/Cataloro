@@ -3853,7 +3853,7 @@ async def check_listing_expiration(listing_id: str):
 
 @app.get("/api/listings/{listing_id}")
 async def get_listing(listing_id: str):
-    """Get a specific listing by ID"""
+    """Get a specific listing by ID - returns full details including images"""
     try:
         listing = await db.listings.find_one({"id": listing_id})
         
@@ -3867,6 +3867,10 @@ async def get_listing(listing_id: str):
             {"id": listing_id},
             {"$inc": {"views": 1}}
         )
+        
+        # Note: This endpoint returns full images for detail view
+        # For performance in listing detail pages, we keep the actual images
+        # Browse endpoints use optimized placeholders to avoid 44MB+ responses
         
         return listing
         
