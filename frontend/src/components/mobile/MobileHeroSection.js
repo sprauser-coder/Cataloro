@@ -157,6 +157,7 @@ function MobileHeroSection({
           <div className="mb-4">
             <MobileSearchBar
               onSearch={onSearch}
+              initialValue={searchTerm}
               placeholder={heroContent.search_placeholder || 'Search catalysts...'}
             />
           </div>
