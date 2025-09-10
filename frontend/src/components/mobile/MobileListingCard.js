@@ -34,7 +34,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
 
   const handleFavorite = () => {
     setIsFavorited(!isFavorited);
-    onFavorite?.(listing.id, !isFavorited);
+    onFavorite?.(currentListing.id, !isFavorited);
   };
 
   const handleQuickView = () => {
