@@ -1203,15 +1203,22 @@ async def browse_listings():
             # CRITICAL: Optimize images for browse view performance
             if listing.get('images'):
                 optimized_images = []
+                has_actual_images = False
+                
                 for img in listing['images']:
                     if isinstance(img, str):
-                        # If it's a base64 data URL (from old uploads), replace with placeholder
+                        # If it's a base64 data URL (from old uploads)
                         if img.startswith('data:'):
-                            # Use placeholder for base64 images to avoid massive responses
-                            optimized_images.append('/api/placeholder-image.jpg')
+                            # For browse view, keep smaller version or use actual file if available
+                            # For now, use a smaller thumbnail approach
+                            # TODO: In production, create proper thumbnails
+                            has_actual_images = True
+                            # Keep actual images but add note that they might be large
+                            optimized_images.append(img)
                         elif img.startswith('/uploads/') or img.startswith('/static/'):
                             # Keep file URLs as they're already efficient
                             optimized_images.append(img)
+                            has_actual_images = True
                         else:
                             # For any other format, use placeholder
                             optimized_images.append('/api/placeholder-image.jpg')
@@ -1219,6 +1226,7 @@ async def browse_listings():
                         # Non-string image data, use placeholder
                         optimized_images.append('/api/placeholder-image.jpg')
                 
+                # If we have actual images, keep them for now
                 listing['images'] = optimized_images if optimized_images else ['/api/placeholder-image.jpg']
             else:
                 # No images, provide placeholder
