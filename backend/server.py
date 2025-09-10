@@ -720,10 +720,20 @@ async def login_user(request: Request, credentials: dict):
     user = await db.users.find_one({"email": email})
     if not user:
         # Create demo user if not exists
-        user_id = generate_id()
+        user_id = None
         
-        # Set user data based on user type
-        if credentials["email"] == "admin@cataloro.com":
+        # Special handling for demo users to maintain consistency with existing listings
+        if credentials["email"] in ["user@cataloro.com", "demo@cataloro.com", "demo_user@cataloro.com"]:
+            # Use fixed demo user ID that matches existing listings in database
+            user_id = "68bfff790e4e46bc28d43631"
+            full_name = "Demo User"
+            username = "demo_user"
+            user_role = "User-Buyer"
+            badge = "Buyer"
+            registration_status = "Approved"
+            role = "user"
+        elif credentials["email"] == "admin@cataloro.com":
+            user_id = generate_id()
             full_name = "Sash"
             username = "sash_admin"
             user_role = "Admin"
@@ -731,6 +741,8 @@ async def login_user(request: Request, credentials: dict):
             registration_status = "Approved"
             role = "admin"
         else:
+            # Generate new ID for other users
+            user_id = generate_id()
             full_name = "Demo User"
             username = credentials.get("username", "demo_user")
             user_role = "User-Buyer"  # Default for demo users
