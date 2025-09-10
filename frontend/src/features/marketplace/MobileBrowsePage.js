@@ -15,6 +15,16 @@ function MobileBrowsePage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    category: '',
+    priceRange: { min: 0, max: 1000 },
+    location: '',
+    condition: '',
+    dateRange: '',
+    rating: 0,
+    sortBy: 'newest'
+  });
+  const [filteredListings, setFilteredListings] = useState([]);
   const [quickStats, setQuickStats] = useState({
     totalListings: 0,
     newToday: 0,
