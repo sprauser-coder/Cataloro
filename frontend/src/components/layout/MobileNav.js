@@ -73,7 +73,7 @@ function MobileNav({ isOpen, onClose }) {
     {
       title: 'My Account',
       items: [
-        { label: 'My Listings', path: '/my-listings', icon: Package },
+        { label: 'My Listings', path: '/mobile-my-listings', icon: Package },
         { label: 'Buy Management', path: '/buy-management', icon: ShoppingCart },
         { label: 'Messages', path: '/messages', icon: MessageCircle },
         { label: 'Favorites', path: '/favorites', icon: Heart }
