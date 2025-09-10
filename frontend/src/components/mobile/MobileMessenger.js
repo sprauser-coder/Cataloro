@@ -44,11 +44,17 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
   }, [user]);
 
   const loadConversations = async () => {
-    if (!user) return;
+    console.log('🔄 Loading conversations - user:', user);
+    if (!user) {
+      console.log('❌ No user found in loadConversations');
+      return;
+    }
     
     try {
       setLoading(true);
+      console.log('📞 Calling liveService.getUserMessages with user.id:', user.id);
       const userMessages = await liveService.getUserMessages(user.id);
+      console.log('✅ Got user messages:', userMessages);
       
       // Group messages into conversations (same logic as desktop version)
       const conversationsMap = new Map();
