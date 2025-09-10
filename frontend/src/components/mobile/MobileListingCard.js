@@ -435,7 +435,6 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
               <ChevronRight className="w-5 h-5 text-gray-400" />
             </div>
           </div>
-        </Link>
       </div>
     </div>
   );
