@@ -104,12 +104,14 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
         return new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at);
       });
       
+      console.log('📋 Setting conversations list:', conversationsList);
       setRealConversations(conversationsList);
       
     } catch (error) {
-      console.error('Error loading conversations:', error);
+      console.error('❌ Error loading conversations:', error);
       showToast('Error loading conversations', 'error');
     } finally {
+      console.log('✅ Loading complete, setting loading to false');
       setLoading(false);
     }
   };
