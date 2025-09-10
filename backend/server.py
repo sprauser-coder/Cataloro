@@ -3942,6 +3942,32 @@ async def get_listing(listing_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch listing: {str(e)}")
 
+@app.get("/api/listings/{listing_id}/tenders")
+async def get_listing_tenders(listing_id: str):
+    """Get all active tenders for a specific listing"""
+    try:
+        # Check if listing exists
+        listing = await db.listings.find_one({"id": listing_id})
+        if not listing:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        
+        # Get active tenders for this listing
+        tenders = await db.tenders.find({
+            "listing_id": listing_id,
+            "status": "active"
+        }).sort("offer_amount", -1).to_list(length=None)
+        
+        # Convert ObjectId to string for each tender
+        for tender in tenders:
+            tender['_id'] = str(tender['_id'])
+        
+        return tenders
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch tenders: {str(e)}")
+
 @app.post("/api/listings/{listing_id}/images")
 async def upload_listing_image(listing_id: str, file: UploadFile = File(...)):
     """Upload image for a listing - stores as file, not base64"""
