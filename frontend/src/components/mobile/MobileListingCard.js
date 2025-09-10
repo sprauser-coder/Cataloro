@@ -51,7 +51,181 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
     return `${Math.floor(diffInHours / 24)}d ago`;
   };
 
-  return (
+  // Check if current user can bid on this listing
+  const canUserBid = () => {
+    if (!user) return false;
+    
+    // Check if user is the owner of the listing
+    const isOwner = listing.seller?.username === user.username || 
+                    listing.seller_id === user.id || 
+                    listing.seller?.id === user.id;
+    
+    if (isOwner) return false;
+    
+    // Check if user is already the highest bidder
+    if (listing.bid_info?.has_bids && listing.bid_info?.highest_bidder_id === user.id) {
+      return false;
+    }
+    
+    return true;
+  };
+
+  // Calculate minimum bid amount
+  const getMinimumBid = () => {
+    if (listing.bid_info?.has_bids && listing.bid_info?.highest_bid) {
+      return listing.bid_info.highest_bid + 1;
+    }
+    return listing.price + 1;
+  };
+
+  // Load price range settings and price suggestion on mount
+  useEffect(() => {
+    const fetchPriceRangeSettings = async () => {
+      try {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+        const response = await fetch(`${backendUrl}/api/marketplace/price-range-settings`);
+        
+        if (response.ok) {
+          const settings = await response.json();
+          setPriceRangeSettings(settings);
+        }
+      } catch (error) {
+        console.error('Error fetching price range settings:', error);
+      }
+    };
+
+    const fetchPriceSuggestion = async () => {
+      // Only fetch price suggestions for catalyst items
+      if (listing.category === 'Catalysts' && (listing.catalyst_id || listing.title)) {
+        setLoadingSuggestion(true);
+        try {
+          const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+          const response = await fetch(`${backendUrl}/api/admin/catalyst/calculations`);
+          if (response.ok) {
+            const calculations = await response.json();
+            
+            // Find matching calculation by catalyst_id or title
+            let suggestion = null;
+            if (listing.catalyst_id) {
+              suggestion = calculations.find(calc => calc.cat_id === listing.catalyst_id);
+            } else {
+              // Try to match by title
+              suggestion = calculations.find(calc => 
+                calc.name && calc.name.toLowerCase() === listing.title.toLowerCase()
+              );
+            }
+            
+            if (suggestion && suggestion.total_price) {
+              setPriceSuggestion(parseFloat(suggestion.total_price));
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch price suggestion:', error);
+        } finally {
+          setLoadingSuggestion(false);
+        }
+      }
+    };
+
+    fetchPriceRangeSettings();
+    fetchPriceSuggestion();
+  }, [listing.catalyst_id, listing.title, listing.category]);
+
+  // Handle bid submission
+  const handleSubmitBid = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      showToast('Please login to place bids', 'error');
+      return;
+    }
+
+    if (!canUserBid()) {
+      if (listing.seller?.username === user.username || listing.seller_id === user.id) {
+        showToast('You cannot bid on your own listing', 'error');
+      } else if (listing.bid_info?.highest_bidder_id === user.id) {
+        showToast('You are already the highest bidder', 'info');
+      }
+      return;
+    }
+
+    const bidValue = parseFloat(bidAmount);
+    const minimumBid = getMinimumBid();
+
+    if (!bidValue || bidValue < minimumBid) {
+      setBidError(`Minimum bid: ${formatPrice(minimumBid)}`);
+      return;
+    }
+
+    setBidError('');
+    setIsSubmittingBid(true);
+
+    try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/tenders/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          listing_id: listing.id,
+          buyer_id: user.id,
+          offer_amount: bidValue
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setBidSuccess(true);
+        setBidAmount('');
+        showToast(`Bid of ${formatPrice(bidValue)} submitted successfully!`, 'success');
+        
+        // Hide success indicator after 3 seconds
+        setTimeout(() => {
+          setBidSuccess(false);
+        }, 3000);
+        
+      } else {
+        setBidError(data.detail || 'Failed to submit bid');
+        showToast(data.detail || 'Failed to submit bid', 'error');
+      }
+    } catch (error) {
+      console.error('Error submitting bid:', error);
+      setBidError('Network error. Please try again.');
+      showToast('Network error. Please try again.', 'error');
+    } finally {
+      setIsSubmittingBid(false);
+    }
+  };
+
+  // Get bid button disabled state and text
+  const getBidButtonState = () => {
+    if (!user) {
+      return { disabled: true, text: 'Login to Bid', color: 'bg-gray-400' };
+    }
+    
+    if (!canUserBid()) {
+      if (listing.seller?.username === user.username || listing.seller_id === user.id) {
+        return { disabled: true, text: 'Your Listing', color: 'bg-gray-400' };
+      } else if (listing.bid_info?.highest_bidder_id === user.id) {
+        return { disabled: true, text: 'Highest Bidder', color: 'bg-green-500' };
+      }
+    }
+    
+    if (isSubmittingBid) {
+      return { disabled: true, text: 'Submitting...', color: 'bg-blue-400' };
+    }
+    
+    if (bidSuccess) {
+      return { disabled: true, text: 'Bid Submitted!', color: 'bg-green-500' };
+    }
+    
+    return { disabled: false, text: 'Place Bid', color: 'bg-blue-600 hover:bg-blue-700' };
+  };
+
+  const buttonState = getBidButtonState();
     <div className="relative mb-4">
       {/* Main Card - Simplified without swipe functionality */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
