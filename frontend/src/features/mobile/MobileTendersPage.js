@@ -202,7 +202,7 @@ function MyBidsSection({ bids }) {
 }
 
 // Selling Section Component
-function SellingSection({ tenders }) {
+function SellingSection({ tenders, onRefresh }) {
   if (tenders.length === 0) {
     return (
       <div className="text-center py-12">
@@ -227,7 +227,11 @@ function SellingSection({ tenders }) {
   return (
     <div className="space-y-4">
       {tenders.map((listingOverview, index) => (
-        <SellingCard key={listingOverview.listing?.id || index} listingOverview={listingOverview} />
+        <SellingCard 
+          key={listingOverview.listing?.id || index} 
+          listingOverview={listingOverview}
+          onManageTenders={onRefresh}
+        />
       ))}
     </div>
   );
