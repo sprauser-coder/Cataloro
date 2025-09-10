@@ -1,14 +1,14 @@
 {
-  "test_timestamp": "2025-09-10T14:02:56.860643",
+  "test_timestamp": "2025-09-10T18:18:34.774589",
   "admin_authentication": {
     "test_name": "Admin User Authentication",
     "login_successful": true,
-    "response_time_ms": 64.11504745483398,
+    "response_time_ms": 50.51827430725098,
     "admin_email_correct": true,
     "admin_username_correct": true,
     "admin_role_correct": true,
     "user_data": {
-      "id": "68bff934bdb9d78bad2b925c",
+      "id": "admin_user_1",
       "username": "sash_admin",
       "email": "admin@cataloro.com",
       "full_name": "Sash",
@@ -43,7 +43,7 @@
         "username_correct": true,
         "role_correct": true,
         "user_data": {
-          "id": "68bff934bdb9d78bad2b925c",
+          "id": "admin_user_1",
           "username": "sash_admin",
           "email": "admin@cataloro.com",
           "full_name": "Sash",
@@ -69,7 +69,7 @@
         "username_correct": true,
         "role_correct": false,
         "user_data": {
-          "id": "68bff520d28a1097d72b925c",
+          "id": "demo_user_1",
           "username": "demo_user",
           "email": "demo@cataloro.com",
           "name": "Demo User",
@@ -89,25 +89,25 @@
     "total_endpoints_tested": 3,
     "successful_endpoints": 3,
     "success_rate": 100.0,
-    "avg_response_time_ms": 53.11870574951172,
+    "avg_response_time_ms": 41.036526362101235,
     "all_endpoints_working": true,
     "detailed_endpoint_tests": [
       {
         "endpoint": "/admin/dashboard",
         "success": true,
-        "response_time_ms": 89.72930908203125,
+        "response_time_ms": 52.964210510253906,
         "has_data": true
       },
       {
         "endpoint": "/admin/performance",
         "success": true,
-        "response_time_ms": 21.29673957824707,
+        "response_time_ms": 21.898984909057617,
         "has_data": true
       },
       {
         "endpoint": "/health",
         "success": true,
-        "response_time_ms": 48.330068588256836,
+        "response_time_ms": 48.24638366699219,
         "has_data": true
       }
     ]
@@ -126,15 +126,15 @@
       {
         "test": "List Users",
         "success": true,
-        "response_time_ms": 10.454416275024414,
-        "user_count": 6,
+        "response_time_ms": 9.709358215332031,
+        "user_count": 10,
         "has_expected_users": true
       },
       {
         "test": "Suspend User",
         "success": true,
-        "response_time_ms": 10.449409484863281,
-        "user_id": "68bff520d28a1097d72b925c",
+        "response_time_ms": 20.680904388427734,
+        "user_id": "demo_user_1",
         "is_active_after_suspend": false,
         "suspend_successful": true,
         "returns_updated_user": true
@@ -142,8 +142,8 @@
       {
         "test": "Activate User",
         "success": true,
-        "response_time_ms": 11.001825332641602,
-        "user_id": "68bff520d28a1097d72b925c",
+        "response_time_ms": 9.238243103027344,
+        "user_id": "demo_user_1",
         "is_active_after_activate": true,
         "activate_successful": true,
         "returns_updated_user": true
@@ -151,7 +151,7 @@
       {
         "test": "State Persistence",
         "success": true,
-        "user_id": "68bff520d28a1097d72b925c",
+        "user_id": "demo_user_1",
         "final_is_active_status": true,
         "state_persisted": true
       },
@@ -166,7 +166,7 @@
       {
         "test": "Bulk Operations",
         "success": true,
-        "response_time_ms": 50.704002380371094,
+        "response_time_ms": 10.760068893432617,
         "bulk_endpoint_available": true,
         "error": null
       }
@@ -185,7 +185,7 @@
       {
         "step": "List Users",
         "success": true,
-        "total_users": 6,
+        "total_users": 10,
         "expected_users_found": 3,
         "missing_users": []
       },
@@ -195,7 +195,7 @@
         "suspend_worked": true,
         "activate_worked": true,
         "final_state_correct": true,
-        "user_id": "68bff520d28a1097d72b925c"
+        "user_id": "demo_user_1"
       },
       {
         "step": "ID Format Compatibility",
@@ -205,7 +205,7 @@
           {
             "format": "UUID",
             "success": true,
-            "user_id": "68bff520d28a1097d72b925c"
+            "user_id": "demo_user_1"
           }
         ]
       }
@@ -214,8 +214,8 @@
   "browse_endpoint_performance": {
     "test_name": "Browse Endpoint Performance",
     "endpoint_working": true,
-    "response_time_ms": 45.804500579833984,
-    "listings_count": 9,
+    "response_time_ms": 85.26968955993652,
+    "listings_count": 15,
     "data_integrity_score": 100.0,
     "meets_performance_target": true,
     "data_structure_valid": true
@@ -230,13 +230,13 @@
       {
         "feature": "Admin Dashboard",
         "success": true,
-        "response_time_ms": 68.53199005126953,
+        "response_time_ms": 52.48904228210449,
         "has_kpis": false
       },
       {
         "feature": "Performance Metrics",
         "success": true,
-        "response_time_ms": 17.365217208862305,
+        "response_time_ms": 18.43738555908203,
         "has_metrics": true
       }
     ]

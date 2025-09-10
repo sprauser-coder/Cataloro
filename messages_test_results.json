@@ -1,0 +1,151 @@
+{
+  "test_timestamp": "2025-09-10T18:18:29.239254",
+  "demo_user_ids_tested": [
+    "2ae84d11-f762-4462-9467-d283fd719d21",
+    "demo_user_1"
+  ],
+  "api_endpoint_test": {
+    "test_name": "Messages API Endpoint",
+    "total_tests": 2,
+    "successful_tests": 2,
+    "success_rate": 100.0,
+    "total_messages_found": 0,
+    "api_responding": true,
+    "both_user_ids_working": true,
+    "avg_response_time_ms": 69.60368156433105,
+    "detailed_results": [
+      {
+        "user_id": "2ae84d11-f762-4462-9467-d283fd719d21",
+        "success": true,
+        "response_time_ms": 90.1036262512207,
+        "messages_count": 0,
+        "data_structure_valid": true,
+        "messages_data": []
+      },
+      {
+        "user_id": "demo_user_1",
+        "success": true,
+        "response_time_ms": 49.103736877441406,
+        "messages_count": 0,
+        "data_structure_valid": true,
+        "messages_data": []
+      }
+    ]
+  },
+  "database_content_test": {
+    "test_name": "Database Content Check",
+    "total_users_checked": 5,
+    "users_with_api_access": 5,
+    "users_with_messages": 0,
+    "total_messages_in_system": 0,
+    "database_has_messages": false,
+    "empty_database_explanation": true,
+    "detailed_user_results": [
+      {
+        "user_id": "2ae84d11-f762-4462-9467-d283fd719d21",
+        "has_messages": false,
+        "message_count": 0,
+        "api_accessible": true,
+        "sample_message": null
+      },
+      {
+        "user_id": "demo_user_1",
+        "has_messages": false,
+        "message_count": 0,
+        "api_accessible": true,
+        "sample_message": null
+      },
+      {
+        "user_id": "admin_user_1",
+        "has_messages": false,
+        "message_count": 0,
+        "api_accessible": true,
+        "sample_message": null
+      },
+      {
+        "user_id": "test_user_1",
+        "has_messages": false,
+        "message_count": 0,
+        "api_accessible": true,
+        "sample_message": null
+      },
+      {
+        "user_id": "seller_user_1",
+        "has_messages": false,
+        "message_count": 0,
+        "api_accessible": true,
+        "sample_message": null
+      }
+    ]
+  },
+  "message_creation_test": {
+    "test_name": "Message Creation Test",
+    "creation_endpoint_working": true,
+    "message_storage_working": true,
+    "sender_retrieval_working": true,
+    "recipient_retrieval_working": true,
+    "full_message_flow_working": true,
+    "detailed_test_results": {
+      "message_creation_attempted": true,
+      "creation_successful": true,
+      "response_time_ms": 18.42212677001953,
+      "message_id": "4f7221cb-884a-49f2-86b3-43bf6c478f9f",
+      "creation_response": {
+        "message": "Message sent successfully",
+        "id": "4f7221cb-884a-49f2-86b3-43bf6c478f9f"
+      },
+      "sender_can_see_message": true,
+      "recipient_can_see_message": true,
+      "message_properly_stored": true,
+      "sender_message_count": 1,
+      "recipient_message_count": 1
+    }
+  },
+  "consistency_test": {
+    "test_name": "Mobile vs Desktop Consistency",
+    "total_consistency_tests": 3,
+    "successful_consistency_tests": 3,
+    "data_consistent_across_calls": true,
+    "api_reliability": 100.0,
+    "avg_response_time_ms": 39.141337076822914,
+    "response_time_variance": 24.089045001405715,
+    "detailed_consistency_results": [
+      {
+        "test_number": 1,
+        "success": true,
+        "message_count": 1,
+        "response_time_ms": 54.03709411621094,
+        "data_structure": "list",
+        "first_message_id": "4f7221cb-884a-49f2-86b3-43bf6c478f9f"
+      },
+      {
+        "test_number": 2,
+        "success": true,
+        "message_count": 1,
+        "response_time_ms": 52.03723907470703,
+        "data_structure": "list",
+        "first_message_id": "4f7221cb-884a-49f2-86b3-43bf6c478f9f"
+      },
+      {
+        "test_number": 3,
+        "success": true,
+        "message_count": 1,
+        "response_time_ms": 11.349678039550781,
+        "data_structure": "list",
+        "first_message_id": "4f7221cb-884a-49f2-86b3-43bf6c478f9f"
+      }
+    ]
+  },
+  "summary": {
+    "overall_success_rate": 100.0,
+    "api_endpoints_working": true,
+    "database_accessible": true,
+    "message_creation_working": true,
+    "message_storage_working": true,
+    "data_consistency_verified": true,
+    "total_messages_in_system": 0,
+    "empty_messages_explanation": "Database is empty but message creation works - this explains why mobile shows empty messages",
+    "mobile_messages_issue_identified": true,
+    "recommended_action": "Create test messages to populate database"
+  }
+}

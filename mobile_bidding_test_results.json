@@ -1,26 +1,27 @@
 {
-  "test_timestamp": "2025-09-10T14:02:52.862462",
+  "test_timestamp": "2025-09-10T18:18:30.880082",
   "test_setup": {
     "success": true,
-    "listing_id": "819bfe33-2bb1-49fb-85c4-d5ddfc9fe863",
-    "buyer_id": "68c1850b6086f81545922f45",
-    "seller_id": "68c1850c6086f81545922f46"
+    "listing_id": "8ac0ef72-b386-46ce-8b76-e31487ddb89c",
+    "buyer_id": "6c702f80-748a-434f-981f-68952796a469",
+    "seller_id": "44733cf0-ce91-4c64-bb9d-01748182252a"
   },
   "first_bid_scenario": {
     "test_name": "First Bid Scenario",
-    "success": false,
+    "success": true,
     "bid_amount": 100.0,
-    "error": "Bid must be at least \u20ac100.00 (starting price)",
-    "status": 400,
-    "first_bid_accepted": false
+    "response_time_ms": 13.661623001098633,
+    "tender_id": "de463e54-0643-413a-ab57-7d7bb7761559",
+    "message": "Tender submitted successfully",
+    "first_bid_accepted": true
   },
   "higher_bid_scenario": {
     "test_name": "Higher Bid Scenario",
     "success": true,
     "bid_amount": 150.0,
     "previous_highest": 100.0,
-    "response_time_ms": 55.110931396484375,
-    "tender_id": "71860fb1-9df3-42d8-9cc8-0fbf989cdc23",
+    "response_time_ms": 518.589973449707,
+    "tender_id": "c3a98630-231f-438f-b552-515de0c29d5f",
     "message": "Tender submitted successfully",
     "higher_bid_accepted": true
   },
@@ -46,13 +47,13 @@
   },
   "minimum_increment_logic": {
     "test_name": "Minimum Increment Logic",
-    "success": false,
+    "success": true,
     "bid_amount": 151.0,
     "previous_highest": 150.0,
     "increment": 1.0,
-    "minimum_increment_accepted": false,
-    "error_message": "Bid must be higher than current highest bid of \u20ac150.00. Minimum bid: \u20ac151.00",
-    "status": 400
+    "minimum_increment_accepted": true,
+    "response_time_ms": 10.969877243041992,
+    "tender_id": "ea7b9497-1668-4e79-a08a-d71e16ae9d0b"
   },
   "error_message_accuracy": {
     "test_name": "Error Message Accuracy",
@@ -65,14 +66,14 @@
     "detailed_error_tests": [
       {
         "scenario": "Equal bid",
-        "error_message": "Bid must be higher than current highest bid of \u20ac150.00. Minimum bid: \u20ac151.00",
+        "error_message": "Bid must be higher than current highest bid of \u20ac151.00. Minimum bid: \u20ac152.00",
         "contains_current_bid": true,
         "contains_minimum_bid": true,
         "message_clear": true
       },
       {
         "scenario": "Lower bid",
-        "error_message": "Bid must be higher than current highest bid of \u20ac150.00. Minimum bid: \u20ac151.00",
+        "error_message": "Bid must be higher than current highest bid of \u20ac151.00. Minimum bid: \u20ac152.00",
         "contains_current_bid": true,
         "contains_minimum_bid": true,
         "message_clear": true
@@ -89,16 +90,16 @@
     "error_message_appropriate": true
   },
   "summary": {
-    "overall_success_rate": 71.42857142857143,
+    "overall_success_rate": 100.0,
     "bidding_validation_logic_working": true,
-    "first_bid_accepted": false,
+    "first_bid_accepted": true,
     "higher_bids_accepted": true,
     "equal_bids_rejected": true,
     "lower_bids_rejected": true,
-    "minimum_increment_working": false,
+    "minimum_increment_working": true,
     "error_messages_accurate": true,
     "self_bidding_prevented": true,
     "critical_bug_resolved": true,
-    "all_tests_passed": false
+    "all_tests_passed": true
   }
 }

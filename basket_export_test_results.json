@@ -1,11 +1,11 @@
 {
-  "test_timestamp": "2025-09-10T14:02:53.823023",
+  "test_timestamp": "2025-09-10T18:18:31.557521",
   "basic_functionality": {
     "test_name": "Basket Export PDF - Basic Functionality",
     "endpoint_working": true,
-    "response_time_ms": 204.93149757385254,
+    "response_time_ms": 219.90132331848145,
     "pdf_generated": true,
-    "pdf_size_bytes": 3808,
+    "pdf_size_bytes": 3804,
     "is_valid_pdf": true,
     "has_reasonable_size": true,
     "content_type_correct": true,
@@ -16,9 +16,9 @@
     "test_name": "Basket Export Response Time Performance",
     "total_scenarios_tested": 4,
     "successful_scenarios": 4,
-    "avg_response_time_ms": 36.745309829711914,
-    "max_response_time_ms": 91.63045883178711,
-    "min_response_time_ms": 13.165473937988281,
+    "avg_response_time_ms": 16.60698652267456,
+    "max_response_time_ms": 17.956018447875977,
+    "min_response_time_ms": 15.292167663574219,
     "performance_acceptable": true,
     "performance_fast": true,
     "loading_state_justified": false,
@@ -26,28 +26,28 @@
       {
         "scenario": "Small basket (1 item)",
         "item_count": 1,
-        "response_time_ms": 13.165473937988281,
-        "pdf_size_bytes": 3670,
+        "response_time_ms": 15.292167663574219,
+        "pdf_size_bytes": 3667,
         "success": true
       },
       {
         "scenario": "Medium basket (5 items)",
         "item_count": 5,
-        "response_time_ms": 91.63045883178711,
-        "pdf_size_bytes": 3859,
+        "response_time_ms": 15.72561264038086,
+        "pdf_size_bytes": 3857,
         "success": true
       },
       {
         "scenario": "Large basket (10 items)",
         "item_count": 10,
-        "response_time_ms": 23.772001266479492,
-        "pdf_size_bytes": 4447,
+        "response_time_ms": 17.454147338867188,
+        "pdf_size_bytes": 4449,
         "success": true
       },
       {
         "scenario": "Extra large basket (20 items)",
         "item_count": 20,
-        "response_time_ms": 18.413305282592773,
+        "response_time_ms": 17.956018447875977,
         "pdf_size_bytes": 5123,
         "success": true
       }
@@ -68,7 +68,7 @@
         "expected_success": true,
         "actual_success": true,
         "validation_passed": true,
-        "response_time_ms": 11.501073837280273,
+        "response_time_ms": 13.444900512695312,
         "error": null,
         "pdf_size": 2348
       },
@@ -77,7 +77,7 @@
         "expected_success": true,
         "actual_success": true,
         "validation_passed": true,
-        "response_time_ms": 15.807867050170898,
+        "response_time_ms": 12.444734573364258,
         "error": null,
         "pdf_size": 3565
       },
@@ -86,7 +86,7 @@
         "expected_success": false,
         "actual_success": true,
         "validation_passed": false,
-        "response_time_ms": 172.8651523590088,
+        "response_time_ms": 12.740850448608398,
         "error": null,
         "pdf_size": 2297
       },
@@ -95,9 +95,9 @@
         "expected_success": true,
         "actual_success": true,
         "validation_passed": true,
-        "response_time_ms": 13.440370559692383,
+        "response_time_ms": 15.03443717956543,
         "error": null,
-        "pdf_size": 3629
+        "pdf_size": 3627
       }
     ]
   },
@@ -105,9 +105,9 @@
     "test_name": "Basket Export Concurrent Requests",
     "concurrent_requests": 3,
     "successful_requests": 3,
-    "total_time_ms": 93.52827072143555,
-    "avg_individual_time_ms": 28.72927983601888,
-    "max_individual_time_ms": 35.108089447021484,
+    "total_time_ms": 92.19765663146973,
+    "avg_individual_time_ms": 25.24884541829427,
+    "max_individual_time_ms": 33.83588790893555,
     "concurrent_performance_acceptable": true,
     "system_handles_concurrent_exports": true,
     "no_timeout_issues": true
