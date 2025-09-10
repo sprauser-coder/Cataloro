@@ -9,7 +9,7 @@ from datetime import datetime
 from collections import Counter
 
 # Get backend URL from environment
-BACKEND_URL = "https://market-optimize-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-repair.preview.emergentagent.com/api"
 
 def detailed_user_analysis():
     """

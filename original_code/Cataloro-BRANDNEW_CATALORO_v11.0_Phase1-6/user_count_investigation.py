@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://market-optimize-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-repair.preview.emergentagent.com/api"
 
 def test_user_count_discrepancy():
     """

@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://market-optimize-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-repair.preview.emergentagent.com/api"
 DESKTOP_PERFORMANCE_TARGET_MS = 500  # Desktop messaging should load in under 500ms
 MESSAGE_ORDERING_REQUIRED = "chronological"  # oldest first, newest at bottom
 
