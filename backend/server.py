@@ -1295,14 +1295,35 @@ async def browse_listings():
                     "location": listing.get('location', 'Location not specified')
                 }
             
-            # Add simple bid info (without complex tender queries)
+            # Add accurate bid info with optimized queries
             if not listing.get('bid_info'):
-                listing['bid_info'] = {
-                    "has_bids": False,
-                    "total_bids": 0,
-                    "highest_bid": None,
-                    "highest_bidder_id": None
-                }
+                # Get active tenders for this listing (optimized single query per listing)
+                active_tenders = await db.tenders.find({
+                    "listing_id": listing.get('id'),
+                    "status": "active"
+                }).sort("offer_amount", -1).limit(1).to_list(length=1)
+                
+                if active_tenders:
+                    highest_tender = active_tenders[0]
+                    # Count total active tenders for this listing
+                    total_tenders = await db.tenders.count_documents({
+                        "listing_id": listing.get('id'),
+                        "status": "active"
+                    })
+                    
+                    listing['bid_info'] = {
+                        "has_bids": True,
+                        "total_bids": total_tenders,
+                        "highest_bid": highest_tender["offer_amount"],
+                        "highest_bidder_id": highest_tender["buyer_id"]
+                    }
+                else:
+                    listing['bid_info'] = {
+                        "has_bids": False,
+                        "total_bids": 0,
+                        "highest_bid": None,
+                        "highest_bidder_id": None
+                    }
             
             # Ensure price is set
             if not listing.get('price'):
