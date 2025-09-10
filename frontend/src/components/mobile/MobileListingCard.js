@@ -231,6 +231,8 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
     <div className="relative mb-4">
       {/* Main Card - Simplified without swipe functionality */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        {/* Clickable Image Section */}
+        <Link to={`/listing/${listing.id}`} className="block">
           {/* Image */}
           <div className="relative aspect-video bg-gray-100 dark:bg-gray-700">
             {listing.images && listing.images.length > 0 ? (
