@@ -368,11 +368,12 @@ function SellingCard({ listingOverview, onManageTenders }) {
       });
       
       if (response.ok) {
-        alert('Tender rejected successfully!');
+        alert('✅ Tender rejected successfully!');
         setShowTendersDropdown(false);
         if (onManageTenders) onManageTenders(); // Refresh data
       } else {
-        alert('Failed to reject tender');
+        const errorText = await response.text();
+        alert(`❌ Failed to reject tender: ${errorText}`);
       }
     } catch (error) {
       console.error('Error rejecting tender:', error);
