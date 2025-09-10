@@ -63,14 +63,14 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
     if (!user) return false;
     
     // Check if user is the owner of the listing
-    const isOwner = listing.seller?.username === user.username || 
-                    listing.seller_id === user.id || 
-                    listing.seller?.id === user.id;
+    const isOwner = currentListing.seller?.username === user.username || 
+                    currentListing.seller_id === user.id || 
+                    currentListing.seller?.id === user.id;
     
     if (isOwner) return false;
     
     // Check if user is already the highest bidder
-    if (listing.bid_info?.has_bids && listing.bid_info?.highest_bidder_id === user.id) {
+    if (currentListing.bid_info?.has_bids && currentListing.bid_info?.highest_bidder_id === user.id) {
       return false;
     }
     
@@ -79,10 +79,10 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
 
   // Calculate minimum bid amount
   const getMinimumBid = () => {
-    if (listing.bid_info?.has_bids && listing.bid_info?.highest_bid) {
-      return listing.bid_info.highest_bid + 1;
+    if (currentListing.bid_info?.has_bids && currentListing.bid_info?.highest_bid) {
+      return currentListing.bid_info.highest_bid + 1;
     }
-    return listing.price + 1;
+    return currentListing.price + 1;
   };
 
   // Load price range settings and price suggestion on mount
