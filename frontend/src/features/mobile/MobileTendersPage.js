@@ -40,20 +40,24 @@ function MobileTendersPage() {
       setLoading(true);
       
       if (activeTab === 'my-bids') {
-        // Load user's bids
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/user/${user.id}/tenders`);
+        // Load user's bids - use the same endpoint as desktop
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/tenders/buyer/${user.id}`);
         if (response.ok) {
           const data = await response.json();
           setMyBids(data);
+        } else {
+          console.error(`Failed to fetch buyer tenders: ${response.status}`);
+          showToast('Failed to load your bids', 'error');
         }
       } else {
-        // Load tenders for user's listings (selling)
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/user/my-listings/${user.id}`);
+        // Load tenders for user's listings (selling) - use the same endpoint as desktop
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/tenders/seller/${user.id}/overview`);
         if (response.ok) {
-          const listings = await response.json();
-          // Filter listings that have bids
-          const listingsWithBids = listings.filter(listing => (listing.total_bids || 0) > 0);
-          setSellingTenders(listingsWithBids);
+          const data = await response.json();
+          setSellingTenders(data);
+        } else {
+          console.error(`Failed to fetch seller tenders: ${response.status}`);
+          showToast('Failed to load selling tenders', 'error');
         }
       }
     } catch (error) {
