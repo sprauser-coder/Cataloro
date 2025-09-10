@@ -86,10 +86,9 @@ function SimpleLoginPage() {
     setError(null);
   };
 
-  const handleSubmit = async (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setIsAnimating(true);
     setError(null);
     
     try {
