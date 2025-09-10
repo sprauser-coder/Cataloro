@@ -3858,7 +3858,7 @@ async def get_listing(listing_id: str):
 
 @app.post("/api/listings/{listing_id}/images")
 async def upload_listing_image(listing_id: str, file: UploadFile = File(...)):
-    """Upload image for a listing"""
+    """Upload image for a listing - stores as file, not base64"""
     try:
         # Validate file type
         if not file.content_type.startswith('image/'):
@@ -3869,18 +3869,30 @@ async def upload_listing_image(listing_id: str, file: UploadFile = File(...)):
         if len(contents) > 5 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="File size must be less than 5MB")
         
-        # For demo purposes, return a data URL
-        import base64
-        file_data = base64.b64encode(contents).decode()
-        image_url = f"data:{file.content_type};base64,{file_data}"
+        # Generate unique filename
+        file_extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+        unique_filename = f"{uuid.uuid4()}.{file_extension}"
+        file_path = f"uploads/{unique_filename}"
         
-        # Update listing with new image
+        # Save file to disk
+        with open(file_path, "wb") as buffer:
+            buffer.write(contents)
+        
+        # Create URL for the uploaded image
+        image_url = f"/uploads/{unique_filename}"
+        
+        # Update listing with new image URL (not base64)
         result = await db.listings.update_one(
             {"id": listing_id},
             {"$push": {"images": image_url}}
         )
         
         if result.matched_count == 0:
+            # Clean up uploaded file if listing not found
+            try:
+                os.remove(file_path)
+            except:
+                pass
             raise HTTPException(status_code=404, detail="Listing not found")
         
         return {
