@@ -93,6 +93,12 @@ function MobileSearchBar({ onSearch, placeholder = "Search catalysts...", classN
     }
   };
 
+  // Update query when initialValue changes (for external control)
+  useEffect(() => {
+    if (initialValue !== query) {
+      setQuery(initialValue);
+    }
+  }, [initialValue]);
   const handleVoiceSearch = () => {
     if (recognition.current && !isListening) {
       setIsListening(true);
