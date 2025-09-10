@@ -267,7 +267,9 @@ def generate_id():
 
 def serialize_doc(doc):
     if doc and "_id" in doc:
-        doc["id"] = str(doc["_id"])
+        # Only set id from _id if there's no existing custom id field
+        if "id" not in doc:
+            doc["id"] = str(doc["_id"])
         del doc["_id"]
     return doc
 
