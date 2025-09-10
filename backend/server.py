@@ -4428,7 +4428,7 @@ async def submit_tender(tender_data: dict):
         if seller_id == buyer_id:
             raise HTTPException(status_code=400, detail="Cannot bid on your own listing")
         
-        # Check if offer meets minimum bid requirement (current highest bid)
+        # Check if offer meets minimum bid requirement (must be higher than current highest bid)
         existing_tenders = await db.tenders.find({
             "listing_id": listing_id,
             "status": "active"
@@ -4436,13 +4436,20 @@ async def submit_tender(tender_data: dict):
         
         minimum_bid = listing.get("price", 0)  # Starting price from listing
         if existing_tenders:
-            minimum_bid = max(minimum_bid, existing_tenders[0]["offer_amount"])
+            # Must bid higher than current highest bid
+            minimum_bid = existing_tenders[0]["offer_amount"] + 1
         
-        if offer_amount < minimum_bid:
-            raise HTTPException(
-                status_code=400, 
-                detail=f"Offer must be at least €{minimum_bid:.2f} (current highest bid or starting price)"
-            )
+        if offer_amount <= minimum_bid:
+            if existing_tenders:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Bid must be higher than current highest bid of €{existing_tenders[0]['offer_amount']:.2f}. Minimum bid: €{minimum_bid:.2f}"
+                )
+            else:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Bid must be at least €{minimum_bid:.2f} (starting price)"
+                )
         
         # Create the tender
         tender_id = generate_id()
