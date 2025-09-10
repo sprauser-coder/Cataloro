@@ -108,16 +108,16 @@ function MobileBottomNav() {
       highlight: true // Central create button
     },
     {
-      label: 'Cart',
-      path: '/buy-management',
+      label: 'Tenders',
+      path: '/mobile-tenders',
       icon: ShoppingCart,
-      badge: cartCount > 0 ? cartCount : null
+      badge: null
     },
     {
-      label: 'Profile',
-      path: '/profile',
+      label: 'Listings',
+      path: '/mobile-my-listings',
       icon: User,
-      badge: null // No badge for profile
+      badge: null
     }
   ];
 
