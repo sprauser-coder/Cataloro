@@ -144,7 +144,8 @@ function ProfilePage() {
   // Calculate real statistics from marketplace data
   useEffect(() => {
     const calculateStats = () => {
-      const userListings = allProducts.filter(p => p.seller === user?.username || p.seller === user?.full_name);
+      // Use seller_id to match listings instead of username/full_name for consistency
+      const userListings = allProducts.filter(p => p.seller_id === user?.id);
       const activeListings = userListings.filter(p => p.inStock !== false);
       const userOrders = orderHistory || [];
       const completedOrders = userOrders.filter(o => o.status === 'completed');
