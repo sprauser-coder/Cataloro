@@ -331,7 +331,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
             {/* Description - REMOVED per user requirements */}
 
             {/* Market Range - Show for catalyst items */}
-            {listing.category === 'Catalysts' && (
+            {currentListing.category === 'Catalysts' && (
               <div className="mb-3">
                 {loadingSuggestion ? (
                   <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
