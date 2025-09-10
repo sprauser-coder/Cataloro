@@ -136,6 +136,14 @@ function MessagesPage() {
     };
   }, []); // Empty dependency array to prevent infinite loop
 
+  // Load messages when user is available
+  useEffect(() => {
+    if (user && !isMobile) {
+      console.log('🔄 Loading messages for desktop version...');
+      loadMessages();
+    }
+  }, [user, isMobile]);
+
   // CONDITIONAL RETURN AFTER ALL HOOKS
   if (isMobile) {
     return (
