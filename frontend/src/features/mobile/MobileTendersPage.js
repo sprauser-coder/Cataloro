@@ -312,23 +312,23 @@ function BidCard({ bid }) {
   );
 }
 
-// Selling Card Component
-function SellingCard({ listing }) {
+// Selling Card Component  
+function SellingCard({ listingOverview }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-            {listing.title}
+            {listingOverview.listing?.title || 'Unknown Item'}
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Listed for €{listing.price}
+            Listed for €{listingOverview.listing?.price || 0}
           </p>
         </div>
         <div className="flex items-center bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-full">
           <Users className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-1" />
           <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-            {listing.total_bids || 0} bid{(listing.total_bids || 0) !== 1 ? 's' : ''}
+            {listingOverview.tender_count || 0} bid{(listingOverview.tender_count || 0) !== 1 ? 's' : ''}
           </span>
         </div>
       </div>
@@ -338,27 +338,30 @@ function SellingCard({ listing }) {
           <div>
             <p className="text-xs text-gray-500 dark:text-gray-400">Highest Bid</p>
             <p className="text-lg font-bold text-green-600 dark:text-green-400">
-              €{listing.highest_bid || 0}
+              €{listingOverview.highest_offer || 0}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Status</p>
-            <p className="text-sm font-semibold text-gray-900 dark:text-white capitalize">
-              {listing.status || 'Active'}
+            <p className="text-xs text-gray-500 dark:text-gray-400">Active Tenders</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">
+              {listingOverview.tenders?.length || 0}
             </p>
           </div>
         </div>
 
         <div className="flex space-x-2">
           <Link
-            to={`/listing/${listing.id}`}
+            to={`/listing/${listingOverview.listing?.id}`}
             className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
             View
           </Link>
-          <button className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+          <Link
+            to={`/tenders?tab=listings&listing=${listingOverview.listing?.id}`}
+            className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
+          >
             Manage
-          </button>
+          </Link>
         </div>
       </div>
     </div>
