@@ -40,7 +40,16 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
   const [loading, setLoading] = useState(true);
   const [realConversations, setRealConversations] = useState([]);
   const [conversationMessages, setConversationMessages] = useState([]);
-  const messagesEndRef = useRef(null);
+  const [preventInitialFocus, setPreventInitialFocus] = useState(true);
+
+  // Prevent auto-focus for the first few seconds after component loads
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPreventInitialFocus(false);
+    }, 3000); // Allow normal focus after 3 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Debug user context
   useEffect(() => {
