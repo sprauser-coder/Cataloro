@@ -136,6 +136,9 @@ function App() {
                   <Route path="view-all-requests" element={<ViewAllRequestsPage />} />
                   <Route path={APP_ROUTES.MY_LISTINGS} element={<MyListingsPage />} />
 
+                  {/* Mobile-specific routes */}
+                  <Route path="mobile-my-listings" element={<MobileMyListingsPage />} />
+                  <Route path="mobile-tenders" element={<MobileTendersPage />} />
 
                   <Route path="messages" element={<MessagesPage />} />
                   <Route path={APP_ROUTES.TENDERS.substring(1)} element={<TenderManagementPage />} />
