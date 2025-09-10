@@ -25,8 +25,12 @@ import { useNotifications } from '../../context/NotificationContext';
 import { liveService } from '../../services/liveService';
 
 function MobileMessenger({ conversations = [], activeConversation = null, onBack }) {
+  console.log('🚀 MobileMessenger component rendered - props:', { onBack: !!onBack, activeConversation });
+  
   const { user } = useAuth();
   const { showToast } = useNotifications();
+  
+  console.log('🔐 Auth context in MobileMessenger:', { user, hasUser: !!user });
   
   const [view, setView] = useState(activeConversation ? 'conversation' : 'list'); // 'list' or 'conversation'
   const [currentConversation, setCurrentConversation] = useState(activeConversation);
