@@ -324,13 +324,20 @@ function MobileProductDetailPage() {
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-              {formatPrice(product.bid_info?.has_bids && product.bid_info?.highest_bid 
-                ? product.bid_info.highest_bid 
-                : product.price)}
+              {product.bid_info?.has_bids && product.bid_info?.highest_bid 
+                ? formatPrice(product.bid_info.highest_bid)
+                : formatPrice(product.price)}
             </div>
-            {product.bid_info?.has_bids && product.bid_info?.total_bids > 0 && (
-              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Current bid ({product.bid_info.total_bids} bid{product.bid_info.total_bids !== 1 ? 's' : ''})
+            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {product.bid_info?.has_bids && product.bid_info?.total_bids > 0 ? (
+                <>Current highest bid ({product.bid_info.total_bids} bid{product.bid_info.total_bids !== 1 ? 's' : ''})</>
+              ) : (
+                <>Starting price (no bids yet)</>
+              )}
+            </div>
+            {product.bid_info?.has_bids && product.price && (
+              <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                Original price: {formatPrice(product.price)}
               </div>
             )}
             {product.rating && (
