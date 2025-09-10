@@ -242,17 +242,6 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
     }
   };
 
-  useEffect(() => {
-    // Only scroll when new messages are added, with a small delay
-    if (messages.length > 0) {
-      const timeoutId = setTimeout(() => {
-        scrollToBottom();
-      }, 50);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [messages]);
-
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', { 
       hour: 'numeric', 
