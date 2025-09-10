@@ -277,9 +277,10 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
               </div>
             )}
           </div>
+        </Link>
 
-          {/* Content */}
-          <div className="p-4">
+        {/* Non-clickable Content Section */}
+        <div className="p-4">
             {/* Title and Price */}
             <div className="flex justify-between items-start mb-2">
               <h3 className="font-semibold text-gray-900 dark:text-white text-lg leading-tight flex-1 mr-2">
