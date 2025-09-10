@@ -22,10 +22,16 @@ import {
 } from 'lucide-react';
 
 function MobileProductDetailPage() {
-  const { id: productId } = useParams();
+  const params = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { showToast } = useNotifications();
+
+  // Handle both route patterns: /listing/:id and /product/:productId
+  const productId = params.id || params.productId;
+
+  console.log('🔍 MobileProductDetailPage params:', params);
+  console.log('🆔 Product ID resolved:', productId);
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
