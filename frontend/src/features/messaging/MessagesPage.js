@@ -427,7 +427,8 @@ function MessagesPage() {
 
     try {
       setSending(true);
-      await liveService.sendMessage(user.id, {
+      await liveService.sendMessage({
+        sender_id: user.id,
         recipient_id: selectedUser.id,
         subject: newMessage.subject || 'New Message',
         content: newMessage.content
