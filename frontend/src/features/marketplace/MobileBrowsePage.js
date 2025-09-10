@@ -1,201 +1,183 @@
 /**
- * CATALORO - Mobile Browse Page
- * Optimized mobile marketplace experience
+ * CATALORO - Mobile Browse Page (SIMPLIFIED FOR SPEED)
+ * Optimized mobile marketplace browsing without complex context dependencies
  */
 
 import React, { useState, useEffect } from 'react';
-import { Search } from 'lucide-react';
-import { useMarketplace } from '../../context/MarketplaceContext';
-import { useNotifications } from '../../context/NotificationContext';
-
-// Mobile Components
+import { Search, Filter, TrendingUp, Package, Clock, DollarSign } from 'lucide-react';
 import MobileHeroSection from '../../components/mobile/MobileHeroSection';
-import MobileFilters from '../../components/mobile/MobileFilters';
 import MobileListingCard from '../../components/mobile/MobileListingCard';
+import MobileFilters from '../../components/mobile/MobileFilters';
 
 function MobileBrowsePage() {
-  // Core marketplace state
-  const { 
-    filteredProducts,
-    globalSearchQuery,
-    globalFilters,
-    isLoading,
-    refreshListings,
-    searchListings,
-    updateFilters,
-    updateGlobalSearchQuery
-  } = useMarketplace();
-  
-  const { showToast } = useNotifications();
-
-  // Mobile-specific state
+  // Simple local state - no complex context
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-  const [quickStats, setQuickStats] = useState({});
+  const [quickStats, setQuickStats] = useState({
+    totalListings: 0,
+    newToday: 0,
+    hotDeals: 0,
+    avgPrice: 0
+  });
 
-  // Load quick stats for mobile hero
-  useEffect(() => {
-    const calculateQuickStats = () => {
+  // Simple, direct API call - no context complexity
+  const loadListings = async () => {
+    try {
+      setLoading(true);
+      console.log('📱 Mobile browse: Loading listings directly from API');
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/marketplace/browse`);
+      if (!response.ok) throw new Error('Failed to fetch');
+      
+      const data = await response.json();
+      console.log('📱 Mobile browse: Loaded', data.length, 'listings');
+      
+      setListings(data);
+      
+      // Calculate quick stats
       const stats = {
-        totalListings: filteredProducts.length,
-        newToday: filteredProducts.filter(item => {
+        totalListings: data.length,
+        newToday: data.filter(item => {
           const createdDate = new Date(item.created_at);
           const today = new Date();
           return createdDate.toDateString() === today.toDateString();
         }).length,
-        hotDeals: filteredProducts.filter(item => item.isHotDeal || item.discount > 0).length,
-        avgPrice: filteredProducts.length > 0 
-          ? Math.round(filteredProducts.reduce((sum, item) => sum + (item.price || 0), 0) / filteredProducts.length)
+        hotDeals: data.filter(item => item.isHotDeal || item.discount > 0).length,
+        avgPrice: data.length > 0 
+          ? Math.round(data.reduce((sum, item) => sum + (item.price || 0), 0) / data.length)
           : 0
       };
       setQuickStats(stats);
-    };
-
-    calculateQuickStats();
-  }, [filteredProducts]);
-
-  // Refresh listings when page becomes visible (for updated prices after bidding)
-  useEffect(() => {
-    let refreshTimeout;
-    
-    const handleVisibilityChange = () => {
-      if (!document.hidden && !refreshTimeout) {
-        // Page is visible, refresh listings to get updated bid prices
-        console.log('📱 Mobile browse page visible, refreshing listings for updated prices');
-        
-        // Throttle refreshes to prevent infinite loop
-        refreshTimeout = setTimeout(() => {
-          refreshListings();
-          refreshTimeout = null;
-        }, 1000);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    // DON'T refresh on mount - MarketplaceContext already loads listings
-    // Removed duplicate refresh call that was causing performance issues
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (refreshTimeout) {
-        clearTimeout(refreshTimeout);
-      }
-    };
-  }, []); // Remove refreshListings dependency to prevent loops
-
-  // Mobile event handlers
-  const handleMobileSearch = (query) => {
-    updateGlobalSearchQuery(query);
-    searchListings(query);
-  };
-
-  const handleMobileFiltersToggle = () => {
-    setIsMobileFiltersOpen(true);
-  };
-
-  const handleMobileFiltersChange = (newFilters) => {
-    updateFilters(newFilters);
-  };
-
-  const handleMobileFavorite = async (listingId, isFavorited) => {
-    try {
-      if (isFavorited) {
-        // Add to favorites logic
-        showToast('Added to favorites', 'success');
-      } else {
-        // Remove from favorites logic
-        showToast('Removed from favorites', 'success');
-      }
+      
     } catch (error) {
-      showToast('Error updating favorites', 'error');
+      console.error('❌ Mobile browse: Error loading listings:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleMobileContact = (listing) => {
-    // Navigate to messaging or show contact modal
-    showToast(`Contact seller for ${listing.title}`, 'info');
+  // Load listings on component mount - ONLY ONCE
+  useEffect(() => {
+    loadListings();
+  }, []);
+
+  // Simple search filtering
+  const filteredListings = listings.filter(listing =>
+    listing.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    listing.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSearch = (query) => {
+    setSearchTerm(query);
   };
 
-  const handleMobileQuickView = (listing) => {
-    // Show quick view modal or navigate to product detail
-    window.location.href = `/listing/${listing.id}`;
-  };
-
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading catalysts...</p>
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading listings...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mobile-container">
-      {/* Mobile Hero Section */}
-      <MobileHeroSection
-        onSearch={handleMobileSearch}
-        onFilterToggle={handleMobileFiltersToggle}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+      {/* Hero Section */}
+      <MobileHeroSection 
         quickStats={quickStats}
+        onSearch={handleSearch}
+        searchTerm={searchTerm}
       />
 
-      {/* Mobile Filters */}
-      <MobileFilters
-        isOpen={isMobileFiltersOpen}
-        onClose={() => setIsMobileFiltersOpen(false)}
-        filters={globalFilters}
-        onFiltersChange={handleMobileFiltersChange}
-        availableFilters={{
-          categories: ['Catalytic Converters', 'Diesel Particulate Filters', 'Ceramic Catalysts'],
-          locations: ['Germany', 'France', 'United Kingdom', 'Netherlands'],
-          conditions: ['New', 'Like New', 'Good', 'Fair', 'Used']
-        }}
-      />
-
-      {/* Mobile Listings - Debug info */}
-      <div className="px-4 pb-20">
-        <div className="mb-4 p-2 bg-yellow-100 text-yellow-800 text-xs rounded">
-          DEBUG: filteredProducts.length = {filteredProducts.length}, 
-          isLoading = {isLoading.toString()}
-        </div>
-        
-        {filteredProducts.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-gray-400" />
+      {/* Quick Actions */}
+      <div className="px-4 -mt-6 relative z-10">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search listings..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600"
+                />
+              </div>
             </div>
-            <h3 className="mobile-title text-gray-900 dark:text-white mb-2">
-              No catalysts found
+            <button
+              onClick={() => setIsMobileFiltersOpen(true)}
+              className="ml-3 p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <Filter className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Bar */}
+      <div className="px-4 mb-6">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-white p-4">
+          <div className="grid grid-cols-4 gap-4 text-center">
+            <div>
+              <Package className="w-5 h-5 mx-auto mb-1 opacity-80" />
+              <div className="text-lg font-bold">{quickStats.totalListings}</div>
+              <div className="text-xs opacity-80">Total</div>
+            </div>
+            <div>
+              <Clock className="w-5 h-5 mx-auto mb-1 opacity-80" />
+              <div className="text-lg font-bold">{quickStats.newToday}</div>
+              <div className="text-xs opacity-80">New Today</div>
+            </div>
+            <div>
+              <TrendingUp className="w-5 h-5 mx-auto mb-1 opacity-80" />
+              <div className="text-lg font-bold">{quickStats.hotDeals}</div>
+              <div className="text-xs opacity-80">Hot Deals</div>
+            </div>
+            <div>
+              <DollarSign className="w-5 h-5 mx-auto mb-1 opacity-80" />
+              <div className="text-lg font-bold">€{quickStats.avgPrice}</div>
+              <div className="text-xs opacity-80">Avg Price</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Listings Grid */}
+      <div className="px-4">
+        {filteredListings.length === 0 ? (
+          <div className="text-center py-12">
+            <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              No listings found
             </h3>
-            <p className="mobile-body text-gray-500 dark:text-gray-400">
-              Try adjusting your search or filters
+            <p className="text-gray-600 dark:text-gray-400">
+              {searchTerm ? 'Try adjusting your search terms' : 'Be the first to list an item!'}
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {filteredProducts.map((listing) => (
-              <MobileListingCard
-                key={listing.id}
-                listing={listing}
-                onFavorite={handleMobileFavorite}
-                onContact={handleMobileContact}
-                onQuickView={handleMobileQuickView}
-              />
+          <div className="grid gap-4">
+            {filteredListings.map((listing) => (
+              <MobileListingCard key={listing.id} listing={listing} />
             ))}
           </div>
         )}
-
-        {/* Load More Button for Mobile */}
-        {filteredProducts.length > 0 && filteredProducts.length % 10 === 0 && (
-          <div className="mt-6 text-center">
-            <button className="mobile-button bg-blue-600 text-white hover:bg-blue-700 transition-colors">
-              Load More Results
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* Mobile Filters Modal */}
+      {isMobileFiltersOpen && (
+        <MobileFilters 
+          onClose={() => setIsMobileFiltersOpen(false)}
+          onApplyFilters={(filters) => {
+            // Simple client-side filtering for now
+            setIsMobileFiltersOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }
