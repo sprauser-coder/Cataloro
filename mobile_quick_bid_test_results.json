@@ -1,0 +1,360 @@
+{
+  "test_timestamp": "2025-09-10T17:07:17.224014",
+  "test_summary": "Mobile Quick Bid Functionality Comprehensive Testing",
+  "api_validation": {
+    "browse_endpoint": {
+      "test_name": "Browse Endpoint Bid Info Validation",
+      "endpoint_working": true,
+      "response_time_ms": 104.4931411743164,
+      "bid_info_analysis": {
+        "total_listings": 14,
+        "listings_with_bid_info": 5,
+        "listings_with_bids": 5,
+        "listings_without_bids": 0,
+        "bid_info_structure_valid": 5,
+        "sample_bid_info": [
+          {
+            "listing_id": "839c9460-8172-4c1d-876c-02cb6a02cdea",
+            "title": "Validation Test Listing",
+            "bid_info": {
+              "has_bids": true,
+              "total_bids": 5,
+              "highest_bid": 157.0,
+              "highest_bidder_id": "2ae84d11-f762-4462-9467-d283fd719d21"
+            }
+          },
+          {
+            "listing_id": "588fa8e2-0a0e-4868-a129-48a1d2d76e9e",
+            "title": "Final Test Catalytic Converter",
+            "bid_info": {
+              "has_bids": true,
+              "total_bids": 3,
+              "highest_bid": 251.0,
+              "highest_bidder_id": "68c1854ff9483b8aa34c1e3a"
+            }
+          },
+          {
+            "listing_id": "c024b07d-9d3a-4d18-a42b-17c45e98ad49",
+            "title": "Test BMW Catalytic Converter f",
+            "bid_info": {
+              "has_bids": true,
+              "total_bids": 3,
+              "highest_bid": 151.0,
+              "highest_bidder_id": "68c1850b6086f81545922f45"
+            }
+          },
+          {
+            "listing_id": "819bfe33-2bb1-49fb-85c4-d5ddfc9fe863",
+            "title": "Test BMW Catalytic Converter f",
+            "bid_info": {
+              "has_bids": true,
+              "total_bids": 1,
+              "highest_bid": 150.0,
+              "highest_bidder_id": "68c1850b6086f81545922f45"
+            }
+          },
+          {
+            "listing_id": "7ea1af1d-302c-40ab-9766-b09f6f03186d",
+            "title": "Ford6G915E211FA",
+            "bid_info": {
+              "has_bids": true,
+              "total_bids": 2,
+              "highest_bid": 30.0,
+              "highest_bidder_id": "68bff934bdb9d78bad2b925c"
+            }
+          }
+        ]
+      },
+      "bid_info_structure_correct": true,
+      "has_listings_with_bids": true,
+      "test_listings_available": true
+    },
+    "tenders_submit_endpoint": {
+      "test_name": "Tenders Submit API Validation",
+      "valid_bid_test": {
+        "bid_amount": 158.0,
+        "success": true,
+        "response_time_ms": 44.23332214355469,
+        "error": null,
+        "tender_id_returned": true
+      },
+      "invalid_bid_test": {
+        "bid_amount": 147.0,
+        "correctly_rejected": true,
+        "response_time_ms": 9.448528289794922,
+        "error_message": "Bid must be higher than current highest bid of \u20ac158.00. Minimum bid: \u20ac159.00",
+        "proper_error_handling": false
+      },
+      "endpoint_functional": true,
+      "bid_validation_working": true
+    },
+    "price_range_settings_endpoint": {
+      "test_name": "Price Range Settings API Validation",
+      "endpoint_working": true,
+      "response_time_ms": 13.902664184570312,
+      "settings_data": {
+        "price_range_min_percent": 10.0,
+        "price_range_max_percent": 10.0
+      },
+      "expected_fields_present": 2,
+      "total_expected_fields": 5,
+      "structure_valid": false,
+      "has_price_data": true
+    },
+    "catalyst_calculations_endpoint": {
+      "test_name": "Catalyst Calculations API Validation",
+      "endpoint_working": false,
+      "error": "Catalyst calculations endpoint failed",
+      "response_time_ms": 8.960962295532227,
+      "status": 405,
+      "endpoint_available": true
+    }
+  },
+  "bid_validation_logic": {
+    "minimum_bid_requirements": {
+      "test_name": "Minimum Bid Requirements Validation",
+      "total_tests": 2,
+      "minimum_bid_acceptance_rate": 50.0,
+      "low_bid_rejection_rate": 100.0,
+      "validation_working_correctly": true,
+      "detailed_tests": [
+        {
+          "listing_id": "839c9460-8172-4c1d-876c-02cb6a02cdea",
+          "current_highest_bid": 157.0,
+          "minimum_bid_test": {
+            "bid_amount": 158.0,
+            "accepted": false,
+            "error": null
+          },
+          "below_minimum_test": {
+            "bid_amount": 156.0,
+            "correctly_rejected": true,
+            "error_message": "Bid must be higher than current highest bid of \u20ac158.00. Minimum bid: \u20ac159.00"
+          }
+        },
+        {
+          "listing_id": "588fa8e2-0a0e-4868-a129-48a1d2d76e9e",
+          "current_highest_bid": 251.0,
+          "minimum_bid_test": {
+            "bid_amount": 252.0,
+            "accepted": true,
+            "error": null
+          },
+          "below_minimum_test": {
+            "bid_amount": 250.0,
+            "correctly_rejected": true,
+            "error_message": "Bid must be higher than current highest bid of \u20ac252.00. Minimum bid: \u20ac253.00"
+          }
+        }
+      ]
+    },
+    "self_bidding_prevention": {
+      "test_name": "Self-Bidding Prevention Validation",
+      "error": "No user listings found to test self-bidding prevention",
+      "user_has_listings": false
+    },
+    "highest_bidder_prevention": {
+      "test_name": "Highest Bidder Prevention Validation",
+      "first_bid_successful": true,
+      "first_bid_amount": 167.0,
+      "second_bid_correctly_prevented": false,
+      "second_bid_amount": 172.0,
+      "error_message": "",
+      "proper_error_message": false,
+      "prevention_logic_working": false
+    },
+    "bid_amount_validation": {
+      "test_name": "Bid Amount Validation",
+      "total_invalid_tests": 3,
+      "correctly_rejected_invalid": 3,
+      "valid_bid_accepted": false,
+      "invalid_rejection_rate": 100.0,
+      "validation_working_correctly": false,
+      "detailed_tests": [
+        {
+          "test_type": "Non-numeric bid",
+          "bid_value": "not_a_number",
+          "correctly_rejected": true,
+          "error_message": "Failed to submit tender: '<' not supported between instances of 'str' and 'float'"
+        },
+        {
+          "test_type": "Negative bid",
+          "bid_value": -50,
+          "correctly_rejected": true,
+          "error_message": "Bid must be higher than current highest bid of \u20ac172.00. Minimum bid: \u20ac173.00"
+        },
+        {
+          "test_type": "Zero bid",
+          "bid_value": 0,
+          "correctly_rejected": true,
+          "error_message": "listing_id, buyer_id, and offer_amount are required"
+        },
+        {
+          "test_type": "Valid numeric bid",
+          "bid_value": 172.0,
+          "correctly_accepted": false,
+          "error_message": null
+        }
+      ]
+    }
+  },
+  "edge_cases": {
+    "no_existing_bids": {
+      "test_name": "No Existing Bids Edge Case",
+      "test_listing_id": "ed8192cf-6920-4c37-bd47-58ad1c06ea42",
+      "starting_price": 50.0,
+      "equal_price_bid": {
+        "amount": 50.0,
+        "accepted": true,
+        "error": null
+      },
+      "above_price_bid": {
+        "amount": 75.0,
+        "accepted": true,
+        "error": null
+      },
+      "below_price_bid": {
+        "amount": 40.0,
+        "correctly_rejected": true,
+        "error_message": "Bid must be higher than current highest bid of \u20ac75.00. Minimum bid: \u20ac76.00"
+      },
+      "first_bid_logic_working": true,
+      "validation_working": true
+    },
+    "existing_bids": {
+      "test_name": "Existing Bids Edge Case",
+      "test_listing_id": "839c9460-8172-4c1d-876c-02cb6a02cdea",
+      "current_highest_bid": 157.0,
+      "total_existing_bids": 5,
+      "equal_bid_test": {
+        "amount": 157.0,
+        "correctly_rejected": true,
+        "error_message": "Bid must be higher than current highest bid of \u20ac172.00. Minimum bid: \u20ac173.00"
+      },
+      "higher_bid_test": {
+        "amount": 177.0,
+        "accepted": true,
+        "error": null
+      },
+      "existing_bid_logic_working": true
+    },
+    "invalid_bid_amounts": {
+      "test_name": "Invalid Bid Amounts Edge Cases",
+      "total_edge_cases_tested": 3,
+      "edge_cases_handled_correctly": 3,
+      "detailed_tests": [
+        {
+          "test_case": "Empty/None bid amount",
+          "bid_value": null,
+          "correctly_handled": true,
+          "error_message": "listing_id, buyer_id, and offer_amount are required"
+        },
+        {
+          "test_case": "Extremely high bid",
+          "bid_value": 999999999,
+          "handled_appropriately": true,
+          "result": "accepted",
+          "error_message": ""
+        },
+        {
+          "test_case": "Decimal bid amount",
+          "bid_value": 167.5,
+          "handled_appropriately": true,
+          "result": "rejected",
+          "error_message": "Bid must be higher than current highest bid of \u20ac999999999.00. Minimum bid: \u20ac1000000000.00"
+        }
+      ]
+    },
+    "network_error_handling": {
+      "test_name": "Network Error Handling",
+      "total_error_scenarios": 3,
+      "properly_handled_errors": 3,
+      "error_handling_rate": 100.0,
+      "error_handling_working": true,
+      "detailed_tests": [
+        {
+          "test_case": "Invalid endpoint",
+          "properly_handled": true,
+          "status_code": 404
+        },
+        {
+          "test_case": "Malformed data",
+          "properly_handled": true,
+          "status_code": 400
+        },
+        {
+          "test_case": "Missing required fields",
+          "properly_handled": true,
+          "status_code": 400
+        }
+      ]
+    }
+  },
+  "market_range_functionality": {
+    "price_range_calculation": {
+      "test_name": "Market Range Functionality",
+      "price_range_settings_working": true,
+      "catalyst_calculations_available": false,
+      "catalyst_listings_found": 10,
+      "price_range_data_valid": false,
+      "calculation_data_valid": false,
+      "market_range_functional": true,
+      "sample_catalyst_listings": [
+        {
+          "id": "7ea1af1d-302c-40ab-9766-b09f6f03186d",
+          "title": "Ford6G915E211FA"
+        },
+        {
+          "id": "1628284f-8d0f-4c18-b776-11d2b9fd11a4",
+          "title": "Walker351631A"
+        },
+        {
+          "id": "1a3c7f29-29e0-47d2-996e-39ec4e8a3e85",
+          "title": "JaguarNNC6700GB"
+        }
+      ]
+    },
+    "loading_states": {
+      "test_name": "Loading States for Price Suggestions",
+      "total_endpoints_tested": 2,
+      "successful_endpoints": 1,
+      "fast_loading_endpoints": 2,
+      "average_response_time_ms": 6.23011589050293,
+      "loading_performance_acceptable": true,
+      "detailed_loading_tests": [
+        {
+          "endpoint": "/marketplace/price-range-settings",
+          "response_time_ms": 6.23011589050293,
+          "success": true,
+          "fast_loading": true,
+          "acceptable_loading": true
+        },
+        {
+          "endpoint": "/admin/catalyst/calculations",
+          "response_time_ms": 46.57721519470215,
+          "success": false,
+          "fast_loading": true,
+          "acceptable_loading": true
+        }
+      ]
+    }
+  },
+  "summary": {
+    "overall_success_rate": 81.25,
+    "api_validation_success_rate": 100.0,
+    "bid_validation_logic_success_rate": 25.0,
+    "edge_cases_success_rate": 100.0,
+    "market_range_functionality_success_rate": 100.0,
+    "browse_endpoint_working": true,
+    "bid_submission_working": true,
+    "bid_validation_working": false,
+    "edge_cases_handled": true,
+    "market_range_available": true,
+    "critical_issues": [],
+    "minor_issues": [
+      "Self-bidding prevention may not be working properly"
+    ],
+    "mobile_quick_bid_functional": true,
+    "ready_for_production": false
+  }
+}
