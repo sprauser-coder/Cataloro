@@ -73,6 +73,15 @@ function MobileBrowsePage() {
     setSearchTerm(query);
   };
 
+  const handleBidUpdate = (listingId, updatedListing) => {
+    // Update the specific listing in the listings array
+    setListings(prevListings => 
+      prevListings.map(listing => 
+        listing.id === listingId ? updatedListing : listing
+      )
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
