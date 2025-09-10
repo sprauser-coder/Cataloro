@@ -4753,7 +4753,7 @@ async def reject_tender(tender_id: str, rejection_data: dict):
 
 @app.get("/api/tenders/seller/{seller_id}/overview")
 async def get_seller_tenders_overview(seller_id: str):
-    """Get overview of all tenders for all seller's listings"""
+    """Get overview of all tenders for all seller's listings (OPTIMIZED)"""
     try:
         # Get all seller's active listings
         listings = await db.listings.find({"seller_id": seller_id, "status": "active"}).to_list(length=None)
@@ -4775,32 +4775,66 @@ async def get_seller_tenders_overview(seller_id: str):
             "business_name": seller.get("business_name", "")
         } if seller else {}
         
+        # OPTIMIZATION: Get all tenders for all listings in one query
+        listing_ids = [listing["id"] for listing in listings]
+        all_tenders = await db.tenders.find({
+            "listing_id": {"$in": listing_ids},
+            "status": "active"
+        }).sort("offer_amount", -1).to_list(length=None)
+        
+        # OPTIMIZATION: Get all unique buyer IDs and fetch buyers in one query
+        buyer_ids = list(set(tender["buyer_id"] for tender in all_tenders))
+        buyers_list = await db.users.find({"id": {"$in": buyer_ids}}).to_list(length=None)
+        buyers_dict = {buyer['id']: buyer for buyer in buyers_list}
+        
+        # Fallback lookup with ObjectId for buyers not found
+        missing_buyer_ids = set(buyer_ids) - set(buyers_dict.keys())
+        if missing_buyer_ids:
+            try:
+                from bson import ObjectId
+                oid_list = []
+                for uid in missing_buyer_ids:
+                    try:
+                        oid_list.append(ObjectId(uid))
+                    except:
+                        continue
+                
+                if oid_list:
+                    fallback_buyers = await db.users.find({"_id": {"$in": oid_list}}).to_list(length=None)
+                    for buyer in fallback_buyers:
+                        buyers_dict[str(buyer['_id'])] = buyer
+            except Exception as fallback_error:
+                print(f"Fallback buyer lookup error: {fallback_error}")
+        
+        # Group tenders by listing_id
+        tenders_by_listing = {}
+        for tender in all_tenders:
+            listing_id = tender["listing_id"]
+            if listing_id not in tenders_by_listing:
+                tenders_by_listing[listing_id] = []
+            tenders_by_listing[listing_id].append(tender)
+        
         overview = []
         for listing in listings:
-            # Get active tenders for this listing
-            tenders = await db.tenders.find({
-                "listing_id": listing["id"],
-                "status": "active"
-            }).sort("offer_amount", -1).to_list(length=None)
+            listing_tenders = tenders_by_listing.get(listing["id"], [])
             
-            # Enrich tenders with buyer info
+            # Enrich tenders with buyer info from cached lookup
             enriched_tenders = []
-            for tender in tenders:
-                buyer = await db.users.find_one({"id": tender["buyer_id"]})
-                if not buyer:
-                    try:
-                        from bson import ObjectId
-                        buyer = await db.users.find_one({"_id": ObjectId(tender["buyer_id"])})
-                    except:
-                        pass
-                        
+            for tender in listing_tenders:
+                buyer = buyers_dict.get(tender["buyer_id"])
                 buyer_info = {
                     "id": buyer.get("id", ""),
                     "username": buyer.get("username", "Unknown"),
                     "full_name": buyer.get("full_name", ""),
                     "is_business": buyer.get("is_business", False),
                     "business_name": buyer.get("business_name", "")
-                } if buyer else {}
+                } if buyer else {
+                    "id": tender["buyer_id"],
+                    "username": "Unknown",
+                    "full_name": "",
+                    "is_business": False,
+                    "business_name": ""
+                }
                 
                 enriched_tender = {
                     "id": tender["id"],
@@ -4819,8 +4853,8 @@ async def get_seller_tenders_overview(seller_id: str):
                     "seller_id": listing.get("seller_id", "")
                 },
                 "seller": seller_info,
-                "tender_count": len(tenders),
-                "highest_offer": tenders[0]["offer_amount"] if tenders else 0,
+                "tender_count": len(listing_tenders),
+                "highest_offer": listing_tenders[0]["offer_amount"] if listing_tenders else 0,
                 "tenders": enriched_tenders
             }
             overview.append(listing_overview)
