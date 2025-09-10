@@ -13,6 +13,21 @@ function NotificationToast() {
   const { user, isAuthenticated } = useAuth();
   const { notifications } = useNotifications(); // Add this to get context notifications
 
+  // Watch for new notifications from context (for showToast calls)
+  useEffect(() => {
+    if (notifications && notifications.length > 0) {
+      // Show the most recent notification as a toast
+      const latestNotification = notifications[notifications.length - 1];
+      if (latestNotification && latestNotification.type) {
+        addToast(
+          latestNotification.message,
+          latestNotification.type,
+          5000
+        );
+      }
+    }
+  }, [notifications]);
+
   // Load system notifications from backend instead of hardcoded demo
   useEffect(() => {
     if (isAuthenticated && user?.id) {
