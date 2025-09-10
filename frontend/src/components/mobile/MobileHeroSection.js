@@ -11,6 +11,7 @@ function MobileHeroSection({
   onSearch, 
   onFilterToggle, 
   quickStats = {},
+  searchTerm = "",
   className = "" 
 }) {
   const [heroContent, setHeroContent] = useState({
