@@ -1199,10 +1199,29 @@ async def browse_listings():
                     listing['id'] = str(listing['_id'])
                 del listing['_id']
             
-            # CRITICAL: Remove massive base64 images for browse view
+            # CRITICAL: Optimize images for browse view performance
             if listing.get('images'):
-                # Replace with placeholder or just remove images for browse speed
-                listing['images'] = ['/api/placeholder-image.jpg']  # Use lightweight placeholder
+                optimized_images = []
+                for img in listing['images']:
+                    if isinstance(img, str):
+                        # If it's a base64 data URL (from old uploads), replace with placeholder
+                        if img.startswith('data:'):
+                            # Use placeholder for base64 images to avoid massive responses
+                            optimized_images.append('/api/placeholder-image.jpg')
+                        elif img.startswith('/uploads/') or img.startswith('/static/'):
+                            # Keep file URLs as they're already efficient
+                            optimized_images.append(img)
+                        else:
+                            # For any other format, use placeholder
+                            optimized_images.append('/api/placeholder-image.jpg')
+                    else:
+                        # Non-string image data, use placeholder
+                        optimized_images.append('/api/placeholder-image.jpg')
+                
+                listing['images'] = optimized_images if optimized_images else ['/api/placeholder-image.jpg']
+            else:
+                # No images, provide placeholder
+                listing['images'] = ['/api/placeholder-image.jpg']
             
             # Add basic seller info (without additional DB queries)
             if not listing.get('seller'):
