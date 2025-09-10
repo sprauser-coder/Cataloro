@@ -347,11 +347,15 @@ function MobileProductDetailPage() {
               type="number"
               value={bidAmount}
               onChange={(e) => setBidAmount(e.target.value)}
-              placeholder="Enter bid amount"
+              placeholder={
+                product.bid_info?.highest_bid 
+                  ? `Min bid: €${(product.bid_info.highest_bid + 1).toFixed(0)}`
+                  : `Min bid: €${product.price || 0}`
+              }
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
                        focus:ring-2 focus:ring-blue-500 focus:border-transparent
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              min="0"
+              min={product.bid_info?.highest_bid ? product.bid_info.highest_bid + 1 : product.price || 0}
               step="1"
             />
           </div>
