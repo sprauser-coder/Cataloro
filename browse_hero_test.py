@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://mobile-browse-perf.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-optimize-1.preview.emergentagent.com/api"
 
 class BrowseHeroTester:
     def __init__(self):
