@@ -122,7 +122,60 @@ function SimpleLoginPage() {
       console.error('Login error:', error);
     } finally {
       setIsLoading(false);
-      setIsAnimating(false);
+    }
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    // Validation
+    if (registerData.password !== registerData.confirmPassword) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    if (registerData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: registerData.username,
+          email: registerData.email,
+          password: registerData.password,
+          full_name: registerData.fullName
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || `Registration failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Auto-login after successful registration
+      localStorage.setItem('cataloro_token', data.token);
+      localStorage.setItem('cataloro_user', JSON.stringify(data.user));
+      
+      // Redirect to marketplace
+      window.location.href = '/browse';
+      
+    } catch (error) {
+      setError(error.message || 'Registration failed. Please try again.');
+      console.error('Registration error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
