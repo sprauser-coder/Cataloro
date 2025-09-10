@@ -72,12 +72,8 @@ function MobileBrowsePage() {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
-    // Initial refresh when component mounts, but only once
-    let mounted = false;
-    if (!mounted) {
-      refreshListings();
-      mounted = true;
-    }
+    // DON'T refresh on mount - MarketplaceContext already loads listings
+    // Removed duplicate refresh call that was causing performance issues
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
