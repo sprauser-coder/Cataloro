@@ -1177,6 +1177,11 @@ async def browse_listings():
                     listing['id'] = str(listing['_id'])
                 del listing['_id']
             
+            # CRITICAL: Remove massive base64 images for browse view
+            if listing.get('images'):
+                # Replace with placeholder or just remove images for browse speed
+                listing['images'] = ['/api/placeholder-image.jpg']  # Use lightweight placeholder
+            
             # Add basic seller info (without additional DB queries)
             if not listing.get('seller'):
                 listing['seller'] = {
@@ -1203,7 +1208,7 @@ async def browse_listings():
             if not listing.get('created_at'):
                 listing['created_at'] = datetime.utcnow().isoformat()
         
-        logger.info(f"📋 Simple optimized returned {len(listings)} listings")
+        logger.info(f"📋 Simple optimized returned {len(listings)} listings (without heavy images)")
         return listings
         
     except Exception as e:
