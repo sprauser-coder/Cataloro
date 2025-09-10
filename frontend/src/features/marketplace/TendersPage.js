@@ -116,6 +116,7 @@ function TendersPage() {
       if (response.ok) {
         const data = await response.json();
         setTendersOverview(data);
+        setLastLoadTime(prev => ({ ...prev, listings: Date.now() }));
       } else {
         showToast('Failed to load tender overview', 'error');
       }
