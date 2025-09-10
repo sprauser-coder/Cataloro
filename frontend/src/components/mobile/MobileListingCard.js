@@ -298,10 +298,38 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
               </div>
             </div>
 
-            {/* Description */}
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
-              {listing.description}
-            </p>
+            {/* Description - REMOVED per user requirements */}
+
+            {/* Market Range - Show for catalyst items */}
+            {listing.category === 'Catalysts' && (
+              <div className="mb-3">
+                {loadingSuggestion ? (
+                  <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                    <div className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Loading market range...
+                  </div>
+                ) : priceSuggestion ? (
+                  <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 dark:from-indigo-900/40 dark:via-blue-900/40 dark:to-cyan-900/40 border border-indigo-100 dark:border-indigo-800/60 shadow-sm">
+                    <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-indigo-200/20 to-transparent dark:from-indigo-600/10 rounded-bl-full"></div>
+                    <div className="relative p-3">
+                      <div className="flex items-center space-x-2">
+                        <div className="p-1 rounded-lg bg-gradient-to-r from-indigo-500 to-blue-500 shadow-sm">
+                          <Database className="w-3 h-3 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-medium text-indigo-700 dark:text-indigo-300 uppercase tracking-wide">
+                            Market Range
+                          </div>
+                          <div className="text-sm font-bold text-indigo-900 dark:text-indigo-100 leading-tight">
+                            €{(priceSuggestion * (100 - priceRangeSettings.price_range_min_percent) / 100).toFixed(0)} - €{(priceSuggestion * (100 + priceRangeSettings.price_range_max_percent) / 100).toFixed(0)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            )}
 
             {/* Metadata */}
             <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
