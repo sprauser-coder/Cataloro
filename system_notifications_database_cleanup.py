@@ -21,7 +21,7 @@ from datetime import datetime
 import sys
 
 # Configuration
-BASE_URL = "https://cataloro-mobile.preview.emergentagent.com/api"
+BASE_URL = "https://mobile-browse-perf.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@cataloro.com"
 ADMIN_PASSWORD = "admin123"
 

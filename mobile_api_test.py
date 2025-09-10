@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://cataloro-mobile.preview.emergentagent.com/api"
+BACKEND_URL = "https://mobile-browse-perf.preview.emergentagent.com/api"
 
 # Demo User Configuration
 DEMO_USER_EMAIL = "demo@cataloro.com"
