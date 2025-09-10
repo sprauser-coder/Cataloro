@@ -242,8 +242,10 @@ function MobileBrowsePage() {
       {/* Mobile Filters Modal */}
       {isMobileFiltersOpen && (
         <MobileFilters 
+          isOpen={isMobileFiltersOpen}
           onClose={() => setIsMobileFiltersOpen(false)}
-          onApplyFilters={(newFilters) => {
+          filters={filters}
+          onFiltersChange={(newFilters) => {
             handleFiltersChange(newFilters);
             setIsMobileFiltersOpen(false);
           }}
