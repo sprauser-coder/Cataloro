@@ -1,0 +1,493 @@
+{
+  "investigation_timestamp": "2025-09-10T18:30:29.999505",
+  "demo_user_ids_tested": [
+    "2ae84d11-f762-4462-9467-d283fd719d21",
+    "demo_user_1"
+  ],
+  "browse_page_analysis": {
+    "test_name": "Browse Page Data Analysis",
+    "success": true,
+    "response_time_ms": 170.3634262084961,
+    "total_listings": 15,
+    "demo_user_listings_count": 9,
+    "demo_user_listings": [
+      {
+        "listing_id": "7ea1af1d-302c-40ab-9766-b09f6f03186d",
+        "title": "Ford6G915E211FA",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller_name": "Demo User",
+        "seller_username": "demo_user",
+        "price": 10.0,
+        "match_reason": "Seller name is 'Demo User'; Seller username is 'demo_user'"
+      },
+      {
+        "listing_id": "1a3c7f29-29e0-47d2-996e-39ec4e8a3e85",
+        "title": "JaguarNNC6700GB",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller_name": "Demo User",
+        "seller_username": "demo_user",
+        "price": 50.0,
+        "match_reason": "Seller name is 'Demo User'; Seller username is 'demo_user'"
+      },
+      {
+        "listing_id": "e2368349-4e46-48f1-a783-1327aec2723e",
+        "title": "Ford6G915E211FA",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller_name": "Demo User",
+        "seller_username": "demo_user",
+        "price": 60.0,
+        "match_reason": "Seller name is 'Demo User'; Seller username is 'demo_user'"
+      },
+      {
+        "listing_id": "48a2ff59-e238-4f38-8338-0fe74ab79891",
+        "title": "JaguarNNC6700GB",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller_name": "Demo User",
+        "seller_username": "demo_user",
+        "price": 50.0,
+        "match_reason": "Seller name is 'Demo User'; Seller username is 'demo_user'"
+      },
+      {
+        "listing_id": "ed8192cf-6920-4c37-bd47-58ad1c06ea42",
+        "title": "Ford6G915E211FA",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller_name": "Demo User",
+        "seller_username": "demo_user",
+        "price": 50.0,
+        "match_reason": "Seller name is 'Demo User'; Seller username is 'demo_user'"
+      },
+      {
+        "listing_id": "42c64709-c1ee-46a9-b1e4-9847c4ad63a2",
+        "title": "VW1J0178AADN",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller_name": "Demo User",
+        "seller_username": "demo_user",
+        "price": 90.0,
+        "match_reason": "Seller name is 'Demo User'; Seller username is 'demo_user'"
+      },
+      {
+        "listing_id": "0c34df92-fdb9-4ffc-813a-484896adf1f2",
+        "title": "MercedesKT0137",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller_name": "Demo User",
+        "seller_username": "demo_user",
+        "price": 140.0,
+        "match_reason": "Seller name is 'Demo User'; Seller username is 'demo_user'"
+      },
+      {
+        "listing_id": "fa1ee264-e6fa-46e8-8623-56eef2ca15a3",
+        "title": "VW3B0131701Q",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller_name": "Demo User",
+        "seller_username": "demo_user",
+        "price": 30.0,
+        "match_reason": "Seller name is 'Demo User'; Seller username is 'demo_user'"
+      },
+      {
+        "listing_id": "807170c4-8f7c-4551-af2e-6dd1f45da6c5",
+        "title": "Suzuki78KC01",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller_name": "Demo User",
+        "seller_username": "demo_user",
+        "price": 30.0,
+        "match_reason": "Seller name is 'Demo User'; Seller username is 'demo_user'"
+      }
+    ],
+    "all_seller_info": [
+      {
+        "listing_id": "8ac0ef72-b386-46ce-8b76-e31487ddb89c",
+        "listing_title": "Test BMW Catalytic Converter for Bidding",
+        "seller_id": "44733cf0-ce91-4c64-bb9d-01748182252a",
+        "seller": {
+          "name": "Unknown User",
+          "username": "Unknown",
+          "is_business": false,
+          "location": "Location not specified"
+        },
+        "seller_name": "Unknown User",
+        "seller_username": "Unknown"
+      },
+      {
+        "listing_id": "839c9460-8172-4c1d-876c-02cb6a02cdea",
+        "listing_title": "Validation Test Listing",
+        "seller_id": "68c185a85c8d31b4d736bb66",
+        "seller": {
+          "name": "Unknown User",
+          "username": "Unknown",
+          "is_business": false,
+          "location": "Location not specified"
+        },
+        "seller_name": "Unknown User",
+        "seller_username": "Unknown"
+      },
+      {
+        "listing_id": "588fa8e2-0a0e-4868-a129-48a1d2d76e9e",
+        "listing_title": "Final Test Catalytic Converter",
+        "seller_id": "68c1854ff9483b8aa34c1e3b",
+        "seller": {
+          "name": "Unknown User",
+          "username": "Unknown",
+          "is_business": false,
+          "location": "Location not specified"
+        },
+        "seller_name": "Unknown User",
+        "seller_username": "Unknown"
+      },
+      {
+        "listing_id": "c024b07d-9d3a-4d18-a42b-17c45e98ad49",
+        "listing_title": "Test BMW Catalytic Converter for Bidding",
+        "seller_id": "68c1850c6086f81545922f46",
+        "seller": {
+          "name": "Unknown User",
+          "username": "Unknown",
+          "is_business": false,
+          "location": "Location not specified"
+        },
+        "seller_name": "Unknown User",
+        "seller_username": "Unknown"
+      },
+      {
+        "listing_id": "819bfe33-2bb1-49fb-85c4-d5ddfc9fe863",
+        "listing_title": "Test BMW Catalytic Converter for Bidding",
+        "seller_id": "68c1850c6086f81545922f46",
+        "seller": {
+          "name": "Unknown User",
+          "username": "Unknown",
+          "is_business": false,
+          "location": "Location not specified"
+        },
+        "seller_name": "Unknown User",
+        "seller_username": "Unknown"
+      },
+      {
+        "listing_id": "7ea1af1d-302c-40ab-9766-b09f6f03186d",
+        "listing_title": "Ford6G915E211FA",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller": {
+          "name": "Demo User",
+          "username": "demo_user",
+          "email": "user@cataloro.com",
+          "verified": false,
+          "is_business": false,
+          "company_name": null,
+          "location": "Not specified"
+        },
+        "seller_name": "Demo User",
+        "seller_username": "demo_user"
+      },
+      {
+        "listing_id": "1628284f-8d0f-4c18-b776-11d2b9fd11a4",
+        "listing_title": "Walker351631A",
+        "seller_id": "68bff934bdb9d78bad2b925c",
+        "seller": {
+          "name": "Sash Admin",
+          "username": "sash_admin",
+          "email": "admin@cataloro.com",
+          "verified": true,
+          "is_business": false,
+          "company_name": null,
+          "location": "System, Admin"
+        },
+        "seller_name": "Sash Admin",
+        "seller_username": "sash_admin"
+      },
+      {
+        "listing_id": "1a3c7f29-29e0-47d2-996e-39ec4e8a3e85",
+        "listing_title": "JaguarNNC6700GB",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller": {
+          "name": "Demo User",
+          "username": "demo_user",
+          "email": "user@cataloro.com",
+          "verified": false,
+          "is_business": false,
+          "company_name": null,
+          "location": "Not specified"
+        },
+        "seller_name": "Demo User",
+        "seller_username": "demo_user"
+      },
+      {
+        "listing_id": "e2368349-4e46-48f1-a783-1327aec2723e",
+        "listing_title": "Ford6G915E211FA",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller": {
+          "name": "Demo User",
+          "username": "demo_user",
+          "email": "user@cataloro.com",
+          "verified": false,
+          "is_business": false,
+          "company_name": null,
+          "location": "Not specified"
+        },
+        "seller_name": "Demo User",
+        "seller_username": "demo_user"
+      },
+      {
+        "listing_id": "48a2ff59-e238-4f38-8338-0fe74ab79891",
+        "listing_title": "JaguarNNC6700GB",
+        "seller_id": "68bfff790e4e46bc28d43631",
+        "seller": {
+          "name": "Demo User",
+          "username": "demo_user",
+          "email": "user@cataloro.com",
+          "verified": false,
+          "is_business": false,
+          "company_name": null,
+          "location": "Not specified"
+        },
+        "seller_name": "Demo User",
+        "seller_username": "demo_user"
+      }
+    ]
+  },
+  "management_center_analysis": {
+    "test_name": "Management Center Data Analysis",
+    "results_by_user_id": {
+      "2ae84d11-f762-4462-9467-d283fd719d21": {
+        "success": true,
+        "response_time_ms": 49.140214920043945,
+        "listings_count": 0,
+        "listings": []
+      },
+      "demo_user_1": {
+        "success": true,
+        "response_time_ms": 49.05104637145996,
+        "listings_count": 0,
+        "listings": []
+      }
+    }
+  },
+  "user_identity_verification": {
+    "test_name": "Database User Identity Verification",
+    "total_login_attempts": 3,
+    "successful_logins": 3,
+    "demo_user_accounts_found": 3,
+    "user_accounts": [
+      {
+        "login_email": "demo@cataloro.com",
+        "user_id": "demo_user_1",
+        "username": "demo_user",
+        "email": "demo@cataloro.com",
+        "is_demo_user": true,
+        "matches_expected_ids": true
+      },
+      {
+        "login_email": "demo_user@cataloro.com",
+        "user_id": "e2ece4ec-a9bc-440a-b297-16eaa7f3585b",
+        "username": "demo_user",
+        "email": "demo_user@cataloro.com",
+        "is_demo_user": true,
+        "matches_expected_ids": false
+      },
+      {
+        "login_email": "test@cataloro.com",
+        "user_id": "8eeee7eb-2878-4972-bc25-dc1da5661dad",
+        "username": "demo_user",
+        "email": "test@cataloro.com",
+        "is_demo_user": true,
+        "matches_expected_ids": false
+      }
+    ],
+    "demo_user_accounts": [
+      {
+        "login_email": "demo@cataloro.com",
+        "user_id": "demo_user_1",
+        "username": "demo_user",
+        "email": "demo@cataloro.com",
+        "is_demo_user": true,
+        "matches_expected_ids": true
+      },
+      {
+        "login_email": "demo_user@cataloro.com",
+        "user_id": "e2ece4ec-a9bc-440a-b297-16eaa7f3585b",
+        "username": "demo_user",
+        "email": "demo_user@cataloro.com",
+        "is_demo_user": true,
+        "matches_expected_ids": false
+      },
+      {
+        "login_email": "test@cataloro.com",
+        "user_id": "8eeee7eb-2878-4972-bc25-dc1da5661dad",
+        "username": "demo_user",
+        "email": "test@cataloro.com",
+        "is_demo_user": true,
+        "matches_expected_ids": false
+      }
+    ]
+  },
+  "listing_ownership_analysis": {
+    "test_name": "Listing Ownership Analysis",
+    "success": true,
+    "demo_listings_analyzed": 9,
+    "ownership_analysis": [
+      {
+        "listing_id": "7ea1af1d-302c-40ab-9766-b09f6f03186d",
+        "title": "Ford6G915E211FA",
+        "seller_id_from_browse": "68bfff790e4e46bc28d43631",
+        "seller_name_from_browse": "Demo User",
+        "seller_username_from_browse": "demo_user",
+        "seller_id_from_detail": "68bfff790e4e46bc28d43631",
+        "detail_endpoint_working": true,
+        "seller_id_consistent": true,
+        "matches_demo_user_id_1": false,
+        "matches_demo_user_id_2": false,
+        "matches_any_expected_demo_id": false
+      },
+      {
+        "listing_id": "1a3c7f29-29e0-47d2-996e-39ec4e8a3e85",
+        "title": "JaguarNNC6700GB",
+        "seller_id_from_browse": "68bfff790e4e46bc28d43631",
+        "seller_name_from_browse": "Demo User",
+        "seller_username_from_browse": "demo_user",
+        "seller_id_from_detail": "68bfff790e4e46bc28d43631",
+        "detail_endpoint_working": true,
+        "seller_id_consistent": true,
+        "matches_demo_user_id_1": false,
+        "matches_demo_user_id_2": false,
+        "matches_any_expected_demo_id": false
+      },
+      {
+        "listing_id": "e2368349-4e46-48f1-a783-1327aec2723e",
+        "title": "Ford6G915E211FA",
+        "seller_id_from_browse": "68bfff790e4e46bc28d43631",
+        "seller_name_from_browse": "Demo User",
+        "seller_username_from_browse": "demo_user",
+        "seller_id_from_detail": "68bfff790e4e46bc28d43631",
+        "detail_endpoint_working": true,
+        "seller_id_consistent": true,
+        "matches_demo_user_id_1": false,
+        "matches_demo_user_id_2": false,
+        "matches_any_expected_demo_id": false
+      },
+      {
+        "listing_id": "48a2ff59-e238-4f38-8338-0fe74ab79891",
+        "title": "JaguarNNC6700GB",
+        "seller_id_from_browse": "68bfff790e4e46bc28d43631",
+        "seller_name_from_browse": "Demo User",
+        "seller_username_from_browse": "demo_user",
+        "seller_id_from_detail": "68bfff790e4e46bc28d43631",
+        "detail_endpoint_working": true,
+        "seller_id_consistent": true,
+        "matches_demo_user_id_1": false,
+        "matches_demo_user_id_2": false,
+        "matches_any_expected_demo_id": false
+      },
+      {
+        "listing_id": "ed8192cf-6920-4c37-bd47-58ad1c06ea42",
+        "title": "Ford6G915E211FA",
+        "seller_id_from_browse": "68bfff790e4e46bc28d43631",
+        "seller_name_from_browse": "Demo User",
+        "seller_username_from_browse": "demo_user",
+        "seller_id_from_detail": "68bfff790e4e46bc28d43631",
+        "detail_endpoint_working": true,
+        "seller_id_consistent": true,
+        "matches_demo_user_id_1": false,
+        "matches_demo_user_id_2": false,
+        "matches_any_expected_demo_id": false
+      },
+      {
+        "listing_id": "42c64709-c1ee-46a9-b1e4-9847c4ad63a2",
+        "title": "VW1J0178AADN",
+        "seller_id_from_browse": "68bfff790e4e46bc28d43631",
+        "seller_name_from_browse": "Demo User",
+        "seller_username_from_browse": "demo_user",
+        "seller_id_from_detail": "68bfff790e4e46bc28d43631",
+        "detail_endpoint_working": true,
+        "seller_id_consistent": true,
+        "matches_demo_user_id_1": false,
+        "matches_demo_user_id_2": false,
+        "matches_any_expected_demo_id": false
+      },
+      {
+        "listing_id": "0c34df92-fdb9-4ffc-813a-484896adf1f2",
+        "title": "MercedesKT0137",
+        "seller_id_from_browse": "68bfff790e4e46bc28d43631",
+        "seller_name_from_browse": "Demo User",
+        "seller_username_from_browse": "demo_user",
+        "seller_id_from_detail": "68bfff790e4e46bc28d43631",
+        "detail_endpoint_working": true,
+        "seller_id_consistent": true,
+        "matches_demo_user_id_1": false,
+        "matches_demo_user_id_2": false,
+        "matches_any_expected_demo_id": false
+      },
+      {
+        "listing_id": "fa1ee264-e6fa-46e8-8623-56eef2ca15a3",
+        "title": "VW3B0131701Q",
+        "seller_id_from_browse": "68bfff790e4e46bc28d43631",
+        "seller_name_from_browse": "Demo User",
+        "seller_username_from_browse": "demo_user",
+        "seller_id_from_detail": "68bfff790e4e46bc28d43631",
+        "detail_endpoint_working": true,
+        "seller_id_consistent": true,
+        "matches_demo_user_id_1": false,
+        "matches_demo_user_id_2": false,
+        "matches_any_expected_demo_id": false
+      },
+      {
+        "listing_id": "807170c4-8f7c-4551-af2e-6dd1f45da6c5",
+        "title": "Suzuki78KC01",
+        "seller_id_from_browse": "68bfff790e4e46bc28d43631",
+        "seller_name_from_browse": "Demo User",
+        "seller_username_from_browse": "demo_user",
+        "seller_id_from_detail": "68bfff790e4e46bc28d43631",
+        "detail_endpoint_working": true,
+        "seller_id_consistent": true,
+        "matches_demo_user_id_1": false,
+        "matches_demo_user_id_2": false,
+        "matches_any_expected_demo_id": false
+      }
+    ]
+  },
+  "authentication_state_check": {
+    "test_name": "Authentication State Check",
+    "scenarios_tested": 3,
+    "successful_logins": 3,
+    "authentication_results": [
+      {
+        "scenario": "Standard demo login",
+        "login_successful": true,
+        "user_id": "demo_user_1",
+        "username": "demo_user",
+        "email": "demo@cataloro.com",
+        "matches_demo_id_1": false,
+        "matches_demo_id_2": true,
+        "management_center_accessible": true,
+        "management_center_listings_count": 0
+      },
+      {
+        "scenario": "Alternative demo email",
+        "login_successful": true,
+        "user_id": "e2ece4ec-a9bc-440a-b297-16eaa7f3585b",
+        "username": "demo_user",
+        "email": "demo_user@cataloro.com",
+        "matches_demo_id_1": false,
+        "matches_demo_id_2": false,
+        "management_center_accessible": true,
+        "management_center_listings_count": 0
+      },
+      {
+        "scenario": "Test user login",
+        "login_successful": true,
+        "user_id": "8eeee7eb-2878-4972-bc25-dc1da5661dad",
+        "username": "demo_user",
+        "email": "test@cataloro.com",
+        "matches_demo_id_1": false,
+        "matches_demo_id_2": false,
+        "management_center_accessible": true,
+        "management_center_listings_count": 0
+      }
+    ]
+  },
+  "inconsistency_analysis": {
+    "inconsistency_detected": true,
+    "browse_page_demo_listings": 9,
+    "management_center_listings_id1": 0,
+    "management_center_listings_id2": 0,
+    "potential_causes": [
+      "Browse page shows demo_user listings with different seller_id than expected demo_user IDs",
+      "Multiple demo_user accounts exist with different user_ids"
+    ]
+  }
+}
