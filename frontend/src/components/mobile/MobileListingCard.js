@@ -233,9 +233,9 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
     }
     
     if (!canUserBid()) {
-      if (listing.seller?.username === user.username || listing.seller_id === user.id) {
+      if (currentListing.seller?.username === user.username || currentListing.seller_id === user.id) {
         return { disabled: true, text: 'Your Listing', color: 'bg-gray-400' };
-      } else if (listing.bid_info?.highest_bidder_id === user.id) {
+      } else if (currentListing.bid_info?.highest_bidder_id === user.id) {
         return { disabled: true, text: 'Highest Bidder', color: 'bg-green-500' };
       }
     }
