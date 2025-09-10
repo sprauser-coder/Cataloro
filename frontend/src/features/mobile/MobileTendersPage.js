@@ -475,22 +475,56 @@ function SellingCard({ listingOverview, onManageTenders }) {
                       </div>
                     </div>
                     
-                    {(tender.status === 'active' || tender.status === 'pending') && (
+                    {/* Always show Accept/Reject buttons unless tender is already accepted/rejected */}
+                    {(!tender.status || tender.status.toLowerCase() !== 'accepted' && tender.status.toLowerCase() !== 'rejected') && (
                       <div className="flex space-x-2 mt-2">
                         <button
                           onClick={() => handleAcceptTender(tender.id, tender.offer_amount)}
                           disabled={processingTender === tender.id}
-                          className="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg text-xs hover:bg-green-700 transition-colors disabled:opacity-50"
+                          className="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center"
                         >
-                          {processingTender === tender.id ? 'Processing...' : 'Accept'}
+                          {processingTender === tender.id ? (
+                            <>
+                              <div className="animate-spin w-3 h-3 border border-white border-t-transparent rounded-full mr-1"></div>
+                              Processing...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Accept
+                            </>
+                          )}
                         </button>
                         <button
                           onClick={() => handleRejectTender(tender.id, tender.offer_amount)}
                           disabled={processingTender === tender.id}
-                          className="flex-1 bg-red-600 text-white px-3 py-2 rounded-lg text-xs hover:bg-red-700 transition-colors disabled:opacity-50"
+                          className="flex-1 bg-red-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
                         >
-                          {processingTender === tender.id ? 'Processing...' : 'Reject'}
+                          {processingTender === tender.id ? (
+                            <>
+                              <div className="animate-spin w-3 h-3 border border-white border-t-transparent rounded-full mr-1"></div>
+                              Processing...
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-3 h-3 mr-1" />
+                              Reject
+                            </>
+                          )}
                         </button>
+                      </div>
+                    )}
+                    
+                    {/* Show message for already processed tenders */}
+                    {(tender.status?.toLowerCase() === 'accepted' || tender.status?.toLowerCase() === 'rejected') && (
+                      <div className="mt-2 text-center">
+                        <span className={`text-xs px-3 py-1 rounded-full font-medium ${
+                          tender.status.toLowerCase() === 'accepted' 
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                            : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                        }`}>
+                          {tender.status.toLowerCase() === 'accepted' ? 'Tender Accepted' : 'Tender Rejected'}
+                        </span>
                       </div>
                     )}
                   </div>
