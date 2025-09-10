@@ -226,6 +226,8 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
   };
 
   const buttonState = getBidButtonState();
+
+  return (
     <div className="relative mb-4">
       {/* Main Card - Simplified without swipe functionality */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
