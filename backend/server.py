@@ -6801,7 +6801,7 @@ async def track_system_notification_click(user_id: str, notification_id: str):
 
 @app.get("/api/user/{user_id}/sold-items")
 async def get_user_sold_items(user_id: str):
-    """Get sold items for a user - includes accepted tenders and completed deals"""
+    """Get sold items for a user - includes accepted tenders and completed deals (OPTIMIZED)"""
     try:
         sold_items = []
         total_revenue = 0
@@ -6817,12 +6817,27 @@ async def get_user_sold_items(user_id: str):
         
         deals = await deals_cursor.to_list(length=None)
         
+        # OPTIMIZATION: Collect all unique listing and buyer IDs from deals
+        deal_listing_ids = []
+        deal_buyer_ids = []
         for deal in deals:
-            # Get listing details
-            listing = await db.listings.find_one({"id": deal.get("listing_id")})
-            
-            # Get buyer details
-            buyer = await db.users.find_one({"id": deal.get("buyer_id")})
+            if deal.get("listing_id"):
+                deal_listing_ids.append(deal["listing_id"])
+            if deal.get("buyer_id"):
+                deal_buyer_ids.append(deal["buyer_id"])
+        
+        # OPTIMIZATION: Fetch all listings and buyers in batch queries
+        deal_listings_list = await db.listings.find({"id": {"$in": deal_listing_ids}}).to_list(length=None) if deal_listing_ids else []
+        deal_buyers_list = await db.users.find({"id": {"$in": deal_buyer_ids}}).to_list(length=None) if deal_buyer_ids else []
+        
+        # Create lookup dictionaries
+        deal_listings_dict = {listing['id']: listing for listing in deal_listings_list}
+        deal_buyers_dict = {buyer['id']: buyer for buyer in deal_buyers_list}
+        
+        for deal in deals:
+            # Get listing and buyer details from cached lookup
+            listing = deal_listings_dict.get(deal.get("listing_id"))
+            buyer = deal_buyers_dict.get(deal.get("buyer_id"))
             
             final_price = deal.get("final_price", deal.get("price", 0))
             total_revenue += final_price
@@ -6865,12 +6880,27 @@ async def get_user_sold_items(user_id: str):
                 "status": "accepted"
             }).sort("accepted_at", -1).to_list(length=None)
             
+            # OPTIMIZATION: Collect all unique listing and buyer IDs from tenders
+            tender_listing_ids = []
+            tender_buyer_ids = []
             for tender in accepted_tenders:
-                # Get listing details
-                listing = await db.listings.find_one({"id": tender.get("listing_id")})
-                
-                # Get buyer details
-                buyer = await db.users.find_one({"id": tender.get("buyer_id")})
+                if tender.get("listing_id"):
+                    tender_listing_ids.append(tender["listing_id"])
+                if tender.get("buyer_id"):
+                    tender_buyer_ids.append(tender["buyer_id"])
+            
+            # OPTIMIZATION: Fetch all listings and buyers in batch queries
+            tender_listings_list = await db.listings.find({"id": {"$in": tender_listing_ids}}).to_list(length=None) if tender_listing_ids else []
+            tender_buyers_list = await db.users.find({"id": {"$in": tender_buyer_ids}}).to_list(length=None) if tender_buyer_ids else []
+            
+            # Create lookup dictionaries
+            tender_listings_dict = {listing['id']: listing for listing in tender_listings_list}
+            tender_buyers_dict = {buyer['id']: buyer for buyer in tender_buyers_list}
+            
+            for tender in accepted_tenders:
+                # Get listing and buyer details from cached lookup
+                listing = tender_listings_dict.get(tender.get("listing_id"))
+                buyer = tender_buyers_dict.get(tender.get("buyer_id"))
                 
                 final_price = tender.get("offer_amount", 0)
                 total_revenue += final_price
