@@ -141,19 +141,58 @@ function ProductDetailPage() {
 
   useEffect(() => {
     const loadProduct = async () => {
-      // First try to find product in cached allProducts
-      const foundProduct = allProducts.find(p => p.id === productId);
-      if (foundProduct) {
-        setProduct(foundProduct);
-        addToRecentlyViewed(foundProduct);
-        setLoading(false);
-        return;
-      }
+      try {
+        console.log('🔍 Loading product details for desktop:', productId);
+        
+        // First try to get detailed product info from individual listing endpoint (same as mobile)
+        const detailResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings/${productId}`);
+        if (detailResponse.ok) {
+          const productDetail = await detailResponse.json();
+          
+          // Get current bidding information (same as mobile)
+          const bidResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings/${productId}/tenders`);
+          if (bidResponse.ok) {
+            const tenders = await bidResponse.json();
+            
+            // Add bid information to product (same logic as mobile)
+            const activeTenders = tenders.filter(t => t.status === 'active');
+            if (activeTenders.length > 0) {
+              const highestBid = Math.max(...activeTenders.map(t => t.offer_amount));
+              productDetail.bid_info = {
+                has_bids: true,
+                highest_bid: highestBid,
+                total_bids: activeTenders.length
+              };
+            } else {
+              productDetail.bid_info = {
+                has_bids: false,
+                highest_bid: null,
+                total_bids: 0
+              };
+            }
+          }
+          
+          setProduct(productDetail);
+          addToRecentlyViewed(productDetail);
+          console.log('✅ Desktop product detail loaded:', productDetail.title);
+          console.log('💰 Desktop bid info:', productDetail.bid_info);
+          setLoading(false);
+          return;
+        }
+        
+        // Fallback to cached data if individual listing fails
+        console.log('⚠️ Individual listing failed, trying cached data');
+        const foundProduct = allProducts.find(p => p.id === productId);
+        if (foundProduct) {
+          setProduct(foundProduct);
+          addToRecentlyViewed(foundProduct);
+          setLoading(false);
+          return;
+        }
 
-      // If not found in cache and allProducts has data, try fetching from API
-      if (allProducts.length > 0) {
-        try {
-          console.log('🔍 Product not found in cache, fetching from API...');
+        // Final fallback to browse endpoint
+        if (allProducts.length > 0) {
+          console.log('⚠️ Cached data failed, trying browse endpoint');
           const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/marketplace/browse`);
           if (response.ok) {
             const allListings = await response.json();
@@ -165,15 +204,25 @@ function ProductDetailPage() {
               return;
             }
           }
-        } catch (error) {
-          console.error('❌ Failed to fetch product from API:', error);
-        }
         
-        // If still not found, redirect to browse
-        console.log('❌ Product not found, redirecting to browse');
-        navigate('/browse');
+          // If still not found, redirect to browse
+          console.log('❌ Product not found, redirecting to browse');
+          navigate('/browse');
+        }
+        // If allProducts is empty, keep loading (wait for MarketplaceContext to load)
+        
+      } catch (error) {
+        console.error('❌ Error loading desktop product:', error);
+        // Try fallback to cached data
+        const foundProduct = allProducts.find(p => p.id === productId);
+        if (foundProduct) {
+          setProduct(foundProduct);
+          addToRecentlyViewed(foundProduct);
+        } else {
+          navigate('/browse');
+        }
+        setLoading(false);
       }
-      // If allProducts is empty, keep loading (wait for MarketplaceContext to load)
     };
 
     if (productId) {
