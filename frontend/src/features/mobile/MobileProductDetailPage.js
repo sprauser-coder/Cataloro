@@ -272,8 +272,15 @@ function MobileProductDetailPage() {
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-              {formatPrice(product.price)}
+              {formatPrice(product.bid_info?.has_bids && product.bid_info?.highest_bid 
+                ? product.bid_info.highest_bid 
+                : product.price)}
             </div>
+            {product.bid_info?.has_bids && product.bid_info?.total_bids > 0 && (
+              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Current bid ({product.bid_info.total_bids} bid{product.bid_info.total_bids !== 1 ? 's' : ''})
+              </div>
+            )}
             {product.rating && (
               <div className="flex items-center mt-1">
                 <Star className="w-4 h-4 text-yellow-500 fill-current" />
