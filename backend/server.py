@@ -725,13 +725,43 @@ async def login_user(request: Request, credentials: dict):
         # Special handling for demo users to maintain consistency with existing listings
         if credentials["email"] in ["user@cataloro.com", "demo@cataloro.com", "demo_user@cataloro.com"]:
             # Use fixed demo user ID that matches existing listings in database
-            user_id = "68bfff790e4e46bc28d43631"
-            full_name = "Demo User"
-            username = "demo_user"
-            user_role = "User-Buyer"
-            badge = "Buyer"
-            registration_status = "Approved"
-            role = "user"
+            fixed_demo_user_id = "68bfff790e4e46bc28d43631"
+            
+            # Check if a user with the fixed ID already exists
+            existing_fixed_user = await db.users.find_one({"id": fixed_demo_user_id})
+            
+            if existing_fixed_user:
+                # Use the existing user with the fixed ID instead of creating a new one
+                user = existing_fixed_user
+                # Update the email to match the current login attempt
+                await db.users.update_one(
+                    {"id": fixed_demo_user_id},
+                    {"$set": {"email": credentials["email"]}}
+                )
+                user = await db.users.find_one({"email": credentials["email"]})
+            else:
+                # Create new user with fixed ID
+                user_id = fixed_demo_user_id
+                full_name = "Demo User"
+                username = "demo_user"
+                user_role = "User-Buyer"
+                badge = "Buyer"
+                registration_status = "Approved"
+                role = "user"
+                
+                user = {
+                    "id": user_id,
+                    "username": username,
+                    "email": credentials["email"],
+                    "full_name": full_name,
+                    "role": role,
+                    "user_role": user_role,
+                    "registration_status": registration_status,
+                    "badge": badge,
+                    "created_at": datetime.utcnow(),
+                    "is_active": True
+                }
+                await db.users.insert_one(user)
         elif credentials["email"] == "admin@cataloro.com":
             user_id = generate_id()
             full_name = "Sash"
@@ -740,6 +770,20 @@ async def login_user(request: Request, credentials: dict):
             badge = "Admin"
             registration_status = "Approved"
             role = "admin"
+            
+            user = {
+                "id": user_id,
+                "username": username,
+                "email": credentials["email"],
+                "full_name": full_name,
+                "role": role,
+                "user_role": user_role,
+                "registration_status": registration_status,
+                "badge": badge,
+                "created_at": datetime.utcnow(),
+                "is_active": True
+            }
+            await db.users.insert_one(user)
         else:
             # Generate new ID for other users
             user_id = generate_id()
@@ -749,20 +793,20 @@ async def login_user(request: Request, credentials: dict):
             badge = "Buyer"
             registration_status = "Approved"  # Auto-approve demo users
             role = "user"
-        
-        user = {
-            "id": user_id,
-            "username": username,
-            "email": credentials["email"],
-            "full_name": full_name,
-            "role": role,
-            "user_role": user_role,
-            "registration_status": registration_status,
-            "badge": badge,
-            "created_at": datetime.utcnow(),
-            "is_active": True
-        }
-        await db.users.insert_one(user)
+            
+            user = {
+                "id": user_id,
+                "username": username,
+                "email": credentials["email"],
+                "full_name": full_name,
+                "role": role,
+                "user_role": user_role,
+                "registration_status": registration_status,
+                "badge": badge,
+                "created_at": datetime.utcnow(),
+                "is_active": True
+            }
+            await db.users.insert_one(user)
     else:
         # Handle existing demo users to ensure consistency with fixed user ID
         if credentials["email"] in ["user@cataloro.com", "demo@cataloro.com", "demo_user@cataloro.com"]:
