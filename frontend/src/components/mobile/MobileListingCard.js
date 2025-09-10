@@ -27,6 +27,11 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
   const [priceSuggestion, setPriceSuggestion] = useState(null);
   const [loadingSuggestion, setLoadingSuggestion] = useState(false);
 
+  // Update local listing state when prop changes
+  useEffect(() => {
+    setCurrentListing(listing);
+  }, [listing]);
+
   const handleFavorite = () => {
     setIsFavorited(!isFavorited);
     onFavorite?.(listing.id, !isFavorited);
