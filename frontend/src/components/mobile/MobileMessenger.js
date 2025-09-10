@@ -38,8 +38,15 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
   const [conversationMessages, setConversationMessages] = useState([]);
   const messagesEndRef = useRef(null);
 
+  // Debug user context
+  useEffect(() => {
+    console.log('🔍 MobileMessenger useEffect triggered - user state:', user);
+    console.log('🔍 User keys:', user ? Object.keys(user) : 'user is null/undefined');
+  }, [user]);
+
   // Load real conversations from backend
   useEffect(() => {
+    console.log('🎯 loadConversations useEffect triggered - user:', user);
     loadConversations();
   }, [user]);
 
