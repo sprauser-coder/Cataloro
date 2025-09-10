@@ -1,0 +1,146 @@
+{
+  "test_timestamp": "2025-09-10T19:51:57.057284",
+  "demo_user_id": "68bfff790e4e46bc28d43631",
+  "my_listings_test": {
+    "test_name": "My Listings Endpoint",
+    "endpoint_working": true,
+    "response_time_ms": 691.514253616333,
+    "total_listings": 15,
+    "active_listings": 15,
+    "sold_listings": 0,
+    "catalyst_listings": 13,
+    "automotive_listings": 2,
+    "listings_with_bids": 0,
+    "bid_details": [],
+    "sample_listings": [
+      {
+        "title": "Honda Civic Exhaust System Parts",
+        "price": 75.0,
+        "category": "Automotive",
+        "status": "active",
+        "has_bids": false
+      },
+      {
+        "title": "Volkswagen Golf Catalyst - SOLD",
+        "price": 120.0,
+        "category": "Catalysts",
+        "status": "active",
+        "has_bids": false
+      },
+      {
+        "title": "Toyota Prius Hybrid Catalyst",
+        "price": 280.0,
+        "category": "Catalysts",
+        "status": "active",
+        "has_bids": false
+      },
+      {
+        "title": "Ford Focus Catalytic Converter Set",
+        "price": 95.0,
+        "category": "Automotive",
+        "status": "active",
+        "has_bids": false
+      },
+      {
+        "title": "Audi A4 Exhaust Catalyst",
+        "price": 180.0,
+        "category": "Catalysts",
+        "status": "active",
+        "has_bids": false
+      }
+    ]
+  },
+  "browse_test": {
+    "test_name": "Browse Endpoint",
+    "endpoint_working": true,
+    "response_time_ms": 106.19544982910156,
+    "total_listings": 24,
+    "demo_user_listings": 15,
+    "other_user_listings": 9,
+    "catalyst_listings": 17,
+    "automotive_listings": 6,
+    "active_listings": 24,
+    "sold_listings": 0,
+    "includes_demo_data": true
+  },
+  "messages_test": {
+    "test_name": "Messages Endpoint",
+    "endpoint_working": true,
+    "response_time_ms": 10.879755020141602,
+    "total_conversations": 15,
+    "recent_messages": [
+      {
+        "subject": "Tender Accepted - Suzuki78KC01",
+        "sender": "68bfff790e4e46bc28d43631",
+        "recipient": "68bff934bdb9d78bad2b925c",
+        "created_at": "2025-09-09T12:06:21.034775"
+      },
+      {
+        "subject": "Tender Accepted - JaguarNNC6700GB",
+        "sender": "68bfff790e4e46bc28d43631",
+        "recipient": "68bff934bdb9d78bad2b925c",
+        "created_at": "2025-09-09T14:46:08.447129"
+      },
+      {
+        "subject": "",
+        "sender": "68bff934bdb9d78bad2b925c",
+        "recipient": "68bfff790e4e46bc28d43631",
+        "created_at": "2025-09-10T10:03:22.813524+02:00"
+      },
+      {
+        "subject": "",
+        "sender": "68bfff790e4e46bc28d43631",
+        "recipient": "68bff934bdb9d78bad2b925c",
+        "created_at": "2025-09-10T10:08:52.435421+02:00"
+      },
+      {
+        "subject": "",
+        "sender": "68bff934bdb9d78bad2b925c",
+        "recipient": "68bfff790e4e46bc28d43631",
+        "created_at": "2025-09-10T10:17:40.461254+02:00"
+      }
+    ],
+    "has_conversations": true
+  },
+  "individual_listings_test": {
+    "test_name": "Individual Listing Endpoints",
+    "listing_detail_working": true,
+    "tenders_working": true,
+    "listing_detail_response_time": 10.225772857666016,
+    "tenders_response_time": 10.545492172241211,
+    "test_listing_title": "Honda Civic Exhaust System Parts",
+    "test_listing_id": "aa88ac4d-458e-419e-a97c-bef9e4fffd09",
+    "bid_count": 1,
+    "both_endpoints_working": true
+  },
+  "consistency_test": {
+    "test_name": "Data Consistency",
+    "my_listings_count": 15,
+    "active_my_listings_count": 15,
+    "demo_in_browse_count": 15,
+    "consistency_score": 100.0,
+    "field_consistency_scores": {
+      "title": 100.0,
+      "price": 100.0,
+      "category": 100.0,
+      "status": 100.0
+    },
+    "data_consistent": true,
+    "all_fields_consistent": true
+  },
+  "summary": {
+    "my_listings_working": true,
+    "my_listings_populated": true,
+    "browse_working": true,
+    "browse_includes_demo_data": true,
+    "messages_working": true,
+    "messages_populated": true,
+    "individual_listings_working": true,
+    "data_consistent": true,
+    "all_endpoints_working": true,
+    "verification_successful": true,
+    "total_demo_listings": 15,
+    "listings_with_bids": 0,
+    "total_conversations": 15
+  }
+}
