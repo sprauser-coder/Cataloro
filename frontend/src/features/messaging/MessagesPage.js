@@ -232,15 +232,7 @@ function MessagesPage() {
     }
   };
 
-  // Remove auto-scroll on message changes
-  useEffect(() => {
-    // Auto-scroll to bottom when messages change (for desktop consistency with mobile)
-    if (conversationMessages.length > 0) {
-      setTimeout(() => {
-        scrollToBottom();
-      }, 100);
-    }
-  }, [conversationMessages]);
+  // Auto-scroll useEffect moved above conditional return to fix hooks violation
 
   // Auto-resize textarea
   const autoResizeTextarea = (element) => {
