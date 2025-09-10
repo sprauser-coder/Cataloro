@@ -73,14 +73,71 @@ function MobileBrowsePage() {
     loadListings();
   }, []);
 
-  // Simple search filtering
-  const filteredListings = listings.filter(listing =>
-    listing.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    listing.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+    applyFilters(listings, term, filters);
+  };
 
-  const handleSearch = (query) => {
-    setSearchTerm(query);
+  const handleFiltersChange = (newFilters) => {
+    setFilters(newFilters);
+    applyFilters(listings, searchTerm, newFilters);
+  };
+
+  const applyFilters = (allListings, searchTerm, activeFilters) => {
+    let filtered = [...allListings];
+
+    // Search filter
+    if (searchTerm && searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(listing => 
+        listing.title?.toLowerCase().includes(searchLower) ||
+        listing.description?.toLowerCase().includes(searchLower) ||
+        listing.seller?.username?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Price range filter
+    if (activeFilters.priceRange && activeFilters.priceRange.min > 0 || activeFilters.priceRange.max < 1000) {
+      filtered = filtered.filter(listing => {
+        const price = listing.price || 0;
+        return price >= activeFilters.priceRange.min && price <= activeFilters.priceRange.max;
+      });
+    }
+
+    // Category filter
+    if (activeFilters.category && activeFilters.category !== '') {
+      filtered = filtered.filter(listing => 
+        listing.category?.toLowerCase() === activeFilters.category.toLowerCase()
+      );
+    }
+
+    // Condition filter
+    if (activeFilters.condition && activeFilters.condition !== '') {
+      filtered = filtered.filter(listing => 
+        listing.condition?.toLowerCase() === activeFilters.condition.toLowerCase()
+      );
+    }
+
+    // Sort results
+    switch (activeFilters.sortBy) {
+      case 'price_low':
+        filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
+        break;
+      case 'price_high':
+        filtered.sort((a, b) => (b.price || 0) - (a.price || 0));
+        break;
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+        break;
+      case 'oldest':
+        filtered.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+        break;
+      default:
+        // Keep original order
+        break;
+    }
+
+    setFilteredListings(filtered);
   };
 
   const handleBidUpdate = (listingId, updatedListing) => {
