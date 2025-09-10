@@ -2873,7 +2873,79 @@ async def main():
     print("🔧 Cataloro Marketplace Testing Suite")
     print("=" * 50)
     
-    # Run Basket Export Tests (Primary focus for this review)
+    # Run Mobile Bidding Tests (Primary focus for this review)
+    print("\n🎯 MOBILE BIDDING FUNCTIONALITY TESTING")
+    print("=" * 60)
+    
+    bidding_tester = MobileBiddingTester()
+    bidding_results = await bidding_tester.run_comprehensive_bidding_test()
+    
+    # Print Bidding Test Summary
+    print("\n" + "=" * 60)
+    print("📊 MOBILE BIDDING FUNCTIONALITY SUMMARY")
+    print("=" * 60)
+    
+    if bidding_results.get("setup_error"):
+        print(f"❌ Setup Error: {bidding_results['setup_error']}")
+        print("Cannot proceed with bidding tests without proper setup")
+    else:
+        bidding_summary = bidding_results["summary"]
+        first_bid = bidding_results["first_bid_scenario"]
+        higher_bid = bidding_results["higher_bid_scenario"]
+        equal_bid = bidding_results["equal_bid_scenario"]
+        lower_bid = bidding_results["lower_bid_scenario"]
+        min_increment = bidding_results["minimum_increment_logic"]
+        error_accuracy = bidding_results["error_message_accuracy"]
+        self_bidding = bidding_results["self_bidding_prevention"]
+        
+        print(f"🎯 Overall Success Rate: {bidding_summary.get('overall_success_rate', 0):.0f}%")
+        print()
+        
+        # Critical Bidding Logic
+        validation_status = "✅" if bidding_summary.get("bidding_validation_logic_working") else "❌"
+        bug_resolved = "✅" if bidding_summary.get("critical_bug_resolved") else "❌"
+        print(f"{validation_status} Bidding Validation Logic: {'Working' if bidding_summary.get('bidding_validation_logic_working') else 'Failed'}")
+        print(f"{bug_resolved} Critical Bug Resolved: {'Yes' if bidding_summary.get('critical_bug_resolved') else 'No'}")
+        print()
+        
+        # Individual Test Results
+        first_bid_status = "✅" if first_bid.get("success") else "❌"
+        print(f"{first_bid_status} First Bid Scenario: {'Accepted' if first_bid.get('first_bid_accepted') else 'Failed'}")
+        
+        higher_bid_status = "✅" if higher_bid.get("success") else "❌"
+        print(f"{higher_bid_status} Higher Bid Scenario: {'Accepted' if higher_bid.get('higher_bid_accepted') else 'Failed'}")
+        
+        equal_bid_status = "✅" if equal_bid.get("success") else "❌"
+        print(f"{equal_bid_status} Equal Bid Scenario: {'Correctly Rejected' if equal_bid.get('correctly_rejected') else 'Incorrectly Accepted'}")
+        
+        lower_bid_status = "✅" if lower_bid.get("success") else "❌"
+        print(f"{lower_bid_status} Lower Bid Scenario: {'Correctly Rejected' if lower_bid.get('correctly_rejected') else 'Incorrectly Accepted'}")
+        
+        min_increment_status = "✅" if min_increment.get("success") else "❌"
+        print(f"{min_increment_status} Minimum Increment Logic: {'Working' if min_increment.get('minimum_increment_accepted') else 'Failed'}")
+        
+        error_accuracy_status = "✅" if error_accuracy.get("success") else "❌"
+        accuracy_score = error_accuracy.get("accuracy_score", 0)
+        print(f"{error_accuracy_status} Error Message Accuracy: {accuracy_score:.0f}%")
+        
+        self_bidding_status = "✅" if self_bidding.get("success") else "❌"
+        print(f"{self_bidding_status} Self-Bidding Prevention: {'Working' if self_bidding.get('self_bidding_prevented') else 'Failed'}")
+        
+        print()
+        print("🏆 MOBILE BIDDING TEST RESULTS:")
+        overall_status = "✅ ALL TESTS PASSED" if bidding_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
+        print(f"   {overall_status}")
+        print(f"   Success Rate: {bidding_summary.get('overall_success_rate', 0):.0f}%")
+        print(f"   Critical Bug: {'✅ RESOLVED' if bidding_summary.get('critical_bug_resolved') else '❌ NOT RESOLVED'}")
+        print(f"   Validation Logic: {'✅ Working' if bidding_summary.get('bidding_validation_logic_working') else '❌ Failed'}")
+        
+        # Save detailed results
+        with open("/app/mobile_bidding_test_results.json", "w") as f:
+            json.dump(bidding_results, f, indent=2, default=str)
+        
+        print(f"\n📄 Mobile bidding test results saved to: /app/mobile_bidding_test_results.json")
+    
+    # Run Basket Export Tests (Secondary focus)
     print("\n📄 BASKET EXPORT FUNCTIONALITY TESTING")
     print("=" * 60)
     
