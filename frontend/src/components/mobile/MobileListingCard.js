@@ -389,7 +389,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
               <div className="flex items-center space-x-2 mb-2">
                 <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Bid</span>
-                {listing.bid_info?.has_bids && (
+                {currentListing.bid_info?.has_bids && (
                   <span className="text-xs text-gray-500 dark:text-gray-400">
                     Min: {formatPrice(getMinimumBid())}
                   </span>
