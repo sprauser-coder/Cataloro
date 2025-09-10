@@ -76,8 +76,24 @@ function MobileProductDetailPage() {
   }, [productId, navigate, showToast]);
 
   const handleBidSubmit = async () => {
-    if (!bidAmount || parseFloat(bidAmount) <= 0) {
+    const bidValue = parseFloat(bidAmount);
+    
+    if (!bidAmount || bidValue <= 0) {
       showToast('Please enter a valid bid amount', 'error');
+      return;
+    }
+
+    // Validate minimum bid amount
+    const currentHighestBid = product.bid_info?.highest_bid || 0;
+    const startingPrice = product.price || 0;
+    const minimumBid = currentHighestBid > 0 ? currentHighestBid + 1 : startingPrice;
+    
+    if (bidValue < minimumBid) {
+      if (currentHighestBid > 0) {
+        showToast(`Bid must be higher than current highest bid of €${currentHighestBid}. Minimum: €${minimumBid}`, 'error');
+      } else {
+        showToast(`Bid must be at least €${minimumBid} (starting price)`, 'error');
+      }
       return;
     }
 
@@ -91,7 +107,7 @@ function MobileProductDetailPage() {
       console.log('💰 Submitting bid:', {
         listing_id: productId,
         buyer_id: user.id,
-        offer_amount: parseFloat(bidAmount)
+        offer_amount: bidValue
       });
 
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/submit`, {
@@ -102,7 +118,7 @@ function MobileProductDetailPage() {
         body: JSON.stringify({
           listing_id: productId,
           buyer_id: user.id,
-          offer_amount: parseFloat(bidAmount)
+          offer_amount: bidValue
         })
       });
 
