@@ -124,8 +124,8 @@ function App() {
                   <Route index element={<Navigate to={APP_ROUTES.BROWSE} replace />} />
                   <Route path={APP_ROUTES.BROWSE} element={<BrowsePageComponent />} />
 
-                  <Route path="product/:productId" element={<ProductDetailPage />} />
-                  <Route path="listing/:id" element={<ProductDetailPage />} />
+                  <Route path="product/:productId" element={isMobile ? <MobileProductDetailPage /> : <ProductDetailPage />} />
+                  <Route path="listing/:id" element={isMobile ? <MobileProductDetailPage /> : <ProductDetailPage />} />
                   <Route path="search" element={<BrowsePageComponent />} />
                   <Route path="trending" element={<BrowsePageComponent />} />
                   <Route path="create-listing" element={<CreateListingPage />} />
