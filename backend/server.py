@@ -5861,10 +5861,10 @@ async def get_user_active_bids(user_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to fetch user active bids: {str(e)}")
 
 @app.get("/api/admin/catalyst/calculations")
-async def get_catalyst_calculations():
-    """Get calculated prices for all catalysts"""
+async def get_catalyst_calculations(limit: int = 100, skip: int = 0):
+    """Get calculated prices for catalysts - optimized with pagination"""
     try:
-        # Get price settings
+        # Get price settings (cached lookup)
         settings = await db.catalyst_price_settings.find_one({"type": "price_settings"})
         if not settings:
             # Default values
@@ -5877,44 +5877,62 @@ async def get_catalyst_calculations():
                 "renumeration_rh": 0.88
             }
         
-        # Get all catalyst data
-        catalysts = await db.catalyst_data.find({}).to_list(length=None)
+        # Optimized query with pagination and essential fields only
+        catalysts = await db.catalyst_data.find({}, {
+            "id": 1,
+            "cat_id": 1,
+            "name": 1,
+            "ceramic_weight": 1,
+            "pt_ppm": 1,
+            "pd_ppm": 1,
+            "rh_ppm": 1
+        }).skip(skip).limit(limit).to_list(length=limit)
         
-        # Get price overrides
-        overrides = await db.catalyst_price_overrides.find({}).to_list(length=None)
+        # Get price overrides in batch for found catalysts
+        catalyst_ids = [cat['id'] for cat in catalysts if 'id' in cat]
+        overrides_cursor = db.catalyst_price_overrides.find({"catalyst_id": {"$in": catalyst_ids}})
+        overrides = await overrides_cursor.to_list(length=len(catalyst_ids))
         override_dict = {override['catalyst_id']: override for override in overrides}
         
-        # Calculate prices
+        # Calculate prices with error handling
         calculations = []
         for catalyst in catalysts:
-            catalyst_id = catalyst['id']
-            
-            # Check for override
-            if catalyst_id in override_dict and override_dict[catalyst_id]['is_override']:
-                total_price = override_dict[catalyst_id]['override_price']
-                is_override = True
-            else:
-                # Calculate standard price
-                ceramic_weight = catalyst.get('ceramic_weight', 0)
-                pt_ppm = catalyst.get('pt_ppm', 0)
-                pd_ppm = catalyst.get('pd_ppm', 0)
-                rh_ppm = catalyst.get('rh_ppm', 0)
+            try:
+                catalyst_id = catalyst.get('id')
+                if not catalyst_id:
+                    continue
+                    
+                # Check for override
+                if catalyst_id in override_dict and override_dict[catalyst_id].get('is_override'):
+                    total_price = override_dict[catalyst_id].get('override_price', 0)
+                    is_override = True
+                else:
+                    # Calculate standard price with safe conversions
+                    ceramic_weight = float(catalyst.get('ceramic_weight', 0) or 0)
+                    pt_ppm = float(catalyst.get('pt_ppm', 0) or 0)
+                    pd_ppm = float(catalyst.get('pd_ppm', 0) or 0)
+                    rh_ppm = float(catalyst.get('rh_ppm', 0) or 0)
+                    
+                    pt_value = (ceramic_weight * (pt_ppm / 1000) * settings['renumeration_pt']) * settings['pt_price']
+                    pd_value = (ceramic_weight * (pd_ppm / 1000) * settings['renumeration_pd']) * settings['pd_price']
+                    rh_value = (ceramic_weight * (rh_ppm / 1000) * settings['renumeration_rh']) * settings['rh_price']
+                    
+                    total_price = pt_value + pd_value + rh_value
+                    is_override = False
                 
-                pt_value = (ceramic_weight * (pt_ppm / 1000) * settings['renumeration_pt']) * settings['pt_price']
-                pd_value = (ceramic_weight * (pd_ppm / 1000) * settings['renumeration_pd']) * settings['pd_price']
-                rh_value = (ceramic_weight * (rh_ppm / 1000) * settings['renumeration_rh']) * settings['rh_price']
+                calculations.append({
+                    "_id": catalyst_id,
+                    "database_id": catalyst_id,
+                    "cat_id": catalyst.get('cat_id', ''),
+                    "name": catalyst.get('name', ''),
+                    "total_price": round(total_price, 2),
+                    "is_override": is_override
+                })
                 
-                total_price = pt_value + pd_value + rh_value
-                is_override = False
-            
-            calculations.append({
-                "_id": catalyst_id,
-                "database_id": catalyst_id,
-                "cat_id": catalyst.get('cat_id', ''),
-                "name": catalyst.get('name', ''),
-                "total_price": round(total_price, 2),
-                "is_override": is_override
-            })
+            except (ValueError, TypeError, KeyError) as calc_error:
+                # Skip problematic catalysts instead of failing entire request
+                print(f"Warning: Skipping catalyst {catalyst.get('id', 'unknown')} due to calculation error: {calc_error}")
+                continue
         
         return calculations
         
