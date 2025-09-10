@@ -3455,6 +3455,24 @@ async def upload_logo(file: UploadFile = File(...), mode: str = "light"):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload logo: {str(e)}")
 
+@app.get("/api/admin/logo")
+async def get_admin_logo():
+    """Get admin uploaded logo"""
+    try:
+        # Check if logo is stored in database
+        logo_doc = await db.site_settings.find_one({"type": "logo"})
+        if logo_doc and logo_doc.get("logo_url"):
+            return {
+                "logo_url": logo_doc["logo_url"],
+                "mode": logo_doc.get("mode", "light")
+            }
+        
+        # Return default/no logo
+        return {"logo_url": None, "mode": "light"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get logo: {str(e)}")
+
 @app.get("/api/admin/content")
 async def get_content():
     """Get info page content for CMS"""
