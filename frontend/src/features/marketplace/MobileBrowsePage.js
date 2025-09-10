@@ -73,6 +73,13 @@ function MobileBrowsePage() {
     loadListings();
   }, []);
 
+  // Apply filters when listings change
+  useEffect(() => {
+    if (listings.length > 0) {
+      applyFilters(listings, searchTerm, filters);
+    }
+  }, [listings]);
+
   const handleSearch = (term) => {
     setSearchTerm(term);
     applyFilters(listings, term, filters);
