@@ -313,9 +313,71 @@ function BidCard({ bid }) {
 }
 
 // Selling Card Component  
-function SellingCard({ listingOverview }) {
+function SellingCard({ listingOverview, onManageTenders }) {
+  const [showTendersDropdown, setShowTendersDropdown] = useState(false);
+  const [processingTender, setProcessingTender] = useState(null);
+
+  const handleManageClick = (e) => {
+    e.preventDefault();
+    setShowTendersDropdown(!showTendersDropdown);
+  };
+
+  const handleAcceptTender = async (tenderId, tenderAmount) => {
+    if (!window.confirm(`Accept this bid of €${tenderAmount}?`)) return;
+    
+    try {
+      setProcessingTender(tenderId);
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/${tenderId}/accept`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ seller_id: listingOverview.listing?.seller_id })
+      });
+      
+      if (response.ok) {
+        alert('Tender accepted successfully!');
+        setShowTendersDropdown(false);
+        if (onManageTenders) onManageTenders(); // Refresh data
+      } else {
+        alert('Failed to accept tender');
+      }
+    } catch (error) {
+      console.error('Error accepting tender:', error);
+      alert('Error accepting tender');
+    } finally {
+      setProcessingTender(null);
+    }
+  };
+
+  const handleRejectTender = async (tenderId, tenderAmount) => {
+    if (!window.confirm(`Reject this bid of €${tenderAmount}?`)) return;
+    
+    try {
+      setProcessingTender(tenderId);
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/${tenderId}/reject`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ seller_id: listingOverview.listing?.seller_id })
+      });
+      
+      if (response.ok) {
+        alert('Tender rejected successfully!');
+        setShowTendersDropdown(false);
+        if (onManageTenders) onManageTenders(); // Refresh data
+      } else {
+        alert('Failed to reject tender');
+      }
+    } catch (error) {
+      console.error('Error rejecting tender:', error);
+      alert('Error rejecting tender');
+    } finally {
+      setProcessingTender(null);
+    }
+  };
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm relative">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -333,7 +395,7 @@ function SellingCard({ listingOverview }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-4">
           <div>
             <p className="text-xs text-gray-500 dark:text-gray-400">Highest Bid</p>
@@ -356,14 +418,88 @@ function SellingCard({ listingOverview }) {
           >
             View
           </Link>
-          <Link
-            to={`/tenders?tab=listings&listing=${listingOverview.listing?.id}`}
+          <button
+            onClick={handleManageClick}
             className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
           >
             Manage
-          </Link>
+          </button>
         </div>
       </div>
+
+      {/* Tenders Dropdown/Modal */}
+      {showTendersDropdown && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-25 z-10"
+            onClick={() => setShowTendersDropdown(false)}
+          ></div>
+          
+          {/* Dropdown Content */}
+          <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-20 max-h-80 overflow-y-auto">
+            <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                Manage Tenders ({listingOverview.tenders?.length || 0})
+              </h4>
+            </div>
+            
+            {listingOverview.tenders && listingOverview.tenders.length > 0 ? (
+              <div className="max-h-60 overflow-y-auto">
+                {listingOverview.tenders.map((tender, index) => (
+                  <div key={tender.id || index} className="p-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          {tender.buyer?.username || 'Anonymous'}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {tender.buyer?.is_business ? 'Business' : 'Individual'} • {tender.created_at ? new Date(tender.created_at).toLocaleDateString() : 'N/A'}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                          €{tender.offer_amount || 0}
+                        </p>
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          tender.status === 'accepted' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
+                          tender.status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' :
+                          'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300'
+                        }`}>
+                          {tender.status?.charAt(0).toUpperCase() + tender.status?.slice(1) || 'Active'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {(tender.status === 'active' || tender.status === 'pending') && (
+                      <div className="flex space-x-2 mt-2">
+                        <button
+                          onClick={() => handleAcceptTender(tender.id, tender.offer_amount)}
+                          disabled={processingTender === tender.id}
+                          className="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg text-xs hover:bg-green-700 transition-colors disabled:opacity-50"
+                        >
+                          {processingTender === tender.id ? 'Processing...' : 'Accept'}
+                        </button>
+                        <button
+                          onClick={() => handleRejectTender(tender.id, tender.offer_amount)}
+                          disabled={processingTender === tender.id}
+                          className="flex-1 bg-red-600 text-white px-3 py-2 rounded-lg text-xs hover:bg-red-700 transition-colors disabled:opacity-50"
+                        >
+                          {processingTender === tender.id ? 'Processing...' : 'Reject'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400">No tenders yet</p>
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
