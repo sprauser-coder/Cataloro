@@ -463,6 +463,8 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="Type a message..."
+              autoFocus={false}
+              autoComplete="off"
               className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-2xl text-sm placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600 resize-none"
               rows="1"
             />
