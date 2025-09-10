@@ -416,8 +416,8 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-20" id="messages-container">  {/* Added pb-20 for bottom spacing */}
+      {/* Messages - Scrollable area that takes remaining space */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4" id="messages-container" style={{ paddingBottom: 'calc(80px + env(safe-area-inset-bottom))' }}>
         {messages.map((msg) => (
           <div
             key={msg.id}
