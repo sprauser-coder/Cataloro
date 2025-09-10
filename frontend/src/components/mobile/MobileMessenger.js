@@ -125,6 +125,11 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
         return new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at);
       });
       
+      // Sort messages within each conversation chronologically (oldest first, newest at bottom)
+      conversationsList.forEach(conversation => {
+        conversation.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      });
+      
       console.log('📋 Setting conversations list:', conversationsList);
       setRealConversations(conversationsList);
       
