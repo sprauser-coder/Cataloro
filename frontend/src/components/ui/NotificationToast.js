@@ -34,10 +34,10 @@ function NotificationToast() {
       // Load system notifications when user first logs in
       loadSystemNotifications();
       
-      // Also set up periodic checking for new system notifications every 3 minutes (reduced to prevent rate limiting)
+      // Also set up periodic checking for new system notifications every 10 minutes (reduced to prevent rate limiting)
       const interval = setInterval(() => {
         loadSystemNotifications();
-      }, 180000); // 3 minutes instead of 30 seconds
+      }, 600000); // 10 minutes instead of 3 minutes
       
       return () => clearInterval(interval);
     }
