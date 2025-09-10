@@ -339,11 +339,13 @@ function SellingCard({ listingOverview, onManageTenders }) {
       });
       
       if (response.ok) {
-        alert('Tender accepted successfully!');
+        // Import showToast from parent component via props or use alert for now
+        alert('✅ Tender accepted successfully!');
         setShowTendersDropdown(false);
         if (onManageTenders) onManageTenders(); // Refresh data
       } else {
-        alert('Failed to accept tender');
+        const errorText = await response.text();
+        alert(`❌ Failed to accept tender: ${errorText}`);
       }
     } catch (error) {
       console.error('Error accepting tender:', error);
