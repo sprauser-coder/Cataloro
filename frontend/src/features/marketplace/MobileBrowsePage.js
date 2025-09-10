@@ -53,6 +53,26 @@ function MobileBrowsePage() {
     calculateQuickStats();
   }, [filteredProducts]);
 
+  // Refresh listings when page becomes visible (for updated prices after bidding)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Page is visible, refresh listings to get updated bid prices
+        console.log('📱 Mobile browse page visible, refreshing listings for updated prices');
+        refreshListings();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Also refresh when component mounts
+    refreshListings();
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [refreshListings]);
+
   // Mobile event handlers
   const handleMobileSearch = (query) => {
     updateGlobalSearchQuery(query);
