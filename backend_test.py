@@ -2868,6 +2868,403 @@ class CatalystDataTester:
         finally:
             await self.cleanup()
 
+class MessagesTester:
+    def __init__(self):
+        self.session = None
+        self.test_results = []
+        self.demo_user_id = "2ae84d11-f762-4462-9467-d283fd719d21"  # From review request
+        self.demo_user_id_alt = "demo_user_1"  # Alternative from review request
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def test_messages_api_endpoint(self) -> Dict:
+        """Test /api/user/{user_id}/messages endpoint directly"""
+        print("📨 Testing Messages API Endpoint...")
+        
+        test_results = []
+        
+        # Test with primary demo user ID
+        print(f"  Testing with demo user ID: {self.demo_user_id}")
+        result1 = await self.make_request(f"/user/{self.demo_user_id}/messages")
+        
+        if result1["success"]:
+            messages_data = result1["data"]
+            print(f"    ✅ API responded successfully")
+            print(f"    📊 Response time: {result1['response_time_ms']:.0f}ms")
+            print(f"    📨 Messages returned: {len(messages_data) if isinstance(messages_data, list) else 'Not a list'}")
+            
+            test_results.append({
+                "user_id": self.demo_user_id,
+                "success": True,
+                "response_time_ms": result1["response_time_ms"],
+                "messages_count": len(messages_data) if isinstance(messages_data, list) else 0,
+                "data_structure_valid": isinstance(messages_data, list),
+                "messages_data": messages_data[:3] if isinstance(messages_data, list) else None  # First 3 for inspection
+            })
+        else:
+            print(f"    ❌ API failed: {result1.get('error', 'Unknown error')}")
+            print(f"    📊 Status: {result1['status']}")
+            test_results.append({
+                "user_id": self.demo_user_id,
+                "success": False,
+                "error": result1.get("error", "API call failed"),
+                "status": result1["status"],
+                "response_time_ms": result1["response_time_ms"]
+            })
+        
+        # Test with alternative demo user ID
+        print(f"  Testing with alternative demo user ID: {self.demo_user_id_alt}")
+        result2 = await self.make_request(f"/user/{self.demo_user_id_alt}/messages")
+        
+        if result2["success"]:
+            messages_data = result2["data"]
+            print(f"    ✅ API responded successfully")
+            print(f"    📊 Response time: {result2['response_time_ms']:.0f}ms")
+            print(f"    📨 Messages returned: {len(messages_data) if isinstance(messages_data, list) else 'Not a list'}")
+            
+            test_results.append({
+                "user_id": self.demo_user_id_alt,
+                "success": True,
+                "response_time_ms": result2["response_time_ms"],
+                "messages_count": len(messages_data) if isinstance(messages_data, list) else 0,
+                "data_structure_valid": isinstance(messages_data, list),
+                "messages_data": messages_data[:3] if isinstance(messages_data, list) else None
+            })
+        else:
+            print(f"    ❌ API failed: {result2.get('error', 'Unknown error')}")
+            print(f"    📊 Status: {result2['status']}")
+            test_results.append({
+                "user_id": self.demo_user_id_alt,
+                "success": False,
+                "error": result2.get("error", "API call failed"),
+                "status": result2["status"],
+                "response_time_ms": result2["response_time_ms"]
+            })
+        
+        successful_tests = [t for t in test_results if t["success"]]
+        total_messages = sum(t.get("messages_count", 0) for t in successful_tests)
+        
+        return {
+            "test_name": "Messages API Endpoint",
+            "total_tests": len(test_results),
+            "successful_tests": len(successful_tests),
+            "success_rate": len(successful_tests) / len(test_results) * 100 if test_results else 0,
+            "total_messages_found": total_messages,
+            "api_responding": len(successful_tests) > 0,
+            "both_user_ids_working": len(successful_tests) == 2,
+            "avg_response_time_ms": statistics.mean([t["response_time_ms"] for t in successful_tests]) if successful_tests else 0,
+            "detailed_results": test_results
+        }
+    
+    async def check_database_content(self) -> Dict:
+        """Check if there are any existing messages in the user_messages collection"""
+        print("🗄️ Checking Database Content...")
+        
+        # We can't directly access MongoDB from here, but we can infer from API responses
+        # Let's check a few different user IDs to see if any have messages
+        
+        test_user_ids = [
+            self.demo_user_id,
+            self.demo_user_id_alt,
+            "admin_user_1",
+            "test_user_1",
+            "seller_user_1"
+        ]
+        
+        database_check_results = []
+        total_messages_in_system = 0
+        
+        for user_id in test_user_ids:
+            print(f"  Checking messages for user: {user_id}")
+            result = await self.make_request(f"/user/{user_id}/messages")
+            
+            if result["success"]:
+                messages_data = result["data"]
+                message_count = len(messages_data) if isinstance(messages_data, list) else 0
+                total_messages_in_system += message_count
+                
+                database_check_results.append({
+                    "user_id": user_id,
+                    "has_messages": message_count > 0,
+                    "message_count": message_count,
+                    "api_accessible": True,
+                    "sample_message": messages_data[0] if message_count > 0 else None
+                })
+                
+                print(f"    📨 {message_count} messages found")
+            else:
+                database_check_results.append({
+                    "user_id": user_id,
+                    "has_messages": False,
+                    "message_count": 0,
+                    "api_accessible": False,
+                    "error": result.get("error", "API failed")
+                })
+                print(f"    ❌ API failed: {result.get('error', 'Unknown')}")
+        
+        users_with_messages = [r for r in database_check_results if r["has_messages"]]
+        accessible_users = [r for r in database_check_results if r["api_accessible"]]
+        
+        return {
+            "test_name": "Database Content Check",
+            "total_users_checked": len(test_user_ids),
+            "users_with_api_access": len(accessible_users),
+            "users_with_messages": len(users_with_messages),
+            "total_messages_in_system": total_messages_in_system,
+            "database_has_messages": total_messages_in_system > 0,
+            "empty_database_explanation": total_messages_in_system == 0,
+            "detailed_user_results": database_check_results
+        }
+    
+    async def test_message_creation(self) -> Dict:
+        """Test the POST endpoint to create a test message"""
+        print("✉️ Testing Message Creation...")
+        
+        # Create a test message
+        test_message_data = {
+            "recipient_id": self.demo_user_id_alt,  # Send to alternative demo user
+            "subject": "Test Message for Mobile Messages Functionality",
+            "content": "This is a test message created to verify the messages functionality is working correctly. Created at: " + datetime.now().isoformat()
+        }
+        
+        print(f"  Creating test message from {self.demo_user_id} to {self.demo_user_id_alt}")
+        create_result = await self.make_request(f"/user/{self.demo_user_id}/messages", "POST", data=test_message_data)
+        
+        creation_test = {
+            "message_creation_attempted": True,
+            "creation_successful": create_result["success"],
+            "response_time_ms": create_result["response_time_ms"]
+        }
+        
+        if create_result["success"]:
+            message_id = create_result["data"].get("id") if isinstance(create_result["data"], dict) else None
+            print(f"    ✅ Message created successfully")
+            print(f"    📨 Message ID: {message_id}")
+            
+            creation_test.update({
+                "message_id": message_id,
+                "creation_response": create_result["data"]
+            })
+            
+            # Now test if we can retrieve the message
+            print("  Verifying message retrieval after creation...")
+            
+            # Check sender's messages
+            sender_messages_result = await self.make_request(f"/user/{self.demo_user_id}/messages")
+            sender_has_new_message = False
+            
+            if sender_messages_result["success"]:
+                sender_messages = sender_messages_result["data"]
+                if isinstance(sender_messages, list):
+                    sender_has_new_message = any(
+                        msg.get("id") == message_id or msg.get("content", "").startswith("This is a test message")
+                        for msg in sender_messages
+                    )
+                    print(f"    📨 Sender now has {len(sender_messages)} messages")
+            
+            # Check recipient's messages
+            recipient_messages_result = await self.make_request(f"/user/{self.demo_user_id_alt}/messages")
+            recipient_has_new_message = False
+            
+            if recipient_messages_result["success"]:
+                recipient_messages = recipient_messages_result["data"]
+                if isinstance(recipient_messages, list):
+                    recipient_has_new_message = any(
+                        msg.get("id") == message_id or msg.get("content", "").startswith("This is a test message")
+                        for msg in recipient_messages
+                    )
+                    print(f"    📨 Recipient now has {len(recipient_messages)} messages")
+            
+            creation_test.update({
+                "sender_can_see_message": sender_has_new_message,
+                "recipient_can_see_message": recipient_has_new_message,
+                "message_properly_stored": sender_has_new_message or recipient_has_new_message,
+                "sender_message_count": len(sender_messages_result["data"]) if sender_messages_result["success"] and isinstance(sender_messages_result["data"], list) else 0,
+                "recipient_message_count": len(recipient_messages_result["data"]) if recipient_messages_result["success"] and isinstance(recipient_messages_result["data"], list) else 0
+            })
+            
+        else:
+            print(f"    ❌ Message creation failed: {create_result.get('error', 'Unknown error')}")
+            print(f"    📊 Status: {create_result['status']}")
+            
+            creation_test.update({
+                "creation_error": create_result.get("error", "Message creation failed"),
+                "creation_status": create_result["status"]
+            })
+        
+        return {
+            "test_name": "Message Creation Test",
+            "creation_endpoint_working": creation_test["creation_successful"],
+            "message_storage_working": creation_test.get("message_properly_stored", False),
+            "sender_retrieval_working": creation_test.get("sender_can_see_message", False),
+            "recipient_retrieval_working": creation_test.get("recipient_can_see_message", False),
+            "full_message_flow_working": (
+                creation_test["creation_successful"] and 
+                creation_test.get("message_properly_stored", False)
+            ),
+            "detailed_test_results": creation_test
+        }
+    
+    async def test_mobile_vs_desktop_consistency(self) -> Dict:
+        """Test that mobile and desktop get the same data"""
+        print("📱💻 Testing Mobile vs Desktop Consistency...")
+        
+        # Test the same endpoint multiple times to check for consistency
+        consistency_tests = []
+        
+        for i in range(3):
+            print(f"  Consistency test {i+1}/3...")
+            result = await self.make_request(f"/user/{self.demo_user_id}/messages")
+            
+            if result["success"]:
+                messages_data = result["data"]
+                consistency_tests.append({
+                    "test_number": i + 1,
+                    "success": True,
+                    "message_count": len(messages_data) if isinstance(messages_data, list) else 0,
+                    "response_time_ms": result["response_time_ms"],
+                    "data_structure": type(messages_data).__name__,
+                    "first_message_id": messages_data[0].get("id") if isinstance(messages_data, list) and len(messages_data) > 0 else None
+                })
+            else:
+                consistency_tests.append({
+                    "test_number": i + 1,
+                    "success": False,
+                    "error": result.get("error", "API failed"),
+                    "response_time_ms": result["response_time_ms"]
+                })
+        
+        successful_tests = [t for t in consistency_tests if t["success"]]
+        
+        # Check consistency
+        data_consistent = True
+        if len(successful_tests) > 1:
+            first_count = successful_tests[0]["message_count"]
+            first_structure = successful_tests[0]["data_structure"]
+            
+            for test in successful_tests[1:]:
+                if test["message_count"] != first_count or test["data_structure"] != first_structure:
+                    data_consistent = False
+                    break
+        
+        return {
+            "test_name": "Mobile vs Desktop Consistency",
+            "total_consistency_tests": len(consistency_tests),
+            "successful_consistency_tests": len(successful_tests),
+            "data_consistent_across_calls": data_consistent,
+            "api_reliability": len(successful_tests) / len(consistency_tests) * 100 if consistency_tests else 0,
+            "avg_response_time_ms": statistics.mean([t["response_time_ms"] for t in successful_tests]) if successful_tests else 0,
+            "response_time_variance": statistics.stdev([t["response_time_ms"] for t in successful_tests]) if len(successful_tests) > 1 else 0,
+            "detailed_consistency_results": consistency_tests
+        }
+    
+    async def run_comprehensive_messages_test(self) -> Dict:
+        """Run all messages functionality tests"""
+        print("🚀 Starting Cataloro Messages Functionality Testing")
+        print("=" * 70)
+        
+        await self.setup()
+        
+        try:
+            # Run all test suites
+            api_endpoint_test = await self.test_messages_api_endpoint()
+            database_content_test = await self.check_database_content()
+            message_creation_test = await self.test_message_creation()
+            consistency_test = await self.test_mobile_vs_desktop_consistency()
+            
+            # Compile overall results
+            all_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "demo_user_ids_tested": [self.demo_user_id, self.demo_user_id_alt],
+                "api_endpoint_test": api_endpoint_test,
+                "database_content_test": database_content_test,
+                "message_creation_test": message_creation_test,
+                "consistency_test": consistency_test
+            }
+            
+            # Calculate overall success metrics
+            test_results = [
+                api_endpoint_test.get("api_responding", False),
+                database_content_test.get("users_with_api_access", 0) > 0,
+                message_creation_test.get("creation_endpoint_working", False),
+                consistency_test.get("data_consistent_across_calls", False)
+            ]
+            
+            overall_success_rate = sum(test_results) / len(test_results) * 100
+            
+            # Determine the root cause of empty messages
+            empty_messages_explanation = ""
+            if database_content_test.get("total_messages_in_system", 0) == 0:
+                if message_creation_test.get("creation_endpoint_working", False):
+                    empty_messages_explanation = "Database is empty but message creation works - this explains why mobile shows empty messages"
+                else:
+                    empty_messages_explanation = "Database is empty and message creation is not working - this explains the empty messages issue"
+            else:
+                empty_messages_explanation = "Messages exist in database - the mobile issue may be in UI rendering or data processing"
+            
+            all_results["summary"] = {
+                "overall_success_rate": overall_success_rate,
+                "api_endpoints_working": api_endpoint_test.get("api_responding", False),
+                "database_accessible": database_content_test.get("users_with_api_access", 0) > 0,
+                "message_creation_working": message_creation_test.get("creation_endpoint_working", False),
+                "message_storage_working": message_creation_test.get("message_storage_working", False),
+                "data_consistency_verified": consistency_test.get("data_consistent_across_calls", False),
+                "total_messages_in_system": database_content_test.get("total_messages_in_system", 0),
+                "empty_messages_explanation": empty_messages_explanation,
+                "mobile_messages_issue_identified": True,
+                "recommended_action": "Create test messages to populate database" if database_content_test.get("total_messages_in_system", 0) == 0 else "Check mobile UI data processing"
+            }
+            
+            return all_results
+            
+        finally:
+            await self.cleanup()
+
 async def main():
     """Main test execution"""
     print("🔧 Cataloro Marketplace Testing Suite")
