@@ -466,14 +466,17 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
               autoFocus={false}
               autoComplete="off"
               onFocus={(e) => {
-                // Only allow focus if it was triggered by user interaction
-                if (!e.target.dataset.userTriggered) {
-                  e.target.blur();
-                }
+                // Allow focus after a short delay to distinguish between auto-focus and user clicks
+                setTimeout(() => {
+                  e.target.dataset.userTriggered = 'true';
+                }, 100);
               }}
-              onClick={(e) => {
-                // Mark this as user-triggered focus
-                e.target.dataset.userTriggered = 'true';
+              onBlur={() => {
+                // Clear the user-triggered flag on blur
+                const input = document.querySelector('input[placeholder*="message"]');
+                if (input) {
+                  delete input.dataset.userTriggered;
+                }
               }}
               className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border-0 rounded-2xl text-sm placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600 resize-none"
               rows="1"
