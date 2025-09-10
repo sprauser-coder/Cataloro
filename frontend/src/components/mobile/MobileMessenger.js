@@ -143,9 +143,6 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
     }
   };
 
-  // Mock messages for active conversation - replace with real message loading
-  const [messages, setMessages] = useState([]);
-
   // Load conversation messages when conversation is selected
   const loadConversationMessages = async (conversation) => {
     if (conversation && conversation.messages) {
