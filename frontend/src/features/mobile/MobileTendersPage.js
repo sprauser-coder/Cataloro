@@ -359,7 +359,7 @@ function SellingCard({ listingOverview, onManageTenders }) {
     try {
       setProcessingTender(tenderId);
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/${tenderId}/reject`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/tenders/${tenderId}/reject`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ seller_id: listingOverview.listing?.seller_id })
