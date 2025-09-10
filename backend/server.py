@@ -1702,8 +1702,8 @@ async def get_user_associated_ids(user_id: str) -> list:
     return user_ids
 
 @app.get("/api/user/my-listings/{user_id}")
-async def get_my_listings(user_id: str):
-    """Get user's listings - only active listings for consistency with browse"""
+async def get_my_listings(user_id: str, limit: int = 50, skip: int = 0):
+    """Get user's listings - optimized with pagination and indexes"""
     try:
         # Check if user exists and is active
         await check_user_active_status(user_id)
@@ -1711,13 +1711,13 @@ async def get_my_listings(user_id: str):
         # Get all associated user IDs (current and legacy)
         associated_ids = await get_user_associated_ids(user_id)
         
-        # Find listings using any of the associated IDs
+        # Optimized query using indexes and pagination
         listings = await db.listings.find({
             "seller_id": {"$in": associated_ids}, 
             "status": "active"
-        }).sort("created_at", -1).to_list(length=None)
+        }).sort("created_at", -1).skip(skip).limit(limit).to_list(length=limit)
         
-        # Ensure consistent ID format
+        # Ensure consistent ID format - minimal processing
         for listing in listings:
             if 'id' not in listing and '_id' in listing:
                 listing['id'] = str(listing['_id'])
