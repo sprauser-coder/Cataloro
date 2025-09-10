@@ -1,0 +1,200 @@
+{
+  "test_timestamp": "2025-09-10T19:50:26.517710",
+  "database_state": {
+    "demo_user_exists": true,
+    "demo_user_id": "68bfff790e4e46bc28d43631",
+    "demo_user_id_matches": true,
+    "admin_user_exists": true,
+    "admin_user_id": "admin_user_1",
+    "total_listings": 14,
+    "demo_user_listings": 8,
+    "admin_user_listings": 0,
+    "my_listings_endpoint_working": true,
+    "my_listings_count": 8,
+    "messages_endpoint_working": true,
+    "messages_count": 10,
+    "database_empty": false
+  },
+  "listings_creation": {
+    "demo_listings_created": 7,
+    "admin_listings_created": 3,
+    "total_listings_created": 10,
+    "demo_listings": [
+      {
+        "message": "Listing created successfully",
+        "id": "a03e4afe-8bfb-4fff-a575-b5f20e5d02f7",
+        "listing_id": "a03e4afe-8bfb-4fff-a575-b5f20e5d02f7",
+        "status": "active",
+        "has_time_limit": false,
+        "expires_at": null
+      },
+      {
+        "message": "Listing created successfully",
+        "id": "d68798b4-ccbc-4df3-ac2a-3b569b6113bd",
+        "listing_id": "d68798b4-ccbc-4df3-ac2a-3b569b6113bd",
+        "status": "active",
+        "has_time_limit": false,
+        "expires_at": null
+      },
+      {
+        "message": "Listing created successfully",
+        "id": "2da1c76a-dec1-480f-a2f9-c865778f9563",
+        "listing_id": "2da1c76a-dec1-480f-a2f9-c865778f9563",
+        "status": "active",
+        "has_time_limit": false,
+        "expires_at": null
+      },
+      {
+        "message": "Listing created successfully",
+        "id": "ed1c0469-57a4-45b7-87c0-c33fbfd0b994",
+        "listing_id": "ed1c0469-57a4-45b7-87c0-c33fbfd0b994",
+        "status": "active",
+        "has_time_limit": false,
+        "expires_at": null
+      },
+      {
+        "message": "Listing created successfully",
+        "id": "38b9fce3-c9d8-4591-b386-885721bd22b2",
+        "listing_id": "38b9fce3-c9d8-4591-b386-885721bd22b2",
+        "status": "active",
+        "has_time_limit": false,
+        "expires_at": null
+      },
+      {
+        "message": "Listing created successfully",
+        "id": "038ab8bb-25ac-417a-9840-7d38a1c30558",
+        "listing_id": "038ab8bb-25ac-417a-9840-7d38a1c30558",
+        "status": "active",
+        "has_time_limit": false,
+        "expires_at": null
+      },
+      {
+        "message": "Listing created successfully",
+        "id": "aa88ac4d-458e-419e-a97c-bef9e4fffd09",
+        "listing_id": "aa88ac4d-458e-419e-a97c-bef9e4fffd09",
+        "status": "active",
+        "has_time_limit": false,
+        "expires_at": null
+      }
+    ],
+    "admin_listings": [
+      {
+        "message": "Listing created successfully",
+        "id": "3f6a95b2-67aa-4634-867b-072ccdd9c1a7",
+        "listing_id": "3f6a95b2-67aa-4634-867b-072ccdd9c1a7",
+        "status": "active",
+        "has_time_limit": false,
+        "expires_at": null
+      },
+      {
+        "message": "Listing created successfully",
+        "id": "b1439c1a-661b-4006-947a-49f7cd712808",
+        "listing_id": "b1439c1a-661b-4006-947a-49f7cd712808",
+        "status": "active",
+        "has_time_limit": false,
+        "expires_at": null
+      },
+      {
+        "message": "Listing created successfully",
+        "id": "32b05ed9-27ec-4cb2-b12f-81d450c161b4",
+        "listing_id": "32b05ed9-27ec-4cb2-b12f-81d450c161b4",
+        "status": "active",
+        "has_time_limit": false,
+        "expires_at": null
+      }
+    ]
+  },
+  "bids_creation": {
+    "bids_created": 5,
+    "bid_details": [
+      {
+        "listing_title": "Honda Civic Exhaust System Parts",
+        "bidder": "admin",
+        "amount": 100.0,
+        "bid_id": "9052c131-cd1f-45f8-9f16-0c588ce3bd2b"
+      },
+      {
+        "listing_title": "Volkswagen Golf Catalyst - SOLD",
+        "bidder": "admin",
+        "amount": 145.0,
+        "bid_id": "4c2d1fa2-92b7-4312-90d5-4ff0d9c6ab1e"
+      },
+      {
+        "listing_title": "Toyota Prius Hybrid Catalyst",
+        "bidder": "admin",
+        "amount": 305.0,
+        "bid_id": "cb50dbdd-b493-447c-bfd7-cc9ecae98bfa"
+      },
+      {
+        "listing_title": "Rare Catalyst Sample - SOLD",
+        "bidder": "demo",
+        "amount": 250.0,
+        "bid_id": "a94598d7-6cba-456a-b412-d0abf6824294"
+      },
+      {
+        "listing_title": "Luxury Vehicle Catalyst Bundle",
+        "bidder": "demo",
+        "amount": 430.0,
+        "bid_id": "61c8b3cd-6149-4d97-8656-d2598dd5b809"
+      }
+    ]
+  },
+  "messages_creation": {
+    "messages_created": 5,
+    "message_details": [
+      {
+        "message_id": "23484dac-c6f9-4e50-b0db-32c1e7cd19d9",
+        "from": "demo",
+        "to": "admin",
+        "subject": "Question about BMW Catalytic Converter"
+      },
+      {
+        "message_id": "6d039899-9610-4331-b027-3821b4ffb8fc",
+        "from": "admin",
+        "to": "demo",
+        "subject": "Re: Question about BMW Catalytic Converter"
+      },
+      {
+        "message_id": "78de915e-84bc-470c-9cb3-bed5bce1221e",
+        "from": "demo",
+        "to": "admin",
+        "subject": "Re: Question about BMW Catalytic Converter"
+      },
+      {
+        "message_id": "bd9022d5-dfab-4e85-b791-81cc42362d80",
+        "from": "admin",
+        "to": "demo",
+        "subject": "Re: Question about BMW Catalytic Converter"
+      },
+      {
+        "message_id": "7c4b71d3-daeb-49f2-8782-7f1930637bb3",
+        "from": "demo",
+        "to": "admin",
+        "subject": "Inquiry about Platinum Collection"
+      }
+    ]
+  },
+  "endpoint_verification": {
+    "my_listings_working": true,
+    "my_listings_count": 15,
+    "browse_working": true,
+    "browse_total_count": 24,
+    "demo_listings_in_browse": 15,
+    "messages_working": true,
+    "messages_count": 15,
+    "all_endpoints_working": true
+  },
+  "summary": {
+    "demo_user_verified": true,
+    "demo_user_id_correct": true,
+    "demo_data_created_successfully": true,
+    "demo_listings_created": 7,
+    "admin_listings_created": 3,
+    "demo_bids_created": 5,
+    "demo_messages_created": 5,
+    "my_listings_now_populated": true,
+    "my_listings_count": 15,
+    "all_endpoints_working": true,
+    "test_successful": true
+  }
+}
