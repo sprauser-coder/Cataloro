@@ -367,7 +367,7 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
 
   // Conversation View
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-900" style={{ height: '100vh', height: '100dvh' }}>
+    <div className="relative flex flex-col h-full bg-white dark:bg-gray-900" style={{ height: '100vh', height: '100dvh' }}>
       {/* Conversation Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
         <div className="flex items-center justify-between">
