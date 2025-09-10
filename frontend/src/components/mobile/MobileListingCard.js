@@ -95,8 +95,15 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
               </h3>
               <div className="text-right">
                 <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                  {formatPrice(listing.price)}
+                  {formatPrice(listing.bid_info?.has_bids && listing.bid_info?.highest_bid 
+                    ? listing.bid_info.highest_bid 
+                    : listing.price)}
                 </p>
+                {listing.bid_info?.has_bids && listing.bid_info?.total_bids > 0 && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {listing.bid_info.total_bids} bid{listing.bid_info.total_bids !== 1 ? 's' : ''}
+                  </p>
+                )}
               </div>
             </div>
 
