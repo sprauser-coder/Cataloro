@@ -103,7 +103,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
 
     const fetchPriceSuggestion = async () => {
       // Only fetch price suggestions for catalyst items
-      if (listing.category === 'Catalysts' && (listing.catalyst_id || listing.title)) {
+      if (currentListing.category === 'Catalysts' && (currentListing.catalyst_id || currentListing.title)) {
         setLoadingSuggestion(true);
         try {
           const backendUrl = process.env.REACT_APP_BACKEND_URL || import.meta.env.REACT_APP_BACKEND_URL;
@@ -113,12 +113,12 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
             
             // Find matching calculation by catalyst_id or title
             let suggestion = null;
-            if (listing.catalyst_id) {
-              suggestion = calculations.find(calc => calc.cat_id === listing.catalyst_id);
+            if (currentListing.catalyst_id) {
+              suggestion = calculations.find(calc => calc.cat_id === currentListing.catalyst_id);
             } else {
               // Try to match by title
               suggestion = calculations.find(calc => 
-                calc.name && calc.name.toLowerCase() === listing.title.toLowerCase()
+                calc.name && calc.name.toLowerCase() === currentListing.title.toLowerCase()
               );
             }
             
@@ -136,7 +136,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
 
     fetchPriceRangeSettings();
     fetchPriceSuggestion();
-  }, [listing.catalyst_id, listing.title, listing.category]);
+  }, [currentListing.catalyst_id, currentListing.title, currentListing.category]);
 
   // Handle bid submission
   const handleSubmitBid = async (e) => {
