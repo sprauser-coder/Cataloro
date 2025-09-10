@@ -65,6 +65,18 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
     loadConversations();
   }, [user]);
 
+  // Scroll to bottom when new messages are added
+  useEffect(() => {
+    // Only scroll when new messages are added, with a small delay
+    if (messages.length > 0) {
+      const timeoutId = setTimeout(() => {
+        scrollToBottom();
+      }, 50);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [messages]);
+
   const loadConversations = async () => {
     console.log('🔄 Loading conversations - user:', user);
     if (!user) {
