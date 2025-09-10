@@ -88,18 +88,49 @@ function MobileProductDetailPage() {
 
     setSubmittingBid(true);
     try {
-      // In a real app, this would make an API call to submit the bid
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+      console.log('💰 Submitting bid:', {
+        listing_id: productId,
+        buyer_id: user.id,
+        offer_amount: parseFloat(bidAmount)
+      });
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          listing_id: productId,
+          buyer_id: user.id,
+          offer_amount: parseFloat(bidAmount)
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to submit bid');
+      }
+
+      const result = await response.json();
+      console.log('✅ Bid submitted successfully:', result);
       
       showToast('Bid submitted successfully!', 'success');
       setBidAmount('');
       
       // Refresh product data to show updated bid info
-      // In real implementation, you'd refetch the product
+      const refreshResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/marketplace/browse`);
+      if (refreshResponse.ok) {
+        const allProducts = await refreshResponse.json();
+        const updatedProduct = allProducts.find(p => p.id === productId);
+        if (updatedProduct) {
+          setProduct(updatedProduct);
+          console.log('🔄 Product data refreshed with updated bids');
+        }
+      }
       
     } catch (error) {
       console.error('❌ Error submitting bid:', error);
-      showToast('Error submitting bid', 'error');
+      showToast(error.message || 'Error submitting bid', 'error');
     } finally {
       setSubmittingBid(false);
     }
