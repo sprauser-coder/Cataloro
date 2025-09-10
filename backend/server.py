@@ -4144,8 +4144,8 @@ async def remove_from_cart(user_id: str, item_id: str):
 async def get_user_messages(user_id: str):
     """Get user's messages with sender/recipient information (OPTIMIZED)"""
     try:
-        # Get messages for user
-        messages = await db.user_messages.find({"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]}).sort("created_at", -1).to_list(length=None)
+        # Get messages for user (sorted oldest first for proper mobile display)
+        messages = await db.user_messages.find({"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]}).sort("created_at", 1).to_list(length=None)
         
         # OPTIMIZATION: Collect all unique user IDs to minimize database queries
         user_ids = set()
