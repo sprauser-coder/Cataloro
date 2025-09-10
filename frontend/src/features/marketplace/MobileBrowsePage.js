@@ -236,8 +236,8 @@ function MobileBrowsePage() {
       {isMobileFiltersOpen && (
         <MobileFilters 
           onClose={() => setIsMobileFiltersOpen(false)}
-          onApplyFilters={(filters) => {
-            // Simple client-side filtering for now
+          onApplyFilters={(newFilters) => {
+            handleFiltersChange(newFilters);
             setIsMobileFiltersOpen(false);
           }}
         />
