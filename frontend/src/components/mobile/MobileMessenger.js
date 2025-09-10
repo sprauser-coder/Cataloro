@@ -445,10 +445,13 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Message Input - Fixed at bottom with proper mobile spacing */}
-      <div className="sticky bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4" 
-           style={{ marginBottom: 'env(safe-area-inset-bottom)' }}>
-        <div className="flex items-end space-x-3">
+      {/* Message Input - Fixed positioning with keyboard handling */}
+      <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4" 
+           style={{ 
+             paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
+             transform: 'translateZ(0)' // Force GPU acceleration for better positioning
+           }}>
+        <div className="flex items-center space-x-3">  {/* Changed from items-end to items-center */}
           <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
             <Paperclip className="w-5 h-5" />
           </button>
