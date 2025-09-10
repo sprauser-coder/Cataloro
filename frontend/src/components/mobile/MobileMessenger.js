@@ -295,7 +295,7 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
         </div>
 
         {/* Conversations List */}
-        <div className="flex-1 overflow-y-auto pb-20">  {/* Added pb-20 for bottom spacing */}
+        <div className="flex-1 overflow-y-auto" style={{ paddingBottom: 'calc(80px + env(safe-area-inset-bottom))' }}>  {/* Added safe area spacing */}
           {loading ? (
             <div className="flex flex-col items-center justify-center h-64 text-center px-4">
               <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4 animate-pulse">
