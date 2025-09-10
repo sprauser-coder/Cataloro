@@ -214,9 +214,12 @@ function MessagesPage() {
     setIsFullPageChat(!isFullPageChat);
   };
 
-  // Scroll to bottom of messages (optional - can be triggered manually)
+  // Scroll to bottom of messages container only (not the entire page)
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const messagesContainer = document.getElementById('desktop-messages-container');
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
   };
 
   // Remove auto-scroll on message changes
