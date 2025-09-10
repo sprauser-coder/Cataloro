@@ -6,10 +6,12 @@
 import React, { useState, useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle, Bell } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
 
 function NotificationToast() {
   const [toasts, setToasts] = useState([]);
   const { user, isAuthenticated } = useAuth();
+  const { notifications } = useNotifications(); // Add this to get context notifications
 
   // Load system notifications from backend instead of hardcoded demo
   useEffect(() => {
