@@ -99,6 +99,7 @@ function MobileBrowsePage() {
       <MobileHeroSection 
         quickStats={quickStats}
         onSearch={handleSearch}
+        onFilterToggle={() => setIsMobileFiltersOpen(true)}
         searchTerm={searchTerm}
       />
 
