@@ -281,24 +281,26 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
 
         {/* Non-clickable Content Section */}
         <div className="p-4">
-            {/* Title and Price */}
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-semibold text-gray-900 dark:text-white text-lg leading-tight flex-1 mr-2">
-                {listing.title}
-              </h3>
-              <div className="text-right">
-                <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                  {formatPrice(listing.bid_info?.has_bids && listing.bid_info?.highest_bid 
-                    ? listing.bid_info.highest_bid 
-                    : listing.price)}
-                </p>
-                {listing.bid_info?.has_bids && listing.bid_info?.total_bids > 0 && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {listing.bid_info.total_bids} bid{listing.bid_info.total_bids !== 1 ? 's' : ''}
+            {/* Title and Price - Clickable for navigation */}
+            <Link to={`/listing/${listing.id}`} className="block">
+              <div className="flex justify-between items-start mb-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-2 -m-2 transition-colors">
+                <h3 className="font-semibold text-gray-900 dark:text-white text-lg leading-tight flex-1 mr-2">
+                  {listing.title}
+                </h3>
+                <div className="text-right">
+                  <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                    {formatPrice(listing.bid_info?.has_bids && listing.bid_info?.highest_bid 
+                      ? listing.bid_info.highest_bid 
+                      : listing.price)}
                   </p>
-                )}
+                  {listing.bid_info?.has_bids && listing.bid_info?.total_bids > 0 && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {listing.bid_info.total_bids} bid{listing.bid_info.total_bids !== 1 ? 's' : ''}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
+            </Link>
 
             {/* Description - REMOVED per user requirements */}
 
