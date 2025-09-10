@@ -18,6 +18,8 @@ import MobileBrowsePage from './features/marketplace/MobileBrowsePage';
 
 import ProductDetailPage from './features/marketplace/ProductDetailPage';
 import MobileProductDetailPage from './features/mobile/MobileProductDetailPage';
+import MobileMyListingsPage from './features/mobile/MobileMyListingsPage';
+import MobileTendersPage from './features/mobile/MobileTendersPage';
 import MyListingsPage from './features/marketplace/MyListingsPage';
 import CreateListingPage from './features/marketplace/CreateListingPage';
 import EditListingPage from './features/marketplace/EditListingPage';
