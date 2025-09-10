@@ -38,7 +38,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
   };
 
   const handleQuickView = () => {
-    onQuickView?.(listing);
+    onQuickView?.(currentListing);
   };
 
   const formatPrice = (price) => {
