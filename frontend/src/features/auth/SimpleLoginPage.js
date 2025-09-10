@@ -1,13 +1,12 @@
 /**
- * CATALORO - Clean Modern Login Page
- * Professional design with admin logo integration
+ * CATALORO - Ultra-Modern Login Page with Liquid Glass Optics
+ * Advanced glassmorphism design with animated backgrounds and admin logo
  */
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Store, ArrowRight, User, UserPlus } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Store, ArrowRight, User, UserPlus, Sparkles, Zap } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { adminService } from '../../services/adminService';
 
 function SimpleLoginPage() {
   const navigate = useNavigate();
@@ -180,264 +179,342 @@ function SimpleLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Clean Background Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#3b82f6,transparent)] opacity-10"></div>
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Ultra-Modern Animated Background */}
+      <div className="absolute inset-0">
+        {/* Primary gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/80 via-purple-900/80 to-pink-900/80"></div>
+        
+        {/* Animated liquid shapes */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-r from-cyan-400/30 to-blue-500/30 rounded-full blur-3xl animate-blob"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-purple-400/30 to-pink-500/30 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-40 left-1/2 transform -translate-x-1/2 w-80 h-80 bg-gradient-to-r from-emerald-400/30 to-cyan-500/30 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
+        </div>
+        
+        {/* Floating particles */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+          <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-purple-400 rounded-full animate-ping animation-delay-1000"></div>
+          <div className="absolute bottom-1/3 left-1/3 w-1.5 h-1.5 bg-pink-400 rounded-full animate-pulse animation-delay-2000"></div>
+          <div className="absolute top-2/3 right-1/3 w-1 h-1 bg-emerald-400 rounded-full animate-ping animation-delay-3000"></div>
+        </div>
+        
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.03"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+      </div>
       
-      <div className="relative min-h-screen flex items-center justify-center p-4">
+      <div className="relative min-h-screen flex items-center justify-center p-4 z-10">
         <div className="w-full max-w-md">
           {/* Logo and Header */}
           <div className="text-center mb-8">
-            <div className="mb-6">
+            <div className="mb-6 relative">
               {logoUrl ? (
-                <img 
-                  src={logoUrl} 
-                  alt="Company Logo" 
-                  className="h-16 w-auto mx-auto"
-                />
+                <div className="relative">
+                  <div className="w-20 h-20 mx-auto bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 flex items-center justify-center p-2">
+                    <img 
+                      src={logoUrl} 
+                      alt="Company Logo" 
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                  {/* Glowing effect */}
+                  <div className="absolute inset-0 w-20 h-20 mx-auto bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-3xl blur-xl animate-pulse"></div>
+                  <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-cyan-400 animate-spin" style={{ animationDuration: '3s' }} />
+                </div>
               ) : (
-                <div className="w-16 h-16 mx-auto bg-blue-600 rounded-2xl flex items-center justify-center">
-                  <Store className="w-8 h-8 text-white" />
+                <div className="relative">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-cyan-500/20 to-purple-500/20 backdrop-blur-xl rounded-3xl border border-white/20 flex items-center justify-center">
+                    <Store className="w-10 h-10 text-white drop-shadow-lg" />
+                  </div>
+                  {/* Glowing effect */}
+                  <div className="absolute inset-0 w-20 h-20 mx-auto bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-3xl blur-xl animate-pulse"></div>
+                  <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-cyan-400 animate-spin" style={{ animationDuration: '3s' }} />
                 </div>
               )}
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-purple-200 mb-2">
               Welcome to Cataloro
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Sign in to your account or create a new one
+            <p className="text-gray-300/80 text-lg">
+              Your premium marketplace experience
             </p>
           </div>
 
-          {/* Main Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-            {/* Tab Selector */}
-            <div className="flex mb-8">
-              <button
-                type="button"
-                onClick={() => setActiveTab('login')}
-                className={`flex-1 py-3 px-4 text-center font-medium rounded-l-lg transition-colors ${
-                  activeTab === 'login'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                }`}
-              >
-                <User className="w-4 h-4 inline mr-2" />
-                Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('register')}
-                className={`flex-1 py-3 px-4 text-center font-medium rounded-r-lg transition-colors ${
-                  activeTab === 'register'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                }`}
-              >
-                <UserPlus className="w-4 h-4 inline mr-2" />
-                Sign Up
-              </button>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
-                <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+          {/* Ultra-Modern Glass Card */}
+          <div className="relative">
+            {/* Glass morphism background */}
+            <div className="absolute inset-0 bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10"></div>
+            
+            {/* Inner glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 rounded-3xl"></div>
+            
+            {/* Content */}
+            <div className="relative p-8">
+              {/* Liquid Tab Selector */}
+              <div className="flex mb-8 relative">
+                <div className="absolute inset-0 bg-white/5 rounded-2xl"></div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('login')}
+                  className={`relative flex-1 py-4 px-6 text-center font-semibold rounded-xl transition-all duration-500 ${
+                    activeTab === 'login'
+                      ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-white shadow-lg transform scale-105'
+                      : 'text-gray-300/70'
+                  }`}
+                >
+                  <User className="w-5 h-5 inline mr-2" />
+                  Sign In
+                  {activeTab === 'login' && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-xl blur-lg"></div>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('register')}
+                  className={`relative flex-1 py-4 px-6 text-center font-semibold rounded-xl transition-all duration-500 ${
+                    activeTab === 'register'
+                      ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-white shadow-lg transform scale-105'
+                      : 'text-gray-300/70'
+                  }`}
+                >
+                  <UserPlus className="w-5 h-5 inline mr-2" />
+                  Sign Up
+                  {activeTab === 'register' && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-xl blur-lg"></div>
+                  )}
+                </button>
               </div>
-            )}
 
-            {/* Login Form */}
-            {activeTab === 'login' && (
-              <form onSubmit={handleLoginSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      type="email"
-                      name="email"
-                      value={loginData.email}
-                      onChange={handleLoginChange}
-                      required
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="Enter your email"
-                    />
-                  </div>
+              {/* Error Message */}
+              {error && (
+                <div className="mb-6 p-4 bg-red-500/10 backdrop-blur-sm border border-red-500/20 rounded-2xl">
+                  <p className="text-red-300 text-sm font-medium">{error}</p>
                 </div>
+              )}
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      name="password"
-                      value={loginData.password}
-                      onChange={handleLoginChange}
-                      required
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="Enter your password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
+              {/* Login Form */}
+              {activeTab === 'login' && (
+                <form onSubmit={handleLoginSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-200 mb-3">
+                      Email Address
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl blur-lg group-focus-within:blur-xl transition-all duration-300"></div>
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+                        <input
+                          type="email"
+                          name="email"
+                          value={loginData.email}
+                          onChange={handleLoginChange}
+                          required
+                          className="w-full pl-12 pr-4 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 text-white placeholder-gray-400 transition-all duration-300"
+                          placeholder="Enter your email"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Signing In...
-                    </>
-                  ) : (
-                    <>
-                      Sign In
-                      <ArrowRight className="w-5 h-5 ml-2" />
-                    </>
-                  )}
-                </button>
-              </form>
-            )}
-
-            {/* Registration Form */}
-            {activeTab === 'register' && (
-              <form onSubmit={handleRegisterSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Full Name
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={registerData.fullName}
-                      onChange={handleRegisterChange}
-                      required
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="Enter your full name"
-                    />
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-200 mb-3">
+                      Password
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl blur-lg group-focus-within:blur-xl transition-all duration-300"></div>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          name="password"
+                          value={loginData.password}
+                          onChange={handleLoginChange}
+                          required
+                          className="w-full pl-12 pr-14 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 text-white placeholder-gray-400 transition-all duration-300"
+                          placeholder="Enter your password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Username
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      type="text"
-                      name="username"
-                      value={registerData.username}
-                      onChange={handleRegisterChange}
-                      required
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="Choose a username"
-                    />
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="relative w-full py-4 px-6 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-purple-600 opacity-0 group-active:opacity-100 transition-opacity duration-200"></div>
+                    <div className="relative flex items-center justify-center">
+                      {isLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                          Signing In...
+                        </>
+                      ) : (
+                        <>
+                          Sign In
+                          <ArrowRight className="w-5 h-5 ml-3" />
+                        </>
+                      )}
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-2xl blur-xl"></div>
+                  </button>
+                </form>
+              )}
+
+              {/* Registration Form */}
+              {activeTab === 'register' && (
+                <form onSubmit={handleRegisterSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-200 mb-3">
+                      Full Name
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl blur-lg group-focus-within:blur-xl transition-all duration-300"></div>
+                      <div className="relative">
+                        <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+                        <input
+                          type="text"
+                          name="fullName"
+                          value={registerData.fullName}
+                          onChange={handleRegisterChange}
+                          required
+                          className="w-full pl-12 pr-4 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 text-white placeholder-gray-400 transition-all duration-300"
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      type="email"
-                      name="email"
-                      value={registerData.email}
-                      onChange={handleRegisterChange}
-                      required
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="Enter your email"
-                    />
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-200 mb-3">
+                      Username
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl blur-lg group-focus-within:blur-xl transition-all duration-300"></div>
+                      <div className="relative">
+                        <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+                        <input
+                          type="text"
+                          name="username"
+                          value={registerData.username}
+                          onChange={handleRegisterChange}
+                          required
+                          className="w-full pl-12 pr-4 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 text-white placeholder-gray-400 transition-all duration-300"
+                          placeholder="Choose a username"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      name="password"
-                      value={registerData.password}
-                      onChange={handleRegisterChange}
-                      required
-                      minLength={6}
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="Create a password (min 6 characters)"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-200 mb-3">
+                      Email Address
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl blur-lg group-focus-within:blur-xl transition-all duration-300"></div>
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+                        <input
+                          type="email"
+                          name="email"
+                          value={registerData.email}
+                          onChange={handleRegisterChange}
+                          required
+                          className="w-full pl-12 pr-4 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 text-white placeholder-gray-400 transition-all duration-300"
+                          placeholder="Enter your email"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      name="confirmPassword"
-                      value={registerData.confirmPassword}
-                      onChange={handleRegisterChange}
-                      required
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      placeholder="Confirm your password"
-                    />
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-200 mb-3">
+                      Password
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl blur-lg group-focus-within:blur-xl transition-all duration-300"></div>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          name="password"
+                          value={registerData.password}
+                          onChange={handleRegisterChange}
+                          required
+                          minLength={6}
+                          className="w-full pl-12 pr-14 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 text-white placeholder-gray-400 transition-all duration-300"
+                          placeholder="Create a password (min 6 characters)"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 z-10"
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Creating Account...
-                    </>
-                  ) : (
-                    <>
-                      Create Account
-                      <UserPlus className="w-5 h-5 ml-2" />
-                    </>
-                  )}
-                </button>
-              </form>
-            )}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-200 mb-3">
+                      Confirm Password
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl blur-lg group-focus-within:blur-xl transition-all duration-300"></div>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          name="confirmPassword"
+                          value={registerData.confirmPassword}
+                          onChange={handleRegisterChange}
+                          required
+                          className="w-full pl-12 pr-4 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 text-white placeholder-gray-400 transition-all duration-300"
+                          placeholder="Confirm your password"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="relative w-full py-4 px-6 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-purple-600 opacity-0 group-active:opacity-100 transition-opacity duration-200"></div>
+                    <div className="relative flex items-center justify-center">
+                      {isLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                          Creating Account...
+                        </>
+                      ) : (
+                        <>
+                          Create Account
+                          <UserPlus className="w-5 h-5 ml-3" />
+                        </>
+                      )}
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-2xl blur-xl"></div>
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
 
           {/* Footer */}
           <div className="text-center mt-8">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              © 2024 Cataloro. All rights reserved.
+            <p className="text-sm text-gray-400/60">
+              © 2024 Cataloro. Premium marketplace experience.
             </p>
           </div>
         </div>
