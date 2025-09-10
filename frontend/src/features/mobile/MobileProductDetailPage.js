@@ -44,22 +44,58 @@ function MobileProductDetailPage() {
   useEffect(() => {
     const loadProduct = async () => {
       try {
-        console.log('🔍 Loading product:', productId);
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/marketplace/browse`);
-        if (response.ok) {
-          const allProducts = await response.json();
-          const foundProduct = allProducts.find(p => p.id === productId);
+        console.log('🔍 Loading product details:', productId);
+        
+        // First try to get detailed product info from individual listing endpoint
+        const detailResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings/${productId}`);
+        if (detailResponse.ok) {
+          const productDetail = await detailResponse.json();
           
-          if (foundProduct) {
-            setProduct(foundProduct);
-            console.log('✅ Product loaded:', foundProduct.title);
-          } else {
-            console.log('❌ Product not found');
-            showToast('Product not found', 'error');
-            navigate('/browse');
+          // Get current bidding information
+          const bidResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings/${productId}/tenders`);
+          if (bidResponse.ok) {
+            const tenders = await bidResponse.json();
+            
+            // Add bid information to product
+            const activeTenders = tenders.filter(t => t.status === 'active');
+            if (activeTenders.length > 0) {
+              const highestBid = Math.max(...activeTenders.map(t => t.offer_amount));
+              productDetail.bid_info = {
+                has_bids: true,
+                highest_bid: highestBid,
+                total_bids: activeTenders.length
+              };
+            } else {
+              productDetail.bid_info = {
+                has_bids: false,
+                highest_bid: null,
+                total_bids: 0
+              };
+            }
           }
+          
+          setProduct(productDetail);
+          console.log('✅ Product detail loaded:', productDetail.title);
+          console.log('💰 Bid info:', productDetail.bid_info);
         } else {
-          throw new Error('Failed to fetch products');
+          // Fallback to browse endpoint if individual listing fails
+          console.log('⚠️ Individual listing failed, trying browse endpoint');
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/marketplace/browse`);
+          if (response.ok) {
+            const allProducts = await response.json();
+            const foundProduct = allProducts.find(p => p.id === productId);
+            
+            if (foundProduct) {
+              setProduct(foundProduct);
+              console.log('✅ Product loaded from browse:', foundProduct.title);
+            } else {
+              console.log('❌ Product not found');
+              showToast('Product not found', 'error');
+              navigate('/browse');
+            }
+          } else {
+            throw new Error('Failed to fetch products');
+          }
         }
       } catch (error) {
         console.error('❌ Error loading product:', error);
