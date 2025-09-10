@@ -12,7 +12,9 @@ import {
   Heart, 
   User,
   Search,
-  MessageCircle
+  MessageCircle,
+  DollarSign,
+  Package
 } from 'lucide-react';
 import { liveService } from '../../services/liveService';
 
