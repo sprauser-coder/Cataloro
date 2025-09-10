@@ -7,7 +7,7 @@ import requests
 import json
 from datetime import datetime
 
-BACKEND_URL = "https://cataloro-debug-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-mobile.preview.emergentagent.com/api"
 
 def get_demo_user():
     """Get demo user for testing"""
