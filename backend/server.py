@@ -764,8 +764,31 @@ async def login_user(request: Request, credentials: dict):
         }
         await db.users.insert_one(user)
     else:
+        # Update existing demo users to use fixed user ID for consistency
+        if credentials["email"] in ["user@cataloro.com", "demo@cataloro.com", "demo_user@cataloro.com"]:
+            fixed_demo_user_id = "68bfff790e4e46bc28d43631"
+            current_user_id = user.get("id")
+            
+            # Only update if the user doesn't already have the fixed ID
+            if current_user_id != fixed_demo_user_id:
+                update_fields = {
+                    "id": fixed_demo_user_id,
+                    "full_name": "Demo User",
+                    "username": "demo_user",
+                    "user_role": "User-Buyer",
+                    "badge": "Buyer",
+                    "registration_status": "Approved"
+                }
+                
+                await db.users.update_one(
+                    {"email": credentials["email"]},
+                    {"$set": update_fields}
+                )
+                # Refresh user data
+                user = await db.users.find_one({"email": credentials["email"]})
+        
         # Update existing admin user to have the correct name and RBAC fields
-        if credentials["email"] == "admin@cataloro.com":
+        elif credentials["email"] == "admin@cataloro.com":
             update_fields = {
                 "full_name": "Sash", 
                 "username": "sash_admin"
