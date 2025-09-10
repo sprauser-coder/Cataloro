@@ -99,6 +99,7 @@ function MobileSearchBar({ onSearch, placeholder = "Search catalysts...", classN
       setQuery(initialValue);
     }
   }, [initialValue]);
+
   const handleVoiceSearch = () => {
     if (recognition.current && !isListening) {
       setIsListening(true);
