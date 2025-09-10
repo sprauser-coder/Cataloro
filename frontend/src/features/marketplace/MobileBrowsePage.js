@@ -45,6 +45,7 @@ function MobileBrowsePage() {
       console.log('📱 Mobile browse: Loaded', data.length, 'listings');
       
       setListings(data);
+      setFilteredListings(data); // Initialize filtered listings
       
       // Calculate quick stats
       const stats = {
