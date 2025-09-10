@@ -98,39 +98,20 @@ function SimpleLoginPage() {
     // Fill form and submit
     setFormData(demoCredentials);
     
-    // Trigger actual login
+    // Trigger actual login using AuthContext
     setIsLoading(true);
     setIsAnimating(true);
     setError(null);
     
     try {
-      console.log('🌐 Making login request to:', `${process.env.REACT_APP_BACKEND_URL}/api/auth/login`);
+      console.log('🔐 Using AuthContext login method');
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(demoCredentials)
-      });
-
-      console.log('📡 Response received:', response.status, response.statusText);
-
-      if (!response.ok) {
-        throw new Error(`Demo login failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('✅ Login data received:', data);
-      
-      localStorage.setItem('cataloro_token', data.token);
-      localStorage.setItem('cataloro_user', JSON.stringify(data.user));
-      
-      console.log('💾 Data saved to localStorage');
-      console.log('🚀 Attempting navigation...');
+      // Use the AuthContext login method instead of manual fetch
+      const response = await login(demoCredentials.email, demoCredentials.password);
+      console.log('✅ AuthContext login successful:', response);
       
       // Check if user is admin and redirect accordingly
-      if (data?.user?.role === 'admin' || data?.user?.email === 'admin@cataloro.com') {
+      if (response?.user?.role === 'admin' || response?.user?.email === 'admin@cataloro.com') {
         console.log('👑 Admin user, navigating to /admin');
         navigate('/admin');
       } else {
@@ -139,11 +120,11 @@ function SimpleLoginPage() {
       }
       
     } catch (error) {
-      console.error('❌ Demo login error:', error);
-      setError(`Demo login failed: ${error.message}`);
+      console.error('❌ Demo login failed:', error);
+      setError('Demo login failed. Please try again.');
     } finally {
       setIsLoading(false);
-      setIsAnimating(false);
+      setTimeout(() => setIsAnimating(false), 300);
     }
   };
 
