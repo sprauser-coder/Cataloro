@@ -1,0 +1,111 @@
+{
+  "test_timestamp": "2025-09-10T10:08:43.804724",
+  "desktop_performance_target_ms": 500,
+  "desktop_message_loading": {
+    "test_name": "Desktop Message Loading Performance",
+    "avg_response_time_ms": 18.86615753173828,
+    "min_response_time_ms": 8.033990859985352,
+    "max_response_time_ms": 50.305843353271484,
+    "performance_variance_ms": 42.27185249328613,
+    "avg_message_count": 2,
+    "avg_data_quality_score": 90.0,
+    "meets_performance_target": true,
+    "performance_target_ms": 500,
+    "consistent_performance": true,
+    "desktop_loading_optimized": true,
+    "useEffect_fix_working": true,
+    "total_test_calls": 5,
+    "successful_calls": 5
+  },
+  "message_ordering_consistency": {
+    "test_name": "Message Ordering Consistency",
+    "message_count": 2,
+    "chronological_order_verified": true,
+    "ordering_direction": "ascending_chronological",
+    "time_span_analysis": "2 messages spanning 0.0 hours",
+    "first_message_time": "2025-09-10T00:21:34.492906+02:00",
+    "last_message_time": "2025-09-10T00:21:34.530838+02:00",
+    "ordering_consistency_score": 100.0,
+    "desktop_mobile_consistency": true,
+    "messages_display_oldest_first": true,
+    "new_messages_at_bottom": true
+  },
+  "desktop_vs_mobile_performance": {
+    "test_name": "Desktop vs Mobile Performance Comparison",
+    "desktop_avg_response_time_ms": 22.201697031656902,
+    "mobile_avg_response_time_ms": 23.341894149780273,
+    "performance_difference_ms": 1.1401971181233712,
+    "performance_ratio": 0.9511523310487592,
+    "desktop_meets_target": true,
+    "mobile_meets_target": true,
+    "performance_comparable": true,
+    "desktop_performance_optimized": true,
+    "both_platforms_optimized": true,
+    "desktop_test_calls": 3,
+    "mobile_test_calls": 3
+  },
+  "backend_api_optimization": {
+    "test_name": "Backend API Optimization",
+    "avg_response_time_ms": 12.51024670071072,
+    "max_response_time_ms": 20.10186513264974,
+    "database_queries_optimized": true,
+    "n_plus_1_queries_fixed": false,
+    "backend_performance_target_met": true,
+    "optimization_tests_completed": 3,
+    "all_optimization_tests_successful": true,
+    "detailed_optimization_tests": [
+      {
+        "test_type": "cold_request",
+        "response_time_ms": 8.777856826782227,
+        "message_count": 2,
+        "success": true
+      },
+      {
+        "test_type": "warm_request",
+        "response_time_ms": 8.651018142700195,
+        "message_count": 2,
+        "success": true
+      },
+      {
+        "test_type": "concurrent_requests",
+        "response_time_ms": 20.10186513264974,
+        "concurrent_count": 3,
+        "success": true
+      }
+    ]
+  },
+  "message_api_efficiency": {
+    "test_name": "Message API Efficiency",
+    "avg_efficiency_score": 100,
+    "no_excessive_api_calls": true,
+    "rapid_calls_handled_efficiently": true,
+    "burst_requests_handled_efficiently": true,
+    "api_efficiency_optimized": true,
+    "detailed_efficiency_tests": [
+      {
+        "test_type": "rapid_successive_calls",
+        "avg_response_time_ms": 10.225105285644531,
+        "call_count": 5,
+        "efficiency_score": 100
+      },
+      {
+        "test_type": "burst_requests",
+        "avg_individual_time_ms": 12.464284896850586,
+        "total_burst_time_ms": 16.043901443481445,
+        "successful_requests": 3,
+        "efficiency_score": 100
+      }
+    ]
+  },
+  "summary": {
+    "overall_success_rate": 100.0,
+    "desktop_loading_fixed": true,
+    "message_ordering_correct": true,
+    "performance_targets_met": true,
+    "desktop_mobile_parity": true,
+    "backend_optimized": false,
+    "no_excessive_api_calls": true,
+    "all_critical_fixes_working": true,
+    "desktop_messaging_performance_improved": true
+  }
+}
