@@ -179,56 +179,7 @@ function SimpleLoginPage() {
     }
   };
 
-  const handleDemoLogin = async (role = 'user') => {
-    console.log('🔄 handleDemoLogin called with role:', role);
-    
-    const demoCredentials = {
-      email: role === 'admin' ? 'admin@cataloro.com' : 'user@cataloro.com',
-      password: 'demo123'
-    };
-    
-    console.log('📝 Demo credentials:', demoCredentials);
-    
-    // Fill form and submit
-    setFormData(demoCredentials);
-    
-    // Trigger actual login using AuthContext
-    setIsLoading(true);
-    setIsAnimating(true);
-    setError(null);
-    
-    try {
-      console.log('🔐 Using AuthContext login method');
-      
-      // Use the AuthContext login method instead of manual fetch
-      const response = await login(demoCredentials.email, demoCredentials.password);
-      console.log('✅ AuthContext login successful:', response);
-      
-      // Check if user is admin and redirect accordingly
-      if (response?.user?.role === 'admin' || response?.user?.email === 'admin@cataloro.com') {
-        console.log('👑 Admin user, navigating to /admin');
-        navigate('/admin');
-      } else {
-        console.log('👤 Regular user, navigating to /browse');
-        navigate('/browse');
-      }
-      
-    } catch (error) {
-      console.error('❌ Demo login failed:', error);
-      setError('Demo login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-      setTimeout(() => setIsAnimating(false), 300);
-    }
-  };
 
-  const handleLogout = () => {
-    localStorage.removeItem('cataloro_token');
-    localStorage.removeItem('cataloro_user');
-    setLoggedInUser(null);
-    setFormData({ email: '', password: '' });
-    alert('✅ Logged out successfully!');
-  };
 
   // If user is already logged in, show logged in state
   if (loggedInUser) {
