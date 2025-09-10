@@ -805,7 +805,7 @@ function MessagesPage() {
                 </div>
 
                 {/* Messages - Clean design without headers */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-3 bg-gradient-to-b from-gray-50/30 to-white/50 dark:from-gray-900/30 dark:to-gray-800/50">
+                <div id="desktop-messages-container" className="flex-1 overflow-y-auto p-6 space-y-3 bg-gradient-to-b from-gray-50/30 to-white/50 dark:from-gray-900/30 dark:to-gray-800/50">
                   {/* Messages - newest at bottom */}
                   {conversationMessages
                     .slice() // Create a copy to avoid mutating original array
