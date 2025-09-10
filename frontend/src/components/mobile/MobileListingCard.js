@@ -290,16 +290,16 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
             </div>
 
             {/* Hot deal badge */}
-            {listing.isHotDeal && (
+            {currentListing.isHotDeal && (
               <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
                 Hot Deal
               </div>
             )}
 
             {/* Image count indicator */}
-            {listing.images && listing.images.length > 1 && (
+            {currentListing.images && currentListing.images.length > 1 && (
               <div className="absolute bottom-2 right-2 bg-black/50 text-white px-2 py-1 rounded-full text-xs">
-                +{listing.images.length - 1}
+                +{currentListing.images.length - 1}
               </div>
             )}
           </div>
