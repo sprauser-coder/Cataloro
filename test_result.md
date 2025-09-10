@@ -1,3 +1,48 @@
+**Test Date:** 2025-01-10 20:45:00 UTC  
+**Test Agent:** testing  
+**Test Status:** 🚨 CRITICAL LISTING VISIBILITY ISSUE IDENTIFIED - SELLER_ID MISMATCH CAUSING ADMIN LISTINGS TO NOT APPEAR IN MY-LISTINGS
+
+#### Listing Visibility Investigation Results (Latest):
+**CRITICAL SELLER_ID MISMATCH DISCOVERED:** 🚨 MAJOR DATA CONSISTENCY ISSUE IDENTIFIED - Executed comprehensive investigation of specific listing visibility issues reported by user including Admin Listing "walker351631A" Visibility Testing, Demo User Listings Loading Testing, Data Consistency Cross-Reference Testing, and User ID Mapping Analysis. Successfully identified the root cause of the critical issue with detailed technical analysis (4/4 investigation areas completed, 100% investigation success rate, critical seller_id mismatch issue confirmed).
+
+**1. Admin Listing "walker351631A" Investigation** 🚨 CRITICAL ISSUE CONFIRMED - Target listing visibility mismatch identified: Listing "walker351631A" found in browse endpoint ✅, Listing NOT found in admin my-listings endpoint ❌, Root cause identified: seller_id mismatch between listing data and admin user ID ✅, Listing has seller_id "68bff934bdb9d78bad2b925c" (legacy admin ID) ✅, Admin user current ID is "admin_user_1" ✅, my-listings endpoint queries by exact seller_id match causing mismatch ✅, Issue confirmed: Legacy seller_id prevents listing from appearing in current admin my-listings ✅.
+
+**2. Demo User Listings Loading Testing** ✅ DEMO USER LISTINGS WORKING CORRECTLY - Demo user listings loading properly: Demo user ID "68bfff790e4e46bc28d43631" authentication successful ✅, GET /api/user/my-listings/68bfff790e4e46bc28d43631 endpoint working correctly ✅, Demo user has 15 listings loading properly ✅, No loading issues identified for demo user ✅, Demo user listings include: Honda Civic Exhaust System Parts, Volkswagen Golf Catalyst - SOLD, Toyota Prius Hybrid Catalyst, Ford Focus Catalytic Converter Set, Audi A4 Exhaust Catalyst ✅, Demo user listings loading issue NOT confirmed ✅.
+
+**3. Data Consistency Cross-Reference Testing** ✅ BROWSE VS MY-LISTINGS CONSISTENCY VERIFIED - Cross-reference analysis completed: Browse endpoint returns 24 total listings ✅, Admin has 3 listings visible in browse ✅, Demo user has 15 listings visible in browse ✅, Data consistency between browse and my-listings verified for all users except admin legacy ID issue ✅, No phantom listings or missing listings identified ✅, All seller_id mappings valid and resolve to correct user profiles ✅, Only inconsistency: admin legacy seller_id "68bff934bdb9d78bad2b925c" vs current "admin_user_1" ✅.
+
+**4. User ID Mapping Analysis** 🔍 LEGACY ID MAPPING ISSUE IDENTIFIED - User ID consistency analysis reveals mapping problem: Admin user ID "admin_user_1" consistent across authentication and profile endpoints ✅, Demo user ID "68bfff790e4e46bc28d43631" consistent across all endpoints ✅, Legacy seller_id "68bff934bdb9d78bad2b925c" still exists in listing data ✅, Legacy ID resolves to admin user profile when queried directly ✅, Backend has ID resolution/mapping functionality working ✅, Issue: my-listings endpoint uses exact seller_id match without ID resolution ✅, 7 unique seller_ids found in browse listings, all valid ✅.
+
+**5. Technical Root Cause Analysis** 🔧 BACKEND LOGIC ISSUE IDENTIFIED - Deep technical investigation reveals exact cause: my-listings endpoint code: `db.listings.find({"seller_id": user_id, "status": "active"})` ✅, Query uses exact string match for seller_id parameter ✅, Admin listing has seller_id "68bff934bdb9d78bad2b925c" (legacy) ✅, Admin user current ID is "admin_user_1" ✅, No ID resolution applied in my-listings query logic ✅, Backend profile endpoint DOES resolve legacy IDs correctly ✅, Inconsistency: profile resolution works, my-listings resolution does not ✅.
+
+**CRITICAL FINDINGS:**
+- 🚨 CONFIRMED: Admin listing "walker351631A" visible in browse but NOT in admin my-listings due to seller_id mismatch
+- 🚨 ROOT CAUSE: Legacy seller_id "68bff934bdb9d78bad2b925c" in listing data vs current admin ID "admin_user_1"
+- ✅ Demo user listings loading correctly - no issues identified with ID "68bfff790e4e46bc28d43631"
+- ✅ Browse endpoint working correctly - all 24 listings visible with proper seller information
+- ✅ Data consistency verified except for admin legacy ID issue
+- 🔧 TECHNICAL ISSUE: my-listings endpoint lacks ID resolution logic that profile endpoint has
+- 🔧 SOLUTION NEEDED: Update my-listings endpoint to resolve legacy user IDs or update listing seller_ids
+
+**TECHNICAL VERIFICATION:**
+- Target Listing: "walker351631A" (ID: 1628284f-8d0f-4c18-b776-11d2b9fd11a4) found in browse
+- Listing seller_id: "68bff934bdb9d78bad2b925c" (legacy admin ID)
+- Admin current ID: "admin_user_1" (from authentication)
+- Profile resolution: Legacy ID "68bff934bdb9d78bad2b925c" → resolves to admin_user_1 profile
+- my-listings query: Exact match "admin_user_1" ≠ "68bff934bdb9d78bad2b925c" → no results
+- my-listings with legacy ID: Returns 1 listing (walker351631A)
+- Demo user: 15 listings loading correctly, no issues
+
+**LISTING VISIBILITY INVESTIGATION RESULTS:** 4/4 investigation areas completed (100% success rate), critical seller_id mismatch identified, demo user listings working correctly, data consistency verified, technical root cause identified, backend logic issue confirmed.
+
+**LISTING VISIBILITY INVESTIGATION STATUS:** 🚨 CRITICAL ISSUE IDENTIFIED AND ANALYZED - The listing visibility investigation has successfully identified and analyzed the critical issue reported by the user. Admin Listing Investigation confirms "walker351631A" visibility mismatch due to seller_id inconsistency, Demo User Listings Testing shows no loading issues, Data Consistency Testing verifies overall system integrity, User ID Mapping Analysis reveals legacy ID resolution gap, Technical Root Cause Analysis identifies exact backend logic issue. Investigation completed successfully: Target Listing Issue (🚨 CONFIRMED), Demo User Issue (❌ NOT CONFIRMED), Data Consistency (✅), Root Cause (🔧 IDENTIFIED). The main reported issue is confirmed and requires backend fix to resolve legacy seller_id mapping in my-listings endpoint.
+
+**AGENT COMMUNICATION:**
+- agent: testing
+- message: "LISTING VISIBILITY INVESTIGATION COMPLETED - CRITICAL SELLER_ID MISMATCH IDENTIFIED. Comprehensive investigation confirms user-reported issue: Admin listing 'walker351631A' visible in browse but NOT in my-listings due to seller_id mismatch. Root cause: Listing has legacy seller_id '68bff934bdb9d78bad2b925c' but admin current ID is 'admin_user_1'. Backend profile endpoint resolves legacy IDs correctly, but my-listings endpoint uses exact string match without ID resolution. Demo user listings working correctly (15 listings found), no loading issues. Technical solution needed: Update my-listings endpoint to include ID resolution logic or migrate legacy seller_ids. Investigation results: Target Issue CONFIRMED 🚨, Demo Issue NOT CONFIRMED ✅, Root Cause IDENTIFIED 🔧, Backend Fix REQUIRED."
+
+---
+
 **Test Date:** 2025-01-10 20:30:00 UTC  
 **Test Agent:** testing  
 **Test Status:** ✅ ADMIN USER SPECIFIC ISSUES TESTING COMPLETED - ADMIN FUNCTIONALITY WORKING WITH MINOR NON-CRITICAL ENDPOINT ISSUE
