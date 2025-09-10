@@ -172,46 +172,6 @@ function MobileHeroSection({
           </div>
         </div>
       </div>
-
-      {/* Quick Stats Bar - Optional */}
-      {Object.keys(quickStats).length > 0 && (
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
-          <div className="flex justify-around text-center">
-            {quickStats.totalListings && (
-              <div>
-                <p className="text-lg font-bold text-gray-900 dark:text-white">
-                  {quickStats.totalListings}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
-              </div>
-            )}
-            {quickStats.newToday && (
-              <div>
-                <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                  {quickStats.newToday}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">New Today</p>
-              </div>
-            )}
-            {quickStats.hotDeals && (
-              <div>
-                <p className="text-lg font-bold text-red-600 dark:text-red-400">
-                  {quickStats.hotDeals}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Hot Deals</p>
-              </div>
-            )}
-            {quickStats.avgPrice && (
-              <div>
-                <p className="text-lg font-bold text-green-600 dark:text-green-400">
-                  €{quickStats.avgPrice}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Avg Price</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
