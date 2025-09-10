@@ -1,14 +1,29 @@
 /**
  * CATALORO - Mobile Listing Card Component
- * Swipeable listing card optimized for mobile with touch gestures
+ * Enhanced mobile listing card with quick bid and market range features
  */
 
-import React, { useState } from 'react';
-import { Heart, Eye, Clock, MapPin, Star, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Heart, Eye, Clock, MapPin, Star, ChevronRight, DollarSign, TrendingUp, Database, AlertCircle, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
 
 function MobileListingCard({ listing, onFavorite, onQuickView }) {
+  const { user } = useAuth();
+  const { showToast } = useNotifications();
+  
   const [isFavorited, setIsFavorited] = useState(listing.favorited || false);
+  const [bidAmount, setBidAmount] = useState('');
+  const [isSubmittingBid, setIsSubmittingBid] = useState(false);
+  const [bidError, setBidError] = useState('');
+  const [bidSuccess, setBidSuccess] = useState(false);
+  const [priceRangeSettings, setPriceRangeSettings] = useState({
+    price_range_min_percent: 10.0,
+    price_range_max_percent: 10.0
+  });
+  const [priceSuggestion, setPriceSuggestion] = useState(null);
+  const [loadingSuggestion, setLoadingSuggestion] = useState(false);
 
   const handleFavorite = () => {
     setIsFavorited(!isFavorited);
