@@ -176,7 +176,7 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          listing_id: listing.id,
+          listing_id: currentListing.id,
           buyer_id: user.id,
           offer_amount: bidValue
         })
