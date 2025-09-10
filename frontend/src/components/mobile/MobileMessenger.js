@@ -152,6 +152,9 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
         status: msg.is_read ? 'read' : 'delivered'
       }));
       
+      // Sort messages chronologically (oldest first, newest at bottom)
+      formattedMessages.sort((a, b) => a.timestamp - b.timestamp);
+      
       setMessages(formattedMessages);
     }
   };
