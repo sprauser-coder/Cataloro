@@ -152,6 +152,8 @@ function TendersPage() {
 
       if (response.ok) {
         showToast(`Tender offer of €${offerAmount.toFixed(2)} accepted!`, 'success');
+        // Force refresh by invalidating cache
+        setLastLoadTime(prev => ({ ...prev, listings: null }));
         loadTendersOverview(); // Refresh data
       } else {
         const errorData = await response.json();
