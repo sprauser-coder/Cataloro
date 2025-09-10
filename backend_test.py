@@ -3270,7 +3270,81 @@ async def main():
     print("🔧 Cataloro Marketplace Testing Suite")
     print("=" * 50)
     
-    # Run Mobile Bidding Tests (Primary focus for this review)
+    # Run Messages Tests (PRIMARY FOCUS - for the review request)
+    print("\n📨 MESSAGES FUNCTIONALITY TESTING")
+    print("=" * 60)
+    
+    messages_tester = MessagesTester()
+    messages_results = await messages_tester.run_comprehensive_messages_test()
+    
+    # Print Messages Test Summary
+    print("\n" + "=" * 60)
+    print("📊 MESSAGES FUNCTIONALITY SUMMARY")
+    print("=" * 60)
+    
+    messages_summary = messages_results["summary"]
+    api_test = messages_results["api_endpoint_test"]
+    db_test = messages_results["database_content_test"]
+    creation_test = messages_results["message_creation_test"]
+    consistency_test = messages_results["consistency_test"]
+    
+    print(f"🎯 Overall Success Rate: {messages_summary.get('overall_success_rate', 0):.0f}%")
+    print()
+    
+    # API Endpoint Testing
+    api_status = "✅" if api_test.get("api_responding") else "❌"
+    both_ids_status = "✅" if api_test.get("both_user_ids_working") else "❌"
+    print(f"{api_status} API Endpoints Working: {'Yes' if api_test.get('api_responding') else 'No'}")
+    print(f"   📊 Success Rate: {api_test.get('success_rate', 0):.0f}%")
+    print(f"   ⏱️ Avg Response Time: {api_test.get('avg_response_time_ms', 0):.0f}ms")
+    print(f"   {both_ids_status} Both User IDs Working: {'Yes' if api_test.get('both_user_ids_working') else 'No'}")
+    
+    # Database Content Check
+    db_status = "✅" if db_test.get("database_accessible") else "❌"
+    messages_exist = "✅" if db_test.get("database_has_messages") else "❌"
+    total_messages = db_test.get("total_messages_in_system", 0)
+    print(f"{db_status} Database Accessible: {'Yes' if db_test.get('users_with_api_access', 0) > 0 else 'No'}")
+    print(f"   📊 Users Checked: {db_test.get('total_users_checked', 0)}")
+    print(f"   📨 Total Messages in System: {total_messages}")
+    print(f"   {messages_exist} Messages Exist: {'Yes' if db_test.get('database_has_messages') else 'No'}")
+    
+    # Message Creation Test
+    creation_status = "✅" if creation_test.get("creation_endpoint_working") else "❌"
+    storage_status = "✅" if creation_test.get("message_storage_working") else "❌"
+    flow_status = "✅" if creation_test.get("full_message_flow_working") else "❌"
+    print(f"{creation_status} Message Creation: {'Working' if creation_test.get('creation_endpoint_working') else 'Failed'}")
+    print(f"   {storage_status} Message Storage: {'Working' if creation_test.get('message_storage_working') else 'Failed'}")
+    print(f"   {flow_status} Full Message Flow: {'Working' if creation_test.get('full_message_flow_working') else 'Failed'}")
+    
+    # Consistency Test
+    consistency_status = "✅" if consistency_test.get("data_consistent_across_calls") else "❌"
+    reliability = consistency_test.get("api_reliability", 0)
+    print(f"{consistency_status} Data Consistency: {'Verified' if consistency_test.get('data_consistent_across_calls') else 'Issues Found'}")
+    print(f"   📊 API Reliability: {reliability:.0f}%")
+    print(f"   ⏱️ Avg Response Time: {consistency_test.get('avg_response_time_ms', 0):.0f}ms")
+    
+    print()
+    print("🔍 ROOT CAUSE ANALYSIS:")
+    print(f"   {messages_summary.get('empty_messages_explanation', 'Unknown')}")
+    print(f"   📋 Recommended Action: {messages_summary.get('recommended_action', 'None')}")
+    
+    print()
+    print("🏆 MESSAGES FUNCTIONALITY TEST RESULTS:")
+    overall_status = "✅ ISSUE IDENTIFIED" if messages_summary.get("mobile_messages_issue_identified") else "❌ ISSUE NOT CLEAR"
+    print(f"   {overall_status}")
+    print(f"   Success Rate: {messages_summary.get('overall_success_rate', 0):.0f}%")
+    print(f"   API Working: {'✅ Yes' if messages_summary.get('api_endpoints_working') else '❌ No'}")
+    print(f"   Database Access: {'✅ Yes' if messages_summary.get('database_accessible') else '❌ No'}")
+    print(f"   Message Creation: {'✅ Working' if messages_summary.get('message_creation_working') else '❌ Failed'}")
+    print(f"   Data Consistency: {'✅ Verified' if messages_summary.get('data_consistency_verified') else '❌ Issues'}")
+    
+    # Save detailed results
+    with open("/app/messages_test_results.json", "w") as f:
+        json.dump(messages_results, f, indent=2, default=str)
+    
+    print(f"\n📄 Messages test results saved to: /app/messages_test_results.json")
+    
+    # Run Mobile Bidding Tests (Secondary focus)
     print("\n🎯 MOBILE BIDDING FUNCTIONALITY TESTING")
     print("=" * 60)
     
