@@ -4439,7 +4439,7 @@ async def submit_tender(tender_data: dict):
             # Must bid higher than current highest bid
             minimum_bid = existing_tenders[0]["offer_amount"] + 1
         
-        if offer_amount <= minimum_bid:
+        if offer_amount < minimum_bid:
             if existing_tenders:
                 raise HTTPException(
                     status_code=400, 
