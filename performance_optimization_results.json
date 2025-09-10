@@ -1,5 +1,5 @@
 {
-  "test_timestamp": "2025-09-10T09:24:57.585694",
+  "test_timestamp": "2025-09-10T09:39:19.247354",
   "test_configuration": {
     "backend_url": "https://mobile-browse-perf.preview.emergentagent.com/api",
     "browse_response_size_target_kb": 15,
@@ -9,53 +9,53 @@
   "browse_endpoint_performance": {
     "test_name": "Browse Endpoint Performance",
     "success": true,
-    "avg_response_time_ms": 78.15686861673991,
-    "max_response_time_ms": 121.08802795410156,
-    "avg_response_size_kb": 11.41796875,
-    "max_response_size_kb": 11.41796875,
+    "avg_response_time_ms": 79.90638415018718,
+    "max_response_time_ms": 127.32672691345215,
+    "avg_response_size_kb": 11.734375,
+    "max_response_size_kb": 11.734375,
     "performance_target_met": true,
     "size_target_met": true,
     "size_improvement_achieved": true,
-    "placeholder_usage_percent": 100.0,
+    "placeholder_usage_percent": 0.0,
     "base64_images_eliminated": true,
     "optimization_successful": true,
     "detailed_measurements": {
       "response_times_ms": [
-        121.08802795410156,
-        56.10775947570801,
-        57.274818420410156
+        127.32672691345215,
+        62.32643127441406,
+        50.06599426269531
       ],
       "response_sizes_kb": [
-        11.41796875,
-        11.41796875,
-        11.41796875
+        11.734375,
+        11.734375,
+        11.734375
       ],
       "image_optimization_checks": [
         {
           "total_listings": 8,
           "listings_with_images": 8,
-          "placeholder_images": 9,
+          "placeholder_images": 0,
           "base64_images": 0,
           "file_url_images": 0,
-          "placeholder_usage_percent": 100.0,
+          "placeholder_usage_percent": 0.0,
           "base64_images_found": 0
         },
         {
           "total_listings": 8,
           "listings_with_images": 8,
-          "placeholder_images": 9,
+          "placeholder_images": 0,
           "base64_images": 0,
           "file_url_images": 0,
-          "placeholder_usage_percent": 100.0,
+          "placeholder_usage_percent": 0.0,
           "base64_images_found": 0
         },
         {
           "total_listings": 8,
           "listings_with_images": 8,
-          "placeholder_images": 9,
+          "placeholder_images": 0,
           "base64_images": 0,
           "file_url_images": 0,
-          "placeholder_usage_percent": 100.0,
+          "placeholder_usage_percent": 0.0,
           "base64_images_found": 0
         }
       ]
@@ -64,7 +64,7 @@
   "placeholder_image_endpoint": {
     "test_name": "Placeholder Image Endpoint",
     "success": true,
-    "response_time_ms": 5.553483963012695,
+    "response_time_ms": 16.68548583984375,
     "image_size_bytes": 70,
     "size_target_met": true,
     "has_proper_cache_headers": true,
@@ -78,7 +78,7 @@
     "test_name": "Individual Listing Endpoint",
     "success": true,
     "listing_id": "7ea1af1d-302c-40ab-9766-b09f6f03186d",
-    "response_time_ms": 32.11688995361328,
+    "response_time_ms": 30.7767391204834,
     "response_size_kb": 1681.3125,
     "images_count": 1,
     "has_full_images": true,
@@ -95,41 +95,41 @@
   "response_size_comparison": {
     "test_name": "Response Size Comparison",
     "success": true,
-    "avg_response_size_kb": 11.41796875,
-    "avg_response_size_mb": 0.011150360107421875,
-    "max_response_size_kb": 11.41796875,
-    "max_response_size_mb": 0.011150360107421875,
+    "avg_response_size_kb": 11.734375,
+    "avg_response_size_mb": 0.0114593505859375,
+    "max_response_size_kb": 11.734375,
+    "max_response_size_mb": 0.0114593505859375,
     "baseline_size_mb": 44,
-    "improvement_percent": 99.97465827248313,
+    "improvement_percent": 99.9739560213956,
     "target_size_kb": 15,
     "target_achieved": true,
     "massive_improvement_achieved": true,
     "performance_issue_resolved": true,
     "measurements": [
       {
-        "response_size_kb": 11.41796875,
-        "response_size_mb": 0.011150360107421875,
-        "response_time_ms": 59.07011032104492
+        "response_size_kb": 11.734375,
+        "response_size_mb": 0.0114593505859375,
+        "response_time_ms": 45.99642753601074
       },
       {
-        "response_size_kb": 11.41796875,
-        "response_size_mb": 0.011150360107421875,
-        "response_time_ms": 58.25471878051758
+        "response_size_kb": 11.734375,
+        "response_size_mb": 0.0114593505859375,
+        "response_time_ms": 43.42460632324219
       },
       {
-        "response_size_kb": 11.41796875,
-        "response_size_mb": 0.011150360107421875,
-        "response_time_ms": 61.8739128112793
+        "response_size_kb": 11.734375,
+        "response_size_mb": 0.0114593505859375,
+        "response_time_ms": 42.488813400268555
       },
       {
-        "response_size_kb": 11.41796875,
-        "response_size_mb": 0.011150360107421875,
-        "response_time_ms": 57.283878326416016
+        "response_size_kb": 11.734375,
+        "response_size_mb": 0.0114593505859375,
+        "response_time_ms": 44.04425621032715
       },
       {
-        "response_size_kb": 11.41796875,
-        "response_size_mb": 0.011150360107421875,
-        "response_time_ms": 56.86378479003906
+        "response_size_kb": 11.734375,
+        "response_size_mb": 0.0114593505859375,
+        "response_time_ms": 41.1219596862793
       }
     ]
   },
@@ -143,10 +143,10 @@
     "44mb_issue_resolved": true,
     "optimization_fully_successful": true,
     "key_metrics": {
-      "avg_response_size_kb": 11.41796875,
-      "avg_response_time_ms": 78.15686861673991,
-      "placeholder_usage_percent": 100.0,
-      "improvement_from_44mb_percent": 99.97465827248313
+      "avg_response_size_kb": 11.734375,
+      "avg_response_time_ms": 79.90638415018718,
+      "placeholder_usage_percent": 0.0,
+      "improvement_from_44mb_percent": 99.9739560213956
     }
   }
 }
