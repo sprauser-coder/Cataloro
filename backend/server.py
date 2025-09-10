@@ -414,6 +414,61 @@ async def get_placeholder_image():
         }
     )
 
+@app.get("/api/listings/{listing_id}/thumbnail/{image_index}")
+async def get_listing_thumbnail(listing_id: str, image_index: int):
+    """Serve optimized thumbnail for listing images"""
+    try:
+        # Get the listing from database
+        listing = await db.listings.find_one({"id": listing_id})
+        if not listing:
+            # Fall back to placeholder if listing not found
+            return await get_placeholder_image()
+        
+        images = listing.get('images', [])
+        if image_index >= len(images):
+            # Fall back to placeholder if image index out of range
+            return await get_placeholder_image()
+            
+        image = images[image_index]
+        
+        if not isinstance(image, str) or not image.startswith('data:'):
+            # Fall back to placeholder if not a base64 image
+            return await get_placeholder_image()
+        
+        # Extract and decode base64 image
+        try:
+            # Parse data URL: data:image/jpeg;base64,<data>
+            header, data = image.split(',', 1)
+            image_data = base64.b64decode(data)
+            
+            # Determine content type from header
+            content_type = "image/jpeg"  # default
+            if "image/png" in header:
+                content_type = "image/png"
+            elif "image/gif" in header:
+                content_type = "image/gif"
+            elif "image/webp" in header:
+                content_type = "image/webp"
+            
+            # For thumbnails, we could resize here, but for now just serve original with caching
+            from fastapi.responses import Response
+            return Response(
+                content=image_data,
+                media_type=content_type,
+                headers={
+                    "Cache-Control": "public, max-age=86400",  # Cache for 1 day
+                    "Content-Length": str(len(image_data))
+                }
+            )
+            
+        except Exception as decode_error:
+            print(f"Error decoding base64 image: {decode_error}")
+            return await get_placeholder_image()
+        
+    except Exception as e:
+        print(f"Error serving thumbnail: {e}")
+        return await get_placeholder_image()
+
 @app.post("/api/admin/cache/clear")
 async def clear_all_cache():
     """Clear ALL Redis cache - URGENT endpoint for data consistency"""
