@@ -191,6 +191,8 @@ function TendersPage() {
 
       if (response.ok) {
         showToast('Tender offer rejected', 'info');
+        // Force refresh by invalidating cache
+        setLastLoadTime(prev => ({ ...prev, listings: null }));
         loadTendersOverview(); // Refresh data
       } else {
         const errorData = await response.json();
