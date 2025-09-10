@@ -6958,8 +6958,9 @@ async def get_user_sold_items(user_id: str):
             sold_items.append(sold_item)
         
         # Method 2: Get accepted tenders where user is the seller
-        # First get user's listings
-        user_listings = await db.listings.find({"seller_id": user_id}).to_list(length=None)
+        # First get user's listings (with ID resolution)
+        associated_ids = await get_user_associated_ids(user_id)
+        user_listings = await db.listings.find({"seller_id": {"$in": associated_ids}}).to_list(length=None)
         listing_ids = [listing.get("id") for listing in user_listings if listing.get("id")]
         
         if listing_ids:
