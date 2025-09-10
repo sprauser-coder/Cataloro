@@ -394,6 +394,7 @@ async def health_check():
     return {"status": "healthy", "app": "Cataloro Marketplace", "version": "1.0.0"}
 
 @app.get("/api/placeholder-image.jpg")
+@app.head("/api/placeholder-image.jpg")
 async def get_placeholder_image():
     """Serve a lightweight placeholder image for listings without images"""
     from fastapi.responses import Response
