@@ -140,14 +140,44 @@ function ProductDetailPage() {
   const isExpired = product?.time_info?.is_expired || false;
 
   useEffect(() => {
-    const foundProduct = allProducts.find(p => p.id === productId);
-    if (foundProduct) {
-      setProduct(foundProduct);
-      addToRecentlyViewed(foundProduct);
-      setLoading(false);
-    } else {
-      // If not found, redirect to browse
-      navigate('/browse');
+    const loadProduct = async () => {
+      // First try to find product in cached allProducts
+      const foundProduct = allProducts.find(p => p.id === productId);
+      if (foundProduct) {
+        setProduct(foundProduct);
+        addToRecentlyViewed(foundProduct);
+        setLoading(false);
+        return;
+      }
+
+      // If not found in cache and allProducts has data, try fetching from API
+      if (allProducts.length > 0) {
+        try {
+          console.log('🔍 Product not found in cache, fetching from API...');
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/marketplace/browse`);
+          if (response.ok) {
+            const allListings = await response.json();
+            const apiProduct = allListings.find(p => p.id === productId);
+            if (apiProduct) {
+              setProduct(apiProduct);
+              addToRecentlyViewed(apiProduct);
+              setLoading(false);
+              return;
+            }
+          }
+        } catch (error) {
+          console.error('❌ Failed to fetch product from API:', error);
+        }
+        
+        // If still not found, redirect to browse
+        console.log('❌ Product not found, redirecting to browse');
+        navigate('/browse');
+      }
+      // If allProducts is empty, keep loading (wait for MarketplaceContext to load)
+    };
+
+    if (productId) {
+      loadProduct();
     }
   }, [productId, allProducts, navigate, addToRecentlyViewed]);
 
