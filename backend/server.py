@@ -89,7 +89,9 @@ async def add_cors_headers(request: Request, call_next):
 
 # Static Files - Serve uploaded images
 os.makedirs("uploads", exist_ok=True)
+os.makedirs("static", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # MongoDB Connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
