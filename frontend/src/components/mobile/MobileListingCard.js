@@ -97,11 +97,6 @@ function MobileListingCard({ listing, onFavorite, onQuickView }) {
                 <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
                   {formatPrice(listing.price)}
                 </p>
-                {listing.originalPrice && listing.originalPrice > listing.price && (
-                  <p className="text-sm text-gray-500 line-through">
-                    {formatPrice(listing.originalPrice)}
-                  </p>
-                )}
               </div>
             </div>
 
