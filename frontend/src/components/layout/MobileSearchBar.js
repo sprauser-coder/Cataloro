@@ -6,8 +6,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, Mic, Camera, Filter, ScanLine } from 'lucide-react';
 
-function MobileSearchBar({ onSearch, placeholder = "Search catalysts...", className = "" }) {
-  const [query, setQuery] = useState('');
+function MobileSearchBar({ onSearch, placeholder = "Search catalysts...", className = "", initialValue = "" }) {
+  const [query, setQuery] = useState(initialValue);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isListening, setIsListening] = useState(false);
