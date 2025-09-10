@@ -393,6 +393,26 @@ async def create_listing_expiration_notification(listing_id: str, seller_id: str
 async def health_check():
     return {"status": "healthy", "app": "Cataloro Marketplace", "version": "1.0.0"}
 
+@app.get("/api/placeholder-image.jpg")
+async def get_placeholder_image():
+    """Serve a lightweight placeholder image for listings without images"""
+    from fastapi.responses import Response
+    import base64
+    
+    # 1x1 transparent PNG (smallest possible valid image)
+    tiny_png = base64.b64decode(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+    )
+    
+    return Response(
+        content=tiny_png,
+        media_type="image/png",
+        headers={
+            "Cache-Control": "public, max-age=31536000",  # Cache for 1 year
+            "Content-Length": str(len(tiny_png))
+        }
+    )
+
 @app.post("/api/admin/cache/clear")
 async def clear_all_cache():
     """Clear ALL Redis cache - URGENT endpoint for data consistency"""
