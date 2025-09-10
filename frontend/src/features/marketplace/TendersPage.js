@@ -213,6 +213,7 @@ function TendersPage() {
       if (response.ok) {
         const data = await response.json();
         setMyTenders(data);
+        setLastLoadTime(prev => ({ ...prev, tenders: Date.now() }));
       } else {
         showToast('Failed to load your tenders', 'error');
       }
