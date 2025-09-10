@@ -280,6 +280,7 @@ function TendersPage() {
           averagePrice: 0,
           thisMonth: 0
         });
+        setLastLoadTime(prev => ({ ...prev, sold: Date.now() }));
       } else {
         console.error('Failed to fetch sold items');
         showToast('Failed to load sold items', 'error');
