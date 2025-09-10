@@ -455,7 +455,8 @@ function MessagesPage() {
 
     try {
       setSending(true);
-      await liveService.sendMessage(user.id, {
+      await liveService.sendMessage({
+        sender_id: user.id,
         recipient_id: selectedConversation.id,
         subject: `Re: ${conversationMessages[0]?.subject || 'Conversation'}`,
         content: messageToSend
