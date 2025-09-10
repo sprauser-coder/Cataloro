@@ -445,8 +445,8 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Message Input */}
-      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
+      {/* Message Input - Fixed at bottom with safe area */}
+      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 pb-6 safe-bottom">
         <div className="flex items-end space-x-3">
           <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
             <Paperclip className="w-5 h-5" />
