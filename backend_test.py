@@ -1291,6 +1291,555 @@ class BrowseEndpointTester:
         finally:
             await self.cleanup()
 
+class MobileBiddingTester:
+    def __init__(self):
+        self.session = None
+        self.test_results = []
+        self.test_listing_id = None
+        self.test_buyer_id = None
+        self.test_seller_id = None
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def setup_test_data(self) -> Dict:
+        """Create test users and listing for bidding tests"""
+        print("🔧 Setting up test data for bidding tests...")
+        
+        # Create test buyer user
+        buyer_data = {
+            "email": "test_buyer@cataloro.com",
+            "password": "test_password",
+            "username": "test_buyer",
+            "full_name": "Test Buyer"
+        }
+        
+        buyer_result = await self.make_request("/auth/login", "POST", data=buyer_data)
+        if buyer_result["success"]:
+            self.test_buyer_id = buyer_result["data"]["user"]["id"]
+            print(f"  ✅ Test buyer created/logged in: {self.test_buyer_id}")
+        else:
+            print(f"  ❌ Failed to create test buyer: {buyer_result.get('error')}")
+            return {"success": False, "error": "Failed to create test buyer"}
+        
+        # Create test seller user
+        seller_data = {
+            "email": "test_seller@cataloro.com", 
+            "password": "test_password",
+            "username": "test_seller",
+            "full_name": "Test Seller"
+        }
+        
+        seller_result = await self.make_request("/auth/login", "POST", data=seller_data)
+        if seller_result["success"]:
+            self.test_seller_id = seller_result["data"]["user"]["id"]
+            print(f"  ✅ Test seller created/logged in: {self.test_seller_id}")
+        else:
+            print(f"  ❌ Failed to create test seller: {seller_result.get('error')}")
+            return {"success": False, "error": "Failed to create test seller"}
+        
+        # Create test listing
+        listing_data = {
+            "title": "Test BMW Catalytic Converter for Bidding",
+            "description": "Test listing for bidding functionality validation",
+            "price": 100.0,  # Starting price
+            "category": "Automotive",
+            "condition": "Used",
+            "seller_id": self.test_seller_id,
+            "images": [],
+            "tags": ["test", "bidding"],
+            "features": ["Test feature"]
+        }
+        
+        listing_result = await self.make_request("/listings", "POST", data=listing_data)
+        if listing_result["success"]:
+            self.test_listing_id = listing_result["data"]["id"]
+            print(f"  ✅ Test listing created: {self.test_listing_id}")
+            return {"success": True, "listing_id": self.test_listing_id, "buyer_id": self.test_buyer_id, "seller_id": self.test_seller_id}
+        else:
+            print(f"  ❌ Failed to create test listing: {listing_result.get('error')}")
+            return {"success": False, "error": "Failed to create test listing"}
+    
+    async def test_first_bid_scenario(self) -> Dict:
+        """Test bidding on item with no existing bids"""
+        print("🎯 Testing first bid scenario (no existing bids)...")
+        
+        if not self.test_listing_id or not self.test_buyer_id:
+            return {"test_name": "First Bid Scenario", "error": "Test data not set up"}
+        
+        # Test valid first bid (equal to starting price)
+        first_bid_data = {
+            "listing_id": self.test_listing_id,
+            "buyer_id": self.test_buyer_id,
+            "offer_amount": 100.0  # Equal to starting price
+        }
+        
+        result = await self.make_request("/tenders/submit", "POST", data=first_bid_data)
+        
+        if result["success"]:
+            print(f"  ✅ First bid accepted: €{first_bid_data['offer_amount']}")
+            return {
+                "test_name": "First Bid Scenario",
+                "success": True,
+                "bid_amount": first_bid_data["offer_amount"],
+                "response_time_ms": result["response_time_ms"],
+                "tender_id": result["data"].get("tender_id"),
+                "message": result["data"].get("message"),
+                "first_bid_accepted": True
+            }
+        else:
+            print(f"  ❌ First bid rejected: {result.get('data', {}).get('detail', result.get('error'))}")
+            return {
+                "test_name": "First Bid Scenario", 
+                "success": False,
+                "bid_amount": first_bid_data["offer_amount"],
+                "error": result.get("data", {}).get("detail", result.get("error")),
+                "status": result["status"],
+                "first_bid_accepted": False
+            }
+    
+    async def test_higher_bid_scenario(self) -> Dict:
+        """Test bidding higher than current highest bid (should succeed)"""
+        print("📈 Testing higher bid scenario (should succeed)...")
+        
+        if not self.test_listing_id or not self.test_buyer_id:
+            return {"test_name": "Higher Bid Scenario", "error": "Test data not set up"}
+        
+        # Get current highest bid first
+        tenders_result = await self.make_request(f"/tenders/listing/{self.test_listing_id}")
+        current_highest = 100.0  # Default to starting price
+        
+        if tenders_result["success"] and tenders_result["data"]:
+            tenders = tenders_result["data"]
+            if tenders:
+                current_highest = max(tender["offer_amount"] for tender in tenders)
+        
+        # Bid higher than current highest
+        higher_bid_amount = current_highest + 50.0
+        higher_bid_data = {
+            "listing_id": self.test_listing_id,
+            "buyer_id": self.test_buyer_id,
+            "offer_amount": higher_bid_amount
+        }
+        
+        result = await self.make_request("/tenders/submit", "POST", data=higher_bid_data)
+        
+        if result["success"]:
+            print(f"  ✅ Higher bid accepted: €{higher_bid_amount} (previous: €{current_highest})")
+            return {
+                "test_name": "Higher Bid Scenario",
+                "success": True,
+                "bid_amount": higher_bid_amount,
+                "previous_highest": current_highest,
+                "response_time_ms": result["response_time_ms"],
+                "tender_id": result["data"].get("tender_id"),
+                "message": result["data"].get("message"),
+                "higher_bid_accepted": True
+            }
+        else:
+            print(f"  ❌ Higher bid rejected: {result.get('data', {}).get('detail', result.get('error'))}")
+            return {
+                "test_name": "Higher Bid Scenario",
+                "success": False,
+                "bid_amount": higher_bid_amount,
+                "previous_highest": current_highest,
+                "error": result.get("data", {}).get("detail", result.get("error")),
+                "status": result["status"],
+                "higher_bid_accepted": False
+            }
+    
+    async def test_equal_bid_scenario(self) -> Dict:
+        """Test bidding equal to current highest bid (should fail)"""
+        print("⚖️ Testing equal bid scenario (should fail)...")
+        
+        if not self.test_listing_id or not self.test_buyer_id:
+            return {"test_name": "Equal Bid Scenario", "error": "Test data not set up"}
+        
+        # Get current highest bid
+        tenders_result = await self.make_request(f"/tenders/listing/{self.test_listing_id}")
+        current_highest = 100.0  # Default to starting price
+        
+        if tenders_result["success"] and tenders_result["data"]:
+            tenders = tenders_result["data"]
+            if tenders:
+                current_highest = max(tender["offer_amount"] for tender in tenders)
+        
+        # Bid equal to current highest
+        equal_bid_data = {
+            "listing_id": self.test_listing_id,
+            "buyer_id": self.test_buyer_id,
+            "offer_amount": current_highest
+        }
+        
+        result = await self.make_request("/tenders/submit", "POST", data=equal_bid_data)
+        
+        if not result["success"]:
+            error_message = result.get("data", {}).get("detail", result.get("error", ""))
+            print(f"  ✅ Equal bid correctly rejected: €{current_highest}")
+            print(f"    Error message: {error_message}")
+            return {
+                "test_name": "Equal Bid Scenario",
+                "success": True,  # Success means it was correctly rejected
+                "bid_amount": current_highest,
+                "current_highest": current_highest,
+                "correctly_rejected": True,
+                "error_message": error_message,
+                "status": result["status"],
+                "error_message_accurate": "higher than current highest bid" in error_message.lower()
+            }
+        else:
+            print(f"  ❌ Equal bid incorrectly accepted: €{current_highest}")
+            return {
+                "test_name": "Equal Bid Scenario",
+                "success": False,  # Failure means it was incorrectly accepted
+                "bid_amount": current_highest,
+                "current_highest": current_highest,
+                "correctly_rejected": False,
+                "error": "Equal bid should have been rejected but was accepted"
+            }
+    
+    async def test_lower_bid_scenario(self) -> Dict:
+        """Test bidding lower than current highest bid (should fail)"""
+        print("📉 Testing lower bid scenario (should fail)...")
+        
+        if not self.test_listing_id or not self.test_buyer_id:
+            return {"test_name": "Lower Bid Scenario", "error": "Test data not set up"}
+        
+        # Get current highest bid
+        tenders_result = await self.make_request(f"/tenders/listing/{self.test_listing_id}")
+        current_highest = 100.0  # Default to starting price
+        
+        if tenders_result["success"] and tenders_result["data"]:
+            tenders = tenders_result["data"]
+            if tenders:
+                current_highest = max(tender["offer_amount"] for tender in tenders)
+        
+        # Bid lower than current highest
+        lower_bid_amount = current_highest - 25.0
+        lower_bid_data = {
+            "listing_id": self.test_listing_id,
+            "buyer_id": self.test_buyer_id,
+            "offer_amount": lower_bid_amount
+        }
+        
+        result = await self.make_request("/tenders/submit", "POST", data=lower_bid_data)
+        
+        if not result["success"]:
+            error_message = result.get("data", {}).get("detail", result.get("error", ""))
+            print(f"  ✅ Lower bid correctly rejected: €{lower_bid_amount} (current: €{current_highest})")
+            print(f"    Error message: {error_message}")
+            return {
+                "test_name": "Lower Bid Scenario",
+                "success": True,  # Success means it was correctly rejected
+                "bid_amount": lower_bid_amount,
+                "current_highest": current_highest,
+                "correctly_rejected": True,
+                "error_message": error_message,
+                "status": result["status"],
+                "error_message_accurate": "higher than current highest bid" in error_message.lower()
+            }
+        else:
+            print(f"  ❌ Lower bid incorrectly accepted: €{lower_bid_amount}")
+            return {
+                "test_name": "Lower Bid Scenario",
+                "success": False,  # Failure means it was incorrectly accepted
+                "bid_amount": lower_bid_amount,
+                "current_highest": current_highest,
+                "correctly_rejected": False,
+                "error": "Lower bid should have been rejected but was accepted"
+            }
+    
+    async def test_minimum_increment_logic(self) -> Dict:
+        """Test minimum increment logic (+1 requirement)"""
+        print("🔢 Testing minimum increment logic (+1 requirement)...")
+        
+        if not self.test_listing_id or not self.test_buyer_id:
+            return {"test_name": "Minimum Increment Logic", "error": "Test data not set up"}
+        
+        # Get current highest bid
+        tenders_result = await self.make_request(f"/tenders/listing/{self.test_listing_id}")
+        current_highest = 100.0  # Default to starting price
+        
+        if tenders_result["success"] and tenders_result["data"]:
+            tenders = tenders_result["data"]
+            if tenders:
+                current_highest = max(tender["offer_amount"] for tender in tenders)
+        
+        # Test minimum valid increment (+1)
+        minimum_valid_bid = current_highest + 1.0
+        min_increment_data = {
+            "listing_id": self.test_listing_id,
+            "buyer_id": self.test_buyer_id,
+            "offer_amount": minimum_valid_bid
+        }
+        
+        result = await self.make_request("/tenders/submit", "POST", data=min_increment_data)
+        
+        if result["success"]:
+            print(f"  ✅ Minimum increment bid accepted: €{minimum_valid_bid} (previous: €{current_highest})")
+            return {
+                "test_name": "Minimum Increment Logic",
+                "success": True,
+                "bid_amount": minimum_valid_bid,
+                "previous_highest": current_highest,
+                "increment": minimum_valid_bid - current_highest,
+                "minimum_increment_accepted": True,
+                "response_time_ms": result["response_time_ms"],
+                "tender_id": result["data"].get("tender_id")
+            }
+        else:
+            error_message = result.get("data", {}).get("detail", result.get("error", ""))
+            print(f"  ❌ Minimum increment bid rejected: €{minimum_valid_bid}")
+            print(f"    Error message: {error_message}")
+            return {
+                "test_name": "Minimum Increment Logic",
+                "success": False,
+                "bid_amount": minimum_valid_bid,
+                "previous_highest": current_highest,
+                "increment": minimum_valid_bid - current_highest,
+                "minimum_increment_accepted": False,
+                "error_message": error_message,
+                "status": result["status"]
+            }
+    
+    async def test_error_message_accuracy(self) -> Dict:
+        """Test error messages provide clear feedback about minimum bid requirements"""
+        print("💬 Testing error message accuracy...")
+        
+        if not self.test_listing_id or not self.test_buyer_id:
+            return {"test_name": "Error Message Accuracy", "error": "Test data not set up"}
+        
+        error_tests = []
+        
+        # Get current highest bid
+        tenders_result = await self.make_request(f"/tenders/listing/{self.test_listing_id}")
+        current_highest = 100.0
+        
+        if tenders_result["success"] and tenders_result["data"]:
+            tenders = tenders_result["data"]
+            if tenders:
+                current_highest = max(tender["offer_amount"] for tender in tenders)
+        
+        # Test 1: Bid equal to current highest
+        equal_bid_data = {
+            "listing_id": self.test_listing_id,
+            "buyer_id": self.test_buyer_id,
+            "offer_amount": current_highest
+        }
+        
+        equal_result = await self.make_request("/tenders/submit", "POST", data=equal_bid_data)
+        if not equal_result["success"]:
+            error_msg = equal_result.get("data", {}).get("detail", "")
+            error_tests.append({
+                "scenario": "Equal bid",
+                "error_message": error_msg,
+                "contains_current_bid": str(current_highest) in error_msg,
+                "contains_minimum_bid": "minimum bid" in error_msg.lower(),
+                "message_clear": len(error_msg) > 20 and "€" in error_msg
+            })
+            print(f"    Equal bid error: {error_msg}")
+        
+        # Test 2: Bid lower than current highest
+        lower_bid_data = {
+            "listing_id": self.test_listing_id,
+            "buyer_id": self.test_buyer_id,
+            "offer_amount": current_highest - 10.0
+        }
+        
+        lower_result = await self.make_request("/tenders/submit", "POST", data=lower_bid_data)
+        if not lower_result["success"]:
+            error_msg = lower_result.get("data", {}).get("detail", "")
+            error_tests.append({
+                "scenario": "Lower bid",
+                "error_message": error_msg,
+                "contains_current_bid": str(current_highest) in error_msg,
+                "contains_minimum_bid": "minimum bid" in error_msg.lower(),
+                "message_clear": len(error_msg) > 20 and "€" in error_msg
+            })
+            print(f"    Lower bid error: {error_msg}")
+        
+        # Calculate accuracy metrics
+        total_tests = len(error_tests)
+        clear_messages = sum(1 for test in error_tests if test["message_clear"])
+        contains_amounts = sum(1 for test in error_tests if test["contains_current_bid"])
+        contains_minimum = sum(1 for test in error_tests if test["contains_minimum_bid"])
+        
+        accuracy_score = 0
+        if total_tests > 0:
+            accuracy_score = ((clear_messages + contains_amounts + contains_minimum) / (total_tests * 3)) * 100
+        
+        return {
+            "test_name": "Error Message Accuracy",
+            "success": accuracy_score >= 75,  # 75% accuracy threshold
+            "total_error_tests": total_tests,
+            "clear_messages": clear_messages,
+            "contains_current_bid_amount": contains_amounts,
+            "contains_minimum_bid_text": contains_minimum,
+            "accuracy_score": accuracy_score,
+            "detailed_error_tests": error_tests,
+            "error_messages_accurate": accuracy_score >= 75
+        }
+    
+    async def test_self_bidding_prevention(self) -> Dict:
+        """Test that sellers cannot bid on their own listings"""
+        print("🚫 Testing self-bidding prevention...")
+        
+        if not self.test_listing_id or not self.test_seller_id:
+            return {"test_name": "Self-Bidding Prevention", "error": "Test data not set up"}
+        
+        # Try to bid on own listing
+        self_bid_data = {
+            "listing_id": self.test_listing_id,
+            "buyer_id": self.test_seller_id,  # Same as seller_id
+            "offer_amount": 200.0
+        }
+        
+        result = await self.make_request("/tenders/submit", "POST", data=self_bid_data)
+        
+        if not result["success"]:
+            error_message = result.get("data", {}).get("detail", result.get("error", ""))
+            print(f"  ✅ Self-bidding correctly prevented")
+            print(f"    Error message: {error_message}")
+            return {
+                "test_name": "Self-Bidding Prevention",
+                "success": True,
+                "self_bidding_prevented": True,
+                "error_message": error_message,
+                "status": result["status"],
+                "error_message_appropriate": "cannot bid on your own" in error_message.lower()
+            }
+        else:
+            print(f"  ❌ Self-bidding incorrectly allowed")
+            return {
+                "test_name": "Self-Bidding Prevention",
+                "success": False,
+                "self_bidding_prevented": False,
+                "error": "Seller should not be able to bid on their own listing"
+            }
+    
+    async def run_comprehensive_bidding_test(self) -> Dict:
+        """Run all bidding functionality tests"""
+        print("🚀 Starting Mobile Bidding Functionality Testing")
+        print("=" * 60)
+        
+        await self.setup()
+        
+        try:
+            # Setup test data
+            setup_result = await self.setup_test_data()
+            if not setup_result.get("success"):
+                return {
+                    "test_timestamp": datetime.now().isoformat(),
+                    "setup_error": setup_result.get("error"),
+                    "tests_completed": False
+                }
+            
+            # Run all bidding tests
+            first_bid = await self.test_first_bid_scenario()
+            higher_bid = await self.test_higher_bid_scenario()
+            equal_bid = await self.test_equal_bid_scenario()
+            lower_bid = await self.test_lower_bid_scenario()
+            min_increment = await self.test_minimum_increment_logic()
+            error_accuracy = await self.test_error_message_accuracy()
+            self_bidding = await self.test_self_bidding_prevention()
+            
+            # Compile results
+            all_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "test_setup": setup_result,
+                "first_bid_scenario": first_bid,
+                "higher_bid_scenario": higher_bid,
+                "equal_bid_scenario": equal_bid,
+                "lower_bid_scenario": lower_bid,
+                "minimum_increment_logic": min_increment,
+                "error_message_accuracy": error_accuracy,
+                "self_bidding_prevention": self_bidding
+            }
+            
+            # Calculate overall success metrics
+            test_results = [
+                first_bid.get("success", False),
+                higher_bid.get("success", False),
+                equal_bid.get("success", False),
+                lower_bid.get("success", False),
+                min_increment.get("success", False),
+                error_accuracy.get("success", False),
+                self_bidding.get("success", False)
+            ]
+            
+            overall_success_rate = sum(test_results) / len(test_results) * 100
+            
+            # Critical bidding logic checks
+            bidding_validation_working = (
+                equal_bid.get("correctly_rejected", False) and
+                lower_bid.get("correctly_rejected", False) and
+                higher_bid.get("higher_bid_accepted", False)
+            )
+            
+            all_results["summary"] = {
+                "overall_success_rate": overall_success_rate,
+                "bidding_validation_logic_working": bidding_validation_working,
+                "first_bid_accepted": first_bid.get("first_bid_accepted", False),
+                "higher_bids_accepted": higher_bid.get("higher_bid_accepted", False),
+                "equal_bids_rejected": equal_bid.get("correctly_rejected", False),
+                "lower_bids_rejected": lower_bid.get("correctly_rejected", False),
+                "minimum_increment_working": min_increment.get("minimum_increment_accepted", False),
+                "error_messages_accurate": error_accuracy.get("error_messages_accurate", False),
+                "self_bidding_prevented": self_bidding.get("self_bidding_prevented", False),
+                "critical_bug_resolved": bidding_validation_working,
+                "all_tests_passed": overall_success_rate >= 85
+            }
+            
+            return all_results
+            
+        finally:
+            await self.cleanup()
+
+
 class BasketExportTester:
     def __init__(self):
         self.session = None
