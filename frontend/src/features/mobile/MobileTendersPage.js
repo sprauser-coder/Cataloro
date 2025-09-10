@@ -226,8 +226,8 @@ function SellingSection({ tenders }) {
 
   return (
     <div className="space-y-4">
-      {tenders.map((listing) => (
-        <SellingCard key={listing.id} listing={listing} />
+      {tenders.map((listingOverview, index) => (
+        <SellingCard key={listingOverview.listing?.id || index} listingOverview={listingOverview} />
       ))}
     </div>
   );
