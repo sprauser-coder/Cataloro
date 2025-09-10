@@ -1,0 +1,388 @@
+{
+  "test_timestamp": "2025-09-10T20:15:07.737958",
+  "admin_authentication": {
+    "test_name": "Admin User Authentication",
+    "login_successful": true,
+    "response_time_ms": 68.63808631896973,
+    "admin_email_correct": true,
+    "admin_username_correct": true,
+    "admin_role_correct": true,
+    "admin_is_active": true,
+    "admin_user_id": "admin_user_1",
+    "user_data": {
+      "id": "admin_user_1",
+      "username": "sash_admin",
+      "email": "admin@cataloro.com",
+      "full_name": "Sash",
+      "name": "Sash Admin",
+      "role": "admin",
+      "user_role": "Admin",
+      "registration_status": "Approved",
+      "badge": "Admin",
+      "is_business": false,
+      "business_name": "",
+      "verified": true,
+      "is_active": true,
+      "created_at": "2025-09-09T09:53:56.308000",
+      "city": "System",
+      "country": "Admin"
+    },
+    "token_received": true,
+    "all_admin_properties_correct": true
+  },
+  "admin_listings_visibility": {
+    "test_name": "Admin Listings Visibility",
+    "my_listings_endpoint_working": true,
+    "response_time_ms": 253.39627265930176,
+    "admin_listings_count": 3,
+    "admin_listings_in_browse": 3,
+    "management_center_accessible": false,
+    "admin_listings_data": [
+      {
+        "title": "Rare Catalyst Sample - SOLD",
+        "description": "Rare catalytic converter sample for testing purposes. This item has been sold.",
+        "price": 200.0,
+        "category": "Catalysts",
+        "condition": "Used",
+        "seller_id": "admin_user_1",
+        "images": [
+          "/api/placeholder-image.jpg"
+        ],
+        "tags": [
+          "rare",
+          "sample",
+          "admin",
+          "sold"
+        ],
+        "features": [
+          "Rare Sample",
+          "Testing Purpose",
+          "Admin Item"
+        ],
+        "status": "active",
+        "id": "32b05ed9-27ec-4cb2-b12f-81d450c161b4",
+        "created_at": "2025-09-10T19:50:24.823499",
+        "updated_at": "2025-09-10T19:50:24.823506",
+        "views": 0,
+        "favorites_count": 0,
+        "has_time_limit": false,
+        "time_limit_hours": null,
+        "expires_at": null,
+        "is_expired": false,
+        "winning_bidder_id": null
+      },
+      {
+        "title": "Luxury Vehicle Catalyst Bundle",
+        "description": "Catalytic converters from luxury vehicles. Perfect for high-end recycling operations.",
+        "price": 380.0,
+        "category": "Catalysts",
+        "condition": "Good",
+        "seller_id": "admin_user_1",
+        "images": [
+          "/api/placeholder-image.jpg"
+        ],
+        "tags": [
+          "luxury",
+          "bundle",
+          "admin",
+          "high-end"
+        ],
+        "features": [
+          "Luxury Vehicles",
+          "Bundle Deal",
+          "Admin Verified"
+        ],
+        "status": "active",
+        "id": "b1439c1a-661b-4006-947a-49f7cd712808",
+        "created_at": "2025-09-10T19:50:24.810393",
+        "updated_at": "2025-09-10T19:50:24.810400",
+        "views": 0,
+        "favorites_count": 0,
+        "has_time_limit": false,
+        "time_limit_hours": null,
+        "expires_at": null,
+        "is_expired": false,
+        "winning_bidder_id": null
+      },
+      {
+        "title": "Premium Platinum Catalyst Collection",
+        "description": "High-grade catalytic converters with premium platinum content. Admin-curated collection for serious buyers.",
+        "price": 450.0,
+        "category": "Catalysts",
+        "condition": "Excellent",
+        "seller_id": "admin_user_1",
+        "images": [
+          "/api/placeholder-image.jpg"
+        ],
+        "tags": [
+          "premium",
+          "platinum",
+          "admin",
+          "collection"
+        ],
+        "features": [
+          "Admin Curated",
+          "Premium Grade",
+          "High Platinum"
+        ],
+        "status": "active",
+        "id": "3f6a95b2-67aa-4634-867b-072ccdd9c1a7",
+        "created_at": "2025-09-10T19:50:24.757022",
+        "updated_at": "2025-09-10T19:50:24.757028",
+        "views": 0,
+        "favorites_count": 0,
+        "has_time_limit": false,
+        "time_limit_hours": null,
+        "expires_at": null,
+        "is_expired": false,
+        "winning_bidder_id": null
+      }
+    ],
+    "listings_visible_in_management": false
+  },
+  "admin_database_state": {
+    "test_name": "Admin User Database State",
+    "profile_accessible": true,
+    "response_time_ms": 47.982215881347656,
+    "admin_id": "admin_user_1",
+    "admin_email": "admin@cataloro.com",
+    "admin_username": "sash_admin",
+    "admin_role": "admin",
+    "admin_full_name": "Sash",
+    "admin_is_active": true,
+    "registration_status": "Approved",
+    "has_all_essential_fields": true,
+    "missing_fields": [],
+    "complete_profile_data": {
+      "id": "admin_user_1",
+      "username": "sash_admin",
+      "email": "admin@cataloro.com",
+      "full_name": "Sash",
+      "name": "Sash Admin",
+      "role": "admin",
+      "user_role": "Admin",
+      "registration_status": "Approved",
+      "badge": "Admin",
+      "is_business": false,
+      "business_name": "",
+      "verified": true,
+      "is_active": true,
+      "created_at": "2025-09-09T09:53:56.308000",
+      "city": "System",
+      "country": "Admin"
+    }
+  },
+  "admin_messages_historical": {
+    "test_name": "Admin Messages Historical Data",
+    "admin_messages_accessible": true,
+    "admin_message_count": 11,
+    "demo_message_count": 20,
+    "demo_messages_accessible": true,
+    "message_count_comparison": "Admin: 11, Demo: 20",
+    "potential_data_access_issues": [],
+    "has_data_access_issues": false,
+    "admin_messages_response_time_ms": 9.729385375976562,
+    "admin_messages_data": [
+      {
+        "_id": "68c1d6113051c263b80e2e04",
+        "sender_id": "68bfff790e4e46bc28d43631",
+        "recipient_id": "admin_user_1",
+        "subject": "Tender Accepted - MercedesKT0137",
+        "content": "Congratulations! I have accepted your tender offer of \u20ac185.00 for MercedesKT0137. Please contact me to arrange payment and delivery details.",
+        "read": false,
+        "created_at": "2025-09-10T19:48:33.849597",
+        "id": "7dea7298-df41-49a7-ac5d-a393cdf18b9d",
+        "is_read": true,
+        "read_at": "2025-09-10T19:48:52.692096",
+        "sender_name": "Demo User",
+        "recipient_name": "Sash"
+      },
+      {
+        "_id": "68c1d681197913edc1dd487b",
+        "sender_id": "68bfff790e4e46bc28d43631",
+        "recipient_id": "admin_user_1",
+        "subject": "Question about BMW Catalytic Converter",
+        "content": null,
+        "read": false,
+        "created_at": "2025-09-10T21:50:25.096083+02:00",
+        "id": "221f230b-ff58-4e56-8f65-5ce6fda24358",
+        "is_read": true,
+        "read_at": "2025-09-10T19:56:24.152903",
+        "sender_name": "Demo User",
+        "recipient_name": "Sash"
+      },
+      {
+        "_id": "68c1d681197913edc1dd487c",
+        "sender_id": "admin_user_1",
+        "recipient_id": "68bfff790e4e46bc28d43631",
+        "subject": "Re: Question about BMW Catalytic Converter",
+        "content": null,
+        "read": false,
+        "created_at": "2025-09-10T21:50:25.148918+02:00",
+        "id": "125735e1-3af6-4cd4-b692-cd07db9c49c1",
+        "sender_name": "Sash",
+        "recipient_name": "Demo User"
+      },
+      {
+        "_id": "68c1d681197913edc1dd487d",
+        "sender_id": "68bfff790e4e46bc28d43631",
+        "recipient_id": "admin_user_1",
+        "subject": "Re: Question about BMW Catalytic Converter",
+        "content": null,
+        "read": false,
+        "created_at": "2025-09-10T21:50:25.158977+02:00",
+        "id": "a8c69e93-2a40-495f-946e-7964666914dc",
+        "is_read": true,
+        "read_at": "2025-09-10T19:56:24.149836",
+        "sender_name": "Demo User",
+        "recipient_name": "Sash"
+      },
+      {
+        "_id": "68c1d681197913edc1dd487e",
+        "sender_id": "admin_user_1",
+        "recipient_id": "68bfff790e4e46bc28d43631",
+        "subject": "Re: Question about BMW Catalytic Converter",
+        "content": null,
+        "read": false,
+        "created_at": "2025-09-10T21:50:25.171081+02:00",
+        "id": "ae847c84-4c32-47d1-a262-e6dbc0aa0904",
+        "sender_name": "Sash",
+        "recipient_name": "Demo User"
+      },
+      {
+        "_id": "68c1d681197913edc1dd487f",
+        "sender_id": "68bfff790e4e46bc28d43631",
+        "recipient_id": "admin_user_1",
+        "subject": "Inquiry about Platinum Collection",
+        "content": null,
+        "read": false,
+        "created_at": "2025-09-10T21:50:25.182167+02:00",
+        "id": "8534ebff-339b-4530-a81f-cd06f16867c1",
+        "is_read": true,
+        "read_at": "2025-09-10T19:56:24.155109",
+        "sender_name": "Demo User",
+        "recipient_name": "Sash"
+      },
+      {
+        "_id": "68c1d81c9437122d349edd87",
+        "sender_id": "admin_user_1",
+        "recipient_id": "68bfff790e4e46bc28d43631",
+        "subject": "",
+        "content": "test",
+        "read": false,
+        "created_at": "2025-09-10T21:57:16.353316+02:00",
+        "id": "a2af1f71-6c7d-407e-8aca-52c52b8c7242",
+        "sender_name": "Sash",
+        "recipient_name": "Demo User"
+      },
+      {
+        "_id": "68c1db6e45d0ffe30060ffe9",
+        "sender_id": "68bfff790e4e46bc28d43631",
+        "recipient_id": "admin_user_1",
+        "subject": "Desktop Messaging Test - Original Message",
+        "content": "Test message from demo user to admin. Timestamp: 2025-09-10T20:11:26.516352",
+        "read": false,
+        "created_at": "2025-09-10T22:11:26.550149+02:00",
+        "id": "3ae66ba5-e9a4-464f-8479-c7306c49dc8b",
+        "sender_name": "Demo User",
+        "recipient_name": "Sash"
+      },
+      {
+        "_id": "68c1db6e45d0ffe30060ffea",
+        "sender_id": "admin_user_1",
+        "recipient_id": "68bfff790e4e46bc28d43631",
+        "subject": "Re: Desktop Messaging Test - Reply Message",
+        "content": "CRITICAL REPLY from admin to demo user. Testing desktop messenger reply fix. Timestamp: 2025-09-10T20:11:26.559437",
+        "read": false,
+        "created_at": "2025-09-10T22:11:26.563907+02:00",
+        "id": "0be96bc2-57f0-4c34-ad4f-157881f47ad4",
+        "sender_name": "Sash",
+        "recipient_name": "Demo User"
+      },
+      {
+        "_id": "68c1db6e45d0ffe30060ffeb",
+        "sender_id": "68bfff790e4e46bc28d43631",
+        "recipient_id": "admin_user_1",
+        "subject": "Desktop Messenger Workflow Test - 20250910_201126",
+        "content": "Hello Admin, this is a comprehensive test of the desktop messenger workflow. Please reply to confirm the functionality is working end-to-end.",
+        "read": false,
+        "created_at": "2025-09-10T22:11:26.658365+02:00",
+        "id": "defbbc96-c2e4-486e-aafc-edcbf991b0dd",
+        "sender_name": "Demo User",
+        "recipient_name": "Sash"
+      },
+      {
+        "_id": "68c1db6e45d0ffe30060ffec",
+        "sender_id": "admin_user_1",
+        "recipient_id": "68bfff790e4e46bc28d43631",
+        "subject": "Re: Desktop Messenger Workflow Test - 20250910_201126",
+        "content": "Hello Demo User, I received your message and I'm replying to confirm that the desktop messenger reply functionality is working correctly after the liveService.sendMessage fix.",
+        "read": false,
+        "created_at": "2025-09-10T22:11:26.706690+02:00",
+        "id": "a2fcf810-7a94-4157-8b16-0a381fd9072f",
+        "sender_name": "Sash",
+        "recipient_name": "Demo User"
+      }
+    ]
+  },
+  "cross_platform_message_visibility": {
+    "test_name": "Cross-platform Message Visibility",
+    "admin_can_send_messages": true,
+    "admin_can_receive_messages": true,
+    "admin_can_see_messages": true,
+    "sent_message_id": "b594c88f-ab4d-4797-bcd5-add44b417fbf",
+    "received_message_id": "9b865de2-f9f2-485f-90c8-a1849cd23ecb",
+    "updated_admin_message_count": 13,
+    "admin_specific_filtering_issues": [],
+    "has_filtering_issues": false,
+    "messaging_fully_functional": true,
+    "send_response_time_ms": 48.13408851623535,
+    "receive_response_time_ms": 48.245906829833984
+  },
+  "admin_data_filtering": {
+    "test_name": "Admin Specific Data Filtering",
+    "total_filtering_tests": 3,
+    "successful_filtering_tests": 2,
+    "filtering_health_score": 66.66666666666666,
+    "admin_filtering_working_correctly": false,
+    "identified_filtering_issues": [
+      "Admin Access to All Listings: None"
+    ],
+    "has_filtering_issues": true,
+    "detailed_filtering_tests": [
+      {
+        "test": "Admin Access to All Users",
+        "success": true,
+        "user_count": 10,
+        "admin_in_user_list": true,
+        "response_time_ms": 8.599281311035156
+      },
+      {
+        "test": "Admin Access to All Listings",
+        "success": false,
+        "error": null,
+        "response_time_ms": 48.24066162109375
+      },
+      {
+        "test": "Admin Dashboard Access",
+        "success": true,
+        "has_kpis": false,
+        "response_time_ms": 73.98867607116699
+      }
+    ]
+  },
+  "summary": {
+    "overall_success_rate": 83.33333333333334,
+    "admin_authentication_working": true,
+    "admin_listings_accessible": true,
+    "admin_database_state_healthy": true,
+    "admin_messages_working": true,
+    "cross_platform_messaging_working": true,
+    "admin_data_filtering_working": false,
+    "critical_issues_identified": [
+      "Admin data filtering problems"
+    ],
+    "has_critical_issues": true,
+    "all_admin_functionality_working": false
+  }
+}
