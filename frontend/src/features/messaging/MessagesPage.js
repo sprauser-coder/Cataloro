@@ -814,7 +814,7 @@ function MessagesPage() {
                     .slice() // Create a copy to avoid mutating original array
                     .map((message, index, messageArray) => {
                     const isOwn = message.sender_id === user?.id;
-                    const showAvatar = index === 0 || reversedArray[index - 1].sender_id !== message.sender_id;
+                    const showAvatar = index === 0 || messageArray[index - 1].sender_id !== message.sender_id;
                     const isHighlighted = highlightedMessageId === message.id;
                     
                     return (
