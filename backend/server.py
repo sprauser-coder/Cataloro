@@ -415,6 +415,7 @@ async def get_placeholder_image():
     )
 
 @app.get("/api/listings/{listing_id}/thumbnail/{image_index}")
+@app.head("/api/listings/{listing_id}/thumbnail/{image_index}")
 async def get_listing_thumbnail(listing_id: str, image_index: int):
     """Serve optimized thumbnail for listing images"""
     try:
