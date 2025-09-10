@@ -417,7 +417,7 @@ function MobileMessenger({ conversations = [], activeConversation = null, onBack
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4" id="messages-container">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-20" id="messages-container">  {/* Added pb-20 for bottom spacing */}
         {messages.map((msg) => (
           <div
             key={msg.id}
