@@ -185,6 +185,25 @@ function MobileListingCard({ listing, onFavorite, onQuickView, onBidUpdate }) {
       const data = await response.json();
 
       if (response.ok) {
+        // Update local listing state with new bid information
+        const updatedListing = {
+          ...currentListing,
+          bid_info: {
+            ...currentListing.bid_info,
+            has_bids: true,
+            total_bids: (currentListing.bid_info?.total_bids || 0) + 1,
+            highest_bid: bidValue,
+            highest_bidder_id: user.id
+          }
+        };
+        
+        setCurrentListing(updatedListing);
+        
+        // Notify parent component of the bid update
+        if (onBidUpdate) {
+          onBidUpdate(listing.id, updatedListing);
+        }
+        
         setBidSuccess(true);
         setBidAmount('');
         showToast(`Bid of ${formatPrice(bidValue)} submitted successfully!`, 'success');
