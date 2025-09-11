@@ -1,26 +1,24 @@
 {
-  "test_timestamp": "2025-09-11T19:42:28.567209",
+  "test_timestamp": "2025-09-11T19:43:48.904663",
   "test_focus": "Two critical fixes: Notifications TypeError + Create Listing Not Found",
   "notifications_array_test": {
     "test_name": "Notifications Array Format",
-    "success": false,
+    "success": true,
     "test_results": {
       "endpoint": "/user/68bfff790e4e46bc28d43631/notifications",
       "expected_status": 200,
       "actual_status": 200,
-      "response_time_ms": 16.51477813720703,
-      "is_array": false,
+      "response_time_ms": 13.200044631958008,
+      "is_array": true,
       "array_length": 0,
-      "filterable": false,
-      "error_messages": [
-        "Response is not an array: <class 'dict'>"
-      ],
+      "filterable": true,
+      "error_messages": [],
       "success": true,
-      "fix_working": false
+      "fix_working": true
     },
-    "critical_issue": true,
-    "fix_working": false,
-    "prevents_typeerror": false
+    "critical_issue": false,
+    "fix_working": true,
+    "prevents_typeerror": true
   },
   "create_listing_test": {
     "test_name": "Create Listing Endpoint",
@@ -29,9 +27,9 @@
       "endpoint": "/listings",
       "expected_status": 201,
       "actual_status": 200,
-      "response_time_ms": 66.76650047302246,
+      "response_time_ms": 52.039146423339844,
       "listing_created": true,
-      "listing_id": "2a2f11a7-8ed3-4460-870f-24fdc79d5161",
+      "listing_id": "bd8134b4-026a-403c-8d1a-ce79060ba684",
       "error_messages": [
         "Unexpected unauthenticated status: 200"
       ],
@@ -75,19 +73,19 @@
   },
   "summary": {
     "total_tests": 4,
-    "successful_tests": 2,
-    "failed_tests": 2,
-    "success_rate": 50.0,
+    "successful_tests": 3,
+    "failed_tests": 1,
+    "success_rate": 75.0,
     "critical_issues": [
-      "Notifications Array Format: Response is not an array: <class 'dict'>",
       "Error Handling: Listings unexpected status: 200"
     ],
     "working_fixes": [
+      "Notifications Array Format: Working correctly",
       "Create Listing Endpoint: Working correctly",
       "Authentication Headers: Working correctly"
     ],
-    "notifications_fix_status": "FAILED",
+    "notifications_fix_status": "WORKING",
     "create_listing_fix_status": "WORKING",
-    "both_fixes_working": false
+    "both_fixes_working": true
   }
 }
