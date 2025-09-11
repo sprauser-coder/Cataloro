@@ -102,10 +102,25 @@ class LiveService {
 
   async removeFromFavorites(userId, itemId) {
     try {
-      const response = await fetch(`${this.baseURL}/user/${userId}/favorites/${itemId}`, {
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${this.baseURL}/api/user/${userId}/favorites/${itemId}`, {
         method: 'DELETE',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error removing from favorites:', error);
+      throw error;
+    }
+  }
         }
       });
       
