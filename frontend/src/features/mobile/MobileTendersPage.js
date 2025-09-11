@@ -365,9 +365,13 @@ function SellingCard({ listingOverview, onManageTenders }) {
     try {
       setProcessingTender(tenderId);
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://marketplace-debug-3.preview.emergentagent.com/api'}/api/tenders/${tenderId}/reject`, {
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/${tenderId}/reject`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ seller_id: listingOverview.listing?.seller_id })
       });
       
