@@ -697,20 +697,20 @@ function BusinessTab({ showToast }) {
                 <Settings className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 <span className="font-semibold text-purple-900 dark:text-purple-100">Admin-Manager</span>
               </div>
-              <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">5</span>
+              <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{loading ? '...' : realMetrics.roleDistribution.adminManager}</span>
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-purple-700 dark:text-purple-300">Users Managed</span>
-                <span className="font-medium text-purple-900 dark:text-purple-100">1,126</span>
+                <span className="font-medium text-purple-900 dark:text-purple-100">{loading ? '...' : realMetrics.userMetrics.totalUsers}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-purple-700 dark:text-purple-300">Approvals/Day</span>
-                <span className="font-medium text-purple-900 dark:text-purple-100">23</span>
+                <span className="font-medium text-purple-900 dark:text-purple-100">{loading ? '...' : 'N/A'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-purple-700 dark:text-purple-300">Response Time</span>
-                <span className="font-medium text-purple-900 dark:text-purple-100">1.2h</span>
+                <span className="font-medium text-purple-900 dark:text-purple-100">{loading ? '...' : 'N/A'}</span>
               </div>
             </div>
           </div>
