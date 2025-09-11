@@ -1,0 +1,230 @@
+{
+  "test_timestamp": "2025-09-11T09:13:18.321260",
+  "authentication": {
+    "success": true,
+    "admin_user_id": "admin_user_1",
+    "demo_user_id": "68bfff790e4e46bc28d43631"
+  },
+  "admin_settings_verification": {
+    "test_name": "Admin Menu Settings Verification",
+    "success": true,
+    "response_time_ms": 55.83333969116211,
+    "mobile_messages_enabled": false,
+    "desktop_messages_enabled": true,
+    "mobile_messages_config": {
+      "enabled": false,
+      "roles": [
+        "admin",
+        "buyer",
+        "seller"
+      ]
+    },
+    "desktop_messages_config": {},
+    "admin_settings_accessible": true,
+    "messages_properly_configured": true,
+    "full_admin_settings": {
+      "desktop_menu": {
+        "test_item": {
+          "enabled": true,
+          "roles": [
+            "admin"
+          ]
+        },
+        "browse": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "buyer",
+            "seller"
+          ]
+        },
+        "create_listing": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "seller"
+          ]
+        },
+        "frontend_test": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "seller"
+          ]
+        }
+      },
+      "mobile_menu": {
+        "test_item": {
+          "enabled": false,
+          "roles": [
+            "buyer"
+          ]
+        },
+        "browse": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "buyer",
+            "seller"
+          ]
+        },
+        "messages": {
+          "enabled": false,
+          "roles": [
+            "admin",
+            "buyer",
+            "seller"
+          ]
+        }
+      }
+    }
+  },
+  "user_menu_settings_api_debug": {
+    "test_name": "User Menu Settings API Debug",
+    "admin_user_test": {
+      "success": true,
+      "response_time_ms": 191.8950080871582,
+      "mobile_menu_count": 1,
+      "messages_in_mobile_menu": false,
+      "mobile_menu_keys": [
+        "browse"
+      ],
+      "mobile_menu_type": "dict",
+      "full_settings": {
+        "desktop_menu": {
+          "test_item": {
+            "enabled": true,
+            "roles": [
+              "admin"
+            ]
+          },
+          "browse": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "buyer",
+              "seller"
+            ]
+          },
+          "create_listing": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "seller"
+            ]
+          },
+          "frontend_test": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "seller"
+            ]
+          }
+        },
+        "mobile_menu": {
+          "browse": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "buyer",
+              "seller"
+            ]
+          }
+        },
+        "user_role": "admin"
+      }
+    },
+    "demo_user_test": {
+      "success": true,
+      "response_time_ms": 8.615970611572266,
+      "mobile_menu_count": 1,
+      "messages_in_mobile_menu": false,
+      "mobile_menu_keys": [
+        "browse"
+      ],
+      "mobile_menu_type": "dict",
+      "full_settings": {
+        "desktop_menu": {
+          "browse": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "buyer",
+              "seller"
+            ]
+          }
+        },
+        "mobile_menu": {
+          "browse": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "buyer",
+              "seller"
+            ]
+          }
+        },
+        "user_role": "buyer"
+      }
+    },
+    "role_mapping": {
+      "admin_role": "admin",
+      "demo_role": "buyer",
+      "role_mapping_working": true
+    },
+    "filtering_working": {
+      "admin_messages_filtered": true,
+      "demo_messages_filtered": true
+    }
+  },
+  "database_state_verification": {
+    "test_name": "Database State Verification",
+    "success": true,
+    "database_accessible": true,
+    "settings_save_successful": true,
+    "settings_persistence_working": true,
+    "original_messages_config": {
+      "enabled": false,
+      "roles": [
+        "admin",
+        "buyer",
+        "seller"
+      ]
+    },
+    "updated_messages_config": {
+      "enabled": false,
+      "roles": [
+        "admin",
+        "buyer",
+        "seller"
+      ]
+    },
+    "messages_properly_disabled": true
+  },
+  "end_to_end_visibility_chain_debug": {
+    "test_name": "End-to-End Visibility Chain Debug",
+    "success": true,
+    "step1_admin_saves_settings": true,
+    "step2_database_stores_correctly": true,
+    "step3_user_endpoint_filters": true,
+    "step3_filtering_details": {
+      "admin_filtered": true,
+      "demo_filtered": true
+    },
+    "step4_complete_chain_working": true,
+    "chain_breakdown_point": "No breakdown - chain working correctly"
+  },
+  "summary": {
+    "overall_success_rate": 100.0,
+    "admin_settings_accessible": true,
+    "messages_properly_disabled_in_admin": true,
+    "admin_user_messages_filtered": true,
+    "demo_user_messages_filtered": true,
+    "database_persistence_working": true,
+    "complete_visibility_chain_working": true,
+    "role_mapping_working": true,
+    "chain_breakdown_point": "No breakdown - chain working correctly",
+    "critical_issue_identified": false,
+    "all_tests_passed": true
+  }
+}
