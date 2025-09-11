@@ -1432,17 +1432,23 @@ async def update_profile(user_id: str, profile_data: dict):
 
 # Marketplace Endpoints
 @app.get("/api/marketplace/browse")
-async def browse_listings():
-    """Browse available listings - SIMPLIFIED FOR SPEED"""
+async def browse_listings(status: str = "active", limit: int = 50):
+    """Browse available listings - SIMPLIFIED FOR SPEED with status filtering"""
     try:
         logger.info("📋 Simple browse request started")
         
-        # Simple query - just get active listings, sorted by newest first
-        listings = await db.listings.find(
-            {"status": "active"}
-        ).sort("created_at", -1).limit(50).to_list(length=None)
+        # Build query based on status filter
+        if status == "all":
+            query = {}  # Get all listings regardless of status
+        elif status in ["active", "pending", "expired", "sold", "draft"]:
+            query = {"status": status}
+        else:
+            query = {"status": "active"}  # Default to active
         
-        logger.info(f"📋 Found {len(listings)} listings")
+        # Simple query - get listings, sorted by newest first
+        listings = await db.listings.find(query).sort("created_at", -1).limit(limit).to_list(length=None)
+        
+        logger.info(f"📋 Found {len(listings)} listings with status filter: {status}")
         
         # Simple processing - minimal enrichment
         for listing in listings:
