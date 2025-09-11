@@ -1,0 +1,290 @@
+{
+  "test_timestamp": "2025-09-11T06:46:26.516696",
+  "jwt_token_generation": {
+    "test_name": "JWT Token Generation",
+    "success": false,
+    "error": "Admin login failed: Unknown error",
+    "status": 500
+  },
+  "admin_endpoints_with_auth": {
+    "test_name": "Admin Endpoints With Auth",
+    "success": false,
+    "error": "No admin token available"
+  },
+  "admin_endpoints_without_auth": {
+    "test_name": "Admin Endpoints Without Auth",
+    "success": true,
+    "total_endpoints": 5,
+    "properly_blocked_endpoints": 0,
+    "vulnerable_endpoints": 0,
+    "security_score": 0.0,
+    "all_endpoints_secured": true,
+    "endpoint_results": [
+      {
+        "endpoint": "/admin/menu-settings",
+        "method": "GET",
+        "name": "Menu Settings GET",
+        "status": 403,
+        "response_time_ms": 9.908676147460938,
+        "properly_blocked": false,
+        "security_vulnerability": false,
+        "error": "Request failed"
+      },
+      {
+        "endpoint": "/admin/menu-settings",
+        "method": "POST",
+        "name": "Menu Settings POST",
+        "status": 403,
+        "response_time_ms": 10.869026184082031,
+        "properly_blocked": false,
+        "security_vulnerability": false,
+        "error": "Request failed"
+      },
+      {
+        "endpoint": "/admin/dashboard",
+        "method": "GET",
+        "name": "Admin Dashboard",
+        "status": 403,
+        "response_time_ms": 10.082483291625977,
+        "properly_blocked": false,
+        "security_vulnerability": false,
+        "error": "Request failed"
+      },
+      {
+        "endpoint": "/admin/users",
+        "method": "GET",
+        "name": "Admin Users",
+        "status": 403,
+        "response_time_ms": 12.578964233398438,
+        "properly_blocked": false,
+        "security_vulnerability": false,
+        "error": "Request failed"
+      },
+      {
+        "endpoint": "/admin/performance",
+        "method": "GET",
+        "name": "Admin Performance",
+        "status": 403,
+        "response_time_ms": 48.06351661682129,
+        "properly_blocked": false,
+        "security_vulnerability": false,
+        "error": "Request failed"
+      }
+    ],
+    "vulnerable_endpoint_details": []
+  },
+  "admin_endpoints_invalid_tokens": {
+    "test_name": "Admin Endpoints With Invalid Tokens",
+    "success": true,
+    "total_tokens_tested": 5,
+    "properly_rejected_tokens": 4,
+    "vulnerable_tokens": 0,
+    "token_security_score": 80.0,
+    "all_invalid_tokens_rejected": true,
+    "token_results": [
+      {
+        "token_name": "Invalid Token 1",
+        "token_value": "invalid_token_123",
+        "status": 401,
+        "properly_rejected": true,
+        "security_vulnerability": false
+      },
+      {
+        "token_name": "Invalid Token 2",
+        "token_value": "Bearer fake_jwt_toke...",
+        "status": 401,
+        "properly_rejected": true,
+        "security_vulnerability": false
+      },
+      {
+        "token_name": "Mock Token",
+        "token_value": "mock_token_admin_use...",
+        "status": 401,
+        "properly_rejected": true,
+        "security_vulnerability": false
+      },
+      {
+        "token_name": "Sample JWT",
+        "token_value": "eyJhbGciOiJIUzI1NiIs...",
+        "status": 401,
+        "properly_rejected": true,
+        "security_vulnerability": false
+      },
+      {
+        "token_name": "Empty Token",
+        "token_value": "",
+        "status": 403,
+        "properly_rejected": false,
+        "security_vulnerability": false
+      }
+    ],
+    "vulnerable_token_details": []
+  },
+  "role_based_access_control": {
+    "test_name": "Role-Based Access Control",
+    "success": false,
+    "error": "Failed to login demo user: Unknown error"
+  },
+  "security_bypass_prevention": {
+    "test_name": "Security Bypass Prevention",
+    "success": true,
+    "total_bypass_tests": 15,
+    "properly_blocked_attempts": 15,
+    "bypass_vulnerabilities": 0,
+    "bypass_prevention_score": 100.0,
+    "no_bypass_vulnerabilities": true,
+    "bypass_test_results": [
+      {
+        "test_type": "Header Manipulation",
+        "test_name": "Header Test 1",
+        "headers": {
+          "X-Admin-Override": "true"
+        },
+        "status": 403,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "Header Manipulation",
+        "test_name": "Header Test 2",
+        "headers": {
+          "X-User-Role": "admin"
+        },
+        "status": 403,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "Header Manipulation",
+        "test_name": "Header Test 3",
+        "headers": {
+          "X-Bypass-Auth": "true"
+        },
+        "status": 403,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "Header Manipulation",
+        "test_name": "Header Test 4",
+        "headers": {
+          "Authorization": ""
+        },
+        "status": 403,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "Header Manipulation",
+        "test_name": "Header Test 5",
+        "headers": {
+          "Authorization": "Basic YWRtaW46YWRtaW4="
+        },
+        "status": 403,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "URL Manipulation",
+        "test_name": "URL Test 1",
+        "url": "/admin/../admin/dashboard",
+        "status": 403,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "URL Manipulation",
+        "test_name": "URL Test 2",
+        "url": "/admin/dashboard?admin=true",
+        "status": 403,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "URL Manipulation",
+        "test_name": "URL Test 3",
+        "url": "/admin/dashboard#bypass",
+        "status": 403,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "URL Manipulation",
+        "test_name": "URL Test 4",
+        "url": "/admin/dashboard/",
+        "status": 403,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "URL Manipulation",
+        "test_name": "URL Test 5",
+        "url": "/ADMIN/DASHBOARD",
+        "status": 404,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "Method Manipulation",
+        "test_name": "Method PUT",
+        "method": "PUT",
+        "status": 405,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "Method Manipulation",
+        "test_name": "Method PATCH",
+        "method": "PATCH",
+        "status": 405,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "Method Manipulation",
+        "test_name": "Method DELETE",
+        "method": "DELETE",
+        "status": 405,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "Method Manipulation",
+        "test_name": "Method OPTIONS",
+        "method": "OPTIONS",
+        "status": 405,
+        "bypassed": false,
+        "properly_blocked": true
+      },
+      {
+        "test_type": "Method Manipulation",
+        "test_name": "Method HEAD",
+        "method": "HEAD",
+        "status": 405,
+        "bypassed": false,
+        "properly_blocked": true
+      }
+    ],
+    "vulnerability_details": []
+  },
+  "security_summary": {
+    "overall_security_score": 45.0,
+    "all_critical_checks_passed": false,
+    "total_vulnerabilities_found": 0,
+    "security_level": "VULNERABLE",
+    "critical_security_checks": {
+      "jwt_tokens_working": false,
+      "admin_endpoints_accessible_with_auth": false,
+      "admin_endpoints_blocked_without_auth": true,
+      "invalid_tokens_rejected": true,
+      "rbac_working": false,
+      "no_bypass_vulnerabilities": true
+    },
+    "individual_scores": {
+      "authentication_required_score": 0.0,
+      "token_validation_score": 80.0,
+      "role_based_access_score": 0,
+      "bypass_prevention_score": 100.0
+    }
+  }
+}
