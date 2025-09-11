@@ -118,19 +118,29 @@ function MenuSettings() {
   const saveMenuSettings = async () => {
     try {
       setSaving(true);
+      const token = localStorage.getItem('cataloro_token');
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-guardian.preview.emergentagent.com'}/api/admin/menu-settings`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify(settings)
       });
 
       if (response.ok) {
         showToast('Menu settings saved successfully', 'success');
         setHasChanges(false);
+      } else if (response.status === 401 || response.status === 403) {
+        showToast('Access denied. Admin privileges required.', 'error');
+        console.error('Authentication error saving menu settings');
       } else {
-        throw new Error('Failed to save menu settings');
+        throw new Error(`Failed to save menu settings: ${response.status}`);
       }
     } catch (error) {
       console.error('Error saving menu settings:', error);
