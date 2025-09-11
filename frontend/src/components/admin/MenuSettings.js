@@ -94,7 +94,7 @@ function MenuSettings() {
         headers.Authorization = `Bearer ${token}`;
       }
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-guardian.preview.emergentagent.com'}/api/admin/menu-settings`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/menu-settings`, {
         headers
       });
       
