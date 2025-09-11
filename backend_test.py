@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
-API ENDPOINT FIXES TESTING - URGENT
-Testing the specific API endpoint fixes implemented to resolve 404 errors and authentication issues
-Verifying browse listings, notifications, image upload, profile, and admin logo endpoints
+MOBILE TENDER ACCEPT/REJECT FUNCTIONALITY TESTING - URGENT
+Testing the mobile tender accept/reject functionality that was just fixed:
+- Added Authentication Headers (Authorization: Bearer ${token})
+- Fixed API URLs (proper backend URL construction)  
+- Fixed Data Loading (added auth headers to loadTendersData function)
 """
 
 import asyncio
