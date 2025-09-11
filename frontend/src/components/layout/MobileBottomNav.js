@@ -128,6 +128,13 @@ function MobileBottomNav() {
       key: 'messages'
     },
     {
+      label: 'Notifications',
+      path: '/notifications',
+      icon: Bell,
+      badge: unreadNotifications > 0 ? unreadNotifications : null,
+      key: 'notifications'
+    },
+    {
       label: 'Create',
       path: '/create-listing',
       icon: Plus,
