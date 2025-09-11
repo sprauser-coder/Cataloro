@@ -204,7 +204,7 @@ const MenuSettings = () => {
   };
 
   const deleteCustomItem = (menuType, customItemId) => {
-    if (!confirm('Are you sure you want to delete this custom menu item?')) return;
+    if (!window.confirm('Are you sure you want to delete this custom menu item?')) return;
     
     setSettings(prev => ({
       ...prev,
