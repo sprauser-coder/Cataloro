@@ -41,7 +41,7 @@ function MobileTendersPage() {
       
       if (activeTab === 'my-bids') {
         // Load user's bids - use the same endpoint as desktop
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/tenders/buyer/${user.id}`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-guardian.preview.emergentagent.com/api'}/api/tenders/buyer/${user.id}`);
         if (response.ok) {
           const data = await response.json();
           setMyBids(data);
@@ -51,7 +51,7 @@ function MobileTendersPage() {
         }
       } else {
         // Load tenders for user's listings (selling) - use the same endpoint as desktop
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/tenders/seller/${user.id}/overview`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-guardian.preview.emergentagent.com/api'}/api/tenders/seller/${user.id}/overview`);
         if (response.ok) {
           const data = await response.json();
           setSellingTenders(data);
@@ -332,7 +332,7 @@ function SellingCard({ listingOverview, onManageTenders }) {
     try {
       setProcessingTender(tenderId);
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/tenders/${tenderId}/accept`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-guardian.preview.emergentagent.com/api'}/api/tenders/${tenderId}/accept`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ seller_id: listingOverview.listing?.seller_id })
@@ -361,7 +361,7 @@ function SellingCard({ listingOverview, onManageTenders }) {
     try {
       setProcessingTender(tenderId);
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com/api'}/api/tenders/${tenderId}/reject`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-guardian.preview.emergentagent.com/api'}/api/tenders/${tenderId}/reject`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ seller_id: listingOverview.listing?.seller_id })

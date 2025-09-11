@@ -8,7 +8,7 @@ import aiohttp
 import time
 import statistics
 
-BACKEND_URL = "https://cataloro-repair.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-guardian.preview.emergentagent.com/api"
 
 async def test_cache_effectiveness():
     """Test cache effectiveness with multiple scenarios"""

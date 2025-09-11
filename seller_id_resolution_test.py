@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://cataloro-repair.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-guardian.preview.emergentagent.com/api"
 
 # Admin User Configuration
 ADMIN_EMAIL = "admin@cataloro.com"

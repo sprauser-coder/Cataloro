@@ -26,7 +26,7 @@ export function useMenuSettings() {
   const fetchUserMenuSettings = async (userId) => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com'}/api/menu-settings/user/${userId}`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-guardian.preview.emergentagent.com'}/api/menu-settings/user/${userId}`);
       
       if (response.ok) {
         const data = await response.json();

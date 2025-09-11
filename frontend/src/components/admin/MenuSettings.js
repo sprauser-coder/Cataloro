@@ -85,7 +85,7 @@ function MenuSettings() {
   const loadMenuSettings = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com'}/api/admin/menu-settings`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-guardian.preview.emergentagent.com'}/api/admin/menu-settings`);
       if (response.ok) {
         const data = await response.json();
         setSettings(data);
@@ -103,7 +103,7 @@ function MenuSettings() {
   const saveMenuSettings = async () => {
     try {
       setSaving(true);
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://cataloro-repair.preview.emergentagent.com'}/api/admin/menu-settings`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-guardian.preview.emergentagent.com'}/api/admin/menu-settings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
