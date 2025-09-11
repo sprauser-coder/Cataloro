@@ -3488,7 +3488,7 @@ async def get_admin_logo():
         raise HTTPException(status_code=500, detail=f"Failed to get logo: {str(e)}")
 
 @app.get("/api/admin/menu-settings")
-async def get_menu_settings():
+async def get_menu_settings(token: str = Depends(get_current_user_token)):
     """Get menu settings configuration"""
     try:
         # Get menu settings from database
