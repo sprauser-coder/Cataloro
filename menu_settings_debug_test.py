@@ -433,7 +433,14 @@ class MenuSettingsDebugTester:
             demo_user_result = await self.make_request(f"/menu-settings/user/{self.demo_user_id}")
             if demo_user_result["success"]:
                 demo_mobile_menu = demo_user_result["data"].get("mobile_menu", [])
-                demo_messages_filtered = not any(item.get("key") == "messages" for item in demo_mobile_menu)
+                
+                if isinstance(demo_mobile_menu, list):
+                    demo_messages_filtered = not any(item.get("key") == "messages" for item in demo_mobile_menu if isinstance(item, dict))
+                elif isinstance(demo_mobile_menu, dict):
+                    demo_messages_filtered = "messages" not in demo_mobile_menu
+                else:
+                    demo_messages_filtered = True  # If no mobile menu, messages is filtered
+                
                 step3_results["demo_filtered"] = demo_messages_filtered
                 print(f"    {'✅' if demo_messages_filtered else '❌'} Demo user messages filtered: {demo_messages_filtered}")
         
