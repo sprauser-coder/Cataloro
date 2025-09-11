@@ -1,5 +1,582 @@
 #!/usr/bin/env python3
 """
+Menu Settings Authentication Testing
+Testing Menu Settings functionality end-to-end after authentication fixes
+"""
+
+import asyncio
+import aiohttp
+import time
+import json
+from datetime import datetime
+from typing import Dict, List, Any
+
+# Test Configuration
+BACKEND_URL = "https://market-guardian.preview.emergentagent.com/api"
+
+# Admin User Configuration
+ADMIN_EMAIL = "admin@cataloro.com"
+ADMIN_PASSWORD = "admin_password"
+
+class MenuSettingsTester:
+    def __init__(self):
+        self.session = None
+        self.admin_token = None
+        self.demo_user_token = None
+        self.test_results = []
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def test_admin_login_jwt_token(self) -> Dict:
+        """Test admin login generates proper JWT tokens"""
+        print("🔐 Testing Admin Login and JWT Token Generation...")
+        
+        login_data = {
+            "email": ADMIN_EMAIL,
+            "password": ADMIN_PASSWORD
+        }
+        
+        result = await self.make_request("/auth/login", "POST", data=login_data)
+        
+        if result["success"]:
+            user_data = result["data"].get("user", {})
+            token = result["data"].get("token", "")
+            
+            # Store token for subsequent requests
+            self.admin_token = token
+            
+            # Verify JWT token structure (basic validation)
+            token_parts = token.split('.') if token else []
+            is_jwt_format = len(token_parts) == 3
+            
+            # Verify token contains required fields by decoding payload (basic check)
+            token_valid = False
+            token_fields = {}
+            if is_jwt_format and token:
+                try:
+                    import base64
+                    import json
+                    # Decode JWT payload (middle part)
+                    payload_b64 = token_parts[1]
+                    # Add padding if needed
+                    payload_b64 += '=' * (4 - len(payload_b64) % 4)
+                    payload_json = base64.b64decode(payload_b64).decode('utf-8')
+                    token_fields = json.loads(payload_json)
+                    
+                    # Check required fields
+                    required_fields = ["user_id", "email", "role"]
+                    token_valid = all(field in token_fields for field in required_fields)
+                except Exception as e:
+                    print(f"    ⚠️ Token decode error: {e}")
+            
+            # Verify admin user properties
+            email_correct = user_data.get("email") == ADMIN_EMAIL
+            role_correct = user_data.get("role") == "admin" or user_data.get("user_role") == "Admin"
+            user_id_present = bool(user_data.get("id"))
+            
+            print(f"  ✅ Admin login successful")
+            print(f"  📧 Email: {user_data.get('email')} ({'✅' if email_correct else '❌'})")
+            print(f"  🔑 Role: {user_data.get('role', user_data.get('user_role'))} ({'✅' if role_correct else '❌'})")
+            print(f"  🆔 User ID: {user_data.get('id')} ({'✅' if user_id_present else '❌'})")
+            print(f"  🎫 JWT Token: {'✅ Real JWT' if is_jwt_format else '❌ Not JWT format'}")
+            print(f"  📋 Token Fields: {list(token_fields.keys()) if token_fields else 'None'}")
+            
+            return {
+                "test_name": "Admin Login and JWT Token Test",
+                "login_successful": True,
+                "response_time_ms": result["response_time_ms"],
+                "admin_email_correct": email_correct,
+                "admin_role_correct": role_correct,
+                "user_id_present": user_id_present,
+                "jwt_token_generated": bool(token),
+                "jwt_format_valid": is_jwt_format,
+                "token_fields_valid": token_valid,
+                "token_fields": token_fields,
+                "user_data": user_data,
+                "all_requirements_met": email_correct and role_correct and user_id_present and is_jwt_format and token_valid
+            }
+        else:
+            print(f"  ❌ Admin login failed: {result.get('error', 'Unknown error')}")
+            return {
+                "test_name": "Admin Login and JWT Token Test",
+                "login_successful": False,
+                "response_time_ms": result["response_time_ms"],
+                "error": result.get("error", "Login failed"),
+                "status": result["status"]
+            }
+    
+    async def test_menu_settings_authentication(self) -> Dict:
+        """Test Menu Settings endpoints with and without authentication"""
+        print("🔒 Testing Menu Settings Authentication...")
+        
+        if not self.admin_token:
+            return {
+                "test_name": "Menu Settings Authentication Test",
+                "error": "No admin token available - admin login required first"
+            }
+        
+        auth_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        test_results = []
+        
+        # Test 1: GET /api/admin/menu-settings WITH valid admin JWT token
+        print("  Testing GET with valid admin token...")
+        get_with_auth = await self.make_request("/admin/menu-settings", headers=auth_headers)
+        
+        test_results.append({
+            "endpoint": "GET /api/admin/menu-settings",
+            "with_auth": True,
+            "success": get_with_auth["success"],
+            "status": get_with_auth["status"],
+            "response_time_ms": get_with_auth["response_time_ms"],
+            "has_data": bool(get_with_auth.get("data")) if get_with_auth["success"] else False
+        })
+        
+        if get_with_auth["success"]:
+            print(f"    ✅ GET with auth successful (200 status, {get_with_auth['response_time_ms']:.0f}ms)")
+        else:
+            print(f"    ❌ GET with auth failed: {get_with_auth.get('error', 'Unknown error')}")
+        
+        # Test 2: GET /api/admin/menu-settings WITHOUT authentication
+        print("  Testing GET without authentication...")
+        get_without_auth = await self.make_request("/admin/menu-settings")
+        
+        test_results.append({
+            "endpoint": "GET /api/admin/menu-settings",
+            "with_auth": False,
+            "success": get_without_auth["success"],
+            "status": get_without_auth["status"],
+            "response_time_ms": get_without_auth["response_time_ms"],
+            "properly_blocked": get_without_auth["status"] in [401, 403]
+        })
+        
+        if get_without_auth["status"] in [401, 403]:
+            print(f"    ✅ GET without auth properly blocked ({get_without_auth['status']} status)")
+        else:
+            print(f"    ❌ GET without auth not properly blocked (status: {get_without_auth['status']})")
+        
+        # Test 3: POST /api/admin/menu-settings WITH valid admin JWT token
+        print("  Testing POST with valid admin token...")
+        test_menu_data = {
+            "desktop_menu": {
+                "browse": {"enabled": True, "roles": ["admin", "buyer", "seller"]},
+                "create_listing": {"enabled": True, "roles": ["admin", "seller"]}
+            },
+            "mobile_menu": {
+                "browse": {"enabled": True, "roles": ["admin", "buyer", "seller"]},
+                "messages": {"enabled": True, "roles": ["admin", "buyer", "seller"]}
+            }
+        }
+        
+        post_with_auth = await self.make_request("/admin/menu-settings", "POST", data=test_menu_data, headers=auth_headers)
+        
+        test_results.append({
+            "endpoint": "POST /api/admin/menu-settings",
+            "with_auth": True,
+            "success": post_with_auth["success"],
+            "status": post_with_auth["status"],
+            "response_time_ms": post_with_auth["response_time_ms"],
+            "has_data": bool(post_with_auth.get("data")) if post_with_auth["success"] else False
+        })
+        
+        if post_with_auth["success"]:
+            print(f"    ✅ POST with auth successful (200 status, {post_with_auth['response_time_ms']:.0f}ms)")
+        else:
+            print(f"    ❌ POST with auth failed: {post_with_auth.get('error', 'Unknown error')}")
+        
+        # Test 4: POST /api/admin/menu-settings WITHOUT authentication
+        print("  Testing POST without authentication...")
+        post_without_auth = await self.make_request("/admin/menu-settings", "POST", data=test_menu_data)
+        
+        test_results.append({
+            "endpoint": "POST /api/admin/menu-settings",
+            "with_auth": False,
+            "success": post_without_auth["success"],
+            "status": post_without_auth["status"],
+            "response_time_ms": post_without_auth["response_time_ms"],
+            "properly_blocked": post_without_auth["status"] in [401, 403]
+        })
+        
+        if post_without_auth["status"] in [401, 403]:
+            print(f"    ✅ POST without auth properly blocked ({post_without_auth['status']} status)")
+        else:
+            print(f"    ❌ POST without auth not properly blocked (status: {post_without_auth['status']})")
+        
+        # Calculate overall results
+        auth_tests_passed = sum(1 for t in test_results if t.get("with_auth") and t.get("success"))
+        unauth_tests_blocked = sum(1 for t in test_results if not t.get("with_auth") and t.get("properly_blocked"))
+        
+        return {
+            "test_name": "Menu Settings Authentication Test",
+            "total_tests": len(test_results),
+            "auth_tests_passed": auth_tests_passed,
+            "unauth_tests_blocked": unauth_tests_blocked,
+            "get_with_auth_working": any(t.get("endpoint") == "GET /api/admin/menu-settings" and t.get("with_auth") and t.get("success") for t in test_results),
+            "get_without_auth_blocked": any(t.get("endpoint") == "GET /api/admin/menu-settings" and not t.get("with_auth") and t.get("properly_blocked") for t in test_results),
+            "post_with_auth_working": any(t.get("endpoint") == "POST /api/admin/menu-settings" and t.get("with_auth") and t.get("success") for t in test_results),
+            "post_without_auth_blocked": any(t.get("endpoint") == "POST /api/admin/menu-settings" and not t.get("with_auth") and t.get("properly_blocked") for t in test_results),
+            "all_auth_requirements_met": auth_tests_passed == 2 and unauth_tests_blocked == 2,
+            "detailed_results": test_results
+        }
+    
+    async def test_menu_settings_data_structure(self) -> Dict:
+        """Test Menu Settings API returns expected data structure"""
+        print("📋 Testing Menu Settings Data Structure...")
+        
+        if not self.admin_token:
+            return {
+                "test_name": "Menu Settings Data Structure Test",
+                "error": "No admin token available - admin login required first"
+            }
+        
+        auth_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # Test GET returns expected structure
+        print("  Testing GET data structure...")
+        get_result = await self.make_request("/admin/menu-settings", headers=auth_headers)
+        
+        if get_result["success"]:
+            data = get_result["data"]
+            
+            # Check for required top-level keys
+            has_desktop_menu = "desktop_menu" in data
+            has_mobile_menu = "mobile_menu" in data
+            
+            desktop_menu = data.get("desktop_menu", {})
+            mobile_menu = data.get("mobile_menu", {})
+            
+            # Check desktop menu structure
+            desktop_valid = isinstance(desktop_menu, dict)
+            desktop_items = list(desktop_menu.keys()) if desktop_valid else []
+            
+            # Check mobile menu structure
+            mobile_valid = isinstance(mobile_menu, dict)
+            mobile_items = list(mobile_menu.keys()) if mobile_valid else []
+            
+            print(f"    ✅ GET successful with data structure")
+            print(f"    📱 Desktop menu: {len(desktop_items)} items - {desktop_items[:3]}...")
+            print(f"    📱 Mobile menu: {len(mobile_items)} items - {mobile_items[:3]}...")
+            
+            # Test POST accepts menu settings updates
+            print("  Testing POST data persistence...")
+            test_update_data = {
+                "desktop_menu": {
+                    "test_item": {"enabled": True, "roles": ["admin"]},
+                    **desktop_menu  # Keep existing items
+                },
+                "mobile_menu": {
+                    "test_item": {"enabled": False, "roles": ["buyer"]},
+                    **mobile_menu  # Keep existing items
+                }
+            }
+            
+            post_result = await self.make_request("/admin/menu-settings", "POST", data=test_update_data, headers=auth_headers)
+            
+            if post_result["success"]:
+                # Verify persistence by getting data again
+                verify_result = await self.make_request("/admin/menu-settings", headers=auth_headers)
+                
+                persistence_verified = False
+                if verify_result["success"]:
+                    verify_data = verify_result["data"]
+                    desktop_has_test = "test_item" in verify_data.get("desktop_menu", {})
+                    mobile_has_test = "test_item" in verify_data.get("mobile_menu", {})
+                    persistence_verified = desktop_has_test and mobile_has_test
+                
+                print(f"    ✅ POST successful, persistence verified: {persistence_verified}")
+                
+                return {
+                    "test_name": "Menu Settings Data Structure Test",
+                    "get_successful": True,
+                    "has_desktop_menu": has_desktop_menu,
+                    "has_mobile_menu": has_mobile_menu,
+                    "desktop_menu_valid": desktop_valid,
+                    "mobile_menu_valid": mobile_valid,
+                    "desktop_items_count": len(desktop_items),
+                    "mobile_items_count": len(mobile_items),
+                    "post_successful": post_result["success"],
+                    "persistence_verified": persistence_verified,
+                    "data_structure_valid": has_desktop_menu and has_mobile_menu and desktop_valid and mobile_valid,
+                    "all_requirements_met": has_desktop_menu and has_mobile_menu and desktop_valid and mobile_valid and post_result["success"] and persistence_verified
+                }
+            else:
+                print(f"    ❌ POST failed: {post_result.get('error')}")
+                return {
+                    "test_name": "Menu Settings Data Structure Test",
+                    "get_successful": True,
+                    "has_desktop_menu": has_desktop_menu,
+                    "has_mobile_menu": has_mobile_menu,
+                    "desktop_menu_valid": desktop_valid,
+                    "mobile_menu_valid": mobile_valid,
+                    "post_successful": False,
+                    "post_error": post_result.get("error"),
+                    "data_structure_valid": has_desktop_menu and has_mobile_menu and desktop_valid and mobile_valid
+                }
+        else:
+            print(f"    ❌ GET failed: {get_result.get('error')}")
+            return {
+                "test_name": "Menu Settings Data Structure Test",
+                "get_successful": False,
+                "get_error": get_result.get("error"),
+                "status": get_result["status"]
+            }
+    
+    async def test_frontend_integration(self) -> Dict:
+        """Test complete frontend authentication flow"""
+        print("🌐 Testing Frontend Integration...")
+        
+        if not self.admin_token:
+            return {
+                "test_name": "Frontend Integration Test",
+                "error": "No admin token available - admin login required first"
+            }
+        
+        # Test that the backend URL is accessible
+        backend_url = "https://market-guardian.preview.emergentagent.com"
+        
+        # Test Menu Settings endpoint accessibility from frontend perspective
+        auth_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        print("  Testing Menu Settings endpoint accessibility...")
+        menu_result = await self.make_request("/admin/menu-settings", headers=auth_headers)
+        
+        if menu_result["success"]:
+            # Test that response format matches frontend expectations
+            data = menu_result["data"]
+            frontend_compatible = (
+                isinstance(data, dict) and
+                "desktop_menu" in data and
+                "mobile_menu" in data and
+                isinstance(data["desktop_menu"], dict) and
+                isinstance(data["mobile_menu"], dict)
+            )
+            
+            print(f"    ✅ Menu Settings endpoint accessible")
+            print(f"    📱 Frontend compatible format: {frontend_compatible}")
+            
+            # Test save operation works end-to-end
+            print("  Testing save operation...")
+            test_save_data = {
+                "desktop_menu": data.get("desktop_menu", {}),
+                "mobile_menu": data.get("mobile_menu", {})
+            }
+            
+            # Add a test modification
+            test_save_data["desktop_menu"]["frontend_test"] = {
+                "enabled": True,
+                "roles": ["admin", "seller"]
+            }
+            
+            save_result = await self.make_request("/admin/menu-settings", "POST", data=test_save_data, headers=auth_headers)
+            
+            if save_result["success"]:
+                # Verify the save worked
+                verify_result = await self.make_request("/admin/menu-settings", headers=auth_headers)
+                save_verified = False
+                
+                if verify_result["success"]:
+                    verify_data = verify_result["data"]
+                    save_verified = "frontend_test" in verify_data.get("desktop_menu", {})
+                
+                print(f"    ✅ Save operation successful, verified: {save_verified}")
+                
+                return {
+                    "test_name": "Frontend Integration Test",
+                    "backend_url": backend_url,
+                    "menu_endpoint_accessible": True,
+                    "response_time_ms": menu_result["response_time_ms"],
+                    "frontend_compatible_format": frontend_compatible,
+                    "save_operation_working": save_result["success"],
+                    "save_verification_passed": save_verified,
+                    "jwt_token_working": True,  # Since we got here with JWT
+                    "all_integration_working": frontend_compatible and save_result["success"] and save_verified
+                }
+            else:
+                print(f"    ❌ Save operation failed: {save_result.get('error')}")
+                return {
+                    "test_name": "Frontend Integration Test",
+                    "menu_endpoint_accessible": True,
+                    "frontend_compatible_format": frontend_compatible,
+                    "save_operation_working": False,
+                    "save_error": save_result.get("error")
+                }
+        else:
+            print(f"    ❌ Menu Settings endpoint not accessible: {menu_result.get('error')}")
+            return {
+                "test_name": "Frontend Integration Test",
+                "menu_endpoint_accessible": False,
+                "error": menu_result.get("error"),
+                "status": menu_result["status"]
+            }
+    
+    async def test_demo_user_access(self) -> Dict:
+        """Test that demo user cannot access admin endpoints"""
+        print("👤 Testing Demo User Access Restrictions...")
+        
+        # Login as demo user
+        demo_login_data = {
+            "email": "demo@cataloro.com",
+            "password": "demo_password"
+        }
+        
+        demo_result = await self.make_request("/auth/login", "POST", data=demo_login_data)
+        
+        if demo_result["success"]:
+            demo_token = demo_result["data"].get("token", "")
+            demo_headers = {"Authorization": f"Bearer {demo_token}"}
+            
+            # Test that demo user cannot access menu settings
+            print("  Testing demo user access to menu settings...")
+            demo_access_result = await self.make_request("/admin/menu-settings", headers=demo_headers)
+            
+            properly_blocked = demo_access_result["status"] in [401, 403]
+            
+            if properly_blocked:
+                print(f"    ✅ Demo user properly blocked ({demo_access_result['status']} status)")
+            else:
+                print(f"    ❌ Demo user not properly blocked (status: {demo_access_result['status']})")
+            
+            return {
+                "test_name": "Demo User Access Test",
+                "demo_login_successful": True,
+                "demo_token_generated": bool(demo_token),
+                "menu_settings_blocked": properly_blocked,
+                "block_status": demo_access_result["status"],
+                "access_properly_restricted": properly_blocked
+            }
+        else:
+            print(f"    ❌ Demo user login failed: {demo_result.get('error')}")
+            return {
+                "test_name": "Demo User Access Test",
+                "demo_login_successful": False,
+                "error": demo_result.get("error")
+            }
+    
+    async def run_comprehensive_menu_settings_test(self) -> Dict:
+        """Run all Menu Settings tests"""
+        print("🚀 Starting Menu Settings Authentication Testing")
+        print("=" * 60)
+        
+        await self.setup()
+        
+        try:
+            # Run all test suites
+            admin_jwt_test = await self.test_admin_login_jwt_token()
+            auth_test = await self.test_menu_settings_authentication()
+            data_structure_test = await self.test_menu_settings_data_structure()
+            frontend_integration_test = await self.test_frontend_integration()
+            demo_access_test = await self.test_demo_user_access()
+            
+            # Compile overall results
+            all_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "backend_url": BACKEND_URL,
+                "admin_jwt_test": admin_jwt_test,
+                "menu_settings_auth_test": auth_test,
+                "data_structure_test": data_structure_test,
+                "frontend_integration_test": frontend_integration_test,
+                "demo_user_access_test": demo_access_test
+            }
+            
+            # Calculate overall success metrics
+            test_results = [
+                admin_jwt_test.get("all_requirements_met", False),
+                auth_test.get("all_auth_requirements_met", False),
+                data_structure_test.get("all_requirements_met", False),
+                frontend_integration_test.get("all_integration_working", False),
+                demo_access_test.get("access_properly_restricted", False)
+            ]
+            
+            overall_success_rate = sum(test_results) / len(test_results) * 100
+            
+            all_results["summary"] = {
+                "overall_success_rate": overall_success_rate,
+                "jwt_token_generation_working": admin_jwt_test.get("all_requirements_met", False),
+                "menu_settings_auth_working": auth_test.get("all_auth_requirements_met", False),
+                "data_structure_working": data_structure_test.get("all_requirements_met", False),
+                "frontend_integration_working": frontend_integration_test.get("all_integration_working", False),
+                "access_control_working": demo_access_test.get("access_properly_restricted", False),
+                "all_tests_passed": overall_success_rate == 100,
+                "menu_settings_fully_operational": all(test_results)
+            }
+            
+            return all_results
+            
+        finally:
+            await self.cleanup()
+
+async def main():
+    """Main test execution"""
+    tester = MenuSettingsTester()
+    results = await tester.run_comprehensive_menu_settings_test()
+    
+    print("\n" + "=" * 60)
+    print("📊 MENU SETTINGS TEST RESULTS SUMMARY")
+    print("=" * 60)
+    
+    summary = results.get("summary", {})
+    
+    print(f"Overall Success Rate: {summary.get('overall_success_rate', 0):.1f}%")
+    print(f"JWT Token Generation: {'✅' if summary.get('jwt_token_generation_working') else '❌'}")
+    print(f"Menu Settings Auth: {'✅' if summary.get('menu_settings_auth_working') else '❌'}")
+    print(f"Data Structure: {'✅' if summary.get('data_structure_working') else '❌'}")
+    print(f"Frontend Integration: {'✅' if summary.get('frontend_integration_working') else '❌'}")
+    print(f"Access Control: {'✅' if summary.get('access_control_working') else '❌'}")
+    
+    if summary.get('menu_settings_fully_operational'):
+        print("\n🎉 ALL MENU SETTINGS TESTS PASSED - FUNCTIONALITY WORKING PERFECTLY!")
+    else:
+        print("\n⚠️ Some Menu Settings tests failed - see detailed results above")
+    
+    return results
+
+if __name__ == "__main__":
+    asyncio.run(main())
+"""
 Menu Settings API Testing
 Comprehensive testing of Menu Settings API functionality end-to-end
 """
