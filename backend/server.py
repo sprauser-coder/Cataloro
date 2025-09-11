@@ -4511,6 +4511,7 @@ async def create_listing(request: Request, listing_data: dict):
             "listing_id": listing_data["id"],
             "status": "active",
             "has_time_limit": listing_data.get("has_time_limit", False),
+            "time_limit_hours": listing_data.get("time_limit_hours"),
             "expires_at": listing_data.get("expires_at")
         }
         
