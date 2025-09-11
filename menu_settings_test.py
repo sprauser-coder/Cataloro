@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Menu Settings Authentication Testing
-Testing Menu Settings functionality end-to-end after authentication fixes
+Menu Settings Visibility Functionality End-to-End Testing
+Testing the complete visibility workflow from admin settings to user navigation
 """
 
 import asyncio
@@ -17,6 +17,10 @@ BACKEND_URL = "https://market-guardian.preview.emergentagent.com/api"
 # Admin User Configuration
 ADMIN_EMAIL = "admin@cataloro.com"
 ADMIN_PASSWORD = "admin_password"
+
+# Demo User Configuration  
+DEMO_EMAIL = "demo@cataloro.com"
+DEMO_PASSWORD = "demo_password"
 
 class MenuSettingsTester:
     def __init__(self):
