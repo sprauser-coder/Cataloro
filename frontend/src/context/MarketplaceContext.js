@@ -20,8 +20,8 @@ const initialState = {
     priceFrom: 0, // Changed from priceRange array to separate from/to values
     priceTo: 10000,
     rating: 0,
-    location: 'all'
-    // Removed condition filter
+    location: 'all',
+    bidFilter: 'all' // New filter: "all", "placed_bid", "not_placed_bid", "own_listings"
   },
   
   // Products & Listings
