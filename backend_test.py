@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-MANAGEMENT CENTER SELL LISTINGS INVESTIGATION
-Investigating reported issue: "Management Center Sell does not show all products listed"
-Testing listings endpoints, pagination, filtering, and data consistency
+MANAGEMENT CENTER SELL FIXES TESTING
+Testing the critical API fixes implemented for Management Center Sell
+Verifying seller-specific endpoints, status filtering, and pagination functionality
 """
 
 import asyncio
@@ -25,6 +25,10 @@ ADMIN_EMAIL = "admin@cataloro.com"
 ADMIN_USERNAME = "sash_admin"
 ADMIN_ROLE = "admin"
 ADMIN_ID = "admin_user_1"
+
+# Demo User Configuration
+DEMO_EMAIL = "demo@cataloro.com"
+DEMO_USER_ID = "68bfff790e4e46bc28d43631"
 
 class ManagementCenterSellTester:
     """
