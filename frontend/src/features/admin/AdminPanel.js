@@ -7649,10 +7649,19 @@ function ListingModal({ listing, onSave, onClose }) {
 
   const fetchCalculations = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/calculations`);
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/calculations`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setCalculations(data);
+        console.log('✅ Catalyst calculations loaded');
+      } else {
+        console.error('❌ Failed to fetch calculations - Status:', response.status);
       }
     } catch (error) {
       console.error('Failed to fetch calculations:', error);
