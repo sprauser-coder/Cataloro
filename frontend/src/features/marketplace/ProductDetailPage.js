@@ -851,32 +851,6 @@ function ProductDetailPage() {
           </div>
         </div>
       )}
-
-      {/* Live Bidding Widget */}
-      {user && !isExpired && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Live Bidding</h2>
-          <LiveBiddingWidget
-            listing={product}
-            currentUser={user}
-            onBidPlaced={(bidAmount) => {
-              showToast(`Bid of €${bidAmount} placed successfully!`, 'success');
-              // Refresh product data to update bid info
-              window.location.reload();
-            }}
-          />
-        </div>
-      )}
-
-      {/* Similar Items */}
-      <SimilarItemsPanel
-        listingId={product.id}
-        currentUserId={user?.id}
-        limit={4}
-        onItemClick={(listing) => {
-          navigate(`/product/${listing.id}`);
-        }}
-      />
     </div>
   );
 }
