@@ -295,6 +295,12 @@ function ProductDetailPage() {
       return;
     }
 
+    // Check if user is already the highest bidder
+    if (product.bid_info?.highest_bidder_id === user.id && product.bid_info?.has_bids) {
+      showToast('You are already the highest bidder! Wait for others to place higher bids.', 'warning');
+      return;
+    }
+
     const offerAmount = parseFloat(tenderAmount);
     const minimumBid = product.bid_info?.highest_bid || product.price || 0;
 
