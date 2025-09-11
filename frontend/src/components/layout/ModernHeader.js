@@ -548,10 +548,21 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
 
   const isActive = (path) => location.pathname === path;
 
-  const navigationItems = [
-    { label: 'About', path: '/info', icon: Globe },
-    { label: 'Browse', path: '/browse', icon: Store },
+  // Define all possible navigation items with their menu keys
+  const allNavigationItems = [
+    { label: 'About', path: '/info', icon: Globe, key: 'about' },
+    { label: 'Browse', path: '/browse', icon: Store, key: 'browse' },
+    { label: 'Tenders', path: '/tenders', icon: DollarSign, key: 'tenders' },
+    { label: 'Buy Management', path: '/buy-management', icon: ShoppingCart, key: 'buy_management' },
+    { label: 'My Listings', path: '/my-listings', icon: Package, key: 'my_listings' },
+    { label: 'Favorites', path: '/favorites', icon: Heart, key: 'favorites' },
+    { label: 'Notifications', path: '/notifications', icon: Bell, key: 'notifications' },
   ];
+
+  // Filter navigation items based on menu visibility settings
+  const navigationItems = allNavigationItems.filter(item => 
+    isMenuItemVisible('desktop_menu', item.key)
+  );
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-white/20 shadow-lg shadow-black/5">
