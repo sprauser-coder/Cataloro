@@ -140,7 +140,7 @@ async def get_current_user(token: str = Depends(get_current_user_token)) -> dict
             detail="User not found"
         )
     
-    if user.get("status") != "active":
+    if not user.get("is_active", True):
         raise HTTPException(
             status_code=403,
             detail="Account is not active"
