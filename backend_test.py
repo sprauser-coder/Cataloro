@@ -6104,476 +6104,76 @@ class MessagesTester:
             await self.cleanup()
 
 async def main():
-    """Main test execution"""
-    print("🔧 Cataloro Marketplace Testing Suite")
-    print("=" * 50)
+    """Main function to run Management Center Sell investigation"""
+    print("🚀 CATALORO MANAGEMENT CENTER SELL INVESTIGATION")
+    print("=" * 80)
     
-    # Run Admin Menu Settings Tests (PRIMARY FOCUS - for the review request)
-    print("\n⚙️ ADMIN MENU SETTINGS FUNCTIONALITY TESTING")
-    print("=" * 60)
+    # Run Management Center Sell investigation
+    print("\n🏢 MANAGEMENT CENTER SELL INVESTIGATION")
+    print("-" * 50)
     
-    menu_tester = AdminMenuSettingsTester()
-    menu_results = await menu_tester.run_comprehensive_menu_settings_test()
+    management_tester = ManagementCenterSellTester()
+    management_results = await management_tester.run_management_center_sell_investigation()
     
-    # Print Menu Settings Test Summary
-    print("\n" + "=" * 60)
-    print("📊 ADMIN MENU SETTINGS FUNCTIONALITY SUMMARY")
-    print("=" * 60)
+    # Print comprehensive results
+    print("\n📊 INVESTIGATION RESULTS SUMMARY")
+    print("=" * 80)
     
-    if menu_results.get("error"):
-        print(f"❌ Setup Error: {menu_results['error']}")
-        print("Cannot proceed with menu settings tests without proper authentication")
+    if "error" in management_results:
+        print(f"❌ Investigation failed: {management_results['error']}")
         return
     
-    menu_summary = menu_results["summary"]
-    get_test = menu_results["menu_settings_get_endpoint"]
-    structure_test = menu_results["data_structure_comparison"]
-    post_test = menu_results["menu_settings_post_endpoint"]
-    defaults_test = menu_results["default_items_verification"]
-    cleanup_test = menu_results["database_cleanup_impact"]
-    user_test = menu_results["user_menu_settings_endpoint"]
+    critical_summary = management_results.get("critical_summary", {})
+    critical_issues = critical_summary.get("critical_issues", [])
+    recommendations = critical_summary.get("recommendations", [])
     
-    print(f"🎯 Overall Success Rate: {menu_summary.get('overall_success_rate', 0):.0f}%")
-    print()
+    print(f"🔍 Investigation Status: {critical_summary.get('investigation_status', 'UNKNOWN')}")
+    print(f"⚠️ Critical Issues Found: {len(critical_issues)}")
+    print(f"🚨 Urgent Action Required: {critical_summary.get('urgent_action_required', False)}")
+    print(f"🎯 Root Cause Identified: {critical_summary.get('root_cause_identified', False)}")
     
-    # GET Endpoint Testing
-    get_status = "✅" if get_test.get("success") else "❌"
-    print(f"{get_status} GET /api/admin/menu-settings: {'Working' if get_test.get('success') else 'Failed'}")
-    if get_test.get("success"):
-        print(f"   🖥️ Desktop items: {get_test.get('desktop_items_count', 0)}")
-        print(f"   📱 Mobile items: {get_test.get('mobile_items_count', 0)}")
-        print(f"   🏗️ Valid structure: {'Yes' if get_test.get('valid_item_structure') else 'No'}")
-    else:
-        print(f"   ❌ Error: {get_test.get('error', 'Unknown')}")
+    if critical_issues:
+        print("\n🚨 CRITICAL ISSUES:")
+        for i, issue in enumerate(critical_issues, 1):
+            print(f"  {i}. {issue}")
     
-    # Data Structure Comparison
-    structure_status = "✅" if structure_test.get("success") else "❌"
-    print(f"{structure_status} Data Structure Match: {'Passed' if structure_test.get('success') else 'Failed'}")
-    if structure_test.get("success"):
-        print(f"   🖥️ Desktop match: {structure_test.get('desktop_match_percent', 0):.1f}%")
-        print(f"   📱 Mobile match: {structure_test.get('mobile_match_percent', 0):.1f}%")
+    if recommendations:
+        print("\n💡 RECOMMENDATIONS:")
+        for i, rec in enumerate(recommendations, 1):
+            print(f"  {i}. {rec}")
     
-    # POST Endpoint Testing
-    post_status = "✅" if post_test.get("success") else "❌"
-    print(f"{post_status} POST /api/admin/menu-settings: {'Working' if post_test.get('success') else 'Failed'}")
-    if post_test.get("success"):
-        print(f"   ✅ Update verified: {'Yes' if post_test.get('update_verified') else 'No'}")
-    else:
-        print(f"   ❌ Error: {post_test.get('error', 'Unknown')}")
+    # Print detailed test results
+    print("\n📋 DETAILED TEST RESULTS:")
+    print("-" * 50)
     
-    # Default Items Verification
-    defaults_status = "✅" if defaults_test.get("success") else "❌"
-    print(f"{defaults_status} Default Items Structure: {'Valid' if defaults_test.get('success') else 'Invalid'}")
-    if defaults_test.get("success"):
-        print(f"   🖥️ Desktop valid: {defaults_test.get('desktop_valid_items', 0)}/{defaults_test.get('total_expected', 0)}")
-        print(f"   📱 Mobile valid: {defaults_test.get('mobile_valid_items', 0)}/{defaults_test.get('total_expected', 0)}")
+    test_results = [
+        ("Total Count Investigation", management_results.get("total_count_investigation", {})),
+        ("Management Endpoints Test", management_results.get("management_endpoints_test", {})),
+        ("Role Visibility Test", management_results.get("role_visibility_test", {})),
+        ("Status Categorization Test", management_results.get("status_categorization_test", {})),
+        ("Caching Issues Test", management_results.get("caching_issues_test", {}))
+    ]
     
-    # Database Cleanup Impact
-    cleanup_status = "✅" if cleanup_test.get("success") else "❌"
-    print(f"{cleanup_status} Database Cleanup Impact: {'No issues' if cleanup_test.get('success') else 'Issues detected'}")
-    if not cleanup_test.get("success"):
-        analysis = cleanup_test.get("cleanup_analysis", {})
-        print(f"   🗑️ Corrupted items: {analysis.get('corrupted_custom_items', 0)}")
-        print(f"   📝 Placeholder items: {analysis.get('placeholder_items', 0)}")
-        print(f"   ❌ Missing defaults: {analysis.get('missing_defaults_count', 0)}")
-    
-    # User Menu Endpoint
-    user_status = "✅" if user_test.get("success") else "❌"
-    print(f"{user_status} User Menu Filtering: {'Working' if user_test.get('success') else 'Failed'}")
-    if user_test.get("success"):
-        print(f"   👤 User role: {user_test.get('user_role', 'unknown')}")
-        print(f"   🔑 Admin items: {len(user_test.get('admin_items_desktop', []))}")
-    
-    print()
-    print("🏆 ADMIN MENU SETTINGS TEST RESULTS:")
-    overall_status = "✅ ALL TESTS PASSED" if menu_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
-    print(f"   {overall_status}")
-    print(f"   Success Rate: {menu_summary.get('overall_success_rate', 0):.0f}%")
-    print(f"   GET Endpoint: {'✅ Working' if menu_summary.get('menu_get_working') else '❌ Failed'}")
-    print(f"   POST Endpoint: {'✅ Working' if menu_summary.get('menu_post_working') else '❌ Failed'}")
-    print(f"   Data Structure: {'✅ Correct' if menu_summary.get('data_structure_correct') else '❌ Issues'}")
-    print(f"   Default Items: {'✅ Valid' if menu_summary.get('default_items_valid') else '❌ Invalid'}")
-    print(f"   Database Cleanup: {'✅ OK' if menu_summary.get('database_cleanup_ok') else '❌ Issues'}")
-    print(f"   User Filtering: {'✅ Working' if menu_summary.get('user_menu_filtering_working') else '❌ Failed'}")
-    
-    # Save detailed results
-    with open("/app/menu_settings_test_results.json", "w") as f:
-        json.dump(menu_results, f, indent=2, default=str)
-    
-    print(f"\n📄 Menu settings test results saved to: /app/menu_settings_test_results.json")
-    
-    # Run Mobile Bidding Tests (Secondary focus)
-    print("\n🎯 MOBILE BIDDING FUNCTIONALITY TESTING")
-    print("=" * 60)
-    
-    bidding_tester = MobileBiddingTester()
-    bidding_results = await bidding_tester.run_comprehensive_bidding_test()
-    
-    # Print Bidding Test Summary
-    print("\n" + "=" * 60)
-    print("📊 MOBILE BIDDING FUNCTIONALITY SUMMARY")
-    print("=" * 60)
-    
-    if bidding_results.get("setup_error"):
-        print(f"❌ Setup Error: {bidding_results['setup_error']}")
-        print("Cannot proceed with bidding tests without proper setup")
-    else:
-        bidding_summary = bidding_results["summary"]
-        first_bid = bidding_results["first_bid_scenario"]
-        higher_bid = bidding_results["higher_bid_scenario"]
-        equal_bid = bidding_results["equal_bid_scenario"]
-        lower_bid = bidding_results["lower_bid_scenario"]
-        min_increment = bidding_results["minimum_increment_logic"]
-        error_accuracy = bidding_results["error_message_accuracy"]
-        self_bidding = bidding_results["self_bidding_prevention"]
+    for test_name, test_data in test_results:
+        success = test_data.get("success", False)
+        status_icon = "✅" if success else "❌"
+        print(f"{status_icon} {test_name}: {'PASSED' if success else 'FAILED'}")
         
-        print(f"🎯 Overall Success Rate: {bidding_summary.get('overall_success_rate', 0):.0f}%")
-        print()
-        
-        # Critical Bidding Logic
-        validation_status = "✅" if bidding_summary.get("bidding_validation_logic_working") else "❌"
-        bug_resolved = "✅" if bidding_summary.get("critical_bug_resolved") else "❌"
-        print(f"{validation_status} Bidding Validation Logic: {'Working' if bidding_summary.get('bidding_validation_logic_working') else 'Failed'}")
-        print(f"{bug_resolved} Critical Bug Resolved: {'Yes' if bidding_summary.get('critical_bug_resolved') else 'No'}")
-        print()
-        
-        # Individual Test Results
-        first_bid_status = "✅" if first_bid.get("success") else "❌"
-        print(f"{first_bid_status} First Bid Scenario: {'Accepted' if first_bid.get('first_bid_accepted') else 'Failed'}")
-        
-        higher_bid_status = "✅" if higher_bid.get("success") else "❌"
-        print(f"{higher_bid_status} Higher Bid Scenario: {'Accepted' if higher_bid.get('higher_bid_accepted') else 'Failed'}")
-        
-        equal_bid_status = "✅" if equal_bid.get("success") else "❌"
-        print(f"{equal_bid_status} Equal Bid Scenario: {'Correctly Rejected' if equal_bid.get('correctly_rejected') else 'Incorrectly Accepted'}")
-        
-        lower_bid_status = "✅" if lower_bid.get("success") else "❌"
-        print(f"{lower_bid_status} Lower Bid Scenario: {'Correctly Rejected' if lower_bid.get('correctly_rejected') else 'Incorrectly Accepted'}")
-        
-        min_increment_status = "✅" if min_increment.get("success") else "❌"
-        print(f"{min_increment_status} Minimum Increment Logic: {'Working' if min_increment.get('minimum_increment_accepted') else 'Failed'}")
-        
-        error_accuracy_status = "✅" if error_accuracy.get("success") else "❌"
-        accuracy_score = error_accuracy.get("accuracy_score", 0)
-        print(f"{error_accuracy_status} Error Message Accuracy: {accuracy_score:.0f}%")
-        
-        self_bidding_status = "✅" if self_bidding.get("success") else "❌"
-        print(f"{self_bidding_status} Self-Bidding Prevention: {'Working' if self_bidding.get('self_bidding_prevented') else 'Failed'}")
-        
-        print()
-        print("🏆 MOBILE BIDDING TEST RESULTS:")
-        overall_status = "✅ ALL TESTS PASSED" if bidding_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
-        print(f"   {overall_status}")
-        print(f"   Success Rate: {bidding_summary.get('overall_success_rate', 0):.0f}%")
-        print(f"   Critical Bug: {'✅ RESOLVED' if bidding_summary.get('critical_bug_resolved') else '❌ NOT RESOLVED'}")
-        print(f"   Validation Logic: {'✅ Working' if bidding_summary.get('bidding_validation_logic_working') else '❌ Failed'}")
-        
-        # Save detailed results
-        with open("/app/mobile_bidding_test_results.json", "w") as f:
-            json.dump(bidding_results, f, indent=2, default=str)
-        
-        print(f"\n📄 Mobile bidding test results saved to: /app/mobile_bidding_test_results.json")
+        if not success and "error" in test_data:
+            print(f"    Error: {test_data['error']}")
     
-    # Run Basket Export Tests (Secondary focus)
-    print("\n📄 BASKET EXPORT FUNCTIONALITY TESTING")
-    print("=" * 60)
+    print("\n" + "=" * 80)
+    print("🏁 MANAGEMENT CENTER SELL INVESTIGATION COMPLETE")
     
-    basket_tester = BasketExportTester()
-    basket_results = await basket_tester.run_comprehensive_basket_export_test()
-    
-    # Print Basket Export Test Summary
-    print("\n" + "=" * 60)
-    print("📊 BASKET EXPORT FUNCTIONALITY SUMMARY")
-    print("=" * 60)
-    
-    basket_summary = basket_results["summary"]
-    basic_func = basket_results["basic_functionality"]
-    response_time = basket_results["response_time_performance"]
-    data_validation = basket_results["data_validation"]
-    concurrent = basket_results["concurrent_requests"]
-    
-    print(f"🎯 Overall Success Rate: {basket_summary.get('overall_success_rate', 0):.0f}%")
-    print()
-    
-    # Basic Functionality
-    basic_status = "✅" if basic_func.get("endpoint_working") else "❌"
-    pdf_status = "✅" if basic_func.get("pdf_generated") else "❌"
-    print(f"{basic_status} Endpoint Functionality: Working")
-    print(f"{pdf_status} PDF Generation: {'Working' if basic_func.get('pdf_generated') else 'Failed'}")
-    print(f"   ⏱️ Response Time: {basic_func.get('response_time_ms', 0):.0f}ms")
-    print(f"   📊 PDF Size: {basic_func.get('pdf_size_bytes', 0)} bytes")
-    print(f"   📋 Valid PDF: {'✅' if basic_func.get('is_valid_pdf') else '❌'}")
-    
-    # Response Time Performance
-    perf_status = "✅" if response_time.get("performance_acceptable") else "❌"
-    loading_justified = "✅" if response_time.get("loading_state_justified") else "❌"
-    avg_time = response_time.get("avg_response_time_ms", 0)
-    max_time = response_time.get("max_response_time_ms", 0)
-    print(f"{perf_status} Response Time Performance: {avg_time:.0f}ms avg, {max_time:.0f}ms max")
-    print(f"{loading_justified} Loading State Justified: {'Yes' if response_time.get('loading_state_justified') else 'No'}")
-    
-    # Data Validation
-    validation_status = "✅" if data_validation.get("handles_edge_cases") else "❌"
-    validation_rate = data_validation.get("validation_success_rate", 0)
-    print(f"{validation_status} Data Validation: {validation_rate:.0f}% success rate")
-    print(f"   📝 Empty Baskets: {'✅' if data_validation.get('handles_empty_baskets') else '❌'}")
-    print(f"   📊 Minimal Data: {'✅' if data_validation.get('handles_minimal_data') else '❌'}")
-    print(f"   🚫 Invalid Data: {'✅' if data_validation.get('handles_invalid_data') else '❌'}")
-    
-    # Concurrent Requests
-    concurrent_status = "✅" if concurrent.get("system_handles_concurrent_exports") else "❌"
-    concurrent_success = concurrent.get("successful_requests", 0)
-    concurrent_total = concurrent.get("concurrent_requests", 0)
-    print(f"{concurrent_status} Concurrent Exports: {concurrent_success}/{concurrent_total} successful")
-    
-    print()
-    print("🏆 BASKET EXPORT TEST RESULTS:")
-    overall_status = "✅ ALL TESTS PASSED" if basket_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
-    print(f"   {overall_status}")
-    print(f"   Success Rate: {basket_summary.get('overall_success_rate', 0):.0f}%")
-    print(f"   PDF Generation: {'✅ Working' if basket_summary.get('pdf_generation_working') else '❌ Failed'}")
-    print(f"   Loading State: {'✅ Justified' if basket_summary.get('loading_state_justified') else '❌ Not Needed'}")
-    print(f"   Data Validation: {'✅ Robust' if basket_summary.get('data_validation_robust') else '❌ Needs Work'}")
-    print(f"   Concurrent Support: {'✅ Working' if basket_summary.get('concurrent_export_supported') else '❌ Issues'}")
-    
-    # Save detailed results
-    with open("/app/basket_export_test_results.json", "w") as f:
-        json.dump(basket_results, f, indent=2, default=str)
-    
-    print(f"\n📄 Basket export test results saved to: /app/basket_export_test_results.json")
-    
-    # Run Catalyst Data Endpoint Tests (Secondary)
-    print("\n🧪 CATALYST DATA ENDPOINT TESTING")
-    print("=" * 60)
-    
-    catalyst_tester = CatalystDataTester()
-    catalyst_results = await catalyst_tester.run_comprehensive_catalyst_test()
-    
-    # Print Catalyst Test Summary
-    print("\n" + "=" * 60)
-    print("📊 CATALYST DATA ENDPOINT SUMMARY")
-    print("=" * 60)
-    
-    catalyst_summary = catalyst_results["summary"]
-    endpoint_test = catalyst_results["endpoint_functionality"]
-    structure_test = catalyst_results["data_structure_validation"]
-    performance_test = catalyst_results["performance_testing"]
-    consistency_test = catalyst_results["data_consistency"]
-    enhanced_search_test = catalyst_results["enhanced_search_functionality"]
-    
-    print(f"🎯 Overall Success Rate: {catalyst_summary.get('overall_success_rate', 0):.0f}%")
-    print()
-    
-    # Endpoint Functionality
-    endpoint_status = "✅" if endpoint_test.get("success") else "❌"
-    entry_count = endpoint_test.get("entry_count", 0)
-    expected_count = endpoint_test.get("expected_count", 4496)
-    count_status = "✅" if endpoint_test.get("count_matches_expected") else "❌"
-    print(f"{endpoint_status} Endpoint Functionality: Working")
-    print(f"   {count_status} Entry Count: {entry_count}/{expected_count} entries")
-    print(f"   ⏱️ Response Time: {endpoint_test.get('response_time_ms', 0):.0f}ms")
-    
-    # Enhanced Search Functionality
-    search_status = "✅" if enhanced_search_test.get("enhanced_search_ready") else "❌"
-    add_info_rate = enhanced_search_test.get("add_info_population_rate", 0)
-    meaningful_rate = enhanced_search_test.get("meaningful_info_rate", 0)
-    print(f"{search_status} Enhanced Search Functionality: Ready")
-    print(f"   📝 Add_info Population: {add_info_rate:.1f}%")
-    print(f"   💡 Meaningful Content: {meaningful_rate:.1f}%")
-    print(f"   🔍 Searchable Fields: {'✅' if enhanced_search_test.get('searchable_fields_present') else '❌'}")
-    
-    # Data Structure
-    structure_status = "✅" if structure_test.get("validation_passed") else "❌"
-    print(f"{structure_status} Data Structure: Valid")
-    if structure_test.get("success"):
-        validation_results = structure_test.get("validation_results", {})
-        print(f"   📊 Fields Present: {structure_test.get('all_fields_present', False)}")
-        print(f"   🔢 Types Correct: {structure_test.get('all_types_correct', False)}")
-    
-    # Performance
-    performance_status = "✅" if performance_test.get("meets_acceptable_threshold") else "❌"
-    performance_rating = performance_test.get("performance_rating", "unknown")
-    avg_time = performance_test.get("avg_response_time_ms", 0)
-    print(f"{performance_status} Performance: {performance_rating} ({avg_time:.0f}ms avg)")
-    
-    # Data Consistency
-    consistency_status = "✅" if consistency_test.get("acceptable_data_quality") else "❌"
-    quality_score = consistency_test.get("data_quality_score", 0)
-    print(f"{consistency_status} Data Quality: {quality_score:.1f}%")
-    
-    print()
-    print("🏆 CATALYST ENDPOINT TEST RESULTS:")
-    overall_status = "✅ ALL TESTS PASSED" if catalyst_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
-    search_verified = "✅ ENHANCED SEARCH VERIFIED" if catalyst_summary.get("createlistingpage_enhanced_search_verified") else "❌ ENHANCED SEARCH VERIFICATION FAILED"
-    print(f"   {overall_status}")
-    print(f"   {search_verified}")
-    print(f"   Success Rate: {catalyst_summary.get('overall_success_rate', 0):.0f}%")
-    
-    # Run Admin Authentication & Database Consistency Tests
-    print("\n🔐 ADMIN AUTHENTICATION & DATABASE CONSISTENCY TESTS")
-    print("=" * 60)
-    
-    admin_tester = AdminAuthenticationTester()
-    admin_results = await admin_tester.run_comprehensive_admin_test()
-    
-    # Print Admin Test Summary
-    print("\n" + "=" * 60)
-    print("📊 ADMIN AUTHENTICATION & USER MANAGEMENT SUMMARY")
-    print("=" * 60)
-    
-    admin_summary = admin_results["summary"]
-    admin_auth = admin_results["admin_authentication"]
-    db_consistency = admin_results["database_consistency"]
-    user_mgmt_endpoints = admin_results["user_management_endpoints"]
-    user_mgmt_functionality = admin_results["user_management_functionality"]
-    user_workflow = admin_results["user_workflow_integration"]
-    browse_perf = admin_results["browse_endpoint_performance"]
-    admin_func = admin_results["admin_functionality"]
-    
-    print(f"🎯 Overall Success Rate: {admin_summary.get('overall_success_rate', 0):.0f}%")
-    print()
-    
-    # Admin Authentication
-    auth_status = "✅" if admin_auth.get("all_admin_properties_correct") else "❌"
-    print(f"{auth_status} Admin Authentication: {admin_auth.get('login_successful', False)}")
-    if admin_auth.get("login_successful"):
-        print(f"   📧 Email: {admin_auth.get('admin_email_correct', False)}")
-        print(f"   👤 Username: {admin_auth.get('admin_username_correct', False)}")
-        print(f"   🔑 Role: {admin_auth.get('admin_role_correct', False)}")
-    
-    # Database Consistency
-    db_status = "✅" if db_consistency.get("all_users_consistent") else "❌"
-    db_score = db_consistency.get("database_consistency_score", 0)
-    print(f"{db_status} Database Consistency: {db_score:.0f}%")
-    print(f"   👥 Users Found: {db_consistency.get('users_found_in_database', 0)}/{db_consistency.get('total_expected_users', 0)}")
-    
-    # User Management Endpoints
-    mgmt_endpoints_status = "✅" if user_mgmt_endpoints.get("all_endpoints_working") else "❌"
-    mgmt_endpoints_success = user_mgmt_endpoints.get("success_rate", 0)
-    print(f"{mgmt_endpoints_status} User Management Endpoints: {mgmt_endpoints_success:.0f}% success rate")
-    
-    # User Management Functionality (NEW)
-    mgmt_func_status = "✅" if user_mgmt_functionality.get("critical_functionality_working") else "❌"
-    mgmt_func_success = user_mgmt_functionality.get("success_rate", 0)
-    print(f"{mgmt_func_status} User Management Functionality: {mgmt_func_success:.0f}% success rate")
-    
-    # Activate/Suspend Functionality
-    activate_suspend_status = "✅" if user_mgmt_functionality.get("activate_suspend_working") else "❌"
-    print(f"   {activate_suspend_status} Activate/Suspend: {user_mgmt_functionality.get('activate_suspend_working', False)}")
-    
-    # State Persistence
-    persistence_status = "✅" if user_mgmt_functionality.get("state_persistence_working") else "❌"
-    print(f"   {persistence_status} State Persistence: {user_mgmt_functionality.get('state_persistence_working', False)}")
-    
-    # Error Handling
-    error_handling_status = "✅" if user_mgmt_functionality.get("error_handling_working") else "❌"
-    print(f"   {error_handling_status} Error Handling: {user_mgmt_functionality.get('error_handling_working', False)}")
-    
-    # User Workflow Integration (NEW)
-    workflow_status = "✅" if user_workflow.get("complete_workflow_working") else "❌"
-    workflow_success = user_workflow.get("workflow_success_rate", 0)
-    print(f"{workflow_status} User Workflow Integration: {workflow_success:.0f}% success rate")
-    
-    # Browse Endpoint Performance
-    browse_status = "✅" if browse_perf.get("endpoint_working") else "❌"
-    browse_time = browse_perf.get("response_time_ms", 0)
-    print(f"{browse_status} Browse Endpoint: {browse_time:.0f}ms response time")
-    
-    # Admin Functionality
-    func_status = "✅" if admin_func.get("all_admin_features_working") else "❌"
-    func_success = admin_func.get("admin_success_rate", 0)
-    print(f"{func_status} Admin Functionality: {func_success:.0f}% features working")
-    
-    print()
-    print("🏆 OVERALL USER MANAGEMENT TEST RESULTS:")
-    overall_status = "✅ ALL TESTS PASSED" if admin_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
-    print(f"   {overall_status}")
-    print(f"   Success Rate: {admin_summary.get('overall_success_rate', 0):.0f}%")
-    
-    # Detailed User Management Results
-    print()
-    print("📋 USER MANAGEMENT DETAILED RESULTS:")
-    print(f"   🔄 Activate/Suspend Working: {'✅' if admin_summary.get('activate_suspend_functionality_working') else '❌'}")
-    print(f"   💾 State Persistence: {'✅' if admin_summary.get('state_persistence_working') else '❌'}")
-    print(f"   🚫 Error Handling: {'✅' if admin_summary.get('error_handling_working') else '❌'}")
-    print(f"   🔗 Complete Workflow: {'✅' if admin_summary.get('complete_user_workflow_working') else '❌'}")
-    
-    # Save detailed results
-    with open("/app/user_management_test_results.json", "w") as f:
-        json.dump(admin_results, f, indent=2, default=str)
-    
-    print(f"\n📄 User management test results saved to: /app/user_management_test_results.json")
-    
-    # Run Browse Performance Tests automatically for comprehensive testing
-    run_browse_tests = False  # Set to False to skip interactive browse tests for now
-    
-    if run_browse_tests:
-        print("\n🚀 BROWSE ENDPOINT PERFORMANCE TESTS")
-        print("=" * 50)
-        
-        browse_tester = BrowseEndpointTester()
-        browse_results = await browse_tester.run_comprehensive_test()
-        
-        # Print Browse Test Summary
-        print("\n" + "=" * 60)
-        print("📊 BROWSE PERFORMANCE TEST SUMMARY")
-        print("=" * 60)
-        
-        browse_summary = browse_results["summary"]
-        basic = browse_results["basic_performance"]
-        cache = browse_results["cache_performance"]
-        filtering = browse_results["filtering_performance"]
-        concurrent = browse_results["concurrent_performance"]
-        pagination = browse_results["pagination_performance"]
-        
-        print(f"🎯 Performance Target: {browse_results['performance_target_ms']}ms")
-        print(f"📈 Cache Improvement Target: {browse_results['cache_improvement_target_percent']}%")
-        print()
-        
-        # Basic Performance
-        status = "✅" if basic.get("meets_performance_target") else "❌"
-        print(f"{status} Basic Browse Performance: {basic.get('avg_response_time_ms', 0):.0f}ms avg")
-        
-        # Cache Performance
-        cache_status = "✅" if cache.get("cache_working") else "❌"
-        improvement = cache.get("cache_improvement_percent", 0)
-        print(f"{cache_status} Cache Performance: {improvement:.1f}% improvement")
-        
-        # Data Integrity
-        integrity_status = "✅" if browse_summary.get("data_integrity_excellent") else "❌"
-        integrity = browse_summary.get("average_data_integrity_score", 0)
-        print(f"{integrity_status} Data Integrity: {integrity:.1f}%")
-        
-        # Filtering
-        filter_status = "✅" if filtering.get("all_filters_under_target") else "❌"
-        filter_success = filtering.get("success_rate", 0)
-        print(f"{filter_status} Filtering Options: {filter_success:.0f}% success rate")
-        
-        # Concurrent Performance
-        concurrent_status = "✅" if concurrent.get("all_under_target") else "❌"
-        throughput = concurrent.get("throughput_requests_per_second", 0)
-        print(f"{concurrent_status} Concurrent Performance: {throughput:.1f} req/sec")
-        
-        # Pagination
-        pagination_status = "✅" if pagination.get("all_pages_under_target") else "❌"
-        pagination_success = pagination.get("successful_pages", 0)
-        print(f"{pagination_status} Pagination: {pagination_success}/5 pages successful")
-        
-        print()
-        print("🏆 BROWSE PERFORMANCE RESULTS:")
-        browse_overall_status = "✅ EXCELLENT" if browse_summary.get("performance_target_met") and browse_summary.get("cache_target_met") else "⚠️ NEEDS IMPROVEMENT"
-        print(f"   {browse_overall_status}")
-        print(f"   Performance Success Rate: {browse_summary.get('overall_performance_success_rate', 0):.0f}%")
-        print(f"   Cache Working: {'Yes' if browse_summary.get('cache_functionality_working') else 'No'}")
-        print(f"   Data Integrity: {browse_summary.get('average_data_integrity_score', 0):.0f}%")
-        
-        # Save detailed results
-        with open("/app/browse_performance_test_results.json", "w") as f:
-            json.dump(browse_results, f, indent=2, default=str)
-        
-        print(f"\n📄 Browse test results saved to: /app/browse_performance_test_results.json")
-    
-    return admin_results
+    # Return summary for test_result.md update
+    return {
+        "investigation_complete": True,
+        "critical_issues_count": len(critical_issues),
+        "critical_issues": critical_issues,
+        "recommendations": recommendations,
+        "urgent_action_required": critical_summary.get("urgent_action_required", False),
+        "test_results": {name: data.get("success", False) for name, data in test_results}
+    }
 
 async def main_custom_menu():
     """Main function to run custom menu management tests"""
