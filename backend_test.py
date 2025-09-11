@@ -7214,6 +7214,7 @@ async def main():
     
     # Individual test results
     print("📊 Individual Endpoint Test Results:")
+    print(f"   {'✅' if test_results.get('unified_calculations_test', {}).get('success') else '❌'} Unified Calculations API (/api/admin/catalyst/unified-calculations) - PRIORITY")
     print(f"   {'✅' if test_results.get('browse_listings_test', {}).get('success') else '❌'} Browse Listings API (/api/marketplace/browse)")
     print(f"   {'✅' if test_results.get('notifications_test', {}).get('success') else '❌'} Notifications API (/api/user/{{user_id}}/notifications)")
     print(f"   {'✅' if test_results.get('image_upload_test', {}).get('success') else '❌'} Image Upload API (/api/admin/upload-image)")
