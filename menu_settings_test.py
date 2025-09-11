@@ -362,15 +362,15 @@ class MenuSettingsTester:
         # Test 1: Toggle specific items on/off
         toggle_test_settings = {
             "desktop_menu": {
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                "messages": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer"]},  # Disabled
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
+                "messages": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer", "user"]},  # Disabled
+                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
                 "admin_panel": {"enabled": True, "roles": ["admin", "manager"]}
             },
             "mobile_menu": {
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                "messages": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer"]},  # Disabled
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]}
+                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
+                "messages": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer", "user"]},  # Disabled
+                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]}
             }
         }
         
