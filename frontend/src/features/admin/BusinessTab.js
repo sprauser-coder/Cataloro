@@ -511,23 +511,23 @@ function BusinessTab({ showToast }) {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Total Business</span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">156</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">{loading ? '...' : realMetrics.businessMetrics.totalBusiness}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Verified Business</span>
-              <span className="text-md font-semibold text-green-600 dark:text-green-400">134</span>
+              <span className="text-md font-semibold text-green-600 dark:text-green-400">{loading ? '...' : realMetrics.businessMetrics.verifiedBusiness}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Pending Verification</span>
-              <span className="text-md font-semibold text-orange-600 dark:text-orange-400">22</span>
+              <span className="text-md font-semibold text-orange-600 dark:text-orange-400">{loading ? '...' : realMetrics.businessMetrics.pendingVerification}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Premium Business</span>
-              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">45</span>
+              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">{loading ? '...' : realMetrics.businessMetrics.premiumBusiness}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Revenue Share</span>
-              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">€12.4K</span>
+              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">{loading ? '...' : realMetrics.businessMetrics.revenueShare}</span>
             </div>
           </div>
         </div>
