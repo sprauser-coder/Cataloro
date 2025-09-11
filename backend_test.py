@@ -25,6 +25,564 @@ ADMIN_USERNAME = "sash_admin"
 ADMIN_ROLE = "admin"
 ADMIN_ID = "admin_user_1"
 
+class AdsImageUploadTester:
+    def __init__(self):
+        self.session = None
+        self.test_results = []
+        self.admin_token = None
+        self.test_ads = []
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None, form_data=None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if form_data:
+                request_kwargs['data'] = form_data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def authenticate_admin(self) -> bool:
+        """Authenticate as admin user"""
+        print("🔐 Authenticating as admin...")
+        
+        login_data = {
+            "email": ADMIN_EMAIL,
+            "password": "admin_password"
+        }
+        
+        result = await self.make_request("/auth/login", "POST", data=login_data)
+        
+        if result["success"]:
+            self.admin_token = result["data"].get("token", "")
+            print(f"  ✅ Admin authentication successful")
+            return True
+        else:
+            print(f"  ❌ Admin authentication failed: {result.get('error', 'Unknown error')}")
+            return False
+    
+    def create_test_image(self) -> bytes:
+        """Create a simple test image (1x1 PNG)"""
+        # 1x1 transparent PNG (smallest possible valid image)
+        png_data = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+        )
+        return png_data
+    
+    async def test_upload_endpoint_availability(self) -> Dict:
+        """Test if /api/admin/upload-image endpoint exists and is accessible"""
+        print("🔍 Testing upload endpoint availability...")
+        
+        if not self.admin_token:
+            return {"test_name": "Upload Endpoint Availability", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # Test with GET request first (should return 405 Method Not Allowed)
+        get_result = await self.make_request("/admin/upload-image", "GET", headers=headers)
+        
+        # Test with POST but no data (should return 422 or 400)
+        post_result = await self.make_request("/admin/upload-image", "POST", headers=headers)
+        
+        endpoint_exists = get_result["status"] in [405, 422, 400] or post_result["status"] in [405, 422, 400]
+        
+        print(f"  📊 GET status: {get_result['status']}, POST status: {post_result['status']}")
+        print(f"  {'✅' if endpoint_exists else '❌'} Upload endpoint {'exists' if endpoint_exists else 'not found'}")
+        
+        return {
+            "test_name": "Upload Endpoint Availability",
+            "success": endpoint_exists,
+            "get_status": get_result["status"],
+            "post_status": post_result["status"],
+            "endpoint_exists": endpoint_exists,
+            "get_response": get_result.get("data", ""),
+            "post_response": post_result.get("data", "")
+        }
+    
+    async def test_authentication_requirements(self) -> Dict:
+        """Test if upload endpoint requires admin authentication"""
+        print("🔐 Testing authentication requirements...")
+        
+        # Create test image
+        test_image = self.create_test_image()
+        
+        # Test without authentication
+        form_data = aiohttp.FormData()
+        form_data.add_field('image', io.BytesIO(test_image), filename='test.png', content_type='image/png')
+        form_data.add_field('section', 'ads')
+        form_data.add_field('field', 'ad_image')
+        
+        no_auth_result = await self.make_request("/admin/upload-image", "POST", form_data=form_data)
+        
+        # Test with invalid token
+        invalid_headers = {"Authorization": "Bearer invalid_token_12345"}
+        invalid_auth_result = await self.make_request("/admin/upload-image", "POST", headers=invalid_headers, form_data=form_data)
+        
+        # Test with valid admin token
+        if self.admin_token:
+            valid_headers = {"Authorization": f"Bearer {self.admin_token}"}
+            valid_auth_result = await self.make_request("/admin/upload-image", "POST", headers=valid_headers, form_data=form_data)
+        else:
+            valid_auth_result = {"success": False, "status": 0, "error": "No admin token"}
+        
+        auth_required = no_auth_result["status"] in [401, 403] and invalid_auth_result["status"] in [401, 403]
+        
+        print(f"  📊 No auth: {no_auth_result['status']}, Invalid auth: {invalid_auth_result['status']}, Valid auth: {valid_auth_result['status']}")
+        print(f"  {'✅' if auth_required else '❌'} Authentication {'required' if auth_required else 'not properly enforced'}")
+        
+        return {
+            "test_name": "Authentication Requirements",
+            "success": auth_required,
+            "no_auth_status": no_auth_result["status"],
+            "invalid_auth_status": invalid_auth_result["status"],
+            "valid_auth_status": valid_auth_result["status"],
+            "auth_properly_required": auth_required,
+            "valid_auth_success": valid_auth_result["success"]
+        }
+    
+    async def test_file_upload_functionality(self) -> Dict:
+        """Test actual file upload with proper headers and admin JWT token"""
+        print("📤 Testing file upload functionality...")
+        
+        if not self.admin_token:
+            return {"test_name": "File Upload Functionality", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # Create test image
+        test_image = self.create_test_image()
+        
+        # Test with proper multipart/form-data
+        form_data = aiohttp.FormData()
+        form_data.add_field('image', io.BytesIO(test_image), filename='test_ad_image.png', content_type='image/png')
+        form_data.add_field('section', 'ads')
+        form_data.add_field('field', 'ad_image')
+        
+        upload_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=form_data)
+        
+        # Check if upload was successful
+        upload_successful = upload_result["success"]
+        has_image_url = False
+        image_url = None
+        
+        if upload_successful and isinstance(upload_result["data"], dict):
+            response_data = upload_result["data"]
+            has_image_url = "url" in response_data or "imageUrl" in response_data
+            image_url = response_data.get("url") or response_data.get("imageUrl")
+        
+        print(f"  📊 Upload status: {upload_result['status']}")
+        print(f"  {'✅' if upload_successful else '❌'} Upload {'successful' if upload_successful else 'failed'}")
+        if has_image_url:
+            print(f"  📷 Image URL: {image_url}")
+        
+        return {
+            "test_name": "File Upload Functionality",
+            "success": upload_successful,
+            "response_time_ms": upload_result["response_time_ms"],
+            "upload_status": upload_result["status"],
+            "upload_successful": upload_successful,
+            "has_image_url": has_image_url,
+            "image_url": image_url,
+            "response_data": upload_result.get("data"),
+            "error": upload_result.get("error")
+        }
+    
+    async def test_ads_management_workflow(self) -> Dict:
+        """Test complete ads upload workflow from AdsManagement component"""
+        print("🔄 Testing AdsManagement upload workflow...")
+        
+        if not self.admin_token:
+            return {"test_name": "AdsManagement Workflow", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        workflow_steps = []
+        
+        # Step 1: Test admin login and JWT token generation
+        print("  Step 1: Verifying admin authentication...")
+        auth_test = {
+            "step": "Admin Authentication",
+            "success": bool(self.admin_token),
+            "token_length": len(self.admin_token) if self.admin_token else 0
+        }
+        workflow_steps.append(auth_test)
+        
+        # Step 2: Test file upload from AdsManagement component workflow
+        print("  Step 2: Testing file upload workflow...")
+        test_image = self.create_test_image()
+        
+        # Simulate the exact request from AdsManagement.js
+        form_data = aiohttp.FormData()
+        form_data.add_field('image', io.BytesIO(test_image), filename='ad_test_image.png', content_type='image/png')
+        form_data.add_field('section', 'ads')
+        form_data.add_field('field', 'ad_image')
+        
+        upload_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=form_data)
+        
+        upload_step = {
+            "step": "File Upload",
+            "success": upload_result["success"],
+            "status": upload_result["status"],
+            "response_time_ms": upload_result["response_time_ms"],
+            "has_response_data": bool(upload_result.get("data"))
+        }
+        workflow_steps.append(upload_step)
+        
+        # Step 3: Test ad creation with uploaded image
+        print("  Step 3: Testing ad creation with uploaded image...")
+        if upload_result["success"] and isinstance(upload_result["data"], dict):
+            image_url = upload_result["data"].get("url") or upload_result["data"].get("imageUrl")
+            
+            ad_data = {
+                "title": "Test Ad with Uploaded Image",
+                "description": "Testing ads upload functionality",
+                "content": "Test content",
+                "image_url": image_url,
+                "link_url": "https://example.com",
+                "target_audience": "all",
+                "placement": "banner"
+            }
+            
+            create_ad_result = await self.make_request("/admin/ads", "POST", data=ad_data, headers=headers)
+            
+            ad_creation_step = {
+                "step": "Ad Creation with Uploaded Image",
+                "success": create_ad_result["success"],
+                "status": create_ad_result["status"],
+                "image_url_used": image_url,
+                "ad_created": create_ad_result["success"]
+            }
+            
+            # Store test ad for cleanup
+            if create_ad_result["success"] and isinstance(create_ad_result["data"], dict):
+                ad_id = create_ad_result["data"].get("id")
+                if ad_id:
+                    self.test_ads.append(ad_id)
+        else:
+            ad_creation_step = {
+                "step": "Ad Creation with Uploaded Image",
+                "success": False,
+                "error": "Upload failed, cannot test ad creation"
+            }
+        
+        workflow_steps.append(ad_creation_step)
+        
+        # Step 4: Verify response handling and error reporting
+        print("  Step 4: Testing error handling...")
+        
+        # Test with invalid file type
+        invalid_form_data = aiohttp.FormData()
+        invalid_form_data.add_field('image', io.BytesIO(b"not an image"), filename='test.txt', content_type='text/plain')
+        invalid_form_data.add_field('section', 'ads')
+        invalid_form_data.add_field('field', 'ad_image')
+        
+        invalid_upload_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=invalid_form_data)
+        
+        error_handling_step = {
+            "step": "Error Handling",
+            "success": not invalid_upload_result["success"],  # Should fail for invalid file
+            "invalid_file_rejected": not invalid_upload_result["success"],
+            "error_status": invalid_upload_result["status"],
+            "proper_error_response": invalid_upload_result["status"] in [400, 422]
+        }
+        workflow_steps.append(error_handling_step)
+        
+        # Calculate overall workflow success
+        successful_steps = sum(1 for step in workflow_steps if step.get("success", False))
+        workflow_success = successful_steps == len(workflow_steps)
+        
+        print(f"  📊 Workflow steps: {successful_steps}/{len(workflow_steps)} successful")
+        
+        return {
+            "test_name": "AdsManagement Workflow",
+            "success": workflow_success,
+            "total_steps": len(workflow_steps),
+            "successful_steps": successful_steps,
+            "workflow_complete": workflow_success,
+            "detailed_steps": workflow_steps
+        }
+    
+    async def test_file_validation_and_storage(self) -> Dict:
+        """Test file upload validation and storage logic"""
+        print("🔍 Testing file validation and storage...")
+        
+        if not self.admin_token:
+            return {"test_name": "File Validation and Storage", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        validation_tests = []
+        
+        # Test 1: Valid image upload
+        print("  Testing valid image upload...")
+        valid_image = self.create_test_image()
+        
+        form_data = aiohttp.FormData()
+        form_data.add_field('image', io.BytesIO(valid_image), filename='valid_test.png', content_type='image/png')
+        form_data.add_field('section', 'ads')
+        form_data.add_field('field', 'ad_image')
+        
+        valid_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=form_data)
+        
+        validation_tests.append({
+            "test": "Valid Image Upload",
+            "success": valid_result["success"],
+            "status": valid_result["status"],
+            "has_url": bool(valid_result.get("data", {}).get("url") or valid_result.get("data", {}).get("imageUrl"))
+        })
+        
+        # Test 2: Invalid file type
+        print("  Testing invalid file type...")
+        invalid_form_data = aiohttp.FormData()
+        invalid_form_data.add_field('image', io.BytesIO(b"This is not an image"), filename='test.txt', content_type='text/plain')
+        invalid_form_data.add_field('section', 'ads')
+        invalid_form_data.add_field('field', 'ad_image')
+        
+        invalid_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=invalid_form_data)
+        
+        validation_tests.append({
+            "test": "Invalid File Type",
+            "success": not invalid_result["success"],  # Should fail
+            "status": invalid_result["status"],
+            "properly_rejected": invalid_result["status"] in [400, 422]
+        })
+        
+        # Test 3: Missing required fields
+        print("  Testing missing required fields...")
+        missing_fields_form = aiohttp.FormData()
+        missing_fields_form.add_field('image', io.BytesIO(valid_image), filename='test.png', content_type='image/png')
+        # Missing section and field
+        
+        missing_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=missing_fields_form)
+        
+        validation_tests.append({
+            "test": "Missing Required Fields",
+            "success": not missing_result["success"],  # Should fail
+            "status": missing_result["status"],
+            "properly_rejected": missing_result["status"] in [400, 422]
+        })
+        
+        # Test 4: Check if upload directory exists and is writable
+        print("  Testing storage path and permissions...")
+        # This is tested indirectly through successful upload
+        storage_test = {
+            "test": "Storage Path and Permissions",
+            "success": valid_result["success"],
+            "upload_directory_accessible": valid_result["success"],
+            "file_stored_successfully": bool(valid_result.get("data", {}).get("url"))
+        }
+        validation_tests.append(storage_test)
+        
+        # Calculate validation results
+        successful_validations = sum(1 for test in validation_tests if test.get("success", False))
+        validation_working = successful_validations >= 2  # At least valid upload and storage should work
+        
+        print(f"  📊 Validation tests: {successful_validations}/{len(validation_tests)} passed")
+        
+        return {
+            "test_name": "File Validation and Storage",
+            "success": validation_working,
+            "total_validation_tests": len(validation_tests),
+            "successful_validations": successful_validations,
+            "validation_working": validation_working,
+            "detailed_tests": validation_tests
+        }
+    
+    async def test_backend_logs_for_errors(self) -> Dict:
+        """Check backend logs for upload-related errors"""
+        print("📋 Checking for backend upload errors...")
+        
+        # This test simulates checking logs by testing various error conditions
+        error_conditions = []
+        
+        if not self.admin_token:
+            return {"test_name": "Backend Error Analysis", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # Test various error conditions that might appear in logs
+        
+        # 1. Test with no file
+        print("  Testing upload with no file...")
+        no_file_form = aiohttp.FormData()
+        no_file_form.add_field('section', 'ads')
+        no_file_form.add_field('field', 'ad_image')
+        
+        no_file_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=no_file_form)
+        
+        error_conditions.append({
+            "condition": "No File Provided",
+            "status": no_file_result["status"],
+            "error_handled": no_file_result["status"] in [400, 422],
+            "response": str(no_file_result.get("data", ""))[:100]  # First 100 chars
+        })
+        
+        # 2. Test with oversized file (simulate)
+        print("  Testing large file handling...")
+        # Create a larger test image (still small but larger than 1x1)
+        large_test_data = b"fake_large_image_data" * 1000  # Simulate larger file
+        
+        large_file_form = aiohttp.FormData()
+        large_file_form.add_field('image', io.BytesIO(large_test_data), filename='large_test.png', content_type='image/png')
+        large_file_form.add_field('section', 'ads')
+        large_file_form.add_field('field', 'ad_image')
+        
+        large_file_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=large_file_form)
+        
+        error_conditions.append({
+            "condition": "Large File Upload",
+            "status": large_file_result["status"],
+            "handled_appropriately": large_file_result["status"] in [200, 201, 400, 413],  # Success or proper error
+            "response": str(large_file_result.get("data", ""))[:100]
+        })
+        
+        # 3. Test with malformed request
+        print("  Testing malformed request...")
+        malformed_result = await self.make_request("/admin/upload-image", "POST", headers=headers, data={"not": "form_data"})
+        
+        error_conditions.append({
+            "condition": "Malformed Request",
+            "status": malformed_result["status"],
+            "error_handled": malformed_result["status"] in [400, 422],
+            "response": str(malformed_result.get("data", ""))[:100]
+        })
+        
+        # Analyze error handling
+        properly_handled_errors = sum(1 for condition in error_conditions if condition.get("error_handled", False) or condition.get("handled_appropriately", False))
+        
+        return {
+            "test_name": "Backend Error Analysis",
+            "success": properly_handled_errors >= 2,  # Most errors should be handled properly
+            "total_error_conditions": len(error_conditions),
+            "properly_handled_errors": properly_handled_errors,
+            "error_handling_working": properly_handled_errors >= 2,
+            "detailed_conditions": error_conditions
+        }
+    
+    async def cleanup_test_data(self):
+        """Clean up test ads created during testing"""
+        if not self.admin_token or not self.test_ads:
+            return
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        for ad_id in self.test_ads:
+            try:
+                await self.make_request(f"/admin/ads/{ad_id}", "DELETE", headers=headers)
+                print(f"  🧹 Cleaned up test ad: {ad_id}")
+            except Exception as e:
+                print(f"  ⚠️ Failed to cleanup ad {ad_id}: {e}")
+    
+    async def run_comprehensive_ads_upload_test(self) -> Dict:
+        """Run all ads image upload tests"""
+        print("🚀 Starting Ads Image Upload Functionality Testing")
+        print("=" * 70)
+        
+        await self.setup()
+        
+        try:
+            # Authenticate first
+            auth_success = await self.authenticate_admin()
+            if not auth_success:
+                return {
+                    "test_timestamp": datetime.now().isoformat(),
+                    "error": "Admin authentication failed - cannot proceed with tests"
+                }
+            
+            # Run all test suites
+            endpoint_availability = await self.test_upload_endpoint_availability()
+            auth_requirements = await self.test_authentication_requirements()
+            file_upload = await self.test_file_upload_functionality()
+            ads_workflow = await self.test_ads_management_workflow()
+            file_validation = await self.test_file_validation_and_storage()
+            error_analysis = await self.test_backend_logs_for_errors()
+            
+            # Cleanup test data
+            await self.cleanup_test_data()
+            
+            # Compile overall results
+            all_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "endpoint_availability": endpoint_availability,
+                "authentication_requirements": auth_requirements,
+                "file_upload_functionality": file_upload,
+                "ads_management_workflow": ads_workflow,
+                "file_validation_and_storage": file_validation,
+                "backend_error_analysis": error_analysis
+            }
+            
+            # Calculate overall success metrics
+            test_results = [
+                endpoint_availability.get("success", False),
+                auth_requirements.get("success", False),
+                file_upload.get("success", False),
+                ads_workflow.get("success", False),
+                file_validation.get("success", False),
+                error_analysis.get("success", False)
+            ]
+            
+            overall_success_rate = sum(test_results) / len(test_results) * 100
+            
+            all_results["summary"] = {
+                "overall_success_rate": overall_success_rate,
+                "endpoint_available": endpoint_availability.get("success", False),
+                "authentication_working": auth_requirements.get("success", False),
+                "file_upload_working": file_upload.get("success", False),
+                "ads_workflow_working": ads_workflow.get("success", False),
+                "file_validation_working": file_validation.get("success", False),
+                "error_handling_working": error_analysis.get("success", False),
+                "all_tests_passed": overall_success_rate == 100,
+                "critical_functionality_working": (
+                    endpoint_availability.get("success", False) and
+                    auth_requirements.get("success", False) and
+                    file_upload.get("success", False)
+                ),
+                "upload_failure_identified": not file_upload.get("success", False)
+            }
+            
+            return all_results
+            
+        finally:
+            await self.cleanup()
+
+
 class CustomMenuManagementTester:
     def __init__(self):
         self.session = None
