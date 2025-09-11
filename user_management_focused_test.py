@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 # Test Configuration
-BACKEND_URL = "https://admin-nav-control.preview.emergentagent.com/api"
+BACKEND_URL = "https://menu-settings-debug.preview.emergentagent.com/api"
 
 class UserManagementTester:
     def __init__(self):

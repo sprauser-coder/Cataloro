@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://admin-nav-control.preview.emergentagent.com/api"
+BACKEND_URL = "https://menu-settings-debug.preview.emergentagent.com/api"
 
 def check_all_possible_endpoints():
     """Check all possible endpoints that might show user-related counts"""

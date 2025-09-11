@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://admin-nav-control.preview.emergentagent.com/api"
+BACKEND_URL = "https://menu-settings-debug.preview.emergentagent.com/api"
 
 # Test Users Configuration
 ADMIN_EMAIL = "admin@cataloro.com"

@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://admin-nav-control.preview.emergentagent.com/api"
+BACKEND_URL = "https://menu-settings-debug.preview.emergentagent.com/api"
 PERFORMANCE_TARGET_MS = 1000  # Browse endpoint should respond in under 1 second
 
 # Phantom listings to check for (from review request)

@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_user_lookup():
-    base_url = "https://admin-nav-control.preview.emergentagent.com"
+    base_url = "https://menu-settings-debug.preview.emergentagent.com"
     
     # Get all users to see how they're stored
     print("Getting all users from admin endpoint...")

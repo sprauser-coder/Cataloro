@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://admin-nav-control.preview.emergentagent.com/api"
+BASE_URL = "https://menu-settings-debug.preview.emergentagent.com/api"
 
 class BuyManagementInvestigator:
     def __init__(self):

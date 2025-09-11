@@ -37,7 +37,7 @@ function SimpleLoginPage() {
   useEffect(() => {
     const fetchLogo = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://admin-nav-control.preview.emergentagent.com/api'}/admin/logo`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://menu-settings-debug.preview.emergentagent.com/api'}/admin/logo`);
         if (response.ok) {
           const data = await response.json();
           if (data.logo_url) {
@@ -143,7 +143,7 @@ function SimpleLoginPage() {
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://admin-nav-control.preview.emergentagent.com/api'}/api/auth/register`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://menu-settings-debug.preview.emergentagent.com/api'}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
