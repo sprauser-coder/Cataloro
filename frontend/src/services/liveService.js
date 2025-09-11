@@ -148,7 +148,7 @@ class LiveService {
       }
       
       const token = localStorage.getItem('cataloro_token');
-      const response = await fetch(`${this.baseURL}/user/${senderId}/messages`, {
+      const response = await fetch(`${this.baseURL}/api/user/${senderId}/messages`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
