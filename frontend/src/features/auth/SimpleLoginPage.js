@@ -33,6 +33,8 @@ function SimpleLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [checkingAvailability, setCheckingAvailability] = useState({});
 
   // Fetch admin logo and check if user is already logged in
   useEffect(() => {
