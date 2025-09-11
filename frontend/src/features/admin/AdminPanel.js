@@ -1067,9 +1067,11 @@ function UsersTab({ users, onUpdateUser, showToast }) {
   // RBAC Functions
   const handleApproveUser = async (userId) => {
     try {
+      const token = localStorage.getItem('cataloro_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}/approve`, {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -1091,9 +1093,11 @@ function UsersTab({ users, onUpdateUser, showToast }) {
     if (reason === null) return; // User cancelled
 
     try {
+      const token = localStorage.getItem('cataloro_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}/reject`, {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ reason: reason || 'No reason provided' })
