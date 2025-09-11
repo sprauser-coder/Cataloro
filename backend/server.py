@@ -3708,17 +3708,17 @@ async def get_user_menu_settings(user_id: str):
         filtered_mobile = {}
         
         for item_key, item_config in menu_settings.get("desktop_menu", {}).items():
-            if item_config.get("enabled", True) and user_role in item_config.get("roles", []):
+            if item_config.get("enabled", True) and menu_role in item_config.get("roles", []):
                 filtered_desktop[item_key] = item_config
         
         for item_key, item_config in menu_settings.get("mobile_menu", {}).items():
-            if item_config.get("enabled", True) and user_role in item_config.get("roles", []):
+            if item_config.get("enabled", True) and menu_role in item_config.get("roles", []):
                 filtered_mobile[item_key] = item_config
         
         return {
             "desktop_menu": filtered_desktop,
             "mobile_menu": filtered_mobile,
-            "user_role": user_role
+            "user_role": menu_role
         }
         
     except Exception as e:
