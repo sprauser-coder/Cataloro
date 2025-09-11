@@ -294,7 +294,7 @@ class AdminSecurityTester:
             }
             
             if properly_blocked:
-                print(f"    ✅ {endpoint_test['name']}: Properly blocked (401)")
+                print(f"    ✅ {endpoint_test['name']}: Properly blocked ({result['status']})")
             elif result["success"]:
                 print(f"    🚨 {endpoint_test['name']}: SECURITY VULNERABILITY - Accessible without auth!")
                 endpoint_result["vulnerability_details"] = "Endpoint accessible without authentication"
