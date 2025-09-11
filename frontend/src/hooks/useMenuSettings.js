@@ -58,15 +58,6 @@ export function useMenuSettings() {
     
     const menuSection = menuSettings[menuType];
     
-    // Debug logging for all items
-    console.log(`🔍 Menu visibility check: ${menuType} -> ${itemKey}`, {
-      loading,
-      menuSection: menuSection ? 'exists' : 'missing',
-      menuItem: menuSection?.[itemKey] ? 'exists' : 'missing',
-      enabled: menuSection?.[itemKey]?.enabled,
-      result: menuSection?.[itemKey] ? menuSection[itemKey].enabled !== false : true
-    });
-    
     // If no menu section found, show all items by default (default behavior)
     if (!menuSection) return true;
     
