@@ -549,14 +549,13 @@ class MenuSettingsVisibilityTester:
             
             for menu_type in ["mobile_menu", "desktop_menu"]:
                 if menu_type in demo_menu:
-                    for item in demo_menu[menu_type]:
-                        item_key = item.get("key", "")
-                        if item_key in ["admin_panel", "admin_drawer"]:
-                            admin_only_items.append(item)
-                        elif item_key in ["create_listing", "my_listings", "listings"]:
-                            seller_items.append(item)
-                        elif item_key in ["browse", "favorites", "profile"]:
-                            buyer_items.append(item)
+                    for key, item in demo_menu[menu_type].items():
+                        if key in ["admin_panel", "admin_drawer"]:
+                            admin_only_items.append({"key": key, **item})
+                        elif key in ["create_listing", "my_listings", "listings"]:
+                            seller_items.append({"key": key, **item})
+                        elif key in ["browse", "favorites", "profile"]:
+                            buyer_items.append({"key": key, **item})
             
             demo_cannot_see_admin_items = len(admin_only_items) == 0
             demo_cannot_see_seller_items = len(seller_items) == 0
