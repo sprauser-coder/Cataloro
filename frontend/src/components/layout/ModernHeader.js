@@ -564,7 +564,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     Calendar, Clock, Download, Upload, Edit, Trash2, Eye, EyeOff, Lock,
     Unlock, Key, Users, UserPlus, Phone, Smartphone, Monitor, Tablet,
     Laptop, Zap, Activity, Award, Target, Compass, Map, Navigation,
-    Bookmark, Tag, Filter, Sort, List, Grid, Layers, Archive, Folder,
+    Bookmark, Tag, Filter, SortAsc, List, Grid, Layers, Archive, Folder,
     File, Image, Video, Music, Headphones, Mic, Volume2, Play, Pause,
     Square, SkipBack, SkipForward, Repeat, Shuffle, Share, ExternalLink,
     LinkIcon, Copy, Check, AlertTriangle, AlertCircle, Info, CheckCircle
