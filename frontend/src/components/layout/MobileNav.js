@@ -33,6 +33,7 @@ function MobileNav({ isOpen, onClose }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { isMenuItemVisible } = useMenuSettings();
 
   const handleLogout = async () => {
     try {
