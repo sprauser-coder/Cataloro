@@ -32,6 +32,522 @@ ADMIN_ID = "admin_user_1"
 DEMO_EMAIL = "demo@cataloro.com"
 DEMO_USER_ID = "68bfff790e4e46bc28d43631"
 
+class MobileTenderTester:
+    """
+    MOBILE TENDER ACCEPT/REJECT FUNCTIONALITY TESTING
+    Testing the mobile tender accept/reject functionality that was just fixed:
+    
+    FIXES APPLIED:
+    1. Added Authentication Headers: Added Authorization: Bearer ${token} to both handleAcceptTender and handleRejectTender functions
+    2. Fixed API URLs: Cleaned up the backend URL construction to use proper environment variable
+    3. Fixed Data Loading: Added authentication headers to loadTendersData function for both buyer and seller tender loading
+    
+    SPECIFIC TESTS:
+    1. Tender Accept Functionality - Test PUT /api/tenders/{tender_id}/accept with authentication
+    2. Tender Reject Functionality - Test PUT /api/tenders/{tender_id}/reject with authentication  
+    3. Tender Data Loading - Test GET /api/tenders/buyer/{user_id} and GET /api/tenders/seller/{user_id}/overview with authentication
+    """
+    def __init__(self):
+        self.session = None
+        self.admin_token = None
+        self.demo_token = None
+        self.seller_token = None
+        self.test_user_id = None
+        self.seller_user_id = None
+        self.test_results = {}
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def authenticate_users(self) -> bool:
+        """Authenticate demo user (buyer) and create/authenticate seller user"""
+        print("🔐 Authenticating users for mobile tender testing...")
+        
+        # Authenticate demo user (buyer)
+        demo_login_data = {
+            "email": DEMO_EMAIL,
+            "password": "demo_password"
+        }
+        
+        demo_result = await self.make_request("/auth/login", "POST", data=demo_login_data)
+        
+        if demo_result["success"]:
+            self.demo_token = demo_result["data"].get("token", "")
+            self.test_user_id = demo_result["data"].get("user", {}).get("id", DEMO_USER_ID)
+            print(f"  ✅ Demo user (buyer) authentication successful (ID: {self.test_user_id})")
+        else:
+            print(f"  ❌ Demo user authentication failed: {demo_result.get('error', 'Unknown error')}")
+            return False
+        
+        # Authenticate admin as seller (admin can create listings and accept/reject tenders)
+        admin_login_data = {
+            "email": ADMIN_EMAIL,
+            "password": "admin_password"
+        }
+        
+        admin_result = await self.make_request("/auth/login", "POST", data=admin_login_data)
+        
+        if admin_result["success"]:
+            self.seller_token = admin_result["data"].get("token", "")
+            self.seller_user_id = admin_result["data"].get("user", {}).get("id", ADMIN_ID)
+            print(f"  ✅ Admin user (seller) authentication successful (ID: {self.seller_user_id})")
+            return True
+        else:
+            print(f"  ❌ Admin user authentication failed: {admin_result.get('error', 'Unknown error')}")
+            return False
+    
+    async def create_test_listing_and_tender(self) -> Dict:
+        """Create a test listing and tender for testing accept/reject functionality"""
+        print("📝 Creating test listing and tender...")
+        
+        # Create test listing as seller
+        listing_data = {
+            "title": "Test Catalyst for Mobile Tender Testing",
+            "description": "Test listing for mobile tender accept/reject functionality",
+            "price": 100.0,
+            "category": "Catalysts",
+            "condition": "Used",
+            "seller_id": self.seller_user_id,
+            "images": [],
+            "tags": ["test", "mobile", "tender"],
+            "features": ["test feature"]
+        }
+        
+        headers = {"Authorization": f"Bearer {self.seller_token}"}
+        listing_result = await self.make_request("/listings", "POST", data=listing_data, headers=headers)
+        
+        if not listing_result["success"]:
+            return {"error": f"Failed to create test listing: {listing_result.get('error', 'Unknown error')}"}
+        
+        listing_id = listing_result["data"].get("id")
+        print(f"  ✅ Test listing created: {listing_id}")
+        
+        # Create test tender as buyer
+        tender_data = {
+            "listing_id": listing_id,
+            "buyer_id": self.test_user_id,
+            "seller_id": self.seller_user_id,
+            "offer_amount": 85.0,
+            "message": "Test tender for mobile functionality testing"
+        }
+        
+        buyer_headers = {"Authorization": f"Bearer {self.demo_token}"}
+        tender_result = await self.make_request("/tenders/submit", "POST", data=tender_data, headers=buyer_headers)
+        
+        if not tender_result["success"]:
+            return {"error": f"Failed to create test tender: {tender_result.get('error', 'Unknown error')}"}
+        
+        tender_id = tender_result["data"].get("id")
+        print(f"  ✅ Test tender created: {tender_id}")
+        
+        return {
+            "listing_id": listing_id,
+            "tender_id": tender_id,
+            "success": True
+        }
+    
+    async def test_tender_accept_functionality(self) -> Dict:
+        """
+        Test 1: Tender Accept Functionality
+        Test PUT /api/tenders/{tender_id}/accept with authentication
+        Verify seller can accept bids on their listings
+        """
+        print("✅ Testing tender accept functionality...")
+        
+        test_results = {
+            "endpoint": "/tenders/{tender_id}/accept",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "accept_successful": False,
+            "authentication_working": False,
+            "seller_validation_working": False,
+            "error_messages": [],
+            "success": False
+        }
+        
+        # Create test data
+        test_data = await self.create_test_listing_and_tender()
+        if "error" in test_data:
+            test_results["error_messages"].append(test_data["error"])
+            return {
+                "test_name": "Tender Accept Functionality",
+                "success": False,
+                "test_results": test_results,
+                "critical_issue": True
+            }
+        
+        tender_id = test_data["tender_id"]
+        
+        # Test tender accept with authentication
+        print("  🔐 Testing authenticated tender accept...")
+        headers = {"Authorization": f"Bearer {self.seller_token}"}
+        accept_data = {"seller_id": self.seller_user_id}
+        
+        result = await self.make_request(f"/tenders/{tender_id}/accept", "PUT", data=accept_data, headers=headers)
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            test_results["accept_successful"] = True
+            test_results["authentication_working"] = True
+            test_results["seller_validation_working"] = True
+            test_results["success"] = True
+            print(f"    ✅ Tender accept successful")
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+            
+            # Verify tender status updated to accepted
+            tender_check = await self.make_request(f"/tenders/listing/{test_data['listing_id']}")
+            if tender_check["success"]:
+                tenders = tender_check.get("data", [])
+                accepted_tender = next((t for t in tenders if t.get("id") == tender_id and t.get("status") == "accepted"), None)
+                if accepted_tender:
+                    print(f"    ✅ Tender status correctly updated to 'accepted'")
+                else:
+                    test_results["error_messages"].append("Tender status not updated to 'accepted'")
+                    print(f"    ⚠️ Tender status not updated correctly")
+        else:
+            test_results["error_messages"].append(f"Tender accept failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ Tender accept failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        # Test without authentication (should fail)
+        print("  🚫 Testing unauthenticated tender accept (should fail)...")
+        unauth_result = await self.make_request(f"/tenders/{tender_id}/accept", "PUT", data=accept_data)
+        if unauth_result["status"] in [401, 403]:
+            print(f"    ✅ Unauthenticated access properly rejected: Status {unauth_result['status']}")
+        else:
+            print(f"    ⚠️ Unauthenticated access not properly rejected: Status {unauth_result['status']}")
+            test_results["error_messages"].append("Authentication not properly enforced")
+        
+        return {
+            "test_name": "Tender Accept Functionality",
+            "success": test_results["success"] and test_results["actual_status"] == 200,
+            "test_results": test_results,
+            "critical_issue": not test_results["success"] or test_results["actual_status"] != 200,
+            "authentication_fixed": test_results["authentication_working"]
+        }
+    
+    async def test_tender_reject_functionality(self) -> Dict:
+        """
+        Test 2: Tender Reject Functionality  
+        Test PUT /api/tenders/{tender_id}/reject with authentication
+        Verify seller can reject bids on their listings
+        """
+        print("❌ Testing tender reject functionality...")
+        
+        test_results = {
+            "endpoint": "/tenders/{tender_id}/reject",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "reject_successful": False,
+            "authentication_working": False,
+            "seller_validation_working": False,
+            "error_messages": [],
+            "success": False
+        }
+        
+        # Create test data
+        test_data = await self.create_test_listing_and_tender()
+        if "error" in test_data:
+            test_results["error_messages"].append(test_data["error"])
+            return {
+                "test_name": "Tender Reject Functionality",
+                "success": False,
+                "test_results": test_results,
+                "critical_issue": True
+            }
+        
+        tender_id = test_data["tender_id"]
+        
+        # Test tender reject with authentication
+        print("  🔐 Testing authenticated tender reject...")
+        headers = {"Authorization": f"Bearer {self.seller_token}"}
+        reject_data = {"seller_id": self.seller_user_id}
+        
+        result = await self.make_request(f"/tenders/{tender_id}/reject", "PUT", data=reject_data, headers=headers)
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            test_results["reject_successful"] = True
+            test_results["authentication_working"] = True
+            test_results["seller_validation_working"] = True
+            test_results["success"] = True
+            print(f"    ✅ Tender reject successful")
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+            
+            # Verify tender status updated to rejected
+            tender_check = await self.make_request(f"/tenders/listing/{test_data['listing_id']}")
+            if tender_check["success"]:
+                tenders = tender_check.get("data", [])
+                rejected_tender = next((t for t in tenders if t.get("id") == tender_id and t.get("status") == "rejected"), None)
+                if rejected_tender:
+                    print(f"    ✅ Tender status correctly updated to 'rejected'")
+                else:
+                    test_results["error_messages"].append("Tender status not updated to 'rejected'")
+                    print(f"    ⚠️ Tender status not updated correctly")
+        else:
+            test_results["error_messages"].append(f"Tender reject failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ Tender reject failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        # Test without authentication (should fail)
+        print("  🚫 Testing unauthenticated tender reject (should fail)...")
+        unauth_result = await self.make_request(f"/tenders/{tender_id}/reject", "PUT", data=reject_data)
+        if unauth_result["status"] in [401, 403]:
+            print(f"    ✅ Unauthenticated access properly rejected: Status {unauth_result['status']}")
+        else:
+            print(f"    ⚠️ Unauthenticated access not properly rejected: Status {unauth_result['status']}")
+            test_results["error_messages"].append("Authentication not properly enforced")
+        
+        return {
+            "test_name": "Tender Reject Functionality",
+            "success": test_results["success"] and test_results["actual_status"] == 200,
+            "test_results": test_results,
+            "critical_issue": not test_results["success"] or test_results["actual_status"] != 200,
+            "authentication_fixed": test_results["authentication_working"]
+        }
+    
+    async def test_tender_data_loading(self) -> Dict:
+        """
+        Test 3: Tender Data Loading
+        Test GET /api/tenders/buyer/{user_id} and GET /api/tenders/seller/{user_id}/overview with authentication
+        Verify both endpoints return proper tender data for mobile display
+        """
+        print("📱 Testing tender data loading for mobile...")
+        
+        test_results = {
+            "buyer_endpoint": f"/tenders/buyer/{self.test_user_id}",
+            "seller_endpoint": f"/tenders/seller/{self.seller_user_id}/overview",
+            "buyer_status": 0,
+            "seller_status": 0,
+            "buyer_response_time_ms": 0,
+            "seller_response_time_ms": 0,
+            "buyer_tenders_count": 0,
+            "seller_tenders_count": 0,
+            "buyer_authentication_working": False,
+            "seller_authentication_working": False,
+            "error_messages": [],
+            "success": False
+        }
+        
+        # Test buyer tenders endpoint (mobile my-bids tab)
+        print("  💰 Testing buyer tenders data loading...")
+        buyer_headers = {"Authorization": f"Bearer {self.demo_token}"}
+        buyer_result = await self.make_request(f"/tenders/buyer/{self.test_user_id}", headers=buyer_headers)
+        
+        test_results["buyer_status"] = buyer_result["status"]
+        test_results["buyer_response_time_ms"] = buyer_result["response_time_ms"]
+        
+        if buyer_result["success"]:
+            buyer_tenders = buyer_result.get("data", [])
+            test_results["buyer_tenders_count"] = len(buyer_tenders) if isinstance(buyer_tenders, list) else 0
+            test_results["buyer_authentication_working"] = True
+            print(f"    ✅ Buyer tenders loaded: {test_results['buyer_tenders_count']} tenders")
+            print(f"    ⏱️ Response time: {test_results['buyer_response_time_ms']:.1f}ms")
+            
+            # Verify tender data structure for mobile display
+            if buyer_tenders and isinstance(buyer_tenders, list) and len(buyer_tenders) > 0:
+                sample_tender = buyer_tenders[0]
+                required_fields = ["id", "offer_amount", "status", "listing"]
+                missing_fields = [field for field in required_fields if field not in sample_tender]
+                if missing_fields:
+                    test_results["error_messages"].append(f"Buyer tender missing fields: {missing_fields}")
+                else:
+                    print(f"    ✅ Buyer tender data has required fields for mobile display")
+        else:
+            test_results["error_messages"].append(f"Buyer tenders loading failed: {buyer_result.get('error', 'Unknown error')}")
+            print(f"    ❌ Buyer tenders loading failed: Status {buyer_result['status']}")
+        
+        # Test seller tenders overview endpoint (mobile selling tab)
+        print("  🏪 Testing seller tenders overview data loading...")
+        seller_headers = {"Authorization": f"Bearer {self.seller_token}"}
+        seller_result = await self.make_request(f"/tenders/seller/{self.seller_user_id}/overview", headers=seller_headers)
+        
+        test_results["seller_status"] = seller_result["status"]
+        test_results["seller_response_time_ms"] = seller_result["response_time_ms"]
+        
+        if seller_result["success"]:
+            seller_data = seller_result.get("data", {})
+            if isinstance(seller_data, dict):
+                # Count total tenders across all listings
+                total_tenders = 0
+                listings = seller_data.get("listings", [])
+                for listing in listings:
+                    if isinstance(listing, dict):
+                        tenders = listing.get("tenders", [])
+                        total_tenders += len(tenders) if isinstance(tenders, list) else 0
+                
+                test_results["seller_tenders_count"] = total_tenders
+                test_results["seller_authentication_working"] = True
+                print(f"    ✅ Seller tenders overview loaded: {total_tenders} total tenders across {len(listings)} listings")
+                print(f"    ⏱️ Response time: {test_results['seller_response_time_ms']:.1f}ms")
+                
+                # Verify seller overview data structure for mobile display
+                required_overview_fields = ["seller", "listings"]
+                missing_overview_fields = [field for field in required_overview_fields if field not in seller_data]
+                if missing_overview_fields:
+                    test_results["error_messages"].append(f"Seller overview missing fields: {missing_overview_fields}")
+                else:
+                    print(f"    ✅ Seller overview data has required fields for mobile display")
+            else:
+                test_results["error_messages"].append("Seller overview data is not in expected format")
+        else:
+            test_results["error_messages"].append(f"Seller overview loading failed: {seller_result.get('error', 'Unknown error')}")
+            print(f"    ❌ Seller overview loading failed: Status {seller_result['status']}")
+        
+        # Test unauthenticated access (should fail)
+        print("  🚫 Testing unauthenticated data loading (should fail)...")
+        unauth_buyer_result = await self.make_request(f"/tenders/buyer/{self.test_user_id}")
+        unauth_seller_result = await self.make_request(f"/tenders/seller/{self.seller_user_id}/overview")
+        
+        if unauth_buyer_result["status"] in [401, 403] and unauth_seller_result["status"] in [401, 403]:
+            print(f"    ✅ Unauthenticated access properly rejected for both endpoints")
+        else:
+            print(f"    ⚠️ Unauthenticated access not properly rejected (buyer: {unauth_buyer_result['status']}, seller: {unauth_seller_result['status']})")
+            test_results["error_messages"].append("Authentication not properly enforced on data loading endpoints")
+        
+        # Determine overall success
+        test_results["success"] = (
+            test_results["buyer_status"] == 200 and 
+            test_results["seller_status"] == 200 and
+            test_results["buyer_authentication_working"] and 
+            test_results["seller_authentication_working"]
+        )
+        
+        return {
+            "test_name": "Tender Data Loading",
+            "success": test_results["success"],
+            "test_results": test_results,
+            "critical_issue": not test_results["success"],
+            "authentication_fixed": test_results["buyer_authentication_working"] and test_results["seller_authentication_working"]
+        }
+    
+    async def run_mobile_tender_tests(self) -> Dict:
+        """
+        Run complete mobile tender accept/reject functionality tests
+        """
+        print("🚨 STARTING MOBILE TENDER ACCEPT/REJECT FUNCTIONALITY TESTING")
+        print("=" * 80)
+        print("TESTING: Mobile tender accept/reject functionality fixes")
+        print("FIXES: Authentication headers, API URLs, data loading with auth")
+        print("=" * 80)
+        
+        await self.setup()
+        
+        try:
+            # Authenticate first
+            auth_success = await self.authenticate_users()
+            if not auth_success:
+                return {
+                    "test_timestamp": datetime.now().isoformat(),
+                    "error": "User authentication failed - cannot proceed with testing"
+                }
+            
+            # Run all mobile tender tests
+            accept_test = await self.test_tender_accept_functionality()
+            reject_test = await self.test_tender_reject_functionality()
+            data_loading_test = await self.test_tender_data_loading()
+            
+            # Compile comprehensive test results
+            test_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "test_focus": "Mobile tender accept/reject functionality fixes",
+                "tender_accept_test": accept_test,
+                "tender_reject_test": reject_test,
+                "tender_data_loading_test": data_loading_test
+            }
+            
+            # Determine critical findings
+            critical_issues = []
+            working_features = []
+            
+            tests = [accept_test, reject_test, data_loading_test]
+            
+            for test in tests:
+                if test.get("critical_issue", False):
+                    error_msg = "Unknown error"
+                    if test.get("test_results", {}).get("error_messages"):
+                        error_msg = test["test_results"]["error_messages"][0]
+                    elif test.get("error"):
+                        error_msg = test["error"]
+                    critical_issues.append(f"{test['test_name']}: {error_msg}")
+                
+                if test.get("success", False):
+                    working_features.append(f"{test['test_name']}: Working correctly")
+            
+            # Calculate success metrics
+            total_tests = len(tests)
+            successful_tests = sum(1 for test in tests if test.get("success", False))
+            success_rate = (successful_tests / total_tests) * 100
+            
+            test_results["summary"] = {
+                "total_tests": total_tests,
+                "successful_tests": successful_tests,
+                "failed_tests": total_tests - successful_tests,
+                "success_rate": success_rate,
+                "critical_issues": critical_issues,
+                "working_features": working_features,
+                "mobile_functionality_working": len(critical_issues) == 0,
+                "authentication_fixes_working": all(test.get("authentication_fixed", False) for test in tests)
+            }
+            
+            return test_results
+            
+        finally:
+            await self.cleanup()
+
+
 class BrowseBidFilteringTester:
     """
     ENHANCED BROWSE LISTINGS ENDPOINT TESTING
