@@ -1,0 +1,141 @@
+{
+  "test_timestamp": "2025-09-11T11:38:32.959693",
+  "admin_authentication": {
+    "success": true,
+    "user_data": {
+      "id": "admin_user_1",
+      "username": "sash_admin",
+      "email": "admin@cataloro.com",
+      "full_name": "Sash",
+      "name": "Sash Admin",
+      "role": "admin",
+      "user_role": "Admin",
+      "registration_status": "Approved",
+      "badge": "Admin",
+      "is_business": false,
+      "business_name": "",
+      "verified": true,
+      "is_active": true,
+      "created_at": "2025-09-09T09:53:56.308000",
+      "city": "System",
+      "country": "Admin",
+      "company_name": "",
+      "first_name": "Sascha",
+      "last_name": "Prauser",
+      "password": "Start123",
+      "vat_number": ""
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWRtaW5fdXNlcl8xIiwiZW1haWwiOiJhZG1pbkBjYXRhbG9yby5jb20iLCJyb2xlIjoiYWRtaW4iLCJ1c2VyX3JvbGUiOiJBZG1pbiIsImV4cCI6MTc1NzY3NzExMn0.w1b1jI_VrRuE6PVQsoJ-7wZTSPFZOWBUOdll401WqFE"
+  },
+  "database_state_verification": {
+    "test_name": "Database State Verification",
+    "success": true,
+    "desktop_messages_enabled": true,
+    "mobile_messages_enabled": false,
+    "desktop_enabled_type": "<class 'bool'>",
+    "mobile_enabled_type": "<class 'bool'>",
+    "messages_consistently_disabled": false,
+    "raw_desktop_messages": {
+      "enabled": true,
+      "roles": [
+        "admin",
+        "manager",
+        "seller",
+        "buyer"
+      ],
+      "label": "Messages",
+      "icon": "MessageCircle",
+      "path": "/messages"
+    },
+    "raw_mobile_messages": {
+      "enabled": false,
+      "roles": [
+        "admin",
+        "manager",
+        "seller",
+        "buyer"
+      ],
+      "label": "Messages",
+      "icon": "MessageCircle",
+      "path": "/messages"
+    }
+  },
+  "admin_settings_debug": {
+    "test_name": "Admin Settings Debug",
+    "success": true,
+    "desktop_messages_disabled": false,
+    "mobile_messages_disabled": true,
+    "desktop_messages_roles": [
+      "admin",
+      "manager",
+      "seller",
+      "buyer"
+    ],
+    "mobile_messages_roles": [
+      "admin",
+      "manager",
+      "seller",
+      "buyer"
+    ],
+    "admin_settings_correct": false,
+    "roles_include_admin": true
+  },
+  "user_filtering_logic_debug": {
+    "test_name": "User Filtering Logic Debug",
+    "success": true,
+    "desktop_has_messages": true,
+    "mobile_has_messages": false,
+    "desktop_messages_config": {
+      "enabled": true,
+      "roles": [
+        "admin",
+        "manager",
+        "seller",
+        "buyer"
+      ],
+      "label": "Messages",
+      "icon": "MessageCircle",
+      "path": "/messages"
+    },
+    "mobile_messages_config": null,
+    "filtering_working_correctly": false,
+    "desktop_filtering_broken": true,
+    "mobile_filtering_working": true,
+    "critical_bug_confirmed": true
+  },
+  "filtering_condition_analysis": {
+    "test_name": "Filtering Condition Analysis",
+    "success": true,
+    "desktop_enabled": true,
+    "desktop_admin_in_roles": true,
+    "desktop_should_be_included": true,
+    "desktop_actually_included": true,
+    "desktop_filtering_correct": true,
+    "mobile_enabled": false,
+    "mobile_admin_in_roles": true,
+    "mobile_should_be_included": false,
+    "mobile_actually_included": false,
+    "mobile_filtering_correct": true,
+    "filtering_logic_consistent": true,
+    "root_cause_identified": false
+  },
+  "critical_findings": {
+    "messages_disabled_in_database": false,
+    "desktop_filtering_broken": true,
+    "mobile_filtering_working": true,
+    "inconsistent_filtering_behavior": true,
+    "critical_bug_confirmed": true,
+    "root_cause_identified": false,
+    "backend_bug_confirmed": false
+  },
+  "summary": {
+    "test_completed": true,
+    "admin_authentication_successful": true,
+    "database_state_verified": true,
+    "admin_settings_verified": true,
+    "user_filtering_analyzed": true,
+    "filtering_conditions_analyzed": true,
+    "critical_bug_confirmed": true,
+    "expected_finding_confirmed": "desktop_menu.messages should have enabled: false in database, and backend filtering should exclude it from user API response just like mobile_menu.messages"
+  }
+}
