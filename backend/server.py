@@ -2107,7 +2107,7 @@ async def get_admin_dashboard(current_user: dict = Depends(require_admin_role)):
         }
 
 @app.get("/api/admin/users")
-async def get_all_users():
+async def get_all_users(current_user: dict = Depends(require_admin_role)):
     users_cursor = db.users.find({})
     users = []
     async for user in users_cursor:
@@ -2275,7 +2275,7 @@ async def delete_user_by_admin(user_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to delete user: {str(e)}")
 
 @app.post("/api/admin/search/sync")
-async def sync_listings_to_elasticsearch():
+async def sync_listings_to_elasticsearch(current_user: dict = Depends(require_admin_role)):
     """Sync all existing listings to Elasticsearch (Admin only)"""
     try:
         if not search_service.connected:
@@ -2333,7 +2333,7 @@ async def sync_listings_to_elasticsearch():
         raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
 
 @app.get("/api/admin/security/dashboard")
-async def get_security_dashboard():
+async def get_security_dashboard(current_user: dict = Depends(require_admin_role)):
     """Get comprehensive security dashboard data (Admin only)"""
     try:
         security_metrics = security_service.get_security_metrics()
@@ -2368,7 +2368,7 @@ async def get_security_dashboard():
         raise HTTPException(status_code=500, detail=f"Failed to get security dashboard: {str(e)}")
 
 @app.get("/api/admin/monitoring/dashboard")
-async def get_monitoring_dashboard():
+async def get_monitoring_dashboard(current_user: dict = Depends(require_admin_role)):
     """Get comprehensive monitoring dashboard data (Admin only)"""
     try:
         dashboard_data = monitoring_service.get_monitoring_dashboard_data()
@@ -2433,7 +2433,7 @@ async def resolve_monitoring_alert(alert_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to resolve alert: {str(e)}")
 
 @app.get("/api/admin/system/health")
-async def get_system_health():
+async def get_system_health(current_user: dict = Depends(require_admin_role)):
     """Get comprehensive system health check (Admin only)"""
     try:
         # Run health checks
@@ -2547,7 +2547,7 @@ async def get_predictive_analytics(forecast_days: int = 30):
         raise HTTPException(status_code=500, detail=f"Predictive analytics failed: {str(e)}")
 
 @app.get("/api/admin/analytics/dashboard")
-async def get_analytics_dashboard():
+async def get_analytics_dashboard(current_user: dict = Depends(require_admin_role)):
     """Get comprehensive analytics dashboard data (Admin only)"""
     try:
         # Get all analytics for dashboard
@@ -2596,7 +2596,7 @@ async def get_analytics_dashboard():
         raise HTTPException(status_code=500, detail=f"Dashboard generation failed: {str(e)}")
 
 @app.get("/api/admin/analytics/kpis")
-async def get_key_performance_indicators():
+async def get_key_performance_indicators(current_user: dict = Depends(require_admin_role)):
     """Get key performance indicators summary (Admin only)"""
     try:
         # Get current metrics
@@ -3447,7 +3447,7 @@ async def bulk_user_action(action_data: dict):
 
 # Site Branding and Settings Endpoints
 @app.get("/api/admin/settings")
-async def get_site_settings():
+async def get_site_settings(current_user: dict = Depends(require_admin_role)):
     """Get site branding and configuration settings"""
     try:
         # Get settings from database or return defaults
@@ -3563,7 +3563,7 @@ async def upload_logo(file: UploadFile = File(...), mode: str = "light"):
         raise HTTPException(status_code=500, detail=f"Failed to upload logo: {str(e)}")
 
 @app.get("/api/admin/logo")
-async def get_admin_logo():
+async def get_admin_logo(current_user: dict = Depends(require_admin_role)):
     """Get admin uploaded logo"""
     try:
         # Check if logo is stored in database
@@ -3697,7 +3697,7 @@ async def get_user_menu_settings(user_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to get user menu settings: {str(e)}")
 
 @app.get("/api/admin/content")
-async def get_content():
+async def get_content(current_user: dict = Depends(require_admin_role)):
     """Get info page content for CMS"""
     try:
         # Get content from database or return defaults
@@ -3832,7 +3832,7 @@ async def upload_image(
         raise HTTPException(status_code=500, detail=f"Failed to upload image: {str(e)}")
 
 @app.get("/api/admin/content/versions")
-async def get_content_versions():
+async def get_content_versions(current_user: dict = Depends(require_admin_role)):
     """Get version history of content changes"""
     try:
         versions = await db.site_content_history.find(
@@ -3846,7 +3846,7 @@ async def get_content_versions():
         raise HTTPException(status_code=500, detail=f"Failed to get versions: {str(e)}")
 
 @app.post("/api/admin/content/backup")
-async def backup_current_content():
+async def backup_current_content(current_user: dict = Depends(require_admin_role)):
     """Create backup of current content"""
     try:
         current_content = await db.site_content.find_one({"type": "info_page"})
@@ -5974,7 +5974,7 @@ async def upload_catalyst_excel(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Failed to upload catalyst data: {error_msg}")
 
 @app.get("/api/admin/catalyst/data")
-async def get_catalyst_data():
+async def get_catalyst_data(current_user: dict = Depends(require_admin_role)):
     """Get all catalyst data for the Data tab"""
     try:
         catalysts = await db.catalyst_data.find({}).to_list(length=None)
@@ -6010,7 +6010,7 @@ async def update_catalyst_data(catalyst_id: str, update_data: dict):
         raise HTTPException(status_code=500, detail=f"Failed to update catalyst data: {str(e)}")
 
 @app.get("/api/admin/catalyst/price-settings")
-async def get_price_settings():
+async def get_price_settings(current_user: dict = Depends(require_admin_role)):
     """Get catalyst price calculation settings"""
     try:
         settings = await db.catalyst_price_settings.find_one({"type": "price_settings"})
@@ -6181,7 +6181,7 @@ async def get_catalyst_calculations(limit: int = 100, skip: int = 0):
         raise HTTPException(status_code=500, detail=f"Failed to calculate prices: {str(e)}")
 
 @app.get("/api/admin/catalyst/unified-calculations")
-async def get_unified_catalyst_calculations():
+async def get_unified_catalyst_calculations(current_user: dict = Depends(require_admin_role)):
     """Get unified calculations combining both price and content data for all catalysts"""
     try:
         # Get price settings
@@ -6285,7 +6285,7 @@ async def reset_price_calculation(catalyst_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to reset price calculation: {str(e)}")
 
 @app.delete("/api/admin/catalyst/database")
-async def delete_catalyst_database():
+async def delete_catalyst_database(current_user: dict = Depends(require_admin_role)):
     """Delete all catalyst data from the database"""
     try:
         # Delete all catalyst data
@@ -6939,7 +6939,7 @@ async def remove_from_favorites(user_id: str, listing_id: str):
 # ============================================================================
 
 @app.get("/api/admin/system-notifications")
-async def get_system_notifications():
+async def get_system_notifications(current_user: dict = Depends(require_admin_role)):
     """Get all system notifications for admin management"""
     try:
         notifications = await db.system_notifications.find({}).sort("created_at", -1).to_list(length=100)
@@ -7033,7 +7033,7 @@ async def delete_system_notification(notification_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to delete system notification: {str(e)}")
 
 @app.post("/api/admin/cleanup-system-notifications")
-async def cleanup_system_notifications_from_user_notifications():
+async def cleanup_system_notifications_from_user_notifications(current_user: dict = Depends(require_admin_role)):
     """Clean up system notifications that were incorrectly stored in user_notifications collection"""
     try:
         # Find all notifications in user_notifications that have system_notification_id field
@@ -7873,7 +7873,7 @@ async def unassign_item_from_basket(item_id: str):
 # ============================================================================
 
 @app.get("/api/admin/ads")
-async def get_all_ads():
+async def get_all_ads(current_user: dict = Depends(require_admin_role)):
     """Get all ads for management (admin only)"""
     try:
         # Convert MongoDB cursor to list first
