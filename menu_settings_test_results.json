@@ -1,5 +1,5 @@
 {
-  "test_timestamp": "2025-09-11T08:47:58.025971",
+  "test_timestamp": "2025-09-11T08:49:20.095975",
   "authentication": {
     "success": true,
     "admin_user": {
@@ -37,27 +37,27 @@
       "created_at": "2025-09-09T10:20:41.643000",
       "is_active": true
     },
-    "admin_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWRtaW5fdXNlcl8xIiwiZW1haWwiOiJhZG1pbkBjYXRhbG9yby5jb20iLCJyb2xlIjoiYWRtaW4iLCJ1c2VyX3JvbGUiOiJBZG1pbiIsImV4cCI6MTc1NzY2Njg3N30.cT6DMp6IvGDS99pmtRpaUPFGHEWUQDEVsTvxBjxvo1g",
-    "demo_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjhiZmZmNzkwZTRlNDZiYzI4ZDQzNjMxIiwiZW1haWwiOiJkZW1vQGNhdGFsb3JvLmNvbSIsInJvbGUiOiJ1c2VyIiwidXNlcl9yb2xlIjoiVXNlci1CdXllciIsImV4cCI6MTc1NzY2Njg3N30.VwkeNCEdJMUo8b_iw1tAS44HbZ2M8B9rSZlUmajKZUo"
+    "admin_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWRtaW5fdXNlcl8xIiwiZW1haWwiOiJhZG1pbkBjYXRhbG9yby5jb20iLCJyb2xlIjoiYWRtaW4iLCJ1c2VyX3JvbGUiOiJBZG1pbiIsImV4cCI6MTc1NzY2Njk1OX0.DkvU2Tk2fgO24bmofruiM--bCy0CdvajJ2ynldBM8j4",
+    "demo_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjhiZmZmNzkwZTRlNDZiYzI4ZDQzNjMxIiwiZW1haWwiOiJkZW1vQGNhdGFsb3JvLmNvbSIsInJvbGUiOiJ1c2VyIiwidXNlcl9yb2xlIjoiVXNlci1CdXllciIsImV4cCI6MTc1NzY2Njk1OX0.by_qJbwcW-mM2VW-mZJHlXh8lvF3b4vVq9r6Db2K-0k"
   },
   "role_mapping_verification": {
     "test_name": "Role Mapping Fix Verification",
     "total_users_tested": 2,
     "successful_authentications": 2,
-    "admin_role_mapping_working": false,
+    "admin_role_mapping_working": true,
     "buyer_role_mapping_working": true,
     "user_buyer_to_buyer_mapping_working": true,
-    "admin_to_admin_mapping_working": false,
-    "role_mapping_fix_successful": false,
+    "admin_to_admin_mapping_working": true,
+    "role_mapping_fix_successful": true,
     "detailed_role_tests": [
       {
         "user": "admin",
         "user_id": "admin_user_1",
         "email": "admin@cataloro.com",
         "menu_settings_accessible": true,
-        "response_time_ms": 11.817455291748047,
-        "admin_role_mapped_correctly": false,
-        "admin_items_count": 0,
+        "response_time_ms": 11.272668838500977,
+        "admin_role_mapped_correctly": true,
+        "admin_items_count": 1,
         "success": true
       },
       {
@@ -65,7 +65,7 @@
         "user_id": "68bfff790e4e46bc28d43631",
         "email": "demo@cataloro.com",
         "menu_settings_accessible": true,
-        "response_time_ms": 12.413263320922852,
+        "response_time_ms": 11.638879776000977,
         "buyer_role_mapped_correctly": true,
         "seller_items_properly_hidden": true,
         "buyer_items_count": 2,
@@ -89,31 +89,31 @@
       {
         "step": "Get Current Settings",
         "success": true,
-        "response_time_ms": 12.784481048583984,
+        "response_time_ms": 11.873722076416016,
         "settings_retrieved": true
       },
       {
         "step": "Save Modified Settings",
         "success": true,
-        "response_time_ms": 10.704755783081055,
+        "response_time_ms": 10.09678840637207,
         "messages_disabled": true
       },
       {
         "step": "Verify Database Persistence",
         "success": true,
-        "response_time_ms": 50.810813903808594,
+        "response_time_ms": 49.46303367614746,
         "messages_disabled_in_db": true
       },
       {
         "step": "Admin User Filtering",
         "success": true,
-        "response_time_ms": 9.943485260009766,
+        "response_time_ms": 9.97304916381836,
         "messages_filtered_for_admin": true
       },
       {
         "step": "Demo User Filtering",
         "success": true,
-        "response_time_ms": 8.990287780761719,
+        "response_time_ms": 8.592844009399414,
         "messages_filtered_for_demo": true
       }
     ]
@@ -122,29 +122,29 @@
     "test_name": "Different User Role Testing",
     "total_users_tested": 2,
     "successful_tests": 2,
-    "admin_role_restrictions_working": false,
+    "admin_role_restrictions_working": true,
     "buyer_role_restrictions_working": true,
-    "role_based_filtering_working": false,
-    "admin_can_see_admin_items": false,
+    "role_based_filtering_working": true,
+    "admin_can_see_admin_items": true,
     "buyer_cannot_see_seller_items": true,
     "buyer_cannot_see_admin_items": true,
     "detailed_role_visibility_tests": [
       {
         "user_type": "admin",
         "user_id": "admin_user_1",
-        "response_time_ms": 8.85915756225586,
-        "can_see_admin_items": false,
+        "response_time_ms": 51.92971229553223,
+        "can_see_admin_items": true,
         "can_see_seller_items": true,
-        "admin_items_count": 0,
+        "admin_items_count": 1,
         "seller_items_count": 1,
         "buyer_items_count": 2,
-        "role_restrictions_working": false,
+        "role_restrictions_working": true,
         "success": true
       },
       {
         "user_type": "buyer",
         "user_id": "68bfff790e4e46bc28d43631",
-        "response_time_ms": 51.25021934509277,
+        "response_time_ms": 11.803150177001953,
         "cannot_see_admin_items": true,
         "cannot_see_seller_items": true,
         "can_see_buyer_items": true,
@@ -165,55 +165,55 @@
     "admin_can_disable_items": true,
     "demo_user_properly_filtered": true,
     "admin_behavior_correct": true,
-    "role_restrictions_and_disabled_both_working": false,
-    "end_to_end_workflow_functional": false,
+    "role_restrictions_and_disabled_both_working": true,
+    "end_to_end_workflow_functional": true,
     "detailed_scenario_steps": [
       {
         "step": "Admin Get Current Settings",
         "success": true,
-        "response_time_ms": 10.57124137878418
+        "response_time_ms": 10.059595108032227
       },
       {
         "step": "Admin Disable Messages",
         "success": true,
-        "response_time_ms": 55.013179779052734,
+        "response_time_ms": 50.82058906555176,
         "messages_disabled": true
       },
       {
         "step": "Demo User Messages Hidden",
         "success": true,
-        "response_time_ms": 10.988950729370117,
+        "response_time_ms": 9.28044319152832,
         "messages_hidden_from_demo": true
       },
       {
         "step": "Admin User Messages Behavior",
         "success": true,
-        "response_time_ms": 10.362625122070312,
+        "response_time_ms": 8.705377578735352,
         "admin_messages_behavior": "hidden",
         "admin_behavior_correct": true
       },
       {
         "step": "Disabled vs Role-Restricted Test",
         "success": true,
-        "role_restrictions_still_working": false,
-        "admin_only_items_count": 0,
+        "role_restrictions_still_working": true,
+        "admin_only_items_count": 1,
         "disabled_items_filtered": true,
-        "role_and_disabled_both_working": false
+        "role_and_disabled_both_working": true
       }
     ]
   },
   "summary": {
-    "overall_success_rate": 25.0,
-    "role_mapping_fix_working": false,
+    "overall_success_rate": 100.0,
+    "role_mapping_fix_working": true,
     "menu_visibility_workflow_working": true,
-    "role_based_filtering_working": false,
-    "end_to_end_scenario_working": false,
-    "admin_role_mapping_correct": false,
+    "role_based_filtering_working": true,
+    "end_to_end_scenario_working": true,
+    "admin_role_mapping_correct": true,
     "buyer_role_mapping_correct": true,
     "database_persistence_working": true,
     "user_filtering_working": true,
-    "admin_can_see_admin_items": false,
+    "admin_can_see_admin_items": true,
     "buyer_cannot_see_seller_items": true,
-    "all_tests_passed": false
+    "all_tests_passed": true
   }
 }
