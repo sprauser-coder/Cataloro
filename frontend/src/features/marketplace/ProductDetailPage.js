@@ -890,7 +890,13 @@ function CatalystContentBox({ weight, ptPpm, pdPpm, rhPpm, ptG, pdG, rhG }) {
   useEffect(() => {
     const fetchPriceSettings = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/price-settings`);
+        const token = localStorage.getItem('cataloro_token');
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/price-settings`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
         if (response.ok) {
           const settings = await response.json();
           setPriceSettings(settings);
