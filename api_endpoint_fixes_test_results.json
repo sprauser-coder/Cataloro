@@ -1,6 +1,6 @@
 {
-  "test_timestamp": "2025-09-11T17:58:44.875925",
-  "test_focus": "API endpoint fixes for 404 errors and authentication issues",
+  "test_timestamp": "2025-09-11T18:23:11.568522",
+  "test_focus": "API endpoint fixes for 404 errors and authentication issues + unified calculations",
   "browse_listings_test": {
     "test_name": "Browse Listings API",
     "success": true,
@@ -8,7 +8,7 @@
       "endpoint": "/marketplace/browse",
       "expected_status": 200,
       "actual_status": 200,
-      "response_time_ms": 72.79038429260254,
+      "response_time_ms": 131.48975372314453,
       "listings_count": 9,
       "error_messages": [],
       "success": true,
@@ -29,7 +29,7 @@
       "endpoint": "/user/68bfff790e4e46bc28d43631/notifications",
       "expected_status": 200,
       "actual_status": 200,
-      "response_time_ms": 53.07579040527344,
+      "response_time_ms": 11.741876602172852,
       "notifications_count": 0,
       "error_messages": [],
       "success": true,
@@ -46,7 +46,7 @@
       "endpoint": "/admin/upload-image",
       "expected_status": 200,
       "actual_status": 500,
-      "response_time_ms": 52.79135704040527,
+      "response_time_ms": 9.347677230834961,
       "upload_successful": false,
       "error_messages": [
         "Image upload failed: Unknown error"
@@ -65,7 +65,7 @@
       "endpoint": "/auth/profile",
       "expected_status": 200,
       "actual_status": 200,
-      "response_time_ms": 2805.1953315734863,
+      "response_time_ms": 8.69131088256836,
       "profile_data_present": true,
       "error_messages": [],
       "success": true,
@@ -82,7 +82,7 @@
       "endpoint": "/admin/logo",
       "expected_status": 200,
       "actual_status": 200,
-      "response_time_ms": 13.48257064819336,
+      "response_time_ms": 8.763313293457031,
       "logo_data_present": true,
       "error_messages": [],
       "success": true,
@@ -92,11 +92,42 @@
     "error_resolved": true,
     "admin_access_working": true
   },
+  "unified_calculations_test": {
+    "test_name": "Unified Calculations Endpoint",
+    "success": true,
+    "test_results": {
+      "endpoint": "/admin/catalyst/unified-calculations",
+      "expected_status": 200,
+      "actual_status": 200,
+      "response_time_ms": 186.09285354614258,
+      "catalyst_entries_count": 4496,
+      "has_required_fields": true,
+      "error_messages": [],
+      "success": true,
+      "authentication_working": true,
+      "sample_entry": {
+        "catalyst_id": "35dd663d-7933-4474-b20e-d59b9eab835b",
+        "cat_id": "32050",
+        "name": "MazdaRF4SOK14",
+        "weight": 1.32,
+        "total_price": 17.71,
+        "pt_g": 0.7085,
+        "pd_g": 0.0,
+        "rh_g": 0.0,
+        "is_override": false,
+        "add_info": "Mazda RF4S OK14"
+      }
+    },
+    "critical_issue": false,
+    "zero_entries_issue": false,
+    "authentication_working": true,
+    "has_required_fields": true
+  },
   "summary": {
-    "total_tests": 5,
-    "successful_tests": 4,
+    "total_tests": 6,
+    "successful_tests": 5,
     "failed_tests": 1,
-    "success_rate": 80.0,
+    "success_rate": 83.33333333333334,
     "critical_issues": [
       "Image Upload Authentication: Image upload failed: Unknown error"
     ],
