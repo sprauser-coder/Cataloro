@@ -1186,7 +1186,8 @@ function CreateListingPage() {
                     <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview</h4>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
                       Your listing will expire in <span className="font-mono text-blue-600 dark:text-blue-400">
-                        {formData.time_limit_hours === 24 ? '1 day' : 
+                        {formData.time_limit_hours === 1 ? '1 hour' :
+                         formData.time_limit_hours === 24 ? '1 day' : 
                          formData.time_limit_hours === 48 ? '2 days' :
                          formData.time_limit_hours === 168 ? '1 week' : '1 month'}
                       </span> after publication.
