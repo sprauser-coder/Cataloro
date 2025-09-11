@@ -308,16 +308,16 @@ class MenuSettingsVisibilityTester:
         messages_found = False
         
         if "mobile_menu" in modified_settings:
-            for item in modified_settings["mobile_menu"]:
-                if item.get("key") == "messages":
+            for key, item in modified_settings["mobile_menu"].items():
+                if key == "messages":
                     item["enabled"] = False
                     messages_found = True
                     print(f"    📱 Found and disabled 'messages' in mobile menu")
                     break
         
         if not messages_found and "desktop_menu" in modified_settings:
-            for item in modified_settings["desktop_menu"]:
-                if item.get("key") == "messages":
+            for key, item in modified_settings["desktop_menu"].items():
+                if key == "messages":
                     item["enabled"] = False
                     messages_found = True
                     print(f"    🖥️ Found and disabled 'messages' in desktop menu")
