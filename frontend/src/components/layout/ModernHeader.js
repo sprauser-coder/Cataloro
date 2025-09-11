@@ -712,8 +712,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 </Link>
               )}
               
-              {/* Admin Link - Admin and Admin-Manager access */}
-              {permissions.ui.showAdminPanelLink && (
+              {/* Admin Link - Menu settings visibility */}
+              {isMenuItemVisible('desktop_menu', 'admin_panel') && (
                 <Link
                   to="/admin"
                   className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm shadow-lg backdrop-blur-md ${
