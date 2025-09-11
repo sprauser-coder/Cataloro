@@ -4455,6 +4455,7 @@ async def create_listing(request: Request, listing_data: dict):
             # Calculate expiration time
             expires_at = datetime.utcnow() + timedelta(hours=time_limit_hours)
             listing_data["expires_at"] = expires_at.isoformat()
+            listing_data["time_limit_hours"] = time_limit_hours  # Preserve the time limit value
             listing_data["is_expired"] = False
             listing_data["winning_bidder_id"] = None
         else:
