@@ -809,6 +809,29 @@ function ModernBrowsePage() {
                 <option value="Business">Business</option>
               </select>
             </div>
+            
+            {/* NEW: Bid Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                My Activity
+              </label>
+              <select
+                value={filters.bidFilter || 'all'}
+                onChange={(e) => updateFilters({...filters, bidFilter: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white h-10 leading-none"
+                disabled={!user}
+              >
+                <option value="all">All Listings</option>
+                <option value="placed_bid">Placed a Bid</option>
+                <option value="not_placed_bid">Not Placed a Bid</option>
+                <option value="own_listings">My Listings</option>
+              </select>
+              {!user && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Login to filter by your activity
+                </p>
+              )}
+            </div>
 
             {/* Price Range (from-to inputs) */}
             <div>
@@ -844,16 +867,26 @@ function ModernBrowsePage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="flex flex-col">
+            <div className="flex flex-col md:col-span-3">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Actions
               </label>
-              <button
-                onClick={() => updateFilters({type: 'all', priceFrom: 0, priceTo: 10000, location: 'all', rating: 0})}
-                className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors h-10"
-              >
-                Clear Filters
-              </button>
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => updateFilters({type: 'all', priceFrom: 0, priceTo: 10000, location: 'all', rating: 0, bidFilter: 'all'})}
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors h-10"
+                >
+                  Clear All Filters
+                </button>
+                {user && (
+                  <button
+                    onClick={() => updateFilters({...filters, bidFilter: 'own_listings'})}
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors h-10"
+                  >
+                    Show My Listings
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
