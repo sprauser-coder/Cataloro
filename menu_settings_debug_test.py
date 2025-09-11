@@ -424,7 +424,14 @@ class MenuSettingsDebugTester:
             admin_user_result = await self.make_request(f"/menu-settings/user/{self.admin_user_id}")
             if admin_user_result["success"]:
                 admin_mobile_menu = admin_user_result["data"].get("mobile_menu", [])
-                admin_messages_filtered = not any(item.get("key") == "messages" for item in admin_mobile_menu)
+                
+                if isinstance(admin_mobile_menu, list):
+                    admin_messages_filtered = not any(item.get("key") == "messages" for item in admin_mobile_menu if isinstance(item, dict))
+                elif isinstance(admin_mobile_menu, dict):
+                    admin_messages_filtered = "messages" not in admin_mobile_menu
+                else:
+                    admin_messages_filtered = True  # If no mobile menu, messages is filtered
+                
                 step3_results["admin_filtered"] = admin_messages_filtered
                 print(f"    {'✅' if admin_messages_filtered else '❌'} Admin user messages filtered: {admin_messages_filtered}")
         
