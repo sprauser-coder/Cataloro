@@ -51,7 +51,8 @@ async def check_menu_settings():
     except Exception as e:
         print(f'Error checking menu settings: {e}')
     finally:
-        await client.close()
+        if client:
+            client.close()
 
 if __name__ == "__main__":
     asyncio.run(check_menu_settings())
