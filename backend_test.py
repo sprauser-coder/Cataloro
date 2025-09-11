@@ -4799,72 +4799,92 @@ async def main():
     menu_tester = AdminMenuSettingsTester()
     menu_results = await menu_tester.run_comprehensive_menu_settings_test()
     
-    # Print Messages Test Summary
+    # Print Menu Settings Test Summary
     print("\n" + "=" * 60)
-    print("📊 MESSAGES FUNCTIONALITY SUMMARY")
+    print("📊 ADMIN MENU SETTINGS FUNCTIONALITY SUMMARY")
     print("=" * 60)
     
-    messages_summary = messages_results["summary"]
-    api_test = messages_results["api_endpoint_test"]
-    db_test = messages_results["database_content_test"]
-    creation_test = messages_results["message_creation_test"]
-    consistency_test = messages_results["consistency_test"]
+    if menu_results.get("error"):
+        print(f"❌ Setup Error: {menu_results['error']}")
+        print("Cannot proceed with menu settings tests without proper authentication")
+        return
     
-    print(f"🎯 Overall Success Rate: {messages_summary.get('overall_success_rate', 0):.0f}%")
+    menu_summary = menu_results["summary"]
+    get_test = menu_results["menu_settings_get_endpoint"]
+    structure_test = menu_results["data_structure_comparison"]
+    post_test = menu_results["menu_settings_post_endpoint"]
+    defaults_test = menu_results["default_items_verification"]
+    cleanup_test = menu_results["database_cleanup_impact"]
+    user_test = menu_results["user_menu_settings_endpoint"]
+    
+    print(f"🎯 Overall Success Rate: {menu_summary.get('overall_success_rate', 0):.0f}%")
     print()
     
-    # API Endpoint Testing
-    api_status = "✅" if api_test.get("api_responding") else "❌"
-    both_ids_status = "✅" if api_test.get("both_user_ids_working") else "❌"
-    print(f"{api_status} API Endpoints Working: {'Yes' if api_test.get('api_responding') else 'No'}")
-    print(f"   📊 Success Rate: {api_test.get('success_rate', 0):.0f}%")
-    print(f"   ⏱️ Avg Response Time: {api_test.get('avg_response_time_ms', 0):.0f}ms")
-    print(f"   {both_ids_status} Both User IDs Working: {'Yes' if api_test.get('both_user_ids_working') else 'No'}")
+    # GET Endpoint Testing
+    get_status = "✅" if get_test.get("success") else "❌"
+    print(f"{get_status} GET /api/admin/menu-settings: {'Working' if get_test.get('success') else 'Failed'}")
+    if get_test.get("success"):
+        print(f"   🖥️ Desktop items: {get_test.get('desktop_items_count', 0)}")
+        print(f"   📱 Mobile items: {get_test.get('mobile_items_count', 0)}")
+        print(f"   🏗️ Valid structure: {'Yes' if get_test.get('valid_item_structure') else 'No'}")
+    else:
+        print(f"   ❌ Error: {get_test.get('error', 'Unknown')}")
     
-    # Database Content Check
-    db_status = "✅" if db_test.get("database_accessible") else "❌"
-    messages_exist = "✅" if db_test.get("database_has_messages") else "❌"
-    total_messages = db_test.get("total_messages_in_system", 0)
-    print(f"{db_status} Database Accessible: {'Yes' if db_test.get('users_with_api_access', 0) > 0 else 'No'}")
-    print(f"   📊 Users Checked: {db_test.get('total_users_checked', 0)}")
-    print(f"   📨 Total Messages in System: {total_messages}")
-    print(f"   {messages_exist} Messages Exist: {'Yes' if db_test.get('database_has_messages') else 'No'}")
+    # Data Structure Comparison
+    structure_status = "✅" if structure_test.get("success") else "❌"
+    print(f"{structure_status} Data Structure Match: {'Passed' if structure_test.get('success') else 'Failed'}")
+    if structure_test.get("success"):
+        print(f"   🖥️ Desktop match: {structure_test.get('desktop_match_percent', 0):.1f}%")
+        print(f"   📱 Mobile match: {structure_test.get('mobile_match_percent', 0):.1f}%")
     
-    # Message Creation Test
-    creation_status = "✅" if creation_test.get("creation_endpoint_working") else "❌"
-    storage_status = "✅" if creation_test.get("message_storage_working") else "❌"
-    flow_status = "✅" if creation_test.get("full_message_flow_working") else "❌"
-    print(f"{creation_status} Message Creation: {'Working' if creation_test.get('creation_endpoint_working') else 'Failed'}")
-    print(f"   {storage_status} Message Storage: {'Working' if creation_test.get('message_storage_working') else 'Failed'}")
-    print(f"   {flow_status} Full Message Flow: {'Working' if creation_test.get('full_message_flow_working') else 'Failed'}")
+    # POST Endpoint Testing
+    post_status = "✅" if post_test.get("success") else "❌"
+    print(f"{post_status} POST /api/admin/menu-settings: {'Working' if post_test.get('success') else 'Failed'}")
+    if post_test.get("success"):
+        print(f"   ✅ Update verified: {'Yes' if post_test.get('update_verified') else 'No'}")
+    else:
+        print(f"   ❌ Error: {post_test.get('error', 'Unknown')}")
     
-    # Consistency Test
-    consistency_status = "✅" if consistency_test.get("data_consistent_across_calls") else "❌"
-    reliability = consistency_test.get("api_reliability", 0)
-    print(f"{consistency_status} Data Consistency: {'Verified' if consistency_test.get('data_consistent_across_calls') else 'Issues Found'}")
-    print(f"   📊 API Reliability: {reliability:.0f}%")
-    print(f"   ⏱️ Avg Response Time: {consistency_test.get('avg_response_time_ms', 0):.0f}ms")
+    # Default Items Verification
+    defaults_status = "✅" if defaults_test.get("success") else "❌"
+    print(f"{defaults_status} Default Items Structure: {'Valid' if defaults_test.get('success') else 'Invalid'}")
+    if defaults_test.get("success"):
+        print(f"   🖥️ Desktop valid: {defaults_test.get('desktop_valid_items', 0)}/{defaults_test.get('total_expected', 0)}")
+        print(f"   📱 Mobile valid: {defaults_test.get('mobile_valid_items', 0)}/{defaults_test.get('total_expected', 0)}")
+    
+    # Database Cleanup Impact
+    cleanup_status = "✅" if cleanup_test.get("success") else "❌"
+    print(f"{cleanup_status} Database Cleanup Impact: {'No issues' if cleanup_test.get('success') else 'Issues detected'}")
+    if not cleanup_test.get("success"):
+        analysis = cleanup_test.get("cleanup_analysis", {})
+        print(f"   🗑️ Corrupted items: {analysis.get('corrupted_custom_items', 0)}")
+        print(f"   📝 Placeholder items: {analysis.get('placeholder_items', 0)}")
+        print(f"   ❌ Missing defaults: {analysis.get('missing_defaults_count', 0)}")
+    
+    # User Menu Endpoint
+    user_status = "✅" if user_test.get("success") else "❌"
+    print(f"{user_status} User Menu Filtering: {'Working' if user_test.get('success') else 'Failed'}")
+    if user_test.get("success"):
+        print(f"   👤 User role: {user_test.get('user_role', 'unknown')}")
+        print(f"   🔑 Admin items: {len(user_test.get('admin_items_desktop', []))}")
     
     print()
-    print("🔍 ROOT CAUSE ANALYSIS:")
-    print(f"   {messages_summary.get('empty_messages_explanation', 'Unknown')}")
-    print(f"   📋 Recommended Action: {messages_summary.get('recommended_action', 'None')}")
-    
-    print()
-    print("🏆 MESSAGES FUNCTIONALITY TEST RESULTS:")
-    overall_status = "✅ ISSUE IDENTIFIED" if messages_summary.get("mobile_messages_issue_identified") else "❌ ISSUE NOT CLEAR"
+    print("🏆 ADMIN MENU SETTINGS TEST RESULTS:")
+    overall_status = "✅ ALL TESTS PASSED" if menu_summary.get("all_tests_passed") else "⚠️ SOME TESTS FAILED"
     print(f"   {overall_status}")
-    print(f"   Success Rate: {messages_summary.get('overall_success_rate', 0):.0f}%")
-    print(f"   API Working: {'✅ Yes' if messages_summary.get('api_endpoints_working') else '❌ No'}")
-    print(f"   Database Access: {'✅ Yes' if messages_summary.get('database_accessible') else '❌ No'}")
-    print(f"   Message Creation: {'✅ Working' if messages_summary.get('message_creation_working') else '❌ Failed'}")
-    print(f"   Data Consistency: {'✅ Verified' if messages_summary.get('data_consistency_verified') else '❌ Issues'}")
+    print(f"   Success Rate: {menu_summary.get('overall_success_rate', 0):.0f}%")
+    print(f"   GET Endpoint: {'✅ Working' if menu_summary.get('menu_get_working') else '❌ Failed'}")
+    print(f"   POST Endpoint: {'✅ Working' if menu_summary.get('menu_post_working') else '❌ Failed'}")
+    print(f"   Data Structure: {'✅ Correct' if menu_summary.get('data_structure_correct') else '❌ Issues'}")
+    print(f"   Default Items: {'✅ Valid' if menu_summary.get('default_items_valid') else '❌ Invalid'}")
+    print(f"   Database Cleanup: {'✅ OK' if menu_summary.get('database_cleanup_ok') else '❌ Issues'}")
+    print(f"   User Filtering: {'✅ Working' if menu_summary.get('user_menu_filtering_working') else '❌ Failed'}")
     
     # Save detailed results
-    with open("/app/messages_test_results.json", "w") as f:
-        json.dump(messages_results, f, indent=2, default=str)
+    with open("/app/menu_settings_test_results.json", "w") as f:
+        json.dump(menu_results, f, indent=2, default=str)
     
-    print(f"\n📄 Messages test results saved to: /app/messages_test_results.json")
+    print(f"\n📄 Menu settings test results saved to: /app/menu_settings_test_results.json")
     
     # Run Mobile Bidding Tests (Secondary focus)
     print("\n🎯 MOBILE BIDDING FUNCTIONALITY TESTING")
