@@ -3581,7 +3581,7 @@ async def get_admin_logo():
         raise HTTPException(status_code=500, detail=f"Failed to get logo: {str(e)}")
 
 @app.get("/api/admin/menu-settings")
-async def get_menu_settings(token: str = Depends(get_current_user_token)):
+async def get_menu_settings(current_user: dict = Depends(require_admin_role)):
     """Get menu settings configuration"""
     try:
         # Get menu settings from database
@@ -3623,7 +3623,8 @@ async def get_menu_settings(token: str = Depends(get_current_user_token)):
         raise HTTPException(status_code=500, detail=f"Failed to get menu settings: {str(e)}")
 
 @app.post("/api/admin/menu-settings")
-async def update_menu_settings(settings: dict):
+async def update_menu_settings(settings: dict, current_user: dict = Depends(require_admin_role)):
+    """Update menu settings configuration"""
     """Update menu settings configuration"""
     try:
         # Update menu settings in database
