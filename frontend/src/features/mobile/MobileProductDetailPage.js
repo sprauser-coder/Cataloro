@@ -403,6 +403,21 @@ function MobileProductDetailPage() {
       <div className="bg-white dark:bg-gray-800 p-6 border-t border-gray-200 dark:border-gray-700">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Place Your Bid</h3>
         
+        {/* User is Highest Bidder Indicator */}
+        {product.bid_info?.highest_bidder_id === user?.id && product.bid_info?.has_bids && (
+          <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="text-green-800 dark:text-green-300 font-medium text-sm">
+                🎉 You're the highest bidder!
+              </div>
+            </div>
+            <div className="text-green-700 dark:text-green-400 text-xs mt-1">
+              Wait for others to place higher bids before you can bid again.
+            </div>
+          </div>
+        )}
+        
         <div className="flex space-x-3">
           <div className="flex-1">
             <input
@@ -419,11 +434,12 @@ function MobileProductDetailPage() {
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               min={product.bid_info?.highest_bid ? product.bid_info.highest_bid + 1 : product.price || 0}
               step="1"
+              disabled={product.bid_info?.highest_bidder_id === user?.id}
             />
           </div>
           <button
             onClick={handleBidSubmit}
-            disabled={submittingBid || !bidAmount}
+            disabled={submittingBid || !bidAmount || (product.bid_info?.highest_bidder_id === user?.id)}
             className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 
                      text-white font-semibold rounded-lg transition-colors
                      flex items-center space-x-2"
