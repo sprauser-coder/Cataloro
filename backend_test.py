@@ -656,7 +656,7 @@ class APIEndpointFixesTester:
             critical_issues = []
             resolved_issues = []
             
-            tests = [browse_test, notifications_test, image_upload_test, profile_test, admin_logo_test]
+            tests = [browse_test, notifications_test, image_upload_test, profile_test, admin_logo_test, unified_calculations_test]
             
             for test in tests:
                 if test.get("critical_issue", False):
