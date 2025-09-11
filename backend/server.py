@@ -3870,6 +3870,7 @@ async def get_menu_settings(current_user: dict = Depends(require_admin_role)):
             "mobile_menu": {
                 "browse": {"enabled": True, "label": "Browse", "roles": ["admin", "manager", "seller", "buyer"]},
                 "messages": {"enabled": True, "label": "Messages", "roles": ["admin", "manager", "seller", "buyer"]},
+                "notifications": {"enabled": True, "label": "Notifications", "roles": ["admin", "manager", "seller", "buyer"]},
                 "create": {"enabled": True, "label": "Create", "roles": ["admin", "manager", "seller"]},
                 "tenders": {"enabled": True, "label": "Tenders", "roles": ["admin", "manager", "seller", "buyer"]},
                 "listings": {"enabled": True, "label": "Listings", "roles": ["admin", "manager", "seller"]},
