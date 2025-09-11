@@ -1,9 +1,9 @@
 {
-  "test_timestamp": "2025-09-11T13:21:43.368042",
+  "test_timestamp": "2025-09-11T15:00:03.064927",
   "available_pages_endpoint": {
     "test_name": "Available Pages Endpoint",
     "success": true,
-    "response_time_ms": 15.297412872314453,
+    "response_time_ms": 13.502836227416992,
     "total_pages": 20,
     "expected_pages_found": true,
     "valid_structure": true,
@@ -38,7 +38,7 @@
   "available_icons_endpoint": {
     "test_name": "Available Icons Endpoint",
     "success": true,
-    "response_time_ms": 24.01280403137207,
+    "response_time_ms": 49.15761947631836,
     "total_icons": 79,
     "expected_icons_found": true,
     "sample_icons": [
@@ -57,11 +57,11 @@
   "menu_settings_get": {
     "test_name": "Menu Settings GET",
     "success": true,
-    "response_time_ms": 16.829967498779297,
+    "response_time_ms": 12.491464614868164,
     "has_desktop_items": true,
     "has_mobile_items": true,
-    "desktop_items_count": 12,
-    "mobile_items_count": 11,
+    "desktop_items_count": 11,
+    "mobile_items_count": 7,
     "current_settings": {
       "desktop_menu": {
         "about": {
@@ -72,21 +72,17 @@
             "seller",
             "buyer"
           ],
-          "label": "About Platform",
-          "icon": "Globe",
-          "path": "/info"
+          "label": "About"
         },
         "browse": {
           "enabled": true,
           "roles": [
             "admin",
             "manager",
-            "buyer",
-            "seller"
+            "seller",
+            "buyer"
           ],
-          "label": "Browse",
-          "icon": "Store",
-          "path": "/browse"
+          "label": "Browse"
         },
         "create_listing": {
           "enabled": true,
@@ -95,9 +91,7 @@
             "manager",
             "seller"
           ],
-          "label": "Create Listing",
-          "icon": "Plus",
-          "path": "/create-listing"
+          "label": "Create Listing"
         },
         "messages": {
           "enabled": true,
@@ -107,9 +101,7 @@
             "seller",
             "buyer"
           ],
-          "label": "Messages",
-          "icon": "MessageCircle",
-          "path": "/messages"
+          "label": "Messages"
         },
         "tenders": {
           "enabled": true,
@@ -119,9 +111,7 @@
             "seller",
             "buyer"
           ],
-          "label": "Tenders",
-          "icon": "DollarSign",
-          "path": "/tenders"
+          "label": "Tenders"
         },
         "profile": {
           "enabled": true,
@@ -131,9 +121,7 @@
             "seller",
             "buyer"
           ],
-          "label": "Profile",
-          "icon": "User",
-          "path": "/profile"
+          "label": "Profile"
         },
         "admin_panel": {
           "enabled": true,
@@ -141,9 +129,7 @@
             "admin",
             "manager"
           ],
-          "label": "Admin Panel",
-          "icon": "Shield",
-          "path": "/admin"
+          "label": "Admin Panel"
         },
         "buy_management": {
           "enabled": true,
@@ -152,9 +138,7 @@
             "manager",
             "buyer"
           ],
-          "label": "Buy Management",
-          "icon": "ShoppingCart",
-          "path": "/buy-management"
+          "label": "Buy Management"
         },
         "my_listings": {
           "enabled": false,
@@ -163,9 +147,7 @@
             "manager",
             "seller"
           ],
-          "label": "My Listings",
-          "icon": "Package",
-          "path": "/my-listings"
+          "label": "My Listings"
         },
         "favorites": {
           "enabled": true,
@@ -175,21 +157,7 @@
             "seller",
             "buyer"
           ],
-          "label": "Favorites",
-          "icon": "Heart",
-          "path": "/favorites"
-        },
-        "notifications": {
-          "enabled": false,
-          "roles": [
-            "admin",
-            "manager",
-            "seller",
-            "buyer"
-          ],
-          "label": "Notifications",
-          "icon": "Bell",
-          "path": "/notifications"
+          "label": "Favorites"
         },
         "custom_items": []
       },
@@ -202,9 +170,7 @@
             "seller",
             "buyer"
           ],
-          "label": "Browse",
-          "icon": "Store",
-          "path": "/browse"
+          "label": "Browse"
         },
         "messages": {
           "enabled": true,
@@ -214,9 +180,7 @@
             "seller",
             "buyer"
           ],
-          "label": "Messages",
-          "icon": "MessageCircle",
-          "path": "/messages"
+          "label": "Messages"
         },
         "create": {
           "enabled": true,
@@ -225,9 +189,7 @@
             "manager",
             "seller"
           ],
-          "label": "Create",
-          "icon": "Plus",
-          "path": "/create-listing"
+          "label": "Create"
         },
         "tenders": {
           "enabled": true,
@@ -237,9 +199,7 @@
             "seller",
             "buyer"
           ],
-          "label": "Tenders",
-          "icon": "DollarSign",
-          "path": "/mobile-tenders"
+          "label": "Tenders"
         },
         "listings": {
           "enabled": true,
@@ -248,9 +208,7 @@
             "manager",
             "seller"
           ],
-          "label": "Listings",
-          "icon": "Package",
-          "path": "/mobile-my-listings"
+          "label": "Listings"
         },
         "profile": {
           "enabled": true,
@@ -260,9 +218,7 @@
             "seller",
             "buyer"
           ],
-          "label": "Profile",
-          "icon": "User",
-          "path": "/profile"
+          "label": "Profile"
         },
         "admin_drawer": {
           "enabled": true,
@@ -270,56 +226,7 @@
             "admin",
             "manager"
           ],
-          "label": "Admin Panel",
-          "icon": "BarChart3",
-          "path": "/admin"
-        },
-        "about": {
-          "enabled": true,
-          "roles": [
-            "admin",
-            "manager",
-            "seller",
-            "buyer"
-          ],
-          "label": "About Platform",
-          "icon": "Globe",
-          "path": "/info"
-        },
-        "buy_management": {
-          "enabled": true,
-          "roles": [
-            "admin",
-            "manager",
-            "buyer"
-          ],
-          "label": "Buy Management",
-          "icon": "ShoppingCart",
-          "path": "/buy-management"
-        },
-        "favorites": {
-          "enabled": true,
-          "roles": [
-            "admin",
-            "manager",
-            "seller",
-            "buyer"
-          ],
-          "label": "Favorites",
-          "icon": "Heart",
-          "path": "/favorites"
-        },
-        "notifications": {
-          "enabled": true,
-          "roles": [
-            "admin",
-            "manager",
-            "seller",
-            "buyer"
-          ],
-          "label": "Notifications",
-          "icon": "Bell",
-          "path": "/notifications"
+          "label": "Admin"
         }
       }
     }
@@ -327,7 +234,7 @@
   "custom_item_creation": {
     "test_name": "Custom Menu Item Creation",
     "success": true,
-    "response_time_ms": 13.13924789428711,
+    "response_time_ms": 10.60342788696289,
     "desktop_items_saved": true,
     "mobile_items_saved": true,
     "structure_valid": true,
@@ -366,7 +273,7 @@
   "user_menu_filtering": {
     "test_name": "User Menu Filtering",
     "success": true,
-    "response_time_ms": 12.360334396362305,
+    "response_time_ms": 49.369096755981445,
     "desktop_custom_items": 1,
     "mobile_custom_items": 0,
     "role_filtering_working": true,
