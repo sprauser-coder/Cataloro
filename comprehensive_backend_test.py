@@ -268,7 +268,8 @@ class ComprehensiveBackendTester:
                 
                 # Extract user ID for subsequent tests
                 if endpoint_test["name"].startswith("Create User") and isinstance(result.get("data"), dict):
-                    created_user_id = result["data"].get("user_id") or result["data"].get("id")
+                    user_data = result["data"].get("user", {})
+                    created_user_id = user_data.get("id") if isinstance(user_data, dict) else None
                     print(f"    📝 Created user ID: {created_user_id}")
             else:
                 test_results["failed_endpoints"] += 1
