@@ -28,10 +28,15 @@ async def main():
         async with session.post(f"{BACKEND_URL}/auth/login", json=login_data) as response:
             if response.status == 200:
                 auth_data = await response.json()
-                token = auth_data["data"]["token"]
-                print("  ✅ Authenticated")
+                token = auth_data.get("token") or auth_data.get("data", {}).get("token")
+                if token:
+                    print("  ✅ Authenticated")
+                else:
+                    print(f"  ❌ No token in response: {auth_data}")
+                    return
             else:
-                print("  ❌ Authentication failed")
+                error_text = await response.text()
+                print(f"  ❌ Authentication failed: {error_text}")
                 return
         
         headers = {"Authorization": f"Bearer {token}"}
