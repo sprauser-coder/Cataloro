@@ -60,15 +60,18 @@ function MobileProductDetailPage() {
             const activeTenders = tenders.filter(t => t.status === 'active');
             if (activeTenders.length > 0) {
               const highestBid = Math.max(...activeTenders.map(t => t.offer_amount));
+              const highestBidTender = activeTenders.find(t => t.offer_amount === highestBid);
               productDetail.bid_info = {
                 has_bids: true,
                 highest_bid: highestBid,
+                highest_bidder_id: highestBidTender?.buyer_id,
                 total_bids: activeTenders.length
               };
             } else {
               productDetail.bid_info = {
                 has_bids: false,
                 highest_bid: null,
+                highest_bidder_id: null,
                 total_bids: 0
               };
             }
