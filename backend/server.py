@@ -5392,6 +5392,13 @@ async def submit_tender(tender_data: dict):
                     detail=f"Bid must be at least €{minimum_bid:.2f} (starting price)"
                 )
         
+        # Check if buyer is already the highest bidder (prevent duplicate bids from highest bidder)
+        if existing_tenders and existing_tenders[0]["buyer_id"] == buyer_id:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"You are already the highest bidder with €{existing_tenders[0]['offer_amount']:.2f}. Wait for other bidders or the auction to end."
+            )
+        
         # Create the tender
         tender_id = generate_id()
         current_time = datetime.utcnow()
