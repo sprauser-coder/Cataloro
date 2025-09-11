@@ -474,23 +474,23 @@ function BusinessTab({ showToast }) {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Total Users</span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">1,247</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">{loading ? '...' : realMetrics.userMetrics.totalUsers}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Active Buyers</span>
-              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">892</span>
+              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">{loading ? '...' : realMetrics.userMetrics.activeBuyers}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Active Sellers</span>
-              <span className="text-md font-semibold text-green-600 dark:text-green-400">234</span>
+              <span className="text-md font-semibold text-green-600 dark:text-green-400">{loading ? '...' : realMetrics.userMetrics.activeSellers}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Admins/Managers</span>
-              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">8</span>
+              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">{loading ? '...' : realMetrics.userMetrics.adminsManagers}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Pending Approval</span>
-              <span className="text-md font-semibold text-orange-600 dark:text-orange-400">23</span>
+              <span className="text-md font-semibold text-orange-600 dark:text-orange-400">{loading ? '...' : realMetrics.userMetrics.pendingApproval}</span>
             </div>
           </div>
         </div>
