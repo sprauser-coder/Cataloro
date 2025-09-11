@@ -1596,7 +1596,18 @@ async def advanced_search_listings(
         logger.info("🔄 Using database fallback search")
         
         # Build database query
-        query = {"status": "active"}
+        query = {}
+        
+        # Status filtering - default to active if no status specified
+        if status:
+            if status in ["active", "pending", "expired", "sold", "draft"]:
+                query["status"] = status
+            elif status == "all":
+                # Don't add status filter - show all listings
+                pass
+        else:
+            # Default to active listings only
+            query["status"] = "active"
         
         # Apply filters similar to browse_listings
         if price_min > 0 or price_max < 999999:
