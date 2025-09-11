@@ -3597,40 +3597,71 @@ async def get_admin_logo(current_user: dict = Depends(require_admin_role)):
 async def get_menu_settings(current_user: dict = Depends(require_admin_role)):
     """Get menu settings configuration"""
     try:
+        # Define default menu structure - this is always returned with labels
+        default_settings = {
+            "desktop_menu": {
+                "about": {"enabled": True, "label": "About", "roles": ["admin", "manager", "seller", "buyer"]},
+                "browse": {"enabled": True, "label": "Browse", "roles": ["admin", "manager", "seller", "buyer"]},
+                "create_listing": {"enabled": True, "label": "Create Listing", "roles": ["admin", "manager", "seller"]},
+                "messages": {"enabled": True, "label": "Messages", "roles": ["admin", "manager", "seller", "buyer"]},
+                "tenders": {"enabled": True, "label": "Tenders", "roles": ["admin", "manager", "seller", "buyer"]},
+                "profile": {"enabled": True, "label": "Profile", "roles": ["admin", "manager", "seller", "buyer"]},
+                "admin_panel": {"enabled": True, "label": "Administration", "roles": ["admin", "manager"]},
+                "buy_management": {"enabled": True, "label": "Inventory", "roles": ["admin", "manager", "buyer"]},
+                "my_listings": {"enabled": True, "label": "My Listings", "roles": ["admin", "manager", "seller"]},
+                "favorites": {"enabled": True, "label": "Favorites", "roles": ["admin", "manager", "seller", "buyer"]},
+                "custom_items": []
+            },
+            "mobile_menu": {
+                "browse": {"enabled": True, "label": "Browse", "roles": ["admin", "manager", "seller", "buyer"]},
+                "messages": {"enabled": True, "label": "Messages", "roles": ["admin", "manager", "seller", "buyer"]},
+                "create": {"enabled": True, "label": "Create", "roles": ["admin", "manager", "seller"]},
+                "tenders": {"enabled": True, "label": "Tenders", "roles": ["admin", "manager", "seller", "buyer"]},
+                "listings": {"enabled": True, "label": "Listings", "roles": ["admin", "manager", "seller"]},
+                "profile": {"enabled": True, "label": "Profile", "roles": ["admin", "manager", "seller", "buyer"]},
+                "admin_drawer": {"enabled": True, "label": "Admin", "roles": ["admin", "manager"]},
+                "custom_items": []
+            }
+        }
+        
         # Get menu settings from database
         menu_settings = await db.menu_settings.find_one({"type": "menu_config"})
         
         if not menu_settings:
             # Return default menu settings if none exist
-            default_settings = {
-                "desktop_menu": {
-                    "about": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                    "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                    "create_listing": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                    "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                    "tenders": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                    "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                    "admin_panel": {"enabled": True, "roles": ["admin", "manager"]},
-                    "buy_management": {"enabled": True, "roles": ["admin", "manager", "buyer"]},
-                    "my_listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                    "favorites": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]}
-                },
-                "mobile_menu": {
-                    "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                    "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                    "create": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                    "tenders": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                    "listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                    "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                    "admin_drawer": {"enabled": True, "roles": ["admin", "manager"]}
-                }
-            }
             return default_settings
         
-        return {
-            "desktop_menu": menu_settings.get("desktop_menu", {}),
-            "mobile_menu": menu_settings.get("mobile_menu", {})
+        # Merge database settings with defaults - database overrides defaults
+        merged_settings = {
+            "desktop_menu": {**default_settings["desktop_menu"]},
+            "mobile_menu": {**default_settings["mobile_menu"]}
         }
+        
+        # Apply database overrides for desktop menu
+        desktop_db = menu_settings.get("desktop_menu", {})
+        for key, value in desktop_db.items():
+            if key == "custom_items":
+                merged_settings["desktop_menu"]["custom_items"] = value
+            elif key in merged_settings["desktop_menu"]:
+                # Merge database settings with defaults, keeping labels
+                merged_settings["desktop_menu"][key] = {
+                    **merged_settings["desktop_menu"][key],
+                    **value
+                }
+        
+        # Apply database overrides for mobile menu  
+        mobile_db = menu_settings.get("mobile_menu", {})
+        for key, value in mobile_db.items():
+            if key == "custom_items":
+                merged_settings["mobile_menu"]["custom_items"] = value
+            elif key in merged_settings["mobile_menu"]:
+                # Merge database settings with defaults, keeping labels
+                merged_settings["mobile_menu"][key] = {
+                    **merged_settings["mobile_menu"][key],
+                    **value
+                }
+        
+        return merged_settings
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get menu settings: {str(e)}")
