@@ -3804,17 +3804,38 @@ async def get_user_menu_settings(user_id: str):
                 "user_role": menu_role
             }
         
-        # Filter menu items based on user role
+        # Filter menu items based on user role (including custom items)
         filtered_desktop = {}
         filtered_mobile = {}
         
+        # Filter regular menu items
         for item_key, item_config in menu_settings.get("desktop_menu", {}).items():
-            if item_config.get("enabled", True) and menu_role in item_config.get("roles", []):
-                filtered_desktop[item_key] = item_config
+            if item_key != "custom_items":  # Skip custom_items array, handle separately
+                if item_config.get("enabled", True) and menu_role in item_config.get("roles", []):
+                    filtered_desktop[item_key] = item_config
         
         for item_key, item_config in menu_settings.get("mobile_menu", {}).items():
-            if item_config.get("enabled", True) and menu_role in item_config.get("roles", []):
-                filtered_mobile[item_key] = item_config
+            if item_key != "custom_items":  # Skip custom_items array, handle separately
+                if item_config.get("enabled", True) and menu_role in item_config.get("roles", []):
+                    filtered_mobile[item_key] = item_config
+        
+        # Filter custom items separately
+        desktop_custom_items = []
+        for custom_item in menu_settings.get("desktop_menu", {}).get("custom_items", []):
+            if custom_item.get("enabled", True) and menu_role in custom_item.get("roles", []):
+                desktop_custom_items.append(custom_item)
+        
+        mobile_custom_items = []
+        for custom_item in menu_settings.get("mobile_menu", {}).get("custom_items", []):
+            if custom_item.get("enabled", True) and menu_role in custom_item.get("roles", []):
+                mobile_custom_items.append(custom_item)
+        
+        # Add filtered custom items back to the response
+        if desktop_custom_items:
+            filtered_desktop["custom_items"] = desktop_custom_items
+        
+        if mobile_custom_items:
+            filtered_mobile["custom_items"] = mobile_custom_items
         
         return {
             "desktop_menu": filtered_desktop,
