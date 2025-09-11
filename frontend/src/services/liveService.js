@@ -120,7 +120,13 @@ class LiveService {
   
   async getUserMessages(userId) {
     try {
-      const response = await fetch(`${this.baseURL}/user/${userId}/messages`);
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${this.baseURL}/user/${userId}/messages`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
