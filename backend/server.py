@@ -3802,7 +3802,8 @@ async def update_content(content_data: dict):
 async def upload_image(
     image: UploadFile = File(...),
     section: str = Form(...),
-    field: str = Form(...)
+    field: str = Form(...),
+    current_user: dict = Depends(require_admin_role)
 ):
     """Upload image for CMS content"""
     try:
