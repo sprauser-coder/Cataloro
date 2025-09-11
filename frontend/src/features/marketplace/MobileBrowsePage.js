@@ -55,7 +55,17 @@ function MobileBrowsePage() {
           const today = new Date();
           return createdDate.toDateString() === today.toDateString();
         }).length,
-        hotDeals: data.filter(item => item.isHotDeal || item.discount > 0).length,
+        hotDeals: data.filter(item => {
+          // Include items that are flagged as hot deals or have discounts
+          const isHotDeal = item.isHotDeal || item.discount > 0;
+          
+          // Include items expiring within the next 24 hours
+          const isExpiringIn24Hours = item.expires_at && 
+            new Date(item.expires_at) <= new Date(Date.now() + 24 * 60 * 60 * 1000) &&
+            new Date(item.expires_at) > new Date(); // Not already expired
+          
+          return isHotDeal || isExpiringIn24Hours;
+        }).length,
         avgPrice: data.length > 0 
           ? Math.round(data.reduce((sum, item) => sum + (item.price || 0), 0) / data.length)
           : 0
