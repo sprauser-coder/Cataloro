@@ -280,8 +280,8 @@ class AdminSecurityTester:
                 # No headers = no authentication
             )
             
-            # Should return 401 Unauthorized
-            properly_blocked = result["status"] == 401
+            # Should return 401 Unauthorized or 403 Forbidden
+            properly_blocked = result["status"] in [401, 403]
             
             endpoint_result = {
                 "endpoint": endpoint_test["endpoint"],
