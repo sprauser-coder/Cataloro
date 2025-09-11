@@ -1,0 +1,32 @@
+{
+  "test_timestamp": "2025-09-11T18:25:02.012631",
+  "admin_test": {
+    "success": true,
+    "count": 4496,
+    "sample": {
+      "catalyst_id": "35dd663d-7933-4474-b20e-d59b9eab835b",
+      "cat_id": "32050",
+      "name": "MazdaRF4SOK14",
+      "weight": 1.32,
+      "total_price": 17.71,
+      "pt_g": 0.7085,
+      "pd_g": 0.0,
+      "rh_g": 0.0,
+      "is_override": false,
+      "add_info": "Mazda RF4S OK14"
+    }
+  },
+  "demo_test": {
+    "success": false,
+    "status": 403,
+    "expected_rejection": true
+  },
+  "unauth_test": {
+    "success": false,
+    "status": 403,
+    "expected_rejection": true
+  },
+  "root_cause_identified": true,
+  "fix_needed": true,
+  "conclusion": "Frontend calls admin-only endpoint for all users"
+}
