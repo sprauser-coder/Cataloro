@@ -58,15 +58,22 @@ export function useMenuSettings() {
     
     const menuSection = menuSettings[menuType];
     
-    // If no menu section found, hide items (user needs to be authenticated and have settings)
-    if (!menuSection) return false;
+    // If no menu section found, fallback to default behavior
+    // This happens when user is not logged in or API fails
+    if (!menuSection) {
+      // For unauthenticated users, hide all items except basic ones
+      const publicItems = ['browse', 'about'];
+      return publicItems.includes(itemKey);
+    }
     
     const menuItem = menuSection[itemKey];
     
-    // If item is not in the settings, hide it (only show explicitly configured items)
+    // If item is not in the settings, hide it 
+    // The backend should return all available items for the user's role
     if (!menuItem) return false;
     
-    // Check if item is explicitly enabled and user has permission
+    // Check if item is explicitly enabled
+    // Use 'enabled' property from backend API
     return menuItem.enabled === true;
   };
 
