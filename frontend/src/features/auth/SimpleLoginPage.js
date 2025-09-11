@@ -153,7 +153,9 @@ function SimpleLoginPage() {
           username: registerData.username,
           email: registerData.email,
           password: registerData.password,
-          full_name: registerData.fullName
+          first_name: registerData.firstName,
+          last_name: registerData.lastName,
+          full_name: `${registerData.firstName} ${registerData.lastName}`.trim()
         })
       });
 
