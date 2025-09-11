@@ -85,12 +85,27 @@ function MenuSettings() {
   const loadMenuSettings = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-guardian.preview.emergentagent.com'}/api/admin/menu-settings`);
+      const token = localStorage.getItem('cataloro_token');
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://market-guardian.preview.emergentagent.com'}/api/admin/menu-settings`, {
+        headers
+      });
+      
       if (response.ok) {
         const data = await response.json();
         setSettings(data);
+      } else if (response.status === 401 || response.status === 403) {
+        showToast('Access denied. Admin privileges required.', 'error');
+        console.error('Authentication error loading menu settings');
       } else {
-        throw new Error('Failed to load menu settings');
+        throw new Error(`Failed to load menu settings: ${response.status}`);
       }
     } catch (error) {
       console.error('Error loading menu settings:', error);
