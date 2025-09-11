@@ -399,91 +399,93 @@ function FooterManagement({ showToast }) {
           ))}
 
           {/* Style Configuration */}
-          <div className="space-y-4">
-            <h4 className="font-medium text-gray-900 dark:text-white">Footer Styling</h4>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Background Color
-                </label>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="color"
-                    value={footerConfig.style.backgroundColor}
-                    onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
-                    className="w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600"
-                  />
-                  <input
-                    type="text"
-                    value={footerConfig.style.backgroundColor}
-                    onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-              </div>
+          {footerConfig && footerConfig.style && (
+            <div className="space-y-4">
+              <h4 className="font-medium text-gray-900 dark:text-white">Footer Styling</h4>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Text Color
-                </label>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="color"
-                    value={footerConfig.style.textColor}
-                    onChange={(e) => handleStyleChange('textColor', e.target.value)}
-                    className="w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600"
-                  />
-                  <input
-                    type="text"
-                    value={footerConfig.style.textColor}
-                    onChange={(e) => handleStyleChange('textColor', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Background Color
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="color"
+                      value={footerConfig.style.backgroundColor || '#1f2937'}
+                      onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
+                      className="w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600"
+                    />
+                    <input
+                      type="text"
+                      value={footerConfig.style.backgroundColor || '#1f2937'}
+                      onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
                 </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Link Color
-                </label>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="color"
-                    value={footerConfig.style.linkColor}
-                    onChange={(e) => handleStyleChange('linkColor', e.target.value)}
-                    className="w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600"
-                  />
-                  <input
-                    type="text"
-                    value={footerConfig.style.linkColor}
-                    onChange={(e) => handleStyleChange('linkColor', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Text Color
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="color"
+                      value={footerConfig.style.textColor || '#ffffff'}
+                      onChange={(e) => handleStyleChange('textColor', e.target.value)}
+                      className="w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600"
+                    />
+                    <input
+                      type="text"
+                      value={footerConfig.style.textColor || '#ffffff'}
+                      onChange={(e) => handleStyleChange('textColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
                 </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Border Color
-                </label>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="color"
-                    value={footerConfig.style.borderColor}
-                    onChange={(e) => handleStyleChange('borderColor', e.target.value)}
-                    className="w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600"
-                  />
-                  <input
-                    type="text"
-                    value={footerConfig.style.borderColor}
-                    onChange={(e) => handleStyleChange('borderColor', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Link Color
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="color"
+                      value={footerConfig.style.linkColor || '#60a5fa'}
+                      onChange={(e) => handleStyleChange('linkColor', e.target.value)}
+                      className="w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600"
+                    />
+                    <input
+                      type="text"
+                      value={footerConfig.style.linkColor || '#60a5fa'}
+                      onChange={(e) => handleStyleChange('linkColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Border Color
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="color"
+                      value={footerConfig.style.borderColor || '#374151'}
+                      onChange={(e) => handleStyleChange('borderColor', e.target.value)}
+                      className="w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600"
+                    />
+                    <input
+                      type="text"
+                      value={footerConfig.style.borderColor || '#374151'}
+                      onChange={(e) => handleStyleChange('borderColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </>
       )}
 
