@@ -5606,6 +5606,12 @@ function SiteAdministrationTab({ showToast }) {
       description: 'Manage advertisements across browse page, favorites, messenger, and footer'
     },
     { 
+      id: 'menu-settings', 
+      label: 'Menu Settings', 
+      icon: Navigation,
+      description: 'Configure navigation menu items and add custom links'
+    },
+    { 
       id: 'system-notifications', 
       label: 'System Notifications Manager', 
       icon: Bell,
