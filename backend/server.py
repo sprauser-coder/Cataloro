@@ -2072,7 +2072,7 @@ async def get_user_notifications(user_id: str, current_user: dict = Depends(get_
             raise HTTPException(status_code=403, detail="Access denied")
         
         # Find notifications for user
-        notifications = await db.notifications.find({
+        notifications = await db.user_notifications.find({
             "user_id": user_id
         }).sort("created_at", -1).limit(50).to_list(length=50)
         
