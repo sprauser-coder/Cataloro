@@ -738,10 +738,11 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
             {/* Quick Actions (Desktop) */}
             <div className="hidden lg:flex items-center space-x-2">
               {/* Messages */}
-              <Link
-                to="/messages"
-                className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
-              >
+              {isMenuItemVisible('desktop_menu', 'messages') && (
+                <Link
+                  to="/messages"
+                  className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
+                >
                 <MessageCircle className="w-6 h-6" />
                 {unreadMessages > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
