@@ -553,7 +553,6 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     { label: 'About', path: '/info', icon: Globe, key: 'about' },
     { label: 'Browse', path: '/browse', icon: Store, key: 'browse' },
     { label: 'My Listings', path: '/my-listings', icon: Package, key: 'my_listings' },
-    { label: 'Favorites', path: '/favorites', icon: Heart, key: 'favorites' },
     { label: 'Notifications', path: '/notifications', icon: Bell, key: 'notifications' },
   ];
 
