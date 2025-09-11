@@ -157,6 +157,9 @@ function TendersPage() {
         // Force refresh by invalidating cache
         setLastLoadTime(prev => ({ ...prev, listings: null }));
         loadTendersOverview(); // Refresh data
+        
+        // Redirect to buy-management after successful acceptance
+        navigate('/buy-management');
       } else {
         const errorData = await response.json();
         showToast(errorData.detail || 'Failed to accept tender', 'error');
