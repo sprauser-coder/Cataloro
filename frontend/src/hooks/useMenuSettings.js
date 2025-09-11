@@ -58,17 +58,16 @@ export function useMenuSettings() {
     
     const menuSection = menuSettings[menuType];
     
-    // If no menu section found, show all items by default (default behavior)
-    if (!menuSection) return true;
+    // If no menu section found, hide items (user needs to be authenticated and have settings)
+    if (!menuSection) return false;
     
     const menuItem = menuSection[itemKey];
     
-    // If item is not in the settings, show it by default (items are visible unless explicitly disabled)
-    if (!menuItem) return true;
+    // If item is not in the settings, hide it (only show explicitly configured items)
+    if (!menuItem) return false;
     
-    // Check if item is explicitly disabled or if user doesn't have permission
-    // If item exists in settings, respect the enabled/disabled state
-    return menuItem.enabled !== false;
+    // Check if item is explicitly enabled and user has permission
+    return menuItem.enabled === true;
   };
 
   const getVisibleMenuItems = (menuType, allItems) => {
