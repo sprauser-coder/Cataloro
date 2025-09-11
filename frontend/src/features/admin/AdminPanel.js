@@ -5952,6 +5952,13 @@ function SiteAdministrationTab({ showToast }) {
           />
         )}
 
+        {/* Menu Settings Section */}
+        {activeSection === 'menu-settings' && (
+          <div className="space-y-6">
+            <MenuSettings />
+          </div>
+        )}
+
         {/* System Notifications Section */}
         {activeSection === 'system-notifications' && (
           <div className="space-y-6">
