@@ -183,7 +183,7 @@ function AdsManagement({ showToast }) {
       formDataUpload.append('field', 'ad_image');
 
       const token = localStorage.getItem('cataloro_token');
-      const response = await fetch(`${ENV_CONFIG.API_BASE_URL}/admin/upload-image`, {
+      const response = await fetch(`${ENV_CONFIG.API_BASE_URL}/api/admin/upload-image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
