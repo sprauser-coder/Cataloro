@@ -10,8 +10,6 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import usePermissions from '../../hooks/usePermissions';
 import MultiCurrencyPrice from '../../components/currency/MultiCurrencyPrice';
-import SimilarItemsPanel from '../../components/ai/SimilarItemsPanel';
-import LiveBiddingWidget from '../../components/realtime/LiveBiddingWidget';
 import {
   Heart,
   DollarSign,
