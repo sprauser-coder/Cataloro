@@ -1,12 +1,12 @@
 {
-  "test_timestamp": "2025-09-11T00:19:30.366952",
+  "test_timestamp": "2025-09-11T00:44:11.617908",
   "admin_authentication": {
     "success": true
   },
   "default_menu_settings": {
     "test_name": "Get Default Menu Settings",
     "success": true,
-    "response_time_ms": 16.721487045288086,
+    "response_time_ms": 10.697364807128906,
     "has_desktop_menu": true,
     "has_mobile_menu": true,
     "desktop_items_count": 10,
@@ -24,7 +24,8 @@
             "admin",
             "manager",
             "seller",
-            "buyer"
+            "buyer",
+            "user"
           ]
         },
         "browse": {
@@ -33,7 +34,8 @@
             "admin",
             "manager",
             "seller",
-            "buyer"
+            "buyer",
+            "user"
           ]
         },
         "create_listing": {
@@ -50,7 +52,8 @@
             "admin",
             "manager",
             "seller",
-            "buyer"
+            "buyer",
+            "user"
           ]
         },
         "tenders": {
@@ -59,7 +62,8 @@
             "admin",
             "manager",
             "seller",
-            "buyer"
+            "buyer",
+            "user"
           ]
         },
         "profile": {
@@ -68,7 +72,8 @@
             "admin",
             "manager",
             "seller",
-            "buyer"
+            "buyer",
+            "user"
           ]
         },
         "admin_panel": {
@@ -83,7 +88,8 @@
           "roles": [
             "admin",
             "manager",
-            "buyer"
+            "buyer",
+            "user"
           ]
         },
         "my_listings": {
@@ -100,7 +106,8 @@
             "admin",
             "manager",
             "seller",
-            "buyer"
+            "buyer",
+            "user"
           ]
         }
       },
@@ -111,7 +118,8 @@
             "admin",
             "manager",
             "seller",
-            "buyer"
+            "buyer",
+            "user"
           ]
         },
         "messages": {
@@ -120,7 +128,8 @@
             "admin",
             "manager",
             "seller",
-            "buyer"
+            "buyer",
+            "user"
           ]
         },
         "create": {
@@ -137,7 +146,8 @@
             "admin",
             "manager",
             "seller",
-            "buyer"
+            "buyer",
+            "user"
           ]
         },
         "listings": {
@@ -154,7 +164,8 @@
             "admin",
             "manager",
             "seller",
-            "buyer"
+            "buyer",
+            "user"
           ]
         },
         "admin_drawer": {
@@ -170,7 +181,7 @@
   "update_menu_settings": {
     "test_name": "Update Menu Settings",
     "success": true,
-    "response_time_ms": 18.30005645751953,
+    "response_time_ms": 48.56300354003906,
     "has_message": true,
     "has_settings": true,
     "desktop_updated": true,
@@ -508,7 +519,7 @@
     "detailed_results": {
       "admin_test": {
         "success": true,
-        "response_time_ms": 16.32833480834961,
+        "response_time_ms": 16.41702651977539,
         "user_role": "admin",
         "desktop_items_count": 8,
         "mobile_items_count": 6,
@@ -519,7 +530,7 @@
       },
       "demo_test": {
         "success": true,
-        "response_time_ms": 13.039112091064453,
+        "response_time_ms": 10.98179817199707,
         "user_role": "user",
         "desktop_items_count": 5,
         "mobile_items_count": 4,
