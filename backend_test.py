@@ -356,7 +356,9 @@ class APIEndpointFixesTester:
         if self.demo_token:
             print("  👤 Testing non-admin upload (should fail)...")
             demo_headers = {"Authorization": f"Bearer {self.demo_token}"}
-            demo_result = await self.make_request("/admin/upload-image", "POST", headers=demo_headers, files=files)
+            files = {"image": ("test.png", test_image_data, "image/png")}
+            data = {"section": "test", "field": "test_field"}
+            demo_result = await self.make_request("/admin/upload-image", "POST", headers=demo_headers, files=files, data=data)
             if demo_result["status"] == 403:
                 print(f"    ✅ Non-admin upload properly rejected: Status {demo_result['status']}")
             else:
