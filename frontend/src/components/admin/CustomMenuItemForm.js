@@ -232,7 +232,7 @@ const CustomMenuItemForm = ({
               placeholder="0 = first, higher number = later in menu"
             />
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Lower numbers appear first in the menu. You can also drag-and-drop to reorder.
+              0 = first position (default), higher numbers appear later in menu. You can also drag-and-drop to reorder.
             </p>
           </div>
 
