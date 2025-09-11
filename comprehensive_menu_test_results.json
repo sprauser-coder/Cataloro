@@ -1,0 +1,143 @@
+{
+  "test_timestamp": "2025-09-11T16:00:56.979304",
+  "property_consistency": {
+    "success": true,
+    "consistency_results": [
+      {
+        "user_type": "regular_user",
+        "user_id": "68bfff790e4e46bc28d43631",
+        "admin_properties": [
+          "enabled",
+          "roles",
+          "label"
+        ],
+        "user_properties": [
+          "enabled",
+          "roles",
+          "label"
+        ],
+        "properties_match": true,
+        "uses_enabled": true,
+        "uses_visible": false
+      },
+      {
+        "user_type": "admin_user",
+        "user_id": "admin_user_1",
+        "admin_properties": [
+          "enabled",
+          "roles",
+          "label"
+        ],
+        "user_properties": [
+          "enabled",
+          "roles",
+          "label"
+        ],
+        "properties_match": true,
+        "uses_enabled": true,
+        "uses_visible": false
+      }
+    ],
+    "all_consistent": true
+  },
+  "disabled_item_filtering": {
+    "success": true,
+    "items_disabled": [
+      "browse",
+      "create_listing",
+      "messages"
+    ],
+    "filtering_results": [
+      {
+        "user_type": "buyer",
+        "user_role": "buyer",
+        "disabled_items_found": [],
+        "filtering_working": true,
+        "total_desktop_items": 4,
+        "total_mobile_items": 2
+      },
+      {
+        "user_type": "admin",
+        "user_role": "admin",
+        "disabled_items_found": [],
+        "filtering_working": true,
+        "total_desktop_items": 5,
+        "total_mobile_items": 6
+      }
+    ],
+    "all_filtering_working": true
+  },
+  "role_based_visibility": {
+    "success": true,
+    "role_results": [
+      {
+        "user_id": "68bfff790e4e46bc28d43631",
+        "expected_role": "buyer",
+        "actual_role": "buyer",
+        "admin_items": [
+          "desktop_menu_messages",
+          "desktop_menu_tenders",
+          "desktop_menu_profile",
+          "desktop_menu_buy_management",
+          "desktop_menu_favorites",
+          "mobile_menu_browse",
+          "mobile_menu_messages",
+          "mobile_menu_tenders",
+          "mobile_menu_profile"
+        ],
+        "user_items": [],
+        "role_filtering_correct": false
+      },
+      {
+        "user_id": "admin_user_1",
+        "expected_role": "admin",
+        "actual_role": "admin",
+        "admin_items": [
+          "desktop_menu_create_listing",
+          "desktop_menu_messages",
+          "desktop_menu_tenders",
+          "desktop_menu_profile",
+          "desktop_menu_admin_panel",
+          "desktop_menu_buy_management",
+          "desktop_menu_favorites",
+          "mobile_menu_browse",
+          "mobile_menu_messages",
+          "mobile_menu_create",
+          "mobile_menu_tenders",
+          "mobile_menu_listings",
+          "mobile_menu_profile",
+          "mobile_menu_admin_drawer"
+        ],
+        "user_items": [],
+        "role_filtering_correct": true
+      }
+    ],
+    "all_role_filtering_correct": false
+  },
+  "frontend_integration": {
+    "success": true,
+    "integration_analysis": {
+      "has_desktop_menu": true,
+      "has_mobile_menu": true,
+      "has_user_role": true,
+      "menu_items_have_enabled_property": true,
+      "menu_items_have_label_property": true,
+      "menu_items_have_roles_property": true,
+      "custom_items_present": false,
+      "structure_issues": []
+    },
+    "frontend_compatibility": {
+      "uses_enabled_property": true,
+      "consistent_structure": true,
+      "role_based_filtering_available": true,
+      "menu_separation_clear": true
+    },
+    "frontend_ready": true
+  },
+  "summary": {
+    "all_tests_passed": true,
+    "backend_working_correctly": false,
+    "frontend_ready": true,
+    "issue_location": "backend"
+  }
+}
