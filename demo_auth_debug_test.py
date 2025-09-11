@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://market-guardian.preview.emergentagent.com/api"
+BACKEND_URL = "https://admin-nav-control.preview.emergentagent.com/api"
 
 # Demo user credentials from the review request
 DEMO_EMAIL = "user@cataloro.com"

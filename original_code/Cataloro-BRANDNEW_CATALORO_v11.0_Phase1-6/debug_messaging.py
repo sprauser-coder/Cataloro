@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_messaging():
-    base_url = "https://market-guardian.preview.emergentagent.com"
+    base_url = "https://admin-nav-control.preview.emergentagent.com"
     
     # Create a test user
     user_data = {

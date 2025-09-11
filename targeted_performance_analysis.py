@@ -14,7 +14,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://market-guardian.preview.emergentagent.com/api"
+BACKEND_URL = "https://admin-nav-control.preview.emergentagent.com/api"
 
 class TargetedPerformanceAnalyzer:
     def __init__(self):
