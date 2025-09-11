@@ -223,8 +223,10 @@ class ComprehensiveBackendTester:
         test_user_data = {
             "username": f"test_user_{int(time.time())}",
             "email": f"test_{int(time.time())}@example.com",
+            "password": "test_password_123",
             "full_name": "Test User",
-            "account_type": "buyer"
+            "user_role": "User-Buyer",
+            "registration_status": "Approved"
         }
         
         # Test endpoints as specified in review request
