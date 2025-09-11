@@ -5319,5 +5319,5 @@ async def main_custom_menu():
     return custom_menu_results
 
 if __name__ == "__main__":
-    # Run custom menu management tests
-    asyncio.run(main_custom_menu())
+    # Run admin menu settings tests
+    asyncio.run(main())
