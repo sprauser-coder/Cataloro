@@ -559,7 +559,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   // Icon mapping for custom menu items
   const iconMap = {
     Store, Plus, MessageCircle, DollarSign, ShoppingCart, Heart, Bell, User,
-    Search, Settings, LogOut, Package, Shield, Menu, X, Sun, Moon, Globe,
+    Settings, LogOut, Package, Shield, Menu, X, Sun, Moon, Globe,
     BarChart3, TrendingUp, HelpCircle, Mail, FileText, Home, Star, Camera,
     Calendar, Clock, Download, Upload, Edit, Trash2, Eye, EyeOff, Lock,
     Unlock, Key, Users, UserPlus, Phone, Smartphone, Monitor, Tablet,
