@@ -2082,7 +2082,7 @@ async def get_user_notifications(user_id: str, current_user: dict = Depends(get_
             if 'id' not in notification and '_id' in notification:
                 notification['id'] = str(notification['_id'])
         
-        return {"notifications": notifications}
+        return notifications
         
     except HTTPException:
         raise
