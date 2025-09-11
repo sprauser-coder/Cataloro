@@ -6796,6 +6796,89 @@ async def main_custom_menu():
     
     return custom_menu_results
 
+async def main():
+    """Main function to run API endpoint fixes testing"""
+    print("🚨 CATALORO API ENDPOINT FIXES TESTING")
+    print("=" * 80)
+    print("Testing specific API endpoint fixes to resolve 404 errors and authentication issues")
+    print("FOCUS: Browse listings, notifications, image upload, profile, admin logo endpoints")
+    print()
+    
+    # Run API endpoint fixes testing
+    api_tester = APIEndpointFixesTester()
+    test_results = await api_tester.run_api_endpoint_fixes_testing()
+    
+    # Display results summary
+    print("\n" + "=" * 80)
+    print("🚨 API ENDPOINT FIXES TEST RESULTS SUMMARY")
+    print("=" * 80)
+    
+    if "error" in test_results:
+        print(f"❌ TESTING FAILED: {test_results['error']}")
+        return test_results
+    
+    summary = test_results.get("summary", {})
+    
+    # Individual test results
+    print("📊 Individual Endpoint Test Results:")
+    print(f"   {'✅' if test_results.get('browse_listings_test', {}).get('success') else '❌'} Browse Listings API (/api/marketplace/browse)")
+    print(f"   {'✅' if test_results.get('notifications_test', {}).get('success') else '❌'} Notifications API (/api/user/{{user_id}}/notifications)")
+    print(f"   {'✅' if test_results.get('image_upload_test', {}).get('success') else '❌'} Image Upload API (/api/admin/upload-image)")
+    print(f"   {'✅' if test_results.get('profile_test', {}).get('success') else '❌'} Profile API (/api/auth/profile)")
+    print(f"   {'✅' if test_results.get('admin_logo_test', {}).get('success') else '❌'} Admin Logo API (/api/admin/logo)")
+    
+    print()
+    print("🏆 OVERALL RESULTS:")
+    overall_status = "✅ ALL ENDPOINTS WORKING" if summary.get("all_endpoints_working") else "❌ SOME ENDPOINTS HAVE ISSUES"
+    print(f"   {overall_status}")
+    print(f"   Success Rate: {summary.get('success_rate', 0):.0f}%")
+    print(f"   Successful Tests: {summary.get('successful_tests', 0)}/{summary.get('total_tests', 0)}")
+    print(f"   Fixes Verified: {'✅ Yes' if summary.get('fixes_verified') else '❌ No'}")
+    
+    # Error details
+    if summary.get("critical_issues"):
+        print()
+        print("❌ CRITICAL ISSUES FOUND:")
+        for i, issue in enumerate(summary["critical_issues"], 1):
+            print(f"   {i}. {issue}")
+    
+    # Resolved issues
+    if summary.get("resolved_issues"):
+        print()
+        print("✅ RESOLVED ISSUES:")
+        for i, resolved in enumerate(summary["resolved_issues"], 1):
+            print(f"   {i}. {resolved}")
+    
+    # Specific error messages that should no longer occur
+    print()
+    print("🔍 SPECIFIC ERROR MESSAGES VERIFICATION:")
+    expected_resolved_errors = [
+        "Failed to load listings from API: Error: Not Found",
+        "Error fetching notifications: Error: HTTP error! status: 404",
+        "Upload response error: {\"detail\":\"Not authenticated\"}",
+        "Image upload error: Error: Upload failed: 403"
+    ]
+    
+    for error_msg in expected_resolved_errors:
+        # Check if this error is mentioned in any of the test results
+        error_resolved = True  # Assume resolved unless we find evidence otherwise
+        for test_name, test_data in test_results.items():
+            if isinstance(test_data, dict) and test_data.get("test_results", {}).get("error_messages"):
+                if any(error_msg.lower() in str(err).lower() for err in test_data["test_results"]["error_messages"]):
+                    error_resolved = False
+                    break
+        
+        status = "✅ RESOLVED" if error_resolved else "❌ STILL OCCURRING"
+        print(f"   {status}: {error_msg}")
+    
+    # Save detailed results
+    with open("/app/api_endpoint_fixes_test_results.json", "w") as f:
+        json.dump(test_results, f, indent=2, default=str)
+    
+    print(f"\n📄 API endpoint fixes test results saved to: /app/api_endpoint_fixes_test_results.json")
+    
+    return test_results
+
 if __name__ == "__main__":
-    # Run admin menu settings tests
+    # Run API endpoint fixes tests
     asyncio.run(main())
