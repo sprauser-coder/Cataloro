@@ -1,5 +1,5 @@
 {
-  "test_timestamp": "2025-09-11T10:53:05.131582",
+  "test_timestamp": "2025-09-11T11:37:10.347595",
   "authentication": {
     "success": true,
     "admin_user_id": "admin_user_1",
@@ -8,9 +8,9 @@
   "admin_settings_verification": {
     "test_name": "Admin Menu Settings Verification",
     "success": true,
-    "response_time_ms": 13.100147247314453,
+    "response_time_ms": 13.468265533447266,
     "mobile_messages_enabled": false,
-    "desktop_messages_enabled": false,
+    "desktop_messages_enabled": true,
     "mobile_messages_config": {
       "enabled": false,
       "roles": [
@@ -24,7 +24,7 @@
       "path": "/messages"
     },
     "desktop_messages_config": {
-      "enabled": false,
+      "enabled": true,
       "roles": [
         "admin",
         "manager",
@@ -40,7 +40,7 @@
     "full_admin_settings": {
       "desktop_menu": {
         "about": {
-          "enabled": false,
+          "enabled": true,
           "roles": [
             "admin",
             "manager",
@@ -52,7 +52,7 @@
           "path": "/info"
         },
         "browse": {
-          "enabled": false,
+          "enabled": true,
           "roles": [
             "admin",
             "manager",
@@ -64,7 +64,7 @@
           "path": "/browse"
         },
         "create_listing": {
-          "enabled": false,
+          "enabled": true,
           "roles": [
             "admin",
             "manager",
@@ -75,7 +75,7 @@
           "path": "/create-listing"
         },
         "messages": {
-          "enabled": false,
+          "enabled": true,
           "roles": [
             "admin",
             "manager",
@@ -87,7 +87,7 @@
           "path": "/messages"
         },
         "tenders": {
-          "enabled": false,
+          "enabled": true,
           "roles": [
             "admin",
             "manager",
@@ -99,7 +99,7 @@
           "path": "/tenders"
         },
         "profile": {
-          "enabled": false,
+          "enabled": true,
           "roles": [
             "admin",
             "manager",
@@ -111,7 +111,7 @@
           "path": "/profile"
         },
         "admin_panel": {
-          "enabled": false,
+          "enabled": true,
           "roles": [
             "admin",
             "manager"
@@ -302,7 +302,7 @@
     "test_name": "User Menu Settings API Debug",
     "admin_user_test": {
       "success": true,
-      "response_time_ms": 12.91203498840332,
+      "response_time_ms": 9.611845016479492,
       "mobile_menu_count": 10,
       "messages_in_mobile_menu": false,
       "mobile_menu_keys": [
@@ -320,6 +320,87 @@
       "mobile_menu_type": "dict",
       "full_settings": {
         "desktop_menu": {
+          "about": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ],
+            "label": "About Platform",
+            "icon": "Globe",
+            "path": "/info"
+          },
+          "browse": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ],
+            "label": "Browse",
+            "icon": "Store",
+            "path": "/browse"
+          },
+          "create_listing": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller"
+            ],
+            "label": "Create Listing",
+            "icon": "Plus",
+            "path": "/create-listing"
+          },
+          "messages": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ],
+            "label": "Messages",
+            "icon": "MessageCircle",
+            "path": "/messages"
+          },
+          "tenders": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ],
+            "label": "Tenders",
+            "icon": "DollarSign",
+            "path": "/tenders"
+          },
+          "profile": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ],
+            "label": "Profile",
+            "icon": "User",
+            "path": "/profile"
+          },
+          "admin_panel": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager"
+            ],
+            "label": "Admin Panel",
+            "icon": "Shield",
+            "path": "/admin"
+          },
           "buy_management": {
             "enabled": true,
             "roles": [
@@ -489,7 +570,7 @@
     },
     "demo_user_test": {
       "success": true,
-      "response_time_ms": 13.89312744140625,
+      "response_time_ms": 13.034343719482422,
       "mobile_menu_count": 7,
       "messages_in_mobile_menu": false,
       "mobile_menu_keys": [
@@ -504,6 +585,66 @@
       "mobile_menu_type": "dict",
       "full_settings": {
         "desktop_menu": {
+          "about": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ],
+            "label": "About Platform",
+            "icon": "Globe",
+            "path": "/info"
+          },
+          "browse": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ],
+            "label": "Browse",
+            "icon": "Store",
+            "path": "/browse"
+          },
+          "messages": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ],
+            "label": "Messages",
+            "icon": "MessageCircle",
+            "path": "/messages"
+          },
+          "tenders": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ],
+            "label": "Tenders",
+            "icon": "DollarSign",
+            "path": "/tenders"
+          },
+          "profile": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ],
+            "label": "Profile",
+            "icon": "User",
+            "path": "/profile"
+          },
           "buy_management": {
             "enabled": true,
             "roles": [
