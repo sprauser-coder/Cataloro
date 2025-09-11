@@ -105,6 +105,7 @@ import { getTimeRemaining, isAdExpired, activateAd, deactivateExpiredAds, calcul
 import BusinessTab from './BusinessTab';
 import PDFExportCenter from './PDFExportCenter';
 import MenuSettings from '../../components/admin/MenuSettings';
+import FooterManagement from '../../components/admin/FooterManagement';
 
 // System Notifications List Component
 function SystemNotificationsList() {
