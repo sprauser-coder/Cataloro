@@ -1357,7 +1357,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent flex items-center justify-center">
-                {users.filter(u => u.is_active && u.status !== 'pending' && u.is_verified !== false).length}
+                {users.filter(u => u.registration_status === 'Approved').length}
               </div>
               <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Active Users</div>
             </div>
@@ -1385,7 +1385,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent flex items-center justify-center">
-                {users.filter(u => !u.is_active).length}
+                {users.filter(u => u.registration_status === 'Rejected' || !u.is_active).length}
               </div>
               <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Suspended</div>
             </div>
@@ -1399,7 +1399,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent flex items-center justify-center">
-                {users.filter(u => u.status === 'pending' || (!u.is_verified && u.is_active)).length}
+                {users.filter(u => u.registration_status === 'Pending').length}
               </div>
               <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Pending</div>
             </div>
