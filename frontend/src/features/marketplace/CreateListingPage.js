@@ -215,12 +215,20 @@ function CreateListingPage() {
   const fetchUnifiedCalculations = async () => {
     try {
       setLoadingCatalysts(true);
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/unified-calculations`);
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/unified-calculations`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setUnifiedCalculations(data);
         console.log('Loaded unified calculations:', data.length, 'entries');
         console.log('Sample unified calculation:', data[0]);
+      } else {
+        console.error('Failed to fetch unified calculations - Status:', response.status);
       }
     } catch (error) {
       console.error('Failed to fetch unified calculations:', error);
