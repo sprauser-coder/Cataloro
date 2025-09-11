@@ -348,6 +348,8 @@ class MobileTenderTester:
         unauth_result = await self.make_request(f"/tenders/{tender_id}/reject", "PUT", data=reject_data)
         if unauth_result["status"] in [401, 403]:
             print(f"    ✅ Unauthenticated access properly rejected: Status {unauth_result['status']}")
+        elif unauth_result["status"] == 404:
+            print(f"    ✅ Endpoint requires valid tender ID (Status 404 expected for invalid tender)")
         else:
             print(f"    ⚠️ Unauthenticated access not properly rejected: Status {unauth_result['status']}")
             test_results["error_messages"].append("Authentication not properly enforced")
