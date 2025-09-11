@@ -1,0 +1,447 @@
+{
+  "test_timestamp": "2025-09-11T13:21:43.368042",
+  "available_pages_endpoint": {
+    "test_name": "Available Pages Endpoint",
+    "success": true,
+    "response_time_ms": 15.297412872314453,
+    "total_pages": 20,
+    "expected_pages_found": true,
+    "valid_structure": true,
+    "sample_pages": [
+      {
+        "path": "/browse",
+        "label": "Browse Marketplace",
+        "icon": "Store"
+      },
+      {
+        "path": "/create-listing",
+        "label": "Create Listing",
+        "icon": "Plus"
+      },
+      {
+        "path": "/messages",
+        "label": "Messages",
+        "icon": "MessageCircle"
+      },
+      {
+        "path": "/tenders",
+        "label": "Tenders",
+        "icon": "DollarSign"
+      },
+      {
+        "path": "/my-listings",
+        "label": "My Listings",
+        "icon": "Package"
+      }
+    ]
+  },
+  "available_icons_endpoint": {
+    "test_name": "Available Icons Endpoint",
+    "success": true,
+    "response_time_ms": 24.01280403137207,
+    "total_icons": 79,
+    "expected_icons_found": true,
+    "sample_icons": [
+      "Store",
+      "Plus",
+      "MessageCircle",
+      "DollarSign",
+      "Package",
+      "Heart",
+      "User",
+      "Shield",
+      "ShoppingCart",
+      "Globe"
+    ]
+  },
+  "menu_settings_get": {
+    "test_name": "Menu Settings GET",
+    "success": true,
+    "response_time_ms": 16.829967498779297,
+    "has_desktop_items": true,
+    "has_mobile_items": true,
+    "desktop_items_count": 12,
+    "mobile_items_count": 11,
+    "current_settings": {
+      "desktop_menu": {
+        "about": {
+          "enabled": false,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "About Platform",
+          "icon": "Globe",
+          "path": "/info"
+        },
+        "browse": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "buyer",
+            "seller"
+          ],
+          "label": "Browse",
+          "icon": "Store",
+          "path": "/browse"
+        },
+        "create_listing": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ],
+          "label": "Create Listing",
+          "icon": "Plus",
+          "path": "/create-listing"
+        },
+        "messages": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "Messages",
+          "icon": "MessageCircle",
+          "path": "/messages"
+        },
+        "tenders": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "Tenders",
+          "icon": "DollarSign",
+          "path": "/tenders"
+        },
+        "profile": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "Profile",
+          "icon": "User",
+          "path": "/profile"
+        },
+        "admin_panel": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager"
+          ],
+          "label": "Admin Panel",
+          "icon": "Shield",
+          "path": "/admin"
+        },
+        "buy_management": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "buyer"
+          ],
+          "label": "Buy Management",
+          "icon": "ShoppingCart",
+          "path": "/buy-management"
+        },
+        "my_listings": {
+          "enabled": false,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ],
+          "label": "My Listings",
+          "icon": "Package",
+          "path": "/my-listings"
+        },
+        "favorites": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "Favorites",
+          "icon": "Heart",
+          "path": "/favorites"
+        },
+        "notifications": {
+          "enabled": false,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "Notifications",
+          "icon": "Bell",
+          "path": "/notifications"
+        },
+        "custom_items": []
+      },
+      "mobile_menu": {
+        "browse": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "Browse",
+          "icon": "Store",
+          "path": "/browse"
+        },
+        "messages": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "Messages",
+          "icon": "MessageCircle",
+          "path": "/messages"
+        },
+        "create": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ],
+          "label": "Create",
+          "icon": "Plus",
+          "path": "/create-listing"
+        },
+        "tenders": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "Tenders",
+          "icon": "DollarSign",
+          "path": "/mobile-tenders"
+        },
+        "listings": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ],
+          "label": "Listings",
+          "icon": "Package",
+          "path": "/mobile-my-listings"
+        },
+        "profile": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "Profile",
+          "icon": "User",
+          "path": "/profile"
+        },
+        "admin_drawer": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager"
+          ],
+          "label": "Admin Panel",
+          "icon": "BarChart3",
+          "path": "/admin"
+        },
+        "about": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "About Platform",
+          "icon": "Globe",
+          "path": "/info"
+        },
+        "buy_management": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "buyer"
+          ],
+          "label": "Buy Management",
+          "icon": "ShoppingCart",
+          "path": "/buy-management"
+        },
+        "favorites": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "Favorites",
+          "icon": "Heart",
+          "path": "/favorites"
+        },
+        "notifications": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ],
+          "label": "Notifications",
+          "icon": "Bell",
+          "path": "/notifications"
+        }
+      }
+    }
+  },
+  "custom_item_creation": {
+    "test_name": "Custom Menu Item Creation",
+    "success": true,
+    "response_time_ms": 13.13924789428711,
+    "desktop_items_saved": true,
+    "mobile_items_saved": true,
+    "structure_valid": true,
+    "desktop_custom_count": 2,
+    "mobile_custom_count": 2,
+    "test_items_created": 2
+  },
+  "menu_validation": {
+    "test_name": "Menu Settings Validation",
+    "success": true,
+    "total_validation_tests": 3,
+    "successful_validations": 3,
+    "validation_working": true,
+    "detailed_tests": [
+      {
+        "test": "Missing Required Fields",
+        "should_fail": true,
+        "actually_failed": true,
+        "status": 500,
+        "error": ""
+      },
+      {
+        "test": "Invalid Type Auto-Correction",
+        "should_succeed": true,
+        "actually_succeeded": true,
+        "status": 200
+      },
+      {
+        "test": "Invalid Roles Filtering",
+        "should_succeed": true,
+        "actually_succeeded": true,
+        "status": 200
+      }
+    ]
+  },
+  "user_menu_filtering": {
+    "test_name": "User Menu Filtering",
+    "success": true,
+    "response_time_ms": 12.360334396362305,
+    "desktop_custom_items": 1,
+    "mobile_custom_items": 0,
+    "role_filtering_working": true,
+    "user_role": "admin"
+  },
+  "crud_operations": {
+    "test_name": "Custom Item CRUD Operations",
+    "success": true,
+    "total_operations": 4,
+    "successful_operations": 4,
+    "crud_working": true,
+    "detailed_results": [
+      {
+        "operation": "CREATE",
+        "success": true,
+        "note": "Tested in creation test"
+      },
+      {
+        "operation": "READ",
+        "success": true,
+        "items_found": 1
+      },
+      {
+        "operation": "UPDATE",
+        "success": true,
+        "verified": true
+      },
+      {
+        "operation": "DELETE",
+        "success": true,
+        "verified": true
+      }
+    ]
+  },
+  "integration_workflow": {
+    "test_name": "Integration Workflow",
+    "success": true,
+    "total_steps": 4,
+    "successful_steps": 4,
+    "workflow_complete": true,
+    "detailed_steps": [
+      {
+        "step": "Get Available Resources",
+        "success": true,
+        "pages_available": true,
+        "icons_available": true
+      },
+      {
+        "step": "Create Comprehensive Items",
+        "success": true,
+        "items_created": 2
+      },
+      {
+        "step": "Verify User Filtering",
+        "success": true,
+        "desktop_items": 2,
+        "mobile_items": 2
+      },
+      {
+        "step": "Test Role-Based Access",
+        "success": true,
+        "user_role": "admin"
+      }
+    ]
+  },
+  "summary": {
+    "overall_success_rate": 100.0,
+    "available_pages_working": true,
+    "available_icons_working": true,
+    "menu_settings_crud_working": true,
+    "validation_working": true,
+    "user_filtering_working": true,
+    "crud_operations_working": true,
+    "integration_workflow_working": true,
+    "all_tests_passed": true,
+    "critical_functionality_working": true
+  }
+}
