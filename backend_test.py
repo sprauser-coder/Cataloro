@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Admin Menu Settings Functionality Testing
-Testing admin menu settings API endpoints to debug functionality issues
+CRITICAL DATABASE INVESTIGATION - CATS DATABASE MISSING
+Investigating reported data loss: "Cats database is completely gone!"
+Testing MongoDB collections and catalyst-related data
 """
 
 import asyncio
