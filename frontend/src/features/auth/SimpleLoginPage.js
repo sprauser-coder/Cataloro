@@ -531,11 +531,23 @@ function SimpleLoginPage() {
                           value={registerData.email}
                           onChange={handleRegisterChange}
                           required
-                          className="w-full pl-12 pr-4 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 text-white placeholder-gray-400 transition-all duration-300"
+                          className={`w-full pl-12 pr-4 py-4 bg-white/5 backdrop-blur-xl border rounded-2xl focus:ring-2 text-white placeholder-gray-400 transition-all duration-300 ${
+                            fieldErrors.email 
+                              ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' 
+                              : 'border-white/10 focus:border-cyan-500/50 focus:ring-cyan-500/20'
+                          }`}
                           placeholder="Enter your email"
                         />
+                        {checkingAvailability.email && (
+                          <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-500"></div>
+                          </div>
+                        )}
                       </div>
                     </div>
+                    {fieldErrors.email && (
+                      <div className="text-red-400 text-sm mt-2">{fieldErrors.email}</div>
+                    )}
                   </div>
 
                   <div>
