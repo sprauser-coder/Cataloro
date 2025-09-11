@@ -761,17 +761,19 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
               )}
 
               {/* Favorites */}
-              <Link
-                to="/favorites"
-                className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
-              >
-                <Heart className="w-6 h-6" />
-                {favoriteCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-                    {favoriteCount}
-                  </span>
-                )}
-              </Link>
+              {isMenuItemVisible('desktop_menu', 'favorites') && (
+                <Link
+                  to="/favorites"
+                  className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
+                >
+                  <Heart className="w-6 h-6" />
+                  {favoriteCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                      {favoriteCount}
+                    </span>
+                  )}
+                </Link>
+              )}
 
               {/* Create Listing Button (replaced shopping cart) */}
               {isMenuItemVisible('desktop_menu', 'create_listing') && (
