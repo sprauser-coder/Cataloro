@@ -2031,7 +2031,7 @@ async def get_admin_logo(current_user: dict = Depends(require_admin_role)):
         logger.error(f"Error fetching admin logo: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch logo")
 
-@app.get("/user/{user_id}/notifications")
+@app.get("/api/user/{user_id}/notifications")
 async def get_user_notifications(user_id: str, current_user: dict = Depends(get_current_user)):
     """Get notifications for a user"""
     try:
