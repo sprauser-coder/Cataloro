@@ -14,8 +14,7 @@ import {
   Search,
   MessageCircle,
   DollarSign,
-  Package,
-  Bell
+  Package
 } from 'lucide-react';
 import { liveService } from '../../services/liveService';
 import { useMenuSettings } from '../../hooks/useMenuSettings';
