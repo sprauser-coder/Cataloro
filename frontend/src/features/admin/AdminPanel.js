@@ -1181,9 +1181,11 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
   const handleUpdateUser = async (userData) => {
     try {
+      const token = localStorage.getItem('cataloro_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userData.id}`, {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(userData)
