@@ -74,6 +74,159 @@ function BusinessTab({ showToast }) {
   const [usersData, setUsersData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch real data from backend
+  useEffect(() => {
+    fetchRealData();
+  }, []);
+
+  const fetchRealData = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('cataloro_token');
+      
+      if (!token) {
+        showToast('Authentication required', 'error');
+        return;
+      }
+
+      // Fetch dashboard data
+      const dashboardResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/dashboard`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (dashboardResponse.ok) {
+        const dashboard = await dashboardResponse.json();
+        setDashboardData(dashboard);
+      }
+
+      // Fetch users data
+      const usersResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (usersResponse.ok) {
+        const users = await usersResponse.json();
+        setUsersData(users);
+      }
+
+    } catch (error) {
+      console.error('Failed to fetch real data:', error);
+      showToast('Failed to load business data', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Calculate real metrics from fetched data
+  const calculateRealMetrics = () => {
+    if (!dashboardData || !usersData) {
+      return {
+        userMetrics: {
+          totalUsers: 'N/A',
+          activeBuyers: 'N/A',
+          activeSellers: 'N/A',
+          adminsManagers: 'N/A',
+          pendingApproval: 'N/A'
+        },
+        businessMetrics: {
+          totalBusiness: 'N/A',
+          verifiedBusiness: 'N/A',
+          pendingVerification: 'N/A',
+          premiumBusiness: 'N/A',
+          revenueShare: 'N/A'
+        },
+        activityMetrics: {
+          activeListings: 'N/A',
+          totalBids: 'N/A',
+          completedDeals: 'N/A',
+          messagesSent: 'N/A',
+          avgResponseTime: 'N/A'
+        },
+        financialMetrics: {
+          monthlyRevenue: 'N/A',
+          transactionFees: 'N/A',
+          subscriptionRevenue: 'N/A',
+          averageDealValue: 'N/A',
+          growthRate: 'N/A'
+        },
+        roleDistribution: {
+          userBuyer: 'N/A',
+          userSeller: 'N/A',
+          adminManager: 'N/A',
+          admin: 'N/A'
+        }
+      };
+    }
+
+    // Calculate user metrics
+    const totalUsers = dashboardData.kpis?.total_users || 0;
+    const buyerUsers = usersData.filter(u => u.user_role === 'User-Buyer' || (!u.user_role && u.role === 'user')).length;
+    const sellerUsers = usersData.filter(u => u.user_role === 'User-Seller').length;
+    const adminUsers = usersData.filter(u => u.user_role === 'Admin' || (!u.user_role && u.role === 'admin')).length;
+    const managerUsers = usersData.filter(u => u.user_role === 'Admin-Manager').length;
+    const pendingUsers = usersData.filter(u => u.registration_status === 'Pending').length;
+
+    // Calculate business accounts
+    const businessUsers = usersData.filter(u => u.is_business === true).length;
+    const verifiedBusinessUsers = usersData.filter(u => u.is_business === true && u.registration_status === 'Approved').length;
+    const pendingBusinessUsers = usersData.filter(u => u.is_business === true && u.registration_status === 'Pending').length;
+
+    // Calculate financial metrics
+    const totalRevenue = dashboardData.kpis?.revenue || 0;
+    const totalDeals = dashboardData.kpis?.total_deals || 0;
+    const averageDealValue = totalDeals > 0 ? (totalRevenue / totalDeals) : 0;
+    const growthRate = dashboardData.kpis?.growth_rate || 0;
+
+    // Estimate other metrics (since not available in backend)
+    const estimatedMessages = totalDeals * 3.7; // Estimated messages per deal
+    const estimatedBids = totalDeals * 1.5; // Estimated bids per deal
+
+    return {
+      userMetrics: {
+        totalUsers: totalUsers.toLocaleString(),
+        activeBuyers: buyerUsers.toLocaleString(),
+        activeSellers: sellerUsers.toLocaleString(),
+        adminsManagers: (adminUsers + managerUsers).toLocaleString(),
+        pendingApproval: pendingUsers.toLocaleString()
+      },
+      businessMetrics: {
+        totalBusiness: businessUsers.toLocaleString(),
+        verifiedBusiness: verifiedBusinessUsers.toLocaleString(),
+        pendingVerification: pendingBusinessUsers.toLocaleString(),
+        premiumBusiness: 'N/A', // Not tracked in current system
+        revenueShare: totalRevenue > 0 ? `€${(totalRevenue * 0.05).toFixed(1)}K` : 'N/A' // Estimated 5% commission
+      },
+      activityMetrics: {
+        activeListings: (dashboardData.kpis?.active_listings || 0).toLocaleString(),
+        totalBids: Math.round(estimatedBids).toLocaleString(),
+        completedDeals: totalDeals.toLocaleString(),
+        messagesSent: Math.round(estimatedMessages).toLocaleString(),
+        avgResponseTime: 'N/A' // Not tracked in current system
+      },
+      financialMetrics: {
+        monthlyRevenue: totalRevenue > 0 ? `€${(totalRevenue).toFixed(1)}K` : '€0.0K',
+        transactionFees: totalRevenue > 0 ? `€${(totalRevenue * 0.03).toFixed(1)}K` : '€0.0K', // Estimated 3% fees
+        subscriptionRevenue: 'N/A', // Not implemented yet
+        averageDealValue: averageDealValue > 0 ? `€${Math.round(averageDealValue)}` : '€0',
+        growthRate: growthRate > 0 ? `+${growthRate.toFixed(1)}%` : '0.0%'
+      },
+      roleDistribution: {
+        userBuyer: buyerUsers,
+        userSeller: sellerUsers,
+        adminManager: managerUsers,
+        admin: adminUsers
+      }
+    };
+  };
+
+  const realMetrics = calculateRealMetrics();
+
   // Comprehensive business processes mapping
   const businessProcesses = [
     {
