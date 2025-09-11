@@ -1064,6 +1064,54 @@ async def login_user(request: Request, credentials: dict):
     }
 
 @app.get("/api/auth/profile/{user_id}")
+async def get_user_profile(user_id: str):
+    """Get user profile by ID"""
+    try:
+        # Validate the user ID format
+        if not user_id:
+            raise HTTPException(status_code=400, detail="User ID is required")
+        
+        # Find user in database
+        user = await db.users.find_one({"id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Remove sensitive information
+        user.pop('password', None)
+        user.pop('_id', None)
+        
+        return user
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching user profile: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch user profile")
+
+@app.get("/api/auth/profile")
+async def get_current_user_profile(current_user: dict = Depends(get_current_user)):
+    """Get current authenticated user's profile"""
+    try:
+        user_id = current_user.get("id")
+        
+        # Find user in database
+        user = await db.users.find_one({"id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Remove sensitive information
+        user.pop('password', None)
+        user.pop('_id', None)
+        
+        return user
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching current user profile: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch profile")
+
+@app.get("/api/auth/profile/{user_id}")
 async def get_profile(user_id: str):
     # Try to get cached profile first
     cached_profile = await cache_service.get_cached_user_profile(user_id)
