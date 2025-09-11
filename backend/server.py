@@ -6618,8 +6618,8 @@ async def get_catalyst_calculations(limit: int = 100, skip: int = 0):
         raise HTTPException(status_code=500, detail=f"Failed to calculate prices: {str(e)}")
 
 @app.get("/api/admin/catalyst/unified-calculations")
-async def get_unified_catalyst_calculations(current_user: dict = Depends(require_admin_role)):
-    """Get unified calculations combining both price and content data for all catalysts"""
+async def get_unified_catalyst_calculations(current_user: dict = Depends(get_current_user)):
+    """Get unified calculations combining both price and content data for all catalysts - Available to all users"""
     try:
         # Get price settings
         settings = await db.catalyst_price_settings.find_one({"type": "price_settings"})
