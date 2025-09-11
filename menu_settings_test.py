@@ -692,8 +692,8 @@ class MenuSettingsVisibilityTester:
             messages_found = False
             for menu_type in ["desktop_menu", "mobile_menu"]:
                 if menu_type in demo_menu:
-                    for item in demo_menu[menu_type]:
-                        if item.get("key") == "messages":
+                    for key, item in demo_menu[menu_type].items():
+                        if key == "messages":
                             messages_found = True
                             break
             
