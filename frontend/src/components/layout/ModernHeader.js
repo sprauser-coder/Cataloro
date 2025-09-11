@@ -548,12 +548,10 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
 
   const isActive = (path) => location.pathname === path;
 
-  // Define all possible navigation items with their menu keys
+  // Define navigation items for the main nav (excluding items that have dedicated sections)
   const allNavigationItems = [
     { label: 'About', path: '/info', icon: Globe, key: 'about' },
     { label: 'Browse', path: '/browse', icon: Store, key: 'browse' },
-    { label: 'Tenders', path: '/tenders', icon: DollarSign, key: 'tenders' },
-    { label: 'Buy Management', path: '/buy-management', icon: ShoppingCart, key: 'buy_management' },
     { label: 'My Listings', path: '/my-listings', icon: Package, key: 'my_listings' },
     { label: 'Favorites', path: '/favorites', icon: Heart, key: 'favorites' },
     { label: 'Notifications', path: '/notifications', icon: Bell, key: 'notifications' },
