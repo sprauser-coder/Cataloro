@@ -87,9 +87,11 @@ function NotificationsPage() {
   // Mark notification as read
   const markAsRead = async (notificationId) => {
     try {
+      const token = localStorage.getItem('cataloro_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user?.id}/notifications/${notificationId}/read`, {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
