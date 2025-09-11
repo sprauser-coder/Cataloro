@@ -418,30 +418,33 @@ class MobileTenderTester:
         test_results["seller_response_time_ms"] = seller_result["response_time_ms"]
         
         if seller_result["success"]:
-            seller_data = seller_result.get("data", {})
-            if isinstance(seller_data, dict):
+            seller_data = seller_result.get("data", [])
+            if isinstance(seller_data, list):
                 # Count total tenders across all listings
                 total_tenders = 0
-                listings = seller_data.get("listings", [])
-                for listing in listings:
-                    if isinstance(listing, dict):
-                        tenders = listing.get("tenders", [])
+                for listing_overview in seller_data:
+                    if isinstance(listing_overview, dict):
+                        tenders = listing_overview.get("tenders", [])
                         total_tenders += len(tenders) if isinstance(tenders, list) else 0
                 
                 test_results["seller_tenders_count"] = total_tenders
                 test_results["seller_authentication_working"] = True
-                print(f"    ✅ Seller tenders overview loaded: {total_tenders} total tenders across {len(listings)} listings")
+                print(f"    ✅ Seller tenders overview loaded: {total_tenders} total tenders across {len(seller_data)} listings")
                 print(f"    ⏱️ Response time: {test_results['seller_response_time_ms']:.1f}ms")
                 
                 # Verify seller overview data structure for mobile display
-                required_overview_fields = ["seller", "listings"]
-                missing_overview_fields = [field for field in required_overview_fields if field not in seller_data]
-                if missing_overview_fields:
-                    test_results["error_messages"].append(f"Seller overview missing fields: {missing_overview_fields}")
+                if seller_data and len(seller_data) > 0:
+                    sample_overview = seller_data[0]
+                    required_overview_fields = ["listing", "tenders"]
+                    missing_overview_fields = [field for field in required_overview_fields if field not in sample_overview]
+                    if missing_overview_fields:
+                        test_results["error_messages"].append(f"Seller overview missing fields: {missing_overview_fields}")
+                    else:
+                        print(f"    ✅ Seller overview data has required fields for mobile display")
                 else:
-                    print(f"    ✅ Seller overview data has required fields for mobile display")
+                    print(f"    ✅ Seller overview data structure correct (no listings with tenders)")
             else:
-                test_results["error_messages"].append("Seller overview data is not in expected format")
+                test_results["error_messages"].append("Seller overview data is not in expected array format")
         else:
             test_results["error_messages"].append(f"Seller overview loading failed: {seller_result.get('error', 'Unknown error')}")
             print(f"    ❌ Seller overview loading failed: Status {seller_result['status']}")
