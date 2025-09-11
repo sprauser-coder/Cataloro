@@ -4451,7 +4451,7 @@ async def create_listing(request: Request, listing_data: dict):
         
         # Handle time limit functionality
         if listing_data.get("has_time_limit", False):
-            time_limit_hours = listing_data.get("time_limit_hours", 1)
+            time_limit_hours = listing_data.get("time_limit_hours", 24)
             # Calculate expiration time
             expires_at = datetime.utcnow() + timedelta(hours=time_limit_hours)
             listing_data["expires_at"] = expires_at.isoformat()
