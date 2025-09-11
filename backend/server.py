@@ -1905,7 +1905,7 @@ async def get_notifications(user_id: str):
 
 # Admin Endpoints
 @app.get("/api/admin/dashboard")
-async def get_admin_dashboard():
+async def get_admin_dashboard(current_user: dict = Depends(require_admin_role)):
     """Get real-time admin dashboard with accurate KPIs and caching"""
     try:
         # Try to get cached dashboard data first
