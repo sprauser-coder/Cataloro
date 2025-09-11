@@ -1335,7 +1335,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
   return (
     <div className="space-y-8">
       {/* Enhanced Users Stats - STANDARDIZED SPACING */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div className="cataloro-card-glass p-6">
           <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
             <div className="p-4 bg-blue-100/80 dark:bg-blue-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
@@ -1388,6 +1388,20 @@ function UsersTab({ users, onUpdateUser, showToast }) {
                 {users.filter(u => !u.is_active).length}
               </div>
               <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Suspended</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="cataloro-card-glass p-6">
+          <div className="flex flex-col items-center justify-center space-y-3 h-full min-h-[140px]">
+            <div className="p-4 bg-yellow-100/80 dark:bg-yellow-900/30 rounded-2xl backdrop-blur-md flex items-center justify-center">
+              <Clock className="w-8 h-8 text-yellow-500" />
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent flex items-center justify-center">
+                {users.filter(u => u.status === 'pending' || (!u.is_verified && u.is_active)).length}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Pending</div>
             </div>
           </div>
         </div>
