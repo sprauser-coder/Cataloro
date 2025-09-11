@@ -313,8 +313,9 @@ class APIEndpointFixesTester:
         print("  🔐 Testing authenticated image upload...")
         headers = {"Authorization": f"Bearer {self.admin_token}"}
         files = {"image": ("test.png", test_image_data, "image/png")}
+        data = {"section": "test", "field": "test_field"}
         
-        result = await self.make_request("/admin/upload-image", "POST", headers=headers, files=files)
+        result = await self.make_request("/admin/upload-image", "POST", headers=headers, files=files, data=data)
         
         test_results["actual_status"] = result["status"]
         test_results["response_time_ms"] = result["response_time_ms"]
