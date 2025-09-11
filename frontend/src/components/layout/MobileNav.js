@@ -64,32 +64,45 @@ function MobileNav({ isOpen, onClose }) {
   const isActive = (path) => location.pathname === path;
   const isAdmin = user?.role === 'admin';
 
-  const navigationSections = [
+  // Define all navigation sections with menu keys for visibility filtering
+  const allNavigationSections = [
     {
       title: 'Marketplace',
       items: [
-        { label: 'About Platform', path: '/info', icon: Globe },
-        { label: 'Browse All', path: '/browse', icon: Store }
+        { label: 'About Platform', path: '/info', icon: Globe, key: 'about' },
+        { label: 'Browse All', path: '/browse', icon: Store, key: 'browse' }
       ]
     },
     {
       title: 'My Account',
       items: [
-        { label: 'My Listings', path: '/mobile-my-listings', icon: Package },
-        { label: 'Buy Management', path: '/buy-management', icon: ShoppingCart },
-        { label: 'Messages', path: '/messages', icon: MessageCircle },
-        { label: 'Favorites', path: '/favorites', icon: Heart }
+        { label: 'My Listings', path: '/mobile-my-listings', icon: Package, key: 'listings' },
+        { label: 'Buy Management', path: '/buy-management', icon: ShoppingCart, key: 'buy_management' },
+        { label: 'Messages', path: '/messages', icon: MessageCircle, key: 'messages' },
+        { label: 'Favorites', path: '/favorites', icon: Heart, key: 'favorites' }
       ]
     },
     {
       title: 'Settings',
       items: [
-        { label: 'Profile', path: '/profile', icon: User },
-        { label: 'Notifications', path: '/notifications', icon: Bell },
-        { label: 'Logout', action: 'logout', icon: LogOut, isButton: true }
+        { label: 'Profile', path: '/profile', icon: User, key: 'profile' },
+        { label: 'Notifications', path: '/notifications', icon: Bell, key: 'notifications' },
+        { label: 'Logout', action: 'logout', icon: LogOut, isButton: true, key: 'logout' }
       ]
     }
   ];
+
+  // Filter navigation sections based on menu visibility settings
+  const navigationSections = allNavigationSections.map(section => ({
+    ...section,
+    items: section.items.filter(item => {
+      // Always show logout button
+      if (item.isButton) return true;
+      
+      // Filter based on menu visibility settings
+      return item.key ? isMenuItemVisible('mobile_menu', item.key) : true;
+    })
+  })).filter(section => section.items.length > 0); // Remove empty sections
 
   // Admin users can access admin panel through separate dedicated button/icon
   // Removed admin section from mobile nav to keep it clean
