@@ -566,7 +566,7 @@ async def get_listing_thumbnail(listing_id: str, image_index: int):
         return await get_placeholder_image()
 
 @app.post("/api/admin/cache/clear")
-async def clear_all_cache():
+async def clear_all_cache(current_user: dict = Depends(require_admin_role)):
     """Clear ALL Redis cache - URGENT endpoint for data consistency"""
     try:
         # Clear all cache patterns
