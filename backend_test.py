@@ -100,13 +100,30 @@ class AdminMenuSettingsTester:
             print(f"  ❌ Admin authentication failed: {result.get('error', 'Unknown error')}")
             return False
     
-    def create_test_image(self) -> bytes:
-        """Create a simple test image (1x1 PNG)"""
-        # 1x1 transparent PNG (smallest possible valid image)
-        png_data = base64.b64decode(
-            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
-        )
-        return png_data
+    def get_expected_menu_structure(self) -> Dict:
+        """Get the expected menu structure format"""
+        return {
+            "desktop_menu": {
+                "browse": {"enabled": True, "label": "Browse", "roles": ["buyer", "seller"]},
+                "create_listing": {"enabled": True, "label": "Create Listing", "roles": ["seller"]},
+                "messages": {"enabled": True, "label": "Messages", "roles": ["buyer", "seller"]},
+                "my_listings": {"enabled": True, "label": "My Listings", "roles": ["seller"]},
+                "tenders": {"enabled": True, "label": "Tenders", "roles": ["buyer", "seller"]},
+                "inventory": {"enabled": True, "label": "Inventory", "roles": ["buyer"]},
+                "admin_panel": {"enabled": True, "label": "Administration", "roles": ["admin"]},
+                "custom_items": []
+            },
+            "mobile_menu": {
+                "browse": {"enabled": True, "label": "Browse", "roles": ["buyer", "seller"]},
+                "create_listing": {"enabled": True, "label": "Create Listing", "roles": ["seller"]},
+                "messages": {"enabled": True, "label": "Messages", "roles": ["buyer", "seller"]},
+                "my_listings": {"enabled": True, "label": "My Listings", "roles": ["seller"]},
+                "tenders": {"enabled": True, "label": "Tenders", "roles": ["buyer", "seller"]},
+                "inventory": {"enabled": True, "label": "Inventory", "roles": ["buyer"]},
+                "admin_drawer": {"enabled": True, "label": "Admin", "roles": ["admin"]},
+                "custom_items": []
+            }
+        }
     
     async def test_upload_endpoint_availability(self) -> Dict:
         """Test if /api/admin/upload-image endpoint exists and is accessible"""
