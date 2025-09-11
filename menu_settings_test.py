@@ -498,14 +498,13 @@ class MenuSettingsVisibilityTester:
             
             for menu_type in ["mobile_menu", "desktop_menu"]:
                 if menu_type in admin_menu:
-                    for item in admin_menu[menu_type]:
-                        item_key = item.get("key", "")
-                        if item_key in ["admin_panel", "admin_drawer"]:
-                            admin_only_items.append(item)
-                        elif item_key in ["create_listing", "my_listings", "listings"]:
-                            seller_items.append(item)
-                        elif item_key in ["browse", "favorites", "profile"]:
-                            buyer_items.append(item)
+                    for key, item in admin_menu[menu_type].items():
+                        if key in ["admin_panel", "admin_drawer"]:
+                            admin_only_items.append({"key": key, **item})
+                        elif key in ["create_listing", "my_listings", "listings"]:
+                            seller_items.append({"key": key, **item})
+                        elif key in ["browse", "favorites", "profile"]:
+                            buyer_items.append({"key": key, **item})
             
             admin_can_see_admin_items = len(admin_only_items) > 0
             admin_can_see_seller_items = len(seller_items) > 0  # Admin should see seller items too
