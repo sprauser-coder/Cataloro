@@ -751,6 +751,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   </span>
                 )}
               </Link>
+              )}
 
               {/* Favorites */}
               <Link
