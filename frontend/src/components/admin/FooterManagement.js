@@ -155,7 +155,7 @@ function FooterManagement({ showToast }) {
       ...prev,
       links: {
         ...prev.links,
-        [section]: [...prev.links[section], { label: '', url: '' }]
+        [section]: [...(prev.links?.[section] || []), { label: '', url: '' }]
       }
     }));
   };
@@ -165,7 +165,7 @@ function FooterManagement({ showToast }) {
       ...prev,
       links: {
         ...prev.links,
-        [section]: prev.links[section].filter((_, i) => i !== index)
+        [section]: (prev.links?.[section] || []).filter((_, i) => i !== index)
       }
     }));
   };
