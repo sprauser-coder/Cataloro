@@ -692,8 +692,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 </Link>
               )}
 
-              {/* Inventory Link - Admin, Admin-Manager, and User-Buyer access */}
-              {(permissions.ui.showBuyingFeatures || permissions.ui.showAdminPanelLink) && (
+              {/* Inventory Link - Menu settings visibility */}
+              {isMenuItemVisible('desktop_menu', 'buy_management') && (
                 <Link
                   to="/buy-management"
                   className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
