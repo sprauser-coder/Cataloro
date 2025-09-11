@@ -223,9 +223,13 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
       const userNotifications = await liveService.getUserNotifications(user.id);
       const userMessages = await liveService.getUserMessages(user.id);
       
+      // Ensure we have arrays to work with
+      const notificationsArray = Array.isArray(userNotifications) ? userNotifications : [];
+      const messagesArray = Array.isArray(userMessages) ? userMessages : [];
+      
       // Check for new notifications since last check
       if (showNewNotificationAlert && notifications.length > 0) {
-        const newNotifications = userNotifications.filter(n => 
+        const newNotifications = notificationsArray.filter(n => 
           new Date(n.created_at) > new Date(lastNotificationCheck) && !n.is_read
         );
         
@@ -242,9 +246,9 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
         }
       }
       
-      setNotifications(userNotifications);
-      setUnreadNotifications(userNotifications.filter(n => !n.is_read).length);
-      setUnreadMessages(userMessages.filter(m => !m.is_read && m.sender_id !== user.id).length);
+      setNotifications(notificationsArray);
+      setUnreadNotifications(notificationsArray.filter(n => !n.is_read).length);
+      setUnreadMessages(messagesArray.filter(m => !m.is_read && m.sender_id !== user.id).length);
       setLastNotificationCheck(Date.now());
     } catch (error) {
       console.error('Failed to load notifications:', error);
