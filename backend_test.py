@@ -4489,5 +4489,65 @@ async def main():
     
     return admin_results
 
+async def main_custom_menu():
+    """Main function to run custom menu management tests"""
+    print("🎯 CATALORO CUSTOM MENU MANAGEMENT TESTING")
+    print("=" * 80)
+    print("Testing new custom menu item management functionality end-to-end")
+    print()
+    
+    # Run custom menu management tests
+    custom_menu_tester = CustomMenuManagementTester()
+    custom_menu_results = await custom_menu_tester.run_comprehensive_custom_menu_test()
+    
+    # Display results summary
+    print("\n" + "=" * 80)
+    print("🎯 CUSTOM MENU MANAGEMENT TEST RESULTS SUMMARY")
+    print("=" * 80)
+    
+    if "error" in custom_menu_results:
+        print(f"❌ TESTING FAILED: {custom_menu_results['error']}")
+        return custom_menu_results
+    
+    summary = custom_menu_results.get("summary", {})
+    
+    # Individual test results
+    print("📊 Individual Test Results:")
+    print(f"   {'✅' if custom_menu_results.get('available_pages_endpoint', {}).get('success') else '❌'} Available Pages Endpoint")
+    print(f"   {'✅' if custom_menu_results.get('available_icons_endpoint', {}).get('success') else '❌'} Available Icons Endpoint")
+    print(f"   {'✅' if custom_menu_results.get('menu_settings_get', {}).get('success') else '❌'} Menu Settings GET")
+    print(f"   {'✅' if custom_menu_results.get('custom_item_creation', {}).get('success') else '❌'} Custom Item Creation")
+    print(f"   {'✅' if custom_menu_results.get('menu_validation', {}).get('success') else '❌'} Menu Validation")
+    print(f"   {'✅' if custom_menu_results.get('user_menu_filtering', {}).get('success') else '❌'} User Menu Filtering")
+    print(f"   {'✅' if custom_menu_results.get('crud_operations', {}).get('success') else '❌'} CRUD Operations")
+    print(f"   {'✅' if custom_menu_results.get('integration_workflow', {}).get('success') else '❌'} Integration Workflow")
+    
+    print()
+    print("🏆 OVERALL RESULTS:")
+    overall_status = "✅ ALL TESTS PASSED" if summary.get("all_tests_passed") else "❌ SOME TESTS FAILED"
+    print(f"   {overall_status}")
+    print(f"   Success Rate: {summary.get('overall_success_rate', 0):.0f}%")
+    print(f"   Critical Functionality: {'✅ Working' if summary.get('critical_functionality_working') else '❌ Issues Found'}")
+    
+    # Detailed breakdown
+    print()
+    print("📋 Detailed Breakdown:")
+    print(f"   Available Pages Working: {'✅' if summary.get('available_pages_working') else '❌'}")
+    print(f"   Available Icons Working: {'✅' if summary.get('available_icons_working') else '❌'}")
+    print(f"   Menu Settings CRUD: {'✅' if summary.get('menu_settings_crud_working') else '❌'}")
+    print(f"   Validation Working: {'✅' if summary.get('validation_working') else '❌'}")
+    print(f"   User Filtering Working: {'✅' if summary.get('user_filtering_working') else '❌'}")
+    print(f"   CRUD Operations: {'✅' if summary.get('crud_operations_working') else '❌'}")
+    print(f"   Integration Workflow: {'✅' if summary.get('integration_workflow_working') else '❌'}")
+    
+    # Save detailed results
+    with open("/app/custom_menu_test_results.json", "w") as f:
+        json.dump(custom_menu_results, f, indent=2, default=str)
+    
+    print(f"\n📄 Custom menu test results saved to: /app/custom_menu_test_results.json")
+    
+    return custom_menu_results
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    # Run custom menu management tests
+    asyncio.run(main_custom_menu())
