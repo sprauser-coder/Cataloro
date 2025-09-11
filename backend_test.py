@@ -30,7 +30,7 @@ class AdminMenuSettingsTester:
         self.session = None
         self.test_results = []
         self.admin_token = None
-        self.test_ads = []
+        self.original_menu_settings = None
         
     async def setup(self):
         """Initialize HTTP session"""
