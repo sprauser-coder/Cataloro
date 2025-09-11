@@ -179,7 +179,9 @@ class MobileTenderTester:
         if not tender_result["success"]:
             return {"error": f"Failed to create test tender: {tender_result.get('error', 'Unknown error')}"}
         
-        tender_id = tender_result["data"].get("id")
+        tender_id = tender_result["data"].get("tender_id")
+        if not tender_id:
+            return {"error": f"Failed to get tender ID from response: {tender_result.get('data', {})}"}
         print(f"  ✅ Test tender created: {tender_id}")
         
         return {
