@@ -672,20 +672,20 @@ function BusinessTab({ showToast }) {
                 <Store className="w-5 h-5 text-green-600 dark:text-green-400" />
                 <span className="font-semibold text-green-900 dark:text-green-100">User-Seller</span>
               </div>
-              <span className="text-2xl font-bold text-green-600 dark:text-green-400">234</span>
+              <span className="text-2xl font-bold text-green-600 dark:text-green-400">{loading ? '...' : realMetrics.roleDistribution.userSeller}</span>
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-green-700 dark:text-green-300">Active Listings</span>
-                <span className="font-medium text-green-900 dark:text-green-100">1,847</span>
+                <span className="font-medium text-green-900 dark:text-green-100">{loading ? '...' : realMetrics.activityMetrics.activeListings}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-green-700 dark:text-green-300">Avg Price</span>
-                <span className="font-medium text-green-900 dark:text-green-100">€145</span>
+                <span className="font-medium text-green-900 dark:text-green-100">{loading ? '...' : 'N/A'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-green-700 dark:text-green-300">Completion Rate</span>
-                <span className="font-medium text-green-900 dark:text-green-100">67%</span>
+                <span className="font-medium text-green-900 dark:text-green-100">{loading ? '...' : 'N/A'}</span>
               </div>
             </div>
           </div>
