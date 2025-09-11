@@ -160,6 +160,50 @@ function AdsManagement({ showToast }) {
     });
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file', 'error');
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('Image size must be less than 5MB', 'error');
+      return;
+    }
+
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append('image', file);
+      formDataUpload.append('section', 'ads');
+      formDataUpload.append('field', 'ad_image');
+
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${ENV_CONFIG.API_BASE_URL}/admin/upload-image`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formDataUpload
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setFormData(prev => ({ ...prev, image_url: result.image_url }));
+        showToast('Image uploaded successfully', 'success');
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      showToast('Failed to upload image. Please try again.', 'error');
+    }
+  };
+
   const openEditModal = (ad) => {
     setEditingAd(ad);
     setFormData({
