@@ -30,6 +30,564 @@ ADMIN_ID = "admin_user_1"
 DEMO_EMAIL = "demo@cataloro.com"
 DEMO_USER_ID = "68bfff790e4e46bc28d43631"
 
+class APIEndpointFixesTester:
+    """
+    URGENT: API Endpoint Fixes Testing
+    User reports: 404 errors and authentication issues with specific endpoints
+    Testing the fixes implemented for:
+    1. Browse listings API - Fixed missing `/api` prefix in marketplaceService.js
+    2. Notifications API - Added `/api` prefix and authentication header in liveService.js
+    3. Image upload authentication - Added missing Authorization header to AdminPanel.js and AdsManagement.js
+    4. Backend notifications endpoint - Added `/api` prefix for consistency
+    """
+    def __init__(self):
+        self.session = None
+        self.admin_token = None
+        self.demo_token = None
+        self.test_results = {}
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None, files: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data and not files:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            if files:
+                # For file uploads, use FormData
+                form_data = aiohttp.FormData()
+                for key, value in files.items():
+                    if isinstance(value, tuple):
+                        form_data.add_field(key, value[1], filename=value[0])
+                    else:
+                        form_data.add_field(key, value)
+                if data:
+                    for key, value in data.items():
+                        form_data.add_field(key, str(value))
+                request_kwargs['data'] = form_data
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def authenticate_users(self) -> bool:
+        """Authenticate both admin and demo users"""
+        print("🔐 Authenticating users for API endpoint testing...")
+        
+        # Authenticate admin
+        admin_login_data = {
+            "email": ADMIN_EMAIL,
+            "password": "admin_password"
+        }
+        
+        admin_result = await self.make_request("/auth/login", "POST", data=admin_login_data)
+        
+        if admin_result["success"]:
+            self.admin_token = admin_result["data"].get("token", "")
+            print(f"  ✅ Admin authentication successful")
+        else:
+            print(f"  ❌ Admin authentication failed: {admin_result.get('error', 'Unknown error')}")
+            return False
+        
+        # Authenticate demo user
+        demo_login_data = {
+            "email": "demo@cataloro.com",
+            "password": "demo_password"
+        }
+        
+        demo_result = await self.make_request("/auth/login", "POST", data=demo_login_data)
+        
+        if demo_result["success"]:
+            self.demo_token = demo_result["data"].get("token", "")
+            print(f"  ✅ Demo user authentication successful")
+            return True
+        else:
+            print(f"  ❌ Demo user authentication failed: {demo_result.get('error', 'Unknown error')}")
+            return False
+    
+    async def test_browse_listings_api(self) -> Dict:
+        """
+        Test /api/marketplace/browse - Should return listings without 404 error
+        Fixed missing `/api` prefix in marketplaceService.js
+        """
+        print("📋 Testing browse listings API endpoint...")
+        
+        test_results = {
+            "endpoint": "/marketplace/browse",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "listings_count": 0,
+            "error_messages": [],
+            "success": False
+        }
+        
+        # Test without authentication first (public endpoint)
+        print("  🌐 Testing public access to browse listings...")
+        result = await self.make_request("/marketplace/browse")
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            listings = result.get("data", [])
+            test_results["listings_count"] = len(listings) if isinstance(listings, list) else 0
+            test_results["success"] = True
+            print(f"    ✅ Browse listings successful: {test_results['listings_count']} listings found")
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+            
+            # Verify listings have required fields
+            if listings and isinstance(listings, list) and len(listings) > 0:
+                sample_listing = listings[0]
+                required_fields = ["id", "title", "price", "status"]
+                missing_fields = [field for field in required_fields if field not in sample_listing]
+                if missing_fields:
+                    test_results["error_messages"].append(f"Missing required fields: {missing_fields}")
+                else:
+                    print(f"    ✅ Listings have required fields: {required_fields}")
+        else:
+            test_results["error_messages"].append(f"Browse listings failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ Browse listings failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        # Test with different status filters
+        print("  🔍 Testing status filtering...")
+        status_filters = ["active", "all", "pending", "expired"]
+        status_results = {}
+        
+        for status in status_filters:
+            status_result = await self.make_request("/marketplace/browse", params={"status": status})
+            if status_result["success"]:
+                status_listings = status_result.get("data", [])
+                status_count = len(status_listings) if isinstance(status_listings, list) else 0
+                status_results[status] = status_count
+                print(f"    ✅ Status '{status}': {status_count} listings")
+            else:
+                status_results[status] = 0
+                print(f"    ❌ Status '{status}' failed: {status_result.get('error', 'Unknown error')}")
+        
+        test_results["status_filtering"] = status_results
+        
+        return {
+            "test_name": "Browse Listings API",
+            "success": test_results["success"] and test_results["actual_status"] == 200,
+            "test_results": test_results,
+            "critical_issue": not test_results["success"] or test_results["actual_status"] != 200,
+            "error_resolved": test_results["success"] and test_results["actual_status"] == 200
+        }
+    
+    async def test_notifications_api(self) -> Dict:
+        """
+        Test /api/user/{user_id}/notifications - Should work with authentication, not return 404
+        Added `/api` prefix and authentication header in liveService.js
+        """
+        print("🔔 Testing notifications API endpoint...")
+        
+        if not self.demo_token:
+            return {"test_name": "Notifications API", "error": "No demo token available"}
+        
+        test_results = {
+            "endpoint": f"/user/{DEMO_USER_ID}/notifications",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "notifications_count": 0,
+            "error_messages": [],
+            "success": False,
+            "authentication_working": False
+        }
+        
+        # Test with authentication
+        print("  🔐 Testing authenticated access to notifications...")
+        headers = {"Authorization": f"Bearer {self.demo_token}"}
+        result = await self.make_request(f"/user/{DEMO_USER_ID}/notifications", headers=headers)
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            notifications = result.get("data", [])
+            test_results["notifications_count"] = len(notifications) if isinstance(notifications, list) else 0
+            test_results["success"] = True
+            test_results["authentication_working"] = True
+            print(f"    ✅ Notifications API successful: {test_results['notifications_count']} notifications found")
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+            
+            # Verify notifications have required fields
+            if notifications and isinstance(notifications, list) and len(notifications) > 0:
+                sample_notification = notifications[0]
+                required_fields = ["id", "title", "message", "type", "read", "created_at"]
+                missing_fields = [field for field in required_fields if field not in sample_notification]
+                if missing_fields:
+                    test_results["error_messages"].append(f"Missing required fields: {missing_fields}")
+                else:
+                    print(f"    ✅ Notifications have required fields: {required_fields}")
+        else:
+            test_results["error_messages"].append(f"Notifications API failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ Notifications API failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        # Test without authentication (should fail)
+        print("  🚫 Testing unauthenticated access (should fail)...")
+        unauth_result = await self.make_request(f"/user/{DEMO_USER_ID}/notifications")
+        if unauth_result["status"] == 401 or unauth_result["status"] == 403:
+            print(f"    ✅ Unauthenticated access properly rejected: Status {unauth_result['status']}")
+            test_results["authentication_working"] = True
+        else:
+            print(f"    ⚠️ Unauthenticated access not properly rejected: Status {unauth_result['status']}")
+            test_results["error_messages"].append("Authentication not properly enforced")
+        
+        return {
+            "test_name": "Notifications API",
+            "success": test_results["success"] and test_results["actual_status"] == 200,
+            "test_results": test_results,
+            "critical_issue": not test_results["success"] or test_results["actual_status"] != 200,
+            "error_resolved": test_results["success"] and test_results["actual_status"] == 200,
+            "authentication_fixed": test_results["authentication_working"]
+        }
+    
+    async def test_image_upload_authentication(self) -> Dict:
+        """
+        Test /api/admin/upload-image - Should work with proper authentication, not return 403
+        Added missing Authorization header to AdminPanel.js and AdsManagement.js
+        """
+        print("🖼️ Testing image upload authentication...")
+        
+        if not self.admin_token:
+            return {"test_name": "Image Upload Authentication", "error": "No admin token available"}
+        
+        test_results = {
+            "endpoint": "/admin/upload-image",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "upload_successful": False,
+            "error_messages": [],
+            "success": False,
+            "authentication_working": False
+        }
+        
+        # Create a test image (small PNG)
+        test_image_data = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+        )
+        
+        # Test with authentication
+        print("  🔐 Testing authenticated image upload...")
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        files = {"image": ("test.png", test_image_data, "image/png")}
+        
+        result = await self.make_request("/admin/upload-image", "POST", headers=headers, files=files)
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            upload_data = result.get("data", {})
+            test_results["upload_successful"] = True
+            test_results["success"] = True
+            test_results["authentication_working"] = True
+            print(f"    ✅ Image upload successful")
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+            
+            # Check if response contains image URL
+            if isinstance(upload_data, dict) and ("url" in upload_data or "image_url" in upload_data):
+                image_url = upload_data.get("url") or upload_data.get("image_url")
+                print(f"    ✅ Image URL returned: {image_url}")
+            else:
+                test_results["error_messages"].append("No image URL in response")
+        else:
+            test_results["error_messages"].append(f"Image upload failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ Image upload failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        # Test without authentication (should fail with 401/403)
+        print("  🚫 Testing unauthenticated upload (should fail)...")
+        unauth_result = await self.make_request("/admin/upload-image", "POST", files=files)
+        if unauth_result["status"] in [401, 403]:
+            print(f"    ✅ Unauthenticated upload properly rejected: Status {unauth_result['status']}")
+            test_results["authentication_working"] = True
+        else:
+            print(f"    ⚠️ Unauthenticated upload not properly rejected: Status {unauth_result['status']}")
+            test_results["error_messages"].append("Authentication not properly enforced")
+        
+        # Test with non-admin user (should fail with 403)
+        if self.demo_token:
+            print("  👤 Testing non-admin upload (should fail)...")
+            demo_headers = {"Authorization": f"Bearer {self.demo_token}"}
+            demo_result = await self.make_request("/admin/upload-image", "POST", headers=demo_headers, files=files)
+            if demo_result["status"] == 403:
+                print(f"    ✅ Non-admin upload properly rejected: Status {demo_result['status']}")
+            else:
+                print(f"    ⚠️ Non-admin upload not properly rejected: Status {demo_result['status']}")
+                test_results["error_messages"].append("Admin role not properly enforced")
+        
+        return {
+            "test_name": "Image Upload Authentication",
+            "success": test_results["success"] and test_results["actual_status"] == 200,
+            "test_results": test_results,
+            "critical_issue": not test_results["success"] or test_results["actual_status"] != 200,
+            "error_resolved": test_results["success"] and test_results["actual_status"] == 200,
+            "authentication_fixed": test_results["authentication_working"]
+        }
+    
+    async def test_auth_profile_endpoint(self) -> Dict:
+        """
+        Test /api/auth/profile - Should work for authenticated users
+        """
+        print("👤 Testing auth profile endpoint...")
+        
+        if not self.demo_token:
+            return {"test_name": "Auth Profile", "error": "No demo token available"}
+        
+        test_results = {
+            "endpoint": "/auth/profile",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "profile_data_present": False,
+            "error_messages": [],
+            "success": False,
+            "authentication_working": False
+        }
+        
+        # Test with authentication
+        print("  🔐 Testing authenticated profile access...")
+        headers = {"Authorization": f"Bearer {self.demo_token}"}
+        result = await self.make_request("/auth/profile", headers=headers)
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            profile_data = result.get("data", {})
+            test_results["profile_data_present"] = bool(profile_data)
+            test_results["success"] = True
+            test_results["authentication_working"] = True
+            print(f"    ✅ Profile API successful")
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+            
+            # Verify profile has required fields
+            if isinstance(profile_data, dict):
+                required_fields = ["id", "email", "username"]
+                missing_fields = [field for field in required_fields if field not in profile_data]
+                if missing_fields:
+                    test_results["error_messages"].append(f"Missing required fields: {missing_fields}")
+                else:
+                    print(f"    ✅ Profile has required fields: {required_fields}")
+                    print(f"    👤 User: {profile_data.get('username', 'Unknown')} ({profile_data.get('email', 'No email')})")
+        else:
+            test_results["error_messages"].append(f"Profile API failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ Profile API failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        # Test without authentication (should fail)
+        print("  🚫 Testing unauthenticated profile access (should fail)...")
+        unauth_result = await self.make_request("/auth/profile")
+        if unauth_result["status"] in [401, 403]:
+            print(f"    ✅ Unauthenticated access properly rejected: Status {unauth_result['status']}")
+            test_results["authentication_working"] = True
+        else:
+            print(f"    ⚠️ Unauthenticated access not properly rejected: Status {unauth_result['status']}")
+            test_results["error_messages"].append("Authentication not properly enforced")
+        
+        return {
+            "test_name": "Auth Profile",
+            "success": test_results["success"] and test_results["actual_status"] == 200,
+            "test_results": test_results,
+            "critical_issue": not test_results["success"] or test_results["actual_status"] != 200,
+            "error_resolved": test_results["success"] and test_results["actual_status"] == 200,
+            "authentication_working": test_results["authentication_working"]
+        }
+    
+    async def test_admin_logo_endpoint(self) -> Dict:
+        """
+        Test /api/admin/logo - Should work for admin users
+        """
+        print("🏢 Testing admin logo endpoint...")
+        
+        if not self.admin_token:
+            return {"test_name": "Admin Logo", "error": "No admin token available"}
+        
+        test_results = {
+            "endpoint": "/admin/logo",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "logo_data_present": False,
+            "error_messages": [],
+            "success": False,
+            "admin_access_working": False
+        }
+        
+        # Test with admin authentication
+        print("  🔐 Testing admin logo access...")
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        result = await self.make_request("/admin/logo", headers=headers)
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            logo_data = result.get("data", {})
+            test_results["logo_data_present"] = bool(logo_data)
+            test_results["success"] = True
+            test_results["admin_access_working"] = True
+            print(f"    ✅ Admin logo API successful")
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+            
+            # Check if logo data is present
+            if logo_data:
+                print(f"    ✅ Logo data present: {type(logo_data)}")
+        else:
+            test_results["error_messages"].append(f"Admin logo API failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ Admin logo API failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        # Test with non-admin user (should fail with 403)
+        if self.demo_token:
+            print("  👤 Testing non-admin logo access (should fail)...")
+            demo_headers = {"Authorization": f"Bearer {self.demo_token}"}
+            demo_result = await self.make_request("/admin/logo", headers=demo_headers)
+            if demo_result["status"] == 403:
+                print(f"    ✅ Non-admin access properly rejected: Status {demo_result['status']}")
+                test_results["admin_access_working"] = True
+            else:
+                print(f"    ⚠️ Non-admin access not properly rejected: Status {demo_result['status']}")
+                test_results["error_messages"].append("Admin role not properly enforced")
+        
+        # Test without authentication (should fail)
+        print("  🚫 Testing unauthenticated logo access (should fail)...")
+        unauth_result = await self.make_request("/admin/logo")
+        if unauth_result["status"] in [401, 403]:
+            print(f"    ✅ Unauthenticated access properly rejected: Status {unauth_result['status']}")
+        else:
+            print(f"    ⚠️ Unauthenticated access not properly rejected: Status {unauth_result['status']}")
+            test_results["error_messages"].append("Authentication not properly enforced")
+        
+        return {
+            "test_name": "Admin Logo",
+            "success": test_results["success"] and test_results["actual_status"] == 200,
+            "test_results": test_results,
+            "critical_issue": not test_results["success"] or test_results["actual_status"] != 200,
+            "error_resolved": test_results["success"] and test_results["actual_status"] == 200,
+            "admin_access_working": test_results["admin_access_working"]
+        }
+    
+    async def run_api_endpoint_fixes_testing(self) -> Dict:
+        """
+        Run complete API endpoint fixes testing
+        """
+        print("🚨 STARTING API ENDPOINT FIXES TESTING")
+        print("=" * 80)
+        print("TESTING: Specific API endpoint fixes to resolve 404 errors and authentication issues")
+        print("ENDPOINTS: browse, notifications, image upload, profile, admin logo")
+        print("=" * 80)
+        
+        await self.setup()
+        
+        try:
+            # Authenticate first
+            auth_success = await self.authenticate_users()
+            if not auth_success:
+                return {
+                    "test_timestamp": datetime.now().isoformat(),
+                    "error": "User authentication failed - cannot proceed with testing"
+                }
+            
+            # Run all endpoint tests
+            browse_test = await self.test_browse_listings_api()
+            notifications_test = await self.test_notifications_api()
+            image_upload_test = await self.test_image_upload_authentication()
+            profile_test = await self.test_auth_profile_endpoint()
+            admin_logo_test = await self.test_admin_logo_endpoint()
+            
+            # Compile comprehensive test results
+            test_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "test_focus": "API endpoint fixes for 404 errors and authentication issues",
+                "browse_listings_test": browse_test,
+                "notifications_test": notifications_test,
+                "image_upload_test": image_upload_test,
+                "profile_test": profile_test,
+                "admin_logo_test": admin_logo_test
+            }
+            
+            # Determine critical findings
+            critical_issues = []
+            resolved_issues = []
+            
+            tests = [browse_test, notifications_test, image_upload_test, profile_test, admin_logo_test]
+            
+            for test in tests:
+                if test.get("critical_issue", False):
+                    critical_issues.append(f"{test['test_name']}: {test.get('test_results', {}).get('error_messages', ['Unknown error'])[0] if test.get('test_results', {}).get('error_messages') else 'Failed'}")
+                
+                if test.get("error_resolved", False):
+                    resolved_issues.append(f"{test['test_name']}: Working correctly")
+            
+            # Calculate success metrics
+            total_tests = len(tests)
+            successful_tests = sum(1 for test in tests if test.get("success", False))
+            success_rate = (successful_tests / total_tests) * 100
+            
+            test_results["summary"] = {
+                "total_tests": total_tests,
+                "successful_tests": successful_tests,
+                "failed_tests": total_tests - successful_tests,
+                "success_rate": success_rate,
+                "critical_issues": critical_issues,
+                "resolved_issues": resolved_issues,
+                "all_endpoints_working": len(critical_issues) == 0,
+                "fixes_verified": len(resolved_issues) >= 3  # At least 3 endpoints working
+            }
+            
+            return test_results
+            
+        finally:
+            await self.cleanup()
+
+
 class ManagementCenterSellTester:
     """
     URGENT: Management Center Sell listings investigation
