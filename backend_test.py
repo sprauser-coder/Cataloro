@@ -198,45 +198,102 @@ class AdminMenuSettingsTester:
                 "response": result.get("data", "")
             }
     
-    async def test_authentication_requirements(self) -> Dict:
-        """Test if upload endpoint requires admin authentication"""
-        print("🔐 Testing authentication requirements...")
+    async def test_menu_settings_data_structure_comparison(self) -> Dict:
+        """Compare actual menu structure with expected format"""
+        print("🔍 Testing menu settings data structure comparison...")
         
-        # Create test image
-        test_image = self.create_test_image()
+        if not self.admin_token:
+            return {"test_name": "Menu Settings Data Structure", "error": "No admin token available"}
         
-        # Test without authentication
-        form_data = aiohttp.FormData()
-        form_data.add_field('image', io.BytesIO(test_image), filename='test.png', content_type='image/png')
-        form_data.add_field('section', 'ads')
-        form_data.add_field('field', 'ad_image')
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        result = await self.make_request("/admin/menu-settings", "GET", headers=headers)
         
-        no_auth_result = await self.make_request("/admin/upload-image", "POST", form_data=form_data)
+        if not result["success"]:
+            return {
+                "test_name": "Menu Settings Data Structure",
+                "success": False,
+                "error": result.get("error", "Failed to get menu settings")
+            }
         
-        # Test with invalid token
-        invalid_headers = {"Authorization": "Bearer invalid_token_12345"}
-        invalid_auth_result = await self.make_request("/admin/upload-image", "POST", headers=invalid_headers, form_data=form_data)
+        actual_data = result["data"]
+        expected_structure = self.get_expected_menu_structure()
         
-        # Test with valid admin token
-        if self.admin_token:
-            valid_headers = {"Authorization": f"Bearer {self.admin_token}"}
-            valid_auth_result = await self.make_request("/admin/upload-image", "POST", headers=valid_headers, form_data=form_data)
-        else:
-            valid_auth_result = {"success": False, "status": 0, "error": "No admin token"}
+        # Compare structure
+        structure_matches = []
         
-        auth_required = no_auth_result["status"] in [401, 403] and invalid_auth_result["status"] in [401, 403]
+        # Check desktop menu
+        desktop_actual = actual_data.get("desktop_menu", {})
+        desktop_expected = expected_structure["desktop_menu"]
         
-        print(f"  📊 No auth: {no_auth_result['status']}, Invalid auth: {invalid_auth_result['status']}, Valid auth: {valid_auth_result['status']}")
-        print(f"  {'✅' if auth_required else '❌'} Authentication {'required' if auth_required else 'not properly enforced'}")
+        desktop_comparison = {
+            "has_browse": "browse" in desktop_actual,
+            "has_create_listing": "create_listing" in desktop_actual,
+            "has_messages": "messages" in desktop_actual,
+            "has_my_listings": "my_listings" in desktop_actual,
+            "has_tenders": "tenders" in desktop_actual,
+            "has_inventory": "inventory" in desktop_actual,
+            "has_admin_panel": "admin_panel" in desktop_actual,
+            "has_custom_items": "custom_items" in desktop_actual
+        }
+        
+        # Check mobile menu
+        mobile_actual = actual_data.get("mobile_menu", {})
+        mobile_expected = expected_structure["mobile_menu"]
+        
+        mobile_comparison = {
+            "has_browse": "browse" in mobile_actual,
+            "has_create_listing": "create_listing" in mobile_actual,
+            "has_messages": "messages" in mobile_actual,
+            "has_my_listings": "my_listings" in mobile_actual,
+            "has_tenders": "tenders" in mobile_actual,
+            "has_inventory": "inventory" in mobile_actual,
+            "has_admin_drawer": "admin_drawer" in mobile_actual,
+            "has_custom_items": "custom_items" in mobile_actual
+        }
+        
+        # Check item properties for a sample item
+        sample_item_check = {}
+        if "browse" in desktop_actual and isinstance(desktop_actual["browse"], dict):
+            browse_item = desktop_actual["browse"]
+            sample_item_check = {
+                "has_enabled": "enabled" in browse_item,
+                "has_label": "label" in browse_item,
+                "has_roles": "roles" in browse_item,
+                "enabled_value": browse_item.get("enabled"),
+                "label_value": browse_item.get("label"),
+                "roles_value": browse_item.get("roles")
+            }
+        
+        # Calculate match percentages
+        desktop_matches = sum(1 for v in desktop_comparison.values() if v)
+        mobile_matches = sum(1 for v in mobile_comparison.values() if v)
+        
+        desktop_match_percent = (desktop_matches / len(desktop_comparison)) * 100
+        mobile_match_percent = (mobile_matches / len(mobile_comparison)) * 100
+        
+        overall_success = desktop_match_percent >= 75 and mobile_match_percent >= 75
+        
+        print(f"  🖥️ Desktop structure match: {desktop_matches}/{len(desktop_comparison)} ({desktop_match_percent:.1f}%)")
+        print(f"  📱 Mobile structure match: {mobile_matches}/{len(mobile_comparison)} ({mobile_match_percent:.1f}%)")
+        print(f"  📝 Sample item properties: {sample_item_check}")
+        print(f"  {'✅' if overall_success else '❌'} Structure comparison {'passed' if overall_success else 'failed'}")
         
         return {
-            "test_name": "Authentication Requirements",
-            "success": auth_required,
-            "no_auth_status": no_auth_result["status"],
-            "invalid_auth_status": invalid_auth_result["status"],
-            "valid_auth_status": valid_auth_result["status"],
-            "auth_properly_required": auth_required,
-            "valid_auth_success": valid_auth_result["success"]
+            "test_name": "Menu Settings Data Structure",
+            "success": overall_success,
+            "desktop_comparison": desktop_comparison,
+            "mobile_comparison": mobile_comparison,
+            "desktop_match_percent": desktop_match_percent,
+            "mobile_match_percent": mobile_match_percent,
+            "sample_item_properties": sample_item_check,
+            "actual_desktop_keys": list(desktop_actual.keys()),
+            "actual_mobile_keys": list(mobile_actual.keys()),
+            "expected_vs_actual": {
+                "desktop_expected": list(desktop_expected.keys()),
+                "desktop_actual": list(desktop_actual.keys()),
+                "mobile_expected": list(mobile_expected.keys()),
+                "mobile_actual": list(mobile_actual.keys())
+            }
         }
     
     async def test_file_upload_functionality(self) -> Dict:
