@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_messaging():
-    base_url = "https://marketplace-debug-3.preview.emergentagent.com"
+    base_url = "https://dynamic-marketplace.preview.emergentagent.com"
     
     # Create a test user
     user_data = {

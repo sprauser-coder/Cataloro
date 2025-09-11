@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://marketplace-debug-3.preview.emergentagent.com/api"
+BACKEND_URL = "https://dynamic-marketplace.preview.emergentagent.com/api"
 
 # Test User Configurations
 ADMIN_EMAIL = "admin@cataloro.com"
