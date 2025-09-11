@@ -556,6 +556,20 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
 
   const isActive = (path) => location.pathname === path;
 
+  // Icon mapping for custom menu items
+  const iconMap = {
+    Store, Plus, MessageCircle, DollarSign, ShoppingCart, Heart, Bell, User,
+    Search, Settings, LogOut, Package, Shield, Menu, X, Sun, Moon, Globe,
+    BarChart3, TrendingUp, HelpCircle, Mail, FileText, Home, Star, Camera,
+    Calendar, Clock, Download, Upload, Edit, Trash2, Eye, EyeOff, Lock,
+    Unlock, Key, Users, UserPlus, Phone, Smartphone, Monitor, Tablet,
+    Laptop, Zap, Activity, Award, Target, Compass, Map, Navigation,
+    Bookmark, Tag, Filter, Sort, List, Grid, Layers, Archive, Folder,
+    File, Image, Video, Music, Headphones, Mic, Volume2, Play, Pause,
+    Square, SkipBack, SkipForward, Repeat, Shuffle, Share, ExternalLink,
+    LinkIcon, Copy, Check, AlertTriangle, AlertCircle, Info, CheckCircle
+  };
+
   // Define navigation items for the main nav (excluding items that have dedicated sections)
   const allNavigationItems = [
     { label: 'About', path: '/info', icon: Globe, key: 'about' },
@@ -569,7 +583,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     isMenuItemVisible('desktop_menu', item.key)
   );
 
-  // Get custom menu items
+  // Get custom menu items - these should appear first by default
   const { getCustomMenuItems } = useMenuSettings();
   const customMenuItems = getCustomMenuItems('desktop_menu');
 
