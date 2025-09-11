@@ -3383,8 +3383,12 @@ function AdsManagerSection({ siteConfig, handleConfigChange, showToast }) {
       formData.append('section', `ads_${adType}`);
       formData.append('field', field); // FIXED: Added missing 'field' parameter
 
+      const token = localStorage.getItem('cataloro_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload-image`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData
       });
 
