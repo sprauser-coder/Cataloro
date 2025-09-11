@@ -49,7 +49,7 @@ class MarketplaceService {
 
   async createListing(listingData) {
     try {
-      const response = await axios.post(`${ENV_CONFIG.API_BASE_URL}/listings`, listingData);
+      const response = await axios.post(`${ENV_CONFIG.API_BASE_URL}/api/listings`, listingData);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.detail || 'Failed to create listing');
