@@ -1835,6 +1835,120 @@ async def get_my_listings(user_id: str, limit: int = 50, skip: int = 0):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch user listings: {str(e)}")
 
+# Management Center Seller Endpoints
+@app.get("/api/marketplace/seller/{seller_id}/listings")
+async def get_seller_listings(seller_id: str, status: str = "all", page: int = 1, limit: int = 50):
+    """Get seller's listings for Management Center - with status filtering and pagination"""
+    try:
+        # Check if user exists and is active
+        await check_user_active_status(seller_id)
+        
+        # Get all associated user IDs (current and legacy)
+        associated_ids = await get_user_associated_ids(seller_id)
+        
+        # Build query based on status filter
+        query = {"seller_id": {"$in": associated_ids}}
+        
+        if status != "all":
+            if status == "active":
+                query["status"] = "active"
+            elif status == "pending":
+                query["status"] = "pending"
+            elif status == "expired":
+                query["status"] = "expired"
+            elif status == "sold":
+                query["status"] = "sold"
+            elif status == "draft":
+                query["status"] = "draft"
+        
+        # Calculate pagination
+        skip = (page - 1) * limit
+        
+        # Get listings with pagination
+        listings = await db.listings.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(length=limit)
+        
+        # Get total count for pagination info
+        total_count = await db.listings.count_documents(query)
+        
+        # Ensure consistent ID format
+        for listing in listings:
+            if 'id' not in listing and '_id' in listing:
+                listing['id'] = str(listing['_id'])
+            listing.pop('_id', None)
+            
+            # Add seller info
+            if not listing.get('seller'):
+                listing['seller'] = {
+                    "id": seller_id,
+                    "name": "Seller",
+                    "username": "seller"
+                }
+        
+        return {
+            "listings": listings,
+            "total": total_count,
+            "page": page,
+            "limit": limit,
+            "total_pages": (total_count + limit - 1) // limit
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch seller listings: {str(e)}")
+
+@app.get("/api/marketplace/my-listings")
+async def get_my_listings_marketplace(current_user: dict = Depends(get_current_user), status: str = "all", page: int = 1, limit: int = 50):
+    """Get current user's listings for Management Center - with authentication"""
+    user_id = current_user.get("id")
+    return await get_seller_listings(user_id, status, page, limit)
+
+@app.get("/api/marketplace/seller/{seller_id}/dashboard")
+async def get_seller_dashboard(seller_id: str):
+    """Get seller dashboard data for Management Center"""
+    try:
+        # Check if user exists and is active
+        await check_user_active_status(seller_id)
+        
+        # Get all associated user IDs
+        associated_ids = await get_user_associated_ids(seller_id)
+        
+        # Get listing counts by status
+        active_count = await db.listings.count_documents({"seller_id": {"$in": associated_ids}, "status": "active"})
+        pending_count = await db.listings.count_documents({"seller_id": {"$in": associated_ids}, "status": "pending"})
+        expired_count = await db.listings.count_documents({"seller_id": {"$in": associated_ids}, "status": "expired"})
+        sold_count = await db.listings.count_documents({"seller_id": {"$in": associated_ids}, "status": "sold"})
+        draft_count = await db.listings.count_documents({"seller_id": {"$in": associated_ids}, "status": "draft"})
+        
+        # Get recent tenders for seller's listings
+        recent_tenders = await db.tenders.find({
+            "seller_id": {"$in": associated_ids}
+        }).sort("created_at", -1).limit(10).to_list(length=10)
+        
+        # Process tenders
+        for tender in recent_tenders:
+            if 'id' not in tender and '_id' in tender:
+                tender['id'] = str(tender['_id'])
+            tender.pop('_id', None)
+        
+        return {
+            "listings_summary": {
+                "active": active_count,
+                "pending": pending_count,
+                "expired": expired_count,
+                "sold": sold_count,
+                "draft": draft_count,
+                "total": active_count + pending_count + expired_count + sold_count + draft_count
+            },
+            "recent_tenders": recent_tenders,
+            "seller_id": seller_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch seller dashboard: {str(e)}")
+
 @app.get("/api/user/my-deals/{user_id}")
 async def get_my_deals(user_id: str):
     """Get all deals (approved orders) for a user - both as buyer and seller"""
