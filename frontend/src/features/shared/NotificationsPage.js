@@ -52,8 +52,14 @@ function NotificationsPage() {
     
     setLoading(true);
     try {
-      // Use the CORRECT endpoint that returns real notifications
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`);
+      // Use the CORRECT endpoint that returns real notifications with authentication
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${user.id}/notifications`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const realNotifications = await response.json();
         console.log('Fetched real notifications:', realNotifications);
