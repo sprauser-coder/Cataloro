@@ -627,8 +627,11 @@ export function MarketplaceProvider({ children }) {
       const newFilters = { ...state.activeFilters, ...filters };
       dispatch({ type: ACTIONS.SET_FILTERS, payload: filters });
       
-      // For type and price filters, reload from backend
-      if (filters.type !== undefined || filters.priceFrom !== undefined || filters.priceTo !== undefined) {
+      // For type, price, and bid filters, reload from backend
+      if (filters.type !== undefined || 
+          filters.priceFrom !== undefined || 
+          filters.priceTo !== undefined || 
+          filters.bidFilter !== undefined) {
         await loadInitialProducts(newFilters);
       } else {
         // For other filters (search, sorting), use local filtering
