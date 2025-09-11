@@ -296,52 +296,90 @@ class AdminMenuSettingsTester:
             }
         }
     
-    async def test_file_upload_functionality(self) -> Dict:
-        """Test actual file upload with proper headers and admin JWT token"""
-        print("📤 Testing file upload functionality...")
+    async def test_menu_settings_post_endpoint(self) -> Dict:
+        """Test POST /api/admin/menu-settings endpoint for updating menu settings"""
+        print("📤 Testing menu settings POST endpoint...")
         
         if not self.admin_token:
-            return {"test_name": "File Upload Functionality", "error": "No admin token available"}
+            return {"test_name": "Menu Settings POST Endpoint", "error": "No admin token available"}
         
         headers = {"Authorization": f"Bearer {self.admin_token}"}
         
-        # Create test image
-        test_image = self.create_test_image()
+        # First get current settings
+        get_result = await self.make_request("/admin/menu-settings", "GET", headers=headers)
+        if not get_result["success"]:
+            return {
+                "test_name": "Menu Settings POST Endpoint",
+                "success": False,
+                "error": "Failed to get current settings for POST test"
+            }
         
-        # Test with proper multipart/form-data
-        form_data = aiohttp.FormData()
-        form_data.add_field('image', io.BytesIO(test_image), filename='test_ad_image.png', content_type='image/png')
-        form_data.add_field('section', 'ads')
-        form_data.add_field('field', 'ad_image')
+        current_settings = get_result["data"]
         
-        upload_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=form_data)
-        
-        # Check if upload was successful
-        upload_successful = upload_result["success"]
-        has_image_url = False
-        image_url = None
-        
-        if upload_successful and isinstance(upload_result["data"], dict):
-            response_data = upload_result["data"]
-            has_image_url = "url" in response_data or "imageUrl" in response_data
-            image_url = response_data.get("url") or response_data.get("imageUrl")
-        
-        print(f"  📊 Upload status: {upload_result['status']}")
-        print(f"  {'✅' if upload_successful else '❌'} Upload {'successful' if upload_successful else 'failed'}")
-        if has_image_url:
-            print(f"  📷 Image URL: {image_url}")
-        
-        return {
-            "test_name": "File Upload Functionality",
-            "success": upload_successful,
-            "response_time_ms": upload_result["response_time_ms"],
-            "upload_status": upload_result["status"],
-            "upload_successful": upload_successful,
-            "has_image_url": has_image_url,
-            "image_url": image_url,
-            "response_data": upload_result.get("data"),
-            "error": upload_result.get("error")
+        # Create test settings with a small modification
+        test_settings = {
+            "desktop_menu": {
+                **current_settings.get("desktop_menu", {}),
+                "browse": {
+                    "enabled": True,
+                    "label": "Browse Test",  # Modified label for testing
+                    "roles": ["buyer", "seller"]
+                }
+            },
+            "mobile_menu": {
+                **current_settings.get("mobile_menu", {}),
+                "browse": {
+                    "enabled": True,
+                    "label": "Browse Test Mobile",  # Modified label for testing
+                    "roles": ["buyer", "seller"]
+                }
+            }
         }
+        
+        # Test POST request
+        post_result = await self.make_request("/admin/menu-settings", "POST", data=test_settings, headers=headers)
+        
+        if post_result["success"]:
+            # Verify the update by getting settings again
+            verify_result = await self.make_request("/admin/menu-settings", "GET", headers=headers)
+            
+            update_verified = False
+            if verify_result["success"]:
+                updated_data = verify_result["data"]
+                desktop_browse = updated_data.get("desktop_menu", {}).get("browse", {})
+                mobile_browse = updated_data.get("mobile_menu", {}).get("browse", {})
+                
+                update_verified = (
+                    desktop_browse.get("label") == "Browse Test" and
+                    mobile_browse.get("label") == "Browse Test Mobile"
+                )
+            
+            # Restore original settings
+            if self.original_menu_settings:
+                await self.make_request("/admin/menu-settings", "POST", data=self.original_menu_settings, headers=headers)
+            
+            print(f"  📊 POST status: {post_result['status']}")
+            print(f"  ✅ Update successful: {post_result['success']}")
+            print(f"  🔍 Update verified: {update_verified}")
+            
+            return {
+                "test_name": "Menu Settings POST Endpoint",
+                "success": post_result["success"] and update_verified,
+                "response_time_ms": post_result["response_time_ms"],
+                "post_successful": post_result["success"],
+                "update_verified": update_verified,
+                "post_response": post_result.get("data"),
+                "verification_data": updated_data if verify_result["success"] else None
+            }
+        else:
+            print(f"  ❌ POST failed: {post_result.get('error', 'Unknown error')}")
+            return {
+                "test_name": "Menu Settings POST Endpoint",
+                "success": False,
+                "error": post_result.get("error", "Unknown error"),
+                "status": post_result["status"],
+                "response": post_result.get("data", "")
+            }
     
     async def test_ads_management_workflow(self) -> Dict:
         """Test complete ads upload workflow from AdsManagement component"""
