@@ -7628,10 +7628,19 @@ function ListingModal({ listing, onSave, onClose }) {
 
   const fetchCatalystData = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/data`);
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/data`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setCatalystData(data);
+        console.log('✅ Catalyst data loaded:', data.length, 'records');
+      } else {
+        console.error('❌ Failed to fetch catalyst data - Status:', response.status);
       }
     } catch (error) {
       console.error('Failed to fetch catalyst data:', error);
