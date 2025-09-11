@@ -1,0 +1,194 @@
+{
+  "test_timestamp": "2025-09-11T00:50:57.235919",
+  "tests": {
+    "invalid_credentials": {
+      "test_name": "Invalid Credentials Test",
+      "results": [
+        {
+          "credentials": {
+            "email": "admin@cataloro.com",
+            "password": "wrong_password"
+          },
+          "blocked": false,
+          "status": 200,
+          "error": null
+        },
+        {
+          "credentials": {
+            "email": "nonexistent@cataloro.com",
+            "password": "any_password"
+          },
+          "blocked": false,
+          "status": 200,
+          "error": null
+        },
+        {
+          "credentials": {
+            "email": "",
+            "password": ""
+          },
+          "blocked": true,
+          "status": 400,
+          "error": null
+        },
+        {
+          "credentials": {
+            "email": "admin@cataloro.com",
+            "password": ""
+          },
+          "blocked": true,
+          "status": 400,
+          "error": null
+        }
+      ],
+      "all_blocked": false
+    },
+    "token_validation": {
+      "test_name": "Token Validation",
+      "results": [
+        {
+          "test_name": "Valid Token",
+          "token_works": true,
+          "should_work": true,
+          "works_as_expected": true,
+          "status": 200
+        },
+        {
+          "test_name": "Invalid Token",
+          "token_works": true,
+          "should_work": false,
+          "works_as_expected": false,
+          "status": 200
+        },
+        {
+          "test_name": "Empty Token",
+          "token_works": true,
+          "should_work": false,
+          "works_as_expected": false,
+          "status": 200
+        },
+        {
+          "test_name": "Malformed Token",
+          "token_works": true,
+          "should_work": false,
+          "works_as_expected": false,
+          "status": 200
+        },
+        {
+          "test_name": "Expired-like Token",
+          "token_works": true,
+          "should_work": false,
+          "works_as_expected": false,
+          "status": 200
+        }
+      ],
+      "all_working_as_expected": false
+    },
+    "admin_endpoints_security": {
+      "test_name": "Admin Endpoints Security",
+      "results": [
+        {
+          "endpoint": "/admin/dashboard",
+          "no_auth_status": 200,
+          "invalid_auth_status": 200,
+          "properly_secured": false,
+          "accessible_without_auth": true,
+          "accessible_with_invalid_auth": true
+        },
+        {
+          "endpoint": "/admin/users",
+          "no_auth_status": 200,
+          "invalid_auth_status": 200,
+          "properly_secured": false,
+          "accessible_without_auth": true,
+          "accessible_with_invalid_auth": true
+        },
+        {
+          "endpoint": "/admin/menu-settings",
+          "no_auth_status": 200,
+          "invalid_auth_status": 200,
+          "properly_secured": false,
+          "accessible_without_auth": true,
+          "accessible_with_invalid_auth": true
+        },
+        {
+          "endpoint": "/admin/performance",
+          "no_auth_status": 200,
+          "invalid_auth_status": 200,
+          "properly_secured": false,
+          "accessible_without_auth": true,
+          "accessible_with_invalid_auth": true
+        },
+        {
+          "endpoint": "/admin/cache/clear",
+          "no_auth_status": 405,
+          "invalid_auth_status": 405,
+          "properly_secured": false,
+          "accessible_without_auth": false,
+          "accessible_with_invalid_auth": false
+        }
+      ],
+      "all_properly_secured": false,
+      "security_issues": [
+        "/admin/dashboard",
+        "/admin/users",
+        "/admin/menu-settings",
+        "/admin/performance",
+        "/admin/cache/clear"
+      ]
+    },
+    "user_profile_access": {
+      "test_name": "User Profile Access",
+      "results": [
+        {
+          "test_name": "Own Profile",
+          "user_id": "admin_user_1",
+          "accessible": true,
+          "should_work": true,
+          "works_as_expected": true,
+          "status": 200
+        },
+        {
+          "test_name": "Demo User Profile",
+          "user_id": "68bfff790e4e46bc28d43631",
+          "accessible": true,
+          "should_work": true,
+          "works_as_expected": true,
+          "status": 200
+        },
+        {
+          "test_name": "Non-existent User",
+          "user_id": "non_existent_user_123",
+          "accessible": false,
+          "should_work": false,
+          "works_as_expected": true,
+          "status": 404
+        },
+        {
+          "test_name": "Invalid User ID",
+          "user_id": "invalid_id",
+          "accessible": false,
+          "should_work": false,
+          "works_as_expected": true,
+          "status": 404
+        }
+      ],
+      "all_working_as_expected": true
+    }
+  },
+  "summary": {
+    "invalid_credentials_blocked": false,
+    "token_validation_working": false,
+    "admin_endpoints_secured": false,
+    "profile_access_working": true,
+    "security_issues_found": 5,
+    "security_issues": [
+      "/admin/dashboard",
+      "/admin/users",
+      "/admin/menu-settings",
+      "/admin/performance",
+      "/admin/cache/clear"
+    ],
+    "overall_security_score": 25.0
+  }
+}
