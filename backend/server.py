@@ -733,6 +733,8 @@ async def register_user(request: Request, user_data: dict):
         "username": user_data["username"],
         "email": user_data["email"],
         "full_name": user_data["full_name"],
+        "first_name": user_data.get("first_name", ""),
+        "last_name": user_data.get("last_name", ""),
         "role": "user",  # Keep backward compatibility
         "user_role": user_role,
         "registration_status": "Pending",  # New users need admin approval
