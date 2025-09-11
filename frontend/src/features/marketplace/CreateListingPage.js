@@ -1151,6 +1151,7 @@ function CreateListingPage() {
                     </label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {[
+                        { value: 1, label: '1 Hour', desc: '1 hour' },
                         { value: 24, label: '24 Hours', desc: '1 day' },
                         { value: 48, label: '48 Hours', desc: '2 days' },
                         { value: 168, label: '1 Week', desc: '7 days' },
