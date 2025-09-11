@@ -59,7 +59,7 @@ function CreateListingPage() {
     features: [],
     // Time limit functionality
     has_time_limit: false,
-    time_limit_hours: 24
+    time_limit_hours: 1
   });
 
   // Address from profile settings
