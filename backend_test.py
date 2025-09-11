@@ -342,7 +342,9 @@ class APIEndpointFixesTester:
         
         # Test without authentication (should fail with 401/403)
         print("  🚫 Testing unauthenticated upload (should fail)...")
-        unauth_result = await self.make_request("/admin/upload-image", "POST", files=files)
+        files = {"image": ("test.png", test_image_data, "image/png")}
+        data = {"section": "test", "field": "test_field"}
+        unauth_result = await self.make_request("/admin/upload-image", "POST", files=files, data=data)
         if unauth_result["status"] in [401, 403]:
             print(f"    ✅ Unauthenticated upload properly rejected: Status {unauth_result['status']}")
             test_results["authentication_working"] = True
