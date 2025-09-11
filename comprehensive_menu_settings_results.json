@@ -1,0 +1,179 @@
+{
+  "test_timestamp": "2025-09-11T07:24:32.322055",
+  "authentication": {
+    "success": true,
+    "admin_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWRtaW5fdXNlcl8xIiwiZW1haWwiOiJhZG1pbkBjYXRhbG9yby5jb20iLCJyb2xlIjoiYWRtaW4iLCJ1c2VyX3JvbGUiOiJBZG1pbiIsImV4cCI6MTc1NzY2MTg3Mn0.upF3OEZfYRRP-GvckWi42Hu7pnuYb4LG8ooX_lC6afs",
+    "demo_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjhiZmZmNzkwZTRlNDZiYzI4ZDQzNjMxIiwiZW1haWwiOiJkZW1vQGNhdGFsb3JvLmNvbSIsInJvbGUiOiJ1c2VyIiwidXNlcl9yb2xlIjoiVXNlci1CdXllciIsImV4cCI6MTc1NzY2MTg3Mn0.GFNzqXiHMmtfyfs_ZNCJRoqyONn-qdF18cSKoOqdJOo",
+    "admin_user": {
+      "id": "admin_user_1",
+      "username": "sash_admin",
+      "email": "admin@cataloro.com",
+      "full_name": "Sash",
+      "name": "Sash Admin",
+      "role": "admin",
+      "user_role": "Admin",
+      "registration_status": "Approved",
+      "badge": "Admin",
+      "is_business": false,
+      "business_name": "",
+      "verified": true,
+      "is_active": true,
+      "created_at": "2025-09-09T09:53:56.308000",
+      "city": "System",
+      "country": "Admin",
+      "company_name": "",
+      "first_name": "Sascha",
+      "last_name": "Prauser",
+      "password": "Start123",
+      "vat_number": ""
+    },
+    "demo_user": {
+      "id": "68bfff790e4e46bc28d43631",
+      "username": "demo_user",
+      "email": "demo@cataloro.com",
+      "full_name": "Demo User",
+      "role": "user",
+      "user_role": "User-Buyer",
+      "registration_status": "Approved",
+      "badge": "Buyer",
+      "created_at": "2025-09-09T10:20:41.643000",
+      "is_active": true
+    }
+  },
+  "database_population": {
+    "success": true,
+    "response_time_ms": 16.142606735229492,
+    "desktop_items": 11,
+    "mobile_items": 11
+  },
+  "menu_settings_data_verification": {
+    "test_name": "Menu Settings Data Verification",
+    "success": true,
+    "response_time_ms": 16.97707176208496,
+    "desktop_menu_count": 11,
+    "mobile_menu_count": 11,
+    "expected_desktop_count": 11,
+    "expected_mobile_count": 11,
+    "desktop_items": [
+      "browse",
+      "messages",
+      "create_listing",
+      "favorites",
+      "profile",
+      "my_listings",
+      "admin_panel",
+      "about",
+      "buy_management",
+      "tenders",
+      "notifications"
+    ],
+    "mobile_items": [
+      "browse",
+      "messages",
+      "create",
+      "tenders",
+      "listings",
+      "about",
+      "buy_management",
+      "favorites",
+      "profile",
+      "notifications",
+      "admin_drawer"
+    ],
+    "desktop_structure_valid": true,
+    "mobile_structure_valid": true,
+    "has_real_navigation_data": true,
+    "not_dummy_data": true,
+    "desktop_match_score": 11,
+    "mobile_match_score": 11
+  },
+  "role_based_menu_structure": {
+    "test_name": "Role-Based Menu Structure",
+    "success": true,
+    "response_time_ms": 11.66534423828125,
+    "admin_only_access_correct": true,
+    "seller_access_correct": true,
+    "buyer_access_correct": true,
+    "common_access_correct": true,
+    "role_based_access_working": true,
+    "admin_items_found": [
+      "desktop.admin_panel",
+      "mobile.admin_drawer"
+    ],
+    "seller_items_found": [
+      "desktop.create_listing",
+      "desktop.my_listings",
+      "mobile.listings"
+    ],
+    "buyer_items_found": [
+      "desktop.buy_management",
+      "mobile.buy_management"
+    ],
+    "common_items_found": [
+      "desktop.browse",
+      "mobile.browse",
+      "desktop.messages",
+      "mobile.messages",
+      "desktop.profile",
+      "mobile.profile",
+      "desktop.favorites",
+      "mobile.favorites",
+      "desktop.about",
+      "mobile.about",
+      "desktop.tenders",
+      "mobile.tenders",
+      "desktop.notifications",
+      "mobile.notifications"
+    ]
+  },
+  "menu_settings_crud_operations": {
+    "test_name": "Menu Settings CRUD Operations",
+    "success": true,
+    "get_operation_success": true,
+    "get_response_time_ms": 11.816978454589844,
+    "post_operation_success": true,
+    "post_response_time_ms": 12.225866317749023,
+    "persistence_verified": true,
+    "structure_integrity_maintained": true,
+    "restore_operation_success": true,
+    "crud_operations_working": true,
+    "original_desktop_items": 12,
+    "original_mobile_items": 11
+  },
+  "data_structure_validation": {
+    "test_name": "Data Structure Validation",
+    "success": true,
+    "response_time_ms": 9.992361068725586,
+    "desktop_structure_valid": true,
+    "mobile_structure_valid": true,
+    "overall_structure_valid": true,
+    "desktop_validation": {
+      "valid_items": 12,
+      "total_items": 12,
+      "missing_fields": []
+    },
+    "mobile_validation": {
+      "valid_items": 11,
+      "total_items": 11,
+      "missing_fields": []
+    },
+    "total_menu_items": 23,
+    "valid_menu_items": 23
+  },
+  "summary": {
+    "overall_success_rate": 100.0,
+    "database_populated_with_real_data": true,
+    "real_navigation_data_confirmed": true,
+    "not_dummy_data": true,
+    "role_based_access_working": true,
+    "crud_operations_functional": true,
+    "data_structure_valid": true,
+    "all_tests_passed": true,
+    "desktop_menu_items": 11,
+    "mobile_menu_items": 11,
+    "expected_desktop_items": 11,
+    "expected_mobile_items": 11,
+    "desktop_match_score": 11,
+    "mobile_match_score": 11
+  }
+}
