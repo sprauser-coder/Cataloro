@@ -1,5 +1,5 @@
 {
-  "test_timestamp": "2025-09-11T06:50:07.437711",
+  "test_timestamp": "2025-09-11T06:50:38.902387",
   "jwt_token_generation": {
     "test_name": "JWT Token Generation",
     "success": true,
@@ -17,7 +17,7 @@
         "email": "admin@cataloro.com",
         "role": "admin",
         "user_role": "Admin",
-        "exp": 1757659806
+        "exp": 1757659838
       },
       "has_required_fields": true,
       "required_fields_present": [
@@ -68,7 +68,7 @@
         "name": "Menu Settings GET",
         "success": true,
         "status": 200,
-        "response_time_ms": 17.305612564086914,
+        "response_time_ms": 11.617898941040039,
         "authenticated_access": true
       },
       {
@@ -77,7 +77,7 @@
         "name": "Menu Settings POST",
         "success": true,
         "status": 200,
-        "response_time_ms": 51.08237266540527,
+        "response_time_ms": 13.292312622070312,
         "authenticated_access": true
       },
       {
@@ -86,7 +86,7 @@
         "name": "Admin Dashboard",
         "success": true,
         "status": 200,
-        "response_time_ms": 127.24685668945312,
+        "response_time_ms": 128.25870513916016,
         "authenticated_access": true
       },
       {
@@ -95,7 +95,7 @@
         "name": "Admin Users",
         "success": true,
         "status": 200,
-        "response_time_ms": 16.43061637878418,
+        "response_time_ms": 11.523962020874023,
         "authenticated_access": true
       },
       {
@@ -104,7 +104,7 @@
         "name": "Admin Performance",
         "success": true,
         "status": 200,
-        "response_time_ms": 23.733854293823242,
+        "response_time_ms": 19.27328109741211,
         "authenticated_access": true
       }
     ]
@@ -113,9 +113,9 @@
     "test_name": "Admin Endpoints Without Auth",
     "success": true,
     "total_endpoints": 5,
-    "properly_blocked_endpoints": 0,
+    "properly_blocked_endpoints": 5,
     "vulnerable_endpoints": 0,
-    "security_score": 0.0,
+    "security_score": 100.0,
     "all_endpoints_secured": true,
     "endpoint_results": [
       {
@@ -123,50 +123,45 @@
         "method": "GET",
         "name": "Menu Settings GET",
         "status": 403,
-        "response_time_ms": 49.453020095825195,
-        "properly_blocked": false,
-        "security_vulnerability": false,
-        "error": "Request failed"
+        "response_time_ms": 49.91006851196289,
+        "properly_blocked": true,
+        "security_vulnerability": false
       },
       {
         "endpoint": "/admin/menu-settings",
         "method": "POST",
         "name": "Menu Settings POST",
         "status": 403,
-        "response_time_ms": 8.395910263061523,
-        "properly_blocked": false,
-        "security_vulnerability": false,
-        "error": "Request failed"
+        "response_time_ms": 12.180089950561523,
+        "properly_blocked": true,
+        "security_vulnerability": false
       },
       {
         "endpoint": "/admin/dashboard",
         "method": "GET",
         "name": "Admin Dashboard",
         "status": 403,
-        "response_time_ms": 49.161672592163086,
-        "properly_blocked": false,
-        "security_vulnerability": false,
-        "error": "Request failed"
+        "response_time_ms": 48.84767532348633,
+        "properly_blocked": true,
+        "security_vulnerability": false
       },
       {
         "endpoint": "/admin/users",
         "method": "GET",
         "name": "Admin Users",
         "status": 403,
-        "response_time_ms": 7.710933685302734,
-        "properly_blocked": false,
-        "security_vulnerability": false,
-        "error": "Request failed"
+        "response_time_ms": 8.158445358276367,
+        "properly_blocked": true,
+        "security_vulnerability": false
       },
       {
         "endpoint": "/admin/performance",
         "method": "GET",
         "name": "Admin Performance",
         "status": 403,
-        "response_time_ms": 11.980533599853516,
-        "properly_blocked": false,
-        "security_vulnerability": false,
-        "error": "Request failed"
+        "response_time_ms": 48.874855041503906,
+        "properly_blocked": true,
+        "security_vulnerability": false
       }
     ],
     "vulnerable_endpoint_details": []
@@ -402,7 +397,7 @@
     "vulnerability_details": []
   },
   "security_summary": {
-    "overall_security_score": 70.0,
+    "overall_security_score": 95.0,
     "all_critical_checks_passed": true,
     "total_vulnerabilities_found": 0,
     "security_level": "SECURE",
@@ -415,7 +410,7 @@
       "no_bypass_vulnerabilities": true
     },
     "individual_scores": {
-      "authentication_required_score": 0.0,
+      "authentication_required_score": 100.0,
       "token_validation_score": 80.0,
       "role_based_access_score": 100.0,
       "bypass_prevention_score": 100.0
