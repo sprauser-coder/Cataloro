@@ -1,219 +1,456 @@
 {
-  "test_timestamp": "2025-09-11T10:49:42.074280",
-  "authentication": {
+  "test_timestamp": "2025-09-11T15:43:05.255556",
+  "menu_settings_get_endpoint": {
+    "test_name": "Menu Settings GET Endpoint",
     "success": true,
-    "admin_user": {
-      "id": "admin_user_1",
-      "username": "sash_admin",
-      "email": "admin@cataloro.com",
-      "full_name": "Sash",
-      "name": "Sash Admin",
-      "role": "admin",
-      "user_role": "Admin",
-      "registration_status": "Approved",
-      "badge": "Admin",
-      "is_business": false,
-      "business_name": "",
-      "verified": true,
-      "is_active": true,
-      "created_at": "2025-09-09T09:53:56.308000",
-      "city": "System",
-      "country": "Admin",
-      "company_name": "",
-      "first_name": "Sascha",
-      "last_name": "Prauser",
-      "password": "Start123",
-      "vat_number": ""
+    "response_time_ms": 52.28424072265625,
+    "has_desktop_menu": true,
+    "has_mobile_menu": true,
+    "desktop_items_count": 1,
+    "mobile_items_count": 1,
+    "expected_desktop_items": 0,
+    "expected_mobile_items": 0,
+    "valid_item_structure": true,
+    "sample_item": null,
+    "full_response": {
+      "desktop_menu": {
+        "custom_items": [
+          {
+            "id": "workflow_external",
+            "label": "External Resource",
+            "url": "https://docs.example.com",
+            "icon": "Store",
+            "type": "custom_url",
+            "target": "_blank",
+            "position": 200,
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager"
+            ]
+          }
+        ]
+      },
+      "mobile_menu": {
+        "custom_items": [
+          {
+            "id": "workflow_external",
+            "label": "External Resource",
+            "url": "https://docs.example.com",
+            "icon": "Store",
+            "type": "custom_url",
+            "target": "_blank",
+            "position": 200,
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "data_structure_comparison": {
+    "test_name": "Menu Settings Data Structure",
+    "success": false,
+    "desktop_comparison": {
+      "has_browse": false,
+      "has_create_listing": false,
+      "has_messages": false,
+      "has_my_listings": false,
+      "has_tenders": false,
+      "has_inventory": false,
+      "has_admin_panel": false,
+      "has_custom_items": true
     },
-    "demo_user": {
-      "id": "68bfff790e4e46bc28d43631",
-      "username": "demo_user",
-      "email": "demo@cataloro.com",
-      "full_name": "Demo User",
-      "role": "user",
-      "user_role": "User-Buyer",
-      "registration_status": "Approved",
-      "badge": "Buyer",
-      "created_at": "2025-09-09T10:20:41.643000",
-      "is_active": true
+    "mobile_comparison": {
+      "has_browse": false,
+      "has_create_listing": false,
+      "has_messages": false,
+      "has_my_listings": false,
+      "has_tenders": false,
+      "has_inventory": false,
+      "has_admin_drawer": false,
+      "has_custom_items": true
     },
-    "admin_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYWRtaW5fdXNlcl8xIiwiZW1haWwiOiJhZG1pbkBjYXRhbG9yby5jb20iLCJyb2xlIjoiYWRtaW4iLCJ1c2VyX3JvbGUiOiJBZG1pbiIsImV4cCI6MTc1NzY3NDE4MX0.deqnzYOg7R9siWUZNO-_EY0ALG4gFHU-AJI-2O4EA90",
-    "demo_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjhiZmZmNzkwZTRlNDZiYzI4ZDQzNjMxIiwiZW1haWwiOiJkZW1vQGNhdGFsb3JvLmNvbSIsInJvbGUiOiJ1c2VyIiwidXNlcl9yb2xlIjoiVXNlci1CdXllciIsImV4cCI6MTc1NzY3NDE4MX0.73zDrIsrN36sDxRYrYaD7Hl2r_H_Z9RO_haWzMAe0F0"
+    "desktop_match_percent": 12.5,
+    "mobile_match_percent": 12.5,
+    "sample_item_properties": {},
+    "actual_desktop_keys": [
+      "custom_items"
+    ],
+    "actual_mobile_keys": [
+      "custom_items"
+    ],
+    "expected_vs_actual": {
+      "desktop_expected": [
+        "browse",
+        "create_listing",
+        "messages",
+        "my_listings",
+        "tenders",
+        "inventory",
+        "admin_panel",
+        "custom_items"
+      ],
+      "desktop_actual": [
+        "custom_items"
+      ],
+      "mobile_expected": [
+        "browse",
+        "create_listing",
+        "messages",
+        "my_listings",
+        "tenders",
+        "inventory",
+        "admin_drawer",
+        "custom_items"
+      ],
+      "mobile_actual": [
+        "custom_items"
+      ]
+    }
   },
-  "role_mapping_verification": {
-    "test_name": "Role Mapping Fix Verification",
-    "total_users_tested": 2,
-    "successful_authentications": 2,
-    "admin_role_mapping_working": false,
-    "buyer_role_mapping_working": true,
-    "user_buyer_to_buyer_mapping_working": true,
-    "admin_to_admin_mapping_working": false,
-    "role_mapping_fix_successful": false,
-    "detailed_role_tests": [
+  "menu_settings_post_endpoint": {
+    "test_name": "Menu Settings POST Endpoint",
+    "success": true,
+    "response_time_ms": 18.259525299072266,
+    "post_successful": true,
+    "update_verified": true,
+    "post_response": {
+      "message": "Menu settings updated successfully",
+      "settings": {
+        "desktop_menu": {
+          "custom_items": [
+            {
+              "id": "workflow_external",
+              "label": "External Resource",
+              "url": "https://docs.example.com",
+              "icon": "Store",
+              "type": "custom_url",
+              "target": "_blank",
+              "position": 200,
+              "enabled": true,
+              "roles": [
+                "admin",
+                "manager"
+              ]
+            }
+          ],
+          "browse": {
+            "enabled": true,
+            "label": "Browse Test",
+            "roles": [
+              "buyer",
+              "seller"
+            ]
+          }
+        },
+        "mobile_menu": {
+          "custom_items": [
+            {
+              "id": "workflow_external",
+              "label": "External Resource",
+              "url": "https://docs.example.com",
+              "icon": "Store",
+              "type": "custom_url",
+              "target": "_blank",
+              "position": 200,
+              "enabled": true,
+              "roles": [
+                "admin",
+                "manager"
+              ]
+            }
+          ],
+          "browse": {
+            "enabled": true,
+            "label": "Browse Test Mobile",
+            "roles": [
+              "buyer",
+              "seller"
+            ]
+          }
+        }
+      }
+    },
+    "verification_data": {
+      "desktop_menu": {
+        "custom_items": [
+          {
+            "id": "workflow_external",
+            "label": "External Resource",
+            "url": "https://docs.example.com",
+            "icon": "Store",
+            "type": "custom_url",
+            "target": "_blank",
+            "position": 200,
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager"
+            ]
+          }
+        ],
+        "browse": {
+          "enabled": true,
+          "label": "Browse Test",
+          "roles": [
+            "buyer",
+            "seller"
+          ]
+        }
+      },
+      "mobile_menu": {
+        "custom_items": [
+          {
+            "id": "workflow_external",
+            "label": "External Resource",
+            "url": "https://docs.example.com",
+            "icon": "Store",
+            "type": "custom_url",
+            "target": "_blank",
+            "position": 200,
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager"
+            ]
+          }
+        ],
+        "browse": {
+          "enabled": true,
+          "label": "Browse Test Mobile",
+          "roles": [
+            "buyer",
+            "seller"
+          ]
+        }
+      }
+    }
+  },
+  "default_items_verification": {
+    "test_name": "Default Menu Items Verification",
+    "success": false,
+    "desktop_verification": [
       {
-        "user": "admin",
-        "user_id": "admin_user_1",
-        "email": "admin@cataloro.com",
-        "menu_settings_accessible": true,
-        "response_time_ms": 13.422489166259766,
-        "admin_role_mapped_correctly": false,
-        "admin_items_count": 0,
-        "success": true
+        "item": "browse",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
       },
       {
-        "user": "demo",
-        "user_id": "68bfff790e4e46bc28d43631",
-        "email": "demo@cataloro.com",
-        "menu_settings_accessible": true,
-        "response_time_ms": 8.377790451049805,
-        "buyer_role_mapped_correctly": true,
-        "seller_items_properly_hidden": true,
-        "buyer_items_count": 4,
-        "seller_items_found": 0,
-        "success": true
+        "item": "create_listing",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
+      },
+      {
+        "item": "messages",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
+      },
+      {
+        "item": "my_listings",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
+      },
+      {
+        "item": "tenders",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
+      },
+      {
+        "item": "inventory",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
       }
+    ],
+    "mobile_verification": [
+      {
+        "item": "browse",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
+      },
+      {
+        "item": "create_listing",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
+      },
+      {
+        "item": "messages",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
+      },
+      {
+        "item": "my_listings",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
+      },
+      {
+        "item": "tenders",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
+      },
+      {
+        "item": "inventory",
+        "exists": false,
+        "has_enabled": false,
+        "has_label": false,
+        "has_roles": false,
+        "valid_structure": false
+      }
+    ],
+    "desktop_valid_items": 0,
+    "mobile_valid_items": 0,
+    "desktop_success_rate": 0.0,
+    "mobile_success_rate": 0.0,
+    "expected_items": [
+      "browse",
+      "create_listing",
+      "messages",
+      "my_listings",
+      "tenders",
+      "inventory"
+    ],
+    "total_expected": 6
+  },
+  "database_cleanup_impact": {
+    "test_name": "Database Cleanup Impact",
+    "success": false,
+    "cleanup_analysis": {
+      "has_desktop_menu": true,
+      "has_mobile_menu": true,
+      "desktop_menu_empty": false,
+      "mobile_menu_empty": false,
+      "has_custom_items": true,
+      "corrupted_custom_items": 0,
+      "placeholder_items": 0,
+      "missing_desktop_defaults": [
+        "browse",
+        "create_listing",
+        "messages",
+        "my_listings",
+        "tenders"
+      ],
+      "missing_mobile_defaults": [
+        "browse",
+        "create_listing",
+        "messages",
+        "my_listings",
+        "tenders"
+      ],
+      "missing_defaults_count": 10
+    },
+    "cleanup_issues_detected": true,
+    "desktop_items_count": 1,
+    "mobile_items_count": 1,
+    "custom_items_desktop": 1,
+    "custom_items_mobile": 1,
+    "recommendations": [
+      null,
+      null,
+      "Restore missing default items",
+      null
     ]
   },
-  "menu_visibility_workflow": {
-    "test_name": "Menu Visibility Workflow Test",
-    "total_workflow_steps": 5,
-    "successful_steps": 5,
-    "workflow_success_rate": 100.0,
-    "complete_workflow_working": true,
-    "database_persistence_working": true,
-    "user_filtering_working": true,
-    "admin_filtering_working": true,
-    "demo_filtering_working": true,
-    "messages_disabled_successfully": true,
-    "detailed_workflow_steps": [
-      {
-        "step": "Get Current Settings",
-        "success": true,
-        "response_time_ms": 9.229898452758789,
-        "settings_retrieved": true
+  "user_menu_settings_endpoint": {
+    "test_name": "User Menu Settings Endpoint",
+    "success": false,
+    "response_time_ms": 17.716169357299805,
+    "has_desktop_menu": true,
+    "has_mobile_menu": true,
+    "has_user_role": true,
+    "user_role": "admin",
+    "desktop_items_count": 1,
+    "mobile_items_count": 1,
+    "admin_items_desktop": [],
+    "admin_items_mobile": [],
+    "custom_items_desktop": 1,
+    "custom_items_mobile": 1,
+    "custom_items_properly_filtered": true,
+    "full_response": {
+      "desktop_menu": {
+        "custom_items": [
+          {
+            "id": "workflow_external",
+            "label": "External Resource",
+            "url": "https://docs.example.com",
+            "icon": "Store",
+            "type": "custom_url",
+            "target": "_blank",
+            "position": 200,
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager"
+            ]
+          }
+        ]
       },
-      {
-        "step": "Save Modified Settings",
-        "success": true,
-        "response_time_ms": 12.531042098999023,
-        "messages_disabled": true
+      "mobile_menu": {
+        "custom_items": [
+          {
+            "id": "workflow_external",
+            "label": "External Resource",
+            "url": "https://docs.example.com",
+            "icon": "Store",
+            "type": "custom_url",
+            "target": "_blank",
+            "position": 200,
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager"
+            ]
+          }
+        ]
       },
-      {
-        "step": "Verify Database Persistence",
-        "success": true,
-        "response_time_ms": 8.430719375610352,
-        "messages_disabled_in_db": true
-      },
-      {
-        "step": "Admin User Filtering",
-        "success": true,
-        "response_time_ms": 9.378194808959961,
-        "messages_filtered_for_admin": true
-      },
-      {
-        "step": "Demo User Filtering",
-        "success": true,
-        "response_time_ms": 10.403871536254883,
-        "messages_filtered_for_demo": true
-      }
-    ]
-  },
-  "different_user_role_testing": {
-    "test_name": "Different User Role Testing",
-    "total_users_tested": 2,
-    "successful_tests": 2,
-    "admin_role_restrictions_working": false,
-    "buyer_role_restrictions_working": true,
-    "role_based_filtering_working": false,
-    "admin_can_see_admin_items": false,
-    "buyer_cannot_see_seller_items": true,
-    "buyer_cannot_see_admin_items": true,
-    "detailed_role_visibility_tests": [
-      {
-        "user_type": "admin",
-        "user_id": "admin_user_1",
-        "response_time_ms": 7.513284683227539,
-        "can_see_admin_items": false,
-        "can_see_seller_items": true,
-        "admin_items_count": 0,
-        "seller_items_count": 2,
-        "buyer_items_count": 4,
-        "role_restrictions_working": false,
-        "success": true
-      },
-      {
-        "user_type": "buyer",
-        "user_id": "68bfff790e4e46bc28d43631",
-        "response_time_ms": 48.42662811279297,
-        "cannot_see_admin_items": true,
-        "cannot_see_seller_items": true,
-        "can_see_buyer_items": true,
-        "admin_items_count": 0,
-        "seller_items_count": 0,
-        "buyer_items_count": 4,
-        "role_restrictions_working": true,
-        "success": true
-      }
-    ]
-  },
-  "complete_end_to_end_scenario": {
-    "test_name": "Complete End-to-End Scenario",
-    "total_scenario_steps": 5,
-    "successful_steps": 5,
-    "scenario_success_rate": 100.0,
-    "complete_scenario_working": true,
-    "admin_can_disable_items": true,
-    "demo_user_properly_filtered": true,
-    "admin_behavior_correct": true,
-    "role_restrictions_and_disabled_both_working": false,
-    "end_to_end_workflow_functional": false,
-    "detailed_scenario_steps": [
-      {
-        "step": "Admin Get Current Settings",
-        "success": true,
-        "response_time_ms": 12.296438217163086
-      },
-      {
-        "step": "Admin Disable Messages",
-        "success": true,
-        "response_time_ms": 15.167951583862305,
-        "messages_disabled": true
-      },
-      {
-        "step": "Demo User Messages Hidden",
-        "success": true,
-        "response_time_ms": 49.42655563354492,
-        "messages_hidden_from_demo": true
-      },
-      {
-        "step": "Admin User Messages Behavior",
-        "success": true,
-        "response_time_ms": 8.60142707824707,
-        "admin_messages_behavior": "hidden",
-        "admin_behavior_correct": true
-      },
-      {
-        "step": "Disabled vs Role-Restricted Test",
-        "success": true,
-        "role_restrictions_still_working": false,
-        "admin_only_items_count": 0,
-        "disabled_items_filtered": true,
-        "role_and_disabled_both_working": false
-      }
-    ]
+      "user_role": "admin"
+    }
   },
   "summary": {
-    "overall_success_rate": 25.0,
-    "role_mapping_fix_working": false,
-    "menu_visibility_workflow_working": true,
-    "role_based_filtering_working": false,
-    "end_to_end_scenario_working": false,
-    "admin_role_mapping_correct": false,
-    "buyer_role_mapping_correct": true,
-    "database_persistence_working": true,
-    "user_filtering_working": true,
-    "admin_can_see_admin_items": false,
-    "buyer_cannot_see_seller_items": true,
-    "all_tests_passed": false
+    "overall_success_rate": 33.33333333333333,
+    "menu_get_working": true,
+    "data_structure_correct": false,
+    "menu_post_working": true,
+    "default_items_valid": false,
+    "database_cleanup_ok": false,
+    "user_menu_filtering_working": false,
+    "all_tests_passed": false,
+    "critical_functionality_working": false,
+    "menu_settings_functional": true
   }
 }

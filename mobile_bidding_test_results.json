@@ -1,8 +1,8 @@
 {
-  "test_timestamp": "2025-09-10T18:18:30.880082",
+  "test_timestamp": "2025-09-11T15:43:06.521922",
   "test_setup": {
     "success": true,
-    "listing_id": "8ac0ef72-b386-46ce-8b76-e31487ddb89c",
+    "listing_id": "48a80e7d-a611-445b-9d98-93af0e990227",
     "buyer_id": "6c702f80-748a-434f-981f-68952796a469",
     "seller_id": "44733cf0-ce91-4c64-bb9d-01748182252a"
   },
@@ -10,8 +10,8 @@
     "test_name": "First Bid Scenario",
     "success": true,
     "bid_amount": 100.0,
-    "response_time_ms": 13.661623001098633,
-    "tender_id": "de463e54-0643-413a-ab57-7d7bb7761559",
+    "response_time_ms": 32.21487998962402,
+    "tender_id": "562f2ed9-beef-4de9-8b49-656d86efa5b6",
     "message": "Tender submitted successfully",
     "first_bid_accepted": true
   },
@@ -20,8 +20,8 @@
     "success": true,
     "bid_amount": 150.0,
     "previous_highest": 100.0,
-    "response_time_ms": 518.589973449707,
-    "tender_id": "c3a98630-231f-438f-b552-515de0c29d5f",
+    "response_time_ms": 52.25658416748047,
+    "tender_id": "8a9773a8-649e-49b1-bf43-2def210e04db",
     "message": "Tender submitted successfully",
     "higher_bid_accepted": true
   },
@@ -52,8 +52,8 @@
     "previous_highest": 150.0,
     "increment": 1.0,
     "minimum_increment_accepted": true,
-    "response_time_ms": 10.969877243041992,
-    "tender_id": "ea7b9497-1668-4e79-a08a-d71e16ae9d0b"
+    "response_time_ms": 52.08301544189453,
+    "tender_id": "1d0082c2-9b6c-49bb-809a-a3bb08c6c56f"
   },
   "error_message_accuracy": {
     "test_name": "Error Message Accuracy",

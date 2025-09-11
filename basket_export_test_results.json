@@ -1,11 +1,11 @@
 {
-  "test_timestamp": "2025-09-10T18:18:31.557521",
+  "test_timestamp": "2025-09-11T15:43:07.772137",
   "basic_functionality": {
     "test_name": "Basket Export PDF - Basic Functionality",
     "endpoint_working": true,
-    "response_time_ms": 219.90132331848145,
+    "response_time_ms": 375.90765953063965,
     "pdf_generated": true,
-    "pdf_size_bytes": 3804,
+    "pdf_size_bytes": 3806,
     "is_valid_pdf": true,
     "has_reasonable_size": true,
     "content_type_correct": true,
@@ -16,9 +16,9 @@
     "test_name": "Basket Export Response Time Performance",
     "total_scenarios_tested": 4,
     "successful_scenarios": 4,
-    "avg_response_time_ms": 16.60698652267456,
-    "max_response_time_ms": 17.956018447875977,
-    "min_response_time_ms": 15.292167663574219,
+    "avg_response_time_ms": 87.45133876800537,
+    "max_response_time_ms": 291.96667671203613,
+    "min_response_time_ms": 14.034509658813477,
     "performance_acceptable": true,
     "performance_fast": true,
     "loading_state_justified": false,
@@ -26,29 +26,29 @@
       {
         "scenario": "Small basket (1 item)",
         "item_count": 1,
-        "response_time_ms": 15.292167663574219,
-        "pdf_size_bytes": 3667,
+        "response_time_ms": 14.034509658813477,
+        "pdf_size_bytes": 3670,
         "success": true
       },
       {
         "scenario": "Medium basket (5 items)",
         "item_count": 5,
-        "response_time_ms": 15.72561264038086,
-        "pdf_size_bytes": 3857,
+        "response_time_ms": 291.96667671203613,
+        "pdf_size_bytes": 3862,
         "success": true
       },
       {
         "scenario": "Large basket (10 items)",
         "item_count": 10,
-        "response_time_ms": 17.454147338867188,
-        "pdf_size_bytes": 4449,
+        "response_time_ms": 23.964643478393555,
+        "pdf_size_bytes": 4455,
         "success": true
       },
       {
         "scenario": "Extra large basket (20 items)",
         "item_count": 20,
-        "response_time_ms": 17.956018447875977,
-        "pdf_size_bytes": 5123,
+        "response_time_ms": 19.83952522277832,
+        "pdf_size_bytes": 5128,
         "success": true
       }
     ]
@@ -68,36 +68,36 @@
         "expected_success": true,
         "actual_success": true,
         "validation_passed": true,
-        "response_time_ms": 13.444900512695312,
+        "response_time_ms": 19.23227310180664,
         "error": null,
-        "pdf_size": 2348
+        "pdf_size": 2350
       },
       {
         "test_case": "Minimal data",
         "expected_success": true,
         "actual_success": true,
         "validation_passed": true,
-        "response_time_ms": 12.444734573364258,
+        "response_time_ms": 98.26827049255371,
         "error": null,
-        "pdf_size": 3565
+        "pdf_size": 3568
       },
       {
         "test_case": "Missing required fields",
         "expected_success": false,
         "actual_success": true,
         "validation_passed": false,
-        "response_time_ms": 12.740850448608398,
+        "response_time_ms": 11.336088180541992,
         "error": null,
-        "pdf_size": 2297
+        "pdf_size": 2298
       },
       {
         "test_case": "Large basket name",
         "expected_success": true,
         "actual_success": true,
         "validation_passed": true,
-        "response_time_ms": 15.03443717956543,
+        "response_time_ms": 14.992713928222656,
         "error": null,
-        "pdf_size": 3627
+        "pdf_size": 3629
       }
     ]
   },
@@ -105,9 +105,9 @@
     "test_name": "Basket Export Concurrent Requests",
     "concurrent_requests": 3,
     "successful_requests": 3,
-    "total_time_ms": 92.19765663146973,
-    "avg_individual_time_ms": 25.24884541829427,
-    "max_individual_time_ms": 33.83588790893555,
+    "total_time_ms": 126.02782249450684,
+    "avg_individual_time_ms": 41.418870290120445,
+    "max_individual_time_ms": 47.5919246673584,
     "concurrent_performance_acceptable": true,
     "system_handles_concurrent_exports": true,
     "no_timeout_issues": true
