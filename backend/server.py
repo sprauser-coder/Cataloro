@@ -1480,10 +1480,15 @@ async def update_profile(user_id: str, profile_data: dict):
 
 # Marketplace Endpoints
 @app.get("/api/marketplace/browse")
-async def browse_listings(status: str = "active", limit: int = 50):
-    """Browse available listings - SIMPLIFIED FOR SPEED with status filtering"""
+async def browse_listings(
+    status: str = "active", 
+    limit: int = 50, 
+    user_id: str = None,
+    bid_filter: str = "all"  # New filter: "all", "placed_bid", "not_placed_bid", "own_listings"
+):
+    """Browse available listings with enhanced filtering options"""
     try:
-        logger.info("📋 Simple browse request started")
+        logger.info(f"📋 Browse request - status: {status}, bid_filter: {bid_filter}, user_id: {user_id}")
         
         # Build query based on status filter
         if status == "all":
