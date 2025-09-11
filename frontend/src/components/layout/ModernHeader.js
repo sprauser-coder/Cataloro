@@ -46,6 +46,7 @@ import { useMarketplace } from '../../context/MarketplaceContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { liveService } from '../../services/liveService';
 import usePermissions from '../../hooks/usePermissions';
+import { useMenuSettings } from '../../hooks/useMenuSettings';
 
 function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileMenuOpen }) {
   const { user, logout } = useAuth();
