@@ -4841,7 +4841,7 @@ async def check_listing_expiration(listing_id: str):
 
 @app.get("/api/listings/{listing_id}")
 async def get_listing(listing_id: str):
-    """Get a specific listing by ID - returns full details including images"""
+    """Get a specific listing by ID - returns full details including images and bid_info"""
     try:
         listing = await db.listings.find_one({"id": listing_id})
         
@@ -4855,6 +4855,76 @@ async def get_listing(listing_id: str):
             {"id": listing_id},
             {"$inc": {"views": 1}}
         )
+        
+        # Add bid_info with highest_bidder_id for individual listing page
+        if not listing.get('bid_info'):
+            # Get active tenders for this listing (optimized single query per listing)
+            active_tenders = await db.tenders.find({
+                "listing_id": listing.get('id'),
+                "status": "active"
+            }).sort("offer_amount", -1).limit(1).to_list(length=1)
+            
+            if active_tenders:
+                highest_tender = active_tenders[0]
+                # Count total active tenders for this listing
+                total_tenders = await db.tenders.count_documents({
+                    "listing_id": listing.get('id'),
+                    "status": "active"
+                })
+                
+                listing['bid_info'] = {
+                    "has_bids": True,
+                    "total_bids": total_tenders,
+                    "highest_bid": highest_tender["offer_amount"],
+                    "highest_bidder_id": highest_tender["buyer_id"]
+                }
+            else:
+                listing['bid_info'] = {
+                    "has_bids": False,
+                    "total_bids": 0,
+                    "highest_bid": None,
+                    "highest_bidder_id": None
+                }
+        
+        # Add time information for time-limited listings
+        if listing.get('has_time_limit') and listing.get('expires_at'):
+            try:
+                # Parse the expiration time
+                if isinstance(listing['expires_at'], str):
+                    expires_at = datetime.fromisoformat(listing['expires_at'].replace('Z', '+00:00'))
+                else:
+                    expires_at = listing['expires_at']
+                
+                now = datetime.utcnow()
+                
+                # Calculate time remaining
+                time_diff = expires_at - now
+                time_remaining_seconds = int(time_diff.total_seconds())
+                
+                listing['time_info'] = {
+                    "has_time_limit": True,
+                    "expires_at": listing['expires_at'],
+                    "time_remaining_seconds": max(0, time_remaining_seconds),
+                    "is_expired": time_remaining_seconds <= 0,
+                    "time_limit_hours": listing.get('time_limit_hours', 24)
+                }
+            except Exception as e:
+                logger.error(f"Error calculating time info for listing {listing.get('id')}: {e}")
+                listing['time_info'] = {
+                    "has_time_limit": True,
+                    "expires_at": listing.get('expires_at'),
+                    "time_remaining_seconds": 0,
+                    "is_expired": True,
+                    "time_limit_hours": listing.get('time_limit_hours', 24)
+                }
+        else:
+            listing['time_info'] = {
+                "has_time_limit": False,
+                "expires_at": None,
+                "time_remaining_seconds": None,
+                "is_expired": False,
+                "time_limit_hours": None
+            }
         
         # Note: This endpoint returns full images for detail view
         # For performance in listing detail pages, we keep the actual images
