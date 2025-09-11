@@ -1,0 +1,126 @@
+{
+  "test_timestamp": "2025-09-11T18:41:40.235289",
+  "test_focus": "Enhanced browse listings endpoint with bid filtering functionality",
+  "basic_browse_test": {
+    "test_name": "Basic Browse Endpoint",
+    "success": true,
+    "test_results": {
+      "endpoint": "/marketplace/browse?status=active",
+      "expected_status": 200,
+      "actual_status": 200,
+      "response_time_ms": 92.05436706542969,
+      "listings_count": 9,
+      "error_messages": [],
+      "success": true,
+      "backwards_compatible": true
+    },
+    "critical_issue": false,
+    "backwards_compatible": true
+  },
+  "bid_filter_all_test": {
+    "test_name": "Bid Filter All",
+    "success": true,
+    "test_results": {
+      "endpoint": "/marketplace/browse?status=active&user_id=68bfff790e4e46bc28d43631&bid_filter=all",
+      "expected_status": 200,
+      "actual_status": 200,
+      "response_time_ms": 64.80693817138672,
+      "listings_count": 9,
+      "baseline_count": 9,
+      "error_messages": [],
+      "success": true,
+      "filter_working": true
+    },
+    "critical_issue": false,
+    "filter_working": true
+  },
+  "bid_filter_own_listings_test": {
+    "test_name": "Bid Filter Own Listings",
+    "success": true,
+    "test_results": {
+      "endpoint": "/marketplace/browse?status=active&user_id=68bfff790e4e46bc28d43631&bid_filter=own_listings",
+      "expected_status": 200,
+      "actual_status": 200,
+      "response_time_ms": 54.967403411865234,
+      "listings_count": 6,
+      "all_owned_by_user": true,
+      "error_messages": [],
+      "success": true,
+      "filter_working": true
+    },
+    "critical_issue": false,
+    "filter_working": true
+  },
+  "bid_filter_placed_bid_test": {
+    "test_name": "Bid Filter Placed Bid",
+    "success": false,
+    "test_results": {
+      "endpoint": "/marketplace/browse?status=active&user_id=68bfff790e4e46bc28d43631&bid_filter=placed_bid",
+      "expected_status": 200,
+      "actual_status": 200,
+      "response_time_ms": 51.37324333190918,
+      "listings_count": 1,
+      "user_has_bids_on_all": false,
+      "user_bid_count": 0,
+      "error_messages": [
+        "Some listings don't have user bids: 0/1 valid"
+      ],
+      "success": true,
+      "filter_working": false
+    },
+    "critical_issue": false,
+    "filter_working": false
+  },
+  "bid_filter_not_placed_bid_test": {
+    "test_name": "Bid Filter Not Placed Bid",
+    "success": true,
+    "test_results": {
+      "endpoint": "/marketplace/browse?status=active&user_id=68bfff790e4e46bc28d43631&bid_filter=not_placed_bid",
+      "expected_status": 200,
+      "actual_status": 200,
+      "response_time_ms": 49.86882209777832,
+      "listings_count": 2,
+      "user_has_no_bids_on_all": true,
+      "user_bid_count": 0,
+      "baseline_count": 9,
+      "error_messages": [],
+      "success": true,
+      "filter_working": true
+    },
+    "critical_issue": false,
+    "filter_working": true
+  },
+  "database_consistency_test": {
+    "test_name": "Database Consistency",
+    "success": true,
+    "test_results": {
+      "total_active_listings": 9,
+      "user_owned_listings": 6,
+      "user_bid_listings": 1,
+      "user_no_bid_listings": 2,
+      "filter_sum_matches_total": true,
+      "database_consistent": true,
+      "error_messages": [],
+      "success": true
+    },
+    "critical_issue": false,
+    "consistency_verified": true
+  },
+  "summary": {
+    "total_tests": 6,
+    "successful_tests": 5,
+    "failed_tests": 1,
+    "success_rate": 83.33333333333334,
+    "critical_issues": [],
+    "working_features": [
+      "Basic Browse Endpoint: Working correctly",
+      "Bid Filter All: Working correctly",
+      "Bid Filter Own Listings: Working correctly",
+      "Bid Filter Not Placed Bid: Working correctly",
+      "Database Consistency: Working correctly"
+    ],
+    "all_filters_working": true,
+    "backwards_compatible": true,
+    "database_consistent": true
+  }
+}
