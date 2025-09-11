@@ -26,7 +26,8 @@ function SimpleLoginPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    fullName: ''
+    firstName: '',
+    lastName: ''
   });
   
   const [showPassword, setShowPassword] = useState(false);
