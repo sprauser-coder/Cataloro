@@ -30,6 +30,663 @@ ADMIN_ID = "admin_user_1"
 DEMO_EMAIL = "demo@cataloro.com"
 DEMO_USER_ID = "68bfff790e4e46bc28d43631"
 
+class BrowseBidFilteringTester:
+    """
+    ENHANCED BROWSE LISTINGS ENDPOINT TESTING
+    Testing the enhanced browse listings endpoint with new bid filtering functionality:
+    1. Basic browse endpoint still works: `/api/marketplace/browse?status=active`
+    2. New bid filter parameters work correctly:
+       - `bid_filter=all` (should return all listings)
+       - `bid_filter=own_listings` (should return only user's listings)  
+       - `bid_filter=placed_bid` (should return listings where user has bids)
+       - `bid_filter=not_placed_bid` (should return listings where user hasn't bid)
+    3. Verify the filtering logic works correctly with real data in the database
+    4. Ensure backwards compatibility - the endpoint works without the new parameters
+    """
+    def __init__(self):
+        self.session = None
+        self.admin_token = None
+        self.demo_token = None
+        self.test_user_id = None
+        self.test_results = {}
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def authenticate_users(self) -> bool:
+        """Authenticate both admin and demo users"""
+        print("🔐 Authenticating users for bid filtering tests...")
+        
+        # Authenticate admin
+        admin_login_data = {
+            "email": ADMIN_EMAIL,
+            "password": "admin_password"
+        }
+        
+        admin_result = await self.make_request("/auth/login", "POST", data=admin_login_data)
+        
+        if admin_result["success"]:
+            self.admin_token = admin_result["data"].get("token", "")
+            print(f"  ✅ Admin authentication successful")
+        else:
+            print(f"  ❌ Admin authentication failed: {admin_result.get('error', 'Unknown error')}")
+            return False
+        
+        # Authenticate demo user
+        demo_login_data = {
+            "email": DEMO_EMAIL,
+            "password": "demo_password"
+        }
+        
+        demo_result = await self.make_request("/auth/login", "POST", data=demo_login_data)
+        
+        if demo_result["success"]:
+            self.demo_token = demo_result["data"].get("token", "")
+            self.test_user_id = demo_result["data"].get("user", {}).get("id", DEMO_USER_ID)
+            print(f"  ✅ Demo user authentication successful (ID: {self.test_user_id})")
+            return True
+        else:
+            print(f"  ❌ Demo user authentication failed: {demo_result.get('error', 'Unknown error')}")
+            return False
+    
+    async def test_basic_browse_endpoint(self) -> Dict:
+        """
+        Test 1: Basic browse endpoint still works: `/api/marketplace/browse?status=active`
+        Ensure backwards compatibility
+        """
+        print("📋 Testing basic browse endpoint (backwards compatibility)...")
+        
+        test_results = {
+            "endpoint": "/marketplace/browse?status=active",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "listings_count": 0,
+            "error_messages": [],
+            "success": False,
+            "backwards_compatible": False
+        }
+        
+        # Test basic browse without new parameters
+        result = await self.make_request("/marketplace/browse", params={"status": "active"})
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            listings = result.get("data", [])
+            test_results["listings_count"] = len(listings) if isinstance(listings, list) else 0
+            test_results["success"] = True
+            test_results["backwards_compatible"] = True
+            print(f"    ✅ Basic browse successful: {test_results['listings_count']} active listings found")
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+            
+            # Verify listings have required fields
+            if listings and isinstance(listings, list) and len(listings) > 0:
+                sample_listing = listings[0]
+                required_fields = ["id", "title", "price", "status"]
+                missing_fields = [field for field in required_fields if field not in sample_listing]
+                if missing_fields:
+                    test_results["error_messages"].append(f"Missing required fields: {missing_fields}")
+                else:
+                    print(f"    ✅ Listings have required fields: {required_fields}")
+        else:
+            test_results["error_messages"].append(f"Basic browse failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ Basic browse failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        return {
+            "test_name": "Basic Browse Endpoint",
+            "success": test_results["success"] and test_results["backwards_compatible"],
+            "test_results": test_results,
+            "critical_issue": not test_results["success"],
+            "backwards_compatible": test_results["backwards_compatible"]
+        }
+    
+    async def test_bid_filter_all(self) -> Dict:
+        """
+        Test 2: bid_filter=all should return all listings
+        """
+        print("🔍 Testing bid_filter=all (should return all listings)...")
+        
+        if not self.test_user_id:
+            return {"test_name": "Bid Filter All", "error": "No test user ID available"}
+        
+        test_results = {
+            "endpoint": f"/marketplace/browse?status=active&user_id={self.test_user_id}&bid_filter=all",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "listings_count": 0,
+            "baseline_count": 0,
+            "error_messages": [],
+            "success": False,
+            "filter_working": False
+        }
+        
+        # First get baseline count without bid filter
+        baseline_result = await self.make_request("/marketplace/browse", params={"status": "active"})
+        if baseline_result["success"]:
+            baseline_listings = baseline_result.get("data", [])
+            test_results["baseline_count"] = len(baseline_listings) if isinstance(baseline_listings, list) else 0
+            print(f"    📊 Baseline active listings: {test_results['baseline_count']}")
+        
+        # Test with bid_filter=all
+        result = await self.make_request("/marketplace/browse", params={
+            "status": "active",
+            "user_id": self.test_user_id,
+            "bid_filter": "all"
+        })
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            listings = result.get("data", [])
+            test_results["listings_count"] = len(listings) if isinstance(listings, list) else 0
+            test_results["success"] = True
+            
+            # bid_filter=all should return same count as baseline (all listings)
+            if test_results["listings_count"] == test_results["baseline_count"]:
+                test_results["filter_working"] = True
+                print(f"    ✅ bid_filter=all working: {test_results['listings_count']} listings (matches baseline)")
+            else:
+                test_results["error_messages"].append(f"bid_filter=all returned {test_results['listings_count']} but baseline was {test_results['baseline_count']}")
+                print(f"    ⚠️ bid_filter=all count mismatch: got {test_results['listings_count']}, expected {test_results['baseline_count']}")
+            
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+        else:
+            test_results["error_messages"].append(f"bid_filter=all failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ bid_filter=all failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        return {
+            "test_name": "Bid Filter All",
+            "success": test_results["success"] and test_results["filter_working"],
+            "test_results": test_results,
+            "critical_issue": not test_results["success"],
+            "filter_working": test_results["filter_working"]
+        }
+    
+    async def test_bid_filter_own_listings(self) -> Dict:
+        """
+        Test 3: bid_filter=own_listings should return only user's listings
+        """
+        print("👤 Testing bid_filter=own_listings (should return only user's listings)...")
+        
+        if not self.test_user_id:
+            return {"test_name": "Bid Filter Own Listings", "error": "No test user ID available"}
+        
+        test_results = {
+            "endpoint": f"/marketplace/browse?status=active&user_id={self.test_user_id}&bid_filter=own_listings",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "listings_count": 0,
+            "all_owned_by_user": False,
+            "error_messages": [],
+            "success": False,
+            "filter_working": False
+        }
+        
+        # Test with bid_filter=own_listings
+        result = await self.make_request("/marketplace/browse", params={
+            "status": "active",
+            "user_id": self.test_user_id,
+            "bid_filter": "own_listings"
+        })
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            listings = result.get("data", [])
+            test_results["listings_count"] = len(listings) if isinstance(listings, list) else 0
+            test_results["success"] = True
+            
+            # Verify all returned listings belong to the user
+            if listings and isinstance(listings, list):
+                owned_count = 0
+                for listing in listings:
+                    if isinstance(listing, dict) and listing.get("seller_id") == self.test_user_id:
+                        owned_count += 1
+                
+                test_results["all_owned_by_user"] = owned_count == len(listings)
+                test_results["filter_working"] = test_results["all_owned_by_user"]
+                
+                if test_results["all_owned_by_user"]:
+                    print(f"    ✅ bid_filter=own_listings working: {test_results['listings_count']} listings, all owned by user")
+                else:
+                    test_results["error_messages"].append(f"Some listings not owned by user: {owned_count}/{len(listings)} owned")
+                    print(f"    ❌ bid_filter=own_listings failed: only {owned_count}/{len(listings)} owned by user")
+            else:
+                # No listings returned - this could be valid if user has no listings
+                test_results["all_owned_by_user"] = True
+                test_results["filter_working"] = True
+                print(f"    ✅ bid_filter=own_listings working: {test_results['listings_count']} listings (user has no listings)")
+            
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+        else:
+            test_results["error_messages"].append(f"bid_filter=own_listings failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ bid_filter=own_listings failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        return {
+            "test_name": "Bid Filter Own Listings",
+            "success": test_results["success"] and test_results["filter_working"],
+            "test_results": test_results,
+            "critical_issue": not test_results["success"],
+            "filter_working": test_results["filter_working"]
+        }
+    
+    async def test_bid_filter_placed_bid(self) -> Dict:
+        """
+        Test 4: bid_filter=placed_bid should return listings where user has bids
+        """
+        print("💰 Testing bid_filter=placed_bid (should return listings where user has bids)...")
+        
+        if not self.test_user_id or not self.demo_token:
+            return {"test_name": "Bid Filter Placed Bid", "error": "No test user ID or token available"}
+        
+        test_results = {
+            "endpoint": f"/marketplace/browse?status=active&user_id={self.test_user_id}&bid_filter=placed_bid",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "listings_count": 0,
+            "user_has_bids_on_all": False,
+            "user_bid_count": 0,
+            "error_messages": [],
+            "success": False,
+            "filter_working": False
+        }
+        
+        # First, check if user has any active bids
+        headers = {"Authorization": f"Bearer {self.demo_token}"}
+        user_tenders_result = await self.make_request(f"/user/{self.test_user_id}/tenders", headers=headers)
+        
+        user_bid_listing_ids = set()
+        if user_tenders_result["success"]:
+            tenders = user_tenders_result.get("data", [])
+            if isinstance(tenders, list):
+                for tender in tenders:
+                    if isinstance(tender, dict) and tender.get("status") == "active":
+                        listing_id = tender.get("listing_id")
+                        if listing_id:
+                            user_bid_listing_ids.add(listing_id)
+                test_results["user_bid_count"] = len(user_bid_listing_ids)
+                print(f"    📊 User has active bids on {len(user_bid_listing_ids)} listings")
+        
+        # Test with bid_filter=placed_bid
+        result = await self.make_request("/marketplace/browse", params={
+            "status": "active",
+            "user_id": self.test_user_id,
+            "bid_filter": "placed_bid"
+        })
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            listings = result.get("data", [])
+            test_results["listings_count"] = len(listings) if isinstance(listings, list) else 0
+            test_results["success"] = True
+            
+            # Verify all returned listings have user's bids
+            if listings and isinstance(listings, list):
+                valid_count = 0
+                for listing in listings:
+                    if isinstance(listing, dict):
+                        listing_id = listing.get("id")
+                        if listing_id in user_bid_listing_ids:
+                            valid_count += 1
+                
+                test_results["user_has_bids_on_all"] = valid_count == len(listings)
+                test_results["filter_working"] = test_results["user_has_bids_on_all"]
+                
+                if test_results["user_has_bids_on_all"]:
+                    print(f"    ✅ bid_filter=placed_bid working: {test_results['listings_count']} listings, user has bids on all")
+                else:
+                    test_results["error_messages"].append(f"Some listings don't have user bids: {valid_count}/{len(listings)} valid")
+                    print(f"    ❌ bid_filter=placed_bid failed: only {valid_count}/{len(listings)} have user bids")
+            else:
+                # No listings returned - valid if user has no bids
+                if len(user_bid_listing_ids) == 0:
+                    test_results["user_has_bids_on_all"] = True
+                    test_results["filter_working"] = True
+                    print(f"    ✅ bid_filter=placed_bid working: {test_results['listings_count']} listings (user has no bids)")
+                else:
+                    test_results["error_messages"].append(f"User has {len(user_bid_listing_ids)} bids but filter returned 0 listings")
+                    print(f"    ❌ bid_filter=placed_bid failed: user has {len(user_bid_listing_ids)} bids but got 0 listings")
+            
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+        else:
+            test_results["error_messages"].append(f"bid_filter=placed_bid failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ bid_filter=placed_bid failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        return {
+            "test_name": "Bid Filter Placed Bid",
+            "success": test_results["success"] and test_results["filter_working"],
+            "test_results": test_results,
+            "critical_issue": not test_results["success"],
+            "filter_working": test_results["filter_working"]
+        }
+    
+    async def test_bid_filter_not_placed_bid(self) -> Dict:
+        """
+        Test 5: bid_filter=not_placed_bid should return listings where user hasn't bid (excluding own listings)
+        """
+        print("🚫 Testing bid_filter=not_placed_bid (should return listings where user hasn't bid)...")
+        
+        if not self.test_user_id or not self.demo_token:
+            return {"test_name": "Bid Filter Not Placed Bid", "error": "No test user ID or token available"}
+        
+        test_results = {
+            "endpoint": f"/marketplace/browse?status=active&user_id={self.test_user_id}&bid_filter=not_placed_bid",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "listings_count": 0,
+            "user_has_no_bids_on_all": False,
+            "user_bid_count": 0,
+            "baseline_count": 0,
+            "error_messages": [],
+            "success": False,
+            "filter_working": False
+        }
+        
+        # Get baseline count
+        baseline_result = await self.make_request("/marketplace/browse", params={"status": "active"})
+        if baseline_result["success"]:
+            baseline_listings = baseline_result.get("data", [])
+            test_results["baseline_count"] = len(baseline_listings) if isinstance(baseline_listings, list) else 0
+        
+        # Get user's active bids
+        headers = {"Authorization": f"Bearer {self.demo_token}"}
+        user_tenders_result = await self.make_request(f"/user/{self.test_user_id}/tenders", headers=headers)
+        
+        user_bid_listing_ids = set()
+        if user_tenders_result["success"]:
+            tenders = user_tenders_result.get("data", [])
+            if isinstance(tenders, list):
+                for tender in tenders:
+                    if isinstance(tender, dict) and tender.get("status") == "active":
+                        listing_id = tender.get("listing_id")
+                        if listing_id:
+                            user_bid_listing_ids.add(listing_id)
+                test_results["user_bid_count"] = len(user_bid_listing_ids)
+                print(f"    📊 User has active bids on {len(user_bid_listing_ids)} listings")
+        
+        # Test with bid_filter=not_placed_bid
+        result = await self.make_request("/marketplace/browse", params={
+            "status": "active",
+            "user_id": self.test_user_id,
+            "bid_filter": "not_placed_bid"
+        })
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            listings = result.get("data", [])
+            test_results["listings_count"] = len(listings) if isinstance(listings, list) else 0
+            test_results["success"] = True
+            
+            # Verify returned listings don't have user's bids and aren't owned by user
+            if listings and isinstance(listings, list):
+                valid_count = 0
+                for listing in listings:
+                    if isinstance(listing, dict):
+                        listing_id = listing.get("id")
+                        seller_id = listing.get("seller_id")
+                        
+                        # Should not have user's bid AND should not be owned by user
+                        if listing_id not in user_bid_listing_ids and seller_id != self.test_user_id:
+                            valid_count += 1
+                
+                test_results["user_has_no_bids_on_all"] = valid_count == len(listings)
+                test_results["filter_working"] = test_results["user_has_no_bids_on_all"]
+                
+                if test_results["user_has_no_bids_on_all"]:
+                    print(f"    ✅ bid_filter=not_placed_bid working: {test_results['listings_count']} listings, user has no bids on any")
+                else:
+                    test_results["error_messages"].append(f"Some listings have user bids or are owned by user: {valid_count}/{len(listings)} valid")
+                    print(f"    ❌ bid_filter=not_placed_bid failed: only {valid_count}/{len(listings)} are valid")
+            else:
+                # No listings returned - could be valid if user has bids on all listings
+                test_results["user_has_no_bids_on_all"] = True
+                test_results["filter_working"] = True
+                print(f"    ✅ bid_filter=not_placed_bid working: {test_results['listings_count']} listings")
+            
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+        else:
+            test_results["error_messages"].append(f"bid_filter=not_placed_bid failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ bid_filter=not_placed_bid failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        return {
+            "test_name": "Bid Filter Not Placed Bid",
+            "success": test_results["success"] and test_results["filter_working"],
+            "test_results": test_results,
+            "critical_issue": not test_results["success"],
+            "filter_working": test_results["filter_working"]
+        }
+    
+    async def test_database_consistency(self) -> Dict:
+        """
+        Test 6: Verify the filtering logic works correctly with real data in the database
+        """
+        print("🗄️ Testing database consistency and filtering logic...")
+        
+        if not self.test_user_id or not self.demo_token:
+            return {"test_name": "Database Consistency", "error": "No test user ID or token available"}
+        
+        test_results = {
+            "total_active_listings": 0,
+            "user_owned_listings": 0,
+            "user_bid_listings": 0,
+            "user_no_bid_listings": 0,
+            "filter_sum_matches_total": False,
+            "database_consistent": False,
+            "error_messages": [],
+            "success": False
+        }
+        
+        headers = {"Authorization": f"Bearer {self.demo_token}"}
+        
+        # Get all active listings
+        all_result = await self.make_request("/marketplace/browse", params={"status": "active"})
+        if all_result["success"]:
+            all_listings = all_result.get("data", [])
+            test_results["total_active_listings"] = len(all_listings) if isinstance(all_listings, list) else 0
+            print(f"    📊 Total active listings: {test_results['total_active_listings']}")
+        
+        # Get user's owned listings
+        owned_result = await self.make_request("/marketplace/browse", params={
+            "status": "active",
+            "user_id": self.test_user_id,
+            "bid_filter": "own_listings"
+        })
+        if owned_result["success"]:
+            owned_listings = owned_result.get("data", [])
+            test_results["user_owned_listings"] = len(owned_listings) if isinstance(owned_listings, list) else 0
+            print(f"    👤 User owned listings: {test_results['user_owned_listings']}")
+        
+        # Get listings where user has bids
+        bid_result = await self.make_request("/marketplace/browse", params={
+            "status": "active",
+            "user_id": self.test_user_id,
+            "bid_filter": "placed_bid"
+        })
+        if bid_result["success"]:
+            bid_listings = bid_result.get("data", [])
+            test_results["user_bid_listings"] = len(bid_listings) if isinstance(bid_listings, list) else 0
+            print(f"    💰 User bid listings: {test_results['user_bid_listings']}")
+        
+        # Get listings where user hasn't bid
+        no_bid_result = await self.make_request("/marketplace/browse", params={
+            "status": "active",
+            "user_id": self.test_user_id,
+            "bid_filter": "not_placed_bid"
+        })
+        if no_bid_result["success"]:
+            no_bid_listings = no_bid_result.get("data", [])
+            test_results["user_no_bid_listings"] = len(no_bid_listings) if isinstance(no_bid_listings, list) else 0
+            print(f"    🚫 User no-bid listings: {test_results['user_no_bid_listings']}")
+        
+        # Verify mathematical consistency
+        # Total = Owned + Bid + No-bid (no overlap expected)
+        filter_sum = test_results["user_owned_listings"] + test_results["user_bid_listings"] + test_results["user_no_bid_listings"]
+        test_results["filter_sum_matches_total"] = filter_sum == test_results["total_active_listings"]
+        
+        if test_results["filter_sum_matches_total"]:
+            print(f"    ✅ Filter consistency: {test_results['user_owned_listings']} + {test_results['user_bid_listings']} + {test_results['user_no_bid_listings']} = {test_results['total_active_listings']}")
+            test_results["database_consistent"] = True
+            test_results["success"] = True
+        else:
+            test_results["error_messages"].append(f"Filter sum ({filter_sum}) doesn't match total ({test_results['total_active_listings']})")
+            print(f"    ❌ Filter inconsistency: {filter_sum} ≠ {test_results['total_active_listings']}")
+        
+        return {
+            "test_name": "Database Consistency",
+            "success": test_results["success"] and test_results["database_consistent"],
+            "test_results": test_results,
+            "critical_issue": not test_results["database_consistent"],
+            "consistency_verified": test_results["database_consistent"]
+        }
+    
+    async def run_browse_bid_filtering_tests(self) -> Dict:
+        """
+        Run complete browse bid filtering tests
+        """
+        print("🚨 STARTING ENHANCED BROWSE LISTINGS ENDPOINT TESTING")
+        print("=" * 80)
+        print("TESTING: Enhanced browse listings endpoint with bid filtering functionality")
+        print("FILTERS: all, own_listings, placed_bid, not_placed_bid")
+        print("=" * 80)
+        
+        await self.setup()
+        
+        try:
+            # Authenticate first
+            auth_success = await self.authenticate_users()
+            if not auth_success:
+                return {
+                    "test_timestamp": datetime.now().isoformat(),
+                    "error": "User authentication failed - cannot proceed with testing"
+                }
+            
+            # Run all bid filtering tests
+            basic_test = await self.test_basic_browse_endpoint()
+            all_filter_test = await self.test_bid_filter_all()
+            own_listings_test = await self.test_bid_filter_own_listings()
+            placed_bid_test = await self.test_bid_filter_placed_bid()
+            not_placed_bid_test = await self.test_bid_filter_not_placed_bid()
+            consistency_test = await self.test_database_consistency()
+            
+            # Compile comprehensive test results
+            test_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "test_focus": "Enhanced browse listings endpoint with bid filtering functionality",
+                "basic_browse_test": basic_test,
+                "bid_filter_all_test": all_filter_test,
+                "bid_filter_own_listings_test": own_listings_test,
+                "bid_filter_placed_bid_test": placed_bid_test,
+                "bid_filter_not_placed_bid_test": not_placed_bid_test,
+                "database_consistency_test": consistency_test
+            }
+            
+            # Determine critical findings
+            critical_issues = []
+            working_features = []
+            
+            tests = [basic_test, all_filter_test, own_listings_test, placed_bid_test, not_placed_bid_test, consistency_test]
+            
+            for test in tests:
+                if test.get("critical_issue", False):
+                    error_msg = "Unknown error"
+                    if test.get("test_results", {}).get("error_messages"):
+                        error_msg = test["test_results"]["error_messages"][0]
+                    elif test.get("error"):
+                        error_msg = test["error"]
+                    critical_issues.append(f"{test['test_name']}: {error_msg}")
+                
+                if test.get("success", False):
+                    working_features.append(f"{test['test_name']}: Working correctly")
+            
+            # Calculate success metrics
+            total_tests = len(tests)
+            successful_tests = sum(1 for test in tests if test.get("success", False))
+            success_rate = (successful_tests / total_tests) * 100
+            
+            test_results["summary"] = {
+                "total_tests": total_tests,
+                "successful_tests": successful_tests,
+                "failed_tests": total_tests - successful_tests,
+                "success_rate": success_rate,
+                "critical_issues": critical_issues,
+                "working_features": working_features,
+                "all_filters_working": len(critical_issues) == 0,
+                "backwards_compatible": basic_test.get("backwards_compatible", False),
+                "database_consistent": consistency_test.get("consistency_verified", False)
+            }
+            
+            return test_results
+            
+        finally:
+            await self.cleanup()
+
+
 class APIEndpointFixesTester:
     """
     URGENT: API Endpoint Fixes Testing
