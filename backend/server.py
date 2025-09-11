@@ -3637,14 +3637,49 @@ async def get_menu_settings(current_user: dict = Depends(require_admin_role)):
 
 @app.post("/api/admin/menu-settings")
 async def update_menu_settings(settings: dict, current_user: dict = Depends(require_admin_role)):
-    """Update menu settings configuration"""
-    """Update menu settings configuration"""
+    """Update menu settings configuration with validation for custom items"""
     try:
+        # Validate custom items if they exist
+        desktop_menu = settings.get("desktop_menu", {})
+        mobile_menu = settings.get("mobile_menu", {})
+        
+        # Validate custom items in both menus
+        for menu_type, menu_data in [("desktop", desktop_menu), ("mobile", mobile_menu)]:
+            custom_items = menu_data.get("custom_items", [])
+            for item in custom_items:
+                # Validate required fields
+                required_fields = ["id", "label", "url", "enabled"]
+                for field in required_fields:
+                    if field not in item:
+                        raise HTTPException(
+                            status_code=400, 
+                            detail=f"Custom item missing required field '{field}' in {menu_type} menu"
+                        )
+                
+                # Validate item type
+                if item.get("type") not in ["custom_url", "existing_page"]:
+                    item["type"] = "custom_url"  # default
+                
+                # Validate target
+                if item.get("target") not in ["_self", "_blank"]:
+                    item["target"] = "_self"  # default
+                
+                # Validate position (should be a number)
+                if "position" in item and not isinstance(item["position"], (int, float)):
+                    item["position"] = 999  # default to end
+                
+                # Validate roles
+                valid_roles = ["admin", "manager", "seller", "buyer"]
+                if "roles" not in item or not isinstance(item["roles"], list):
+                    item["roles"] = ["admin", "manager", "seller", "buyer"]
+                else:
+                    item["roles"] = [role for role in item["roles"] if role in valid_roles]
+        
         # Update menu settings in database
         menu_doc = {
             "type": "menu_config",
-            "desktop_menu": settings.get("desktop_menu", {}),
-            "mobile_menu": settings.get("mobile_menu", {}),
+            "desktop_menu": desktop_menu,
+            "mobile_menu": mobile_menu,
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
@@ -3665,6 +3700,72 @@ async def update_menu_settings(settings: dict, current_user: dict = Depends(requ
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update menu settings: {str(e)}")
+
+@app.get("/api/admin/available-pages")
+async def get_available_pages(current_user: dict = Depends(require_admin_role)):
+    """Get list of available app pages for menu item creation"""
+    try:
+        # Define available app pages that can be added to menu
+        available_pages = [
+            {"path": "/browse", "label": "Browse Marketplace", "icon": "Store"},
+            {"path": "/create-listing", "label": "Create Listing", "icon": "Plus"},
+            {"path": "/messages", "label": "Messages", "icon": "MessageCircle"},
+            {"path": "/tenders", "label": "Tenders", "icon": "DollarSign"},
+            {"path": "/my-listings", "label": "My Listings", "icon": "Package"},
+            {"path": "/mobile-my-listings", "label": "My Listings (Mobile)", "icon": "Package"},
+            {"path": "/mobile-tenders", "label": "Tenders (Mobile)", "icon": "DollarSign"},
+            {"path": "/favorites", "label": "Favorites", "icon": "Heart"},
+            {"path": "/profile", "label": "Profile", "icon": "User"},
+            {"path": "/admin", "label": "Admin Panel", "icon": "Shield"},
+            {"path": "/buy-management", "label": "Buy Management", "icon": "ShoppingCart"},
+            {"path": "/info", "label": "About Platform", "icon": "Globe"},
+            {"path": "/notifications", "label": "Notifications", "icon": "Bell"},
+            {"path": "/reports", "label": "Reports", "icon": "BarChart3"},
+            {"path": "/analytics", "label": "Analytics", "icon": "TrendingUp"},
+            {"path": "/settings", "label": "Settings", "icon": "Settings"},
+            {"path": "/help", "label": "Help Center", "icon": "HelpCircle"},
+            {"path": "/contact", "label": "Contact Us", "icon": "Mail"},
+            {"path": "/terms", "label": "Terms of Service", "icon": "FileText"},
+            {"path": "/privacy", "label": "Privacy Policy", "icon": "Shield"}
+        ]
+        
+        return {
+            "available_pages": available_pages,
+            "total_count": len(available_pages)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get available pages: {str(e)}")
+
+@app.get("/api/admin/available-icons") 
+async def get_available_icons(current_user: dict = Depends(require_admin_role)):
+    """Get list of available icons for menu items"""
+    try:
+        # Define available Lucide React icons for menu items
+        available_icons = [
+            "Store", "Plus", "MessageCircle", "DollarSign", "Package", 
+            "Heart", "User", "Shield", "ShoppingCart", "Globe", "Bell",
+            "BarChart3", "TrendingUp", "Settings", "HelpCircle", "Mail",
+            "FileText", "Search", "Home", "Star", "Camera", "Calendar",
+            "Clock", "Download", "Upload", "Edit", "Trash2", "Eye",
+            "EyeOff", "Lock", "Unlock", "Key", "Users", "UserPlus",
+            "Phone", "Smartphone", "Monitor", "Tablet", "Laptop",
+            "Zap", "Activity", "Award", "Target", "Compass", "Map",
+            "Navigation", "Bookmark", "Tag", "Filter", "Sort", "List",
+            "Grid", "Layers", "Archive", "Folder", "File", "Image",
+            "Video", "Music", "Headphones", "Mic", "Volume2", "Play",
+            "Pause", "Square", "SkipBack", "SkipForward", "Repeat",
+            "Shuffle", "Share", "ExternalLink", "Link", "Copy", "Check",
+            "X", "AlertTriangle", "AlertCircle", "Info", "CheckCircle"
+        ]
+        
+        return {
+            "available_icons": available_icons,
+            "total_count": len(available_icons)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get available icons: {str(e)}")
 
 @app.get("/api/menu-settings/user/{user_id}")
 async def get_user_menu_settings(user_id: str):
