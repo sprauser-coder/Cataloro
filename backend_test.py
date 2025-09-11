@@ -26,6 +26,823 @@ ADMIN_USERNAME = "sash_admin"
 ADMIN_ROLE = "admin"
 ADMIN_ID = "admin_user_1"
 
+class ManagementCenterSellTester:
+    """
+    URGENT: Management Center Sell listings investigation
+    User reports: "Management Center Sell does not show all products listed"
+    Testing listings endpoints, pagination, filtering, and data consistency
+    """
+    def __init__(self):
+        self.session = None
+        self.admin_token = None
+        self.demo_token = None
+        self.investigation_results = {}
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def authenticate_users(self) -> bool:
+        """Authenticate both admin and demo users"""
+        print("🔐 Authenticating users for listings investigation...")
+        
+        # Authenticate admin
+        admin_login_data = {
+            "email": ADMIN_EMAIL,
+            "password": "admin_password"
+        }
+        
+        admin_result = await self.make_request("/auth/login", "POST", data=admin_login_data)
+        
+        if admin_result["success"]:
+            self.admin_token = admin_result["data"].get("token", "")
+            print(f"  ✅ Admin authentication successful")
+        else:
+            print(f"  ❌ Admin authentication failed: {admin_result.get('error', 'Unknown error')}")
+            return False
+        
+        # Authenticate demo user
+        demo_login_data = {
+            "email": "demo@cataloro.com",
+            "password": "demo_password"
+        }
+        
+        demo_result = await self.make_request("/auth/login", "POST", data=demo_login_data)
+        
+        if demo_result["success"]:
+            self.demo_token = demo_result["data"].get("token", "")
+            print(f"  ✅ Demo user authentication successful")
+            return True
+        else:
+            print(f"  ❌ Demo user authentication failed: {demo_result.get('error', 'Unknown error')}")
+            return False
+    
+    async def investigate_total_listings_count(self) -> Dict:
+        """
+        CRITICAL: Get total count of listings in database vs API responses
+        Check for discrepancies between database count and what APIs return
+        """
+        print("🔍 CRITICAL: Investigating total listings count discrepancies...")
+        
+        if not self.admin_token:
+            return {"test_name": "Total Listings Count Investigation", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        investigation_results = {
+            "database_total": 0,
+            "browse_api_count": 0,
+            "management_api_count": 0,
+            "seller_listings_count": 0,
+            "active_listings_count": 0,
+            "all_status_listings_count": 0,
+            "discrepancies_found": [],
+            "missing_listings": []
+        }
+        
+        # 1. Check browse API listings count
+        print("  📋 Checking browse API listings count...")
+        browse_result = await self.make_request("/marketplace/browse")
+        if browse_result["success"]:
+            browse_listings = browse_result.get("data", [])
+            investigation_results["browse_api_count"] = len(browse_listings)
+            print(f"    Browse API returned: {len(browse_listings)} listings")
+        else:
+            print(f"    ❌ Browse API failed: {browse_result.get('error', 'Unknown error')}")
+        
+        # 2. Check admin performance endpoint for database stats
+        print("  📊 Checking admin performance endpoint for database statistics...")
+        perf_result = await self.make_request("/admin/performance", headers=headers)
+        if perf_result["success"]:
+            perf_data = perf_result.get("data", {})
+            collections_stats = perf_data.get("collections", {})
+            if "listings" in collections_stats:
+                investigation_results["database_total"] = collections_stats["listings"].get("document_count", 0)
+                print(f"    Database total listings: {investigation_results['database_total']}")
+            else:
+                print("    ⚠️ No listings collection stats found in performance endpoint")
+        else:
+            print(f"    ❌ Performance endpoint failed: {perf_result.get('error', 'Unknown error')}")
+        
+        # 3. Check seller-specific listings (Management Center Sell would use this)
+        print("  👤 Checking seller-specific listings...")
+        # Get demo user profile to find their listings
+        demo_profile_result = await self.make_request("/auth/profile/68bfff790e4e46bc28d43631")
+        if demo_profile_result["success"]:
+            demo_user = demo_profile_result["data"]
+            seller_id = demo_user.get("id")
+            
+            # Check seller listings endpoint
+            seller_headers = {"Authorization": f"Bearer {self.demo_token}"}
+            seller_result = await self.make_request(f"/marketplace/seller/{seller_id}/listings", headers=seller_headers)
+            if seller_result["success"]:
+                seller_listings = seller_result.get("data", [])
+                investigation_results["seller_listings_count"] = len(seller_listings)
+                print(f"    Seller listings: {len(seller_listings)}")
+            else:
+                print(f"    ❌ Seller listings failed: {seller_result.get('error', 'Unknown error')}")
+        
+        # 4. Check different listing status filters
+        print("  🔍 Checking listings by status...")
+        status_filters = ["active", "pending", "expired", "sold"]
+        status_counts = {}
+        
+        for status in status_filters:
+            # Try search with status filter
+            search_result = await self.make_request("/marketplace/search", params={"q": "", "status": status})
+            if search_result["success"]:
+                search_data = search_result.get("data", {})
+                if isinstance(search_data, dict):
+                    status_count = search_data.get("total", 0)
+                    if isinstance(search_data.get("results"), list):
+                        status_count = len(search_data["results"])
+                else:
+                    status_count = len(search_data) if isinstance(search_data, list) else 0
+                status_counts[status] = status_count
+                print(f"    {status.title()} listings: {status_count}")
+        
+        investigation_results["status_breakdown"] = status_counts
+        investigation_results["all_status_listings_count"] = sum(status_counts.values())
+        
+        # 5. Analyze discrepancies
+        print("  🔍 Analyzing discrepancies...")
+        
+        # Compare database total vs browse API
+        if investigation_results["database_total"] > investigation_results["browse_api_count"]:
+            discrepancy = investigation_results["database_total"] - investigation_results["browse_api_count"]
+            investigation_results["discrepancies_found"].append({
+                "type": "database_vs_browse",
+                "description": f"Database has {discrepancy} more listings than browse API",
+                "database_count": investigation_results["database_total"],
+                "api_count": investigation_results["browse_api_count"],
+                "missing_count": discrepancy
+            })
+        
+        # Compare browse vs seller listings
+        if investigation_results["browse_api_count"] != investigation_results["seller_listings_count"]:
+            discrepancy = abs(investigation_results["browse_api_count"] - investigation_results["seller_listings_count"])
+            investigation_results["discrepancies_found"].append({
+                "type": "browse_vs_seller",
+                "description": f"Browse API and seller listings differ by {discrepancy}",
+                "browse_count": investigation_results["browse_api_count"],
+                "seller_count": investigation_results["seller_listings_count"],
+                "difference": discrepancy
+            })
+        
+        # Check if status breakdown matches totals
+        if investigation_results["all_status_listings_count"] != investigation_results["browse_api_count"]:
+            discrepancy = abs(investigation_results["all_status_listings_count"] - investigation_results["browse_api_count"])
+            investigation_results["discrepancies_found"].append({
+                "type": "status_breakdown_vs_browse",
+                "description": f"Status breakdown total differs from browse API by {discrepancy}",
+                "status_total": investigation_results["all_status_listings_count"],
+                "browse_count": investigation_results["browse_api_count"],
+                "difference": discrepancy
+            })
+        
+        critical_discrepancy = len(investigation_results["discrepancies_found"]) > 0
+        
+        print(f"  📊 Investigation complete:")
+        print(f"    - Database total: {investigation_results['database_total']}")
+        print(f"    - Browse API count: {investigation_results['browse_api_count']}")
+        print(f"    - Seller listings: {investigation_results['seller_listings_count']}")
+        print(f"    - Status breakdown total: {investigation_results['all_status_listings_count']}")
+        print(f"    - Discrepancies found: {len(investigation_results['discrepancies_found'])}")
+        print(f"    - Critical issue: {critical_discrepancy}")
+        
+        return {
+            "test_name": "Total Listings Count Investigation",
+            "success": True,
+            "investigation_results": investigation_results,
+            "critical_discrepancy": critical_discrepancy,
+            "discrepancies_count": len(investigation_results["discrepancies_found"]),
+            "potential_data_loss": investigation_results["database_total"] > investigation_results["browse_api_count"] + 5
+        }
+    
+    async def test_management_center_endpoints(self) -> Dict:
+        """
+        Test endpoints that Management Center Sell page would use
+        Check for pagination, filtering, and query issues
+        """
+        print("🏢 Testing Management Center endpoints...")
+        
+        if not self.demo_token:
+            return {"test_name": "Management Center Endpoints", "error": "No demo token available"}
+        
+        headers = {"Authorization": f"Bearer {self.demo_token}"}
+        
+        management_results = {
+            "seller_listings_endpoint": {"working": False, "count": 0, "error": None},
+            "my_listings_endpoint": {"working": False, "count": 0, "error": None},
+            "seller_dashboard_endpoint": {"working": False, "count": 0, "error": None},
+            "pagination_working": False,
+            "filtering_working": False,
+            "total_endpoints_tested": 0,
+            "working_endpoints": 0
+        }
+        
+        # Get demo user ID
+        demo_profile_result = await self.make_request("/auth/profile/68bfff790e4e46bc28d43631")
+        if not demo_profile_result["success"]:
+            return {
+                "test_name": "Management Center Endpoints",
+                "success": False,
+                "error": "Failed to get demo user profile"
+            }
+        
+        demo_user = demo_profile_result["data"]
+        seller_id = demo_user.get("id")
+        
+        # 1. Test seller listings endpoint
+        print("  📋 Testing seller listings endpoint...")
+        management_results["total_endpoints_tested"] += 1
+        seller_result = await self.make_request(f"/marketplace/seller/{seller_id}/listings", headers=headers)
+        if seller_result["success"]:
+            seller_listings = seller_result.get("data", [])
+            management_results["seller_listings_endpoint"]["working"] = True
+            management_results["seller_listings_endpoint"]["count"] = len(seller_listings)
+            management_results["working_endpoints"] += 1
+            print(f"    ✅ Seller listings: {len(seller_listings)} found")
+        else:
+            management_results["seller_listings_endpoint"]["error"] = seller_result.get("error", "Unknown error")
+            print(f"    ❌ Seller listings failed: {seller_result.get('error', 'Unknown error')}")
+        
+        # 2. Test my listings endpoint
+        print("  📝 Testing my listings endpoint...")
+        management_results["total_endpoints_tested"] += 1
+        my_listings_result = await self.make_request("/marketplace/my-listings", headers=headers)
+        if my_listings_result["success"]:
+            my_listings = my_listings_result.get("data", [])
+            management_results["my_listings_endpoint"]["working"] = True
+            management_results["my_listings_endpoint"]["count"] = len(my_listings)
+            management_results["working_endpoints"] += 1
+            print(f"    ✅ My listings: {len(my_listings)} found")
+        else:
+            management_results["my_listings_endpoint"]["error"] = my_listings_result.get("error", "Unknown error")
+            print(f"    ❌ My listings failed: {my_listings_result.get('error', 'Unknown error')}")
+        
+        # 3. Test seller dashboard endpoint
+        print("  📊 Testing seller dashboard endpoint...")
+        management_results["total_endpoints_tested"] += 1
+        dashboard_result = await self.make_request(f"/marketplace/seller/{seller_id}/dashboard", headers=headers)
+        if dashboard_result["success"]:
+            dashboard_data = dashboard_result.get("data", {})
+            listings_count = 0
+            if isinstance(dashboard_data, dict):
+                listings_count = dashboard_data.get("total_listings", 0)
+            management_results["seller_dashboard_endpoint"]["working"] = True
+            management_results["seller_dashboard_endpoint"]["count"] = listings_count
+            management_results["working_endpoints"] += 1
+            print(f"    ✅ Seller dashboard: {listings_count} listings reported")
+        else:
+            management_results["seller_dashboard_endpoint"]["error"] = dashboard_result.get("error", "Unknown error")
+            print(f"    ❌ Seller dashboard failed: {dashboard_result.get('error', 'Unknown error')}")
+        
+        # 4. Test pagination
+        print("  📄 Testing pagination...")
+        page1_result = await self.make_request("/marketplace/browse", params={"page": 1, "limit": 5})
+        page2_result = await self.make_request("/marketplace/browse", params={"page": 2, "limit": 5})
+        
+        if page1_result["success"] and page2_result["success"]:
+            page1_data = page1_result.get("data", [])
+            page2_data = page2_result.get("data", [])
+            
+            # Check if pagination returns different results
+            page1_ids = [item.get("id") for item in page1_data if isinstance(item, dict)]
+            page2_ids = [item.get("id") for item in page2_data if isinstance(item, dict)]
+            
+            pagination_working = len(set(page1_ids) & set(page2_ids)) == 0  # No overlap means pagination working
+            management_results["pagination_working"] = pagination_working
+            print(f"    {'✅' if pagination_working else '❌'} Pagination {'working' if pagination_working else 'not working'}")
+        else:
+            print(f"    ❌ Pagination test failed")
+        
+        # 5. Test filtering
+        print("  🔍 Testing filtering...")
+        all_result = await self.make_request("/marketplace/browse")
+        filtered_result = await self.make_request("/marketplace/search", params={"price_min": 100})
+        
+        if all_result["success"] and filtered_result["success"]:
+            all_data = all_result.get("data", [])
+            filtered_data = filtered_result.get("data", {})
+            
+            if isinstance(filtered_data, dict):
+                filtered_listings = filtered_data.get("results", [])
+            else:
+                filtered_listings = filtered_data if isinstance(filtered_data, list) else []
+            
+            filtering_working = len(filtered_listings) <= len(all_data)
+            management_results["filtering_working"] = filtering_working
+            print(f"    {'✅' if filtering_working else '❌'} Filtering {'working' if filtering_working else 'not working'}")
+        else:
+            print(f"    ❌ Filtering test failed")
+        
+        success_rate = (management_results["working_endpoints"] / management_results["total_endpoints_tested"]) * 100
+        overall_success = success_rate >= 66  # At least 2/3 endpoints working
+        
+        print(f"  📊 Management Center endpoints test complete:")
+        print(f"    - Working endpoints: {management_results['working_endpoints']}/{management_results['total_endpoints_tested']}")
+        print(f"    - Success rate: {success_rate:.1f}%")
+        print(f"    - Pagination working: {management_results['pagination_working']}")
+        print(f"    - Filtering working: {management_results['filtering_working']}")
+        
+        return {
+            "test_name": "Management Center Endpoints",
+            "success": overall_success,
+            "management_results": management_results,
+            "success_rate": success_rate,
+            "seller_id": seller_id,
+            "critical_issues": [
+                endpoint for endpoint, data in management_results.items() 
+                if isinstance(data, dict) and not data.get("working", True)
+            ]
+        }
+    
+    async def test_role_based_listing_visibility(self) -> Dict:
+        """
+        Test if role-based filtering is affecting listing visibility
+        Check different user roles to see if they see different listings
+        """
+        print("👥 Testing role-based listing visibility...")
+        
+        if not self.admin_token or not self.demo_token:
+            return {"test_name": "Role-Based Listing Visibility", "error": "Missing authentication tokens"}
+        
+        role_visibility_results = {
+            "admin_listings_count": 0,
+            "demo_user_listings_count": 0,
+            "public_listings_count": 0,
+            "role_filtering_detected": False,
+            "visibility_discrepancies": []
+        }
+        
+        # 1. Test admin user visibility
+        print("  🔑 Testing admin user listing visibility...")
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        admin_result = await self.make_request("/marketplace/browse", headers=admin_headers)
+        if admin_result["success"]:
+            admin_listings = admin_result.get("data", [])
+            role_visibility_results["admin_listings_count"] = len(admin_listings)
+            print(f"    Admin sees: {len(admin_listings)} listings")
+        
+        # 2. Test demo user visibility
+        print("  👤 Testing demo user listing visibility...")
+        demo_headers = {"Authorization": f"Bearer {self.demo_token}"}
+        demo_result = await self.make_request("/marketplace/browse", headers=demo_headers)
+        if demo_result["success"]:
+            demo_listings = demo_result.get("data", [])
+            role_visibility_results["demo_user_listings_count"] = len(demo_listings)
+            print(f"    Demo user sees: {len(demo_listings)} listings")
+        
+        # 3. Test public (no auth) visibility
+        print("  🌐 Testing public listing visibility...")
+        public_result = await self.make_request("/marketplace/browse")
+        if public_result["success"]:
+            public_listings = public_result.get("data", [])
+            role_visibility_results["public_listings_count"] = len(public_listings)
+            print(f"    Public sees: {len(public_listings)} listings")
+        
+        # 4. Analyze role-based differences
+        print("  🔍 Analyzing role-based differences...")
+        
+        counts = [
+            role_visibility_results["admin_listings_count"],
+            role_visibility_results["demo_user_listings_count"],
+            role_visibility_results["public_listings_count"]
+        ]
+        
+        # Check if all counts are the same
+        all_same = len(set(counts)) == 1
+        role_visibility_results["role_filtering_detected"] = not all_same
+        
+        if not all_same:
+            # Find discrepancies
+            if role_visibility_results["admin_listings_count"] != role_visibility_results["demo_user_listings_count"]:
+                role_visibility_results["visibility_discrepancies"].append({
+                    "type": "admin_vs_demo",
+                    "admin_count": role_visibility_results["admin_listings_count"],
+                    "demo_count": role_visibility_results["demo_user_listings_count"],
+                    "difference": abs(role_visibility_results["admin_listings_count"] - role_visibility_results["demo_user_listings_count"])
+                })
+            
+            if role_visibility_results["demo_user_listings_count"] != role_visibility_results["public_listings_count"]:
+                role_visibility_results["visibility_discrepancies"].append({
+                    "type": "demo_vs_public",
+                    "demo_count": role_visibility_results["demo_user_listings_count"],
+                    "public_count": role_visibility_results["public_listings_count"],
+                    "difference": abs(role_visibility_results["demo_user_listings_count"] - role_visibility_results["public_listings_count"])
+                })
+        
+        # 5. Test seller-specific visibility
+        print("  🏪 Testing seller-specific listing visibility...")
+        demo_profile_result = await self.make_request("/auth/profile/68bfff790e4e46bc28d43631")
+        if demo_profile_result["success"]:
+            demo_user = demo_profile_result["data"]
+            seller_id = demo_user.get("id")
+            
+            # Check if seller can see their own listings
+            seller_result = await self.make_request(f"/marketplace/seller/{seller_id}/listings", headers=demo_headers)
+            if seller_result["success"]:
+                seller_listings = seller_result.get("data", [])
+                role_visibility_results["seller_own_listings_count"] = len(seller_listings)
+                print(f"    Seller sees own listings: {len(seller_listings)}")
+                
+                # Check if seller's listings appear in browse
+                if admin_result["success"]:
+                    admin_listing_ids = [listing.get("id") for listing in admin_listings if isinstance(listing, dict)]
+                    seller_listing_ids = [listing.get("id") for listing in seller_listings if isinstance(listing, dict)]
+                    
+                    seller_listings_in_browse = len(set(seller_listing_ids) & set(admin_listing_ids))
+                    role_visibility_results["seller_listings_in_browse"] = seller_listings_in_browse
+                    
+                    if seller_listings_in_browse < len(seller_listings):
+                        role_visibility_results["visibility_discrepancies"].append({
+                            "type": "seller_listings_missing_from_browse",
+                            "seller_total": len(seller_listings),
+                            "in_browse": seller_listings_in_browse,
+                            "missing": len(seller_listings) - seller_listings_in_browse
+                        })
+        
+        critical_role_issue = len(role_visibility_results["visibility_discrepancies"]) > 0
+        
+        print(f"  📊 Role-based visibility test complete:")
+        print(f"    - Role filtering detected: {role_visibility_results['role_filtering_detected']}")
+        print(f"    - Visibility discrepancies: {len(role_visibility_results['visibility_discrepancies'])}")
+        print(f"    - Critical role issue: {critical_role_issue}")
+        
+        return {
+            "test_name": "Role-Based Listing Visibility",
+            "success": True,
+            "role_visibility_results": role_visibility_results,
+            "critical_role_issue": critical_role_issue,
+            "role_filtering_affecting_results": role_visibility_results["role_filtering_detected"]
+        }
+    
+    async def test_listing_status_categorization(self) -> Dict:
+        """
+        Test if expired, pending, and active listings are properly categorized
+        Check if status filtering is hiding listings from Management Center
+        """
+        print("📊 Testing listing status categorization...")
+        
+        status_results = {
+            "status_breakdown": {},
+            "status_filtering_issues": [],
+            "uncategorized_listings": 0,
+            "status_consistency": True
+        }
+        
+        # 1. Get all listings without status filter
+        print("  📋 Getting all listings...")
+        all_result = await self.make_request("/marketplace/browse")
+        all_listings = []
+        if all_result["success"]:
+            all_listings = all_result.get("data", [])
+            print(f"    Total listings found: {len(all_listings)}")
+        
+        # 2. Analyze status distribution in all listings
+        print("  🔍 Analyzing status distribution...")
+        status_counts = {}
+        for listing in all_listings:
+            if isinstance(listing, dict):
+                status = listing.get("status", "unknown")
+                status_counts[status] = status_counts.get(status, 0) + 1
+        
+        status_results["status_breakdown"] = status_counts
+        print(f"    Status breakdown: {status_counts}")
+        
+        # 3. Test specific status filters
+        print("  🔍 Testing specific status filters...")
+        status_filters = ["active", "pending", "expired", "sold", "draft"]
+        
+        for status in status_filters:
+            # Try search with status filter
+            search_result = await self.make_request("/marketplace/search", params={"q": "", "status": status})
+            if search_result["success"]:
+                search_data = search_result.get("data", {})
+                if isinstance(search_data, dict):
+                    filtered_listings = search_data.get("results", [])
+                    total_reported = search_data.get("total", len(filtered_listings))
+                else:
+                    filtered_listings = search_data if isinstance(search_data, list) else []
+                    total_reported = len(filtered_listings)
+                
+                actual_count = len(filtered_listings)
+                expected_count = status_counts.get(status, 0)
+                
+                print(f"    {status.title()}: API returned {actual_count}, expected {expected_count}")
+                
+                if actual_count != expected_count:
+                    status_results["status_filtering_issues"].append({
+                        "status": status,
+                        "expected_count": expected_count,
+                        "actual_count": actual_count,
+                        "difference": abs(expected_count - actual_count)
+                    })
+            else:
+                print(f"    ❌ {status.title()} filter failed: {search_result.get('error', 'Unknown error')}")
+        
+        # 4. Check for uncategorized listings
+        known_statuses = ["active", "pending", "expired", "sold", "draft"]
+        uncategorized = sum(count for status, count in status_counts.items() if status not in known_statuses)
+        status_results["uncategorized_listings"] = uncategorized
+        
+        if uncategorized > 0:
+            print(f"    ⚠️ Found {uncategorized} listings with unknown status")
+        
+        # 5. Test Management Center specific status handling
+        print("  🏢 Testing Management Center status handling...")
+        if self.demo_token:
+            demo_headers = {"Authorization": f"Bearer {self.demo_token}"}
+            
+            # Get seller's listings and check their statuses
+            demo_profile_result = await self.make_request("/auth/profile/68bfff790e4e46bc28d43631")
+            if demo_profile_result["success"]:
+                demo_user = demo_profile_result["data"]
+                seller_id = demo_user.get("id")
+                
+                seller_result = await self.make_request(f"/marketplace/seller/{seller_id}/listings", headers=demo_headers)
+                if seller_result["success"]:
+                    seller_listings = seller_result.get("data", [])
+                    seller_status_counts = {}
+                    
+                    for listing in seller_listings:
+                        if isinstance(listing, dict):
+                            status = listing.get("status", "unknown")
+                            seller_status_counts[status] = seller_status_counts.get(status, 0) + 1
+                    
+                    status_results["seller_status_breakdown"] = seller_status_counts
+                    print(f"    Seller status breakdown: {seller_status_counts}")
+                    
+                    # Check if seller sees all their listings regardless of status
+                    total_seller_listings = sum(seller_status_counts.values())
+                    if total_seller_listings < sum(1 for listing in all_listings if isinstance(listing, dict) and listing.get("seller_id") == seller_id):
+                        status_results["status_filtering_issues"].append({
+                            "type": "seller_missing_own_listings",
+                            "description": "Seller cannot see all their own listings",
+                            "seller_sees": total_seller_listings,
+                            "should_see": sum(1 for listing in all_listings if isinstance(listing, dict) and listing.get("seller_id") == seller_id)
+                        })
+        
+        status_consistency = len(status_results["status_filtering_issues"]) == 0
+        status_results["status_consistency"] = status_consistency
+        
+        print(f"  📊 Status categorization test complete:")
+        print(f"    - Status filtering issues: {len(status_results['status_filtering_issues'])}")
+        print(f"    - Uncategorized listings: {uncategorized}")
+        print(f"    - Status consistency: {status_consistency}")
+        
+        return {
+            "test_name": "Listing Status Categorization",
+            "success": status_consistency and uncategorized == 0,
+            "status_results": status_results,
+            "critical_status_issues": len(status_results["status_filtering_issues"]) > 0,
+            "status_filtering_problems": status_results["status_filtering_issues"]
+        }
+    
+    async def test_caching_issues(self) -> Dict:
+        """
+        Test for caching issues that might cause stale data
+        Check if cache is preventing updated listings from appearing
+        """
+        print("💾 Testing for caching issues...")
+        
+        if not self.admin_token:
+            return {"test_name": "Caching Issues Test", "error": "No admin token available"}
+        
+        caching_results = {
+            "cache_clear_available": False,
+            "listings_before_clear": 0,
+            "listings_after_clear": 0,
+            "cache_affecting_results": False,
+            "response_time_improvement": 0
+        }
+        
+        # 1. Get initial listings count and response time
+        print("  📋 Getting initial listings count...")
+        initial_result = await self.make_request("/marketplace/browse")
+        if initial_result["success"]:
+            initial_listings = initial_result.get("data", [])
+            caching_results["listings_before_clear"] = len(initial_listings)
+            initial_response_time = initial_result["response_time_ms"]
+            print(f"    Initial listings: {len(initial_listings)} (response time: {initial_response_time:.1f}ms)")
+        
+        # 2. Try to clear cache
+        print("  🧹 Attempting to clear cache...")
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        cache_clear_result = await self.make_request("/admin/cache/clear", "POST", headers=admin_headers)
+        
+        if cache_clear_result["success"]:
+            caching_results["cache_clear_available"] = True
+            cache_data = cache_clear_result.get("data", {})
+            total_cleared = cache_data.get("total_keys_cleared", 0)
+            print(f"    ✅ Cache cleared: {total_cleared} keys removed")
+            
+            # Wait a moment for cache to clear
+            await asyncio.sleep(1)
+            
+            # 3. Get listings count after cache clear
+            print("  📋 Getting listings count after cache clear...")
+            after_result = await self.make_request("/marketplace/browse")
+            if after_result["success"]:
+                after_listings = after_result.get("data", [])
+                caching_results["listings_after_clear"] = len(after_listings)
+                after_response_time = after_result["response_time_ms"]
+                print(f"    After cache clear: {len(after_listings)} (response time: {after_response_time:.1f}ms)")
+                
+                # Check if listings count changed
+                if caching_results["listings_before_clear"] != caching_results["listings_after_clear"]:
+                    caching_results["cache_affecting_results"] = True
+                    difference = abs(caching_results["listings_before_clear"] - caching_results["listings_after_clear"])
+                    print(f"    ⚠️ Cache was affecting results: {difference} listings difference")
+                else:
+                    print(f"    ✅ Cache not affecting listing count")
+                
+                # Check response time difference
+                if initial_response_time > 0:
+                    time_diff = initial_response_time - after_response_time
+                    caching_results["response_time_improvement"] = time_diff
+                    if abs(time_diff) > 50:  # More than 50ms difference
+                        print(f"    📊 Response time changed by {time_diff:.1f}ms")
+        else:
+            print(f"    ❌ Cache clear failed: {cache_clear_result.get('error', 'Unknown error')}")
+        
+        # 4. Test multiple requests for consistency
+        print("  🔄 Testing multiple requests for consistency...")
+        consistency_results = []
+        for i in range(3):
+            result = await self.make_request("/marketplace/browse")
+            if result["success"]:
+                listings = result.get("data", [])
+                consistency_results.append(len(listings))
+                await asyncio.sleep(0.5)  # Small delay between requests
+        
+        consistent_results = len(set(consistency_results)) == 1
+        caching_results["consistent_results"] = consistent_results
+        caching_results["consistency_counts"] = consistency_results
+        
+        if not consistent_results:
+            print(f"    ⚠️ Inconsistent results across requests: {consistency_results}")
+        else:
+            print(f"    ✅ Consistent results across requests: {consistency_results[0]}")
+        
+        cache_issues_detected = (
+            caching_results["cache_affecting_results"] or 
+            not consistent_results
+        )
+        
+        print(f"  📊 Caching test complete:")
+        print(f"    - Cache clear available: {caching_results['cache_clear_available']}")
+        print(f"    - Cache affecting results: {caching_results['cache_affecting_results']}")
+        print(f"    - Consistent results: {consistent_results}")
+        print(f"    - Cache issues detected: {cache_issues_detected}")
+        
+        return {
+            "test_name": "Caching Issues Test",
+            "success": not cache_issues_detected,
+            "caching_results": caching_results,
+            "cache_issues_detected": cache_issues_detected,
+            "recommendations": [
+                "Clear cache regularly" if caching_results["cache_affecting_results"] else None,
+                "Investigate cache consistency" if not consistent_results else None,
+                "Cache system working correctly" if not cache_issues_detected else None
+            ]
+        }
+    
+    async def run_management_center_sell_investigation(self) -> Dict:
+        """
+        Run complete Management Center Sell investigation
+        """
+        print("🚨 STARTING MANAGEMENT CENTER SELL INVESTIGATION")
+        print("=" * 80)
+        print("USER REPORT: 'Management Center Sell does not show all products listed'")
+        print("INVESTIGATING: Listings endpoints, pagination, filtering, and data consistency")
+        print("=" * 80)
+        
+        await self.setup()
+        
+        try:
+            # Authenticate first
+            auth_success = await self.authenticate_users()
+            if not auth_success:
+                return {
+                    "investigation_timestamp": datetime.now().isoformat(),
+                    "error": "User authentication failed - cannot proceed with investigation"
+                }
+            
+            # Run all investigation tests
+            total_count_investigation = await self.investigate_total_listings_count()
+            management_endpoints_test = await self.test_management_center_endpoints()
+            role_visibility_test = await self.test_role_based_listing_visibility()
+            status_categorization_test = await self.test_listing_status_categorization()
+            caching_issues_test = await self.test_caching_issues()
+            
+            # Compile comprehensive investigation results
+            investigation_results = {
+                "investigation_timestamp": datetime.now().isoformat(),
+                "user_report": "Management Center Sell does not show all products listed",
+                "total_count_investigation": total_count_investigation,
+                "management_endpoints_test": management_endpoints_test,
+                "role_visibility_test": role_visibility_test,
+                "status_categorization_test": status_categorization_test,
+                "caching_issues_test": caching_issues_test
+            }
+            
+            # Determine critical findings
+            critical_issues = []
+            
+            if total_count_investigation.get("critical_discrepancy", False):
+                critical_issues.append("Listings count discrepancy between database and API")
+            
+            if management_endpoints_test.get("success", True) == False:
+                critical_issues.append("Management Center endpoints not working properly")
+            
+            if role_visibility_test.get("critical_role_issue", False):
+                critical_issues.append("Role-based filtering affecting listing visibility")
+            
+            if status_categorization_test.get("critical_status_issues", False):
+                critical_issues.append("Status filtering hiding listings")
+            
+            if caching_issues_test.get("cache_issues_detected", False):
+                critical_issues.append("Cache causing stale data")
+            
+            # Provide recommendations
+            recommendations = []
+            
+            if total_count_investigation.get("potential_data_loss", False):
+                recommendations.append("Investigate database vs API discrepancy - potential data loss")
+            
+            if len(management_endpoints_test.get("critical_issues", [])) > 0:
+                recommendations.append("Fix Management Center API endpoints")
+            
+            if role_visibility_test.get("role_filtering_affecting_results", False):
+                recommendations.append("Review role-based filtering logic")
+            
+            if len(status_categorization_test.get("status_filtering_problems", [])) > 0:
+                recommendations.append("Fix status filtering issues")
+            
+            if caching_issues_test.get("cache_issues_detected", False):
+                recommendations.append("Clear cache and review caching strategy")
+            
+            investigation_results["critical_summary"] = {
+                "critical_issues_found": len(critical_issues),
+                "critical_issues": critical_issues,
+                "recommendations": recommendations,
+                "investigation_status": "COMPLETE",
+                "urgent_action_required": len(critical_issues) > 0,
+                "root_cause_identified": len(critical_issues) > 0,
+                "management_center_affected": True
+            }
+            
+            return investigation_results
+            
+        finally:
+            await self.cleanup()
+
+
 class CriticalDatabaseInvestigator:
     """
     URGENT: Critical data investigation for missing cats/catalyst database
