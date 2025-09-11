@@ -214,14 +214,23 @@ function MobileNav({ isOpen, onClose }) {
                       key={item.path}
                       to={item.path}
                       onClick={onClose}
-                      className={`flex items-center space-x-3 px-4 py-2 text-sm font-medium transition-all duration-200 touch-manipulation ${
+                      className={`flex items-center justify-between px-4 py-2 text-sm font-medium transition-all duration-200 touch-manipulation ${
                         isActive(item.path)
                           ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-r-2 border-blue-600'
                           : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700'
                       }`}
                     >
-                      <Icon className="w-4 h-4 flex-shrink-0" />
-                      <span className="truncate">{item.label}</span>
+                      <div className="flex items-center space-x-3">
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{item.label}</span>
+                      </div>
+                      
+                      {/* Add notification badge for notifications item */}
+                      {item.key === 'notifications' && unreadNotifications > 0 && (
+                        <div className="bg-blue-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-medium shadow-md">
+                          {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                        </div>
+                      )}
                     </Link>
                   );
                 })}
