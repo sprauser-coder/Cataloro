@@ -943,8 +943,8 @@ function CreateListingPage() {
                 </div>
               )}
 
-              {/* Catalyst Content Preview - Show Pt g, Pd g, Rh g values when catalyst is selected (Admin/Manager only) */}
-              {isAdminOrManager && selectedCatalyst && (
+              {/* Catalyst Content Preview - Show Pt g, Pd g, Rh g values when catalyst is selected */}
+              {selectedCatalyst && (
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
                   <div className="flex items-center space-x-2 mb-4">
                     <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
