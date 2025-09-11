@@ -672,6 +672,52 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   </Link>
                 );
               })}
+
+              {/* Custom Menu Items */}
+              {customMenuItems.map((item) => {
+                const isActive = location.pathname === item.url;
+                const isExternal = item.url.startsWith('http');
+                
+                return isExternal ? (
+                  <a
+                    key={item.id}
+                    href={item.url}
+                    target={item.target || '_self'}
+                    rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10"
+                  >
+                    {item.icon && (
+                      <span className="w-4 h-4 flex items-center justify-center text-xs">
+                        {item.icon}
+                      </span>
+                    )}
+                    <span className="font-medium">{item.label}</span>
+                    {item.target === '_blank' && <span className="text-xs opacity-60">↗</span>}
+                  </a>
+                ) : (
+                  <Link
+                    key={item.id}
+                    to={item.url}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
+                      isActive
+                        ? 'bg-white/20 dark:bg-white/20 text-gray-900 dark:text-white shadow-lg backdrop-blur-md'
+                        : 'text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white hover:bg-white/10 dark:hover:bg-white/10'
+                    }`}
+                    style={isActive ? {
+                      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
+                      backdropFilter: 'blur(20px)',
+                      boxShadow: '0 4px 15px rgba(255, 255, 255, 0.1)'
+                    } : {}}
+                  >
+                    {item.icon && (
+                      <span className="w-4 h-4 flex items-center justify-center text-xs">
+                        {item.icon}
+                      </span>
+                    )}
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                );
+              })}
               
               {/* Tenders Link - Menu settings visibility */}
               {isMenuItemVisible('desktop_menu', 'tenders') && (
