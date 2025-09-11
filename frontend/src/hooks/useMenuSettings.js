@@ -58,6 +58,17 @@ export function useMenuSettings() {
     
     const menuSection = menuSettings[menuType];
     
+    // Debug logging to understand the issue
+    if (itemKey === 'browse') {
+      console.log('DEBUG: Menu settings for browse:', {
+        menuType,
+        itemKey,
+        menuSection,
+        menuItem: menuSection?.[itemKey],
+        enabled: menuSection?.[itemKey]?.enabled
+      });
+    }
+    
     // If no menu section found, show all items by default (default behavior)
     if (!menuSection) return true;
     
