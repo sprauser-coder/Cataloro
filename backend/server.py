@@ -712,6 +712,30 @@ async def get_performance_metrics(current_user: dict = Depends(require_admin_rol
         }
 
 # Authentication Endpoints
+@app.get("/api/check-username")
+async def check_username_availability(username: str):
+    """Check if username is available for registration"""
+    try:
+        existing_user = await db.users.find_one({"username": username})
+        return {
+            "username": username,
+            "available": existing_user is None
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to check username availability: {str(e)}")
+
+@app.get("/api/check-email")
+async def check_email_availability(email: str):
+    """Check if email is available for registration"""
+    try:
+        existing_user = await db.users.find_one({"email": email})
+        return {
+            "email": email,
+            "available": existing_user is None
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to check email availability: {str(e)}")
+
 @app.post("/api/auth/register")
 @security_service.limiter.limit("3/minute")  # Rate limit registration attempts
 async def register_user(request: Request, user_data: dict):
