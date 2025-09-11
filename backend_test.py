@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-MANAGEMENT CENTER SELL FIXES TESTING
-Testing the critical API fixes implemented for Management Center Sell
-Verifying seller-specific endpoints, status filtering, and pagination functionality
+API ENDPOINT FIXES TESTING - URGENT
+Testing the specific API endpoint fixes implemented to resolve 404 errors and authentication issues
+Verifying browse listings, notifications, image upload, profile, and admin logo endpoints
 """
 
 import asyncio
