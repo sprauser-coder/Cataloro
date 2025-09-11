@@ -3700,7 +3700,7 @@ async def get_user_menu_settings(user_id: str):
             return {
                 "desktop_menu": {},
                 "mobile_menu": {},
-                "user_role": user_role
+                "user_role": menu_role
             }
         
         # Filter menu items based on user role
