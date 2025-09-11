@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
-Menu Settings Visibility Functionality End-to-End Testing
-Testing role mapping fixes and navigation integration for Menu Settings visibility workflow
+Menu Settings Visibility Debug Testing
+Testing Menu Settings visibility functionality where items marked as "Hidden" are still visible in navigation
+REVIEW REQUIREMENTS:
+1. Current Admin Settings Investigation - Check what's stored in admin menu settings
+2. User Menu Settings Filtering Debug - Test if backend filtering works correctly  
+3. Backend Filtering Logic Verification - Test the complete filtering chain
+4. Data State Analysis - Check exact data values and filtering results
 """
 
 import asyncio
