@@ -2115,7 +2115,7 @@ async def get_all_users(current_user: dict = Depends(require_admin_role)):
     return users
 
 @app.put("/api/admin/users/{user_id}")
-async def update_user(user_id: str, user_data: dict):
+async def update_user(user_id: str, user_data: dict, current_user: dict = Depends(require_admin_role)):
     # Try to update by UUID id field first
     result = await db.users.update_one(
         {"id": user_id},
