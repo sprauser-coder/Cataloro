@@ -381,118 +381,112 @@ class AdminMenuSettingsTester:
                 "response": post_result.get("data", "")
             }
     
-    async def test_ads_management_workflow(self) -> Dict:
-        """Test complete ads upload workflow from AdsManagement component"""
-        print("🔄 Testing AdsManagement upload workflow...")
+    async def test_default_menu_items_verification(self) -> Dict:
+        """Test that default menu items have proper enabled, label, and roles properties"""
+        print("🔄 Testing default menu items verification...")
         
         if not self.admin_token:
-            return {"test_name": "AdsManagement Workflow", "error": "No admin token available"}
+            return {"test_name": "Default Menu Items Verification", "error": "No admin token available"}
         
         headers = {"Authorization": f"Bearer {self.admin_token}"}
-        workflow_steps = []
         
-        # Step 1: Test admin login and JWT token generation
-        print("  Step 1: Verifying admin authentication...")
-        auth_test = {
-            "step": "Admin Authentication",
-            "success": bool(self.admin_token),
-            "token_length": len(self.admin_token) if self.admin_token else 0
-        }
-        workflow_steps.append(auth_test)
+        # Get current menu settings
+        result = await self.make_request("/admin/menu-settings", "GET", headers=headers)
         
-        # Step 2: Test file upload from AdsManagement component workflow
-        print("  Step 2: Testing file upload workflow...")
-        test_image = self.create_test_image()
-        
-        # Simulate the exact request from AdsManagement.js
-        form_data = aiohttp.FormData()
-        form_data.add_field('image', io.BytesIO(test_image), filename='ad_test_image.png', content_type='image/png')
-        form_data.add_field('section', 'ads')
-        form_data.add_field('field', 'ad_image')
-        
-        upload_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=form_data)
-        
-        upload_step = {
-            "step": "File Upload",
-            "success": upload_result["success"],
-            "status": upload_result["status"],
-            "response_time_ms": upload_result["response_time_ms"],
-            "has_response_data": bool(upload_result.get("data"))
-        }
-        workflow_steps.append(upload_step)
-        
-        # Step 3: Test ad creation with uploaded image
-        print("  Step 3: Testing ad creation with uploaded image...")
-        if upload_result["success"] and isinstance(upload_result["data"], dict):
-            image_url = upload_result["data"].get("url") or upload_result["data"].get("imageUrl")
-            
-            ad_data = {
-                "title": "Test Ad with Uploaded Image",
-                "description": "Testing ads upload functionality",
-                "content": "Test content",
-                "image_url": image_url,
-                "link_url": "https://example.com",
-                "target_audience": "all",
-                "placement": "banner"
-            }
-            
-            create_ad_result = await self.make_request("/admin/ads", "POST", data=ad_data, headers=headers)
-            
-            ad_creation_step = {
-                "step": "Ad Creation with Uploaded Image",
-                "success": create_ad_result["success"],
-                "status": create_ad_result["status"],
-                "image_url_used": image_url,
-                "ad_created": create_ad_result["success"]
-            }
-            
-            # Store test ad for cleanup
-            if create_ad_result["success"] and isinstance(create_ad_result["data"], dict):
-                ad_id = create_ad_result["data"].get("id")
-                if ad_id:
-                    self.test_ads.append(ad_id)
-        else:
-            ad_creation_step = {
-                "step": "Ad Creation with Uploaded Image",
+        if not result["success"]:
+            return {
+                "test_name": "Default Menu Items Verification",
                 "success": False,
-                "error": "Upload failed, cannot test ad creation"
+                "error": result.get("error", "Failed to get menu settings")
             }
         
-        workflow_steps.append(ad_creation_step)
+        data = result["data"]
+        desktop_menu = data.get("desktop_menu", {})
+        mobile_menu = data.get("mobile_menu", {})
         
-        # Step 4: Verify response handling and error reporting
-        print("  Step 4: Testing error handling...")
+        # Define expected default items
+        expected_default_items = [
+            "browse", "create_listing", "messages", "my_listings", "tenders", "inventory"
+        ]
         
-        # Test with invalid file type
-        invalid_form_data = aiohttp.FormData()
-        invalid_form_data.add_field('image', io.BytesIO(b"not an image"), filename='test.txt', content_type='text/plain')
-        invalid_form_data.add_field('section', 'ads')
-        invalid_form_data.add_field('field', 'ad_image')
+        # Check desktop menu items
+        desktop_verification = []
+        for item_key in expected_default_items:
+            if item_key in desktop_menu:
+                item_data = desktop_menu[item_key]
+                verification = {
+                    "item": item_key,
+                    "exists": True,
+                    "has_enabled": "enabled" in item_data,
+                    "has_label": "label" in item_data,
+                    "has_roles": "roles" in item_data,
+                    "enabled_value": item_data.get("enabled"),
+                    "label_value": item_data.get("label"),
+                    "roles_value": item_data.get("roles"),
+                    "valid_structure": all(key in item_data for key in ["enabled", "label", "roles"])
+                }
+            else:
+                verification = {
+                    "item": item_key,
+                    "exists": False,
+                    "has_enabled": False,
+                    "has_label": False,
+                    "has_roles": False,
+                    "valid_structure": False
+                }
+            desktop_verification.append(verification)
         
-        invalid_upload_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=invalid_form_data)
+        # Check mobile menu items
+        mobile_verification = []
+        for item_key in expected_default_items:
+            if item_key in mobile_menu:
+                item_data = mobile_menu[item_key]
+                verification = {
+                    "item": item_key,
+                    "exists": True,
+                    "has_enabled": "enabled" in item_data,
+                    "has_label": "label" in item_data,
+                    "has_roles": "roles" in item_data,
+                    "enabled_value": item_data.get("enabled"),
+                    "label_value": item_data.get("label"),
+                    "roles_value": item_data.get("roles"),
+                    "valid_structure": all(key in item_data for key in ["enabled", "label", "roles"])
+                }
+            else:
+                verification = {
+                    "item": item_key,
+                    "exists": False,
+                    "has_enabled": False,
+                    "has_label": False,
+                    "has_roles": False,
+                    "valid_structure": False
+                }
+            mobile_verification.append(verification)
         
-        error_handling_step = {
-            "step": "Error Handling",
-            "success": not invalid_upload_result["success"],  # Should fail for invalid file
-            "invalid_file_rejected": not invalid_upload_result["success"],
-            "error_status": invalid_upload_result["status"],
-            "proper_error_response": invalid_upload_result["status"] in [400, 422]
-        }
-        workflow_steps.append(error_handling_step)
+        # Calculate success metrics
+        desktop_valid_items = sum(1 for v in desktop_verification if v["valid_structure"])
+        mobile_valid_items = sum(1 for v in mobile_verification if v["valid_structure"])
         
-        # Calculate overall workflow success
-        successful_steps = sum(1 for step in workflow_steps if step.get("success", False))
-        workflow_success = successful_steps == len(workflow_steps)
+        desktop_success_rate = (desktop_valid_items / len(expected_default_items)) * 100
+        mobile_success_rate = (mobile_valid_items / len(expected_default_items)) * 100
         
-        print(f"  📊 Workflow steps: {successful_steps}/{len(workflow_steps)} successful")
+        overall_success = desktop_success_rate >= 80 and mobile_success_rate >= 80
+        
+        print(f"  🖥️ Desktop valid items: {desktop_valid_items}/{len(expected_default_items)} ({desktop_success_rate:.1f}%)")
+        print(f"  📱 Mobile valid items: {mobile_valid_items}/{len(expected_default_items)} ({mobile_success_rate:.1f}%)")
+        print(f"  {'✅' if overall_success else '❌'} Default items verification {'passed' if overall_success else 'failed'}")
         
         return {
-            "test_name": "AdsManagement Workflow",
-            "success": workflow_success,
-            "total_steps": len(workflow_steps),
-            "successful_steps": successful_steps,
-            "workflow_complete": workflow_success,
-            "detailed_steps": workflow_steps
+            "test_name": "Default Menu Items Verification",
+            "success": overall_success,
+            "desktop_verification": desktop_verification,
+            "mobile_verification": mobile_verification,
+            "desktop_valid_items": desktop_valid_items,
+            "mobile_valid_items": mobile_valid_items,
+            "desktop_success_rate": desktop_success_rate,
+            "mobile_success_rate": mobile_success_rate,
+            "expected_items": expected_default_items,
+            "total_expected": len(expected_default_items)
         }
     
     async def test_file_validation_and_storage(self) -> Dict:
