@@ -386,6 +386,8 @@ function AdminPanel() {
       adminOnly: true },
     { id: 'site-settings', label: 'Site Settings', shortLabel: 'Settings', icon: Settings, 
       adminOnly: true },
+    { id: 'menu-settings', label: 'Menu Settings', shortLabel: 'Menu', icon: Monitor, 
+      adminOnly: true },
     { id: 'administration', label: 'Administration', shortLabel: 'Admin', icon: Shield, 
       adminOnly: true }
   ];
