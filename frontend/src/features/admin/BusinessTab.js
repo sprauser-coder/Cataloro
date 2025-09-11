@@ -647,20 +647,20 @@ function BusinessTab({ showToast }) {
                 <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <span className="font-semibold text-blue-900 dark:text-blue-100">User-Buyer</span>
               </div>
-              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">892</span>
+              <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{loading ? '...' : realMetrics.roleDistribution.userBuyer}</span>
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-blue-700 dark:text-blue-300">Active Bidders</span>
-                <span className="font-medium text-blue-900 dark:text-blue-100">743</span>
+                <span className="font-medium text-blue-900 dark:text-blue-100">{loading ? '...' : 'N/A'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-blue-700 dark:text-blue-300">Avg Bids/User</span>
-                <span className="font-medium text-blue-900 dark:text-blue-100">12.4</span>
+                <span className="font-medium text-blue-900 dark:text-blue-100">{loading ? '...' : 'N/A'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-blue-700 dark:text-blue-300">Success Rate</span>
-                <span className="font-medium text-blue-900 dark:text-blue-100">34%</span>
+                <span className="font-medium text-blue-900 dark:text-blue-100">{loading ? '...' : 'N/A'}</span>
               </div>
             </div>
           </div>
