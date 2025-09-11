@@ -202,17 +202,23 @@ class MenuSettingsVisibilityTester:
             buyer_items = []
             
             if isinstance(demo_menu_data, dict):
-                desktop_menu = demo_menu_data.get("desktop_menu", [])
-                mobile_menu = demo_menu_data.get("mobile_menu", [])
+                desktop_menu = demo_menu_data.get("desktop_menu", {})
+                mobile_menu = demo_menu_data.get("mobile_menu", {})
                 
                 # Check for seller-only items (should NOT be present for buyer)
-                for item in desktop_menu + mobile_menu:
-                    item_key = item.get("key", "")
-                    if item_key in ["create_listing", "my_listings", "listings"]:
+                for key, item in desktop_menu.items():
+                    if key in ["create_listing", "my_listings", "listings"]:
                         seller_items_hidden = False
-                        seller_only_items.append(item)
-                    elif item_key in ["browse", "favorites", "profile"]:
-                        buyer_items.append(item)
+                        seller_only_items.append({"key": key, **item})
+                    elif key in ["browse", "favorites", "profile"]:
+                        buyer_items.append({"key": key, **item})
+                
+                for key, item in mobile_menu.items():
+                    if key in ["create_listing", "my_listings", "listings"]:
+                        seller_items_hidden = False
+                        seller_only_items.append({"key": key, **item})
+                    elif key in ["browse", "favorites", "profile"]:
+                        buyer_items.append({"key": key, **item})
                 
                 buyer_role_correct = seller_items_hidden and len(buyer_items) > 0
             
