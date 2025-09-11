@@ -32,7 +32,8 @@ function MobileFilters({
     condition: '',
     dateRange: '',
     rating: 0,
-    sortBy: 'newest'
+    sortBy: 'newest',
+    bidFilter: 'all'
   };
 
   const [localFilters, setLocalFilters] = useState(filters || defaultFilters);
