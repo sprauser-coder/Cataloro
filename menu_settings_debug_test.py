@@ -249,9 +249,10 @@ class MenuSettingsDebugTester:
                 results["demo_user"] = {
                     "success": True,
                     "response_time_ms": demo_user_result["response_time_ms"],
-                    "mobile_menu_count": len(mobile_menu),
+                    "mobile_menu_count": len(mobile_menu) if isinstance(mobile_menu, (list, dict)) else 0,
                     "messages_in_mobile_menu": messages_in_mobile,
                     "mobile_menu_keys": mobile_menu_keys,
+                    "mobile_menu_type": type(mobile_menu).__name__,
                     "full_settings": demo_user_settings
                 }
             else:
