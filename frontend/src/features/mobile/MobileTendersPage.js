@@ -38,10 +38,16 @@ function MobileTendersPage() {
   const loadTendersData = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem('cataloro_token');
       
       if (activeTab === 'my-bids') {
         // Load user's bids - use the same endpoint as desktop
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://marketplace-debug-3.preview.emergentagent.com/api'}/api/tenders/buyer/${user.id}`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/buyer/${user.id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
         if (response.ok) {
           const data = await response.json();
           setMyBids(data);
@@ -51,7 +57,12 @@ function MobileTendersPage() {
         }
       } else {
         // Load tenders for user's listings (selling) - use the same endpoint as desktop
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://marketplace-debug-3.preview.emergentagent.com/api'}/api/tenders/seller/${user.id}/overview`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/seller/${user.id}/overview`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
         if (response.ok) {
           const data = await response.json();
           setSellingTenders(data);
