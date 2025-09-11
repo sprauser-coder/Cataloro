@@ -593,76 +593,96 @@ class AdminMenuSettingsTester:
             ]
         }
     
-    async def test_backend_logs_for_errors(self) -> Dict:
-        """Check backend logs for upload-related errors"""
-        print("📋 Checking for backend upload errors...")
-        
-        # This test simulates checking logs by testing various error conditions
-        error_conditions = []
+    async def test_user_menu_settings_endpoint(self) -> Dict:
+        """Test user menu settings endpoint to verify filtering works correctly"""
+        print("📋 Testing user menu settings endpoint...")
         
         if not self.admin_token:
-            return {"test_name": "Backend Error Analysis", "error": "No admin token available"}
+            return {"test_name": "User Menu Settings Endpoint", "error": "No admin token available"}
         
-        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        # Test with admin user ID (should see admin items)
+        admin_user_id = ADMIN_ID
+        result = await self.make_request(f"/menu-settings/user/{admin_user_id}")
         
-        # Test various error conditions that might appear in logs
-        
-        # 1. Test with no file
-        print("  Testing upload with no file...")
-        no_file_form = aiohttp.FormData()
-        no_file_form.add_field('section', 'ads')
-        no_file_form.add_field('field', 'ad_image')
-        
-        no_file_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=no_file_form)
-        
-        error_conditions.append({
-            "condition": "No File Provided",
-            "status": no_file_result["status"],
-            "error_handled": no_file_result["status"] in [400, 422],
-            "response": str(no_file_result.get("data", ""))[:100]  # First 100 chars
-        })
-        
-        # 2. Test with oversized file (simulate)
-        print("  Testing large file handling...")
-        # Create a larger test image (still small but larger than 1x1)
-        large_test_data = b"fake_large_image_data" * 1000  # Simulate larger file
-        
-        large_file_form = aiohttp.FormData()
-        large_file_form.add_field('image', io.BytesIO(large_test_data), filename='large_test.png', content_type='image/png')
-        large_file_form.add_field('section', 'ads')
-        large_file_form.add_field('field', 'ad_image')
-        
-        large_file_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=large_file_form)
-        
-        error_conditions.append({
-            "condition": "Large File Upload",
-            "status": large_file_result["status"],
-            "handled_appropriately": large_file_result["status"] in [200, 201, 400, 413],  # Success or proper error
-            "response": str(large_file_result.get("data", ""))[:100]
-        })
-        
-        # 3. Test with malformed request
-        print("  Testing malformed request...")
-        malformed_result = await self.make_request("/admin/upload-image", "POST", headers=headers, data={"not": "form_data"})
-        
-        error_conditions.append({
-            "condition": "Malformed Request",
-            "status": malformed_result["status"],
-            "error_handled": malformed_result["status"] in [400, 422],
-            "response": str(malformed_result.get("data", ""))[:100]
-        })
-        
-        # Analyze error handling
-        properly_handled_errors = sum(1 for condition in error_conditions if condition.get("error_handled", False) or condition.get("handled_appropriately", False))
-        
-        return {
-            "test_name": "Backend Error Analysis",
-            "success": properly_handled_errors >= 2,  # Most errors should be handled properly
-            "total_error_conditions": len(error_conditions),
-            "properly_handled_errors": properly_handled_errors,
-            "error_handling_working": properly_handled_errors >= 2,
-            "detailed_conditions": error_conditions
-        }
+        if result["success"]:
+            data = result["data"]
+            
+            # Check structure
+            has_desktop_menu = "desktop_menu" in data
+            has_mobile_menu = "mobile_menu" in data
+            has_user_role = "user_role" in data
+            
+            desktop_menu = data.get("desktop_menu", {})
+            mobile_menu = data.get("mobile_menu", {})
+            user_role = data.get("user_role", "unknown")
+            
+            # Check if admin items are present
+            admin_items_desktop = []
+            admin_items_mobile = []
+            
+            for item_key, item_data in desktop_menu.items():
+                if isinstance(item_data, dict) and "roles" in item_data:
+                    if "admin" in item_data["roles"]:
+                        admin_items_desktop.append(item_key)
+            
+            for item_key, item_data in mobile_menu.items():
+                if isinstance(item_data, dict) and "roles" in item_data:
+                    if "admin" in item_data["roles"]:
+                        admin_items_mobile.append(item_key)
+            
+            # Check custom items filtering
+            desktop_custom = desktop_menu.get("custom_items", [])
+            mobile_custom = mobile_menu.get("custom_items", [])
+            
+            # Verify role-based filtering for custom items
+            custom_items_properly_filtered = True
+            for item in desktop_custom + mobile_custom:
+                if isinstance(item, dict) and "roles" in item:
+                    if "admin" not in item["roles"]:
+                        custom_items_properly_filtered = False
+                        break
+            
+            filtering_success = (
+                has_desktop_menu and has_mobile_menu and
+                len(admin_items_desktop) > 0 and
+                custom_items_properly_filtered
+            )
+            
+            print(f"  📊 User role: {user_role}")
+            print(f"  🖥️ Desktop items: {len(desktop_menu)}")
+            print(f"  📱 Mobile items: {len(mobile_menu)}")
+            print(f"  🔑 Admin items desktop: {len(admin_items_desktop)}")
+            print(f"  🔑 Admin items mobile: {len(admin_items_mobile)}")
+            print(f"  📝 Custom items desktop: {len(desktop_custom)}")
+            print(f"  📝 Custom items mobile: {len(mobile_custom)}")
+            print(f"  {'✅' if filtering_success else '❌'} User menu filtering {'working' if filtering_success else 'failed'}")
+            
+            return {
+                "test_name": "User Menu Settings Endpoint",
+                "success": filtering_success,
+                "response_time_ms": result["response_time_ms"],
+                "has_desktop_menu": has_desktop_menu,
+                "has_mobile_menu": has_mobile_menu,
+                "has_user_role": has_user_role,
+                "user_role": user_role,
+                "desktop_items_count": len(desktop_menu),
+                "mobile_items_count": len(mobile_menu),
+                "admin_items_desktop": admin_items_desktop,
+                "admin_items_mobile": admin_items_mobile,
+                "custom_items_desktop": len(desktop_custom),
+                "custom_items_mobile": len(mobile_custom),
+                "custom_items_properly_filtered": custom_items_properly_filtered,
+                "full_response": data
+            }
+        else:
+            print(f"  ❌ User menu settings failed: {result.get('error', 'Unknown error')}")
+            return {
+                "test_name": "User Menu Settings Endpoint",
+                "success": False,
+                "error": result.get("error", "Unknown error"),
+                "status": result["status"],
+                "response": result.get("data", "")
+            }
     
     async def cleanup_test_data(self):
         """Clean up test ads created during testing"""
