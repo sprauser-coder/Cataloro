@@ -64,7 +64,13 @@ class LiveService {
   
   async getUserFavorites(userId) {
     try {
-      const response = await this.handleRateLimitedRequest(`${this.baseURL}/user/${userId}/favorites`);
+      const token = localStorage.getItem('cataloro_token');
+      const response = await this.handleRateLimitedRequest(`${this.baseURL}/api/user/${userId}/favorites`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       return await response.json();
     } catch (error) {
       console.error('Error fetching favorites:', error);
