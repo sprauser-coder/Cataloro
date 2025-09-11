@@ -80,9 +80,11 @@ class LiveService {
 
   async addToFavorites(userId, itemId) {
     try {
-      const response = await fetch(`${this.baseURL}/user/${userId}/favorites/${itemId}`, {
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${this.baseURL}/api/user/${userId}/favorites/${itemId}`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
