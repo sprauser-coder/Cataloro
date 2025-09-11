@@ -54,17 +54,13 @@ export function useMenuSettings() {
 
   const isMenuItemVisible = (menuType, itemKey) => {
     // During loading, hide items to prevent showing disabled items
-    if (loading) {
-      console.log(`🔄 Menu loading - hiding ${itemKey}`);
-      return false;
-    }
+    if (loading) return false;
     
     const menuSection = menuSettings[menuType];
     
     // If no menu section found, fallback to default behavior
     // This happens when user is not logged in or API fails
     if (!menuSection) {
-      console.log(`❌ No menu section for ${menuType} - ${itemKey} fallback to public items`);
       // For unauthenticated users, hide all items except basic ones
       const publicItems = ['browse', 'about'];
       return publicItems.includes(itemKey);
@@ -74,20 +70,11 @@ export function useMenuSettings() {
     
     // If item is not in the settings, hide it 
     // The backend should return all available items for the user's role
-    if (!menuItem) {
-      console.log(`❌ No menu item data for ${menuType}.${itemKey} - hiding`);
-      return false;
-    }
+    if (!menuItem) return false;
     
     // Check if item is explicitly enabled
     // Use 'enabled' property from backend API
-    const isVisible = menuItem.enabled === true;
-    console.log(`🔍 Menu visibility check: ${menuType}.${itemKey} = ${isVisible}`, {
-      enabled: menuItem.enabled,
-      menuItem: menuItem
-    });
-    
-    return isVisible;
+    return menuItem.enabled === true;
   };
 
   const getVisibleMenuItems = (menuType, allItems) => {
