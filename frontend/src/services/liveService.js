@@ -121,7 +121,7 @@ class LiveService {
   async getUserMessages(userId) {
     try {
       const token = localStorage.getItem('cataloro_token');
-      const response = await fetch(`${this.baseURL}/user/${userId}/messages`, {
+      const response = await fetch(`${this.baseURL}/api/user/${userId}/messages`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
