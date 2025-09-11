@@ -687,6 +687,271 @@ class APIEndpointFixesTester:
             await self.cleanup()
 
 
+class UnifiedCalculationsTester:
+    """
+    URGENT: Unified Calculations Endpoint Testing
+    User reports: "add listing function and attached input field where it needs to search in the database is still showing 0 entries"
+    Testing the /api/admin/catalyst/unified-calculations endpoint that provides catalyst data for autocomplete
+    """
+    def __init__(self):
+        self.session = None
+        self.admin_token = None
+        self.demo_token = None
+        self.test_results = {}
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def authenticate_admin(self) -> bool:
+        """Authenticate admin user"""
+        print("🔐 Authenticating admin user for unified calculations testing...")
+        
+        admin_login_data = {
+            "email": ADMIN_EMAIL,
+            "password": "admin_password"
+        }
+        
+        admin_result = await self.make_request("/auth/login", "POST", data=admin_login_data)
+        
+        if admin_result["success"]:
+            self.admin_token = admin_result["data"].get("token", "")
+            print(f"  ✅ Admin authentication successful")
+            return True
+        else:
+            print(f"  ❌ Admin authentication failed: {admin_result.get('error', 'Unknown error')}")
+            return False
+    
+    async def test_unified_calculations_endpoint_comprehensive(self) -> Dict:
+        """
+        Comprehensive test of the unified calculations endpoint
+        """
+        print("🧪 COMPREHENSIVE: Testing unified calculations endpoint...")
+        
+        if not self.admin_token:
+            return {"test_name": "Unified Calculations Comprehensive", "error": "No admin token available"}
+        
+        test_results = {
+            "endpoint_accessible": False,
+            "authentication_working": False,
+            "catalyst_entries_count": 0,
+            "required_fields_present": False,
+            "sample_entries": [],
+            "database_collections_check": {},
+            "error_messages": [],
+            "response_time_ms": 0,
+            "status_code": 0
+        }
+        
+        # 1. Test endpoint accessibility with authentication
+        print("  🔐 Testing endpoint with admin authentication...")
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        result = await self.make_request("/admin/catalyst/unified-calculations", headers=headers)
+        
+        test_results["status_code"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            test_results["endpoint_accessible"] = True
+            test_results["authentication_working"] = True
+            catalyst_data = result.get("data", [])
+            test_results["catalyst_entries_count"] = len(catalyst_data) if isinstance(catalyst_data, list) else 0
+            
+            print(f"    ✅ Endpoint accessible: Status {result['status']}")
+            print(f"    ⏱️ Response time: {result['response_time_ms']:.1f}ms")
+            print(f"    📊 Catalyst entries returned: {test_results['catalyst_entries_count']}")
+            
+            # Check for required fields in entries
+            if catalyst_data and isinstance(catalyst_data, list) and len(catalyst_data) > 0:
+                # Take first few entries as samples
+                test_results["sample_entries"] = catalyst_data[:3]
+                
+                required_fields = ["cat_id", "name", "add_info"]
+                all_have_required = True
+                
+                for i, entry in enumerate(catalyst_data[:5]):  # Check first 5 entries
+                    missing_fields = [field for field in required_fields if field not in entry or not entry.get(field)]
+                    if missing_fields:
+                        all_have_required = False
+                        test_results["error_messages"].append(f"Entry {i+1} missing fields: {missing_fields}")
+                
+                test_results["required_fields_present"] = all_have_required
+                
+                if all_have_required:
+                    print(f"    ✅ All entries have required fields: {required_fields}")
+                    print(f"    📋 Sample entries:")
+                    for i, entry in enumerate(test_results["sample_entries"]):
+                        print(f"      {i+1}. cat_id='{entry.get('cat_id')}', name='{entry.get('name')}', add_info='{entry.get('add_info', '')[:30]}...'")
+                else:
+                    print(f"    ❌ Some entries missing required fields")
+            else:
+                test_results["error_messages"].append("No catalyst entries returned - this is the root cause of 0 entries in add listing")
+                print(f"    ❌ CRITICAL: No catalyst entries returned - this explains the 0 entries issue")
+        else:
+            test_results["error_messages"].append(f"Endpoint failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ Endpoint failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        # 2. Check database collections that the endpoint depends on
+        print("  🗄️ Checking database collections...")
+        collections_to_check = [
+            ("catalyst_data", "Main catalyst data collection"),
+            ("catalyst_price_settings", "Price settings collection"),
+            ("catalyst_price_overrides", "Price overrides collection")
+        ]
+        
+        for collection_name, description in collections_to_check:
+            # Try to get admin performance data to check collections
+            perf_result = await self.make_request("/admin/performance", headers=headers)
+            if perf_result["success"]:
+                perf_data = perf_result.get("data", {})
+                collections_stats = perf_data.get("collections", {})
+                
+                if collection_name in collections_stats:
+                    collection_info = collections_stats[collection_name]
+                    doc_count = collection_info.get("document_count", 0)
+                    test_results["database_collections_check"][collection_name] = {
+                        "exists": True,
+                        "document_count": doc_count,
+                        "description": description
+                    }
+                    print(f"    ✅ {collection_name}: {doc_count} documents")
+                else:
+                    test_results["database_collections_check"][collection_name] = {
+                        "exists": False,
+                        "document_count": 0,
+                        "description": description
+                    }
+                    print(f"    ❌ {collection_name}: Collection not found or empty")
+                    test_results["error_messages"].append(f"Missing or empty collection: {collection_name}")
+        
+        # 3. Test without authentication (should fail)
+        print("  🚫 Testing without authentication (should fail)...")
+        unauth_result = await self.make_request("/admin/catalyst/unified-calculations")
+        if unauth_result["status"] in [401, 403]:
+            print(f"    ✅ Unauthenticated access properly rejected: Status {unauth_result['status']}")
+        else:
+            print(f"    ⚠️ Unauthenticated access not properly rejected: Status {unauth_result['status']}")
+            test_results["error_messages"].append("Authentication not properly enforced")
+        
+        # Determine overall success
+        overall_success = (
+            test_results["endpoint_accessible"] and
+            test_results["authentication_working"] and
+            test_results["catalyst_entries_count"] > 0 and
+            test_results["required_fields_present"]
+        )
+        
+        return {
+            "test_name": "Unified Calculations Comprehensive",
+            "success": overall_success,
+            "test_results": test_results,
+            "critical_issue": not overall_success,
+            "zero_entries_root_cause": test_results["catalyst_entries_count"] == 0,
+            "missing_collections": [name for name, info in test_results["database_collections_check"].items() if not info.get("exists", False)]
+        }
+    
+    async def run_unified_calculations_testing(self) -> Dict:
+        """
+        Run complete unified calculations testing
+        """
+        print("🚨 STARTING UNIFIED CALCULATIONS TESTING")
+        print("=" * 80)
+        print("TESTING: /api/admin/catalyst/unified-calculations endpoint for add listing autocomplete")
+        print("ISSUE: User reports 'add listing function shows 0 entries'")
+        print("=" * 80)
+        
+        await self.setup()
+        
+        try:
+            # Authenticate admin
+            auth_success = await self.authenticate_admin()
+            if not auth_success:
+                return {
+                    "test_timestamp": datetime.now().isoformat(),
+                    "error": "Admin authentication failed - cannot proceed with testing"
+                }
+            
+            # Run comprehensive test
+            comprehensive_test = await self.test_unified_calculations_endpoint_comprehensive()
+            
+            # Compile results
+            test_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "test_focus": "Unified calculations endpoint for add listing autocomplete",
+                "comprehensive_test": comprehensive_test
+            }
+            
+            # Determine critical findings
+            critical_issues = []
+            if comprehensive_test.get("zero_entries_root_cause", False):
+                critical_issues.append("CRITICAL: Endpoint returns 0 catalyst entries - this is the root cause of the add listing issue")
+            
+            if comprehensive_test.get("missing_collections"):
+                missing_cols = comprehensive_test["missing_collections"]
+                critical_issues.append(f"CRITICAL: Missing database collections: {', '.join(missing_cols)}")
+            
+            if not comprehensive_test.get("success", False):
+                critical_issues.append("CRITICAL: Unified calculations endpoint not working properly")
+            
+            test_results["summary"] = {
+                "endpoint_working": comprehensive_test.get("success", False),
+                "catalyst_entries_count": comprehensive_test.get("test_results", {}).get("catalyst_entries_count", 0),
+                "critical_issues": critical_issues,
+                "root_cause_identified": len(critical_issues) > 0,
+                "fix_needed": len(critical_issues) > 0
+            }
+            
+            return test_results
+            
+        finally:
+            await self.cleanup()
+
+
 class ManagementCenterSellTester:
     """
     URGENT: Management Center Sell listings investigation
