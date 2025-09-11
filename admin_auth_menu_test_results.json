@@ -1,0 +1,247 @@
+{
+  "test_timestamp": "2025-09-11T00:49:38.321054",
+  "backend_url": "https://cataloro-repair.preview.emergentagent.com/api",
+  "admin_email": "admin@cataloro.com",
+  "tests": {
+    "admin_login_process": {
+      "test_name": "Admin Login Process",
+      "login_successful": true,
+      "response_time_ms": 90.56377410888672,
+      "token_returned": true,
+      "token_valid": true,
+      "user_data_complete": {
+        "email_correct": true,
+        "admin_role_present": true,
+        "user_id_present": true,
+        "username_present": true,
+        "full_name_present": true
+      },
+      "admin_user_data": {
+        "id": "admin_user_1",
+        "username": "sash_admin",
+        "email": "admin@cataloro.com",
+        "full_name": "Sash",
+        "name": "Sash Admin",
+        "role": "admin",
+        "user_role": "Admin",
+        "registration_status": "Approved",
+        "badge": "Admin",
+        "is_business": false,
+        "business_name": "",
+        "verified": true,
+        "is_active": true,
+        "created_at": "2025-09-09T09:53:56.308000",
+        "city": "System",
+        "country": "Admin",
+        "company_name": "",
+        "first_name": "Sascha",
+        "last_name": "Prauser",
+        "password": "Start123",
+        "vat_number": ""
+      },
+      "token": "mock_token_admin_use...",
+      "all_checks_passed": true
+    },
+    "menu_settings_api_access": {
+      "test_name": "Menu Settings API Access",
+      "authentication_required": false,
+      "authenticated_access_works": true,
+      "menu_data_returned": true,
+      "menu_structure_valid": true,
+      "response_times": {
+        "no_auth_ms": 14.5263671875,
+        "with_auth_ms": 16.3266658782959
+      },
+      "status_codes": {
+        "no_auth": 200,
+        "with_auth": 200,
+        "alt_auth": 200
+      },
+      "menu_data_sample": {
+        "desktop_menu": {
+          "about": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          },
+          "browse": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          },
+          "admin_panel": {
+            "enabled": true,
+            "roles": [
+              "admin"
+            ]
+          }
+        },
+        "mobile_menu": {
+          "browse": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          },
+          "admin_drawer": {
+            "enabled": true,
+            "roles": [
+              "admin"
+            ]
+          }
+        }
+      },
+      "all_checks_passed": false
+    },
+    "menu_settings_crud_operations": {
+      "test_name": "Menu Settings CRUD Operations",
+      "get_operation_works": true,
+      "update_operation_works": true,
+      "crud_functional": true,
+      "operations_results": {
+        "get": {
+          "success": true,
+          "response_time_ms": 52.62398719787598,
+          "status": 200,
+          "has_data": true
+        },
+        "post": {
+          "success": true,
+          "response_time_ms": 17.568111419677734,
+          "status": 200,
+          "endpoint_exists": true
+        },
+        "verify": {
+          "success": true,
+          "response_time_ms": 50.08673667907715,
+          "settings_changed": true
+        }
+      },
+      "original_settings_retrieved": true,
+      "update_endpoints_available": true
+    },
+    "direct_api_access": {
+      "test_name": "Direct API Access",
+      "bearer_token_authentication_works": true,
+      "cors_headers_present": true,
+      "unauthenticated_access_blocked": false,
+      "scenario_results": [
+        {
+          "scenario_name": "Bearer Token",
+          "success": true,
+          "status": 200,
+          "response_time_ms": 10.20669937133789,
+          "has_cors_headers": true,
+          "error": null
+        },
+        {
+          "scenario_name": "Bearer Token with CORS",
+          "success": true,
+          "status": 200,
+          "response_time_ms": 8.922815322875977,
+          "has_cors_headers": true,
+          "error": null
+        },
+        {
+          "scenario_name": "Token in Custom Header",
+          "success": true,
+          "status": 200,
+          "response_time_ms": 15.187501907348633,
+          "has_cors_headers": true,
+          "error": null
+        },
+        {
+          "scenario_name": "No Authentication",
+          "success": true,
+          "status": 200,
+          "response_time_ms": 51.473140716552734,
+          "has_cors_headers": true,
+          "error": null
+        }
+      ],
+      "browser_compatible": true,
+      "security_properly_implemented": false
+    },
+    "admin_redirect_logic": {
+      "test_name": "Admin Redirect Logic",
+      "user_has_admin_role": true,
+      "admin_role_details": {
+        "role": "admin",
+        "user_role": "Admin",
+        "badge": "Admin"
+      },
+      "admin_endpoints_accessible": 4,
+      "total_admin_endpoints_tested": 4,
+      "admin_access_percentage": 100.0,
+      "admin_redirect_logic_working": true,
+      "endpoint_results": [
+        {
+          "endpoint": "/admin/dashboard",
+          "accessible": true,
+          "status": 200,
+          "response_time_ms": 68.44210624694824,
+          "requires_admin": null,
+          "error": null
+        },
+        {
+          "endpoint": "/admin/users",
+          "accessible": true,
+          "status": 200,
+          "response_time_ms": 9.497880935668945,
+          "requires_admin": null,
+          "error": null
+        },
+        {
+          "endpoint": "/admin/menu-settings",
+          "accessible": true,
+          "status": 200,
+          "response_time_ms": 49.83830451965332,
+          "requires_admin": null,
+          "error": null
+        },
+        {
+          "endpoint": "/admin/performance",
+          "accessible": true,
+          "status": 200,
+          "response_time_ms": 21.550416946411133,
+          "requires_admin": null,
+          "error": null
+        }
+      ],
+      "role_based_access_functional": true
+    },
+    "frontend_integration_compatibility": {
+      "test_name": "Frontend Integration Compatibility",
+      "login_response_format_valid": true,
+      "menu_settings_response_format_valid": true,
+      "json_serializable": true,
+      "cors_headers_present": true,
+      "response_time_acceptable": true,
+      "response_time_ms": 9.16290283203125,
+      "frontend_compatible": true,
+      "integration_issues": []
+    }
+  },
+  "summary": {
+    "overall_success_rate": 83.33333333333334,
+    "admin_login_working": true,
+    "token_authentication_working": true,
+    "menu_settings_accessible": true,
+    "admin_role_verified": true,
+    "frontend_integration_ready": true,
+    "critical_issues": [],
+    "all_tests_passed": false,
+    "authentication_flow_working": true
+  }
+}
