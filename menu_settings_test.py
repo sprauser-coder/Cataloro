@@ -148,12 +148,18 @@ class MenuSettingsVisibilityTester:
             admin_items = []
             if isinstance(admin_menu_data, dict):
                 # Look for admin-only items like admin_panel
-                desktop_menu = admin_menu_data.get("desktop_menu", [])
-                mobile_menu = admin_menu_data.get("mobile_menu", [])
+                desktop_menu = admin_menu_data.get("desktop_menu", {})
+                mobile_menu = admin_menu_data.get("mobile_menu", {})
                 
-                for item in desktop_menu + mobile_menu:
-                    if item.get("key") in ["admin_panel", "admin_drawer"]:
-                        admin_items.append(item)
+                # Check desktop menu items
+                for key, item in desktop_menu.items():
+                    if key in ["admin_panel", "admin_drawer"]:
+                        admin_items.append({"key": key, **item})
+                
+                # Check mobile menu items
+                for key, item in mobile_menu.items():
+                    if key in ["admin_panel", "admin_drawer"]:
+                        admin_items.append({"key": key, **item})
                 
                 admin_role_correct = len(admin_items) > 0
             
