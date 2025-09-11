@@ -1,15 +1,118 @@
 {
-  "test_timestamp": "2025-09-11T06:46:26.516696",
+  "test_timestamp": "2025-09-11T06:47:54.083453",
   "jwt_token_generation": {
     "test_name": "JWT Token Generation",
-    "success": false,
-    "error": "Admin login failed: Unknown error",
-    "status": 500
+    "success": true,
+    "token_received": true,
+    "token_analysis": {
+      "token_type": "jwt",
+      "is_jwt": true,
+      "structure_valid": true,
+      "header": {
+        "alg": "HS256",
+        "typ": "JWT"
+      },
+      "payload": {
+        "user_id": "admin_user_1",
+        "email": "admin@cataloro.com",
+        "role": "admin",
+        "user_role": "Admin",
+        "exp": 1757659673
+      },
+      "has_required_fields": true,
+      "required_fields_present": [
+        "user_id",
+        "email",
+        "role"
+      ],
+      "missing_fields": []
+    },
+    "user_data": {
+      "id": "admin_user_1",
+      "username": "sash_admin",
+      "email": "admin@cataloro.com",
+      "full_name": "Sash",
+      "name": "Sash Admin",
+      "role": "admin",
+      "user_role": "Admin",
+      "registration_status": "Approved",
+      "badge": "Admin",
+      "is_business": false,
+      "business_name": "",
+      "verified": true,
+      "is_active": true,
+      "created_at": "2025-09-09T09:53:56.308000",
+      "city": "System",
+      "country": "Admin",
+      "company_name": "",
+      "first_name": "Sascha",
+      "last_name": "Prauser",
+      "password": "Start123",
+      "vat_number": ""
+    },
+    "is_real_jwt": true,
+    "has_required_fields": true,
+    "token_not_mock": true
   },
   "admin_endpoints_with_auth": {
     "test_name": "Admin Endpoints With Auth",
-    "success": false,
-    "error": "No admin token available"
+    "success": true,
+    "total_endpoints": 5,
+    "successful_endpoints": 0,
+    "success_rate": 0.0,
+    "all_endpoints_accessible": false,
+    "endpoint_results": [
+      {
+        "endpoint": "/admin/menu-settings",
+        "method": "GET",
+        "name": "Menu Settings GET",
+        "success": false,
+        "status": 403,
+        "response_time_ms": 12.340545654296875,
+        "authenticated_access": false,
+        "error": "Request failed"
+      },
+      {
+        "endpoint": "/admin/menu-settings",
+        "method": "POST",
+        "name": "Menu Settings POST",
+        "success": false,
+        "status": 403,
+        "response_time_ms": 10.514259338378906,
+        "authenticated_access": false,
+        "error": "Request failed"
+      },
+      {
+        "endpoint": "/admin/dashboard",
+        "method": "GET",
+        "name": "Admin Dashboard",
+        "success": false,
+        "status": 403,
+        "response_time_ms": 10.148286819458008,
+        "authenticated_access": false,
+        "error": "Request failed"
+      },
+      {
+        "endpoint": "/admin/users",
+        "method": "GET",
+        "name": "Admin Users",
+        "success": false,
+        "status": 403,
+        "response_time_ms": 48.83313179016113,
+        "authenticated_access": false,
+        "error": "Request failed"
+      },
+      {
+        "endpoint": "/admin/performance",
+        "method": "GET",
+        "name": "Admin Performance",
+        "success": false,
+        "status": 403,
+        "response_time_ms": 48.71726036071777,
+        "authenticated_access": false,
+        "error": "Request failed"
+      }
+    ]
   },
   "admin_endpoints_without_auth": {
     "test_name": "Admin Endpoints Without Auth",
@@ -25,7 +128,7 @@
         "method": "GET",
         "name": "Menu Settings GET",
         "status": 403,
-        "response_time_ms": 9.908676147460938,
+        "response_time_ms": 7.652997970581055,
         "properly_blocked": false,
         "security_vulnerability": false,
         "error": "Request failed"
@@ -35,7 +138,7 @@
         "method": "POST",
         "name": "Menu Settings POST",
         "status": 403,
-        "response_time_ms": 10.869026184082031,
+        "response_time_ms": 6.352424621582031,
         "properly_blocked": false,
         "security_vulnerability": false,
         "error": "Request failed"
@@ -45,7 +148,7 @@
         "method": "GET",
         "name": "Admin Dashboard",
         "status": 403,
-        "response_time_ms": 10.082483291625977,
+        "response_time_ms": 5.487680435180664,
         "properly_blocked": false,
         "security_vulnerability": false,
         "error": "Request failed"
@@ -55,7 +158,7 @@
         "method": "GET",
         "name": "Admin Users",
         "status": 403,
-        "response_time_ms": 12.578964233398438,
+        "response_time_ms": 5.347967147827148,
         "properly_blocked": false,
         "security_vulnerability": false,
         "error": "Request failed"
@@ -65,7 +168,7 @@
         "method": "GET",
         "name": "Admin Performance",
         "status": 403,
-        "response_time_ms": 48.06351661682129,
+        "response_time_ms": 46.404123306274414,
         "properly_blocked": false,
         "security_vulnerability": false,
         "error": "Request failed"
@@ -122,8 +225,44 @@
   },
   "role_based_access_control": {
     "test_name": "Role-Based Access Control",
-    "success": false,
-    "error": "Failed to login demo user: Unknown error"
+    "success": true,
+    "demo_user_role": "user",
+    "total_endpoints": 4,
+    "properly_blocked_endpoints": 4,
+    "vulnerable_endpoints": 0,
+    "rbac_security_score": 100.0,
+    "rbac_working_correctly": true,
+    "endpoint_results": [
+      {
+        "endpoint": "/admin/menu-settings",
+        "name": "Menu Settings",
+        "status": 403,
+        "properly_blocked": true,
+        "rbac_vulnerability": false
+      },
+      {
+        "endpoint": "/admin/dashboard",
+        "name": "Admin Dashboard",
+        "status": 403,
+        "properly_blocked": true,
+        "rbac_vulnerability": false
+      },
+      {
+        "endpoint": "/admin/users",
+        "name": "Admin Users",
+        "status": 403,
+        "properly_blocked": true,
+        "rbac_vulnerability": false
+      },
+      {
+        "endpoint": "/admin/performance",
+        "name": "Admin Performance",
+        "status": 403,
+        "properly_blocked": true,
+        "rbac_vulnerability": false
+      }
+    ],
+    "vulnerable_endpoint_details": []
   },
   "security_bypass_prevention": {
     "test_name": "Security Bypass Prevention",
@@ -268,22 +407,22 @@
     "vulnerability_details": []
   },
   "security_summary": {
-    "overall_security_score": 45.0,
+    "overall_security_score": 70.0,
     "all_critical_checks_passed": false,
     "total_vulnerabilities_found": 0,
     "security_level": "VULNERABLE",
     "critical_security_checks": {
-      "jwt_tokens_working": false,
+      "jwt_tokens_working": true,
       "admin_endpoints_accessible_with_auth": false,
       "admin_endpoints_blocked_without_auth": true,
       "invalid_tokens_rejected": true,
-      "rbac_working": false,
+      "rbac_working": true,
       "no_bypass_vulnerabilities": true
     },
     "individual_scores": {
       "authentication_required_score": 0.0,
       "token_validation_score": 80.0,
-      "role_based_access_score": 0,
+      "role_based_access_score": 100.0,
       "bypass_prevention_score": 100.0
     }
   }
