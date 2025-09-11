@@ -196,6 +196,37 @@ function MobileFilters({
               </div>
             </div>
 
+            {/* My Activity Filter */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">My Activity</h3>
+              <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { key: 'all', label: 'All Listings' },
+                    { key: 'placed_bid', label: 'Placed a Bid' },
+                    { key: 'not_placed_bid', label: 'Not Placed a Bid' },
+                    { key: 'own_listings', label: 'My Listings' }
+                  ].map((option) => (
+                    <button
+                      key={option.key}
+                      onClick={() => updateFilter('bidFilter', option.key)}
+                      className={`p-3 text-sm rounded-lg border transition-colors ${
+                        localFilters?.bidFilter === option.key
+                          ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-700 dark:text-green-300'
+                          : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
+                      }`}
+                      disabled={!availableFilters.userId}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+              </div>
+              {!availableFilters.userId && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  Login to filter by your activity
+                </p>
+              )}
+            </div>
+
             {/* Price Range */}
             <div>
               <button
