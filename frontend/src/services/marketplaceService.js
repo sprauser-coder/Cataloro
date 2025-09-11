@@ -49,7 +49,13 @@ class MarketplaceService {
 
   async createListing(listingData) {
     try {
-      const response = await axios.post(`${ENV_CONFIG.API_BASE_URL}/api/listings`, listingData);
+      const token = localStorage.getItem('cataloro_token');
+      const response = await axios.post(`${ENV_CONFIG.API_BASE_URL}/api/listings`, listingData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.detail || 'Failed to create listing');
