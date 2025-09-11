@@ -633,6 +633,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 </div>
               </div>
             </Link>
+              )}
 
             {/* Navigation Links */}
             <nav className="hidden lg:flex space-x-2">
