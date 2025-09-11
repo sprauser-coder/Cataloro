@@ -26,17 +26,12 @@ export function useMenuSettings() {
   const fetchUserMenuSettings = async (userId) => {
     try {
       setLoading(true);
-      console.log(`🔍 Fetching menu settings for user: ${userId}`);
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/menu-settings/user/${userId}`);
       
       if (response.ok) {
         const data = await response.json();
-        console.log('📋 Menu settings received:', data);
-        console.log('🖥️ Desktop menu items:', Object.keys(data.desktop_menu || {}));
-        console.log('📱 Mobile menu items:', Object.keys(data.mobile_menu || {}));
         setMenuSettings(data);
       } else {
-        console.error(`❌ Menu settings API failed: ${response.status}`);
         // Use default settings if API fails
         setMenuSettings({
           desktop_menu: {},
@@ -45,7 +40,7 @@ export function useMenuSettings() {
         });
       }
     } catch (error) {
-      console.error('❌ Error fetching menu settings:', error);
+      console.error('Error fetching menu settings:', error);
       // Use default settings on error
       setMenuSettings({
         desktop_menu: {},
@@ -54,7 +49,6 @@ export function useMenuSettings() {
       });
     } finally {
       setLoading(false);
-      console.log('✅ Menu settings loading complete');
     }
   };
 
