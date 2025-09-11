@@ -175,13 +175,21 @@ function CreateListingPage() {
   const fetchCatalystData = async () => {
     try {
       setLoadingCatalysts(true);
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/data`);
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/data`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setCatalystData(data);
         console.log('Loaded catalyst data:', data.length, 'entries');
         console.log('First catalyst structure:', data[0]); // Debug - check structure
         console.log('First catalyst add_info:', data[0]?.add_info); // Debug - check add_info
+      } else {
+        console.error('❌ Failed to fetch catalyst data - Status:', response.status);
       }
     } catch (error) {
       console.error('Failed to fetch catalyst data:', error);
