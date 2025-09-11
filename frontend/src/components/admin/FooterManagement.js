@@ -352,7 +352,7 @@ function FooterManagement({ showToast }) {
           </div>
 
           {/* Footer Links Sections */}
-          {['about', 'marketplace', 'support', 'legal'].map((section) => (
+          {footerConfig && footerConfig.links && ['about', 'marketplace', 'support', 'legal'].map((section) => (
             <div key={section} className="space-y-4">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium text-gray-900 dark:text-white capitalize">
@@ -368,19 +368,19 @@ function FooterManagement({ showToast }) {
               </div>
 
               <div className="space-y-3">
-                {footerConfig.links[section].map((link, index) => (
+                {(footerConfig.links[section] || []).map((link, index) => (
                   <div key={index} className="flex items-center space-x-3">
                     <div className="flex-1 grid grid-cols-2 gap-3">
                       <input
                         type="text"
-                        value={link.label}
+                        value={link.label || ''}
                         onChange={(e) => handleLinkChange(section, index, 'label', e.target.value)}
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="Link Label"
                       />
                       <input
                         type="text"
-                        value={link.url}
+                        value={link.url || ''}
                         onChange={(e) => handleLinkChange(section, index, 'url', e.target.value)}
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="/path or https://example.com"
