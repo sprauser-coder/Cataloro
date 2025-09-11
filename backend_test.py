@@ -8511,6 +8511,86 @@ async def main_enhanced():
     }
 
 
+async def main():
+    """
+    Main function to run mobile tender accept/reject functionality testing
+    """
+    print("🚀 MOBILE TENDER ACCEPT/REJECT FUNCTIONALITY TESTING")
+    print("=" * 80)
+    
+    # Run mobile tender tests
+    mobile_tender_tester = MobileTenderTester()
+    mobile_results = await mobile_tender_tester.run_mobile_tender_tests()
+    
+    # Print comprehensive results
+    print("\n" + "=" * 80)
+    print("📊 MOBILE TENDER TESTING RESULTS")
+    print("=" * 80)
+    
+    if "error" in mobile_results:
+        print(f"❌ TESTING FAILED: {mobile_results['error']}")
+        return
+    
+    summary = mobile_results.get("summary", {})
+    
+    print(f"📈 SUCCESS RATE: {summary.get('success_rate', 0):.1f}% ({summary.get('successful_tests', 0)}/{summary.get('total_tests', 0)} tests passed)")
+    print(f"📱 MOBILE FUNCTIONALITY: {'✅ WORKING' if summary.get('mobile_functionality_working', False) else '❌ ISSUES FOUND'}")
+    print(f"🔐 AUTHENTICATION FIXES: {'✅ WORKING' if summary.get('authentication_fixes_working', False) else '❌ ISSUES FOUND'}")
+    
+    print("\n🎯 WORKING FEATURES:")
+    for feature in summary.get("working_features", []):
+        print(f"  ✅ {feature}")
+    
+    if summary.get("critical_issues"):
+        print("\n🚨 CRITICAL ISSUES:")
+        for issue in summary.get("critical_issues", []):
+            print(f"  ❌ {issue}")
+    
+    print("\n📋 DETAILED TEST RESULTS:")
+    
+    # Tender Accept Test
+    accept_test = mobile_results.get("tender_accept_test", {})
+    print(f"\n1. TENDER ACCEPT FUNCTIONALITY: {'✅ PASS' if accept_test.get('success', False) else '❌ FAIL'}")
+    if accept_test.get("test_results"):
+        results = accept_test["test_results"]
+        print(f"   Status: {results.get('actual_status', 'N/A')} | Response Time: {results.get('response_time_ms', 0):.1f}ms")
+        print(f"   Authentication: {'✅' if results.get('authentication_working', False) else '❌'}")
+        print(f"   Accept Function: {'✅' if results.get('accept_successful', False) else '❌'}")
+    
+    # Tender Reject Test
+    reject_test = mobile_results.get("tender_reject_test", {})
+    print(f"\n2. TENDER REJECT FUNCTIONALITY: {'✅ PASS' if reject_test.get('success', False) else '❌ FAIL'}")
+    if reject_test.get("test_results"):
+        results = reject_test["test_results"]
+        print(f"   Status: {results.get('actual_status', 'N/A')} | Response Time: {results.get('response_time_ms', 0):.1f}ms")
+        print(f"   Authentication: {'✅' if results.get('authentication_working', False) else '❌'}")
+        print(f"   Reject Function: {'✅' if results.get('reject_successful', False) else '❌'}")
+    
+    # Tender Data Loading Test
+    data_test = mobile_results.get("tender_data_loading_test", {})
+    print(f"\n3. TENDER DATA LOADING: {'✅ PASS' if data_test.get('success', False) else '❌ FAIL'}")
+    if data_test.get("test_results"):
+        results = data_test["test_results"]
+        print(f"   Buyer Endpoint: Status {results.get('buyer_status', 'N/A')} | {results.get('buyer_tenders_count', 0)} tenders | {results.get('buyer_response_time_ms', 0):.1f}ms")
+        print(f"   Seller Endpoint: Status {results.get('seller_status', 'N/A')} | {results.get('seller_tenders_count', 0)} tenders | {results.get('seller_response_time_ms', 0):.1f}ms")
+        print(f"   Authentication: {'✅' if results.get('buyer_authentication_working', False) and results.get('seller_authentication_working', False) else '❌'}")
+    
+    print("\n" + "=" * 80)
+    
+    # Determine overall status
+    if summary.get("mobile_functionality_working", False):
+        print("🎉 MOBILE TENDER ACCEPT/REJECT FUNCTIONALITY: ✅ ALL TESTS PASSED")
+        print("📱 Mobile users should now be able to accept/reject tenders successfully")
+        print("🔐 Authentication headers are working correctly")
+        print("📊 Tender data loading is working with authentication")
+    else:
+        print("⚠️ MOBILE TENDER ACCEPT/REJECT FUNCTIONALITY: ❌ ISSUES FOUND")
+        print("🔧 Some functionality may not work correctly on mobile")
+        if summary.get("critical_issues"):
+            print("🚨 Critical issues need to be addressed before mobile functionality is fully operational")
+    
+    print("=" * 80)
+
+
 if __name__ == "__main__":
-    # Run enhanced comprehensive tests
-    asyncio.run(main_enhanced())
+    asyncio.run(main())
