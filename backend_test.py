@@ -638,6 +638,7 @@ class APIEndpointFixesTester:
             image_upload_test = await self.test_image_upload_authentication()
             profile_test = await self.test_auth_profile_endpoint()
             admin_logo_test = await self.test_admin_logo_endpoint()
+            unified_calculations_test = await self.test_unified_calculations_endpoint()
             
             # Compile comprehensive test results
             test_results = {
