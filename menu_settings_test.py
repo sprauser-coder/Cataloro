@@ -360,8 +360,8 @@ class MenuSettingsVisibilityTester:
             # Check if messages is disabled in the retrieved settings
             for menu_type in ["mobile_menu", "desktop_menu"]:
                 if menu_type in verified_settings:
-                    for item in verified_settings[menu_type]:
-                        if item.get("key") == "messages" and not item.get("enabled", True):
+                    for key, item in verified_settings[menu_type].items():
+                        if key == "messages" and not item.get("enabled", True):
                             messages_disabled_confirmed = True
                             break
             
