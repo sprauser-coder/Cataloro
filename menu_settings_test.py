@@ -648,8 +648,8 @@ class MenuSettingsVisibilityTester:
         # Disable messages in both desktop and mobile menus
         for menu_type in ["desktop_menu", "mobile_menu"]:
             if menu_type in modified_settings:
-                for item in modified_settings[menu_type]:
-                    if item.get("key") == "messages":
+                for key, item in modified_settings[menu_type].items():
+                    if key == "messages":
                         item["enabled"] = False
                         messages_disabled = True
                         print(f"    📝 Disabled 'messages' in {menu_type}")
