@@ -7,9 +7,20 @@ import axios from 'axios';
 import { API_ENDPOINTS, ENV_CONFIG } from '../config/directions';
 
 class MarketplaceService {
-  async browseListings(filters = {}) {
+  async browseListings(filters = {}, userId = null) {
     try {
       const params = new URLSearchParams(filters);
+      
+      // Add user_id if provided
+      if (userId) {
+        params.append('user_id', userId);
+      }
+      
+      // Add bid_filter if provided
+      if (filters.bidFilter && filters.bidFilter !== 'all') {
+        params.append('bid_filter', filters.bidFilter);
+      }
+      
       // Use the browse endpoint that returns array format instead of listings endpoint
       const response = await axios.get(`${ENV_CONFIG.API_BASE_URL}/api/marketplace/browse?${params}`);
       return response.data;
