@@ -625,7 +625,7 @@ async def clear_all_cache(current_user: dict = Depends(require_admin_role)):
         }
 
 @app.get("/api/admin/performance")
-async def get_performance_metrics():
+async def get_performance_metrics(current_user: dict = Depends(require_admin_role)):
     """Get performance metrics and optimization status"""
     try:
         # Check cache service health
