@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-MOBILE TENDER ACCEPT/REJECT FUNCTIONALITY TESTING - URGENT
-Testing the mobile tender accept/reject functionality that was just fixed:
-- Added Authentication Headers (Authorization: Bearer ${token})
-- Fixed API URLs (proper backend URL construction)  
-- Fixed Data Loading (added auth headers to loadTendersData function)
+MOBILE NOTIFICATIONS CONFIGURATION TESTING - URGENT
+Testing that mobile notifications are now properly configured:
+- Menu Settings Configuration: Verify GET /api/admin/menu-settings returns notifications in mobile_menu
+- Notifications Data Loading: Test GET /api/user/{user_id}/notifications for mobile badge count
+- Authentication: Check authentication is working for notifications endpoint
 """
 
 import asyncio
