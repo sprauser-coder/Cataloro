@@ -56,7 +56,22 @@ function MobileNav({ isOpen, onClose }) {
     const userData = localStorage.getItem('cataloro_user');
     if (userData) {
       try {
-        setUser(JSON.parse(userData));
+        const user = JSON.parse(userData);
+        setUser(user);
+        
+        // Load unread notifications count
+        const loadNotifications = async () => {
+          try {
+            const notifications = await liveService.getUserNotifications(user.id);
+            const unreadCount = notifications.filter(notif => !notif.is_read).length;
+            setUnreadNotifications(unreadCount);
+          } catch (error) {
+            console.error('Error loading notifications:', error);
+            setUnreadNotifications(0);
+          }
+        };
+        
+        loadNotifications();
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
