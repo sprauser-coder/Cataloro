@@ -727,8 +727,8 @@ class MenuSettingsVisibilityTester:
             admin_messages_found = False
             for menu_type in ["desktop_menu", "mobile_menu"]:
                 if menu_type in admin_menu:
-                    for item in admin_menu[menu_type]:
-                        if item.get("key") == "messages":
+                    for key, item in admin_menu[menu_type].items():
+                        if key == "messages":
                             admin_messages_found = True
                             break
             
