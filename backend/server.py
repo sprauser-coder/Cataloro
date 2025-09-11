@@ -99,6 +99,98 @@ MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = client.cataloro_marketplace
 
+# Authentication Dependencies
+security = HTTPBearer()
+
+async def get_current_user_token(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
+    """Extract and validate JWT token from request"""
+    token = credentials.credentials
+    payload = security_service.verify_token(token)
+    
+    if not payload:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired token"
+        )
+    
+    return token
+
+async def get_current_user(token: str = Depends(get_current_user_token)) -> dict:
+    """Get current user information from JWT token"""
+    payload = security_service.verify_token(token)
+    
+    if not payload:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired token"
+        )
+    
+    # Get user from database to ensure they still exist and are active
+    user_id = payload.get("user_id")
+    if not user_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token: missing user_id"
+        )
+    
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="User not found"
+        )
+    
+    if user.get("status") != "active":
+        raise HTTPException(
+            status_code=403,
+            detail="Account is not active"
+        )
+    
+    return user
+
+async def require_admin_role(current_user: dict = Depends(get_current_user)) -> dict:
+    """Require admin role for accessing admin endpoints"""
+    user_role = current_user.get("role")
+    user_rbac_role = current_user.get("user_role")
+    
+    # Check if user has admin privileges
+    is_admin = (
+        user_role == "admin" or 
+        user_rbac_role in ["Admin", "Admin-Manager"]
+    )
+    
+    if not is_admin:
+        # Log unauthorized access attempt
+        security_service.log_audit_event(
+            user_id=current_user.get("id", "unknown"),
+            action="UNAUTHORIZED_ADMIN_ACCESS",
+            resource="admin_endpoints",
+            details={
+                "user_role": user_role,
+                "user_rbac_role": user_rbac_role,
+                "email": current_user.get("email")
+            }
+        )
+        
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required"
+        )
+    
+    # Log successful admin access
+    security_service.log_audit_event(
+        user_id=current_user.get("id"),
+        action="ADMIN_ACCESS",
+        resource="admin_endpoints",
+        details={
+            "user_role": user_role,
+            "user_rbac_role": user_rbac_role,
+            "email": current_user.get("email")
+        }
+    )
+    
+    return current_user
+
 # Startup and Shutdown Events
 @app.on_event("startup")
 async def startup_event():
