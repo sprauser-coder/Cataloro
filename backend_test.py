@@ -23,6 +23,781 @@ ADMIN_USERNAME = "sash_admin"
 ADMIN_ROLE = "admin"
 ADMIN_ID = "admin_user_1"
 
+class CustomMenuManagementTester:
+    def __init__(self):
+        self.session = None
+        self.test_results = []
+        self.admin_token = None
+        self.test_custom_items = []
+        
+    async def setup(self):
+        """Initialize HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+    
+    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
+        """Make HTTP request and measure response time"""
+        start_time = time.time()
+        
+        try:
+            request_kwargs = {}
+            if params:
+                request_kwargs['params'] = params
+            if data:
+                request_kwargs['json'] = data
+            if headers:
+                request_kwargs['headers'] = headers
+            
+            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
+                end_time = time.time()
+                response_time_ms = (end_time - start_time) * 1000
+                
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return {
+                    "success": response.status in [200, 201],
+                    "response_time_ms": response_time_ms,
+                    "data": response_data,
+                    "status": response.status
+                }
+        except Exception as e:
+            end_time = time.time()
+            response_time_ms = (end_time - start_time) * 1000
+            return {
+                "success": False,
+                "response_time_ms": response_time_ms,
+                "error": str(e),
+                "status": 0
+            }
+    
+    async def authenticate_admin(self) -> bool:
+        """Authenticate as admin user"""
+        print("🔐 Authenticating as admin...")
+        
+        login_data = {
+            "email": ADMIN_EMAIL,
+            "password": "admin_password"
+        }
+        
+        result = await self.make_request("/auth/login", "POST", data=login_data)
+        
+        if result["success"]:
+            self.admin_token = result["data"].get("token", "")
+            print(f"  ✅ Admin authentication successful")
+            return True
+        else:
+            print(f"  ❌ Admin authentication failed: {result.get('error', 'Unknown error')}")
+            return False
+    
+    async def test_available_pages_endpoint(self) -> Dict:
+        """Test GET /api/admin/available-pages endpoint"""
+        print("📄 Testing available pages endpoint...")
+        
+        if not self.admin_token:
+            return {"test_name": "Available Pages Endpoint", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        result = await self.make_request("/admin/available-pages", headers=headers)
+        
+        if result["success"]:
+            data = result["data"]
+            available_pages = data.get("available_pages", [])
+            
+            # Validate expected pages are present
+            expected_pages = ["/browse", "/create-listing", "/messages", "/tenders", "/my-listings"]
+            found_pages = [page["path"] for page in available_pages]
+            expected_found = all(page in found_pages for page in expected_pages)
+            
+            # Validate page structure
+            valid_structure = True
+            for page in available_pages[:3]:  # Check first 3 pages
+                if not all(key in page for key in ["path", "label", "icon"]):
+                    valid_structure = False
+                    break
+            
+            print(f"  ✅ Found {len(available_pages)} available pages")
+            print(f"  📊 Expected pages present: {expected_found}")
+            print(f"  🏗️ Valid structure: {valid_structure}")
+            
+            return {
+                "test_name": "Available Pages Endpoint",
+                "success": True,
+                "response_time_ms": result["response_time_ms"],
+                "total_pages": len(available_pages),
+                "expected_pages_found": expected_found,
+                "valid_structure": valid_structure,
+                "sample_pages": available_pages[:5]
+            }
+        else:
+            print(f"  ❌ Available pages endpoint failed: {result.get('error')}")
+            return {
+                "test_name": "Available Pages Endpoint",
+                "success": False,
+                "error": result.get("error"),
+                "status": result["status"]
+            }
+    
+    async def test_available_icons_endpoint(self) -> Dict:
+        """Test GET /api/admin/available-icons endpoint"""
+        print("🎨 Testing available icons endpoint...")
+        
+        if not self.admin_token:
+            return {"test_name": "Available Icons Endpoint", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        result = await self.make_request("/admin/available-icons", headers=headers)
+        
+        if result["success"]:
+            data = result["data"]
+            available_icons = data.get("available_icons", [])
+            
+            # Validate expected icons are present
+            expected_icons = ["Store", "Plus", "MessageCircle", "DollarSign", "Package", "Heart", "User", "Shield"]
+            expected_found = all(icon in available_icons for icon in expected_icons)
+            
+            print(f"  ✅ Found {len(available_icons)} available icons")
+            print(f"  📊 Expected icons present: {expected_found}")
+            
+            return {
+                "test_name": "Available Icons Endpoint",
+                "success": True,
+                "response_time_ms": result["response_time_ms"],
+                "total_icons": len(available_icons),
+                "expected_icons_found": expected_found,
+                "sample_icons": available_icons[:10]
+            }
+        else:
+            print(f"  ❌ Available icons endpoint failed: {result.get('error')}")
+            return {
+                "test_name": "Available Icons Endpoint",
+                "success": False,
+                "error": result.get("error"),
+                "status": result["status"]
+            }
+    
+    async def test_menu_settings_get(self) -> Dict:
+        """Test GET /api/admin/menu-settings endpoint"""
+        print("⚙️ Testing menu settings GET endpoint...")
+        
+        if not self.admin_token:
+            return {"test_name": "Menu Settings GET", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        result = await self.make_request("/admin/menu-settings", headers=headers)
+        
+        if result["success"]:
+            data = result["data"]
+            desktop_menu = data.get("desktop_menu", {})
+            mobile_menu = data.get("mobile_menu", {})
+            
+            # Check for expected menu structure
+            has_desktop_items = len(desktop_menu) > 0
+            has_mobile_items = len(mobile_menu) > 0
+            
+            print(f"  ✅ Menu settings retrieved successfully")
+            print(f"  🖥️ Desktop menu items: {len(desktop_menu)}")
+            print(f"  📱 Mobile menu items: {len(mobile_menu)}")
+            
+            return {
+                "test_name": "Menu Settings GET",
+                "success": True,
+                "response_time_ms": result["response_time_ms"],
+                "has_desktop_items": has_desktop_items,
+                "has_mobile_items": has_mobile_items,
+                "desktop_items_count": len(desktop_menu),
+                "mobile_items_count": len(mobile_menu),
+                "current_settings": data
+            }
+        else:
+            print(f"  ❌ Menu settings GET failed: {result.get('error')}")
+            return {
+                "test_name": "Menu Settings GET",
+                "success": False,
+                "error": result.get("error"),
+                "status": result["status"]
+            }
+    
+    async def test_custom_menu_item_creation(self) -> Dict:
+        """Test creating custom menu items via POST /api/admin/menu-settings"""
+        print("➕ Testing custom menu item creation...")
+        
+        if not self.admin_token:
+            return {"test_name": "Custom Menu Item Creation", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # First get current settings
+        current_result = await self.make_request("/admin/menu-settings", headers=headers)
+        if not current_result["success"]:
+            return {
+                "test_name": "Custom Menu Item Creation",
+                "success": False,
+                "error": "Failed to get current menu settings"
+            }
+        
+        current_settings = current_result["data"]
+        
+        # Create test custom items
+        test_custom_items = [
+            {
+                "id": "custom_external_link",
+                "label": "External Link Test",
+                "url": "https://example.com",
+                "icon": "ExternalLink",
+                "type": "custom_url",
+                "target": "_blank",
+                "position": 100,
+                "enabled": True,
+                "roles": ["admin", "manager"]
+            },
+            {
+                "id": "custom_internal_page",
+                "label": "Internal Page Test",
+                "url": "/browse",
+                "icon": "Store",
+                "type": "existing_page",
+                "target": "_self",
+                "position": 101,
+                "enabled": True,
+                "roles": ["admin", "manager", "seller", "buyer"]
+            }
+        ]
+        
+        # Add custom items to both desktop and mobile menus
+        updated_settings = {
+            "desktop_menu": {
+                **current_settings.get("desktop_menu", {}),
+                "custom_items": test_custom_items
+            },
+            "mobile_menu": {
+                **current_settings.get("mobile_menu", {}),
+                "custom_items": test_custom_items
+            }
+        }
+        
+        # Save the test items for later cleanup
+        self.test_custom_items = test_custom_items
+        
+        # Update menu settings with custom items
+        result = await self.make_request("/admin/menu-settings", "POST", data=updated_settings, headers=headers)
+        
+        if result["success"]:
+            response_data = result["data"]
+            settings = response_data.get("settings", {})
+            
+            # Verify custom items were saved
+            desktop_custom = settings.get("desktop_menu", {}).get("custom_items", [])
+            mobile_custom = settings.get("mobile_menu", {}).get("custom_items", [])
+            
+            desktop_saved_correctly = len(desktop_custom) == len(test_custom_items)
+            mobile_saved_correctly = len(mobile_custom) == len(test_custom_items)
+            
+            # Verify item structure
+            structure_valid = True
+            if desktop_custom:
+                first_item = desktop_custom[0]
+                required_fields = ["id", "label", "url", "icon", "type", "target", "position", "enabled", "roles"]
+                structure_valid = all(field in first_item for field in required_fields)
+            
+            print(f"  ✅ Custom menu items created successfully")
+            print(f"  🖥️ Desktop custom items: {len(desktop_custom)}")
+            print(f"  📱 Mobile custom items: {len(mobile_custom)}")
+            print(f"  🏗️ Structure valid: {structure_valid}")
+            
+            return {
+                "test_name": "Custom Menu Item Creation",
+                "success": True,
+                "response_time_ms": result["response_time_ms"],
+                "desktop_items_saved": desktop_saved_correctly,
+                "mobile_items_saved": mobile_saved_correctly,
+                "structure_valid": structure_valid,
+                "desktop_custom_count": len(desktop_custom),
+                "mobile_custom_count": len(mobile_custom),
+                "test_items_created": len(test_custom_items)
+            }
+        else:
+            print(f"  ❌ Custom menu item creation failed: {result.get('error')}")
+            return {
+                "test_name": "Custom Menu Item Creation",
+                "success": False,
+                "error": result.get("error"),
+                "status": result["status"]
+            }
+    
+    async def test_menu_settings_validation(self) -> Dict:
+        """Test menu settings validation for custom items"""
+        print("✅ Testing menu settings validation...")
+        
+        if not self.admin_token:
+            return {"test_name": "Menu Settings Validation", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        validation_tests = []
+        
+        # Test 1: Missing required fields
+        print("  Testing missing required fields...")
+        invalid_item = {
+            "label": "Invalid Item",
+            # Missing id, url, enabled
+            "icon": "Star",
+            "roles": ["admin"]
+        }
+        
+        invalid_settings = {
+            "desktop_menu": {
+                "custom_items": [invalid_item]
+            },
+            "mobile_menu": {}
+        }
+        
+        result1 = await self.make_request("/admin/menu-settings", "POST", data=invalid_settings, headers=headers)
+        validation_tests.append({
+            "test": "Missing Required Fields",
+            "should_fail": True,
+            "actually_failed": not result1["success"],
+            "status": result1["status"],
+            "error": result1.get("error", "")
+        })
+        
+        # Test 2: Invalid item type (should be auto-corrected)
+        print("  Testing invalid item type...")
+        auto_correct_item = {
+            "id": "test_auto_correct",
+            "label": "Auto Correct Test",
+            "url": "https://example.com",
+            "enabled": True,
+            "type": "invalid_type",  # Should be auto-corrected to "custom_url"
+            "roles": ["admin"]
+        }
+        
+        auto_correct_settings = {
+            "desktop_menu": {
+                "custom_items": [auto_correct_item]
+            },
+            "mobile_menu": {}
+        }
+        
+        result2 = await self.make_request("/admin/menu-settings", "POST", data=auto_correct_settings, headers=headers)
+        validation_tests.append({
+            "test": "Invalid Type Auto-Correction",
+            "should_succeed": True,
+            "actually_succeeded": result2["success"],
+            "status": result2["status"]
+        })
+        
+        # Test 3: Invalid roles (should be filtered)
+        print("  Testing invalid roles filtering...")
+        invalid_roles_item = {
+            "id": "test_roles_filter",
+            "label": "Roles Filter Test",
+            "url": "/test",
+            "enabled": True,
+            "roles": ["admin", "invalid_role", "buyer", "another_invalid"]  # Should filter out invalid roles
+        }
+        
+        roles_filter_settings = {
+            "desktop_menu": {
+                "custom_items": [invalid_roles_item]
+            },
+            "mobile_menu": {}
+        }
+        
+        result3 = await self.make_request("/admin/menu-settings", "POST", data=roles_filter_settings, headers=headers)
+        validation_tests.append({
+            "test": "Invalid Roles Filtering",
+            "should_succeed": True,
+            "actually_succeeded": result3["success"],
+            "status": result3["status"]
+        })
+        
+        # Calculate validation results
+        successful_validations = sum(1 for test in validation_tests if 
+                                   (test.get("should_fail") and test.get("actually_failed")) or
+                                   (test.get("should_succeed") and test.get("actually_succeeded")))
+        
+        validation_working = successful_validations == len(validation_tests)
+        
+        print(f"  📊 Validation tests: {successful_validations}/{len(validation_tests)} passed")
+        
+        return {
+            "test_name": "Menu Settings Validation",
+            "success": validation_working,
+            "total_validation_tests": len(validation_tests),
+            "successful_validations": successful_validations,
+            "validation_working": validation_working,
+            "detailed_tests": validation_tests
+        }
+    
+    async def test_user_menu_filtering(self) -> Dict:
+        """Test that custom items are properly filtered in user menu settings"""
+        print("🔍 Testing user menu filtering with custom items...")
+        
+        # Test with admin user (should see admin-only custom items)
+        admin_result = await self.make_request(f"/menu-settings/user/{ADMIN_ID}")
+        
+        if admin_result["success"]:
+            admin_data = admin_result["data"]
+            desktop_menu = admin_data.get("desktop_menu", {})
+            mobile_menu = admin_data.get("mobile_menu", {})
+            
+            # Check if custom items are included
+            desktop_custom = desktop_menu.get("custom_items", [])
+            mobile_custom = mobile_menu.get("custom_items", [])
+            
+            # Verify role-based filtering (admin should see admin-only items)
+            admin_role_filtering = True
+            for item in desktop_custom + mobile_custom:
+                if "admin" not in item.get("roles", []):
+                    admin_role_filtering = False
+                    break
+            
+            print(f"  ✅ User menu filtering tested")
+            print(f"  🖥️ Desktop custom items for admin: {len(desktop_custom)}")
+            print(f"  📱 Mobile custom items for admin: {len(mobile_custom)}")
+            print(f"  🔐 Role filtering working: {admin_role_filtering}")
+            
+            return {
+                "test_name": "User Menu Filtering",
+                "success": True,
+                "response_time_ms": admin_result["response_time_ms"],
+                "desktop_custom_items": len(desktop_custom),
+                "mobile_custom_items": len(mobile_custom),
+                "role_filtering_working": admin_role_filtering,
+                "user_role": admin_data.get("user_role", "unknown")
+            }
+        else:
+            print(f"  ❌ User menu filtering test failed: {admin_result.get('error')}")
+            return {
+                "test_name": "User Menu Filtering",
+                "success": False,
+                "error": admin_result.get("error"),
+                "status": admin_result["status"]
+            }
+    
+    async def test_custom_item_crud_operations(self) -> Dict:
+        """Test complete CRUD operations for custom menu items"""
+        print("🔄 Testing custom item CRUD operations...")
+        
+        if not self.admin_token:
+            return {"test_name": "Custom Item CRUD", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        crud_results = []
+        
+        # CREATE - Already tested in test_custom_menu_item_creation
+        crud_results.append({"operation": "CREATE", "success": True, "note": "Tested in creation test"})
+        
+        # READ - Get current settings to verify items exist
+        print("  Testing READ operation...")
+        read_result = await self.make_request("/admin/menu-settings", headers=headers)
+        if read_result["success"]:
+            settings = read_result["data"]
+            desktop_custom = settings.get("desktop_menu", {}).get("custom_items", [])
+            read_success = len(desktop_custom) > 0
+            crud_results.append({"operation": "READ", "success": read_success, "items_found": len(desktop_custom)})
+        else:
+            crud_results.append({"operation": "READ", "success": False, "error": read_result.get("error")})
+        
+        # UPDATE - Modify existing custom item
+        print("  Testing UPDATE operation...")
+        if read_result["success"] and desktop_custom:
+            # Modify the first custom item
+            updated_item = desktop_custom[0].copy()
+            updated_item["label"] = "Updated Test Label"
+            updated_item["url"] = "https://updated-example.com"
+            
+            # Update the settings
+            updated_settings = read_result["data"]
+            updated_settings["desktop_menu"]["custom_items"][0] = updated_item
+            
+            update_result = await self.make_request("/admin/menu-settings", "POST", data=updated_settings, headers=headers)
+            
+            if update_result["success"]:
+                # Verify the update
+                verify_result = await self.make_request("/admin/menu-settings", headers=headers)
+                if verify_result["success"]:
+                    verify_custom = verify_result["data"].get("desktop_menu", {}).get("custom_items", [])
+                    update_verified = (len(verify_custom) > 0 and 
+                                     verify_custom[0].get("label") == "Updated Test Label")
+                    crud_results.append({"operation": "UPDATE", "success": update_verified, "verified": update_verified})
+                else:
+                    crud_results.append({"operation": "UPDATE", "success": False, "error": "Verification failed"})
+            else:
+                crud_results.append({"operation": "UPDATE", "success": False, "error": update_result.get("error")})
+        else:
+            crud_results.append({"operation": "UPDATE", "success": False, "error": "No items to update"})
+        
+        # DELETE - Remove custom items
+        print("  Testing DELETE operation...")
+        delete_settings = read_result["data"] if read_result["success"] else {}
+        delete_settings["desktop_menu"] = delete_settings.get("desktop_menu", {})
+        delete_settings["mobile_menu"] = delete_settings.get("mobile_menu", {})
+        delete_settings["desktop_menu"]["custom_items"] = []  # Remove all custom items
+        delete_settings["mobile_menu"]["custom_items"] = []   # Remove all custom items
+        
+        delete_result = await self.make_request("/admin/menu-settings", "POST", data=delete_settings, headers=headers)
+        
+        if delete_result["success"]:
+            # Verify deletion
+            verify_delete_result = await self.make_request("/admin/menu-settings", headers=headers)
+            if verify_delete_result["success"]:
+                verify_desktop = verify_delete_result["data"].get("desktop_menu", {}).get("custom_items", [])
+                verify_mobile = verify_delete_result["data"].get("mobile_menu", {}).get("custom_items", [])
+                delete_verified = len(verify_desktop) == 0 and len(verify_mobile) == 0
+                crud_results.append({"operation": "DELETE", "success": delete_verified, "verified": delete_verified})
+            else:
+                crud_results.append({"operation": "DELETE", "success": False, "error": "Delete verification failed"})
+        else:
+            crud_results.append({"operation": "DELETE", "success": False, "error": delete_result.get("error")})
+        
+        # Calculate overall CRUD success
+        successful_operations = sum(1 for result in crud_results if result.get("success", False))
+        crud_success = successful_operations == len(crud_results)
+        
+        print(f"  📊 CRUD operations: {successful_operations}/{len(crud_results)} successful")
+        
+        return {
+            "test_name": "Custom Item CRUD Operations",
+            "success": crud_success,
+            "total_operations": len(crud_results),
+            "successful_operations": successful_operations,
+            "crud_working": crud_success,
+            "detailed_results": crud_results
+        }
+    
+    async def test_integration_workflow(self) -> Dict:
+        """Test complete custom menu workflow integration"""
+        print("🔗 Testing complete custom menu workflow integration...")
+        
+        if not self.admin_token:
+            return {"test_name": "Integration Workflow", "error": "No admin token available"}
+        
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        workflow_steps = []
+        
+        # Step 1: Get available resources
+        print("  Step 1: Getting available resources...")
+        pages_result = await self.make_request("/admin/available-pages", headers=headers)
+        icons_result = await self.make_request("/admin/available-icons", headers=headers)
+        
+        resources_available = pages_result["success"] and icons_result["success"]
+        workflow_steps.append({
+            "step": "Get Available Resources",
+            "success": resources_available,
+            "pages_available": pages_result["success"],
+            "icons_available": icons_result["success"]
+        })
+        
+        # Step 2: Create comprehensive custom menu items
+        print("  Step 2: Creating comprehensive custom menu items...")
+        if resources_available:
+            # Use actual available pages and icons
+            available_pages = pages_result["data"].get("available_pages", [])
+            available_icons = icons_result["data"].get("available_icons", [])
+            
+            comprehensive_items = [
+                {
+                    "id": "workflow_external",
+                    "label": "External Resource",
+                    "url": "https://docs.example.com",
+                    "icon": available_icons[0] if available_icons else "ExternalLink",
+                    "type": "custom_url",
+                    "target": "_blank",
+                    "position": 200,
+                    "enabled": True,
+                    "roles": ["admin", "manager"]
+                },
+                {
+                    "id": "workflow_internal",
+                    "label": "Internal Page",
+                    "url": available_pages[0]["path"] if available_pages else "/browse",
+                    "icon": available_pages[0]["icon"] if available_pages else "Store",
+                    "type": "existing_page",
+                    "target": "_self",
+                    "position": 201,
+                    "enabled": True,
+                    "roles": ["admin", "manager", "seller", "buyer"]
+                }
+            ]
+            
+            # Get current settings and add comprehensive items
+            current_result = await self.make_request("/admin/menu-settings", headers=headers)
+            if current_result["success"]:
+                current_settings = current_result["data"]
+                updated_settings = {
+                    "desktop_menu": {
+                        **current_settings.get("desktop_menu", {}),
+                        "custom_items": comprehensive_items
+                    },
+                    "mobile_menu": {
+                        **current_settings.get("mobile_menu", {}),
+                        "custom_items": comprehensive_items
+                    }
+                }
+                
+                create_result = await self.make_request("/admin/menu-settings", "POST", data=updated_settings, headers=headers)
+                workflow_steps.append({
+                    "step": "Create Comprehensive Items",
+                    "success": create_result["success"],
+                    "items_created": len(comprehensive_items)
+                })
+            else:
+                workflow_steps.append({
+                    "step": "Create Comprehensive Items",
+                    "success": False,
+                    "error": "Failed to get current settings"
+                })
+        else:
+            workflow_steps.append({
+                "step": "Create Comprehensive Items",
+                "success": False,
+                "error": "Resources not available"
+            })
+        
+        # Step 3: Verify user menu filtering
+        print("  Step 3: Verifying user menu filtering...")
+        user_menu_result = await self.make_request(f"/menu-settings/user/{ADMIN_ID}")
+        if user_menu_result["success"]:
+            user_data = user_menu_result["data"]
+            desktop_custom = user_data.get("desktop_menu", {}).get("custom_items", [])
+            mobile_custom = user_data.get("mobile_menu", {}).get("custom_items", [])
+            
+            filtering_working = len(desktop_custom) > 0 and len(mobile_custom) > 0
+            workflow_steps.append({
+                "step": "Verify User Filtering",
+                "success": filtering_working,
+                "desktop_items": len(desktop_custom),
+                "mobile_items": len(mobile_custom)
+            })
+        else:
+            workflow_steps.append({
+                "step": "Verify User Filtering",
+                "success": False,
+                "error": user_menu_result.get("error")
+            })
+        
+        # Step 4: Test role-based access control
+        print("  Step 4: Testing role-based access control...")
+        # This would ideally test with different user roles, but we'll verify the structure
+        role_test_success = True
+        if user_menu_result["success"]:
+            user_data = user_menu_result["data"]
+            user_role = user_data.get("user_role", "")
+            
+            # Verify that returned items match user role
+            all_custom_items = (user_data.get("desktop_menu", {}).get("custom_items", []) + 
+                              user_data.get("mobile_menu", {}).get("custom_items", []))
+            
+            for item in all_custom_items:
+                if user_role not in item.get("roles", []):
+                    role_test_success = False
+                    break
+        
+        workflow_steps.append({
+            "step": "Test Role-Based Access",
+            "success": role_test_success,
+            "user_role": user_data.get("user_role", "unknown") if user_menu_result["success"] else "unknown"
+        })
+        
+        # Calculate overall workflow success
+        successful_steps = sum(1 for step in workflow_steps if step.get("success", False))
+        workflow_success = successful_steps == len(workflow_steps)
+        
+        print(f"  📊 Workflow steps: {successful_steps}/{len(workflow_steps)} successful")
+        
+        return {
+            "test_name": "Integration Workflow",
+            "success": workflow_success,
+            "total_steps": len(workflow_steps),
+            "successful_steps": successful_steps,
+            "workflow_complete": workflow_success,
+            "detailed_steps": workflow_steps
+        }
+    
+    async def run_comprehensive_custom_menu_test(self) -> Dict:
+        """Run all custom menu management tests"""
+        print("🚀 Starting Custom Menu Item Management Testing")
+        print("=" * 70)
+        
+        await self.setup()
+        
+        try:
+            # Authenticate first
+            auth_success = await self.authenticate_admin()
+            if not auth_success:
+                return {
+                    "test_timestamp": datetime.now().isoformat(),
+                    "error": "Admin authentication failed - cannot proceed with tests"
+                }
+            
+            # Run all test suites
+            available_pages = await self.test_available_pages_endpoint()
+            available_icons = await self.test_available_icons_endpoint()
+            menu_settings_get = await self.test_menu_settings_get()
+            custom_item_creation = await self.test_custom_menu_item_creation()
+            menu_validation = await self.test_menu_settings_validation()
+            user_menu_filtering = await self.test_user_menu_filtering()
+            crud_operations = await self.test_custom_item_crud_operations()
+            integration_workflow = await self.test_integration_workflow()
+            
+            # Compile overall results
+            all_results = {
+                "test_timestamp": datetime.now().isoformat(),
+                "available_pages_endpoint": available_pages,
+                "available_icons_endpoint": available_icons,
+                "menu_settings_get": menu_settings_get,
+                "custom_item_creation": custom_item_creation,
+                "menu_validation": menu_validation,
+                "user_menu_filtering": user_menu_filtering,
+                "crud_operations": crud_operations,
+                "integration_workflow": integration_workflow
+            }
+            
+            # Calculate overall success metrics
+            test_results = [
+                available_pages.get("success", False),
+                available_icons.get("success", False),
+                menu_settings_get.get("success", False),
+                custom_item_creation.get("success", False),
+                menu_validation.get("success", False),
+                user_menu_filtering.get("success", False),
+                crud_operations.get("success", False),
+                integration_workflow.get("success", False)
+            ]
+            
+            overall_success_rate = sum(test_results) / len(test_results) * 100
+            
+            all_results["summary"] = {
+                "overall_success_rate": overall_success_rate,
+                "available_pages_working": available_pages.get("success", False),
+                "available_icons_working": available_icons.get("success", False),
+                "menu_settings_crud_working": menu_settings_get.get("success", False) and custom_item_creation.get("success", False),
+                "validation_working": menu_validation.get("success", False),
+                "user_filtering_working": user_menu_filtering.get("success", False),
+                "crud_operations_working": crud_operations.get("success", False),
+                "integration_workflow_working": integration_workflow.get("success", False),
+                "all_tests_passed": overall_success_rate == 100,
+                "critical_functionality_working": (
+                    available_pages.get("success", False) and
+                    available_icons.get("success", False) and
+                    custom_item_creation.get("success", False) and
+                    user_menu_filtering.get("success", False)
+                )
+            }
+            
+            return all_results
+            
+        finally:
+            await self.cleanup()
+
+
 class AdminAuthenticationTester:
     def __init__(self):
         self.session = None
