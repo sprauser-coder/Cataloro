@@ -100,9 +100,7 @@ function MobileNav({ isOpen, onClose }) {
       if (item.isButton) return true;
       
       // Filter based on menu visibility settings
-      const isVisible = item.key ? isMenuItemVisible('mobile_menu', item.key) : true;
-      console.log(`🔍 MobileNav filtering: ${item.label} (key: ${item.key}) -> ${isVisible ? 'SHOW' : 'HIDE'}`);
-      return isVisible;
+      return item.key ? isMenuItemVisible('mobile_menu', item.key) : true;
     })
   })).filter(section => section.items.length > 0); // Remove empty sections
 
