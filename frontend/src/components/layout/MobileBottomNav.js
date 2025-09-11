@@ -89,6 +89,10 @@ function MobileBottomNav() {
           setUnreadMessages(count);
           localStorage.setItem('cataloro_unread_messages', count.toString());
           break;
+        case 'notifications':
+          setUnreadNotifications(count);
+          localStorage.setItem('cataloro_unread_notifications', count.toString());
+          break;
         case 'cart':
           setCartCount(count);
           localStorage.setItem('cataloro_cart_count', count.toString());
