@@ -1045,6 +1045,10 @@ async def login_user(request: Request, credentials: dict):
         traceback.print_exc()
     
     # Generate JWT token
+    # Extract role information from serialized user
+    user_role = serialized_user.get("user_role", "User-Buyer") if serialized_user else "User-Buyer"
+    role = serialized_user.get("role", "user") if serialized_user else "user"
+    
     token_data = {
         "user_id": user_id,
         "email": email,
