@@ -52,6 +52,21 @@ function MobileBottomNav() {
               setUnreadMessages(parseInt(savedMessages, 10) || 0);
             }
           }
+
+          // Load real unread notifications count
+          try {
+            const notifications = await liveService.getUserNotifications(user.id);
+            const unreadNotificationsCount = notifications.filter(notif => !notif.is_read).length;
+            setUnreadNotifications(unreadNotificationsCount);
+            localStorage.setItem('cataloro_unread_notifications', unreadNotificationsCount.toString());
+          } catch (error) {
+            console.error('Error loading notifications:', error);
+            // Fallback to localStorage
+            const savedNotifications = localStorage.getItem('cataloro_unread_notifications');
+            if (savedNotifications) {
+              setUnreadNotifications(parseInt(savedNotifications, 10) || 0);
+            }
+          }
         } catch (error) {
           console.error('Error parsing user data:', error);
         }
