@@ -99,6 +99,9 @@ function MobileNav({ isOpen, onClose }) {
       // Always show logout button
       if (item.isButton) return true;
       
+      // Always show notifications to ensure visibility
+      if (item.key === 'notifications') return true;
+      
       // Filter based on menu visibility settings
       return item.key ? isMenuItemVisible('mobile_menu', item.key) : true;
     })
