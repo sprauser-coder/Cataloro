@@ -11,7 +11,7 @@ class MarketplaceService {
     try {
       const params = new URLSearchParams(filters);
       // Use the browse endpoint that returns array format instead of listings endpoint
-      const response = await axios.get(`${ENV_CONFIG.API_BASE_URL}/marketplace/browse?${params}`);
+      const response = await axios.get(`${ENV_CONFIG.API_BASE_URL}/api/marketplace/browse?${params}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.detail || 'Failed to fetch listings');
