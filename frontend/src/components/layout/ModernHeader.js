@@ -672,8 +672,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                 );
               })}
               
-              {/* Tenders Link - Role-based visibility */}
-              {permissions.ui.showTenderManagementLink || permissions.ui.showMyTendersLink ? (
+              {/* Tenders Link - Menu settings visibility */}
+              {isMenuItemVisible('desktop_menu', 'tenders') && (
                 <Link
                   to={APP_ROUTES.TENDERS}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
@@ -690,7 +690,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
                   <DollarSign className="w-4 h-4" />
                   <span className="font-medium">Tenders</span>
                 </Link>
-              ) : null}
+              )}
 
               {/* Inventory Link - Admin, Admin-Manager, and User-Buyer access */}
               {(permissions.ui.showBuyingFeatures || permissions.ui.showAdminPanelLink) && (
