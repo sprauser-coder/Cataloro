@@ -520,10 +520,6 @@ function AdminPanel() {
         />
       )}
       
-      {activeTab === 'menu-settings' && (
-        <MenuSettings />
-      )}
-      
       {activeTab === 'administration' && (
         <SiteAdministrationTab 
           showToast={showToast}
