@@ -226,7 +226,7 @@ function FooterManagement({ showToast }) {
         </button>
       </div>
 
-      {footerConfig.enabled && (
+      {footerConfig && footerConfig.enabled && (
         <>
           {/* Company Information */}
           <div className="space-y-4">
@@ -239,7 +239,7 @@ function FooterManagement({ showToast }) {
                 </label>
                 <input
                   type="text"
-                  value={footerConfig.companyInfo.name}
+                  value={footerConfig.companyInfo?.name || ''}
                   onChange={(e) => handleBasicInfoChange('name', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Enter company name"
@@ -252,7 +252,7 @@ function FooterManagement({ showToast }) {
                 </label>
                 <input
                   type="text"
-                  value={footerConfig.companyInfo.tagline}
+                  value={footerConfig.companyInfo?.tagline || ''}
                   onChange={(e) => handleBasicInfoChange('tagline', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Enter company tagline"
@@ -266,7 +266,7 @@ function FooterManagement({ showToast }) {
               </label>
               <textarea
                 rows={3}
-                value={footerConfig.companyInfo.description}
+                value={footerConfig.companyInfo?.description || ''}
                 onChange={(e) => handleBasicInfoChange('description', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="Enter company description"
