@@ -1118,9 +1118,11 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
   const handleSuspendUser = async (userId) => {
     try {
+      const token = localStorage.getItem('cataloro_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}/suspend`, {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -1139,9 +1141,11 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
   const handleActivateUser = async (userId) => {
     try {
+      const token = localStorage.getItem('cataloro_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}/activate`, {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -1164,9 +1168,11 @@ function UsersTab({ users, onUpdateUser, showToast }) {
     }
 
     try {
+      const token = localStorage.getItem('cataloro_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users/${userId}`, {
         method: 'DELETE',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
