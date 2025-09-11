@@ -147,9 +147,11 @@ class LiveService {
         throw new Error('sender_id is required in messageData');
       }
       
+      const token = localStorage.getItem('cataloro_token');
       const response = await fetch(`${this.baseURL}/user/${senderId}/messages`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(messageData)
