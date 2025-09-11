@@ -519,6 +519,98 @@ class APIEndpointFixesTester:
             "admin_access_working": test_results["admin_access_working"]
         }
     
+    async def test_unified_calculations_endpoint(self) -> Dict:
+        """
+        Test /api/admin/catalyst/unified-calculations - Should return catalyst data for autocomplete
+        This is the specific endpoint reported as showing 0 entries in the add listing function
+        """
+        print("🧪 Testing unified calculations endpoint for catalyst data...")
+        
+        if not self.admin_token:
+            return {"test_name": "Unified Calculations Endpoint", "error": "No admin token available"}
+        
+        test_results = {
+            "endpoint": "/admin/catalyst/unified-calculations",
+            "expected_status": 200,
+            "actual_status": 0,
+            "response_time_ms": 0,
+            "catalyst_entries_count": 0,
+            "has_required_fields": False,
+            "error_messages": [],
+            "success": False,
+            "authentication_working": False,
+            "sample_entry": None
+        }
+        
+        # Test with admin authentication
+        print("  🔐 Testing authenticated access to unified calculations...")
+        headers = {"Authorization": f"Bearer {self.admin_token}"}
+        result = await self.make_request("/admin/catalyst/unified-calculations", headers=headers)
+        
+        test_results["actual_status"] = result["status"]
+        test_results["response_time_ms"] = result["response_time_ms"]
+        
+        if result["success"]:
+            catalyst_data = result.get("data", [])
+            test_results["catalyst_entries_count"] = len(catalyst_data) if isinstance(catalyst_data, list) else 0
+            test_results["success"] = True
+            test_results["authentication_working"] = True
+            print(f"    ✅ Unified calculations successful: {test_results['catalyst_entries_count']} catalyst entries found")
+            print(f"    ⏱️ Response time: {test_results['response_time_ms']:.1f}ms")
+            
+            # Verify catalyst entries have required fields for autocomplete
+            if catalyst_data and isinstance(catalyst_data, list) and len(catalyst_data) > 0:
+                sample_entry = catalyst_data[0]
+                test_results["sample_entry"] = sample_entry
+                required_fields = ["cat_id", "name", "add_info"]  # Fields needed for search functionality
+                missing_fields = [field for field in required_fields if field not in sample_entry]
+                if missing_fields:
+                    test_results["error_messages"].append(f"Missing required fields for autocomplete: {missing_fields}")
+                    print(f"    ⚠️ Missing required fields: {missing_fields}")
+                else:
+                    test_results["has_required_fields"] = True
+                    print(f"    ✅ Catalyst entries have required fields: {required_fields}")
+                    print(f"    📋 Sample entry: cat_id='{sample_entry.get('cat_id')}', name='{sample_entry.get('name')}', add_info='{sample_entry.get('add_info', '')[:50]}...'")
+            elif test_results["catalyst_entries_count"] == 0:
+                test_results["error_messages"].append("No catalyst entries returned - this explains why add listing shows 0 entries")
+                print(f"    ❌ No catalyst entries found - this is the root cause of the 0 entries issue")
+        else:
+            test_results["error_messages"].append(f"Unified calculations failed: {result.get('error', 'Unknown error')}")
+            print(f"    ❌ Unified calculations failed: Status {result['status']}")
+            if result.get("error"):
+                print(f"    ❌ Error: {result['error']}")
+        
+        # Test without authentication (should fail with 401/403)
+        print("  🚫 Testing unauthenticated access (should fail)...")
+        unauth_result = await self.make_request("/admin/catalyst/unified-calculations")
+        if unauth_result["status"] in [401, 403]:
+            print(f"    ✅ Unauthenticated access properly rejected: Status {unauth_result['status']}")
+            test_results["authentication_working"] = True
+        else:
+            print(f"    ⚠️ Unauthenticated access not properly rejected: Status {unauth_result['status']}")
+            test_results["error_messages"].append("Authentication not properly enforced")
+        
+        # Test with non-admin user (should fail with 403)
+        if self.demo_token:
+            print("  👤 Testing non-admin access (should fail)...")
+            demo_headers = {"Authorization": f"Bearer {self.demo_token}"}
+            demo_result = await self.make_request("/admin/catalyst/unified-calculations", headers=demo_headers)
+            if demo_result["status"] == 403:
+                print(f"    ✅ Non-admin access properly rejected: Status {demo_result['status']}")
+            else:
+                print(f"    ⚠️ Non-admin access not properly rejected: Status {demo_result['status']}")
+                test_results["error_messages"].append("Admin role not properly enforced")
+        
+        return {
+            "test_name": "Unified Calculations Endpoint",
+            "success": test_results["success"] and test_results["actual_status"] == 200 and test_results["catalyst_entries_count"] > 0,
+            "test_results": test_results,
+            "critical_issue": not test_results["success"] or test_results["actual_status"] != 200 or test_results["catalyst_entries_count"] == 0,
+            "zero_entries_issue": test_results["catalyst_entries_count"] == 0,
+            "authentication_working": test_results["authentication_working"],
+            "has_required_fields": test_results["has_required_fields"]
+        }
+
     async def run_api_endpoint_fixes_testing(self) -> Dict:
         """
         Run complete API endpoint fixes testing
@@ -526,7 +618,7 @@ class APIEndpointFixesTester:
         print("🚨 STARTING API ENDPOINT FIXES TESTING")
         print("=" * 80)
         print("TESTING: Specific API endpoint fixes to resolve 404 errors and authentication issues")
-        print("ENDPOINTS: browse, notifications, image upload, profile, admin logo")
+        print("ENDPOINTS: browse, notifications, image upload, profile, admin logo, unified calculations")
         print("=" * 80)
         
         await self.setup()
