@@ -1,0 +1,605 @@
+{
+  "test_timestamp": "2025-09-11T00:18:17.051542",
+  "admin_authentication": {
+    "success": true
+  },
+  "default_menu_settings": {
+    "test_name": "Get Default Menu Settings",
+    "success": true,
+    "response_time_ms": 17.59815216064453,
+    "has_desktop_menu": true,
+    "has_mobile_menu": true,
+    "desktop_items_count": 10,
+    "mobile_items_count": 7,
+    "desktop_items_present": true,
+    "mobile_items_present": true,
+    "desktop_roles_valid": true,
+    "mobile_roles_valid": true,
+    "structure_valid": true,
+    "menu_data": {
+      "desktop_menu": {
+        "about": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "browse": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "create_listing": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ]
+        },
+        "messages": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "tenders": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "profile": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "admin_panel": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager"
+          ]
+        },
+        "buy_management": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "buyer"
+          ]
+        },
+        "my_listings": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ]
+        },
+        "favorites": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        }
+      },
+      "mobile_menu": {
+        "browse": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "messages": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "create": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ]
+        },
+        "tenders": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "listings": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ]
+        },
+        "profile": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "admin_drawer": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager"
+          ]
+        }
+      }
+    }
+  },
+  "update_menu_settings": {
+    "test_name": "Update Menu Settings",
+    "success": true,
+    "response_time_ms": 50.71210861206055,
+    "has_message": true,
+    "has_settings": true,
+    "desktop_updated": true,
+    "mobile_updated": true,
+    "create_listing_disabled": true,
+    "favorites_disabled": true,
+    "mobile_create_disabled": true,
+    "tenders_admin_only": true,
+    "admin_panel_admin_only": true,
+    "update_successful": true,
+    "test_settings": {
+      "desktop_menu": {
+        "about": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "browse": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "create_listing": {
+          "enabled": false,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ]
+        },
+        "messages": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "tenders": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager"
+          ]
+        },
+        "profile": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "admin_panel": {
+          "enabled": true,
+          "roles": [
+            "admin"
+          ]
+        },
+        "buy_management": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "buyer"
+          ]
+        },
+        "my_listings": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ]
+        },
+        "favorites": {
+          "enabled": false,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        }
+      },
+      "mobile_menu": {
+        "browse": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "messages": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "create": {
+          "enabled": false,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ]
+        },
+        "tenders": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "listings": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller"
+          ]
+        },
+        "profile": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "manager",
+            "seller",
+            "buyer"
+          ]
+        },
+        "admin_drawer": {
+          "enabled": true,
+          "roles": [
+            "admin"
+          ]
+        }
+      }
+    },
+    "response_data": {
+      "message": "Menu settings updated successfully",
+      "settings": {
+        "desktop_menu": {
+          "about": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          },
+          "browse": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          },
+          "create_listing": {
+            "enabled": false,
+            "roles": [
+              "admin",
+              "manager",
+              "seller"
+            ]
+          },
+          "messages": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          },
+          "tenders": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager"
+            ]
+          },
+          "profile": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          },
+          "admin_panel": {
+            "enabled": true,
+            "roles": [
+              "admin"
+            ]
+          },
+          "buy_management": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "buyer"
+            ]
+          },
+          "my_listings": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller"
+            ]
+          },
+          "favorites": {
+            "enabled": false,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          }
+        },
+        "mobile_menu": {
+          "browse": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          },
+          "messages": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          },
+          "create": {
+            "enabled": false,
+            "roles": [
+              "admin",
+              "manager",
+              "seller"
+            ]
+          },
+          "tenders": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          },
+          "listings": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller"
+            ]
+          },
+          "profile": {
+            "enabled": true,
+            "roles": [
+              "admin",
+              "manager",
+              "seller",
+              "buyer"
+            ]
+          },
+          "admin_drawer": {
+            "enabled": true,
+            "roles": [
+              "admin"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "user_specific_filtering": {
+    "test_name": "User Specific Menu Filtering",
+    "admin_test_success": true,
+    "demo_test_success": true,
+    "admin_role_filtering_correct": true,
+    "demo_role_filtering_correct": true,
+    "both_users_tested": true,
+    "role_based_filtering_working": true,
+    "detailed_results": {
+      "admin_test": {
+        "success": true,
+        "response_time_ms": 10.81395149230957,
+        "user_role": "admin",
+        "desktop_items_count": 8,
+        "mobile_items_count": 6,
+        "has_admin_panel": true,
+        "has_tenders": true,
+        "missing_disabled_items": true,
+        "role_filtering_correct": true
+      },
+      "demo_test": {
+        "success": true,
+        "response_time_ms": 50.3382682800293,
+        "user_role": "user",
+        "desktop_items_count": 0,
+        "mobile_items_count": 0,
+        "missing_admin_panel": true,
+        "missing_tenders": true,
+        "missing_disabled_items": true,
+        "role_filtering_correct": true
+      }
+    }
+  },
+  "menu_configuration_logic": {
+    "test_name": "Menu Configuration Logic",
+    "success": true,
+    "users_tested": 2,
+    "successful_tests": 1,
+    "toggle_logic_working": false,
+    "role_assignment_working": true,
+    "both_desktop_mobile_working": false,
+    "configuration_logic_working": false,
+    "detailed_role_tests": [
+      {
+        "user_id": "admin_user_1",
+        "expected_role": "admin",
+        "actual_role": "admin",
+        "messages_hidden_desktop": true,
+        "messages_hidden_mobile": true,
+        "browse_visible": true,
+        "profile_visible": true,
+        "admin_panel_visibility_correct": true,
+        "toggle_logic_working": true,
+        "role_logic_working": true
+      },
+      {
+        "user_id": "68bfff790e4e46bc28d43631",
+        "expected_role": "user",
+        "actual_role": "user",
+        "messages_hidden_desktop": true,
+        "messages_hidden_mobile": true,
+        "browse_visible": false,
+        "profile_visible": false,
+        "admin_panel_visibility_correct": true,
+        "toggle_logic_working": false,
+        "role_logic_working": true
+      }
+    ]
+  },
+  "admin_usage_simulation": {
+    "test_name": "Admin Usage Simulation",
+    "success": false,
+    "admin_settings_applied": true,
+    "users_tested": 2,
+    "successful_verifications": 1,
+    "all_users_verified": false,
+    "disabled_item_filtered_correctly": true,
+    "role_based_filtering_working": true,
+    "admin_can_see_configuration": true,
+    "admin_config_shows_disabled_state": true,
+    "simulation_successful": false,
+    "detailed_user_tests": [
+      {
+        "user_id": "admin_user_1",
+        "user_role": "admin",
+        "description": "Admin User",
+        "tenders_hidden_desktop": true,
+        "tenders_hidden_mobile": true,
+        "browse_present": true,
+        "messages_present": true,
+        "profile_present": true,
+        "admin_panel_correct": true,
+        "disabled_item_filtered": true,
+        "enabled_items_present": true,
+        "role_filtering_correct": true,
+        "verification_successful": true
+      },
+      {
+        "user_id": "68bfff790e4e46bc28d43631",
+        "user_role": "buyer",
+        "description": "Demo User (Buyer)",
+        "tenders_hidden_desktop": true,
+        "tenders_hidden_mobile": true,
+        "browse_present": false,
+        "messages_present": false,
+        "profile_present": false,
+        "admin_panel_correct": true,
+        "disabled_item_filtered": true,
+        "enabled_items_present": false,
+        "role_filtering_correct": true,
+        "verification_successful": false
+      }
+    ]
+  },
+  "summary": {
+    "overall_success_rate": 60.0,
+    "admin_authentication_working": true,
+    "default_settings_working": true,
+    "update_settings_working": true,
+    "user_filtering_working": true,
+    "configuration_logic_working": false,
+    "admin_simulation_working": false,
+    "all_endpoints_working": false,
+    "menu_settings_api_functional": false
+  }
+}
