@@ -561,6 +561,10 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
     isMenuItemVisible('desktop_menu', item.key)
   );
 
+  // Get custom menu items
+  const { getCustomMenuItems } = useMenuSettings();
+  const customMenuItems = getCustomMenuItems('desktop_menu');
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-white/20 shadow-lg shadow-black/5">
       <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5"></div>
