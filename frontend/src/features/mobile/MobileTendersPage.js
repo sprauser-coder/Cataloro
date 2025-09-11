@@ -331,6 +331,7 @@ function BidCard({ bid }) {
 function SellingCard({ listingOverview, onManageTenders }) {
   const [showTendersDropdown, setShowTendersDropdown] = useState(false);
   const [processingTender, setProcessingTender] = useState(null);
+  const navigate = useNavigate();
 
   const handleManageClick = (e) => {
     e.preventDefault();
@@ -358,6 +359,9 @@ function SellingCard({ listingOverview, onManageTenders }) {
         alert('✅ Tender accepted successfully!');
         setShowTendersDropdown(false);
         if (onManageTenders) onManageTenders(); // Refresh data
+        
+        // Redirect to mobile-my-listings after successful acceptance
+        navigate('/mobile-my-listings');
       } else {
         const errorText = await response.text();
         alert(`❌ Failed to accept tender: ${errorText}`);
