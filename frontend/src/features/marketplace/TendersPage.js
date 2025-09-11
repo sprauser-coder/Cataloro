@@ -30,6 +30,7 @@ function TendersPage() {
   const { showToast } = useNotifications();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   
   // Get tab from URL parameters, default to 'listings'
   const urlTab = searchParams.get('tab');
