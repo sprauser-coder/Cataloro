@@ -91,39 +91,49 @@ function MobileBottomNav() {
     return location.pathname === path;
   };
 
-  const bottomNavItems = [
+  const allBottomNavItems = [
     {
       label: 'Browse',
       path: '/browse',
       icon: Store,
-      badge: null
+      badge: null,
+      key: 'browse'
     },
     {
       label: 'Messages',
       path: '/messages',
       icon: MessageCircle,
-      badge: unreadMessages > 0 ? unreadMessages : null
+      badge: unreadMessages > 0 ? unreadMessages : null,
+      key: 'messages'
     },
     {
       label: 'Create',
       path: '/create-listing',
       icon: Plus,
       badge: null,
-      highlight: true // Central create button
+      highlight: true, // Central create button
+      key: 'create'
     },
     {
       label: 'Tenders',
       path: '/mobile-tenders',
       icon: DollarSign,
-      badge: null
+      badge: null,
+      key: 'tenders'
     },
     {
       label: 'Listings',
       path: '/mobile-my-listings',
       icon: Package,
-      badge: null
+      badge: null,
+      key: 'listings'
     }
   ];
+
+  // Filter bottom nav items based on menu settings
+  const bottomNavItems = allBottomNavItems.filter(item => 
+    isMenuItemVisible('mobile_menu', item.key)
+  );
 
   return (
     <>
