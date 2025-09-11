@@ -548,23 +548,23 @@ function BusinessTab({ showToast }) {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Active Listings</span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">2,847</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">{loading ? '...' : realMetrics.activityMetrics.activeListings}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Total Bids</span>
-              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">8,923</span>
+              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">{loading ? '...' : realMetrics.activityMetrics.totalBids}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Completed Deals</span>
-              <span className="text-md font-semibold text-green-600 dark:text-green-400">1,234</span>
+              <span className="text-md font-semibold text-green-600 dark:text-green-400">{loading ? '...' : realMetrics.activityMetrics.completedDeals}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Messages Sent</span>
-              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">15.6K</span>
+              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">{loading ? '...' : realMetrics.activityMetrics.messagesSent}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Avg Response Time</span>
-              <span className="text-md font-semibold text-orange-600 dark:text-orange-400">2.4h</span>
+              <span className="text-md font-semibold text-orange-600 dark:text-orange-400">{loading ? '...' : realMetrics.activityMetrics.avgResponseTime}</span>
             </div>
           </div>
         </div>
