@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-CRITICAL DATABASE INVESTIGATION - CATS DATABASE MISSING
-Investigating reported data loss: "Cats database is completely gone!"
-Testing MongoDB collections and catalyst-related data
+MANAGEMENT CENTER SELL LISTINGS INVESTIGATION
+Investigating reported issue: "Management Center Sell does not show all products listed"
+Testing listings endpoints, pagination, filtering, and data consistency
 """
 
 import asyncio
