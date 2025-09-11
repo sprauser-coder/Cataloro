@@ -489,89 +489,108 @@ class AdminMenuSettingsTester:
             "total_expected": len(expected_default_items)
         }
     
-    async def test_file_validation_and_storage(self) -> Dict:
-        """Test file upload validation and storage logic"""
-        print("🔍 Testing file validation and storage...")
+    async def test_database_cleanup_impact(self) -> Dict:
+        """Test if recent database cleanup affected menu settings structure"""
+        print("🔍 Testing database cleanup impact on menu settings...")
         
         if not self.admin_token:
-            return {"test_name": "File Validation and Storage", "error": "No admin token available"}
+            return {"test_name": "Database Cleanup Impact", "error": "No admin token available"}
         
         headers = {"Authorization": f"Bearer {self.admin_token}"}
-        validation_tests = []
         
-        # Test 1: Valid image upload
-        print("  Testing valid image upload...")
-        valid_image = self.create_test_image()
+        # Get current menu settings
+        result = await self.make_request("/admin/menu-settings", "GET", headers=headers)
         
-        form_data = aiohttp.FormData()
-        form_data.add_field('image', io.BytesIO(valid_image), filename='valid_test.png', content_type='image/png')
-        form_data.add_field('section', 'ads')
-        form_data.add_field('field', 'ad_image')
+        if not result["success"]:
+            return {
+                "test_name": "Database Cleanup Impact",
+                "success": False,
+                "error": result.get("error", "Failed to get menu settings")
+            }
         
-        valid_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=form_data)
+        data = result["data"]
         
-        validation_tests.append({
-            "test": "Valid Image Upload",
-            "success": valid_result["success"],
-            "status": valid_result["status"],
-            "has_url": bool(valid_result.get("data", {}).get("url") or valid_result.get("data", {}).get("imageUrl"))
-        })
-        
-        # Test 2: Invalid file type
-        print("  Testing invalid file type...")
-        invalid_form_data = aiohttp.FormData()
-        invalid_form_data.add_field('image', io.BytesIO(b"This is not an image"), filename='test.txt', content_type='text/plain')
-        invalid_form_data.add_field('section', 'ads')
-        invalid_form_data.add_field('field', 'ad_image')
-        
-        invalid_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=invalid_form_data)
-        
-        validation_tests.append({
-            "test": "Invalid File Type",
-            "success": not invalid_result["success"],  # Should fail
-            "status": invalid_result["status"],
-            "properly_rejected": invalid_result["status"] in [400, 422]
-        })
-        
-        # Test 3: Missing required fields
-        print("  Testing missing required fields...")
-        missing_fields_form = aiohttp.FormData()
-        missing_fields_form.add_field('image', io.BytesIO(valid_image), filename='test.png', content_type='image/png')
-        # Missing section and field
-        
-        missing_result = await self.make_request("/admin/upload-image", "POST", headers=headers, form_data=missing_fields_form)
-        
-        validation_tests.append({
-            "test": "Missing Required Fields",
-            "success": not missing_result["success"],  # Should fail
-            "status": missing_result["status"],
-            "properly_rejected": missing_result["status"] in [400, 422]
-        })
-        
-        # Test 4: Check if upload directory exists and is writable
-        print("  Testing storage path and permissions...")
-        # This is tested indirectly through successful upload
-        storage_test = {
-            "test": "Storage Path and Permissions",
-            "success": valid_result["success"],
-            "upload_directory_accessible": valid_result["success"],
-            "file_stored_successfully": bool(valid_result.get("data", {}).get("url"))
+        # Check for signs of database cleanup issues
+        cleanup_analysis = {
+            "has_desktop_menu": "desktop_menu" in data,
+            "has_mobile_menu": "mobile_menu" in data,
+            "desktop_menu_empty": len(data.get("desktop_menu", {})) == 0,
+            "mobile_menu_empty": len(data.get("mobile_menu", {})) == 0,
+            "has_custom_items": False,
+            "corrupted_custom_items": 0,
+            "placeholder_items": 0
         }
-        validation_tests.append(storage_test)
         
-        # Calculate validation results
-        successful_validations = sum(1 for test in validation_tests if test.get("success", False))
-        validation_working = successful_validations >= 2  # At least valid upload and storage should work
+        # Check for custom items and potential corruption
+        desktop_menu = data.get("desktop_menu", {})
+        mobile_menu = data.get("mobile_menu", {})
         
-        print(f"  📊 Validation tests: {successful_validations}/{len(validation_tests)} passed")
+        # Check desktop custom items
+        desktop_custom = desktop_menu.get("custom_items", [])
+        if desktop_custom:
+            cleanup_analysis["has_custom_items"] = True
+            for item in desktop_custom:
+                if isinstance(item, dict):
+                    label = item.get("label", "")
+                    if "External Page" in label or "Internal Page" in label:
+                        cleanup_analysis["placeholder_items"] += 1
+                    if not item.get("id") or not item.get("label") or not item.get("url"):
+                        cleanup_analysis["corrupted_custom_items"] += 1
+        
+        # Check mobile custom items
+        mobile_custom = mobile_menu.get("custom_items", [])
+        if mobile_custom:
+            cleanup_analysis["has_custom_items"] = True
+            for item in mobile_custom:
+                if isinstance(item, dict):
+                    label = item.get("label", "")
+                    if "External Page" in label or "Internal Page" in label:
+                        cleanup_analysis["placeholder_items"] += 1
+                    if not item.get("id") or not item.get("label") or not item.get("url"):
+                        cleanup_analysis["corrupted_custom_items"] += 1
+        
+        # Check for missing default items (could indicate cleanup issues)
+        expected_defaults = ["browse", "create_listing", "messages", "my_listings", "tenders"]
+        missing_desktop_defaults = [item for item in expected_defaults if item not in desktop_menu]
+        missing_mobile_defaults = [item for item in expected_defaults if item not in mobile_menu]
+        
+        cleanup_analysis["missing_desktop_defaults"] = missing_desktop_defaults
+        cleanup_analysis["missing_mobile_defaults"] = missing_mobile_defaults
+        cleanup_analysis["missing_defaults_count"] = len(missing_desktop_defaults) + len(missing_mobile_defaults)
+        
+        # Determine if cleanup caused issues
+        cleanup_issues_detected = (
+            cleanup_analysis["desktop_menu_empty"] or
+            cleanup_analysis["mobile_menu_empty"] or
+            cleanup_analysis["corrupted_custom_items"] > 0 or
+            cleanup_analysis["placeholder_items"] > 0 or
+            cleanup_analysis["missing_defaults_count"] > 2
+        )
+        
+        cleanup_success = not cleanup_issues_detected
+        
+        print(f"  📊 Desktop menu items: {len(desktop_menu)}")
+        print(f"  📊 Mobile menu items: {len(mobile_menu)}")
+        print(f"  🗑️ Corrupted custom items: {cleanup_analysis['corrupted_custom_items']}")
+        print(f"  📝 Placeholder items: {cleanup_analysis['placeholder_items']}")
+        print(f"  ❌ Missing defaults: {cleanup_analysis['missing_defaults_count']}")
+        print(f"  {'✅' if cleanup_success else '❌'} Database cleanup {'did not affect' if cleanup_success else 'may have affected'} menu structure")
         
         return {
-            "test_name": "File Validation and Storage",
-            "success": validation_working,
-            "total_validation_tests": len(validation_tests),
-            "successful_validations": successful_validations,
-            "validation_working": validation_working,
-            "detailed_tests": validation_tests
+            "test_name": "Database Cleanup Impact",
+            "success": cleanup_success,
+            "cleanup_analysis": cleanup_analysis,
+            "cleanup_issues_detected": cleanup_issues_detected,
+            "desktop_items_count": len(desktop_menu),
+            "mobile_items_count": len(mobile_menu),
+            "custom_items_desktop": len(desktop_custom),
+            "custom_items_mobile": len(mobile_custom),
+            "recommendations": [
+                "Check for corrupted custom items" if cleanup_analysis["corrupted_custom_items"] > 0 else None,
+                "Remove placeholder items" if cleanup_analysis["placeholder_items"] > 0 else None,
+                "Restore missing default items" if cleanup_analysis["missing_defaults_count"] > 0 else None,
+                "Initialize menu settings" if cleanup_analysis["desktop_menu_empty"] or cleanup_analysis["mobile_menu_empty"] else None
+            ]
         }
     
     async def test_backend_logs_for_errors(self) -> Dict:
