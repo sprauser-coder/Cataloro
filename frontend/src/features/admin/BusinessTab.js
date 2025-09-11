@@ -70,6 +70,9 @@ function BusinessTab({ showToast }) {
   const [selectedProcess, setSelectedProcess] = useState(null);
   const [viewMode, setViewMode] = useState('visual'); // visual, list, detailed
   const [expandedSections, setExpandedSections] = useState({});
+  const [dashboardData, setDashboardData] = useState(null);
+  const [usersData, setUsersData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Comprehensive business processes mapping
   const businessProcesses = [
