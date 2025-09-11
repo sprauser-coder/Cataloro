@@ -722,7 +722,7 @@ function BusinessTab({ showToast }) {
                 <Shield className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
                 <span className="font-semibold text-yellow-900 dark:text-yellow-100">Admin</span>
               </div>
-              <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">3</span>
+              <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{loading ? '...' : realMetrics.roleDistribution.admin}</span>
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -731,7 +731,7 @@ function BusinessTab({ showToast }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-yellow-700 dark:text-yellow-300">Actions/Day</span>
-                <span className="font-medium text-yellow-900 dark:text-yellow-100">47</span>
+                <span className="font-medium text-yellow-900 dark:text-yellow-100">{loading ? '...' : 'N/A'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-yellow-700 dark:text-yellow-300">Uptime</span>
