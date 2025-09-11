@@ -5110,20 +5110,7 @@ async def search_users(q: str = ""):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to search users: {str(e)}")
 
-# Notifications endpoints
-@app.get("/api/user/{user_id}/notifications")
-async def get_user_notifications(user_id: str):
-    """Get user's notifications"""
-    try:
-        notifications = await db.user_notifications.find({"user_id": user_id}).sort("created_at", -1).to_list(length=None)
-        
-        for notification in notifications:
-            notification['_id'] = str(notification['_id'])
-        
-        return notifications
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch notifications: {str(e)}")
-
+# Notifications endpoints - POST only (GET is handled in authenticated section)
 @app.post("/api/user/{user_id}/notifications")
 async def create_notification(user_id: str, notification_data: dict):
     """Create a notification"""
