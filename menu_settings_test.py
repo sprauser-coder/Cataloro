@@ -763,8 +763,8 @@ class MenuSettingsVisibilityTester:
             
             for menu_type in ["desktop_menu", "mobile_menu"]:
                 if menu_type in admin_menu:
-                    for item in admin_menu[menu_type]:
-                        if item.get("key") in ["admin_panel", "admin_drawer"]:
+                    for key, item in admin_menu[menu_type].items():
+                        if key in ["admin_panel", "admin_drawer"]:
                             admin_only_items_count += 1
         
         role_restrictions_still_working = admin_only_items_count > 0
