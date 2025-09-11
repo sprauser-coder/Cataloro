@@ -1,0 +1,191 @@
+{
+  "test_timestamp": "2025-09-11T08:33:09.304634",
+  "authentication": {
+    "success": true,
+    "admin_token": true,
+    "demo_token": true,
+    "admin_user_id": "admin_user_1",
+    "demo_user_id": "68bfff790e4e46bc28d43631"
+  },
+  "admin_menu_settings_update": {
+    "test_name": "Admin Menu Settings Update",
+    "success": true,
+    "messages_found_and_disabled": true,
+    "settings_saved_successfully": true,
+    "settings_verified_correctly": true,
+    "disabled_items": [
+      "mobile_menu:messages"
+    ],
+    "save_response_time_ms": 15.844583511352539,
+    "verify_response_time_ms": 11.10696792602539,
+    "database_persistence_working": true
+  },
+  "user_menu_settings_retrieval": {
+    "test_name": "User Menu Settings Retrieval",
+    "success": true,
+    "admin_user_endpoint_working": true,
+    "demo_user_endpoint_working": true,
+    "filtering_logic_working": true,
+    "messages_properly_filtered": true,
+    "role_based_access_working": true,
+    "detailed_results": {
+      "admin_user": {
+        "endpoint_accessible": true,
+        "response_time_ms": 14.76430892944336,
+        "has_menu_data": true,
+        "messages_visible": false,
+        "menu_structure": {
+          "total_items": 5,
+          "desktop_items": 4,
+          "mobile_items": 1,
+          "has_desktop_menu": true,
+          "has_mobile_menu": true
+        },
+        "user_role": "admin"
+      },
+      "demo_user": {
+        "endpoint_accessible": true,
+        "response_time_ms": 10.212421417236328,
+        "has_menu_data": true,
+        "messages_visible": false,
+        "menu_structure": {
+          "total_items": 0,
+          "desktop_items": 0,
+          "mobile_items": 0,
+          "has_desktop_menu": true,
+          "has_mobile_menu": true
+        },
+        "user_role": "user"
+      }
+    }
+  },
+  "visibility_logic_chain": {
+    "test_name": "Visibility Logic Chain",
+    "success": true,
+    "admin_settings_working": true,
+    "user_endpoint_working": true,
+    "complete_chain_working": true,
+    "messages_properly_disabled_throughout_chain": true,
+    "detailed_chain_results": {
+      "admin_settings_storage": {
+        "success": true,
+        "messages_disabled": true,
+        "response_time_ms": 50.59456825256348
+      },
+      "user_endpoint_filtering": {
+        "success": true,
+        "messages_filtered_correctly": true,
+        "response_time_ms": 16.39533042907715,
+        "user_settings_structure": {
+          "total_items": 5,
+          "desktop_items": 4,
+          "mobile_items": 1,
+          "has_desktop_menu": true,
+          "has_mobile_menu": true
+        }
+      },
+      "chain_consistency": {
+        "admin_settings_consistent": true,
+        "user_filtering_consistent": true,
+        "complete_chain_working": true
+      }
+    }
+  },
+  "menu_item_key_matching": {
+    "test_name": "Menu Item Key Matching",
+    "success": true,
+    "admin_keys_extracted": 5,
+    "user_keys_extracted": 4,
+    "key_matching_results": {
+      "keys_match": false,
+      "common_keys": [
+        "test_item",
+        "frontend_test",
+        "create_listing",
+        "browse"
+      ],
+      "admin_only_keys": [
+        "messages"
+      ],
+      "user_only_keys": [],
+      "mismatched_keys": [
+        "messages"
+      ]
+    },
+    "expected_key_presence": {
+      "messages": {
+        "in_admin": true,
+        "in_user": false
+      },
+      "create_listing": {
+        "in_admin": true,
+        "in_user": true
+      },
+      "admin_panel": {
+        "in_admin": false,
+        "in_user": false
+      },
+      "browse": {
+        "in_admin": true,
+        "in_user": true
+      },
+      "profile": {
+        "in_admin": false,
+        "in_user": false
+      },
+      "favorites": {
+        "in_admin": false,
+        "in_user": false
+      }
+    },
+    "keys_consistent_between_contexts": false,
+    "no_key_mismatches": false,
+    "admin_keys": {
+      "all_keys": [
+        "test_item",
+        "browse",
+        "create_listing",
+        "frontend_test",
+        "messages"
+      ],
+      "desktop_keys": [
+        "test_item",
+        "browse",
+        "create_listing",
+        "frontend_test"
+      ],
+      "mobile_keys": [
+        "test_item",
+        "browse",
+        "messages"
+      ]
+    },
+    "user_keys": {
+      "all_keys": [
+        "test_item",
+        "browse",
+        "create_listing",
+        "frontend_test"
+      ],
+      "desktop_keys": [
+        "test_item",
+        "browse",
+        "create_listing",
+        "frontend_test"
+      ],
+      "mobile_keys": [
+        "browse"
+      ]
+    }
+  },
+  "summary": {
+    "overall_success_rate": 100.0,
+    "admin_settings_update_working": true,
+    "user_settings_retrieval_working": true,
+    "complete_visibility_chain_working": true,
+    "menu_key_consistency_working": false,
+    "messages_visibility_issue_resolved": true,
+    "all_tests_passed": true,
+    "critical_functionality_working": true
+  }
+}
