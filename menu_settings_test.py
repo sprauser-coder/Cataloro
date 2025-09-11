@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Menu Settings Visibility Functionality End-to-End Testing
-Testing the complete visibility workflow from admin settings to user navigation
+Testing role mapping fixes and navigation integration for Menu Settings visibility workflow
 """
 
 import asyncio
@@ -14,19 +14,19 @@ from typing import Dict, List, Any
 # Test Configuration
 BACKEND_URL = "https://market-guardian.preview.emergentagent.com/api"
 
-# Admin User Configuration
+# Test Users Configuration
 ADMIN_EMAIL = "admin@cataloro.com"
 ADMIN_PASSWORD = "admin_password"
-
-# Demo User Configuration  
 DEMO_EMAIL = "demo@cataloro.com"
 DEMO_PASSWORD = "demo_password"
 
-class MenuSettingsTester:
+class MenuSettingsVisibilityTester:
     def __init__(self):
         self.session = None
         self.admin_token = None
-        self.demo_user_token = None
+        self.demo_token = None
+        self.admin_user_id = None
+        self.demo_user_id = None
         self.test_results = []
         
     async def setup(self):
@@ -76,476 +76,777 @@ class MenuSettingsTester:
                 "status": 0
             }
     
-    async def test_admin_login_jwt_token(self) -> Dict:
-        """Test admin login generates proper JWT tokens"""
-        print("🔐 Testing Admin Login and JWT Token Generation...")
+    async def authenticate_users(self) -> Dict:
+        """Authenticate admin and demo users"""
+        print("🔐 Authenticating test users...")
         
-        login_data = {
+        # Authenticate admin user
+        admin_login_data = {
             "email": ADMIN_EMAIL,
             "password": ADMIN_PASSWORD
         }
         
-        result = await self.make_request("/auth/login", "POST", data=login_data)
+        admin_result = await self.make_request("/auth/login", "POST", data=admin_login_data)
         
-        if result["success"]:
-            user_data = result["data"].get("user", {})
-            token = result["data"].get("token", "")
+        if admin_result["success"]:
+            admin_user = admin_result["data"].get("user", {})
+            self.admin_token = admin_result["data"].get("token", "")
+            self.admin_user_id = admin_user.get("id")
             
-            # Store token for subsequent requests
-            self.admin_token = token
-            
-            # Verify JWT token structure (basic validation)
-            token_parts = token.split('.') if token else []
-            is_jwt_format = len(token_parts) == 3
-            
-            # Verify token contains required fields by decoding payload (basic check)
-            token_valid = False
-            token_fields = {}
-            if is_jwt_format and token:
-                try:
-                    import base64
-                    import json
-                    # Decode JWT payload (middle part)
-                    payload_b64 = token_parts[1]
-                    # Add padding if needed
-                    payload_b64 += '=' * (4 - len(payload_b64) % 4)
-                    payload_json = base64.b64decode(payload_b64).decode('utf-8')
-                    token_fields = json.loads(payload_json)
-                    
-                    # Check required fields
-                    required_fields = ["user_id", "email", "role"]
-                    token_valid = all(field in token_fields for field in required_fields)
-                except Exception as e:
-                    print(f"    ⚠️ Token decode error: {e}")
-            
-            # Verify admin user properties
-            email_correct = user_data.get("email") == ADMIN_EMAIL
-            role_correct = user_data.get("role") == "admin" or user_data.get("user_role") == "Admin"
-            user_id_present = bool(user_data.get("id"))
-            
-            print(f"  ✅ Admin login successful")
-            print(f"  📧 Email: {user_data.get('email')} ({'✅' if email_correct else '❌'})")
-            print(f"  🔑 Role: {user_data.get('role', user_data.get('user_role'))} ({'✅' if role_correct else '❌'})")
-            print(f"  🆔 User ID: {user_data.get('id')} ({'✅' if user_id_present else '❌'})")
-            print(f"  🎫 JWT Token: {'✅ Real JWT' if is_jwt_format else '❌ Not JWT format'}")
-            print(f"  📋 Token Fields: {list(token_fields.keys()) if token_fields else 'None'}")
-            
-            return {
-                "test_name": "Admin Login and JWT Token Test",
-                "login_successful": True,
-                "response_time_ms": result["response_time_ms"],
-                "admin_email_correct": email_correct,
-                "admin_role_correct": role_correct,
-                "user_id_present": user_id_present,
-                "jwt_token_generated": bool(token),
-                "jwt_format_valid": is_jwt_format,
-                "token_fields_valid": token_valid,
-                "token_fields": token_fields,
-                "user_data": user_data,
-                "all_requirements_met": email_correct and role_correct and user_id_present and is_jwt_format and token_valid
-            }
+            print(f"  ✅ Admin authenticated: {admin_user.get('email')} (ID: {self.admin_user_id})")
+            print(f"     Role: {admin_user.get('role')} / User Role: {admin_user.get('user_role')}")
         else:
-            print(f"  ❌ Admin login failed: {result.get('error', 'Unknown error')}")
-            return {
-                "test_name": "Admin Login and JWT Token Test",
-                "login_successful": False,
-                "response_time_ms": result["response_time_ms"],
-                "error": result.get("error", "Login failed"),
-                "status": result["status"]
-            }
-    
-    async def test_menu_settings_authentication(self) -> Dict:
-        """Test Menu Settings endpoints with and without authentication"""
-        print("🔒 Testing Menu Settings Authentication...")
+            print(f"  ❌ Admin authentication failed: {admin_result.get('error')}")
+            return {"success": False, "error": "Admin authentication failed"}
         
-        if not self.admin_token:
-            return {
-                "test_name": "Menu Settings Authentication Test",
-                "error": "No admin token available - admin login required first"
-            }
-        
-        auth_headers = {"Authorization": f"Bearer {self.admin_token}"}
-        test_results = []
-        
-        # Test 1: GET /api/admin/menu-settings WITH valid admin JWT token
-        print("  Testing GET with valid admin token...")
-        get_with_auth = await self.make_request("/admin/menu-settings", headers=auth_headers)
-        
-        test_results.append({
-            "endpoint": "GET /api/admin/menu-settings",
-            "with_auth": True,
-            "success": get_with_auth["success"],
-            "status": get_with_auth["status"],
-            "response_time_ms": get_with_auth["response_time_ms"],
-            "has_data": bool(get_with_auth.get("data")) if get_with_auth["success"] else False
-        })
-        
-        if get_with_auth["success"]:
-            print(f"    ✅ GET with auth successful (200 status, {get_with_auth['response_time_ms']:.0f}ms)")
-        else:
-            print(f"    ❌ GET with auth failed: {get_with_auth.get('error', 'Unknown error')}")
-        
-        # Test 2: GET /api/admin/menu-settings WITHOUT authentication
-        print("  Testing GET without authentication...")
-        get_without_auth = await self.make_request("/admin/menu-settings")
-        
-        test_results.append({
-            "endpoint": "GET /api/admin/menu-settings",
-            "with_auth": False,
-            "success": get_without_auth["success"],
-            "status": get_without_auth["status"],
-            "response_time_ms": get_without_auth["response_time_ms"],
-            "properly_blocked": get_without_auth["status"] in [401, 403]
-        })
-        
-        if get_without_auth["status"] in [401, 403]:
-            print(f"    ✅ GET without auth properly blocked ({get_without_auth['status']} status)")
-        else:
-            print(f"    ❌ GET without auth not properly blocked (status: {get_without_auth['status']})")
-        
-        # Test 3: POST /api/admin/menu-settings WITH valid admin JWT token
-        print("  Testing POST with valid admin token...")
-        test_menu_data = {
-            "desktop_menu": {
-                "browse": {"enabled": True, "roles": ["admin", "buyer", "seller"]},
-                "create_listing": {"enabled": True, "roles": ["admin", "seller"]}
-            },
-            "mobile_menu": {
-                "browse": {"enabled": True, "roles": ["admin", "buyer", "seller"]},
-                "messages": {"enabled": True, "roles": ["admin", "buyer", "seller"]}
-            }
-        }
-        
-        post_with_auth = await self.make_request("/admin/menu-settings", "POST", data=test_menu_data, headers=auth_headers)
-        
-        test_results.append({
-            "endpoint": "POST /api/admin/menu-settings",
-            "with_auth": True,
-            "success": post_with_auth["success"],
-            "status": post_with_auth["status"],
-            "response_time_ms": post_with_auth["response_time_ms"],
-            "has_data": bool(post_with_auth.get("data")) if post_with_auth["success"] else False
-        })
-        
-        if post_with_auth["success"]:
-            print(f"    ✅ POST with auth successful (200 status, {post_with_auth['response_time_ms']:.0f}ms)")
-        else:
-            print(f"    ❌ POST with auth failed: {post_with_auth.get('error', 'Unknown error')}")
-        
-        # Test 4: POST /api/admin/menu-settings WITHOUT authentication
-        print("  Testing POST without authentication...")
-        post_without_auth = await self.make_request("/admin/menu-settings", "POST", data=test_menu_data)
-        
-        test_results.append({
-            "endpoint": "POST /api/admin/menu-settings",
-            "with_auth": False,
-            "success": post_without_auth["success"],
-            "status": post_without_auth["status"],
-            "response_time_ms": post_without_auth["response_time_ms"],
-            "properly_blocked": post_without_auth["status"] in [401, 403]
-        })
-        
-        if post_without_auth["status"] in [401, 403]:
-            print(f"    ✅ POST without auth properly blocked ({post_without_auth['status']} status)")
-        else:
-            print(f"    ❌ POST without auth not properly blocked (status: {post_without_auth['status']})")
-        
-        # Calculate overall results
-        auth_tests_passed = sum(1 for t in test_results if t.get("with_auth") and t.get("success"))
-        unauth_tests_blocked = sum(1 for t in test_results if not t.get("with_auth") and t.get("properly_blocked"))
-        
-        return {
-            "test_name": "Menu Settings Authentication Test",
-            "total_tests": len(test_results),
-            "auth_tests_passed": auth_tests_passed,
-            "unauth_tests_blocked": unauth_tests_blocked,
-            "get_with_auth_working": any(t.get("endpoint") == "GET /api/admin/menu-settings" and t.get("with_auth") and t.get("success") for t in test_results),
-            "get_without_auth_blocked": any(t.get("endpoint") == "GET /api/admin/menu-settings" and not t.get("with_auth") and t.get("properly_blocked") for t in test_results),
-            "post_with_auth_working": any(t.get("endpoint") == "POST /api/admin/menu-settings" and t.get("with_auth") and t.get("success") for t in test_results),
-            "post_without_auth_blocked": any(t.get("endpoint") == "POST /api/admin/menu-settings" and not t.get("with_auth") and t.get("properly_blocked") for t in test_results),
-            "all_auth_requirements_met": auth_tests_passed == 2 and unauth_tests_blocked == 2,
-            "detailed_results": test_results
-        }
-    
-    async def test_menu_settings_data_structure(self) -> Dict:
-        """Test Menu Settings API returns expected data structure"""
-        print("📋 Testing Menu Settings Data Structure...")
-        
-        if not self.admin_token:
-            return {
-                "test_name": "Menu Settings Data Structure Test",
-                "error": "No admin token available - admin login required first"
-            }
-        
-        auth_headers = {"Authorization": f"Bearer {self.admin_token}"}
-        
-        # Test GET returns expected structure
-        print("  Testing GET data structure...")
-        get_result = await self.make_request("/admin/menu-settings", headers=auth_headers)
-        
-        if get_result["success"]:
-            data = get_result["data"]
-            
-            # Check for required top-level keys
-            has_desktop_menu = "desktop_menu" in data
-            has_mobile_menu = "mobile_menu" in data
-            
-            desktop_menu = data.get("desktop_menu", {})
-            mobile_menu = data.get("mobile_menu", {})
-            
-            # Check desktop menu structure
-            desktop_valid = isinstance(desktop_menu, dict)
-            desktop_items = list(desktop_menu.keys()) if desktop_valid else []
-            
-            # Check mobile menu structure
-            mobile_valid = isinstance(mobile_menu, dict)
-            mobile_items = list(mobile_menu.keys()) if mobile_valid else []
-            
-            print(f"    ✅ GET successful with data structure")
-            print(f"    📱 Desktop menu: {len(desktop_items)} items - {desktop_items[:3]}...")
-            print(f"    📱 Mobile menu: {len(mobile_items)} items - {mobile_items[:3]}...")
-            
-            # Test POST accepts menu settings updates
-            print("  Testing POST data persistence...")
-            test_update_data = {
-                "desktop_menu": {
-                    "test_item": {"enabled": True, "roles": ["admin"]},
-                    **desktop_menu  # Keep existing items
-                },
-                "mobile_menu": {
-                    "test_item": {"enabled": False, "roles": ["buyer"]},
-                    **mobile_menu  # Keep existing items
-                }
-            }
-            
-            post_result = await self.make_request("/admin/menu-settings", "POST", data=test_update_data, headers=auth_headers)
-            
-            if post_result["success"]:
-                # Verify persistence by getting data again
-                verify_result = await self.make_request("/admin/menu-settings", headers=auth_headers)
-                
-                persistence_verified = False
-                if verify_result["success"]:
-                    verify_data = verify_result["data"]
-                    desktop_has_test = "test_item" in verify_data.get("desktop_menu", {})
-                    mobile_has_test = "test_item" in verify_data.get("mobile_menu", {})
-                    persistence_verified = desktop_has_test and mobile_has_test
-                
-                print(f"    ✅ POST successful, persistence verified: {persistence_verified}")
-                
-                return {
-                    "test_name": "Menu Settings Data Structure Test",
-                    "get_successful": True,
-                    "has_desktop_menu": has_desktop_menu,
-                    "has_mobile_menu": has_mobile_menu,
-                    "desktop_menu_valid": desktop_valid,
-                    "mobile_menu_valid": mobile_valid,
-                    "desktop_items_count": len(desktop_items),
-                    "mobile_items_count": len(mobile_items),
-                    "post_successful": post_result["success"],
-                    "persistence_verified": persistence_verified,
-                    "data_structure_valid": has_desktop_menu and has_mobile_menu and desktop_valid and mobile_valid,
-                    "all_requirements_met": has_desktop_menu and has_mobile_menu and desktop_valid and mobile_valid and post_result["success"] and persistence_verified
-                }
-            else:
-                print(f"    ❌ POST failed: {post_result.get('error')}")
-                return {
-                    "test_name": "Menu Settings Data Structure Test",
-                    "get_successful": True,
-                    "has_desktop_menu": has_desktop_menu,
-                    "has_mobile_menu": has_mobile_menu,
-                    "desktop_menu_valid": desktop_valid,
-                    "mobile_menu_valid": mobile_valid,
-                    "post_successful": False,
-                    "post_error": post_result.get("error"),
-                    "data_structure_valid": has_desktop_menu and has_mobile_menu and desktop_valid and mobile_valid
-                }
-        else:
-            print(f"    ❌ GET failed: {get_result.get('error')}")
-            return {
-                "test_name": "Menu Settings Data Structure Test",
-                "get_successful": False,
-                "get_error": get_result.get("error"),
-                "status": get_result["status"]
-            }
-    
-    async def test_frontend_integration(self) -> Dict:
-        """Test complete frontend authentication flow"""
-        print("🌐 Testing Frontend Integration...")
-        
-        if not self.admin_token:
-            return {
-                "test_name": "Frontend Integration Test",
-                "error": "No admin token available - admin login required first"
-            }
-        
-        # Test that the backend URL is accessible
-        backend_url = "https://market-guardian.preview.emergentagent.com"
-        
-        # Test Menu Settings endpoint accessibility from frontend perspective
-        auth_headers = {"Authorization": f"Bearer {self.admin_token}"}
-        
-        print("  Testing Menu Settings endpoint accessibility...")
-        menu_result = await self.make_request("/admin/menu-settings", headers=auth_headers)
-        
-        if menu_result["success"]:
-            # Test that response format matches frontend expectations
-            data = menu_result["data"]
-            frontend_compatible = (
-                isinstance(data, dict) and
-                "desktop_menu" in data and
-                "mobile_menu" in data and
-                isinstance(data["desktop_menu"], dict) and
-                isinstance(data["mobile_menu"], dict)
-            )
-            
-            print(f"    ✅ Menu Settings endpoint accessible")
-            print(f"    📱 Frontend compatible format: {frontend_compatible}")
-            
-            # Test save operation works end-to-end
-            print("  Testing save operation...")
-            test_save_data = {
-                "desktop_menu": data.get("desktop_menu", {}),
-                "mobile_menu": data.get("mobile_menu", {})
-            }
-            
-            # Add a test modification
-            test_save_data["desktop_menu"]["frontend_test"] = {
-                "enabled": True,
-                "roles": ["admin", "seller"]
-            }
-            
-            save_result = await self.make_request("/admin/menu-settings", "POST", data=test_save_data, headers=auth_headers)
-            
-            if save_result["success"]:
-                # Verify the save worked
-                verify_result = await self.make_request("/admin/menu-settings", headers=auth_headers)
-                save_verified = False
-                
-                if verify_result["success"]:
-                    verify_data = verify_result["data"]
-                    save_verified = "frontend_test" in verify_data.get("desktop_menu", {})
-                
-                print(f"    ✅ Save operation successful, verified: {save_verified}")
-                
-                return {
-                    "test_name": "Frontend Integration Test",
-                    "backend_url": backend_url,
-                    "menu_endpoint_accessible": True,
-                    "response_time_ms": menu_result["response_time_ms"],
-                    "frontend_compatible_format": frontend_compatible,
-                    "save_operation_working": save_result["success"],
-                    "save_verification_passed": save_verified,
-                    "jwt_token_working": True,  # Since we got here with JWT
-                    "all_integration_working": frontend_compatible and save_result["success"] and save_verified
-                }
-            else:
-                print(f"    ❌ Save operation failed: {save_result.get('error')}")
-                return {
-                    "test_name": "Frontend Integration Test",
-                    "menu_endpoint_accessible": True,
-                    "frontend_compatible_format": frontend_compatible,
-                    "save_operation_working": False,
-                    "save_error": save_result.get("error")
-                }
-        else:
-            print(f"    ❌ Menu Settings endpoint not accessible: {menu_result.get('error')}")
-            return {
-                "test_name": "Frontend Integration Test",
-                "menu_endpoint_accessible": False,
-                "error": menu_result.get("error"),
-                "status": menu_result["status"]
-            }
-    
-    async def test_demo_user_access(self) -> Dict:
-        """Test that demo user cannot access admin endpoints"""
-        print("👤 Testing Demo User Access Restrictions...")
-        
-        # Login as demo user
+        # Authenticate demo user
         demo_login_data = {
-            "email": "demo@cataloro.com",
-            "password": "demo_password"
+            "email": DEMO_EMAIL,
+            "password": DEMO_PASSWORD
         }
         
         demo_result = await self.make_request("/auth/login", "POST", data=demo_login_data)
         
         if demo_result["success"]:
-            demo_token = demo_result["data"].get("token", "")
-            demo_headers = {"Authorization": f"Bearer {demo_token}"}
+            demo_user = demo_result["data"].get("user", {})
+            self.demo_token = demo_result["data"].get("token", "")
+            self.demo_user_id = demo_user.get("id")
             
-            # Test that demo user cannot access menu settings
-            print("  Testing demo user access to menu settings...")
-            demo_access_result = await self.make_request("/admin/menu-settings", headers=demo_headers)
-            
-            properly_blocked = demo_access_result["status"] in [401, 403]
-            
-            if properly_blocked:
-                print(f"    ✅ Demo user properly blocked ({demo_access_result['status']} status)")
-            else:
-                print(f"    ❌ Demo user not properly blocked (status: {demo_access_result['status']})")
-            
-            return {
-                "test_name": "Demo User Access Test",
-                "demo_login_successful": True,
-                "demo_token_generated": bool(demo_token),
-                "menu_settings_blocked": properly_blocked,
-                "block_status": demo_access_result["status"],
-                "access_properly_restricted": properly_blocked
-            }
+            print(f"  ✅ Demo user authenticated: {demo_user.get('email')} (ID: {self.demo_user_id})")
+            print(f"     Role: {demo_user.get('role')} / User Role: {demo_user.get('user_role')}")
         else:
-            print(f"    ❌ Demo user login failed: {demo_result.get('error')}")
-            return {
-                "test_name": "Demo User Access Test",
-                "demo_login_successful": False,
-                "error": demo_result.get("error")
-            }
+            print(f"  ❌ Demo user authentication failed: {demo_result.get('error')}")
+            return {"success": False, "error": "Demo user authentication failed"}
+        
+        return {
+            "success": True,
+            "admin_user": admin_user,
+            "demo_user": demo_user,
+            "admin_token": self.admin_token,
+            "demo_token": self.demo_token
+        }
+    
+    async def test_role_mapping_verification(self) -> Dict:
+        """Test 1: Role Mapping Fix Verification"""
+        print("🎭 Testing Role Mapping Fix Verification...")
+        
+        if not self.admin_token or not self.demo_token:
+            return {"test_name": "Role Mapping Verification", "error": "Authentication required"}
+        
+        role_mapping_tests = []
+        
+        # Test admin user role mapping
+        print("  Testing admin user role mapping...")
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        admin_menu_result = await self.make_request(f"/menu-settings/user/{self.admin_user_id}", headers=admin_headers)
+        
+        if admin_menu_result["success"]:
+            admin_menu_data = admin_menu_result["data"]
+            
+            # Check if admin gets admin role
+            admin_role_correct = False
+            admin_items = []
+            if isinstance(admin_menu_data, dict):
+                # Look for admin-only items like admin_panel
+                desktop_menu = admin_menu_data.get("desktop_menu", [])
+                mobile_menu = admin_menu_data.get("mobile_menu", [])
+                
+                for item in desktop_menu + mobile_menu:
+                    if item.get("key") in ["admin_panel", "admin_drawer"]:
+                        admin_items.append(item)
+                
+                admin_role_correct = len(admin_items) > 0
+            
+            role_mapping_tests.append({
+                "user": "admin",
+                "user_id": self.admin_user_id,
+                "email": ADMIN_EMAIL,
+                "menu_settings_accessible": True,
+                "response_time_ms": admin_menu_result["response_time_ms"],
+                "admin_role_mapped_correctly": admin_role_correct,
+                "admin_items_count": len(admin_items),
+                "success": True
+            })
+            
+            print(f"    ✅ Admin menu settings accessible ({admin_menu_result['response_time_ms']:.0f}ms)")
+            print(f"    {'✅' if admin_role_correct else '❌'} Admin role mapping: {admin_role_correct}")
+        else:
+            role_mapping_tests.append({
+                "user": "admin",
+                "user_id": self.admin_user_id,
+                "email": ADMIN_EMAIL,
+                "menu_settings_accessible": False,
+                "error": admin_menu_result.get("error"),
+                "success": False
+            })
+            print(f"    ❌ Admin menu settings failed: {admin_menu_result.get('error')}")
+        
+        # Test demo user role mapping (should get buyer role from User-Buyer)
+        print("  Testing demo user role mapping...")
+        demo_headers = {"Authorization": f"Bearer {self.demo_token}"}
+        demo_menu_result = await self.make_request(f"/menu-settings/user/{self.demo_user_id}", headers=demo_headers)
+        
+        if demo_menu_result["success"]:
+            demo_menu_data = demo_menu_result["data"]
+            
+            # Check if demo user gets buyer role (should NOT see seller-only items)
+            buyer_role_correct = False
+            seller_items_hidden = True
+            seller_only_items = []
+            buyer_items = []
+            
+            if isinstance(demo_menu_data, dict):
+                desktop_menu = demo_menu_data.get("desktop_menu", [])
+                mobile_menu = demo_menu_data.get("mobile_menu", [])
+                
+                # Check for seller-only items (should NOT be present for buyer)
+                for item in desktop_menu + mobile_menu:
+                    item_key = item.get("key", "")
+                    if item_key in ["create_listing", "my_listings", "listings"]:
+                        seller_items_hidden = False
+                        seller_only_items.append(item)
+                    elif item_key in ["browse", "favorites", "profile"]:
+                        buyer_items.append(item)
+                
+                buyer_role_correct = seller_items_hidden and len(buyer_items) > 0
+            
+            role_mapping_tests.append({
+                "user": "demo",
+                "user_id": self.demo_user_id,
+                "email": DEMO_EMAIL,
+                "menu_settings_accessible": True,
+                "response_time_ms": demo_menu_result["response_time_ms"],
+                "buyer_role_mapped_correctly": buyer_role_correct,
+                "seller_items_properly_hidden": seller_items_hidden,
+                "buyer_items_count": len(buyer_items),
+                "seller_items_found": len(seller_only_items),
+                "success": True
+            })
+            
+            print(f"    ✅ Demo user menu settings accessible ({demo_menu_result['response_time_ms']:.0f}ms)")
+            print(f"    {'✅' if buyer_role_correct else '❌'} Buyer role mapping: {buyer_role_correct}")
+            print(f"    {'✅' if seller_items_hidden else '❌'} Seller items hidden: {seller_items_hidden}")
+        else:
+            role_mapping_tests.append({
+                "user": "demo",
+                "user_id": self.demo_user_id,
+                "email": DEMO_EMAIL,
+                "menu_settings_accessible": False,
+                "error": demo_menu_result.get("error"),
+                "success": False
+            })
+            print(f"    ❌ Demo user menu settings failed: {demo_menu_result.get('error')}")
+        
+        # Calculate overall success
+        successful_tests = [t for t in role_mapping_tests if t["success"]]
+        admin_role_working = any(t.get("admin_role_mapped_correctly") for t in role_mapping_tests if t["user"] == "admin")
+        buyer_role_working = any(t.get("buyer_role_mapped_correctly") for t in role_mapping_tests if t["user"] == "demo")
+        
+        return {
+            "test_name": "Role Mapping Fix Verification",
+            "total_users_tested": len(role_mapping_tests),
+            "successful_authentications": len(successful_tests),
+            "admin_role_mapping_working": admin_role_working,
+            "buyer_role_mapping_working": buyer_role_working,
+            "user_buyer_to_buyer_mapping_working": buyer_role_working,
+            "admin_to_admin_mapping_working": admin_role_working,
+            "role_mapping_fix_successful": admin_role_working and buyer_role_working,
+            "detailed_role_tests": role_mapping_tests
+        }
+    
+    async def test_menu_visibility_workflow(self) -> Dict:
+        """Test 2: Menu Visibility Workflow Test - Complete admin → user visibility workflow"""
+        print("👁️ Testing Menu Visibility Workflow...")
+        
+        if not self.admin_token:
+            return {"test_name": "Menu Visibility Workflow", "error": "Admin authentication required"}
+        
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        workflow_steps = []
+        
+        # Step 1: Get current menu settings
+        print("  Step 1: Getting current admin menu settings...")
+        current_settings_result = await self.make_request("/admin/menu-settings", headers=admin_headers)
+        
+        if current_settings_result["success"]:
+            current_settings = current_settings_result["data"]
+            
+            workflow_steps.append({
+                "step": "Get Current Settings",
+                "success": True,
+                "response_time_ms": current_settings_result["response_time_ms"],
+                "settings_retrieved": True
+            })
+            
+            print(f"    ✅ Current settings retrieved ({current_settings_result['response_time_ms']:.0f}ms)")
+        else:
+            workflow_steps.append({
+                "step": "Get Current Settings",
+                "success": False,
+                "error": current_settings_result.get("error")
+            })
+            print(f"    ❌ Failed to get current settings: {current_settings_result.get('error')}")
+            return {"test_name": "Menu Visibility Workflow", "error": "Failed to get current settings"}
+        
+        # Step 2: Find and disable "Messages" menu item
+        print("  Step 2: Disabling 'Messages' menu item...")
+        
+        # Find messages in mobile menu and disable it
+        modified_settings = current_settings.copy()
+        messages_found = False
+        
+        if "mobile_menu" in modified_settings:
+            for item in modified_settings["mobile_menu"]:
+                if item.get("key") == "messages":
+                    item["enabled"] = False
+                    messages_found = True
+                    print(f"    📱 Found and disabled 'messages' in mobile menu")
+                    break
+        
+        if not messages_found and "desktop_menu" in modified_settings:
+            for item in modified_settings["desktop_menu"]:
+                if item.get("key") == "messages":
+                    item["enabled"] = False
+                    messages_found = True
+                    print(f"    🖥️ Found and disabled 'messages' in desktop menu")
+                    break
+        
+        if not messages_found:
+            print("    ⚠️ Messages menu item not found in current settings")
+            return {"test_name": "Menu Visibility Workflow", "error": "Messages menu item not found"}
+        
+        # Step 3: Save modified settings
+        print("  Step 3: Saving modified menu settings...")
+        save_result = await self.make_request("/admin/menu-settings", "POST", data=modified_settings, headers=admin_headers)
+        
+        if save_result["success"]:
+            workflow_steps.append({
+                "step": "Save Modified Settings",
+                "success": True,
+                "response_time_ms": save_result["response_time_ms"],
+                "messages_disabled": True
+            })
+            
+            print(f"    ✅ Modified settings saved ({save_result['response_time_ms']:.0f}ms)")
+        else:
+            workflow_steps.append({
+                "step": "Save Modified Settings",
+                "success": False,
+                "error": save_result.get("error")
+            })
+            print(f"    ❌ Failed to save settings: {save_result.get('error')}")
+            return {"test_name": "Menu Visibility Workflow", "error": "Failed to save modified settings"}
+        
+        # Step 4: Verify change is saved in database by retrieving settings again
+        print("  Step 4: Verifying changes saved in database...")
+        verify_result = await self.make_request("/admin/menu-settings", headers=admin_headers)
+        
+        if verify_result["success"]:
+            verified_settings = verify_result["data"]
+            messages_disabled_confirmed = False
+            
+            # Check if messages is disabled in the retrieved settings
+            for menu_type in ["mobile_menu", "desktop_menu"]:
+                if menu_type in verified_settings:
+                    for item in verified_settings[menu_type]:
+                        if item.get("key") == "messages" and not item.get("enabled", True):
+                            messages_disabled_confirmed = True
+                            break
+            
+            workflow_steps.append({
+                "step": "Verify Database Persistence",
+                "success": True,
+                "response_time_ms": verify_result["response_time_ms"],
+                "messages_disabled_in_db": messages_disabled_confirmed
+            })
+            
+            print(f"    {'✅' if messages_disabled_confirmed else '❌'} Database persistence verified: {messages_disabled_confirmed}")
+        else:
+            workflow_steps.append({
+                "step": "Verify Database Persistence",
+                "success": False,
+                "error": verify_result.get("error")
+            })
+            print(f"    ❌ Failed to verify database persistence: {verify_result.get('error')}")
+        
+        # Step 5: Test user menu settings filtering (admin user)
+        print("  Step 5: Testing admin user menu settings filtering...")
+        admin_user_menu_result = await self.make_request(f"/menu-settings/user/{self.admin_user_id}", headers=admin_headers)
+        
+        admin_messages_filtered = False
+        if admin_user_menu_result["success"]:
+            admin_user_menu = admin_user_menu_result["data"]
+            
+            # Check if messages is filtered out for admin user
+            messages_found_in_admin = False
+            for menu_type in ["mobile_menu", "desktop_menu"]:
+                if menu_type in admin_user_menu:
+                    for item in admin_user_menu[menu_type]:
+                        if item.get("key") == "messages":
+                            messages_found_in_admin = True
+                            break
+            
+            admin_messages_filtered = not messages_found_in_admin
+            
+            workflow_steps.append({
+                "step": "Admin User Filtering",
+                "success": True,
+                "response_time_ms": admin_user_menu_result["response_time_ms"],
+                "messages_filtered_for_admin": admin_messages_filtered
+            })
+            
+            print(f"    {'✅' if admin_messages_filtered else '❌'} Messages filtered for admin: {admin_messages_filtered}")
+        else:
+            workflow_steps.append({
+                "step": "Admin User Filtering",
+                "success": False,
+                "error": admin_user_menu_result.get("error")
+            })
+            print(f"    ❌ Failed to test admin user filtering: {admin_user_menu_result.get('error')}")
+        
+        # Step 6: Test user menu settings filtering (demo user)
+        print("  Step 6: Testing demo user menu settings filtering...")
+        demo_headers = {"Authorization": f"Bearer {self.demo_token}"}
+        demo_user_menu_result = await self.make_request(f"/menu-settings/user/{self.demo_user_id}", headers=demo_headers)
+        
+        demo_messages_filtered = False
+        if demo_user_menu_result["success"]:
+            demo_user_menu = demo_user_menu_result["data"]
+            
+            # Check if messages is filtered out for demo user
+            messages_found_in_demo = False
+            for menu_type in ["mobile_menu", "desktop_menu"]:
+                if menu_type in demo_user_menu:
+                    for item in demo_user_menu[menu_type]:
+                        if item.get("key") == "messages":
+                            messages_found_in_demo = True
+                            break
+            
+            demo_messages_filtered = not messages_found_in_demo
+            
+            workflow_steps.append({
+                "step": "Demo User Filtering",
+                "success": True,
+                "response_time_ms": demo_user_menu_result["response_time_ms"],
+                "messages_filtered_for_demo": demo_messages_filtered
+            })
+            
+            print(f"    {'✅' if demo_messages_filtered else '❌'} Messages filtered for demo user: {demo_messages_filtered}")
+        else:
+            workflow_steps.append({
+                "step": "Demo User Filtering",
+                "success": False,
+                "error": demo_user_menu_result.get("error")
+            })
+            print(f"    ❌ Failed to test demo user filtering: {demo_user_menu_result.get('error')}")
+        
+        # Calculate overall workflow success
+        successful_steps = [s for s in workflow_steps if s["success"]]
+        workflow_complete = len(successful_steps) == len(workflow_steps)
+        
+        # Check critical functionality
+        database_persistence_working = any(s.get("messages_disabled_in_db") for s in workflow_steps)
+        user_filtering_working = any(s.get("messages_filtered_for_admin") for s in workflow_steps) and any(s.get("messages_filtered_for_demo") for s in workflow_steps)
+        
+        return {
+            "test_name": "Menu Visibility Workflow Test",
+            "total_workflow_steps": len(workflow_steps),
+            "successful_steps": len(successful_steps),
+            "workflow_success_rate": len(successful_steps) / len(workflow_steps) * 100,
+            "complete_workflow_working": workflow_complete,
+            "database_persistence_working": database_persistence_working,
+            "user_filtering_working": user_filtering_working,
+            "admin_filtering_working": any(s.get("messages_filtered_for_admin") for s in workflow_steps),
+            "demo_filtering_working": any(s.get("messages_filtered_for_demo") for s in workflow_steps),
+            "messages_disabled_successfully": any(s.get("messages_disabled") for s in workflow_steps),
+            "detailed_workflow_steps": workflow_steps
+        }
+    
+    async def test_different_user_role_testing(self) -> Dict:
+        """Test 3: Different User Role Testing - Test visibility with different user types"""
+        print("👥 Testing Different User Role Visibility...")
+        
+        if not self.admin_token or not self.demo_token:
+            return {"test_name": "Different User Role Testing", "error": "Authentication required"}
+        
+        role_visibility_tests = []
+        
+        # Test admin user visibility
+        print("  Testing admin user role-based visibility...")
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        admin_menu_result = await self.make_request(f"/menu-settings/user/{self.admin_user_id}", headers=admin_headers)
+        
+        if admin_menu_result["success"]:
+            admin_menu = admin_menu_result["data"]
+            
+            # Check admin-only items
+            admin_only_items = []
+            seller_items = []
+            buyer_items = []
+            
+            for menu_type in ["mobile_menu", "desktop_menu"]:
+                if menu_type in admin_menu:
+                    for item in admin_menu[menu_type]:
+                        item_key = item.get("key", "")
+                        if item_key in ["admin_panel", "admin_drawer"]:
+                            admin_only_items.append(item)
+                        elif item_key in ["create_listing", "my_listings", "listings"]:
+                            seller_items.append(item)
+                        elif item_key in ["browse", "favorites", "profile"]:
+                            buyer_items.append(item)
+            
+            admin_can_see_admin_items = len(admin_only_items) > 0
+            admin_can_see_seller_items = len(seller_items) > 0  # Admin should see seller items too
+            
+            role_visibility_tests.append({
+                "user_type": "admin",
+                "user_id": self.admin_user_id,
+                "response_time_ms": admin_menu_result["response_time_ms"],
+                "can_see_admin_items": admin_can_see_admin_items,
+                "can_see_seller_items": admin_can_see_seller_items,
+                "admin_items_count": len(admin_only_items),
+                "seller_items_count": len(seller_items),
+                "buyer_items_count": len(buyer_items),
+                "role_restrictions_working": admin_can_see_admin_items,
+                "success": True
+            })
+            
+            print(f"    ✅ Admin menu retrieved ({admin_menu_result['response_time_ms']:.0f}ms)")
+            print(f"    {'✅' if admin_can_see_admin_items else '❌'} Admin can see admin-only items: {admin_can_see_admin_items} ({len(admin_only_items)} items)")
+            print(f"    {'✅' if admin_can_see_seller_items else '❌'} Admin can see seller items: {admin_can_see_seller_items} ({len(seller_items)} items)")
+        else:
+            role_visibility_tests.append({
+                "user_type": "admin",
+                "user_id": self.admin_user_id,
+                "error": admin_menu_result.get("error"),
+                "success": False
+            })
+            print(f"    ❌ Admin menu retrieval failed: {admin_menu_result.get('error')}")
+        
+        # Test demo user (buyer) visibility
+        print("  Testing demo user (buyer) role-based visibility...")
+        demo_headers = {"Authorization": f"Bearer {self.demo_token}"}
+        demo_menu_result = await self.make_request(f"/menu-settings/user/{self.demo_user_id}", headers=demo_headers)
+        
+        if demo_menu_result["success"]:
+            demo_menu = demo_menu_result["data"]
+            
+            # Check what demo user can see
+            admin_only_items = []
+            seller_items = []
+            buyer_items = []
+            
+            for menu_type in ["mobile_menu", "desktop_menu"]:
+                if menu_type in demo_menu:
+                    for item in demo_menu[menu_type]:
+                        item_key = item.get("key", "")
+                        if item_key in ["admin_panel", "admin_drawer"]:
+                            admin_only_items.append(item)
+                        elif item_key in ["create_listing", "my_listings", "listings"]:
+                            seller_items.append(item)
+                        elif item_key in ["browse", "favorites", "profile"]:
+                            buyer_items.append(item)
+            
+            demo_cannot_see_admin_items = len(admin_only_items) == 0
+            demo_cannot_see_seller_items = len(seller_items) == 0
+            demo_can_see_buyer_items = len(buyer_items) > 0
+            
+            role_visibility_tests.append({
+                "user_type": "buyer",
+                "user_id": self.demo_user_id,
+                "response_time_ms": demo_menu_result["response_time_ms"],
+                "cannot_see_admin_items": demo_cannot_see_admin_items,
+                "cannot_see_seller_items": demo_cannot_see_seller_items,
+                "can_see_buyer_items": demo_can_see_buyer_items,
+                "admin_items_count": len(admin_only_items),
+                "seller_items_count": len(seller_items),
+                "buyer_items_count": len(buyer_items),
+                "role_restrictions_working": demo_cannot_see_admin_items and demo_cannot_see_seller_items and demo_can_see_buyer_items,
+                "success": True
+            })
+            
+            print(f"    ✅ Demo user menu retrieved ({demo_menu_result['response_time_ms']:.0f}ms)")
+            print(f"    {'✅' if demo_cannot_see_admin_items else '❌'} Demo user cannot see admin items: {demo_cannot_see_admin_items} ({len(admin_only_items)} items)")
+            print(f"    {'✅' if demo_cannot_see_seller_items else '❌'} Demo user cannot see seller items: {demo_cannot_see_seller_items} ({len(seller_items)} items)")
+            print(f"    {'✅' if demo_can_see_buyer_items else '❌'} Demo user can see buyer items: {demo_can_see_buyer_items} ({len(buyer_items)} items)")
+        else:
+            role_visibility_tests.append({
+                "user_type": "buyer",
+                "user_id": self.demo_user_id,
+                "error": demo_menu_result.get("error"),
+                "success": False
+            })
+            print(f"    ❌ Demo user menu retrieval failed: {demo_menu_result.get('error')}")
+        
+        # Calculate overall success
+        successful_tests = [t for t in role_visibility_tests if t["success"]]
+        admin_role_restrictions_working = any(t.get("role_restrictions_working") for t in role_visibility_tests if t["user_type"] == "admin")
+        buyer_role_restrictions_working = any(t.get("role_restrictions_working") for t in role_visibility_tests if t["user_type"] == "buyer")
+        
+        return {
+            "test_name": "Different User Role Testing",
+            "total_users_tested": len(role_visibility_tests),
+            "successful_tests": len(successful_tests),
+            "admin_role_restrictions_working": admin_role_restrictions_working,
+            "buyer_role_restrictions_working": buyer_role_restrictions_working,
+            "role_based_filtering_working": admin_role_restrictions_working and buyer_role_restrictions_working,
+            "admin_can_see_admin_items": any(t.get("can_see_admin_items") for t in role_visibility_tests if t["user_type"] == "admin"),
+            "buyer_cannot_see_seller_items": any(t.get("cannot_see_seller_items") for t in role_visibility_tests if t["user_type"] == "buyer"),
+            "buyer_cannot_see_admin_items": any(t.get("cannot_see_admin_items") for t in role_visibility_tests if t["user_type"] == "buyer"),
+            "detailed_role_visibility_tests": role_visibility_tests
+        }
+    
+    async def test_complete_end_to_end_scenario(self) -> Dict:
+        """Test 4: Complete End-to-End Scenario - Realistic admin scenario"""
+        print("🎯 Testing Complete End-to-End Scenario...")
+        
+        if not self.admin_token or not self.demo_token:
+            return {"test_name": "Complete End-to-End Scenario", "error": "Authentication required"}
+        
+        scenario_steps = []
+        
+        # Step 1: Admin logs in and gets current menu settings
+        print("  Step 1: Admin retrieves current menu settings...")
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        current_settings_result = await self.make_request("/admin/menu-settings", headers=admin_headers)
+        
+        if current_settings_result["success"]:
+            current_settings = current_settings_result["data"]
+            
+            scenario_steps.append({
+                "step": "Admin Get Current Settings",
+                "success": True,
+                "response_time_ms": current_settings_result["response_time_ms"]
+            })
+            
+            print(f"    ✅ Admin retrieved current settings ({current_settings_result['response_time_ms']:.0f}ms)")
+        else:
+            scenario_steps.append({
+                "step": "Admin Get Current Settings",
+                "success": False,
+                "error": current_settings_result.get("error")
+            })
+            print(f"    ❌ Failed to get current settings: {current_settings_result.get('error')}")
+            return {"test_name": "Complete End-to-End Scenario", "error": "Failed to get current settings"}
+        
+        # Step 2: Admin disables "Messages" for all users
+        print("  Step 2: Admin disables 'Messages' for all users...")
+        
+        modified_settings = current_settings.copy()
+        messages_disabled = False
+        
+        # Disable messages in both desktop and mobile menus
+        for menu_type in ["desktop_menu", "mobile_menu"]:
+            if menu_type in modified_settings:
+                for item in modified_settings[menu_type]:
+                    if item.get("key") == "messages":
+                        item["enabled"] = False
+                        messages_disabled = True
+                        print(f"    📝 Disabled 'messages' in {menu_type}")
+        
+        if not messages_disabled:
+            print("    ⚠️ Messages item not found to disable")
+            return {"test_name": "Complete End-to-End Scenario", "error": "Messages item not found"}
+        
+        # Save the modified settings
+        save_result = await self.make_request("/admin/menu-settings", "POST", data=modified_settings, headers=admin_headers)
+        
+        if save_result["success"]:
+            scenario_steps.append({
+                "step": "Admin Disable Messages",
+                "success": True,
+                "response_time_ms": save_result["response_time_ms"],
+                "messages_disabled": True
+            })
+            
+            print(f"    ✅ Messages disabled and saved ({save_result['response_time_ms']:.0f}ms)")
+        else:
+            scenario_steps.append({
+                "step": "Admin Disable Messages",
+                "success": False,
+                "error": save_result.get("error")
+            })
+            print(f"    ❌ Failed to save disabled messages: {save_result.get('error')}")
+            return {"test_name": "Complete End-to-End Scenario", "error": "Failed to save disabled messages"}
+        
+        # Step 3: Demo user (buyer) should not receive "Messages" in their menu settings
+        print("  Step 3: Verifying demo user does not receive 'Messages'...")
+        demo_headers = {"Authorization": f"Bearer {self.demo_token}"}
+        demo_menu_result = await self.make_request(f"/menu-settings/user/{self.demo_user_id}", headers=demo_headers)
+        
+        demo_messages_hidden = False
+        if demo_menu_result["success"]:
+            demo_menu = demo_menu_result["data"]
+            
+            # Check if messages is NOT in demo user's menu
+            messages_found = False
+            for menu_type in ["desktop_menu", "mobile_menu"]:
+                if menu_type in demo_menu:
+                    for item in demo_menu[menu_type]:
+                        if item.get("key") == "messages":
+                            messages_found = True
+                            break
+            
+            demo_messages_hidden = not messages_found
+            
+            scenario_steps.append({
+                "step": "Demo User Messages Hidden",
+                "success": True,
+                "response_time_ms": demo_menu_result["response_time_ms"],
+                "messages_hidden_from_demo": demo_messages_hidden
+            })
+            
+            print(f"    {'✅' if demo_messages_hidden else '❌'} Messages hidden from demo user: {demo_messages_hidden}")
+        else:
+            scenario_steps.append({
+                "step": "Demo User Messages Hidden",
+                "success": False,
+                "error": demo_menu_result.get("error")
+            })
+            print(f"    ❌ Failed to get demo user menu: {demo_menu_result.get('error')}")
+        
+        # Step 4: Admin user should still see "Messages" if it's enabled for admin role (check role-based vs disabled)
+        print("  Step 4: Checking admin user Messages visibility...")
+        admin_menu_result = await self.make_request(f"/menu-settings/user/{self.admin_user_id}", headers=admin_headers)
+        
+        admin_messages_behavior = "unknown"
+        if admin_menu_result["success"]:
+            admin_menu = admin_menu_result["data"]
+            
+            # Check if admin sees messages (should be hidden due to disabled setting)
+            admin_messages_found = False
+            for menu_type in ["desktop_menu", "mobile_menu"]:
+                if menu_type in admin_menu:
+                    for item in admin_menu[menu_type]:
+                        if item.get("key") == "messages":
+                            admin_messages_found = True
+                            break
+            
+            # Admin should also NOT see messages when it's disabled globally
+            admin_messages_behavior = "hidden" if not admin_messages_found else "visible"
+            admin_behavior_correct = not admin_messages_found  # Should be hidden for admin too
+            
+            scenario_steps.append({
+                "step": "Admin User Messages Behavior",
+                "success": True,
+                "response_time_ms": admin_menu_result["response_time_ms"],
+                "admin_messages_behavior": admin_messages_behavior,
+                "admin_behavior_correct": admin_behavior_correct
+            })
+            
+            print(f"    {'✅' if admin_behavior_correct else '❌'} Admin messages behavior: {admin_messages_behavior} (correct: {admin_behavior_correct})")
+        else:
+            scenario_steps.append({
+                "step": "Admin User Messages Behavior",
+                "success": False,
+                "error": admin_menu_result.get("error")
+            })
+            print(f"    ❌ Failed to get admin user menu: {admin_menu_result.get('error')}")
+        
+        # Step 5: Test scenario where items are disabled vs role-restricted
+        print("  Step 5: Testing disabled vs role-restricted scenarios...")
+        
+        # Check if admin can see admin-only items (should still work)
+        admin_only_items_count = 0
+        if admin_menu_result["success"]:
+            admin_menu = admin_menu_result["data"]
+            
+            for menu_type in ["desktop_menu", "mobile_menu"]:
+                if menu_type in admin_menu:
+                    for item in admin_menu[menu_type]:
+                        if item.get("key") in ["admin_panel", "admin_drawer"]:
+                            admin_only_items_count += 1
+        
+        role_restrictions_still_working = admin_only_items_count > 0
+        
+        scenario_steps.append({
+            "step": "Disabled vs Role-Restricted Test",
+            "success": True,
+            "role_restrictions_still_working": role_restrictions_still_working,
+            "admin_only_items_count": admin_only_items_count,
+            "disabled_items_filtered": demo_messages_hidden,
+            "role_and_disabled_both_working": role_restrictions_still_working and demo_messages_hidden
+        })
+        
+        print(f"    {'✅' if role_restrictions_still_working else '❌'} Role restrictions still working: {role_restrictions_still_working}")
+        print(f"    {'✅' if demo_messages_hidden else '❌'} Disabled items filtered: {demo_messages_hidden}")
+        
+        # Calculate overall scenario success
+        successful_steps = [s for s in scenario_steps if s["success"]]
+        scenario_complete = len(successful_steps) == len(scenario_steps)
+        
+        # Check critical end-to-end functionality
+        admin_can_disable = any(s.get("messages_disabled") for s in scenario_steps)
+        demo_user_filtered = any(s.get("messages_hidden_from_demo") for s in scenario_steps)
+        admin_behavior_correct = any(s.get("admin_behavior_correct") for s in scenario_steps)
+        role_and_disabled_working = any(s.get("role_and_disabled_both_working") for s in scenario_steps)
+        
+        return {
+            "test_name": "Complete End-to-End Scenario",
+            "total_scenario_steps": len(scenario_steps),
+            "successful_steps": len(successful_steps),
+            "scenario_success_rate": len(successful_steps) / len(scenario_steps) * 100,
+            "complete_scenario_working": scenario_complete,
+            "admin_can_disable_items": admin_can_disable,
+            "demo_user_properly_filtered": demo_user_filtered,
+            "admin_behavior_correct": admin_behavior_correct,
+            "role_restrictions_and_disabled_both_working": role_and_disabled_working,
+            "end_to_end_workflow_functional": admin_can_disable and demo_user_filtered and role_and_disabled_working,
+            "detailed_scenario_steps": scenario_steps
+        }
     
     async def run_comprehensive_menu_settings_test(self) -> Dict:
-        """Run all Menu Settings tests"""
-        print("🚀 Starting Menu Settings Authentication Testing")
-        print("=" * 60)
+        """Run all Menu Settings visibility tests"""
+        print("🚀 Starting Menu Settings Visibility Functionality End-to-End Testing")
+        print("=" * 80)
         
         await self.setup()
         
         try:
+            # Authenticate users first
+            auth_result = await self.authenticate_users()
+            if not auth_result["success"]:
+                return {"error": "Authentication failed", "details": auth_result}
+            
             # Run all test suites
-            admin_jwt_test = await self.test_admin_login_jwt_token()
-            auth_test = await self.test_menu_settings_authentication()
-            data_structure_test = await self.test_menu_settings_data_structure()
-            frontend_integration_test = await self.test_frontend_integration()
-            demo_access_test = await self.test_demo_user_access()
+            role_mapping_test = await self.test_role_mapping_verification()
+            menu_visibility_test = await self.test_menu_visibility_workflow()
+            user_role_test = await self.test_different_user_role_testing()
+            end_to_end_test = await self.test_complete_end_to_end_scenario()
             
             # Compile overall results
             all_results = {
                 "test_timestamp": datetime.now().isoformat(),
-                "backend_url": BACKEND_URL,
-                "admin_jwt_test": admin_jwt_test,
-                "menu_settings_auth_test": auth_test,
-                "data_structure_test": data_structure_test,
-                "frontend_integration_test": frontend_integration_test,
-                "demo_user_access_test": demo_access_test
+                "authentication": auth_result,
+                "role_mapping_verification": role_mapping_test,
+                "menu_visibility_workflow": menu_visibility_test,
+                "different_user_role_testing": user_role_test,
+                "complete_end_to_end_scenario": end_to_end_test
             }
             
             # Calculate overall success metrics
             test_results = [
-                admin_jwt_test.get("all_requirements_met", False),
-                auth_test.get("all_auth_requirements_met", False),
-                data_structure_test.get("all_requirements_met", False),
-                frontend_integration_test.get("all_integration_working", False),
-                demo_access_test.get("access_properly_restricted", False)
+                role_mapping_test.get("role_mapping_fix_successful", False),
+                menu_visibility_test.get("complete_workflow_working", False),
+                user_role_test.get("role_based_filtering_working", False),
+                end_to_end_test.get("end_to_end_workflow_functional", False)
             ]
             
             overall_success_rate = sum(test_results) / len(test_results) * 100
             
             all_results["summary"] = {
                 "overall_success_rate": overall_success_rate,
-                "jwt_token_generation_working": admin_jwt_test.get("all_requirements_met", False),
-                "menu_settings_auth_working": auth_test.get("all_auth_requirements_met", False),
-                "data_structure_working": data_structure_test.get("all_requirements_met", False),
-                "frontend_integration_working": frontend_integration_test.get("all_integration_working", False),
-                "access_control_working": demo_access_test.get("access_properly_restricted", False),
-                "all_tests_passed": overall_success_rate == 100,
-                "menu_settings_fully_operational": all(test_results)
+                "role_mapping_fix_working": role_mapping_test.get("role_mapping_fix_successful", False),
+                "menu_visibility_workflow_working": menu_visibility_test.get("complete_workflow_working", False),
+                "role_based_filtering_working": user_role_test.get("role_based_filtering_working", False),
+                "end_to_end_scenario_working": end_to_end_test.get("end_to_end_workflow_functional", False),
+                "admin_role_mapping_correct": role_mapping_test.get("admin_role_mapping_working", False),
+                "buyer_role_mapping_correct": role_mapping_test.get("buyer_role_mapping_working", False),
+                "database_persistence_working": menu_visibility_test.get("database_persistence_working", False),
+                "user_filtering_working": menu_visibility_test.get("user_filtering_working", False),
+                "admin_can_see_admin_items": user_role_test.get("admin_can_see_admin_items", False),
+                "buyer_cannot_see_seller_items": user_role_test.get("buyer_cannot_see_seller_items", False),
+                "all_tests_passed": overall_success_rate == 100
             }
             
             return all_results
@@ -553,711 +854,50 @@ class MenuSettingsTester:
         finally:
             await self.cleanup()
 
+
 async def main():
-    """Main test execution"""
-    tester = MenuSettingsTester()
+    """Main test execution function"""
+    tester = MenuSettingsVisibilityTester()
     results = await tester.run_comprehensive_menu_settings_test()
     
-    print("\n" + "=" * 60)
-    print("📊 MENU SETTINGS TEST RESULTS SUMMARY")
-    print("=" * 60)
+    print("\n" + "=" * 80)
+    print("📊 MENU SETTINGS VISIBILITY TEST RESULTS SUMMARY")
+    print("=" * 80)
     
     summary = results.get("summary", {})
     
-    print(f"Overall Success Rate: {summary.get('overall_success_rate', 0):.1f}%")
-    print(f"JWT Token Generation: {'✅' if summary.get('jwt_token_generation_working') else '❌'}")
-    print(f"Menu Settings Auth: {'✅' if summary.get('menu_settings_auth_working') else '❌'}")
-    print(f"Data Structure: {'✅' if summary.get('data_structure_working') else '❌'}")
-    print(f"Frontend Integration: {'✅' if summary.get('frontend_integration_working') else '❌'}")
-    print(f"Access Control: {'✅' if summary.get('access_control_working') else '❌'}")
+    print(f"🎯 Overall Success Rate: {summary.get('overall_success_rate', 0):.1f}%")
+    print(f"🔐 Role Mapping Fix: {'✅ WORKING' if summary.get('role_mapping_fix_working') else '❌ FAILED'}")
+    print(f"👁️ Menu Visibility Workflow: {'✅ WORKING' if summary.get('menu_visibility_workflow_working') else '❌ FAILED'}")
+    print(f"👥 Role-Based Filtering: {'✅ WORKING' if summary.get('role_based_filtering_working') else '❌ FAILED'}")
+    print(f"🎯 End-to-End Scenario: {'✅ WORKING' if summary.get('end_to_end_scenario_working') else '❌ FAILED'}")
     
-    if summary.get('menu_settings_fully_operational'):
-        print("\n🎉 ALL MENU SETTINGS TESTS PASSED - FUNCTIONALITY WORKING PERFECTLY!")
+    print("\n📋 Detailed Results:")
+    print(f"   Admin Role Mapping: {'✅' if summary.get('admin_role_mapping_correct') else '❌'}")
+    print(f"   Buyer Role Mapping: {'✅' if summary.get('buyer_role_mapping_correct') else '❌'}")
+    print(f"   Database Persistence: {'✅' if summary.get('database_persistence_working') else '❌'}")
+    print(f"   User Filtering: {'✅' if summary.get('user_filtering_working') else '❌'}")
+    print(f"   Admin Can See Admin Items: {'✅' if summary.get('admin_can_see_admin_items') else '❌'}")
+    print(f"   Buyer Cannot See Seller Items: {'✅' if summary.get('buyer_cannot_see_seller_items') else '❌'}")
+    
+    if summary.get('all_tests_passed'):
+        print("\n🎉 ALL MENU SETTINGS VISIBILITY TESTS PASSED!")
+        print("✅ Role mapping fixes are working correctly")
+        print("✅ Navigation integration is functional")
+        print("✅ Complete visibility workflow is operational")
     else:
-        print("\n⚠️ Some Menu Settings tests failed - see detailed results above")
+        print("\n⚠️ SOME TESTS FAILED - Review detailed results above")
+    
+    print("=" * 80)
+    
+    # Save detailed results to file
+    with open('/app/menu_settings_test_results.json', 'w') as f:
+        json.dump(results, f, indent=2, default=str)
+    
+    print("📄 Detailed results saved to: /app/menu_settings_test_results.json")
     
     return results
 
-if __name__ == "__main__":
-    asyncio.run(main())
-"""
-Menu Settings API Testing
-Comprehensive testing of Menu Settings API functionality end-to-end
-"""
-
-import asyncio
-import aiohttp
-import time
-import json
-import statistics
-from datetime import datetime
-from typing import Dict, List, Any
-
-# Test Configuration
-BACKEND_URL = "https://market-guardian.preview.emergentagent.com/api"
-
-# Admin User Configuration
-ADMIN_EMAIL = "admin@cataloro.com"
-ADMIN_USERNAME = "sash_admin"
-ADMIN_ROLE = "admin"
-ADMIN_ID = "admin_user_1"
-
-class MenuSettingsTester:
-    def __init__(self):
-        self.session = None
-        self.test_results = []
-        self.admin_token = None
-        
-    async def setup(self):
-        """Initialize HTTP session"""
-        self.session = aiohttp.ClientSession()
-        
-    async def cleanup(self):
-        """Cleanup HTTP session"""
-        if self.session:
-            await self.session.close()
-    
-    async def make_request(self, endpoint: str, method: str = "GET", params: Dict = None, data: Dict = None, headers: Dict = None) -> Dict:
-        """Make HTTP request and measure response time"""
-        start_time = time.time()
-        
-        try:
-            request_kwargs = {}
-            if params:
-                request_kwargs['params'] = params
-            if data:
-                request_kwargs['json'] = data
-            if headers:
-                request_kwargs['headers'] = headers
-            
-            async with self.session.request(method, f"{BACKEND_URL}{endpoint}", **request_kwargs) as response:
-                end_time = time.time()
-                response_time_ms = (end_time - start_time) * 1000
-                
-                try:
-                    response_data = await response.json()
-                except:
-                    response_data = await response.text()
-                
-                return {
-                    "success": response.status in [200, 201],
-                    "response_time_ms": response_time_ms,
-                    "data": response_data,
-                    "status": response.status
-                }
-        except Exception as e:
-            end_time = time.time()
-            response_time_ms = (end_time - start_time) * 1000
-            return {
-                "success": False,
-                "response_time_ms": response_time_ms,
-                "error": str(e),
-                "status": 0
-            }
-    
-    async def authenticate_admin(self) -> bool:
-        """Authenticate as admin user"""
-        print("🔐 Authenticating as admin user...")
-        
-        login_data = {
-            "email": "admin@cataloro.com",
-            "password": "admin_password"
-        }
-        
-        result = await self.make_request("/auth/login", "POST", data=login_data)
-        
-        if result["success"]:
-            self.admin_token = result["data"].get("token", "")
-            print(f"  ✅ Admin authentication successful")
-            return True
-        else:
-            print(f"  ❌ Admin authentication failed: {result.get('error')}")
-            return False
-    
-    async def test_get_default_menu_settings(self) -> Dict:
-        """Test GET /api/admin/menu-settings - should return default menu configuration"""
-        print("📋 Testing GET /api/admin/menu-settings (default configuration)...")
-        
-        result = await self.make_request("/admin/menu-settings")
-        
-        if result["success"]:
-            menu_data = result["data"]
-            
-            # Validate structure
-            has_desktop_menu = "desktop_menu" in menu_data
-            has_mobile_menu = "mobile_menu" in menu_data
-            
-            # Check default desktop menu items
-            desktop_menu = menu_data.get("desktop_menu", {})
-            expected_desktop_items = ["about", "browse", "create_listing", "messages", "tenders", "profile", "admin_panel", "buy_management", "my_listings", "favorites"]
-            desktop_items_present = all(item in desktop_menu for item in expected_desktop_items)
-            
-            # Check default mobile menu items
-            mobile_menu = menu_data.get("mobile_menu", {})
-            expected_mobile_items = ["browse", "messages", "create", "tenders", "listings", "profile", "admin_drawer"]
-            mobile_items_present = all(item in mobile_menu for item in expected_mobile_items)
-            
-            # Check role configurations
-            desktop_roles_valid = True
-            mobile_roles_valid = True
-            
-            for item_key, item_config in desktop_menu.items():
-                if not isinstance(item_config.get("roles", []), list):
-                    desktop_roles_valid = False
-                    break
-                if not isinstance(item_config.get("enabled", True), bool):
-                    desktop_roles_valid = False
-                    break
-            
-            for item_key, item_config in mobile_menu.items():
-                if not isinstance(item_config.get("roles", []), list):
-                    mobile_roles_valid = False
-                    break
-                if not isinstance(item_config.get("enabled", True), bool):
-                    mobile_roles_valid = False
-                    break
-            
-            print(f"  ✅ Default menu settings retrieved successfully")
-            print(f"  📱 Desktop menu items: {len(desktop_menu)} (expected: {len(expected_desktop_items)})")
-            print(f"  📱 Mobile menu items: {len(mobile_menu)} (expected: {len(expected_mobile_items)})")
-            
-            return {
-                "test_name": "Get Default Menu Settings",
-                "success": True,
-                "response_time_ms": result["response_time_ms"],
-                "has_desktop_menu": has_desktop_menu,
-                "has_mobile_menu": has_mobile_menu,
-                "desktop_items_count": len(desktop_menu),
-                "mobile_items_count": len(mobile_menu),
-                "desktop_items_present": desktop_items_present,
-                "mobile_items_present": mobile_items_present,
-                "desktop_roles_valid": desktop_roles_valid,
-                "mobile_roles_valid": mobile_roles_valid,
-                "structure_valid": has_desktop_menu and has_mobile_menu and desktop_roles_valid and mobile_roles_valid,
-                "menu_data": menu_data
-            }
-        else:
-            print(f"  ❌ Failed to get default menu settings: {result.get('error')}")
-            return {
-                "test_name": "Get Default Menu Settings",
-                "success": False,
-                "error": result.get("error"),
-                "response_time_ms": result["response_time_ms"],
-                "status": result["status"]
-            }
-    
-    async def test_update_menu_settings(self) -> Dict:
-        """Test POST /api/admin/menu-settings - test updating menu settings"""
-        print("✏️ Testing POST /api/admin/menu-settings (update configuration)...")
-        
-        # Test data with some items disabled and role changes
-        # Note: Using both legacy roles (admin, user) and new roles (buyer, seller) for compatibility
-        test_settings = {
-            "desktop_menu": {
-                "about": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "create_listing": {"enabled": False, "roles": ["admin", "manager", "seller"]},  # Disabled for testing
-                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "tenders": {"enabled": True, "roles": ["admin", "manager"]},  # Limited to admin/manager only
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "admin_panel": {"enabled": True, "roles": ["admin"]},  # Admin only
-                "buy_management": {"enabled": True, "roles": ["admin", "manager", "buyer", "user"]},
-                "my_listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "favorites": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer", "user"]}  # Disabled for testing
-            },
-            "mobile_menu": {
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "create": {"enabled": False, "roles": ["admin", "manager", "seller"]},  # Disabled for testing
-                "tenders": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "admin_drawer": {"enabled": True, "roles": ["admin"]}  # Admin only
-            }
-        }
-        
-        result = await self.make_request("/admin/menu-settings", "POST", data=test_settings)
-        
-        if result["success"]:
-            response_data = result["data"]
-            
-            # Validate response structure
-            has_message = "message" in response_data
-            has_settings = "settings" in response_data
-            
-            settings_data = response_data.get("settings", {})
-            desktop_updated = "desktop_menu" in settings_data
-            mobile_updated = "mobile_menu" in settings_data
-            
-            # Verify specific changes were applied
-            desktop_menu = settings_data.get("desktop_menu", {})
-            mobile_menu = settings_data.get("mobile_menu", {})
-            
-            create_listing_disabled = not desktop_menu.get("create_listing", {}).get("enabled", True)
-            favorites_disabled = not desktop_menu.get("favorites", {}).get("enabled", True)
-            mobile_create_disabled = not mobile_menu.get("create", {}).get("enabled", True)
-            
-            tenders_admin_only = set(desktop_menu.get("tenders", {}).get("roles", [])) == {"admin", "manager"}
-            admin_panel_admin_only = set(desktop_menu.get("admin_panel", {}).get("roles", [])) == {"admin"}
-            
-            print(f"  ✅ Menu settings updated successfully")
-            print(f"  🔧 Create listing disabled: {create_listing_disabled}")
-            print(f"  🔧 Favorites disabled: {favorites_disabled}")
-            print(f"  🔧 Tenders admin/manager only: {tenders_admin_only}")
-            
-            return {
-                "test_name": "Update Menu Settings",
-                "success": True,
-                "response_time_ms": result["response_time_ms"],
-                "has_message": has_message,
-                "has_settings": has_settings,
-                "desktop_updated": desktop_updated,
-                "mobile_updated": mobile_updated,
-                "create_listing_disabled": create_listing_disabled,
-                "favorites_disabled": favorites_disabled,
-                "mobile_create_disabled": mobile_create_disabled,
-                "tenders_admin_only": tenders_admin_only,
-                "admin_panel_admin_only": admin_panel_admin_only,
-                "update_successful": has_message and has_settings and desktop_updated and mobile_updated,
-                "test_settings": test_settings,
-                "response_data": response_data
-            }
-        else:
-            print(f"  ❌ Failed to update menu settings: {result.get('error')}")
-            return {
-                "test_name": "Update Menu Settings",
-                "success": False,
-                "error": result.get("error"),
-                "response_time_ms": result["response_time_ms"],
-                "status": result["status"]
-            }
-    
-    async def test_user_specific_menu_filtering(self) -> Dict:
-        """Test GET /api/menu-settings/user/{user_id} - test user-specific menu filtering"""
-        print("👤 Testing GET /api/menu-settings/user/{user_id} (user-specific filtering)...")
-        
-        # Test with admin user
-        admin_user_id = "admin_user_1"
-        admin_result = await self.make_request(f"/menu-settings/user/{admin_user_id}")
-        
-        # Test with demo user (buyer role)
-        demo_user_id = "68bfff790e4e46bc28d43631"
-        demo_result = await self.make_request(f"/menu-settings/user/{demo_user_id}")
-        
-        test_results = {
-            "admin_test": {},
-            "demo_test": {}
-        }
-        
-        # Process admin user results
-        if admin_result["success"]:
-            admin_data = admin_result["data"]
-            admin_role = admin_data.get("user_role", "unknown")
-            admin_desktop = admin_data.get("desktop_menu", {})
-            admin_mobile = admin_data.get("mobile_menu", {})
-            
-            # Admin should see admin_panel and tenders (based on our test settings)
-            admin_has_admin_panel = "admin_panel" in admin_desktop
-            admin_has_tenders = "tenders" in admin_desktop
-            admin_missing_disabled = "create_listing" not in admin_desktop and "favorites" not in admin_desktop
-            
-            test_results["admin_test"] = {
-                "success": True,
-                "response_time_ms": admin_result["response_time_ms"],
-                "user_role": admin_role,
-                "desktop_items_count": len(admin_desktop),
-                "mobile_items_count": len(admin_mobile),
-                "has_admin_panel": admin_has_admin_panel,
-                "has_tenders": admin_has_tenders,
-                "missing_disabled_items": admin_missing_disabled,
-                "role_filtering_correct": admin_has_admin_panel and admin_has_tenders
-            }
-            
-            print(f"  ✅ Admin user menu retrieved (role: {admin_role})")
-            print(f"  📋 Desktop items: {len(admin_desktop)}, Mobile items: {len(admin_mobile)}")
-            print(f"  🔑 Has admin panel: {admin_has_admin_panel}, Has tenders: {admin_has_tenders}")
-        else:
-            test_results["admin_test"] = {
-                "success": False,
-                "error": admin_result.get("error"),
-                "response_time_ms": admin_result["response_time_ms"]
-            }
-            print(f"  ❌ Failed to get admin user menu: {admin_result.get('error')}")
-        
-        # Process demo user results
-        if demo_result["success"]:
-            demo_data = demo_result["data"]
-            demo_role = demo_data.get("user_role", "unknown")
-            demo_desktop = demo_data.get("desktop_menu", {})
-            demo_mobile = demo_data.get("mobile_menu", {})
-            
-            # Demo user (buyer) should NOT see admin_panel, should see limited tenders based on our test settings
-            demo_missing_admin_panel = "admin_panel" not in demo_desktop
-            demo_missing_tenders = "tenders" not in demo_desktop  # We limited tenders to admin/manager only
-            demo_missing_disabled = "create_listing" not in demo_desktop and "favorites" not in demo_desktop
-            
-            test_results["demo_test"] = {
-                "success": True,
-                "response_time_ms": demo_result["response_time_ms"],
-                "user_role": demo_role,
-                "desktop_items_count": len(demo_desktop),
-                "mobile_items_count": len(demo_mobile),
-                "missing_admin_panel": demo_missing_admin_panel,
-                "missing_tenders": demo_missing_tenders,
-                "missing_disabled_items": demo_missing_disabled,
-                "role_filtering_correct": demo_missing_admin_panel and demo_missing_tenders
-            }
-            
-            print(f"  ✅ Demo user menu retrieved (role: {demo_role})")
-            print(f"  📋 Desktop items: {len(demo_desktop)}, Mobile items: {len(demo_mobile)}")
-            print(f"  🚫 Missing admin panel: {demo_missing_admin_panel}, Missing tenders: {demo_missing_tenders}")
-        else:
-            test_results["demo_test"] = {
-                "success": False,
-                "error": demo_result.get("error"),
-                "response_time_ms": demo_result["response_time_ms"]
-            }
-            print(f"  ❌ Failed to get demo user menu: {demo_result.get('error')}")
-        
-        # Calculate overall success
-        admin_success = test_results["admin_test"].get("success", False)
-        demo_success = test_results["demo_test"].get("success", False)
-        admin_filtering = test_results["admin_test"].get("role_filtering_correct", False)
-        demo_filtering = test_results["demo_test"].get("role_filtering_correct", False)
-        
-        return {
-            "test_name": "User Specific Menu Filtering",
-            "admin_test_success": admin_success,
-            "demo_test_success": demo_success,
-            "admin_role_filtering_correct": admin_filtering,
-            "demo_role_filtering_correct": demo_filtering,
-            "both_users_tested": admin_success and demo_success,
-            "role_based_filtering_working": admin_filtering and demo_filtering,
-            "detailed_results": test_results
-        }
-    
-    async def test_menu_configuration_logic(self) -> Dict:
-        """Test menu configuration logic - toggling items and role assignments"""
-        print("⚙️ Testing menu configuration logic (toggle items and roles)...")
-        
-        # Test 1: Toggle specific items on/off
-        toggle_test_settings = {
-            "desktop_menu": {
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "messages": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer", "user"]},  # Disabled
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "admin_panel": {"enabled": True, "roles": ["admin", "manager"]}
-            },
-            "mobile_menu": {
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "messages": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer", "user"]},  # Disabled
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]}
-            }
-        }
-        
-        # Update settings
-        update_result = await self.make_request("/admin/menu-settings", "POST", data=toggle_test_settings)
-        
-        if not update_result["success"]:
-            return {
-                "test_name": "Menu Configuration Logic",
-                "success": False,
-                "error": f"Failed to update settings: {update_result.get('error')}",
-                "response_time_ms": update_result["response_time_ms"]
-            }
-        
-        # Test with different user roles
-        test_users = [
-            {"id": "admin_user_1", "expected_role": "admin"},
-            {"id": "68bfff790e4e46bc28d43631", "expected_role": "user"}  # Demo user
-        ]
-        
-        role_tests = []
-        
-        for user in test_users:
-            user_result = await self.make_request(f"/menu-settings/user/{user['id']}")
-            
-            if user_result["success"]:
-                user_data = user_result["data"]
-                desktop_menu = user_data.get("desktop_menu", {})
-                mobile_menu = user_data.get("mobile_menu", {})
-                
-                # Check that messages is disabled (should not appear)
-                messages_hidden_desktop = "messages" not in desktop_menu
-                messages_hidden_mobile = "messages" not in mobile_menu
-                
-                # Check that enabled items appear
-                browse_visible_desktop = "browse" in desktop_menu
-                profile_visible_desktop = "profile" in desktop_menu
-                
-                # Check role-based filtering
-                admin_panel_visibility = "admin_panel" in desktop_menu
-                admin_panel_correct = (admin_panel_visibility and user["expected_role"] == "admin") or (not admin_panel_visibility and user["expected_role"] != "admin")
-                
-                role_tests.append({
-                    "user_id": user["id"],
-                    "expected_role": user["expected_role"],
-                    "actual_role": user_data.get("user_role", "unknown"),
-                    "messages_hidden_desktop": messages_hidden_desktop,
-                    "messages_hidden_mobile": messages_hidden_mobile,
-                    "browse_visible": browse_visible_desktop,
-                    "profile_visible": profile_visible_desktop,
-                    "admin_panel_visibility_correct": admin_panel_correct,
-                    "toggle_logic_working": messages_hidden_desktop and messages_hidden_mobile and browse_visible_desktop,
-                    "role_logic_working": admin_panel_correct
-                })
-                
-                print(f"  👤 User {user['id']}: Messages hidden: {messages_hidden_desktop}, Admin panel correct: {admin_panel_correct}")
-            else:
-                role_tests.append({
-                    "user_id": user["id"],
-                    "success": False,
-                    "error": user_result.get("error")
-                })
-        
-        # Calculate overall success
-        successful_tests = [t for t in role_tests if t.get("toggle_logic_working", False) and t.get("role_logic_working", False)]
-        toggle_logic_working = all(t.get("toggle_logic_working", False) for t in role_tests if "toggle_logic_working" in t)
-        role_logic_working = all(t.get("role_logic_working", False) for t in role_tests if "role_logic_working" in t)
-        
-        return {
-            "test_name": "Menu Configuration Logic",
-            "success": len(successful_tests) > 0,
-            "users_tested": len(test_users),
-            "successful_tests": len(successful_tests),
-            "toggle_logic_working": toggle_logic_working,
-            "role_assignment_working": role_logic_working,
-            "both_desktop_mobile_working": toggle_logic_working,  # Both desktop and mobile tested
-            "configuration_logic_working": toggle_logic_working and role_logic_working,
-            "detailed_role_tests": role_tests
-        }
-    
-    async def test_admin_usage_simulation(self) -> Dict:
-        """Simulate admin usage - disable menu item and verify it doesn't appear for users"""
-        print("👨‍💼 Testing admin usage simulation (disable item and verify filtering)...")
-        
-        # Step 1: Admin disables a specific menu item
-        admin_disable_settings = {
-            "desktop_menu": {
-                "about": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "create_listing": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "tenders": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer", "user"]},  # DISABLED by admin
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "admin_panel": {"enabled": True, "roles": ["admin", "manager"]},
-                "buy_management": {"enabled": True, "roles": ["admin", "manager", "buyer", "user"]},
-                "my_listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "favorites": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]}
-            },
-            "mobile_menu": {
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "create": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "tenders": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer", "user"]},  # DISABLED by admin
-                "listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
-                "admin_drawer": {"enabled": True, "roles": ["admin", "manager"]}
-            }
-        }
-        
-        # Apply the admin's settings
-        update_result = await self.make_request("/admin/menu-settings", "POST", data=admin_disable_settings)
-        
-        if not update_result["success"]:
-            return {
-                "test_name": "Admin Usage Simulation",
-                "success": False,
-                "error": f"Failed to apply admin settings: {update_result.get('error')}",
-                "response_time_ms": update_result["response_time_ms"]
-            }
-        
-        print(f"  ✅ Admin disabled 'tenders' menu item")
-        
-        # Step 2: Test that disabled item doesn't appear for different user types
-        test_users = [
-            {"id": "admin_user_1", "role": "admin", "description": "Admin User"},
-            {"id": "68bfff790e4e46bc28d43631", "role": "buyer", "description": "Demo User (Buyer)"}
-        ]
-        
-        user_verification_tests = []
-        
-        for user in test_users:
-            user_result = await self.make_request(f"/menu-settings/user/{user['id']}")
-            
-            if user_result["success"]:
-                user_data = user_result["data"]
-                desktop_menu = user_data.get("desktop_menu", {})
-                mobile_menu = user_data.get("mobile_menu", {})
-                
-                # Verify that 'tenders' is NOT present in either menu
-                tenders_hidden_desktop = "tenders" not in desktop_menu
-                tenders_hidden_mobile = "tenders" not in mobile_menu
-                
-                # Verify that other items are still present
-                browse_present = "browse" in desktop_menu
-                messages_present = "messages" in desktop_menu
-                profile_present = "profile" in desktop_menu
-                
-                # Role-specific checks
-                admin_panel_present = "admin_panel" in desktop_menu
-                admin_panel_correct = (admin_panel_present and user["role"] == "admin") or (not admin_panel_present and user["role"] != "admin")
-                
-                user_verification_tests.append({
-                    "user_id": user["id"],
-                    "user_role": user["role"],
-                    "description": user["description"],
-                    "tenders_hidden_desktop": tenders_hidden_desktop,
-                    "tenders_hidden_mobile": tenders_hidden_mobile,
-                    "browse_present": browse_present,
-                    "messages_present": messages_present,
-                    "profile_present": profile_present,
-                    "admin_panel_correct": admin_panel_correct,
-                    "disabled_item_filtered": tenders_hidden_desktop and tenders_hidden_mobile,
-                    "enabled_items_present": browse_present and messages_present and profile_present,
-                    "role_filtering_correct": admin_panel_correct,
-                    "verification_successful": tenders_hidden_desktop and tenders_hidden_mobile and browse_present and admin_panel_correct
-                })
-                
-                print(f"  👤 {user['description']}: Tenders hidden: {tenders_hidden_desktop and tenders_hidden_mobile}, Other items present: {browse_present and messages_present}")
-            else:
-                user_verification_tests.append({
-                    "user_id": user["id"],
-                    "success": False,
-                    "error": user_result.get("error")
-                })
-        
-        # Step 3: Verify admin can still see the configuration
-        admin_config_result = await self.make_request("/admin/menu-settings")
-        admin_can_see_config = admin_config_result["success"]
-        
-        if admin_can_see_config:
-            config_data = admin_config_result["data"]
-            tenders_in_config = "tenders" in config_data.get("desktop_menu", {})
-            tenders_disabled_in_config = not config_data.get("desktop_menu", {}).get("tenders", {}).get("enabled", True)
-            admin_config_correct = tenders_in_config and tenders_disabled_in_config
-            
-            print(f"  ⚙️ Admin can see configuration: {admin_can_see_config}, Tenders disabled in config: {tenders_disabled_in_config}")
-        else:
-            admin_config_correct = False
-        
-        # Calculate overall success
-        successful_verifications = [t for t in user_verification_tests if t.get("verification_successful", False)]
-        all_users_verified = len(successful_verifications) == len(test_users)
-        disabled_item_filtered_for_all = all(t.get("disabled_item_filtered", False) for t in user_verification_tests if "disabled_item_filtered" in t)
-        role_filtering_works = all(t.get("role_filtering_correct", False) for t in user_verification_tests if "role_filtering_correct" in t)
-        
-        return {
-            "test_name": "Admin Usage Simulation",
-            "success": all_users_verified and admin_config_correct,
-            "admin_settings_applied": update_result["success"],
-            "users_tested": len(test_users),
-            "successful_verifications": len(successful_verifications),
-            "all_users_verified": all_users_verified,
-            "disabled_item_filtered_correctly": disabled_item_filtered_for_all,
-            "role_based_filtering_working": role_filtering_works,
-            "admin_can_see_configuration": admin_can_see_config,
-            "admin_config_shows_disabled_state": admin_config_correct,
-            "simulation_successful": all_users_verified and admin_config_correct and disabled_item_filtered_for_all,
-            "detailed_user_tests": user_verification_tests
-        }
-    
-    async def run_comprehensive_menu_settings_test(self) -> Dict:
-        """Run all menu settings tests"""
-        print("🚀 Starting Menu Settings API Comprehensive Testing")
-        print("=" * 70)
-        
-        await self.setup()
-        
-        try:
-            # Authenticate as admin first
-            admin_auth_success = await self.authenticate_admin()
-            if not admin_auth_success:
-                return {
-                    "error": "Failed to authenticate as admin user",
-                    "test_timestamp": datetime.now().isoformat()
-                }
-            
-            # Run all test suites
-            default_settings_test = await self.test_get_default_menu_settings()
-            update_settings_test = await self.test_update_menu_settings()
-            user_filtering_test = await self.test_user_specific_menu_filtering()
-            configuration_logic_test = await self.test_menu_configuration_logic()
-            admin_simulation_test = await self.test_admin_usage_simulation()
-            
-            # Compile overall results
-            all_results = {
-                "test_timestamp": datetime.now().isoformat(),
-                "admin_authentication": {"success": admin_auth_success},
-                "default_menu_settings": default_settings_test,
-                "update_menu_settings": update_settings_test,
-                "user_specific_filtering": user_filtering_test,
-                "menu_configuration_logic": configuration_logic_test,
-                "admin_usage_simulation": admin_simulation_test
-            }
-            
-            # Calculate overall success metrics
-            test_results = [
-                default_settings_test.get("structure_valid", False),
-                update_settings_test.get("update_successful", False),
-                user_filtering_test.get("role_based_filtering_working", False),
-                configuration_logic_test.get("configuration_logic_working", False),
-                admin_simulation_test.get("simulation_successful", False)
-            ]
-            
-            overall_success_rate = sum(test_results) / len(test_results) * 100
-            
-            all_results["summary"] = {
-                "overall_success_rate": overall_success_rate,
-                "admin_authentication_working": admin_auth_success,
-                "default_settings_working": default_settings_test.get("structure_valid", False),
-                "update_settings_working": update_settings_test.get("update_successful", False),
-                "user_filtering_working": user_filtering_test.get("role_based_filtering_working", False),
-                "configuration_logic_working": configuration_logic_test.get("configuration_logic_working", False),
-                "admin_simulation_working": admin_simulation_test.get("simulation_successful", False),
-                "all_endpoints_working": all(test_results),
-                "menu_settings_api_functional": overall_success_rate >= 80
-            }
-            
-            return all_results
-            
-        finally:
-            await self.cleanup()
-
-
-async def main():
-    """Run Menu Settings API tests"""
-    print("🚀 Starting Menu Settings API Testing Suite")
-    print("=" * 60)
-    
-    # Run Menu Settings API Tests
-    menu_tester = MenuSettingsTester()
-    menu_results = await menu_tester.run_comprehensive_menu_settings_test()
-    
-    print("\n" + "=" * 60)
-    print("📊 MENU SETTINGS API TEST SUMMARY")
-    print("=" * 60)
-    
-    menu_summary = menu_results.get("summary", {})
-    
-    print(f"Overall Success Rate: {menu_summary.get('overall_success_rate', 0):.1f}%")
-    print(f"Admin Authentication: {'✅' if menu_summary.get('admin_authentication_working') else '❌'}")
-    print(f"Default Settings: {'✅' if menu_summary.get('default_settings_working') else '❌'}")
-    print(f"Update Settings: {'✅' if menu_summary.get('update_settings_working') else '❌'}")
-    print(f"User Filtering: {'✅' if menu_summary.get('user_filtering_working') else '❌'}")
-    print(f"Configuration Logic: {'✅' if menu_summary.get('configuration_logic_working') else '❌'}")
-    print(f"Admin Simulation: {'✅' if menu_summary.get('admin_simulation_working') else '❌'}")
-    
-    if menu_summary.get('all_endpoints_working'):
-        print("\n🎉 ALL MENU SETTINGS API TESTS PASSED! Menu Settings system is fully operational.")
-    else:
-        print(f"\n⚠️ Some menu settings tests failed. Success rate: {menu_summary.get('overall_success_rate', 0):.1f}%")
-    
-    # Save detailed results to file
-    with open("menu_settings_test_results.json", "w") as f:
-        json.dump(menu_results, f, indent=2)
-    
-    print(f"\n📄 Detailed results saved to menu_settings_test_results.json")
 
 if __name__ == "__main__":
     asyncio.run(main())
