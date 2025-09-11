@@ -43,7 +43,7 @@ import {
   Calendar, Download, Upload, Edit, EyeOff, Lock,
   Unlock, Key, Users, UserPlus, Phone, Smartphone, Monitor, Tablet,
   Laptop, Activity, Award, Target, Compass, Map, Navigation,
-  Bookmark, Tag, Sort, Grid, Layers, Archive, Folder,
+  Bookmark, Tag, SortAsc, Grid, Layers, Archive, Folder,
   File, Image, Video, Music, Headphones, Mic, Play, Pause,
   Square, SkipBack, SkipForward, Repeat, Shuffle, Share, ExternalLink,
   Link as LinkIcon, Copy, AlertTriangle, AlertCircle, Info, CheckCircle
