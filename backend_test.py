@@ -7930,6 +7930,69 @@ async def main():
     
     return test_results
 
+async def main_enhanced():
+    """
+    Enhanced main function to run all tests including new bid filtering tests
+    """
+    print("🚀 STARTING COMPREHENSIVE API TESTING")
+    print("=" * 100)
+    
+    # Run Enhanced Browse Listings Endpoint Testing (NEW)
+    print("🔍 STARTING ENHANCED BROWSE LISTINGS ENDPOINT TESTING")
+    print("=" * 100)
+    
+    bid_filter_tester = BrowseBidFilteringTester()
+    bid_filter_results = await bid_filter_tester.run_browse_bid_filtering_tests()
+    
+    print("\n" + "=" * 100)
+    print("📊 ENHANCED BROWSE LISTINGS ENDPOINT TESTING RESULTS")
+    print("=" * 100)
+    
+    if "error" in bid_filter_results:
+        print(f"❌ TESTING FAILED: {bid_filter_results['error']}")
+        return
+    
+    # Print bid filtering summary
+    bid_summary = bid_filter_results.get("summary", {})
+    print(f"📈 SUCCESS RATE: {bid_summary.get('success_rate', 0):.1f}% ({bid_summary.get('successful_tests', 0)}/{bid_summary.get('total_tests', 0)} tests passed)")
+    print(f"🔄 BACKWARDS COMPATIBLE: {'✅ YES' if bid_summary.get('backwards_compatible', False) else '❌ NO'}")
+    print(f"🗄️ DATABASE CONSISTENT: {'✅ YES' if bid_summary.get('database_consistent', False) else '❌ NO'}")
+    
+    if bid_summary.get("critical_issues"):
+        print(f"\n🚨 CRITICAL ISSUES FOUND:")
+        for issue in bid_summary["critical_issues"]:
+            print(f"  ❌ {issue}")
+    
+    if bid_summary.get("working_features"):
+        print(f"\n✅ WORKING FEATURES:")
+        for feature in bid_summary["working_features"]:
+            print(f"  ✅ {feature}")
+    
+    print(f"\n🎯 OVERALL STATUS: {'✅ ALL BID FILTERS WORKING' if bid_summary.get('all_filters_working', False) else '⚠️ SOME FILTERS NEED ATTENTION'}")
+    
+    # Save bid filtering test results
+    with open("/app/bid_filtering_test_results.json", "w") as f:
+        json.dump(bid_filter_results, f, indent=2, default=str)
+    
+    print(f"\n📄 Bid filtering test results saved to: /app/bid_filtering_test_results.json")
+    
+    # Run original API endpoint fixes testing
+    print("\n" + "=" * 100)
+    print("🔧 STARTING API ENDPOINT FIXES TESTING")
+    print("=" * 100)
+    
+    api_results = await main()
+    
+    print("\n" + "=" * 100)
+    print("🏁 COMPREHENSIVE TESTING COMPLETE")
+    print("=" * 100)
+    
+    return {
+        "bid_filtering_results": bid_filter_results,
+        "api_fixes_results": api_results
+    }
+
+
 if __name__ == "__main__":
-    # Run API endpoint fixes tests
-    asyncio.run(main())
+    # Run enhanced comprehensive tests
+    asyncio.run(main_enhanced())
