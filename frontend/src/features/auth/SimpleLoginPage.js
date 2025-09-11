@@ -86,7 +86,66 @@ function SimpleLoginPage() {
       [e.target.name]: e.target.value
     });
     setError(null);
+    setFieldErrors(prev => ({
+      ...prev,
+      [e.target.name]: null
+    }));
   };
+
+  // Check username availability
+  const checkUsernameAvailability = async (username) => {
+    if (!username || username.length < 3) return;
+    
+    setCheckingAvailability(prev => ({ ...prev, username: true }));
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/check-username?username=${encodeURIComponent(username)}`);
+      const data = await response.json();
+      
+      if (!data.available) {
+        setFieldErrors(prev => ({ ...prev, username: 'Username already taken' }));
+      }
+    } catch (error) {
+      console.error('Error checking username:', error);
+    } finally {
+      setCheckingAvailability(prev => ({ ...prev, username: false }));
+    }
+  };
+
+  // Check email availability
+  const checkEmailAvailability = async (email) => {
+    if (!email || !email.includes('@')) return;
+    
+    setCheckingAvailability(prev => ({ ...prev, email: true }));
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/check-email?email=${encodeURIComponent(email)}`);
+      const data = await response.json();
+      
+      if (!data.available) {
+        setFieldErrors(prev => ({ ...prev, email: 'Email already registered' }));
+      }
+    } catch (error) {
+      console.error('Error checking email:', error);
+    } finally {
+      setCheckingAvailability(prev => ({ ...prev, email: false }));
+    }
+  };
+
+  // Debounced checking
+  useEffect(() => {
+    const timeouts = {};
+    
+    if (registerData.username) {
+      timeouts.username = setTimeout(() => checkUsernameAvailability(registerData.username), 1000);
+    }
+    
+    if (registerData.email) {
+      timeouts.email = setTimeout(() => checkEmailAvailability(registerData.email), 1000);
+    }
+    
+    return () => {
+      Object.values(timeouts).forEach(timeout => clearTimeout(timeout));
+    };
+  }, [registerData.username, registerData.email]);
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
