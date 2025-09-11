@@ -3675,7 +3675,22 @@ async def get_user_menu_settings(user_id: str):
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
+        # Map user role to menu settings role format
         user_role = user.get("role", "buyer")
+        user_rbac_role = user.get("user_role", "")
+        
+        # Convert RBAC role to menu settings role
+        if user_role == "admin" or user_rbac_role in ["Admin", "Admin-Manager"]:
+            menu_role = "admin"
+        elif user_rbac_role == "Admin-Manager":
+            menu_role = "manager"  
+        elif user_rbac_role in ["User-Seller"]:
+            menu_role = "seller"
+        elif user_rbac_role in ["User-Buyer"]:
+            menu_role = "buyer"
+        else:
+            # Default fallback based on user role
+            menu_role = user_role if user_role in ["admin", "manager", "seller", "buyer"] else "buyer"
         
         # Get menu settings
         menu_settings = await db.menu_settings.find_one({"type": "menu_config"})
