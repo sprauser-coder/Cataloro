@@ -425,15 +425,58 @@ function AdsManagement({ showToast }) {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Image URL
+                    Image
                   </label>
-                  <input
-                    type="url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                    placeholder="https://example.com/image.jpg"
-                  />
+                  <div className="space-y-3">
+                    {/* Upload Option */}
+                    <div>
+                      <label className="text-sm text-gray-600 dark:text-gray-400 mb-1 block">
+                        Upload Image File
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      />
+                    </div>
+                    
+                    {/* OR Divider */}
+                    <div className="flex items-center">
+                      <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
+                      <span className="px-3 text-sm text-gray-500 dark:text-gray-400">OR</span>
+                      <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
+                    </div>
+                    
+                    {/* URL Option */}
+                    <div>
+                      <label className="text-sm text-gray-600 dark:text-gray-400 mb-1 block">
+                        Image URL
+                      </label>
+                      <input
+                        type="url"
+                        value={formData.image_url}
+                        onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        placeholder="https://example.com/image.jpg"
+                      />
+                    </div>
+                    
+                    {/* Image Preview */}
+                    {formData.image_url && (
+                      <div className="mt-3">
+                        <label className="text-sm text-gray-600 dark:text-gray-400 mb-1 block">Preview</label>
+                        <img 
+                          src={formData.image_url} 
+                          alt="Ad Preview" 
+                          className="w-full max-w-xs h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div>
