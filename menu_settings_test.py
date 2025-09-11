@@ -170,26 +170,27 @@ class MenuSettingsTester:
         print("✏️ Testing POST /api/admin/menu-settings (update configuration)...")
         
         # Test data with some items disabled and role changes
+        # Note: Using both legacy roles (admin, user) and new roles (buyer, seller) for compatibility
         test_settings = {
             "desktop_menu": {
-                "about": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                "about": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
+                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
                 "create_listing": {"enabled": False, "roles": ["admin", "manager", "seller"]},  # Disabled for testing
-                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
                 "tenders": {"enabled": True, "roles": ["admin", "manager"]},  # Limited to admin/manager only
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
                 "admin_panel": {"enabled": True, "roles": ["admin"]},  # Admin only
-                "buy_management": {"enabled": True, "roles": ["admin", "manager", "buyer"]},
+                "buy_management": {"enabled": True, "roles": ["admin", "manager", "buyer", "user"]},
                 "my_listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "favorites": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer"]}  # Disabled for testing
+                "favorites": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer", "user"]}  # Disabled for testing
             },
             "mobile_menu": {
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
+                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
                 "create": {"enabled": False, "roles": ["admin", "manager", "seller"]},  # Disabled for testing
-                "tenders": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                "tenders": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
                 "listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
                 "admin_drawer": {"enabled": True, "roles": ["admin"]}  # Admin only
             }
         }
