@@ -784,6 +784,7 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
               >
                 <Plus className="w-5 h-5 text-green-600 dark:text-green-400" />
               </Link>
+              )}
             </div>
 
             {/* Notifications */}
