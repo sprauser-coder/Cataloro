@@ -1503,6 +1503,33 @@ async def browse_listings(
         
         logger.info(f"📋 Found {len(listings)} listings with status filter: {status}")
         
+        # Apply bid-based filtering if user_id is provided and bid_filter is specified
+        if user_id and bid_filter != "all":
+            logger.info(f"📋 Applying bid filter: {bid_filter} for user: {user_id}")
+            
+            if bid_filter == "own_listings":
+                # Filter to show only user's own listings
+                listings = [l for l in listings if l.get('seller_id') == user_id]
+                logger.info(f"📋 After own_listings filter: {len(listings)} listings")
+                
+            elif bid_filter in ["placed_bid", "not_placed_bid"]:
+                # Get user's active bids
+                user_tenders = await db.tenders.find({"buyer_id": user_id, "status": "active"}).to_list(length=None)
+                user_bid_listing_ids = {tender.get('listing_id') for tender in user_tenders}
+                logger.info(f"📋 User has bids on {len(user_bid_listing_ids)} listings")
+                
+                if bid_filter == "placed_bid":
+                    # Show only listings where user has placed bids
+                    listings = [l for l in listings if l.get('id') in user_bid_listing_ids]
+                    logger.info(f"📋 After placed_bid filter: {len(listings)} listings")
+                    
+                elif bid_filter == "not_placed_bid":
+                    # Show only listings where user has NOT placed bids (and exclude own listings)
+                    listings = [l for l in listings 
+                              if l.get('id') not in user_bid_listing_ids 
+                              and l.get('seller_id') != user_id]
+                    logger.info(f"📋 After not_placed_bid filter: {len(listings)} listings")
+        
         # Simple processing - minimal enrichment
         for listing in listings:
             # Clean up MongoDB _id
