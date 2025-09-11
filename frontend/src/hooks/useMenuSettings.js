@@ -67,8 +67,8 @@ export function useMenuSettings() {
     if (!menuItem) return true;
     
     // Check if item is explicitly disabled or if user doesn't have permission
-    // If item exists in settings, respect the visibility configuration
-    return menuItem.visible !== false;
+    // If item exists in settings, respect the enabled/disabled state
+    return menuItem.enabled !== false;
   };
 
   const getVisibleMenuItems = (menuType, allItems) => {
