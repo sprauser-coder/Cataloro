@@ -24,6 +24,7 @@ function MobileBottomNav() {
   const [cartCount, setCartCount] = useState(0);
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const { isMenuItemVisible } = useMenuSettings();
   const location = useLocation();
 
   useEffect(() => {
