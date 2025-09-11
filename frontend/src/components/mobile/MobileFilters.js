@@ -43,7 +43,8 @@ function MobileFilters({
     category: false,
     condition: false,
     date: false,
-    rating: false
+    rating: false,
+    bidFilter: false
   });
 
   useEffect(() => {
