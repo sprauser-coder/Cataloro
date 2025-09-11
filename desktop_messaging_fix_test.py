@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://menu-settings-debug.preview.emergentagent.com/api"
+BACKEND_URL = "https://marketplace-debug-3.preview.emergentagent.com/api"
 
 # Test Users Configuration
 DEMO_USER_ID = "68bfff790e4e46bc28d43631"  # Fixed demo user ID from review

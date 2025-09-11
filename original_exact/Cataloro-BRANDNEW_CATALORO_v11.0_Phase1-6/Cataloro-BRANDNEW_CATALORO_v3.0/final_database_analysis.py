@@ -12,7 +12,7 @@ from datetime import datetime
 
 class FinalDatabaseAnalysis:
     def __init__(self):
-        self.backend_url = "https://menu-settings-debug.preview.emergentagent.com/api"
+        self.backend_url = "https://marketplace-debug-3.preview.emergentagent.com/api"
         self.mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
         self.client = None
         self.db = None
