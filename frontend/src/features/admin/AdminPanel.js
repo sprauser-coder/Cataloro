@@ -3233,6 +3233,12 @@ function SettingsTab({ settings, onUpdateSettings, showToast }) {
         </div>
       </div>
 
+      {/* Footer Management Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Footer Configuration</h3>
+        <FooterManagement showToast={showToast} />
+      </div>
+
       {/* Save Button */}
       <div className="bg-gradient-to-r from-green-600 to-blue-600 rounded-xl p-6 text-white">
         <div className="flex items-center justify-between">
