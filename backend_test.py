@@ -4792,12 +4792,12 @@ async def main():
     print("🔧 Cataloro Marketplace Testing Suite")
     print("=" * 50)
     
-    # Run Messages Tests (PRIMARY FOCUS - for the review request)
-    print("\n📨 MESSAGES FUNCTIONALITY TESTING")
+    # Run Admin Menu Settings Tests (PRIMARY FOCUS - for the review request)
+    print("\n⚙️ ADMIN MENU SETTINGS FUNCTIONALITY TESTING")
     print("=" * 60)
     
-    messages_tester = MessagesTester()
-    messages_results = await messages_tester.run_comprehensive_messages_test()
+    menu_tester = AdminMenuSettingsTester()
+    menu_results = await menu_tester.run_comprehensive_menu_settings_test()
     
     # Print Messages Test Summary
     print("\n" + "=" * 60)
