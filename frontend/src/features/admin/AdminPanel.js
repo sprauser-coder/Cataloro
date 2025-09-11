@@ -8053,10 +8053,19 @@ function CatDatabaseTab({ showToast, permissions, isAdminManager }) {
 
   const fetchPriceSettings = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/price-settings`);
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/price-settings`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setPriceSettings(data);
+        console.log('✅ Price settings loaded');
+      } else {
+        console.error('❌ Failed to fetch price settings - Status:', response.status);
       }
     } catch (error) {
       console.error('Failed to fetch price settings:', error);
