@@ -30,6 +30,7 @@ import { useMenuSettings } from '../../hooks/useMenuSettings';
 
 function MobileNav({ isOpen, onClose }) {
   const [user, setUser] = useState(null);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
