@@ -125,35 +125,78 @@ class AdminMenuSettingsTester:
             }
         }
     
-    async def test_upload_endpoint_availability(self) -> Dict:
-        """Test if /api/admin/upload-image endpoint exists and is accessible"""
-        print("🔍 Testing upload endpoint availability...")
+    async def test_menu_settings_get_endpoint(self) -> Dict:
+        """Test GET /api/admin/menu-settings endpoint data structure"""
+        print("🔍 Testing menu settings GET endpoint...")
         
         if not self.admin_token:
-            return {"test_name": "Upload Endpoint Availability", "error": "No admin token available"}
+            return {"test_name": "Menu Settings GET Endpoint", "error": "No admin token available"}
         
         headers = {"Authorization": f"Bearer {self.admin_token}"}
         
-        # Test with GET request first (should return 405 Method Not Allowed)
-        get_result = await self.make_request("/admin/upload-image", "GET", headers=headers)
+        # Test GET request
+        result = await self.make_request("/admin/menu-settings", "GET", headers=headers)
         
-        # Test with POST but no data (should return 422 or 400)
-        post_result = await self.make_request("/admin/upload-image", "POST", headers=headers)
-        
-        endpoint_exists = get_result["status"] in [405, 422, 400] or post_result["status"] in [405, 422, 400]
-        
-        print(f"  📊 GET status: {get_result['status']}, POST status: {post_result['status']}")
-        print(f"  {'✅' if endpoint_exists else '❌'} Upload endpoint {'exists' if endpoint_exists else 'not found'}")
-        
-        return {
-            "test_name": "Upload Endpoint Availability",
-            "success": endpoint_exists,
-            "get_status": get_result["status"],
-            "post_status": post_result["status"],
-            "endpoint_exists": endpoint_exists,
-            "get_response": get_result.get("data", ""),
-            "post_response": post_result.get("data", "")
-        }
+        if result["success"]:
+            data = result["data"]
+            
+            # Store original settings for restoration later
+            self.original_menu_settings = data
+            
+            # Check data structure
+            has_desktop_menu = "desktop_menu" in data
+            has_mobile_menu = "mobile_menu" in data
+            
+            desktop_menu = data.get("desktop_menu", {})
+            mobile_menu = data.get("mobile_menu", {})
+            
+            # Check for expected menu items
+            expected_items = ["browse", "create_listing", "messages", "my_listings", "tenders"]
+            desktop_items_present = sum(1 for item in expected_items if item in desktop_menu)
+            mobile_items_present = sum(1 for item in expected_items if item in mobile_menu)
+            
+            # Check if items have proper structure (enabled, label, roles)
+            valid_structure = True
+            sample_item = None
+            for item_key, item_data in desktop_menu.items():
+                if isinstance(item_data, dict) and item_key != "custom_items":
+                    sample_item = item_data
+                    if not all(key in item_data for key in ["enabled", "label", "roles"]):
+                        valid_structure = False
+                    break
+            
+            print(f"  📊 Response status: {result['status']}")
+            print(f"  🖥️ Desktop menu items: {len(desktop_menu)}")
+            print(f"  📱 Mobile menu items: {len(mobile_menu)}")
+            print(f"  ✅ Expected items in desktop: {desktop_items_present}/{len(expected_items)}")
+            print(f"  ✅ Expected items in mobile: {mobile_items_present}/{len(expected_items)}")
+            print(f"  🏗️ Valid structure: {valid_structure}")
+            if sample_item:
+                print(f"  📝 Sample item structure: {sample_item}")
+            
+            return {
+                "test_name": "Menu Settings GET Endpoint",
+                "success": result["success"],
+                "response_time_ms": result["response_time_ms"],
+                "has_desktop_menu": has_desktop_menu,
+                "has_mobile_menu": has_mobile_menu,
+                "desktop_items_count": len(desktop_menu),
+                "mobile_items_count": len(mobile_menu),
+                "expected_desktop_items": desktop_items_present,
+                "expected_mobile_items": mobile_items_present,
+                "valid_item_structure": valid_structure,
+                "sample_item": sample_item,
+                "full_response": data
+            }
+        else:
+            print(f"  ❌ Menu settings GET failed: {result.get('error', 'Unknown error')}")
+            return {
+                "test_name": "Menu Settings GET Endpoint",
+                "success": False,
+                "error": result.get("error", "Unknown error"),
+                "status": result["status"],
+                "response": result.get("data", "")
+            }
     
     async def test_authentication_requirements(self) -> Dict:
         """Test if upload endpoint requires admin authentication"""
