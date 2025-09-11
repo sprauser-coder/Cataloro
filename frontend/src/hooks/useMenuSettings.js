@@ -55,14 +55,18 @@ export function useMenuSettings() {
   const isMenuItemVisible = (menuType, itemKey) => {
     if (loading) return true; // Show items while loading
     
-    const menuItem = menuSettings[menuType]?.[itemKey];
+    const menuSection = menuSettings[menuType];
     
-    // If no settings found, show by default
-    if (!menuItem) return true;
+    // If no menu section found, don't show anything
+    if (!menuSection) return false;
     
-    // Check if item is enabled and user has permission
-    return menuItem.enabled !== false && 
-           menuItem.roles?.includes(menuSettings.user_role);
+    const menuItem = menuSection[itemKey];
+    
+    // If item is not in the filtered settings from backend, it should be hidden
+    if (!menuItem) return false;
+    
+    // Item exists in settings, so it's enabled and user has permission
+    return true;
   };
 
   const getVisibleMenuItems = (menuType, allItems) => {
