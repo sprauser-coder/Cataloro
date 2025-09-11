@@ -1044,10 +1044,19 @@ async def login_user(request: Request, credentials: dict):
         import traceback
         traceback.print_exc()
     
+    # Generate JWT token
+    token_data = {
+        "user_id": user_id,
+        "email": email,
+        "role": role,
+        "user_role": user_role
+    }
+    access_token = security_service.create_access_token(token_data)
+    
     return {
         "message": "Login successful",
         "user": serialized_user,
-        "token": f"mock_token_{user_id}"
+        "token": access_token
     }
 
 @app.get("/api/auth/profile/{user_id}")
