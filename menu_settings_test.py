@@ -458,24 +458,24 @@ class MenuSettingsTester:
         # Step 1: Admin disables a specific menu item
         admin_disable_settings = {
             "desktop_menu": {
-                "about": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                "about": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
+                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
                 "create_listing": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                "tenders": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer"]},  # DISABLED by admin
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
+                "tenders": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer", "user"]},  # DISABLED by admin
+                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
                 "admin_panel": {"enabled": True, "roles": ["admin", "manager"]},
-                "buy_management": {"enabled": True, "roles": ["admin", "manager", "buyer"]},
+                "buy_management": {"enabled": True, "roles": ["admin", "manager", "buyer", "user"]},
                 "my_listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "favorites": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]}
+                "favorites": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]}
             },
             "mobile_menu": {
-                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
-                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
+                "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
                 "create": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "tenders": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer"]},  # DISABLED by admin
+                "tenders": {"enabled": False, "roles": ["admin", "manager", "seller", "buyer", "user"]},  # DISABLED by admin
                 "listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
-                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer", "user"]},
                 "admin_drawer": {"enabled": True, "roles": ["admin", "manager"]}
             }
         }
