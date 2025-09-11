@@ -80,11 +80,21 @@ export function useMenuSettings() {
     });
   };
 
+  const getCustomMenuItems = (menuType) => {
+    if (loading) return [];
+    
+    const customItems = menuSettings[menuType]?.custom_items || [];
+    return customItems
+      .filter(item => item.enabled !== false)
+      .sort((a, b) => (a.position || 0) - (b.position || 0));
+  };
+
   return {
     menuSettings,
     loading,
     isMenuItemVisible,
     getVisibleMenuItems,
+    getCustomMenuItems,
     refreshSettings: () => user?.id && fetchUserMenuSettings(user.id)
   };
 }
