@@ -3487,6 +3487,121 @@ async def get_admin_logo():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get logo: {str(e)}")
 
+@app.get("/api/admin/menu-settings")
+async def get_menu_settings():
+    """Get menu settings configuration"""
+    try:
+        # Get menu settings from database
+        menu_settings = await db.menu_settings.find_one({"type": "menu_config"})
+        
+        if not menu_settings:
+            # Return default menu settings if none exist
+            default_settings = {
+                "desktop_menu": {
+                    "about": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                    "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                    "create_listing": {"enabled": True, "roles": ["admin", "manager", "seller"]},
+                    "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                    "tenders": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                    "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                    "admin_panel": {"enabled": True, "roles": ["admin", "manager"]},
+                    "buy_management": {"enabled": True, "roles": ["admin", "manager", "buyer"]},
+                    "my_listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
+                    "favorites": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]}
+                },
+                "mobile_menu": {
+                    "browse": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                    "messages": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                    "create": {"enabled": True, "roles": ["admin", "manager", "seller"]},
+                    "tenders": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                    "listings": {"enabled": True, "roles": ["admin", "manager", "seller"]},
+                    "profile": {"enabled": True, "roles": ["admin", "manager", "seller", "buyer"]},
+                    "admin_drawer": {"enabled": True, "roles": ["admin", "manager"]}
+                }
+            }
+            return default_settings
+        
+        return {
+            "desktop_menu": menu_settings.get("desktop_menu", {}),
+            "mobile_menu": menu_settings.get("mobile_menu", {})
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get menu settings: {str(e)}")
+
+@app.post("/api/admin/menu-settings")
+async def update_menu_settings(settings: dict):
+    """Update menu settings configuration"""
+    try:
+        # Update menu settings in database
+        menu_doc = {
+            "type": "menu_config",
+            "desktop_menu": settings.get("desktop_menu", {}),
+            "mobile_menu": settings.get("mobile_menu", {}),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Update or insert menu settings document
+        await db.menu_settings.update_one(
+            {"type": "menu_config"},
+            {"$set": menu_doc},
+            upsert=True
+        )
+        
+        return {
+            "message": "Menu settings updated successfully",
+            "settings": {
+                "desktop_menu": menu_doc["desktop_menu"],
+                "mobile_menu": menu_doc["mobile_menu"]
+            }
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update menu settings: {str(e)}")
+
+@app.get("/api/menu-settings/user/{user_id}")
+async def get_user_menu_settings(user_id: str):
+    """Get menu settings for a specific user based on their role"""
+    try:
+        # Get user data to determine role
+        user = await db.users.find_one({"id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        user_role = user.get("role", "buyer")
+        
+        # Get menu settings
+        menu_settings = await db.menu_settings.find_one({"type": "menu_config"})
+        
+        if not menu_settings:
+            # Return default settings for user role
+            return {
+                "desktop_menu": {},
+                "mobile_menu": {},
+                "user_role": user_role
+            }
+        
+        # Filter menu items based on user role
+        filtered_desktop = {}
+        filtered_mobile = {}
+        
+        for item_key, item_config in menu_settings.get("desktop_menu", {}).items():
+            if item_config.get("enabled", True) and user_role in item_config.get("roles", []):
+                filtered_desktop[item_key] = item_config
+        
+        for item_key, item_config in menu_settings.get("mobile_menu", {}).items():
+            if item_config.get("enabled", True) and user_role in item_config.get("roles", []):
+                filtered_mobile[item_key] = item_config
+        
+        return {
+            "desktop_menu": filtered_desktop,
+            "mobile_menu": filtered_mobile,
+            "user_role": user_role
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get user menu settings: {str(e)}")
+
 @app.get("/api/admin/content")
 async def get_content():
     """Get info page content for CMS"""
