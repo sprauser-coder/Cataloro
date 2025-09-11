@@ -1,5 +1,5 @@
 {
-  "test_timestamp": "2025-09-11T17:57:38.028682",
+  "test_timestamp": "2025-09-11T17:58:44.875925",
   "test_focus": "API endpoint fixes for 404 errors and authentication issues",
   "browse_listings_test": {
     "test_name": "Browse Listings API",
@@ -8,7 +8,7 @@
       "endpoint": "/marketplace/browse",
       "expected_status": 200,
       "actual_status": 200,
-      "response_time_ms": 99.90286827087402,
+      "response_time_ms": 72.79038429260254,
       "listings_count": 9,
       "error_messages": [],
       "success": true,
@@ -29,7 +29,7 @@
       "endpoint": "/user/68bfff790e4e46bc28d43631/notifications",
       "expected_status": 200,
       "actual_status": 200,
-      "response_time_ms": 9.920835494995117,
+      "response_time_ms": 53.07579040527344,
       "notifications_count": 0,
       "error_messages": [],
       "success": true,
@@ -45,8 +45,8 @@
     "test_results": {
       "endpoint": "/admin/upload-image",
       "expected_status": 200,
-      "actual_status": 422,
-      "response_time_ms": 51.975250244140625,
+      "actual_status": 500,
+      "response_time_ms": 52.79135704040527,
       "upload_successful": false,
       "error_messages": [
         "Image upload failed: Unknown error"
@@ -65,7 +65,7 @@
       "endpoint": "/auth/profile",
       "expected_status": 200,
       "actual_status": 200,
-      "response_time_ms": 50.28653144836426,
+      "response_time_ms": 2805.1953315734863,
       "profile_data_present": true,
       "error_messages": [],
       "success": true,
@@ -82,7 +82,7 @@
       "endpoint": "/admin/logo",
       "expected_status": 200,
       "actual_status": 200,
-      "response_time_ms": 9.285926818847656,
+      "response_time_ms": 13.48257064819336,
       "logo_data_present": true,
       "error_messages": [],
       "success": true,
