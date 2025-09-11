@@ -697,9 +697,9 @@ class AdminMenuSettingsTester:
         except Exception as e:
             print(f"  ⚠️ Failed to restore original menu settings: {e}")
     
-    async def run_comprehensive_ads_upload_test(self) -> Dict:
-        """Run all ads image upload tests"""
-        print("🚀 Starting Ads Image Upload Functionality Testing")
+    async def run_comprehensive_menu_settings_test(self) -> Dict:
+        """Run all admin menu settings tests"""
+        print("🚀 Starting Admin Menu Settings Functionality Testing")
         print("=" * 70)
         
         await self.setup()
@@ -714,12 +714,12 @@ class AdminMenuSettingsTester:
                 }
             
             # Run all test suites
-            endpoint_availability = await self.test_upload_endpoint_availability()
-            auth_requirements = await self.test_authentication_requirements()
-            file_upload = await self.test_file_upload_functionality()
-            ads_workflow = await self.test_ads_management_workflow()
-            file_validation = await self.test_file_validation_and_storage()
-            error_analysis = await self.test_backend_logs_for_errors()
+            menu_get_endpoint = await self.test_menu_settings_get_endpoint()
+            data_structure_comparison = await self.test_menu_settings_data_structure_comparison()
+            menu_post_endpoint = await self.test_menu_settings_post_endpoint()
+            default_items_verification = await self.test_default_menu_items_verification()
+            database_cleanup_impact = await self.test_database_cleanup_impact()
+            user_menu_endpoint = await self.test_user_menu_settings_endpoint()
             
             # Cleanup test data
             await self.cleanup_test_data()
@@ -727,41 +727,44 @@ class AdminMenuSettingsTester:
             # Compile overall results
             all_results = {
                 "test_timestamp": datetime.now().isoformat(),
-                "endpoint_availability": endpoint_availability,
-                "authentication_requirements": auth_requirements,
-                "file_upload_functionality": file_upload,
-                "ads_management_workflow": ads_workflow,
-                "file_validation_and_storage": file_validation,
-                "backend_error_analysis": error_analysis
+                "menu_settings_get_endpoint": menu_get_endpoint,
+                "data_structure_comparison": data_structure_comparison,
+                "menu_settings_post_endpoint": menu_post_endpoint,
+                "default_items_verification": default_items_verification,
+                "database_cleanup_impact": database_cleanup_impact,
+                "user_menu_settings_endpoint": user_menu_endpoint
             }
             
             # Calculate overall success metrics
             test_results = [
-                endpoint_availability.get("success", False),
-                auth_requirements.get("success", False),
-                file_upload.get("success", False),
-                ads_workflow.get("success", False),
-                file_validation.get("success", False),
-                error_analysis.get("success", False)
+                menu_get_endpoint.get("success", False),
+                data_structure_comparison.get("success", False),
+                menu_post_endpoint.get("success", False),
+                default_items_verification.get("success", False),
+                database_cleanup_impact.get("success", False),
+                user_menu_endpoint.get("success", False)
             ]
             
             overall_success_rate = sum(test_results) / len(test_results) * 100
             
             all_results["summary"] = {
                 "overall_success_rate": overall_success_rate,
-                "endpoint_available": endpoint_availability.get("success", False),
-                "authentication_working": auth_requirements.get("success", False),
-                "file_upload_working": file_upload.get("success", False),
-                "ads_workflow_working": ads_workflow.get("success", False),
-                "file_validation_working": file_validation.get("success", False),
-                "error_handling_working": error_analysis.get("success", False),
+                "menu_get_working": menu_get_endpoint.get("success", False),
+                "data_structure_correct": data_structure_comparison.get("success", False),
+                "menu_post_working": menu_post_endpoint.get("success", False),
+                "default_items_valid": default_items_verification.get("success", False),
+                "database_cleanup_ok": database_cleanup_impact.get("success", False),
+                "user_menu_filtering_working": user_menu_endpoint.get("success", False),
                 "all_tests_passed": overall_success_rate == 100,
                 "critical_functionality_working": (
-                    endpoint_availability.get("success", False) and
-                    auth_requirements.get("success", False) and
-                    file_upload.get("success", False)
+                    menu_get_endpoint.get("success", False) and
+                    menu_post_endpoint.get("success", False) and
+                    default_items_verification.get("success", False)
                 ),
-                "upload_failure_identified": not file_upload.get("success", False)
+                "menu_settings_functional": (
+                    menu_get_endpoint.get("success", False) and
+                    menu_post_endpoint.get("success", False)
+                )
             }
             
             return all_results
