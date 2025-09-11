@@ -643,12 +643,13 @@ class APIEndpointFixesTester:
             # Compile comprehensive test results
             test_results = {
                 "test_timestamp": datetime.now().isoformat(),
-                "test_focus": "API endpoint fixes for 404 errors and authentication issues",
+                "test_focus": "API endpoint fixes for 404 errors and authentication issues + unified calculations",
                 "browse_listings_test": browse_test,
                 "notifications_test": notifications_test,
                 "image_upload_test": image_upload_test,
                 "profile_test": profile_test,
-                "admin_logo_test": admin_logo_test
+                "admin_logo_test": admin_logo_test,
+                "unified_calculations_test": unified_calculations_test
             }
             
             # Determine critical findings
