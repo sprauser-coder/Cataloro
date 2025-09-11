@@ -550,7 +550,7 @@ class MenuSettingsVisibilityTester:
             for menu_type in ["mobile_menu", "desktop_menu"]:
                 if menu_type in demo_menu:
                     for key, item in demo_menu[menu_type].items():
-                        if key in ["admin_panel", "admin_drawer"]:
+                        if key in ["test_item"] or (isinstance(item.get("roles"), list) and "admin" in item["roles"] and len(item["roles"]) == 1):
                             admin_only_items.append({"key": key, **item})
                         elif key in ["create_listing", "my_listings", "listings"]:
                             seller_items.append({"key": key, **item})
