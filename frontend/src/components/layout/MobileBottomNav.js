@@ -17,6 +17,7 @@ import {
   Package
 } from 'lucide-react';
 import { liveService } from '../../services/liveService';
+import { useMenuSettings } from '../../hooks/useMenuSettings';
 
 function MobileBottomNav() {
   const [user, setUser] = useState(null);
