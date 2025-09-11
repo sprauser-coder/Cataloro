@@ -38,7 +38,15 @@ import {
   BellOff,
   Globe,
   Plus,
-  ShoppingCart
+  ShoppingCart,
+  HelpCircle, Mail, FileText, Home, Camera,
+  Calendar, Download, Upload, Edit, EyeOff, Lock,
+  Unlock, Key, Users, UserPlus, Phone, Smartphone, Monitor, Tablet,
+  Laptop, Activity, Award, Target, Compass, Map, Navigation,
+  Bookmark, Tag, Sort, Grid, Layers, Archive, Folder,
+  File, Image, Video, Music, Headphones, Mic, Play, Pause,
+  Square, SkipBack, SkipForward, Repeat, Shuffle, Share, ExternalLink,
+  Link as LinkIcon, Copy, AlertTriangle, AlertCircle, Info, CheckCircle
 } from 'lucide-react';
 import { APP_ROUTES } from '../../config/directions';
 import { useAuth } from '../../context/AuthContext';
