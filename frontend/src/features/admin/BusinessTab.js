@@ -584,24 +584,24 @@ function BusinessTab({ showToast }) {
           </div>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Monthly Revenue</span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">€45.2K</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">Total Revenue</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">{loading ? '...' : realMetrics.financialMetrics.monthlyRevenue}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Transaction Fees</span>
-              <span className="text-md font-semibold text-green-600 dark:text-green-400">€3.4K</span>
+              <span className="text-md font-semibold text-green-600 dark:text-green-400">{loading ? '...' : realMetrics.financialMetrics.transactionFees}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Subscription Revenue</span>
-              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">€1.8K</span>
+              <span className="text-md font-semibold text-blue-600 dark:text-blue-400">{loading ? '...' : realMetrics.financialMetrics.subscriptionRevenue}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Average Deal Value</span>
-              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">€127</span>
+              <span className="text-md font-semibold text-purple-600 dark:text-purple-400">{loading ? '...' : realMetrics.financialMetrics.averageDealValue}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600 dark:text-gray-400">Growth Rate</span>
-              <span className="text-md font-semibold text-green-600 dark:text-green-400">+12.5%</span>
+              <span className="text-md font-semibold text-green-600 dark:text-green-400">{loading ? '...' : realMetrics.financialMetrics.growthRate}</span>
             </div>
           </div>
         </div>
