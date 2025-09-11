@@ -285,7 +285,7 @@ function FooterManagement({ showToast }) {
                 </label>
                 <input
                   type="email"
-                  value={footerConfig.contact.email}
+                  value={footerConfig.contact?.email || ''}
                   onChange={(e) => handleContactChange('email', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="contact@example.com"
@@ -298,7 +298,7 @@ function FooterManagement({ showToast }) {
                 </label>
                 <input
                   type="text"
-                  value={footerConfig.contact.phone}
+                  value={footerConfig.contact?.phone || ''}
                   onChange={(e) => handleContactChange('phone', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="+1 (555) 123-4567"
@@ -311,7 +311,7 @@ function FooterManagement({ showToast }) {
                 </label>
                 <input
                   type="text"
-                  value={footerConfig.contact.address}
+                  value={footerConfig.contact?.address || ''}
                   onChange={(e) => handleContactChange('address', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="123 Main St, City, State 12345"
