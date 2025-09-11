@@ -747,10 +747,14 @@ async def register_user(request: Request, user_data: dict):
         "company_name": user_data.get("company_name", "")
     }
     
-    # Check if user exists
-    existing_user = await db.users.find_one({"email": user_data["email"]})
-    if existing_user:
+    # Check if user exists (email or username)
+    existing_user_email = await db.users.find_one({"email": user_data["email"]})
+    if existing_user_email:
         raise HTTPException(status_code=400, detail="Email already registered")
+    
+    existing_user_username = await db.users.find_one({"username": user_data["username"]})
+    if existing_user_username:
+        raise HTTPException(status_code=400, detail="Username already taken")
     
     await db.users.insert_one(user)
     
