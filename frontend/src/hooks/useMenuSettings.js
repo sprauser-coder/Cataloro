@@ -53,7 +53,8 @@ export function useMenuSettings() {
   };
 
   const isMenuItemVisible = (menuType, itemKey) => {
-    if (loading) return true; // Show items while loading
+    // During loading, hide items to prevent showing disabled items
+    if (loading) return false;
     
     const menuSection = menuSettings[menuType];
     
