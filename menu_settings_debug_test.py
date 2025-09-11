@@ -183,14 +183,22 @@ class MenuSettingsDebugTester:
                 mobile_menu = admin_user_settings.get("mobile_menu", [])
                 
                 # Check if messages is in the mobile menu
-                messages_in_mobile = any(item.get("key") == "messages" for item in mobile_menu)
+                print(f"    📋 Mobile menu data type: {type(mobile_menu)}")
+                print(f"    📋 Mobile menu content: {mobile_menu}")
+                
+                messages_in_mobile = False
+                mobile_menu_keys = []
+                
+                if isinstance(mobile_menu, list):
+                    messages_in_mobile = any(item.get("key") == "messages" for item in mobile_menu if isinstance(item, dict))
+                    mobile_menu_keys = [item.get("key") for item in mobile_menu if isinstance(item, dict)]
+                elif isinstance(mobile_menu, dict):
+                    messages_in_mobile = "messages" in mobile_menu
+                    mobile_menu_keys = list(mobile_menu.keys())
                 
                 print(f"    ✅ Admin user settings retrieved")
-                print(f"    📱 Mobile menu items: {len(mobile_menu)}")
+                print(f"    📱 Mobile menu items: {len(mobile_menu) if isinstance(mobile_menu, (list, dict)) else 'N/A'}")
                 print(f"    📨 Messages in mobile menu: {messages_in_mobile}")
-                
-                # Get all mobile menu item keys
-                mobile_menu_keys = [item.get("key") for item in mobile_menu]
                 print(f"    🔑 Mobile menu keys: {mobile_menu_keys}")
                 
                 results["admin_user"] = {
