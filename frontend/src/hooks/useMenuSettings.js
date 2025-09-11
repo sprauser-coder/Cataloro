@@ -71,7 +71,8 @@ export function useMenuSettings() {
   };
 
   const getVisibleMenuItems = (menuType, allItems) => {
-    if (loading) return allItems; // Show all items while loading
+    // During loading, hide items to prevent showing disabled items
+    if (loading) return [];
     
     return allItems.filter(item => {
       const itemKey = item.key || item.id || item.path?.replace('/', '');
