@@ -26,6 +26,7 @@ import {
   LogOut
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useMenuSettings } from '../../hooks/useMenuSettings';
 
 function MobileNav({ isOpen, onClose }) {
   const [user, setUser] = useState(null);
