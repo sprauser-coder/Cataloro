@@ -1557,6 +1557,7 @@ async def advanced_search_listings(
     condition: str = "",  # Condition filter
     seller_type: str = "",  # Seller type filter (Private/Business)
     location: str = "",  # Location filter
+    status: str = "",  # Status filter (active, pending, expired, sold, draft)
     sort_by: str = "relevance",  # Sort by: relevance, price_low, price_high, newest, oldest
     page: int = 1,  # Page number
     limit: int = 20  # Results per page
