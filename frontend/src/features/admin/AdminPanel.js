@@ -1357,7 +1357,7 @@ function UsersTab({ users, onUpdateUser, showToast }) {
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold mb-1 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent flex items-center justify-center">
-                {users.filter(u => u.is_active).length}
+                {users.filter(u => u.is_active && u.status !== 'pending' && u.is_verified !== false).length}
               </div>
               <div className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">Active Users</div>
             </div>
