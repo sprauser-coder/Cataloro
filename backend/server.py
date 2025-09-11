@@ -3512,7 +3512,7 @@ async def update_site_settings(settings_data: dict):
         raise HTTPException(status_code=500, detail=f"Failed to update settings: {str(e)}")
 
 @app.post("/api/admin/logo")
-async def upload_logo(file: UploadFile = File(...), mode: str = "light"):
+async def upload_logo(file: UploadFile = File(...), mode: str = "light", current_user: dict = Depends(require_admin_role)):
     """Upload logo file and return URL"""
     try:
         # Validate file type
