@@ -2015,6 +2015,49 @@ async def get_seller_dashboard(seller_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch seller dashboard: {str(e)}")
 
+@app.get("/api/admin/logo")
+async def get_admin_logo(current_user: dict = Depends(require_admin_role)):
+    """Get admin uploaded logo"""
+    try:
+        # Check if logo exists in uploads directory
+        logo_path = "/app/uploads/cms/admin_logo.png"
+        if not os.path.exists(logo_path):
+            # Return default logo or placeholder
+            return {"logo_url": "/api/placeholder-logo.jpg", "has_logo": False}
+        
+        return {"logo_url": "/uploads/cms/admin_logo.png", "has_logo": True}
+        
+    except Exception as e:
+        logger.error(f"Error fetching admin logo: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch logo")
+
+@app.get("/user/{user_id}/notifications")
+async def get_user_notifications(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Get notifications for a user"""
+    try:
+        # Verify user can access these notifications
+        if current_user.get("id") != user_id and current_user.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Find notifications for user
+        notifications = await db.notifications.find({
+            "user_id": user_id
+        }).sort("created_at", -1).limit(50).to_list(length=50)
+        
+        # Process notifications
+        for notification in notifications:
+            notification.pop('_id', None)
+            if 'id' not in notification and '_id' in notification:
+                notification['id'] = str(notification['_id'])
+        
+        return {"notifications": notifications}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching notifications: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch notifications")
+
 @app.get("/api/user/my-deals/{user_id}")
 async def get_my_deals(user_id: str):
     """Get all deals (approved orders) for a user - both as buyer and seller"""
