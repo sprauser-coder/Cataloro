@@ -1207,9 +1207,11 @@ function UsersTab({ users, onUpdateUser, showToast }) {
 
   const handleCreateUser = async (userData) => {
     try {
+      const token = localStorage.getItem('cataloro_token');
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/users`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(userData)
