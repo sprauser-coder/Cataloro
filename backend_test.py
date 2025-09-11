@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Ads Image Upload Functionality Testing
-Testing ads image upload failure - investigating why file upload is not working despite interface being added
+Admin Menu Settings Functionality Testing
+Testing admin menu settings API endpoints to debug functionality issues
 """
 
 import asyncio
