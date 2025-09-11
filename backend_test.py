@@ -25,7 +25,7 @@ ADMIN_USERNAME = "sash_admin"
 ADMIN_ROLE = "admin"
 ADMIN_ID = "admin_user_1"
 
-class AdsImageUploadTester:
+class AdminMenuSettingsTester:
     def __init__(self):
         self.session = None
         self.test_results = []
