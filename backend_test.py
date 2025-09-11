@@ -170,9 +170,7 @@ class MobileTenderTester:
         tender_data = {
             "listing_id": listing_id,
             "buyer_id": self.test_user_id,
-            "seller_id": self.seller_user_id,
-            "offer_amount": 85.0,
-            "message": "Test tender for mobile functionality testing"
+            "offer_amount": 150.0  # Higher than listing price to ensure it's accepted
         }
         
         buyer_headers = {"Authorization": f"Bearer {self.demo_token}"}
