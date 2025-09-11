@@ -766,9 +766,10 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
               </Link>
 
               {/* Create Listing Button (replaced shopping cart) */}
-              <Link
-                to="/create-listing"
-                className="relative p-3 text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white transition-all duration-300 group"
+              {isMenuItemVisible('desktop_menu', 'create_listing') && (
+                <Link
+                  to="/create-listing"
+                  className="relative p-3 text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white transition-all duration-300 group"
                 style={{
                   background: darkMode 
                     ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(34, 197, 94, 0.1) 100%)'
