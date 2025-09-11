@@ -4584,6 +4584,46 @@ async def get_listing(listing_id: str):
         if listing.get('_id'):
             listing['_id'] = str(listing['_id'])
         
+        # Add time information for time-limited listings
+        if listing.get('has_time_limit') and listing.get('expires_at'):
+            try:
+                # Parse the expiration time
+                if isinstance(listing['expires_at'], str):
+                    expires_at = datetime.fromisoformat(listing['expires_at'].replace('Z', '+00:00'))
+                else:
+                    expires_at = listing['expires_at']
+                
+                now = datetime.utcnow()
+                
+                # Calculate time remaining
+                time_diff = expires_at - now
+                time_remaining_seconds = int(time_diff.total_seconds())
+                
+                listing['time_info'] = {
+                    "has_time_limit": True,
+                    "expires_at": listing['expires_at'],
+                    "time_remaining_seconds": max(0, time_remaining_seconds),
+                    "is_expired": time_remaining_seconds <= 0,
+                    "time_limit_hours": listing.get('time_limit_hours', 24)
+                }
+            except Exception as e:
+                logger.error(f"Error calculating time info for listing {listing.get('id')}: {e}")
+                listing['time_info'] = {
+                    "has_time_limit": True,
+                    "expires_at": listing.get('expires_at'),
+                    "time_remaining_seconds": 0,
+                    "is_expired": True,
+                    "time_limit_hours": listing.get('time_limit_hours', 24)
+                }
+        else:
+            listing['time_info'] = {
+                "has_time_limit": False,
+                "expires_at": None,
+                "time_remaining_seconds": None,
+                "is_expired": False,
+                "time_limit_hours": None
+            }
+        
         return listing
         
     except HTTPException:
