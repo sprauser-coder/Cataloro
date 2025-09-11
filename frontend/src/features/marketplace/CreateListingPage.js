@@ -128,9 +128,12 @@ function CreateListingPage() {
 
   // Fetch Cat Database on component mount and load profile address
   useEffect(() => {
-    fetchUnifiedCalculations(); // Use unified endpoint instead of separate calls
+    // Only fetch catalyst data for admin/manager users
+    if (isAdminOrManager) {
+      fetchUnifiedCalculations(); // Use unified endpoint instead of separate calls
+    }
     loadProfileAddress();
-  }, []);
+  }, [isAdminOrManager]);
   
   // Debug permissions and state
   useEffect(() => {
