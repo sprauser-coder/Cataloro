@@ -685,18 +685,17 @@ class AdminMenuSettingsTester:
             }
     
     async def cleanup_test_data(self):
-        """Clean up test ads created during testing"""
-        if not self.admin_token or not self.test_ads:
+        """Restore original menu settings if modified during testing"""
+        if not self.admin_token or not self.original_menu_settings:
             return
         
         headers = {"Authorization": f"Bearer {self.admin_token}"}
         
-        for ad_id in self.test_ads:
-            try:
-                await self.make_request(f"/admin/ads/{ad_id}", "DELETE", headers=headers)
-                print(f"  🧹 Cleaned up test ad: {ad_id}")
-            except Exception as e:
-                print(f"  ⚠️ Failed to cleanup ad {ad_id}: {e}")
+        try:
+            await self.make_request("/admin/menu-settings", "POST", data=self.original_menu_settings, headers=headers)
+            print(f"  🧹 Restored original menu settings")
+        except Exception as e:
+            print(f"  ⚠️ Failed to restore original menu settings: {e}")
     
     async def run_comprehensive_ads_upload_test(self) -> Dict:
         """Run all ads image upload tests"""
