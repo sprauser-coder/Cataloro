@@ -380,23 +380,45 @@ function SimpleLoginPage() {
               {/* Registration Form */}
               {activeTab === 'register' && (
                 <form onSubmit={handleRegisterSubmit} className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-200 mb-3">
-                      Full Name
-                    </label>
-                    <div className="relative group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl blur-lg group-focus-within:blur-xl transition-all duration-300"></div>
-                      <div className="relative">
-                        <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
-                        <input
-                          type="text"
-                          name="fullName"
-                          value={registerData.fullName}
-                          onChange={handleRegisterChange}
-                          required
-                          className="w-full pl-12 pr-4 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 text-white placeholder-gray-400 transition-all duration-300"
-                          placeholder="Enter your full name"
-                        />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-200 mb-3">
+                        First Name
+                      </label>
+                      <div className="relative group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl blur-lg group-focus-within:blur-xl transition-all duration-300"></div>
+                        <div className="relative">
+                          <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+                          <input
+                            type="text"
+                            name="firstName"
+                            value={registerData.firstName}
+                            onChange={handleRegisterChange}
+                            required
+                            className="w-full pl-12 pr-4 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 text-white placeholder-gray-400 transition-all duration-300"
+                            placeholder="First name"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-200 mb-3">
+                        Last Name
+                      </label>
+                      <div className="relative group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl blur-lg group-focus-within:blur-xl transition-all duration-300"></div>
+                        <div className="relative">
+                          <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+                          <input
+                            type="text"
+                            name="lastName"
+                            value={registerData.lastName}
+                            onChange={handleRegisterChange}
+                            required
+                            className="w-full pl-12 pr-4 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 text-white placeholder-gray-400 transition-all duration-300"
+                            placeholder="Last name"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
