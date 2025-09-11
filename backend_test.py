@@ -7161,12 +7161,41 @@ async def main_custom_menu():
     return custom_menu_results
 
 async def main():
-    """Main function to run API endpoint fixes testing"""
-    print("🚨 CATALORO API ENDPOINT FIXES TESTING")
+    """Main function to run API endpoint fixes testing with priority on unified calculations"""
+    print("🚨 CATALORO API TESTING - UNIFIED CALCULATIONS PRIORITY")
     print("=" * 80)
-    print("Testing specific API endpoint fixes to resolve 404 errors and authentication issues")
-    print("FOCUS: Browse listings, notifications, image upload, profile, admin logo endpoints")
+    print("PRIORITY: Testing unified calculations endpoint for add listing autocomplete (0 entries issue)")
+    print("SECONDARY: Testing API endpoint fixes for 404 errors and authentication issues")
+    print("=" * 80)
     print()
+    
+    # PRIORITY: Run Unified Calculations testing first
+    print("🎯 PRIORITY TEST: Unified Calculations Endpoint")
+    unified_tester = UnifiedCalculationsTester()
+    unified_results = await unified_tester.run_unified_calculations_testing()
+    
+    print("\n" + "=" * 80)
+    print("📊 UNIFIED CALCULATIONS TEST RESULTS")
+    print("=" * 80)
+    
+    if "error" in unified_results:
+        print(f"❌ UNIFIED CALCULATIONS TESTING FAILED: {unified_results['error']}")
+    else:
+        summary = unified_results.get("summary", {})
+        print(f"🧪 Endpoint working: {'✅ Yes' if summary.get('endpoint_working') else '❌ No'}")
+        print(f"📊 Catalyst entries count: {summary.get('catalyst_entries_count', 0)}")
+        
+        if summary.get("critical_issues"):
+            print(f"🚨 Critical issues found:")
+            for issue in summary["critical_issues"]:
+                print(f"  - {issue}")
+        
+        if summary.get("root_cause_identified"):
+            print(f"🔍 Root cause identified: {'✅ Yes' if summary.get('fix_needed') else '✅ No issues found'}")
+    
+    print("\n" + "=" * 80)
+    print("🔄 SECONDARY TESTS: API Endpoint Fixes")
+    print("=" * 80)
     
     # Run API endpoint fixes testing
     api_tester = APIEndpointFixesTester()
