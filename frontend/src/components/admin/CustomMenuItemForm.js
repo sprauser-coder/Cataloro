@@ -40,7 +40,7 @@ const CustomMenuItemForm = ({
         icon: 'Star',
         roles: ['admin', 'manager', 'seller', 'buyer'],
         target: '_self',
-        position: 999,
+        position: 0,
         type: 'existing_page',
         enabled: true
       });
