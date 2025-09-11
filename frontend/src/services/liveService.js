@@ -170,9 +170,11 @@ class LiveService {
 
   async markMessageRead(userId, messageId) {
     try {
+      const token = localStorage.getItem('cataloro_token');
       const response = await fetch(`${this.baseURL}/user/${userId}/messages/${messageId}/read`, {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
