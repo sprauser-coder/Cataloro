@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Custom Menu Item Management Functionality Testing
-Testing new custom menu item management endpoints and CRUD operations
+Ads Image Upload Functionality Testing
+Testing ads image upload failure - investigating why file upload is not working despite interface being added
 """
 
 import asyncio
@@ -9,6 +9,8 @@ import aiohttp
 import time
 import json
 import statistics
+import io
+import base64
 from datetime import datetime
 from typing import Dict, List, Any
 
