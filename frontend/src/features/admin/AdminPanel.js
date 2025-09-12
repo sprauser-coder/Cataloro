@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Shield, BarChart3, Users, Package, Building } from 'lucide-react';
 import DashboardTab from '../../components/admin/tabs/DashboardTab';
 import UsersTab from '../../components/admin/tabs/UsersTab';
-import ListingsTab from '../../components/admin/tabs/ListingsTab';
+// import ListingsTab from '../../components/admin/tabs/ListingsTab';
 import BusinessTab from './BusinessTab';
 import { adminService } from '../../services/adminService';
 import { useAuth } from '../../context/AuthContext';
