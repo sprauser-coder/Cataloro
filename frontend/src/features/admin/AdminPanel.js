@@ -4957,8 +4957,63 @@ function ListingModal({ listing, onSave, onClose }) {
     condition: listing?.condition || 'New',
     location: listing?.location || '',
     seller: listing?.seller || '',
-        } else if (backendData.listings && Array.isArray(backendData.listings)) {
-          listingsArray = backendData.listings;
+    image: listing?.image || ''
+  });
+
+  // Cat Database integration
+  const [catalystData, setCatalystData] = useState([]);
+  const [calculations, setCalculations] = useState([]);
+  const [unifiedCalculations, setUnifiedCalculations] = useState([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedCatalyst, setSelectedCatalyst] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchCatalystData();
+    fetchCalculations();
+  }, []);
+
+  const fetchCatalystData = async () => {
+    try {
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/data`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCatalystData(data);
+        console.log('✅ Catalyst data loaded:', data.length, 'records');
+      } else {
+        console.error('❌ Failed to fetch catalyst data - Status:', response.status);
+      }
+    } catch (error) {
+      console.error('Failed to fetch catalyst data:', error);
+    }
+  };
+
+  const fetchCalculations = async () => {
+    try {
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/catalyst/calculations`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCalculations(data);
+        console.log('✅ Catalyst calculations loaded');
+      } else {
+        console.error('❌ Failed to fetch calculations - Status:', response.status);
+      }
+    } catch (error) {
+      console.error('Failed to fetch calculations:', error);
+    }
         }
         
         // Fetch pending orders data to enrich listings
