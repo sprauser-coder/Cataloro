@@ -5419,7 +5419,8 @@ async def submit_tender(tender_data: dict, current_user: dict = Depends(get_curr
         
         # Create the tender
         tender_id = generate_id()
-        current_time = datetime.utcnow()
+        current_time = datetime.now(pytz.timezone('Europe/Berlin'))
+        current_time_utc = datetime.utcnow()
         
         tender = {
             "id": tender_id,
