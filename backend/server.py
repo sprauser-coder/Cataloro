@@ -4712,7 +4712,8 @@ async def check_listing_expiration(listing_id: str):
         
         # Check if expired now
         expires_at = datetime.fromisoformat(listing["expires_at"])
-        current_time = datetime.utcnow()
+        current_time = datetime.now(pytz.timezone('Europe/Berlin'))
+        current_time_utc = datetime.utcnow()
         
         if current_time >= expires_at:
             # Listing has expired, find highest bidder
