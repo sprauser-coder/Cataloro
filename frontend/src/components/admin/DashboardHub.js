@@ -445,7 +445,7 @@ const DashboardHub = () => {
         {activeDashboard === 'overview' && renderOverview()}
         {activeDashboard === 'analytics' && <PlaceholderDashboard title="Analytics Dashboard" description="Advanced analytics features coming soon" />}
         {activeDashboard === 'performance' && <PerformanceDashboard />}
-        {activeDashboard === 'security' && <SecurityDashboard />}
+        {activeDashboard === 'security' && <PlaceholderDashboard title="Security Dashboard" description="Advanced security monitoring features coming soon" />}
         {activeDashboard === 'search' && <EnhancedSearchInterface />}
       </div>
     </div>
