@@ -89,13 +89,25 @@ function AdminPanel() {
     );
   }
 
-  if (!user?.isAdmin) {
+  // Check if user has admin privileges (matching backend logic)
+  const isAdmin = user && (
+    user.role === "admin" || 
+    user.user_role === "Admin" ||
+    user.user_role === "Admin-Manager"
+  );
+
+  if (!isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center p-8">
           <Shield className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Access Denied</h1>
           <p className="text-gray-600 dark:text-gray-400">You don't have permission to access the admin panel.</p>
+          {user && (
+            <div className="mt-4 text-sm text-gray-500">
+              Current role: {user.role || user.user_role || 'Unknown'}
+            </div>
+          )}
         </div>
       </div>
     );
