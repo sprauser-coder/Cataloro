@@ -346,8 +346,8 @@ class TenderAcceptanceDebugTester:
     async def verify_listing_tender_id_match(self, listing_id, tender_id):
         """Verify that the listing ID in tender matches the listing ID in listings collection"""
         try:
-            # Get tender details
-            async with self.session.get(f"{BACKEND_URL}/tenders/{tender_id}") as response:
+            # Get tender details - need to use the listing tenders endpoint since individual tender endpoint may not exist
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}/tenders") as response:
                 if response.status == 200:
                     tender_data = await response.json()
                     tender_listing_id = tender_data.get('listing_id')
