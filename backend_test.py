@@ -1655,6 +1655,591 @@ class BackendTester:
             print("❌ ADMIN PANEL ACCESS HAS ISSUES")
             print("   - Review failed tests above for remaining problems")
 
+    async def run_comprehensive_deployment_tests(self):
+        """Run comprehensive backend deployment testing"""
+        print("🚀 CATALORO MARKETPLACE - COMPREHENSIVE BACKEND DEPLOYMENT TESTING")
+        print("=" * 80)
+        print("Testing critical fixes for production deployment to https://app.cataloro.com")
+        print("=" * 80)
+        
+        # 1. CRITICAL FIXES VERIFICATION
+        print("\n🔧 1. CRITICAL FIXES VERIFICATION")
+        print("-" * 50)
+        
+        # Test database connectivity first
+        await self.test_database_connectivity()
+        
+        # Test authentication system
+        admin_info = await self.test_admin_login_authentication()
+        demo_info = await self.test_demo_user_authentication()
+        
+        if admin_info and demo_info:
+            # Test critical messaging fixes
+            await self.test_messaging_authentication_fixes(admin_info, demo_info)
+            
+            # Test critical listing creation fix
+            await self.test_listing_creation_fix(admin_info)
+            
+            # 2. BIDDING SYSTEM TESTING (now that listing creation should be fixed)
+            print("\n🎯 2. BIDDING SYSTEM TESTING")
+            print("-" * 50)
+            await self.test_bidding_system_end_to_end(admin_info, demo_info)
+            
+            # 3. COMPREHENSIVE SYSTEM VERIFICATION
+            print("\n✅ 3. COMPREHENSIVE SYSTEM VERIFICATION")
+            print("-" * 50)
+            await self.test_admin_panel_apis(admin_info)
+            await self.test_marketplace_apis(admin_info["token"])
+            await self.test_registration_system()
+            await self.test_time_limit_features(admin_info)
+        
+        # Print final deployment readiness summary
+        self.print_deployment_readiness_summary()
+    
+    async def test_demo_user_authentication(self):
+        """Test demo user login authentication"""
+        print("\n🔐 DEMO USER AUTHENTICATION TEST:")
+        
+        # Test demo user login
+        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        
+        if not demo_token:
+            self.log_result(
+                "Demo User Login Test", 
+                False, 
+                "Failed to login with demo@cataloro.com / demo123"
+            )
+            return None
+        
+        return {
+            "token": demo_token,
+            "user_id": demo_user_id,
+            "user": demo_user
+        }
+    
+    async def test_messaging_authentication_fixes(self, admin_info, demo_info):
+        """Test the critical messaging authentication fixes"""
+        print("\n🔒 MESSAGING AUTHENTICATION FIXES VERIFICATION:")
+        
+        admin_user_id = admin_info["user_id"]
+        admin_token = admin_info["token"]
+        demo_user_id = demo_info["user_id"]
+        demo_token = demo_info["token"]
+        
+        # Test 1: GET /api/user/{user_id}/messages - should require authentication
+        await self.test_messages_endpoint_without_auth(admin_user_id)
+        messages = await self.test_messages_endpoint_with_auth(admin_user_id, admin_token)
+        
+        # Test 2: POST /api/user/{user_id}/messages - should require authentication
+        await self.test_send_message_without_auth(admin_user_id)
+        message_id = await self.test_create_test_message(admin_user_id, admin_token)
+        
+        # Test 3: PUT /api/user/{user_id}/messages/{message_id}/read - should require authentication
+        if message_id:
+            await self.test_mark_read_without_auth(admin_user_id, message_id)
+            await self.test_mark_read_authentication(admin_user_id, admin_token, message_id)
+        
+        # Test 4: Authorization - cross-user access control
+        await self.test_cross_user_authorization(admin_info, demo_info)
+        
+        # Test 5: Data quality - NULL content validation
+        if messages:
+            await self.test_message_structure(messages)
+    
+    async def test_listing_creation_fix(self, user_info):
+        """Test the critical listing creation fix - automatic seller_id population from JWT token"""
+        print("\n📝 LISTING CREATION FIX VERIFICATION:")
+        
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {user_info['token']}"}
+            
+            # Test listing creation WITHOUT manually providing seller_id
+            # The fix should automatically populate seller_id from JWT token
+            listing_data = {
+                "title": "DEPLOYMENT TEST - Listing Creation Fix Verification",
+                "description": "Testing automatic seller_id population from JWT token for deployment readiness",
+                "price": 199.99,
+                "category": "Test Category",
+                "condition": "New",
+                "has_time_limit": True,
+                "time_limit_hours": 24
+                # NOTE: seller_id should NOT be provided - it should be auto-populated from JWT
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/listings", json=listing_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listing_id = data.get("id")
+                    seller_id = data.get("seller_id")
+                    expected_seller_id = user_info["user_id"]
+                    
+                    if seller_id == expected_seller_id:
+                        self.log_result(
+                            "✅ CRITICAL FIX: Listing Creation with Auto seller_id", 
+                            True, 
+                            f"SUCCESS - seller_id automatically populated from JWT token (ID: {listing_id}, seller_id: {seller_id})",
+                            response_time
+                        )
+                        return listing_id
+                    else:
+                        self.log_result(
+                            "❌ CRITICAL FIX: Listing Creation with Auto seller_id", 
+                            False, 
+                            f"PARTIAL - Listing created but seller_id mismatch. Expected: {expected_seller_id}, Got: {seller_id}",
+                            response_time
+                        )
+                        return listing_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "❌ CRITICAL FIX: Listing Creation with Auto seller_id", 
+                        False, 
+                        f"FAILED - Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "❌ CRITICAL FIX: Listing Creation with Auto seller_id", 
+                False, 
+                f"EXCEPTION - Request failed: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_bidding_system_end_to_end(self, seller_info, bidder_info):
+        """Test bidding system end-to-end functionality"""
+        
+        # Step 1: Create a test listing with time limits (using seller account)
+        listing_id = await self.test_create_time_limited_listing_for_bidding(seller_info["token"])
+        
+        if not listing_id:
+            self.log_result(
+                "Bidding System End-to-End", 
+                False, 
+                "Cannot test bidding - listing creation failed"
+            )
+            return
+        
+        # Step 2: Test tender submission functionality (using bidder account)
+        tender_id = await self.test_tender_submission_for_bidding(listing_id, bidder_info["token"])
+        
+        # Step 3: Test highest bidder blocking logic
+        if tender_id:
+            await self.test_highest_bidder_blocking_for_bidding(listing_id, bidder_info["token"])
+        
+        # Step 4: Verify bid_info in listing details
+        await self.test_listing_bid_info_verification(listing_id)
+    
+    async def test_create_time_limited_listing_for_bidding(self, token):
+        """Create a time-limited listing specifically for bidding tests"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            listing_data = {
+                "title": "BIDDING TEST - Time Limited Auction Listing",
+                "description": "Test listing for comprehensive bidding system verification",
+                "price": 100.00,
+                "category": "Test Auction",
+                "condition": "New",
+                "has_time_limit": True,
+                "time_limit_hours": 2  # 2 hour auction for testing
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/listings", json=listing_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listing_id = data.get("id")
+                    
+                    self.log_result(
+                        "Create Time-Limited Listing for Bidding", 
+                        True, 
+                        f"Successfully created 2-hour auction listing {listing_id}",
+                        response_time
+                    )
+                    return listing_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create Time-Limited Listing for Bidding", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create Time-Limited Listing for Bidding", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_tender_submission_for_bidding(self, listing_id, token):
+        """Test tender submission for bidding system"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": 125.00,
+                "message": "Test bid for comprehensive bidding system verification"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    tender_id = data.get("id")
+                    
+                    self.log_result(
+                        "Tender Submission for Bidding", 
+                        True, 
+                        f"Successfully submitted bid {tender_id} for ${tender_data['amount']}",
+                        response_time
+                    )
+                    return tender_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Tender Submission for Bidding", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Tender Submission for Bidding", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_highest_bidder_blocking_for_bidding(self, listing_id, token):
+        """Test highest bidder blocking logic for bidding system"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Try to place another bid (should be blocked if user is highest bidder)
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": 150.00,
+                "message": "Attempting second bid as highest bidder - should be blocked"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 400:
+                    error_text = await response.text()
+                    if "highest bidder" in error_text.lower():
+                        self.log_result(
+                            "Highest Bidder Blocking Logic", 
+                            True, 
+                            f"✅ BLOCKING WORKING - Highest bidder properly blocked: {error_text}",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Highest Bidder Blocking Logic", 
+                            False, 
+                            f"Blocked but wrong reason: {error_text}",
+                            response_time
+                        )
+                        return False
+                elif response.status == 200:
+                    self.log_result(
+                        "Highest Bidder Blocking Logic", 
+                        False, 
+                        f"❌ BLOCKING FAILED - Highest bidder was able to place another bid",
+                        response_time
+                    )
+                    return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Highest Bidder Blocking Logic", 
+                        False, 
+                        f"Unexpected status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Highest Bidder Blocking Logic", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def test_listing_bid_info_verification(self, listing_id):
+        """Verify that listing details include proper bid_info with highest_bidder_id"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listing_data = await response.json()
+                    
+                    # Check for bid_info structure
+                    bid_info = listing_data.get('bid_info', {})
+                    has_bids = bid_info.get('has_bids', False)
+                    total_bids = bid_info.get('total_bids', 0)
+                    highest_bid = bid_info.get('highest_bid', 0)
+                    highest_bidder_id = bid_info.get('highest_bidder_id')
+                    
+                    if bid_info and has_bids and highest_bidder_id:
+                        self.log_result(
+                            "Listing Bid Info Verification", 
+                            True, 
+                            f"✅ bid_info complete: {total_bids} bids, highest: ${highest_bid}, bidder: {highest_bidder_id}",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Listing Bid Info Verification", 
+                            False, 
+                            f"❌ bid_info incomplete: has_bids={has_bids}, highest_bidder_id={highest_bidder_id}",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Listing Bid Info Verification", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Listing Bid Info Verification", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def test_admin_panel_apis(self, admin_info):
+        """Test all admin panel APIs with proper security"""
+        print("\n🛡️ ADMIN PANEL APIS VERIFICATION:")
+        
+        await self.test_admin_endpoints_access(admin_info["token"])
+        await self.test_non_admin_access_blocked()
+    
+    async def test_time_limit_features(self, user_info):
+        """Test time limit features comprehensively"""
+        print("\n⏰ TIME LIMIT FEATURES VERIFICATION:")
+        
+        # Test various time limit options
+        await self.test_create_listing_with_different_time_limits(user_info["token"])
+    
+    async def test_create_listing_with_different_time_limits(self, token):
+        """Test creating listings with various time limits"""
+        time_limits = [
+            {"hours": 1, "name": "1 Hour"},
+            {"hours": 24, "name": "24 Hours"},
+            {"hours": 48, "name": "48 Hours"},
+            {"hours": 168, "name": "1 Week"}
+        ]
+        
+        for time_limit in time_limits:
+            await self.test_create_single_time_limited_listing(token, time_limit["hours"], time_limit["name"])
+    
+    async def test_create_single_time_limited_listing(self, token, hours, name):
+        """Test creating a single time-limited listing"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            listing_data = {
+                "title": f"TIME LIMIT TEST - {name} Listing",
+                "description": f"Testing {name} time limit functionality for deployment",
+                "price": 50.00 + hours,  # Vary price based on time limit
+                "category": "Time Limit Test",
+                "condition": "New",
+                "has_time_limit": True,
+                "time_limit_hours": hours
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/listings", json=listing_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listing_id = data.get("id")
+                    expires_at = data.get("expires_at")
+                    
+                    self.log_result(
+                        f"Create {name} Time Limited Listing", 
+                        True, 
+                        f"Successfully created {name} listing {listing_id}, expires: {expires_at}",
+                        response_time
+                    )
+                    return listing_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"Create {name} Time Limited Listing", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"Create {name} Time Limited Listing", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    def print_deployment_readiness_summary(self):
+        """Print comprehensive deployment readiness summary"""
+        print("\n" + "=" * 80)
+        print("🚀 CATALORO MARKETPLACE - DEPLOYMENT READINESS SUMMARY")
+        print("=" * 80)
+        
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        success_rate = (passed_tests/total_tests*100) if total_tests > 0 else 0
+        
+        print(f"📊 OVERALL TEST RESULTS:")
+        print(f"   Total Tests Executed: {total_tests}")
+        print(f"   Tests Passed: {passed_tests}")
+        print(f"   Tests Failed: {failed_tests}")
+        print(f"   Success Rate: {success_rate:.1f}%")
+        print()
+        
+        # Categorize critical fixes
+        critical_fixes = {
+            "Listing Creation Fix": ["CRITICAL FIX: Listing Creation"],
+            "Messaging Authentication": ["Authentication Security", "Send Message Security", "Mark Read Security"],
+            "Bidding System": ["Tender Submission", "Highest Bidder Blocking", "Bid Info"],
+            "Admin Panel Security": ["Admin Endpoint", "Admin Blocking"],
+            "Authentication System": ["Admin Login", "Demo User Login"],
+            "Time Limit Features": ["Time Limited Listing"]
+        }
+        
+        print("🔧 CRITICAL FIXES STATUS:")
+        print("-" * 50)
+        
+        deployment_blockers = []
+        
+        for category, keywords in critical_fixes.items():
+            category_tests = [r for r in self.test_results if any(keyword in r["test"] for keyword in keywords)]
+            
+            if category_tests:
+                category_passed = sum(1 for r in category_tests if r["success"])
+                category_total = len(category_tests)
+                category_rate = (category_passed / category_total * 100) if category_total > 0 else 0
+                
+                if category_rate >= 80:
+                    status = "✅ FIXED"
+                elif category_rate >= 60:
+                    status = "⚠️ PARTIAL"
+                    deployment_blockers.append(f"{category}: {category_passed}/{category_total} tests passed")
+                else:
+                    status = "❌ BROKEN"
+                    deployment_blockers.append(f"{category}: {category_passed}/{category_total} tests passed")
+                
+                print(f"   {status} {category}: {category_passed}/{category_total} ({category_rate:.1f}%)")
+            else:
+                print(f"   ⚠️ NOT TESTED {category}")
+                deployment_blockers.append(f"{category}: Not tested")
+        
+        print()
+        print("🚨 DEPLOYMENT BLOCKERS:")
+        print("-" * 50)
+        
+        if deployment_blockers:
+            for blocker in deployment_blockers:
+                print(f"   ❌ {blocker}")
+        else:
+            print("   ✅ No critical deployment blockers identified")
+        
+        print()
+        print("🎯 DEPLOYMENT RECOMMENDATION:")
+        print("-" * 50)
+        
+        if success_rate >= 90:
+            recommendation = "🚀 READY FOR PRODUCTION DEPLOYMENT"
+            details = "All critical systems operational. Deploy with confidence to https://app.cataloro.com"
+        elif success_rate >= 80:
+            recommendation = "⚠️ READY WITH MONITORING"
+            details = "Deploy with enhanced monitoring. Address remaining issues post-deployment."
+        elif success_rate >= 70:
+            recommendation = "🔧 NEEDS CRITICAL FIXES"
+            details = "Address critical issues before deploying to production."
+        else:
+            recommendation = "❌ NOT READY FOR DEPLOYMENT"
+            details = "Major issues detected. Extensive fixes required before production deployment."
+        
+        print(f"   Status: {recommendation}")
+        print(f"   Details: {details}")
+        
+        print()
+        print("📋 DEPLOYMENT CHECKLIST:")
+        print("-" * 50)
+        
+        checklist = [
+            ("✅ Admin authentication working", any("Admin Login" in r["test"] and r["success"] for r in self.test_results)),
+            ("✅ Demo user authentication working", any("Demo User Login" in r["test"] and r["success"] for r in self.test_results)),
+            ("✅ Listing creation with auto seller_id", any("CRITICAL FIX: Listing Creation" in r["test"] and r["success"] for r in self.test_results)),
+            ("✅ Messaging endpoints require authentication", any("Authentication Security" in r["test"] and r["success"] for r in self.test_results)),
+            ("✅ Bidding system functional", any("Tender Submission" in r["test"] and r["success"] for r in self.test_results)),
+            ("✅ Admin panel endpoints secured", any("Admin Endpoint" in r["test"] and r["success"] for r in self.test_results)),
+            ("✅ Time limit features working", any("Time Limited" in r["test"] and r["success"] for r in self.test_results)),
+            ("✅ Registration system operational", any("User Registration" in r["test"] and r["success"] for r in self.test_results))
+        ]
+        
+        for item, status in checklist:
+            icon = "✅" if status else "❌"
+            print(f"   {icon} {item.replace('✅ ', '')}")
+        
+        print()
+        print("🌐 PRODUCTION DEPLOYMENT TARGET:")
+        print("-" * 50)
+        print("   URL: https://app.cataloro.com")
+        print("   Backend: https://cataloro-admin-fix.preview.emergentagent.com/api")
+        print("   Status: Ready for final deployment verification")
+        
+        print("=" * 80)
+
 async def main():
     """Main test execution - Comprehensive Backend Deployment Testing"""
     print("🚀 CATALORO MARKETPLACE - COMPREHENSIVE BACKEND DEPLOYMENT TESTING")
