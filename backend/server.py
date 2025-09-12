@@ -5184,6 +5184,10 @@ async def send_message(user_id: str, message_data: dict, current_user: dict = De
 async def mark_message_read(user_id: str, message_id: str, current_user: dict = Depends(get_current_user)):
     """Mark message as read"""
     try:
+        # Authorization check: users can only mark their own messages as read (unless admin)
+        if current_user["id"] != user_id and current_user.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Access denied: You can only mark your own messages as read")
+        
         result = await db.user_messages.update_one(
             {"id": message_id, "$or": [{"sender_id": user_id}, {"recipient_id": user_id}]},
             {"$set": {"is_read": True, "read_at": datetime.utcnow().isoformat()}}
