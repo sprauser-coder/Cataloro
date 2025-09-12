@@ -1,0 +1,53 @@
+
+================================================================================
+CATALORO MARKETPLACE - EXTREME STRESS TEST REPORT
+================================================================================
+
+TEST CONFIGURATION:
+- Target Concurrent Users: 1360
+- Test Data Generated:
+  * Users: 1360
+  * Listings: 5000
+  * Bids: 9996
+- Test Duration: 500.62 seconds
+
+PERFORMANCE METRICS:
+- Total Requests: 12571
+- Successful Requests: 4078
+- Failed Requests: 8493
+- Error Rate: 67.56%
+- Throughput: 25.11 requests/second
+
+RESPONSE TIME PERCENTILES:
+- 50th percentile: 0.017s
+- 90th percentile: 10.352s
+- 95th percentile: 10.856s
+- 99th percentile: 30.002s
+
+RESOURCE UTILIZATION:
+- CPU Average: 12.3%
+- CPU Peak: 32.3%
+- Memory Average: 28.3%
+- Memory Peak: 29.9%
+
+LOAD PATTERNS EXECUTED:
+✅ Gradual ramp-up: 0 to 1360 users over 120s
+✅ Sustained peak: 1360 concurrent users for 300s
+✅ Spike testing: 100 requests/second bursts for 30s
+
+OPERATION DISTRIBUTION:
+- Browse operations: 40.0%
+- Bidding operations: 20.0%
+- Messaging operations: 15.0%
+- Favorites operations: 15.0%
+- Upload operations: 10.0%
+
+BOTTLENECK ANALYSIS:
+- Primary bottleneck: Network/Database
+- Recommended optimization: Increase system resources and file descriptor limits
+
+CLEANUP STATUS:
+✅ All test data cleaned up successfully
+✅ Database reset to pre-test state
+
+================================================================================

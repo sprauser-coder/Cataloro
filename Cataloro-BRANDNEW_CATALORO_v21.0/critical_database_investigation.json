@@ -1,0 +1,345 @@
+{
+  "investigation_timestamp": "2025-09-11T16:52:34.277732",
+  "user_report": "Cats database is completely gone!",
+  "collections_investigation": {
+    "test_name": "Database Collections Investigation",
+    "success": true,
+    "investigation_results": {
+      "collections_found": [
+        {
+          "endpoint": "/admin/performance",
+          "collections_info": {
+            "users": {
+              "document_count": 12,
+              "index_count": 8,
+              "indexes": [
+                "_id_",
+                "id_1",
+                "email_1",
+                "username_1",
+                "user_role_1",
+                "registration_status_1",
+                "created_at_1",
+                "email_1_username_1"
+              ]
+            },
+            "listings": {
+              "document_count": 12,
+              "index_count": 13,
+              "indexes": [
+                "_id_",
+                "id_1",
+                "seller_id_1",
+                "status_1",
+                "category_1",
+                "created_at_1",
+                "price_1",
+                "status_1_created_at_-1",
+                "seller_id_1_status_1",
+                "category_1_status_1",
+                "price_1_status_1",
+                "title_text_description_text",
+                "created_at_-1"
+              ]
+            },
+            "tenders": {
+              "document_count": 56,
+              "index_count": 10,
+              "indexes": [
+                "_id_",
+                "id_1",
+                "listing_id_1",
+                "buyer_id_1",
+                "seller_id_1",
+                "status_1",
+                "created_at_1",
+                "listing_id_1_status_1",
+                "buyer_id_1_status_1",
+                "bidder_id_1"
+              ]
+            },
+            "orders": {
+              "document_count": 0,
+              "index_count": 9,
+              "indexes": [
+                "_id_",
+                "id_1",
+                "buyer_id_1",
+                "seller_id_1",
+                "listing_id_1",
+                "status_1",
+                "created_at_1",
+                "buyer_id_1_status_1",
+                "seller_id_1_status_1"
+              ]
+            },
+            "user_notifications": {
+              "document_count": 64,
+              "index_count": 8,
+              "indexes": [
+                "_id_",
+                "id_1",
+                "user_id_1",
+                "type_1",
+                "read_1",
+                "created_at_1",
+                "user_id_1_read_1",
+                "user_id_1_created_at_-1"
+              ]
+            }
+          },
+          "status": "FOUND_COLLECTION_INFO"
+        }
+      ],
+      "catalyst_related_collections": [],
+      "document_counts": {},
+      "missing_collections": [
+        {
+          "endpoint": "/admin/catalyst-data",
+          "status": "NOT_ACCESSIBLE",
+          "error": "Unknown error",
+          "status_code": 404
+        },
+        {
+          "endpoint": "/admin/catalyst-prices",
+          "status": "NOT_ACCESSIBLE",
+          "error": "Unknown error",
+          "status_code": 404
+        },
+        {
+          "endpoint": "/admin/catalyst-overrides",
+          "status": "NOT_ACCESSIBLE",
+          "error": "Unknown error",
+          "status_code": 404
+        },
+        {
+          "endpoint": "/admin/cats",
+          "status": "NOT_ACCESSIBLE",
+          "error": "Unknown error",
+          "status_code": 404
+        },
+        {
+          "endpoint": "/catalyst-data",
+          "status": "NOT_ACCESSIBLE",
+          "error": "Unknown error",
+          "status_code": 404
+        },
+        {
+          "endpoint": "/catalyst-prices",
+          "status": "NOT_ACCESSIBLE",
+          "error": "Unknown error",
+          "status_code": 404
+        },
+        {
+          "endpoint": "/cats",
+          "status": "NOT_ACCESSIBLE",
+          "error": "Unknown error",
+          "status_code": 404
+        },
+        {
+          "endpoint": "/admin/database-status",
+          "status": "NOT_ACCESSIBLE",
+          "error": "Unknown error",
+          "status_code": 404
+        },
+        {
+          "endpoint": "/admin/collections",
+          "status": "NOT_ACCESSIBLE",
+          "error": "Unknown error",
+          "status_code": 404
+        }
+      ],
+      "potential_data_loss": true,
+      "database_stats": {
+        "name": "cataloro_marketplace",
+        "total_size": 59196342.0,
+        "index_size": 2850816.0,
+        "collections": 18
+      },
+      "summary": {
+        "catalyst_endpoints_accessible": 0,
+        "total_endpoints_checked": 9,
+        "missing_endpoints": 9,
+        "data_loss_likely": true
+      }
+    },
+    "critical_finding": true,
+    "accessible_catalyst_endpoints": [],
+    "document_counts": {}
+  },
+  "catalyst_data_check": {
+    "test_name": "Catalyst Data Check",
+    "success": true,
+    "catalyst_data_results": {
+      "catalyst_data": {
+        "exists": false,
+        "count": 0,
+        "sample": null
+      },
+      "catalyst_prices": {
+        "exists": false,
+        "count": 0,
+        "sample": null
+      },
+      "catalyst_overrides": {
+        "exists": false,
+        "count": 0,
+        "sample": null
+      },
+      "cats_collection": {
+        "exists": false,
+        "count": 0,
+        "sample": null
+      }
+    },
+    "summary": {
+      "total_collections_checked": 4,
+      "existing_collections": 0,
+      "total_documents": 0,
+      "data_loss_confirmed": true
+    },
+    "critical_finding": true
+  },
+  "listings_catalyst_check": {
+    "test_name": "Listings Catalyst Fields Check",
+    "success": true,
+    "catalyst_fields_found": {
+      "listings_checked": 9,
+      "listings_with_catalyst_fields": 8,
+      "catalyst_fields_present": [
+        "ceramic_weight",
+        "catalyst_id"
+      ],
+      "sample_catalyst_data": [
+        {
+          "listing_id": "f29d72a2-05c2-4ca2-8ba7-0072836ad25f",
+          "catalyst_fields": [
+            "ceramic_weight",
+            "catalyst_id"
+          ],
+          "sample_values": {
+            "ceramic_weight": 1.38,
+            "catalyst_id": "32093"
+          }
+        },
+        {
+          "listing_id": "1628284f-8d0f-4c18-b776-11d2b9fd11a4",
+          "catalyst_fields": [
+            "ceramic_weight",
+            "catalyst_id"
+          ],
+          "sample_values": {
+            "ceramic_weight": 0.98,
+            "catalyst_id": "32776"
+          }
+        },
+        {
+          "listing_id": "1a3c7f29-29e0-47d2-996e-39ec4e8a3e85",
+          "catalyst_fields": [
+            "ceramic_weight",
+            "catalyst_id"
+          ],
+          "sample_values": {
+            "ceramic_weight": 0.66,
+            "catalyst_id": "32106"
+          }
+        },
+        {
+          "listing_id": "e2368349-4e46-48f1-a783-1327aec2723e",
+          "catalyst_fields": [
+            "ceramic_weight",
+            "catalyst_id"
+          ],
+          "sample_values": {
+            "ceramic_weight": 1.08,
+            "catalyst_id": "32062"
+          }
+        },
+        {
+          "listing_id": "48a2ff59-e238-4f38-8338-0fe74ab79891",
+          "catalyst_fields": [
+            "ceramic_weight",
+            "catalyst_id"
+          ],
+          "sample_values": {
+            "ceramic_weight": 0.66,
+            "catalyst_id": "32106"
+          }
+        },
+        {
+          "listing_id": "42c64709-c1ee-46a9-b1e4-9847c4ad63a2",
+          "catalyst_fields": [
+            "ceramic_weight",
+            "catalyst_id"
+          ],
+          "sample_values": {
+            "ceramic_weight": 1.29,
+            "catalyst_id": "32061"
+          }
+        },
+        {
+          "listing_id": "fa1ee264-e6fa-46e8-8623-56eef2ca15a3",
+          "catalyst_fields": [
+            "ceramic_weight",
+            "catalyst_id"
+          ],
+          "sample_values": {
+            "ceramic_weight": 0.57,
+            "catalyst_id": "32065"
+          }
+        },
+        {
+          "listing_id": "807170c4-8f7c-4551-af2e-6dd1f45da6c5",
+          "catalyst_fields": [
+            "ceramic_weight",
+            "catalyst_id"
+          ],
+          "sample_values": {
+            "ceramic_weight": 0.6,
+            "catalyst_id": "32053"
+          }
+        }
+      ]
+    },
+    "catalyst_integration_exists": true,
+    "potential_data_migration": true
+  },
+  "backup_collections_check": {
+    "test_name": "Backup Collections Check",
+    "success": true,
+    "backup_results": {
+      "backup_collections_found": [],
+      "backup_collections_missing": [
+        "/admin/catalyst-data-backup",
+        "/admin/catalyst_data_backup",
+        "/admin/cats-backup",
+        "/admin/cats_backup",
+        "/admin/catalyst-data-old",
+        "/admin/catalyst_data_old",
+        "/admin/catalyst-archive",
+        "/admin/catalyst_archive",
+        "/admin/catalyst-data-v1",
+        "/admin/catalyst-data-v2",
+        "/admin/catalyst-migration",
+        "/admin/old-catalyst-data",
+        "/admin/legacy-catalyst-data"
+      ],
+      "total_backup_documents": 0
+    },
+    "backups_exist": false,
+    "recovery_possible": false
+  },
+  "critical_summary": {
+    "data_loss_confirmed": false,
+    "catalyst_endpoints_accessible": 0,
+    "total_catalyst_documents": 0,
+    "backup_collections_found": 0,
+    "recovery_options_available": 2,
+    "recovery_options": [
+      "Catalyst data may have been migrated to listings",
+      "Some catalyst endpoints still accessible"
+    ],
+    "investigation_status": "COMPLETE",
+    "urgent_action_required": false
+  }
+}

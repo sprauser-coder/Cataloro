@@ -1,0 +1,631 @@
+{
+  "investigation_timestamp": "2025-09-11T09:53:14.425425",
+  "authentication": {
+    "admin_auth": {
+      "test_name": "Admin Authentication",
+      "success": true,
+      "admin_id": "admin_user_1",
+      "token_received": true,
+      "user_data": {
+        "id": "admin_user_1",
+        "username": "sash_admin",
+        "email": "admin@cataloro.com",
+        "full_name": "Sash",
+        "name": "Sash Admin",
+        "role": "admin",
+        "user_role": "Admin",
+        "registration_status": "Approved",
+        "badge": "Admin",
+        "is_business": false,
+        "business_name": "",
+        "verified": true,
+        "is_active": true,
+        "created_at": "2025-09-09T09:53:56.308000",
+        "city": "System",
+        "country": "Admin",
+        "company_name": "",
+        "first_name": "Sascha",
+        "last_name": "Prauser",
+        "password": "Start123",
+        "vat_number": ""
+      }
+    },
+    "demo_auth": {
+      "test_name": "Demo User Authentication",
+      "success": true,
+      "demo_id": "68bfff790e4e46bc28d43631",
+      "user_data": {
+        "id": "68bfff790e4e46bc28d43631",
+        "username": "demo_user",
+        "email": "demo@cataloro.com",
+        "full_name": "Demo User",
+        "role": "user",
+        "user_role": "User-Buyer",
+        "registration_status": "Approved",
+        "badge": "Buyer",
+        "created_at": "2025-09-09T10:20:41.643000",
+        "is_active": true
+      }
+    }
+  },
+  "admin_menu_settings_investigation": {
+    "test_name": "Admin Menu Settings Investigation",
+    "success": true,
+    "response_time_ms": 13.623237609863281,
+    "menu_structure_analysis": {
+      "total_sections": 2,
+      "mobile_items_count": 3,
+      "desktop_items_count": 4,
+      "sections": {
+        "desktop_menu": {
+          "item_count": 4,
+          "items": [
+            "test_item",
+            "browse",
+            "create_listing",
+            "frontend_test"
+          ]
+        },
+        "mobile_menu": {
+          "item_count": 3,
+          "items": [
+            "test_item",
+            "browse",
+            "messages"
+          ]
+        }
+      }
+    },
+    "test_items_found": [
+      {
+        "key": "test_item",
+        "label": "",
+        "section": "desktop_menu",
+        "reasons": [
+          "test pattern in key",
+          "not in expected real items"
+        ],
+        "data": {
+          "enabled": true,
+          "roles": [
+            "admin"
+          ]
+        }
+      },
+      {
+        "key": "frontend_test",
+        "label": "",
+        "section": "desktop_menu",
+        "reasons": [
+          "test pattern in key",
+          "not in expected real items"
+        ],
+        "data": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "seller"
+          ]
+        }
+      },
+      {
+        "key": "test_item",
+        "label": "",
+        "section": "mobile_menu",
+        "reasons": [
+          "test pattern in key",
+          "not in expected real items"
+        ],
+        "data": {
+          "enabled": false,
+          "roles": [
+            "buyer"
+          ]
+        }
+      }
+    ],
+    "real_items_found": [
+      "messages",
+      "browse",
+      "create_listing"
+    ],
+    "missing_real_items": [
+      "favorites",
+      "my_listings",
+      "about",
+      "admin_drawer",
+      "buy_management",
+      "admin_panel",
+      "tenders",
+      "profile",
+      "notifications"
+    ],
+    "has_test_items": true,
+    "has_all_real_items": false,
+    "raw_menu_data": {
+      "desktop_menu": {
+        "test_item": {
+          "enabled": true,
+          "roles": [
+            "admin"
+          ]
+        },
+        "browse": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "buyer",
+            "seller"
+          ]
+        },
+        "create_listing": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "seller"
+          ]
+        },
+        "frontend_test": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "seller"
+          ]
+        }
+      },
+      "mobile_menu": {
+        "test_item": {
+          "enabled": false,
+          "roles": [
+            "buyer"
+          ]
+        },
+        "browse": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "buyer",
+            "seller"
+          ]
+        },
+        "messages": {
+          "enabled": false,
+          "roles": [
+            "admin",
+            "buyer",
+            "seller"
+          ]
+        }
+      }
+    }
+  },
+  "user_menu_settings_investigation": {
+    "test_name": "User Menu Settings Investigation",
+    "total_users_tested": 2,
+    "successful_user_tests": 2,
+    "test_items_in_user_menus": 2,
+    "users_receiving_test_items": 1,
+    "role_mapping_working": true,
+    "filtering_working": true,
+    "detailed_user_investigations": [
+      {
+        "user_type": "admin",
+        "user_id": "admin_user_1",
+        "success": true,
+        "response_time_ms": 50.67634582519531,
+        "test_items_found": [
+          {
+            "key": "test_item",
+            "section": "desktop_menu",
+            "data": {
+              "enabled": true,
+              "roles": [
+                "admin"
+              ]
+            }
+          },
+          {
+            "key": "frontend_test",
+            "section": "desktop_menu",
+            "data": {
+              "enabled": true,
+              "roles": [
+                "admin",
+                "seller"
+              ]
+            }
+          }
+        ],
+        "real_items_found": [
+          "browse",
+          "create_listing"
+        ],
+        "mobile_items_count": 1,
+        "desktop_items_count": 4,
+        "raw_menu_data": {
+          "desktop_menu": {
+            "test_item": {
+              "enabled": true,
+              "roles": [
+                "admin"
+              ]
+            },
+            "browse": {
+              "enabled": true,
+              "roles": [
+                "admin",
+                "buyer",
+                "seller"
+              ]
+            },
+            "create_listing": {
+              "enabled": true,
+              "roles": [
+                "admin",
+                "seller"
+              ]
+            },
+            "frontend_test": {
+              "enabled": true,
+              "roles": [
+                "admin",
+                "seller"
+              ]
+            }
+          },
+          "mobile_menu": {
+            "browse": {
+              "enabled": true,
+              "roles": [
+                "admin",
+                "buyer",
+                "seller"
+              ]
+            }
+          },
+          "user_role": "admin"
+        }
+      },
+      {
+        "user_type": "demo",
+        "user_id": "68bfff790e4e46bc28d43631",
+        "success": true,
+        "response_time_ms": 13.245582580566406,
+        "test_items_found": [],
+        "real_items_found": [
+          "browse"
+        ],
+        "mobile_items_count": 1,
+        "desktop_items_count": 1,
+        "raw_menu_data": {
+          "desktop_menu": {
+            "browse": {
+              "enabled": true,
+              "roles": [
+                "admin",
+                "buyer",
+                "seller"
+              ]
+            }
+          },
+          "mobile_menu": {
+            "browse": {
+              "enabled": true,
+              "roles": [
+                "admin",
+                "buyer",
+                "seller"
+              ]
+            }
+          },
+          "user_role": "buyer"
+        }
+      }
+    ]
+  },
+  "database_state_investigation": {
+    "test_name": "Database State Verification",
+    "consistency_tests_count": 3,
+    "successful_consistency_tests": 3,
+    "data_consistent_across_requests": true,
+    "persistence_test": {
+      "modification_made": true,
+      "save_success": true,
+      "retrieve_success": true,
+      "data_persisted": true,
+      "restore_success": true
+    },
+    "database_responsive": true,
+    "database_state_stable": true,
+    "detailed_consistency_tests": [
+      {
+        "request_number": 1,
+        "response_time_ms": 51.50961875915527,
+        "data_hash": -1611308000464170695,
+        "menu_structure": {
+          "total_sections": 2,
+          "mobile_items_count": 3,
+          "desktop_items_count": 4,
+          "sections": {
+            "desktop_menu": {
+              "item_count": 4,
+              "items": [
+                "test_item",
+                "browse",
+                "create_listing",
+                "frontend_test"
+              ]
+            },
+            "mobile_menu": {
+              "item_count": 3,
+              "items": [
+                "test_item",
+                "browse",
+                "messages"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "request_number": 2,
+        "response_time_ms": 10.663270950317383,
+        "data_hash": -1611308000464170695,
+        "menu_structure": {
+          "total_sections": 2,
+          "mobile_items_count": 3,
+          "desktop_items_count": 4,
+          "sections": {
+            "desktop_menu": {
+              "item_count": 4,
+              "items": [
+                "test_item",
+                "browse",
+                "create_listing",
+                "frontend_test"
+              ]
+            },
+            "mobile_menu": {
+              "item_count": 3,
+              "items": [
+                "test_item",
+                "browse",
+                "messages"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "request_number": 3,
+        "response_time_ms": 12.464523315429688,
+        "data_hash": -1611308000464170695,
+        "menu_structure": {
+          "total_sections": 2,
+          "mobile_items_count": 3,
+          "desktop_items_count": 4,
+          "sections": {
+            "desktop_menu": {
+              "item_count": 4,
+              "items": [
+                "test_item",
+                "browse",
+                "create_listing",
+                "frontend_test"
+              ]
+            },
+            "mobile_menu": {
+              "item_count": 3,
+              "items": [
+                "test_item",
+                "browse",
+                "messages"
+              ]
+            }
+          }
+        }
+      }
+    ]
+  },
+  "test_data_detection": {
+    "test_name": "Test Data Detection and Pattern Analysis",
+    "total_test_items_detected": 3,
+    "total_suspicious_items": 0,
+    "total_real_items_found": 4,
+    "missing_real_items_count": 9,
+    "integrity_issues_count": 4,
+    "menu_data_clean": false,
+    "real_navigation_complete": false,
+    "detected_test_items": [
+      {
+        "item_key": "test_item",
+        "section": "desktop_menu",
+        "is_test_item": true,
+        "is_suspicious": false,
+        "is_real_item": false,
+        "reasons": [
+          "contains test keyword: test",
+          "has test prefix: test_"
+        ],
+        "data": {
+          "enabled": true,
+          "roles": [
+            "admin"
+          ]
+        }
+      },
+      {
+        "item_key": "frontend_test",
+        "section": "desktop_menu",
+        "is_test_item": true,
+        "is_suspicious": false,
+        "is_real_item": false,
+        "reasons": [
+          "contains test keyword: test",
+          "has test suffix: _test"
+        ],
+        "data": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "seller"
+          ]
+        }
+      },
+      {
+        "item_key": "test_item",
+        "section": "mobile_menu",
+        "is_test_item": true,
+        "is_suspicious": false,
+        "is_real_item": false,
+        "reasons": [
+          "contains test keyword: test",
+          "has test prefix: test_"
+        ],
+        "data": {
+          "enabled": false,
+          "roles": [
+            "buyer"
+          ]
+        }
+      }
+    ],
+    "suspicious_items": [],
+    "real_items_analysis": [
+      {
+        "item_key": "browse",
+        "section": "desktop_menu",
+        "is_test_item": false,
+        "is_suspicious": false,
+        "is_real_item": true,
+        "reasons": [],
+        "data": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "buyer",
+            "seller"
+          ]
+        }
+      },
+      {
+        "item_key": "create_listing",
+        "section": "desktop_menu",
+        "is_test_item": false,
+        "is_suspicious": false,
+        "is_real_item": true,
+        "reasons": [],
+        "data": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "seller"
+          ]
+        }
+      },
+      {
+        "item_key": "browse",
+        "section": "mobile_menu",
+        "is_test_item": false,
+        "is_suspicious": false,
+        "is_real_item": true,
+        "reasons": [],
+        "data": {
+          "enabled": true,
+          "roles": [
+            "admin",
+            "buyer",
+            "seller"
+          ]
+        }
+      },
+      {
+        "item_key": "messages",
+        "section": "mobile_menu",
+        "is_test_item": false,
+        "is_suspicious": false,
+        "is_real_item": true,
+        "reasons": [],
+        "data": {
+          "enabled": false,
+          "roles": [
+            "admin",
+            "buyer",
+            "seller"
+          ]
+        }
+      }
+    ],
+    "missing_real_items": [
+      "favorites",
+      "my_listings",
+      "about",
+      "admin_drawer",
+      "buy_management",
+      "admin_panel",
+      "tenders",
+      "profile",
+      "notifications"
+    ],
+    "integrity_issues": [
+      "Duplicate item 'test_item' in mobile_menu and desktop_menu",
+      "Duplicate item 'browse' in mobile_menu and desktop_menu",
+      "Missing expected real items: ['favorites', 'my_listings', 'about', 'admin_drawer', 'buy_management', 'admin_panel', 'tenders', 'profile', 'notifications']",
+      "Test items found in production menu: ['test_item', 'frontend_test', 'test_item']"
+    ],
+    "test_patterns_used": {
+      "test_keywords": [
+        "test",
+        "dummy",
+        "sample",
+        "placeholder",
+        "mock",
+        "fake",
+        "temp"
+      ],
+      "test_prefixes": [
+        "test_",
+        "dummy_",
+        "sample_",
+        "mock_",
+        "temp_"
+      ],
+      "test_suffixes": [
+        "_test",
+        "_dummy",
+        "_sample",
+        "_mock",
+        "_temp"
+      ],
+      "suspicious_labels": [
+        "Test Item",
+        "Dummy Data",
+        "Sample Menu",
+        "Placeholder"
+      ]
+    }
+  },
+  "summary": {
+    "investigation_successful": true,
+    "issue_severity": "CRITICAL",
+    "test_items_detected_in_admin": true,
+    "test_items_count": 3,
+    "users_receiving_test_items": 1,
+    "missing_real_items_count": 9,
+    "database_state_consistent": true,
+    "menu_data_clean": false,
+    "root_cause_analysis": [
+      "Test items detected in admin menu settings",
+      "Users are receiving test items in their menu settings",
+      "Some expected real navigation items are missing",
+      "Menu data contains test/dummy entries"
+    ],
+    "recommendations": [
+      "Remove test items from menu_settings collection in database",
+      "Verify menu settings initialization process",
+      "Restore missing real navigation items to menu settings"
+    ],
+    "requires_immediate_action": true,
+    "data_integrity_score": 25
+  }
+}

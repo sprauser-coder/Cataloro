@@ -1,0 +1,111 @@
+{
+  "test_timestamp": "2025-09-10T10:33:45.631130",
+  "performance_targets": {
+    "seller_tenders_overview_ms": 200,
+    "sold_items_ms": 300,
+    "buyer_tenders_ms": 500
+  },
+  "test_configuration": {
+    "test_seller_id": "68bff520d28a1097d72b925c",
+    "test_buyer_id": "68bff520d28a1097d72b925d",
+    "admin_user_id": "68bff934bdb9d78bad2b925c"
+  },
+  "seller_tenders_overview": {
+    "test_name": "Seller Tenders Overview Performance",
+    "endpoint": "/tenders/seller/68bff520d28a1097d72b925c/overview",
+    "avg_response_time_ms": 36.334896087646484,
+    "min_response_time_ms": 9.894847869873047,
+    "max_response_time_ms": 59.83591079711914,
+    "target_ms": 200,
+    "meets_performance_target": true,
+    "performance_improvement_percent": 98.18325519561768,
+    "avg_data_quality_score": 100.0,
+    "data_integrity_excellent": true,
+    "n1_optimization_working": true,
+    "total_calls": 5,
+    "success_rate": 100.0,
+    "success": true
+  },
+  "sold_items_performance": {
+    "test_name": "Sold Items Performance",
+    "endpoint": "/user/68bff520d28a1097d72b925c/sold-items",
+    "avg_response_time_ms": 34.77368354797363,
+    "min_response_time_ms": 7.736682891845703,
+    "max_response_time_ms": 53.94315719604492,
+    "target_ms": 300,
+    "meets_performance_target": true,
+    "performance_improvement_percent": 96.52263164520264,
+    "avg_data_quality_score": 100.0,
+    "data_integrity_excellent": true,
+    "n1_optimization_working": true,
+    "total_calls": 5,
+    "success_rate": 100.0,
+    "success": true
+  },
+  "buyer_tenders_performance": {
+    "test_name": "Buyer Tenders Performance",
+    "endpoint": "/tenders/buyer/68bff520d28a1097d72b925d",
+    "avg_response_time_ms": 23.464679718017578,
+    "min_response_time_ms": 7.171869277954102,
+    "max_response_time_ms": 47.39236831665039,
+    "target_ms": 500,
+    "meets_performance_target": true,
+    "avg_data_quality_score": 100.0,
+    "data_integrity_excellent": true,
+    "already_optimized_confirmed": true,
+    "total_calls": 5,
+    "success_rate": 100.0,
+    "success": true
+  },
+  "concurrent_performance": {
+    "test_name": "Concurrent Tenders Performance",
+    "concurrent_requests": 5,
+    "successful_requests": 5,
+    "total_time_ms": 72.60489463806152,
+    "avg_individual_time_ms": 42.95554161071777,
+    "max_individual_time_ms": 71.99978828430176,
+    "min_individual_time_ms": 16.374588012695312,
+    "throughput_requests_per_second": 68.86588052947685,
+    "all_under_target": true,
+    "concurrent_performance_acceptable": true,
+    "success": true
+  },
+  "data_enrichment_accuracy": {
+    "test_name": "Data Enrichment Accuracy",
+    "avg_enrichment_score": 100.0,
+    "data_integrity_100_percent": true,
+    "buyer_info_enrichment_working": true,
+    "listing_info_enrichment_working": true,
+    "enrichment_accuracy_excellent": true,
+    "detailed_tests": [
+      {
+        "endpoint": "seller_overview",
+        "enrichment_score": 100,
+        "buyer_info_complete": true,
+        "listing_info_complete": true,
+        "seller_info_complete": true
+      },
+      {
+        "endpoint": "sold_items",
+        "enrichment_score": 100.0,
+        "buyer_info_complete": true,
+        "listing_info_complete": true,
+        "stats_complete": true
+      }
+    ],
+    "success": true
+  },
+  "summary": {
+    "overall_success_rate": 100.0,
+    "n1_query_fixes_working": true,
+    "performance_targets_met": true,
+    "data_integrity_100_percent": true,
+    "concurrent_handling_efficient": true,
+    "desktop_tenders_tab_optimized": true,
+    "all_critical_requirements_met": true,
+    "seller_overview_under_200ms": true,
+    "sold_items_under_300ms": true,
+    "buyer_tenders_efficient": true,
+    "data_enrichment_accurate": true
+  }
+}

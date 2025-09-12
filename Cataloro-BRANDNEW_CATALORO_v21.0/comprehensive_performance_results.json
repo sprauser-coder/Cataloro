@@ -1,0 +1,205 @@
+{
+  "test_timestamp": "2025-09-10T09:41:10.581164",
+  "success_criteria": {
+    "browse_response_size_kb": 15,
+    "browse_response_time_ms": 200,
+    "general_performance_ms": 1000
+  },
+  "browse_performance_multiple": {
+    "test_name": "Browse Performance Multiple Times",
+    "avg_response_time_ms": 105.89051246643066,
+    "avg_response_size_kb": 12.67578125,
+    "max_response_size_kb": 12.67578125,
+    "size_target_met": true,
+    "time_target_met": true,
+    "improvement_from_44mb_percent": 99.97186660766602,
+    "all_calls_successful": true,
+    "total_calls": 5,
+    "meets_success_criteria": true
+  },
+  "thumbnail_system_actual": {
+    "test_name": "Thumbnail System Actual Images",
+    "total_thumbnail_tests": 5,
+    "working_thumbnails": 5,
+    "placeholder_working": true,
+    "placeholder_size_bytes": 70,
+    "thumbnail_system_working": true,
+    "detailed_thumbnail_tests": [
+      {
+        "listing_id": "7ea1af1d-302c-40ab-9766-b09f6f03186d",
+        "success": true,
+        "content_type": "image/png",
+        "size_bytes": 1290242,
+        "response_time_ms": 13.841390609741211,
+        "is_image": true,
+        "is_cached": false
+      },
+      {
+        "listing_id": "1628284f-8d0f-4c18-b776-11d2b9fd11a4",
+        "success": true,
+        "content_type": "image/jpeg",
+        "size_bytes": 1234386,
+        "response_time_ms": 17.513751983642578,
+        "is_image": true,
+        "is_cached": false
+      },
+      {
+        "listing_id": "e2368349-4e46-48f1-a783-1327aec2723e",
+        "success": true,
+        "content_type": "image/jpeg",
+        "size_bytes": 4532375,
+        "response_time_ms": 30.526161193847656,
+        "is_image": true,
+        "is_cached": false
+      },
+      {
+        "listing_id": "48a2ff59-e238-4f38-8338-0fe74ab79891",
+        "success": true,
+        "content_type": "image/jpeg",
+        "size_bytes": 4651245,
+        "response_time_ms": 219.57850456237793,
+        "is_image": true,
+        "is_cached": false
+      },
+      {
+        "listing_id": "ed8192cf-6920-4c37-bd47-58ad1c06ea42",
+        "success": true,
+        "content_type": "image/jpeg",
+        "size_bytes": 4805109,
+        "response_time_ms": 30.605077743530273,
+        "is_image": true,
+        "is_cached": false
+      }
+    ]
+  },
+  "message_endpoint_performance": {
+    "test_name": "Message Endpoint Performance",
+    "avg_response_time_ms": 584.4361782073975,
+    "max_response_time_ms": 1689.2032623291016,
+    "min_response_time_ms": 11.559486389160156,
+    "performance_good": true,
+    "n1_fix_working": true,
+    "total_calls": 3,
+    "data_integrity_checks": [
+      {
+        "message_count": 2,
+        "has_enrichment": true,
+        "response_time_ms": 1689.2032623291016
+      },
+      {
+        "message_count": 2,
+        "has_enrichment": true,
+        "response_time_ms": 52.545785903930664
+      },
+      {
+        "message_count": 2,
+        "has_enrichment": true,
+        "response_time_ms": 11.559486389160156
+      }
+    ]
+  },
+  "tender_endpoint_performance": {
+    "test_name": "Tender Endpoint Performance",
+    "avg_response_time_ms": 36.43631935119629,
+    "max_response_time_ms": 50.14348030090332,
+    "min_response_time_ms": 9.650230407714844,
+    "performance_good": true,
+    "n1_fix_working": true,
+    "total_calls": 3,
+    "data_integrity_checks": [
+      {
+        "tender_count": 0,
+        "has_enrichment": false,
+        "response_time_ms": 9.650230407714844
+      },
+      {
+        "tender_count": 0,
+        "has_enrichment": false,
+        "response_time_ms": 50.14348030090332
+      },
+      {
+        "tender_count": 0,
+        "has_enrichment": false,
+        "response_time_ms": 49.5152473449707
+      }
+    ]
+  },
+  "data_structure_integrity": {
+    "test_name": "Data Structure Integrity",
+    "structure_integrity_score": 100.0,
+    "no_breaking_changes": true,
+    "total_listings_checked": 8,
+    "detailed_structure_checks": [
+      {
+        "listing_id": "7ea1af1d-302c-40ab-9766-b09f6f03186d",
+        "required_fields_present": true,
+        "missing_required_fields": [],
+        "enriched_fields_present": true,
+        "missing_enriched_fields": [],
+        "seller_structure_valid": true,
+        "bid_info_structure_valid": true,
+        "images_structure_valid": true
+      }
+    ]
+  },
+  "key_endpoints_performance": {
+    "test_name": "Key Endpoints Response Times",
+    "total_endpoints_tested": 5,
+    "successful_endpoints": 5,
+    "performant_endpoints": 5,
+    "overall_performance_good": true,
+    "detailed_endpoint_results": [
+      {
+        "endpoint": "/marketplace/browse",
+        "name": "Browse Listings",
+        "avg_response_time_ms": 42.57329305013021,
+        "target_ms": 200,
+        "meets_target": true,
+        "total_calls": 3
+      },
+      {
+        "endpoint": "/marketplace/search",
+        "name": "Search Listings",
+        "avg_response_time_ms": 581.5444787343343,
+        "target_ms": 1000,
+        "meets_target": true,
+        "total_calls": 3
+      },
+      {
+        "endpoint": "/health",
+        "name": "Health Check",
+        "avg_response_time_ms": 8.262554804484049,
+        "target_ms": 100,
+        "meets_target": true,
+        "total_calls": 3
+      },
+      {
+        "endpoint": "/admin/dashboard",
+        "name": "Admin Dashboard",
+        "avg_response_time_ms": 66.0542647043864,
+        "target_ms": 1000,
+        "meets_target": true,
+        "total_calls": 3
+      },
+      {
+        "endpoint": "/admin/performance",
+        "name": "Performance Metrics",
+        "avg_response_time_ms": 19.864241282145183,
+        "target_ms": 1000,
+        "meets_target": true,
+        "total_calls": 3
+      }
+    ]
+  },
+  "summary": {
+    "overall_success_rate": 100.0,
+    "browse_optimization_successful": true,
+    "thumbnail_system_working": true,
+    "message_n1_fix_working": true,
+    "tender_n1_fix_working": true,
+    "no_breaking_changes": true,
+    "overall_performance_acceptable": true,
+    "all_critical_requirements_met": true,
+    "performance_issue_44mb_resolved": true
+  }
+}
