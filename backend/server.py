@@ -5098,6 +5098,10 @@ async def remove_from_cart(user_id: str, item_id: str):
 async def get_user_messages(user_id: str, current_user: dict = Depends(get_current_user)):
     """Get user's messages with sender/recipient information (OPTIMIZED)"""
     try:
+        # Authorization check: Users can only access their own messages (unless admin)
+        if current_user['id'] != user_id and current_user.get('role') != 'admin' and current_user.get('user_role') not in ['Admin', 'Admin-Manager']:
+            raise HTTPException(status_code=403, detail="Access denied: You can only view your own messages")
+        
         # Get messages for user (sorted oldest first for proper mobile display)
         messages = await db.user_messages.find({"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]}).sort("created_at", 1).to_list(length=None)
         
