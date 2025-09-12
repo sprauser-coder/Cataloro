@@ -4410,6 +4410,9 @@ class BackendTester:
             self.log_result("Tender Acceptance Workflow", False, "Failed to login as admin (seller)")
             return False
         
+        # Reactivate demo user if suspended
+        await self.reactivate_demo_user(admin_token)
+        
         # Login as demo user (buyer)
         buyer_token, buyer_user_id, buyer_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
         if not buyer_token:
@@ -4484,6 +4487,45 @@ class BackendTester:
         )
         
         return workflow_success
+    
+    async def reactivate_demo_user(self, admin_token):
+        """Reactivate demo user if suspended"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            demo_user_id = "68bfff790e4e46bc28d43631"  # Fixed demo user ID
+            
+            async with self.session.put(f"{BACKEND_URL}/admin/users/{demo_user_id}/activate", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    self.log_result(
+                        "Reactivate Demo User", 
+                        True, 
+                        f"Successfully reactivated demo user {demo_user_id}",
+                        response_time
+                    )
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Reactivate Demo User", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Reactivate Demo User", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
     
     async def create_test_listing_for_tender_acceptance(self, admin_token):
         """Create a test listing for tender acceptance testing"""
