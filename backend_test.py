@@ -2674,17 +2674,125 @@ class BackendTester:
         
         print("=" * 80)
 
+    def print_specific_bidding_summary(self):
+        """Print focused summary for specific bidding fix testing"""
+        print("\n" + "=" * 80)
+        print("🎯 SPECIFIC BIDDING FIX TEST SUMMARY")
+        print("=" * 80)
+        
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        success_rate = (passed_tests/total_tests*100) if total_tests > 0 else 0
+        
+        print(f"📊 TEST RESULTS:")
+        print(f"   Total Tests: {total_tests}")
+        print(f"   Passed: {passed_tests}")
+        print(f"   Failed: {failed_tests}")
+        print(f"   Success Rate: {success_rate:.1f}%")
+        print()
+        
+        # Categorize specific bidding tests
+        bidding_categories = {
+            "Item Search": ["Find Specific Item"],
+            "Authentication": ["Login Authentication", "Bidding Authentication Fix"],
+            "Bid Submission": ["Specific Bid Submission"],
+            "Bid Validation": ["Bid Validation"],
+            "Bid Recording": ["Bid Recording Verification", "Listing Bid Info"]
+        }
+        
+        print("🔍 BIDDING FIX TEST RESULTS BY CATEGORY:")
+        print("-" * 50)
+        
+        critical_issues = []
+        
+        for category, keywords in bidding_categories.items():
+            category_tests = [r for r in self.test_results if any(keyword in r["test"] for keyword in keywords)]
+            
+            if category_tests:
+                category_passed = sum(1 for r in category_tests if r["success"])
+                category_total = len(category_tests)
+                category_rate = (category_passed / category_total * 100) if category_total > 0 else 0
+                
+                if category_rate >= 80:
+                    status = "✅ WORKING"
+                elif category_rate >= 60:
+                    status = "⚠️ ISSUES"
+                    critical_issues.extend([r for r in category_tests if not r["success"]])
+                else:
+                    status = "❌ FAILING"
+                    critical_issues.extend([r for r in category_tests if not r["success"]])
+                
+                print(f"   {status} {category}: {category_passed}/{category_total} ({category_rate:.1f}%)")
+            else:
+                print(f"   ⚠️ NOT TESTED {category}")
+        
+        print()
+        print("🚨 CRITICAL FINDINGS:")
+        print("-" * 50)
+        
+        if critical_issues:
+            for issue in critical_issues:
+                print(f"   ❌ {issue['test']}: {issue['details']}")
+        else:
+            print("   ✅ No critical issues found with bidding functionality")
+        
+        print()
+        print("🎯 USER ISSUE RESOLUTION:")
+        print("-" * 50)
+        
+        # Check specific user reported issue
+        auth_fixed = any("Bidding Authentication Fix" in r["test"] and r["success"] for r in self.test_results)
+        bid_submitted = any("Specific Bid Submission" in r["test"] and r["success"] for r in self.test_results)
+        
+        if auth_fixed and bid_submitted:
+            print("   ✅ USER ISSUE RESOLVED: €30.00 bid submission now working")
+            print("   ✅ AUTHENTICATION FIX: JWT tokens now properly sent to /api/tenders/submit")
+            print("   ✅ NO MORE 403 FORBIDDEN: Bidding authentication working correctly")
+        elif auth_fixed:
+            print("   ⚠️ PARTIAL RESOLUTION: Authentication fixed but bid submission issues remain")
+        elif bid_submitted:
+            print("   ⚠️ PARTIAL RESOLUTION: Bid submission working but authentication issues remain")
+        else:
+            print("   ❌ USER ISSUE NOT RESOLVED: Bidding still failing")
+        
+        print()
+        print("📋 SPECIFIC TEST OUTCOMES:")
+        print("-" * 50)
+        
+        # Show specific test results
+        for result in self.test_results:
+            status = "✅" if result["success"] else "❌"
+            print(f"   {status} {result['test']}")
+            if not result["success"]:
+                print(f"      └─ {result['details']}")
+        
+        print()
+        print("🔧 RECOMMENDATIONS:")
+        print("-" * 50)
+        
+        if success_rate >= 90:
+            print("   ✅ BIDDING FIX SUCCESSFUL: User issue resolved")
+            print("   📋 Frontend now properly sends JWT tokens to bidding endpoints")
+            print("   📋 €30.00 bid on MazdaRF4S2J17 (or similar items) should work")
+        elif success_rate >= 70:
+            print("   ⚠️ MOSTLY WORKING: Minor issues remain")
+            print("   📋 Review failed tests and address remaining issues")
+        else:
+            print("   ❌ BIDDING FIX INCOMPLETE: Major issues remain")
+            print("   📋 User will still experience 'Failed to submit tender offer' errors")
+            print("   📋 Additional fixes needed for authentication or validation")
+        
+        print("=" * 80)
+
 async def main():
-    """Main test execution - Comprehensive Backend Deployment Testing"""
-    print("🚀 CATALORO MARKETPLACE - COMPREHENSIVE BACKEND DEPLOYMENT TESTING")
-    print("=" * 80)
-    print(f"Backend URL: {BACKEND_URL}")
-    print(f"Test Time: {datetime.now().isoformat()}")
-    print(f"Deployment Target: https://app.cataloro.com")
-    print()
-    
+    """Main test execution function - focused on specific bidding fix"""
     async with BackendTester() as tester:
-        await tester.run_comprehensive_deployment_tests()
+        # Run specific bidding fix tests
+        await tester.run_specific_bidding_tests()
+        
+        # Print focused summary
+        tester.print_specific_bidding_summary()
 
 if __name__ == "__main__":
     asyncio.run(main())
