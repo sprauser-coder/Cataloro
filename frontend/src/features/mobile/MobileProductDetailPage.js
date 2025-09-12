@@ -153,7 +153,7 @@ function MobileProductDetailPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('cataloro_token')}`
         },
         body: JSON.stringify({
           listing_id: productId,
