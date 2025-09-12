@@ -305,8 +305,8 @@ class BackendTester:
             headers = {"Authorization": f"Bearer {token}"}
             message_data = {
                 "recipient_id": sender_id,  # Send to self for testing
-                "subject": "Test Message for Conversations Loading",
-                "content": "This is a test message created to verify the messaging system is working properly."
+                "subject": "Test Message for Security Validation",
+                "content": "This is a test message created to verify the messaging system security fixes are working properly."
             }
             
             async with self.session.post(f"{BACKEND_URL}/user/{sender_id}/messages", 
@@ -317,16 +317,16 @@ class BackendTester:
                     data = await response.json()
                     message_id = data.get("id")
                     self.log_result(
-                        "Test Message Creation", 
+                        "Send Message Authentication Test", 
                         True, 
-                        f"Successfully created test message (ID: {message_id})",
+                        f"✅ Send message with auth working (ID: {message_id})",
                         response_time
                     )
                     return message_id
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Test Message Creation", 
+                        "Send Message Authentication Test", 
                         False, 
                         f"Failed to create test message with status {response.status}: {error_text}",
                         response_time
@@ -336,12 +336,211 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Test Message Creation", 
+                "Send Message Authentication Test", 
                 False, 
                 f"Message creation failed with exception: {str(e)}",
                 response_time
             )
             return None
+    
+    async def test_send_message_without_auth(self, user_id):
+        """Test sending message without authentication - should be BLOCKED"""
+        start_time = datetime.now()
+        
+        try:
+            message_data = {
+                "recipient_id": user_id,
+                "subject": "Unauthorized Test",
+                "content": "This should not be sent without authentication"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/user/{user_id}/messages", 
+                                       json=message_data) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    self.log_result(
+                        "Send Message Security Test", 
+                        False, 
+                        f"❌ SECURITY VULNERABILITY: Can send messages without authentication",
+                        response_time
+                    )
+                    return True
+                elif response.status in [401, 403]:
+                    self.log_result(
+                        "Send Message Security Test", 
+                        True, 
+                        f"✅ SECURITY FIX WORKING: Send message properly requires authentication (Status {response.status})",
+                        response_time
+                    )
+                    return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Send Message Security Test", 
+                        False, 
+                        f"Unexpected status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Send Message Security Test", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def test_cross_user_authorization(self, user1_info, user2_info):
+        """Test that users cannot access other users' messages"""
+        start_time = datetime.now()
+        
+        try:
+            # Try to access user2's messages with user1's token
+            headers = {"Authorization": f"Bearer {user1_info['token']}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{user2_info['user_id']}/messages", 
+                                      headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    self.log_result(
+                        "Cross-User Authorization Test", 
+                        False, 
+                        f"❌ AUTHORIZATION VULNERABILITY: User can access other user's messages ({len(data)} messages)",
+                        response_time
+                    )
+                    return False
+                elif response.status == 403:
+                    self.log_result(
+                        "Cross-User Authorization Test", 
+                        True, 
+                        f"✅ AUTHORIZATION FIX WORKING: Cross-user access properly blocked (Status 403)",
+                        response_time
+                    )
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Cross-User Authorization Test", 
+                        False, 
+                        f"Unexpected status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Cross-User Authorization Test", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def test_mark_read_authentication(self, user_id, token, message_id):
+        """Test mark message as read with authentication"""
+        if not message_id:
+            self.log_result(
+                "Mark Read Authentication Test", 
+                False, 
+                "No message ID available for testing"
+            )
+            return False
+            
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            async with self.session.put(f"{BACKEND_URL}/user/{user_id}/messages/{message_id}/read", 
+                                      headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    self.log_result(
+                        "Mark Read Authentication Test", 
+                        True, 
+                        f"✅ Mark read with auth working",
+                        response_time
+                    )
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Mark Read Authentication Test", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Mark Read Authentication Test", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def test_mark_read_without_auth(self, user_id, message_id):
+        """Test mark message as read without authentication - should be BLOCKED"""
+        if not message_id:
+            self.log_result(
+                "Mark Read Security Test", 
+                False, 
+                "No message ID available for testing"
+            )
+            return False
+            
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.put(f"{BACKEND_URL}/user/{user_id}/messages/{message_id}/read") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    self.log_result(
+                        "Mark Read Security Test", 
+                        False, 
+                        f"❌ SECURITY VULNERABILITY: Can mark messages as read without authentication",
+                        response_time
+                    )
+                    return False
+                elif response.status in [401, 403]:
+                    self.log_result(
+                        "Mark Read Security Test", 
+                        True, 
+                        f"✅ SECURITY FIX WORKING: Mark read properly requires authentication (Status {response.status})",
+                        response_time
+                    )
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Mark Read Security Test", 
+                        False, 
+                        f"Unexpected status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Mark Read Security Test", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
     
     async def test_different_user_scenarios(self):
         """Test with different user scenarios"""
