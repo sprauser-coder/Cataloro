@@ -11,8 +11,8 @@ import sys
 import os
 from datetime import datetime
 
-# Configuration
-BACKEND_URL = "http://localhost:8001/api"
+# Configuration - Use production URL from frontend/.env
+BACKEND_URL = "https://cataloro-admin-fix.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):
