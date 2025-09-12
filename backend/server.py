@@ -5587,7 +5587,8 @@ async def accept_tender(tender_id: str, acceptance_data: dict):
         if not tender:
             raise HTTPException(status_code=404, detail="Tender not found or not active")
         
-        current_time = datetime.utcnow()
+        current_time = datetime.now(pytz.timezone('Europe/Berlin'))
+        current_time_utc = datetime.utcnow()
         
         # Get catalyst data from listing before updating tender
         listing = await db.listings.find_one({"id": tender["listing_id"]})
