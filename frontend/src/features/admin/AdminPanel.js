@@ -4946,17 +4946,6 @@ function SiteAdministrationTab({ showToast }) {
 }
 
 // ListingsTab component has been extracted to separate file - This was a duplicate DOUBLE component that needed to be removed
-  const [listings, setListings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [activeSubTab, setActiveSubTab] = useState('active'); // Sub-tab state
-  const [selectedListings, setSelectedListings] = useState([]);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingListing, setEditingListing] = useState(null);
-  const [bulkAction, setBulkAction] = useState('');
-
-  const { allProducts } = useMarketplace();
 
   useEffect(() => {
     fetchListings();
