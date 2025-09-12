@@ -1436,8 +1436,8 @@ class BackendTester:
             )
             return None
 
-    async def test_specific_bid_submission(self, listing_id, token, bid_amount=30.00):
-        """Test bidding on specific item with exact user scenario"""
+    async def test_specific_bid_submission(self, listing_id, token, bid_amount=35.00):
+        """Test bidding on specific item with exact user scenario - €35.00 bid"""
         print(f"\n💰 TESTING SPECIFIC BID: €{bid_amount} on listing {listing_id}")
         start_time = datetime.now()
         
@@ -1446,7 +1446,7 @@ class BackendTester:
             tender_data = {
                 "listing_id": listing_id,
                 "amount": bid_amount,
-                "message": f"Test bid of €{bid_amount} - reproducing user reported issue"
+                "message": f"Test bid of €{bid_amount} - reproducing exact user scenario with localStorage token fix"
             }
             
             async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
@@ -1459,7 +1459,7 @@ class BackendTester:
                     self.log_result(
                         f"Specific Bid Submission (€{bid_amount})", 
                         True, 
-                        f"✅ Successfully submitted bid: ID={tender_id}, Amount=€{bid_amount}",
+                        f"✅ SUCCESS: Bid submitted successfully! ID={tender_id}, Amount=€{bid_amount} - localStorage token fix working",
                         response_time
                     )
                     
@@ -1467,12 +1467,21 @@ class BackendTester:
                     await self.verify_bid_recorded(listing_id, tender_id, bid_amount)
                     
                     return tender_id
+                elif response.status == 401:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"Specific Bid Submission (€{bid_amount})", 
+                        False, 
+                        f"❌ 401 UNAUTHORIZED ERROR (User reported issue): {error_text} - localStorage token key issue not fixed",
+                        response_time
+                    )
+                    return None
                 elif response.status == 403:
                     error_text = await response.text()
                     self.log_result(
                         f"Specific Bid Submission (€{bid_amount})", 
                         False, 
-                        f"❌ 403 FORBIDDEN ERROR (User reported issue): {error_text}",
+                        f"❌ 403 FORBIDDEN ERROR: {error_text}",
                         response_time
                     )
                     return None
