@@ -231,7 +231,7 @@ function AdminPanel() {
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3, component: DashboardTab },
     { id: 'users', label: 'Users', icon: Users, component: UsersTab },
-    { id: 'listings', label: 'Listings', icon: Package, component: ListingsTab },
+    // TEMPORARILY DISABLED: { id: 'listings', label: 'Listings', icon: Package, component: ListingsTab },
     { id: 'business', label: 'Business', icon: Building, component: BusinessTab },
     { id: 'ads', label: 'Ads Management', icon: Target, component: AdsManagementTab },
     { id: 'content', label: 'Content', icon: FileText, component: ContentManagementTab },
