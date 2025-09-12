@@ -18,7 +18,8 @@ import aiohttp
 import json
 import sys
 import os
-from datetime import datetime
+from datetime import datetime, timezone
+import pytz
 
 # Configuration - Use production URL from frontend/.env
 BACKEND_URL = "https://cataloro-admin-fix.preview.emergentagent.com/api"
