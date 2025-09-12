@@ -4949,10 +4949,6 @@ function SiteAdministrationTab({ showToast }) {
 
 // Enhanced Listing Creation/Edit Modal Component with Cat Database Integration
 function ListingModal({ listing, onSave, onClose }) {
-      setLoading(true);
-      console.log('🔄 Fetching listings from backend...');
-      
-      // For admin panel, we want to see ALL listings including sold ones - no limit
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/listings?status=all`);
       if (response.ok) {
         const backendData = await response.json();
