@@ -106,6 +106,9 @@ import BusinessTab from './BusinessTab';
 import PDFExportCenter from './PDFExportCenter';
 import MenuSettings from '../../components/admin/MenuSettings';
 import FooterManagement from '../../components/admin/FooterManagement';
+import DashboardTab from '../../components/admin/tabs/DashboardTab';
+import SystemNotificationsList from '../../components/admin/shared/SystemNotificationsList';
+import { getTabConfig, TabNavigation, AdminHeader } from '../../components/admin/shared/AdminLayout';
 
 // System Notifications List Component
 function SystemNotificationsList() {
