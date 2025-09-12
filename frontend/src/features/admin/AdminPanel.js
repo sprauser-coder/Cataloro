@@ -4947,7 +4947,7 @@ function SiteAdministrationTab({ showToast }) {
 
 // ListingsTab component has been extracted to separate file - This was a duplicate DOUBLE component that needed to be removed
 
-  const fetchListings = async () => {
+// Enhanced Listing Creation/Edit Modal Component with Cat Database Integration
     try {
       setLoading(true);
       console.log('🔄 Fetching listings from backend...');
