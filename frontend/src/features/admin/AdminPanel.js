@@ -4954,7 +4954,7 @@ function ListingModal({ listing, onSave, onClose }) {
     price: listing?.price || '',
     category: listing?.category || 'Catalysts',
     description: listing?.description || '',
-        let listingsArray = [];
+    condition: listing?.condition || 'New',
         if (Array.isArray(backendData)) {
           listingsArray = backendData;
         } else if (backendData.listings && Array.isArray(backendData.listings)) {
