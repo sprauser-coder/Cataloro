@@ -3516,7 +3516,7 @@ class BackendTester:
             )
             return None
 
-    async def verify_seller_notification(self, seller_user_id, listing_id, bidder_name):
+    async def verify_seller_notification(self, seller_user_id, listing_id, bidder_name, admin_token=None):
         """Verify that seller receives notification about tender offer"""
         start_time = datetime.now()
         
@@ -3524,7 +3524,12 @@ class BackendTester:
             # Wait a moment for notification to be created
             await asyncio.sleep(2)
             
-            async with self.session.get(f"{BACKEND_URL}/user/{seller_user_id}/notifications") as response:
+            # Use admin token if provided, otherwise try without authentication
+            headers = {}
+            if admin_token:
+                headers = {"Authorization": f"Bearer {admin_token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{seller_user_id}/notifications", headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
