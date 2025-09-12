@@ -5963,7 +5963,8 @@ async def reject_tender(tender_id: str, rejection_data: dict):
         if not tender:
             raise HTTPException(status_code=404, detail="Tender not found or not active")
         
-        current_time = datetime.utcnow()
+        current_time = datetime.now(pytz.timezone('Europe/Berlin'))
+        current_time_utc = datetime.utcnow()
         
         # Update tender status to rejected
         await db.tenders.update_one(
