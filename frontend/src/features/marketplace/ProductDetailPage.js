@@ -494,7 +494,7 @@ function ProductDetailPage() {
                   <div className="text-sm font-semibold text-green-700 dark:text-green-300 uppercase tracking-wide mb-1">
                     {product.bid_info?.has_bids ? 'Current Highest Bid' : 'Starting Price'}
                   </div>
-                  <MultiCurrencyPrice 
+                  <SimplePrice 
                     basePrice={(product.bid_info?.has_bids && product.bid_info?.highest_bid) ? product.bid_info.highest_bid : product.price}
                     baseCurrency="EUR"
                     showAlternativePrices={true}
