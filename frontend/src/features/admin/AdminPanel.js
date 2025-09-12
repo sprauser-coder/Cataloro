@@ -486,9 +486,10 @@ function AdminPanel() {
       )}
       
       {activeTab === 'listings' && (
-        <ListingsTab 
-          showToast={showToast}
-        />
+        <div className="p-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">Listings Management</h2>
+          <p className="text-gray-600">Listings functionality temporarily disabled for debugging</p>
+        </div>
       )}
       
       {activeTab === 'business' && (
