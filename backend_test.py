@@ -4845,24 +4845,24 @@ class BackendTester:
                     data = await response.json()
                     sold_items = data.get("items", [])
                     
-                    # Debug: Print some sold items to understand the structure
-                    print(f"   DEBUG: Found {len(sold_items)} sold items")
-                    if sold_items:
-                        print(f"   DEBUG: First sold item: {sold_items[0]}")
-                        print(f"   DEBUG: Looking for listing_id: {listing_id}")
-                    
                     # Look for our listing in sold items
                     found_item = None
                     for item in sold_items:
-                        if item.get("listing_id") == listing_id:
+                        # Check both direct listing_id and nested listing.id
+                        item_listing_id = item.get("listing_id") or item.get("listing", {}).get("id")
+                        if item_listing_id == listing_id:
                             found_item = item
                             break
                     
                     if found_item:
+                        # Get title from nested listing object or direct field
+                        title = found_item.get("title") or found_item.get("listing", {}).get("title", "Unknown")
+                        price = found_item.get("final_price") or found_item.get("price", 0)
+                        
                         self.log_result(
                             "Seller Sold Items Verification", 
                             True, 
-                            f"✅ Item appears in seller's sold items: '{found_item.get('title')}' (${found_item.get('price')})",
+                            f"✅ Item appears in seller's sold items: '{title}' (${price})",
                             response_time
                         )
                         return True
