@@ -3610,20 +3610,31 @@ class BackendTester:
         print("Fix: datetime.utcnow() → datetime.now(pytz.timezone('Europe/Berlin'))")
         print("=" * 80)
         
-        # Step 1: Login as admin (seller) and demo (buyer)
+        # Step 1: Login as admin (seller) and create/activate demo user (buyer)
         print("\n👤 STEP 1: CREATE TWO USERS")
         admin_info = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
-        demo_info = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
         
-        if not admin_info[0] or not demo_info[0]:
+        if not admin_info[0]:
             self.log_result(
                 "Timezone Test Setup", 
                 False, 
-                "Failed to login both users - cannot proceed with timezone testing"
+                "Failed to login admin user - cannot proceed with timezone testing"
             )
             return False
         
         admin_token, admin_user_id, admin_user = admin_info
+        
+        # Try to create a new test user for bidding
+        demo_info = await self.create_test_user_for_timezone_test()
+        
+        if not demo_info:
+            self.log_result(
+                "Timezone Test Setup", 
+                False, 
+                "Failed to create test user - cannot proceed with timezone testing"
+            )
+            return False
+        
         demo_token, demo_user_id, demo_user = demo_info
         
         # Step 2: Create a test listing by admin (seller)
@@ -3676,6 +3687,85 @@ class BackendTester:
         )
         
         return timezone_consistent
+    
+    async def create_test_user_for_timezone_test(self):
+        """Create a test user for timezone testing"""
+        start_time = datetime.now()
+        
+        try:
+            # Create unique test user
+            timestamp = int(datetime.now().timestamp())
+            test_email = f"timezone_test_{timestamp}@cataloro.com"
+            test_username = f"timezone_test_{timestamp}"
+            
+            registration_data = {
+                "username": test_username,
+                "email": test_email,
+                "full_name": "Timezone Test User",
+                "first_name": "Timezone",
+                "last_name": "Test",
+                "account_type": "buyer"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/auth/register", json=registration_data) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    user_id = data.get("user_id")
+                    
+                    self.log_result(
+                        "Create Test User for Timezone Test", 
+                        True, 
+                        f"Successfully created test user {user_id}",
+                        response_time
+                    )
+                    
+                    # Now login as the test user
+                    login_info = await self.test_login_and_get_token(test_email, "test123")
+                    
+                    if login_info[0]:
+                        return login_info
+                    else:
+                        # User might need approval, let's try to approve them first
+                        await self.approve_test_user(user_id)
+                        # Try login again
+                        return await self.test_login_and_get_token(test_email, "test123")
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create Test User for Timezone Test", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create Test User for Timezone Test", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def approve_test_user(self, user_id):
+        """Approve test user for login"""
+        try:
+            # Login as admin first to get admin token
+            admin_token, _, _ = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+            
+            if admin_token:
+                headers = {"Authorization": f"Bearer {admin_token}"}
+                async with self.session.put(f"{BACKEND_URL}/admin/users/{user_id}/approve", headers=headers) as response:
+                    if response.status == 200:
+                        print(f"✅ Approved test user {user_id}")
+                    else:
+                        print(f"⚠️ Could not approve test user {user_id}")
+        except Exception as e:
+            print(f"⚠️ Error approving test user: {e}")
     
     async def create_test_listing_for_timezone_test(self, admin_token):
         """Create a test listing for timezone testing"""
