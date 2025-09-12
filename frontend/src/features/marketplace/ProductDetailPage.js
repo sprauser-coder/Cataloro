@@ -9,7 +9,7 @@ import { useMarketplace } from '../../context/MarketplaceContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import usePermissions from '../../hooks/usePermissions';
-import MultiCurrencyPrice from '../../components/currency/MultiCurrencyPrice';
+import SimplePrice from '../../components/ui/SimplePrice';
 import {
   Heart,
   DollarSign,
