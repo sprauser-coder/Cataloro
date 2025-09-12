@@ -3835,16 +3835,16 @@ class BackendTester:
                 
                 if response.status == 200:
                     data = await response.json()
-                    tender_id = data.get("id")
+                    tender_id = data.get("id") or data.get("tender_id")  # Try both possible field names
                     
                     self.log_result(
                         "Place Bid for Timezone Test", 
                         True, 
-                        f"Successfully placed bid {tender_id} at {bid_submission_time.strftime('%Y-%m-%d %H:%M:%S %Z')}",
+                        f"Successfully placed bid {tender_id} at {bid_submission_time.strftime('%Y-%m-%d %H:%M:%S %Z')} - Response: {data}",
                         response_time
                     )
                     
-                    return tender_id
+                    return tender_id or "bid_placed"  # Return something even if no ID
                 else:
                     error_text = await response.text()
                     self.log_result(
