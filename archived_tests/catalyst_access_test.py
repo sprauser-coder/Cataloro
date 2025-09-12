@@ -34,7 +34,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://market-refactor-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-admin-fix.preview.emergentagent.com/api"
 EXPECTED_CATALYST_COUNT = 4000  # Should be 4000+ entries as mentioned in review
 
 # Admin User Configuration

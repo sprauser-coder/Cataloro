@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://dynamic-marketplace.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-admin-fix.preview.emergentagent.com/api"
 
 class PendingListingsDeepDive:
     def __init__(self):
