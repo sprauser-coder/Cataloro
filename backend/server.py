@@ -4453,7 +4453,7 @@ async def get_all_listings(
 
 @app.post("/api/listings")
 @security_service.limiter.limit("10/minute")  # Rate limit listing creation
-async def create_listing(request: Request, listing_data: dict):
+async def create_listing(request: Request, listing_data: dict, current_user: dict = Depends(get_current_user)):
     """Create a new listing with security validation"""
     try:
         # Security validations
