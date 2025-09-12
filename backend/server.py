@@ -6426,7 +6426,8 @@ async def complete_order(order_id: str, complete_data: dict):
 async def cleanup_expired_orders():
     """Cleanup expired orders (can be called by a cron job)"""
     try:
-        current_time = datetime.utcnow()
+        current_time = datetime.now(pytz.timezone('Europe/Berlin'))
+        current_time_utc = datetime.utcnow()
         
         # Find expired pending orders
         expired_orders = await db.orders.find({
