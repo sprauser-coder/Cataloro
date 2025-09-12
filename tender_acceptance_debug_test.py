@@ -217,7 +217,7 @@ class TenderAcceptanceDebugTester:
                 
                 if response.status == 200:
                     data = await response.json()
-                    tender_id = data.get("id")
+                    tender_id = data.get("tender_id") or data.get("id")
                     
                     self.log_result(
                         "Place Debug Test Bid", 
