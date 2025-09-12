@@ -15,7 +15,9 @@ import {
   Edit,
   Trash2,
   X,
-  Download
+  Download,
+  Check,
+  User
 } from 'lucide-react';
 
 // Comprehensive User Edit Modal with all features
