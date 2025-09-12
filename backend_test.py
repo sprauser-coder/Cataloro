@@ -1,16 +1,24 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - SORTING FIX FOR TENDERS > SELL SECTION TESTING
-Testing the sorting fix for seller tenders overview endpoint
+CATALORO MARKETPLACE - TENDER ACCEPTANCE WORKFLOW TESTING
+Testing the complete tender acceptance workflow as described by the user
 
 FOCUS AREAS:
-1. LOGIN AS ADMIN USER (seller) - admin@cataloro.com / admin123
-2. CREATE MULTIPLE TEST LISTINGS - with different creation times to test sorting
-3. CALL SELLER TENDERS OVERVIEW ENDPOINT - GET /api/tenders/seller/{seller_id}/overview
-4. VERIFY SORTING - check that listings are returned in descending order by created_at (newest first)
-5. TEST WITH BIDS - place bids on some listings and verify sorting still works correctly
+1. SETUP TEST SCENARIO - Create admin user (seller) and demo user (buyer), create test listing, place bid
+2. ACCEPT THE TENDER - Using PUT /api/tenders/{tender_id}/accept
+3. VERIFY ALL EXPECTED OUTCOMES:
+   - ✅ Seller sends automated message to buyer
+   - ✅ Buyer receives notification about acceptance
+   - ✅ Buyer receives the automated message
+   - ✅ Item status changes to "sold" 
+   - ✅ Item appears in seller's sold items (Tenders > Listings > Sold)
+   - ✅ Item appears in buyer's bought items (Inventory > Bought Items)
 
-TESTING SORTING FIX: Added .sort("created_at", -1) to listings query in get_seller_tenders_overview function
+TESTING ENDPOINTS:
+- GET /api/user/{user_id}/notifications (buyer notifications)
+- GET /api/user/{user_id}/messages (buyer messages)  
+- GET /api/user/{user_id}/sold-items (seller sold items)
+- GET /api/user/bought-items/{user_id} (buyer bought items)
 """
 
 import asyncio
