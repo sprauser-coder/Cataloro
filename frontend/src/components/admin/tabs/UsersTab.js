@@ -18,97 +18,450 @@ import {
   Download
 } from 'lucide-react';
 
-// We'll need to create this modal component separately
-// For now, using a placeholder to avoid import errors
+// Comprehensive User Edit Modal with all features
 const UserEditModal = ({ user, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    full_name: user?.full_name || '',
-    email: user?.email || '',
+    first_name: user?.first_name || (user?.full_name ? user.full_name.split(' ')[0] : ''),
+    last_name: user?.last_name || (user?.full_name ? user.full_name.split(' ').slice(1).join(' ') : ''),
     username: user?.username || '',
-    user_role: user?.user_role || 'User-Buyer',
-    is_active: user?.is_active !== false,
+    email: user?.email || '',
+    user_role: user?.user_role || user?.role === 'admin' ? 'Admin' : 'User-Buyer', // Migrate legacy role to user_role
     registration_status: user?.registration_status || 'Approved',
+    is_active: user?.is_active !== undefined ? user.is_active : true,
+    password: '',
+    confirmPassword: '',
     is_business: user?.is_business || false,
-    ...user
+    company_name: user?.company_name || '',
+    country: user?.country || '',
+    vat_number: user?.vat_number || ''
   });
+
+  const [errors, setErrors] = useState({});
+  const [usernameAvailable, setUsernameAvailable] = useState(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
+
+  const checkUsernameAvailability = async (username) => {
+    if (user && user.username === username) {
+      // Don't check availability for current user's existing username
+      setUsernameAvailable(true);
+      return;
+    }
+    
+    setCheckingUsername(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/check-username/${username}`);
+      if (response.ok) {
+        const data = await response.json();
+        setUsernameAvailable(data.available);
+      } else {
+        setUsernameAvailable(null);
+      }
+    } catch (error) {
+      console.error('Error checking username:', error);
+      setUsernameAvailable(null);
+    } finally {
+      setCheckingUsername(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value
+    });
+    
+    // Clear error for this field
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
+    }
+    
+    // Check username availability when username changes
+    if (name === 'username' && value.length >= 3) {
+      checkUsernameAvailability(value);
+    } else if (name === 'username') {
+      setUsernameAvailable(null);
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // First Name and Last Name validation (matching registration page)
+    if (!formData.first_name.trim()) {
+      newErrors.first_name = 'First name is required';
+    }
+    if (!formData.last_name.trim()) {
+      newErrors.last_name = 'Last name is required';
+    }
+
+    // Username validation (matching registration page)
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
+    }
+    if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
+    }
+    if (usernameAvailable === false) {
+      newErrors.username = 'Username is not available';
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+
+    // Password validation - required for new users or if password is being changed
+    if (!user && !formData.password) {
+      newErrors.password = 'Password is required for new users';
+    }
+    
+    if (formData.password && formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (formData.password && formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    // Business validation (matching registration page)
+    if (formData.is_business) {
+      if (!formData.company_name.trim()) {
+        newErrors.company_name = 'Company name is required for business accounts';
+      }
+      if (!formData.country.trim()) {
+        newErrors.country = 'Country is required for business accounts';
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    const userData = { 
+      ...formData,
+      full_name: `${formData.first_name} ${formData.last_name}`.trim() // Compose full name for backend compatibility
+    };
+    
+    // If editing existing user, include ID
+    if (user) {
+      userData.id = user.id;
+    }
+
+    // Remove password fields if they're empty (for updates)
+    if (!userData.password) {
+      delete userData.password;
+      delete userData.confirmPassword;
+    } else {
+      delete userData.confirmPassword; // Don't send confirmPassword to backend
+    }
+
+    onSave(userData);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
-        <h3 className="text-lg font-semibold mb-4">
-          {user ? 'Edit User' : 'Create New User'}
-        </h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Full Name</label>
-            <input
-              type="text"
-              value={formData.full_name}
-              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {user ? 'Edit User' : 'Create New User'}
+          </h3>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* First Name and Last Name */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                First Name *
+              </label>
+              <input
+                type="text"
+                value={formData.first_name}
+                onChange={handleInputChange}
+                name="first_name"
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                  errors.first_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                }`}
+                placeholder="Enter first name"
+              />
+              {errors.first_name && <p className="text-red-500 text-xs mt-1">{errors.first_name}</p>}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Last Name *
+              </label>
+              <input
+                type="text"
+                value={formData.last_name}
+                onChange={handleInputChange}
+                name="last_name"
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                  errors.last_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                }`}
+                placeholder="Enter last name"
+              />
+              {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name}</p>}
+            </div>
           </div>
+
+          {/* Username with Availability Check */}
           <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Username *
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 pr-10 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                  errors.username ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                }`}
+                placeholder="Enter username"
+              />
+              {formData.username.length >= 3 && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  {checkingUsername ? (
+                    <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                  ) : usernameAvailable === true ? (
+                    <Check className="w-5 h-5 text-green-500" />
+                  ) : usernameAvailable === false ? (
+                    <X className="w-5 h-5 text-red-500" />
+                  ) : null}
+                </div>
+              )}
+            </div>
+            {formData.username.length >= 3 && usernameAvailable !== null && (
+              <div className={`mt-1 text-sm ${usernameAvailable ? 'text-green-600' : 'text-red-600'}`}>
+                {usernameAvailable ? 'Username is available' : 'Username is not available'}
+              </div>
+            )}
+            {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email *
+            </label>
             <input
               type="email"
+              name="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
-              required
+              onChange={handleInputChange}
+              className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              }`}
+              placeholder="Enter email address"
             />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
+
+          {/* User Role Selection */}
           <div>
-            <label className="block text-sm font-medium mb-2">Username</label>
-            <input
-              type="text"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Role</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              User Role *
+            </label>
             <select
+              name="user_role"
               value={formData.user_role}
-              onChange={(e) => setFormData({ ...formData, user_role: e.target.value })}
-              className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
-              <option value="User-Buyer">User Buyer</option>
-              <option value="User-Seller">User Seller</option>
-              <option value="Admin-Manager">Admin Manager</option>
+              <option value="User-Buyer">User-Buyer</option>
+              <option value="User-Seller">User-Seller</option>
+              <option value="Admin-Manager">Admin-Manager</option>
               <option value="Admin">Admin</option>
             </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Determines user permissions and access level
+            </p>
           </div>
-          <div className="flex items-center">
+
+          {/* Registration Status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Registration Status *
+            </label>
+            <select
+              name="registration_status"
+              value={formData.registration_status}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Controls user login access and approval status
+            </p>
+          </div>
+
+          {/* Account Status */}
+          <div className="flex items-center space-x-3">
             <input
               type="checkbox"
+              name="is_active"
               checked={formData.is_active}
-              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-              className="mr-2"
+              onChange={handleInputChange}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
-            <label className="text-sm font-medium">Active</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Account Active
+            </label>
+            <span className="text-xs text-gray-500">
+              {formData.is_active ? 'User can access the platform' : 'User account is suspended'}
+            </span>
           </div>
-          <div className="flex justify-end space-x-3 mt-6">
+
+          {/* Business Registration Section */}
+          <div className="border-t border-gray-200 dark:border-gray-600 pt-6">
+            <div className="flex items-center space-x-3 mb-4">
+              <input
+                type="checkbox"
+                id="is_business"
+                name="is_business"
+                checked={formData.is_business}
+                onChange={handleInputChange}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label htmlFor="is_business" className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                <User className="w-4 h-4 mr-2 text-blue-600" />
+                Business Account
+              </label>
+            </div>
+            
+            {/* Conditional Business Fields */}
+            {formData.is_business && (
+              <div className="space-y-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 flex items-center">
+                  <User className="w-4 h-4 mr-2" />
+                  Business Information
+                </h4>
+                
+                {/* Company Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Company Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="company_name"
+                    value={formData.company_name}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                      errors.company_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    }`}
+                    placeholder="Enter company name"
+                  />
+                  {errors.company_name && <p className="text-red-500 text-xs mt-1">{errors.company_name}</p>}
+                </div>
+
+                {/* Country */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Country *
+                  </label>
+                  <input
+                    type="text"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                      errors.country ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    }`}
+                    placeholder="Enter country"
+                  />
+                  {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
+                </div>
+
+                {/* VAT Number */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    VAT Number
+                    <span className="text-xs text-gray-500 ml-1">(Optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="vat_number"
+                    value={formData.vat_number}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="Enter VAT number (if applicable)"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Password {user && <span className="text-xs text-gray-500">(leave blank to keep current)</span>}
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+              }`}
+              placeholder={user ? "Enter new password (optional)" : "Enter password"}
+            />
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+          </div>
+
+          {/* Confirm Password */}
+          {formData.password && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                  errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                }`}
+                placeholder="Confirm password"
+              />
+              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 border rounded-md hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
             >
-              {user ? 'Update' : 'Create'}
+              {user ? 'Update User' : 'Create User'}
             </button>
           </div>
         </form>
