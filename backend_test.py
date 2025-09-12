@@ -3149,7 +3149,7 @@ class BackendTester:
         
         # Step 7: Verify seller gets notification
         print(f"\n🔔 STEP 7: Verify Seller (Admin) Gets Notification")
-        notification_found = await self.verify_seller_notification(admin_user_id, listing_id, buyer_user.get('full_name', 'Test Buyer'))
+        notification_found = await self.verify_seller_notification(admin_user_id, listing_id, buyer_user.get('full_name', 'Test Buyer'), admin_token)
         
         if not notification_found:
             self.log_result("Bidding Flow - Seller Notification", False, "Seller did not receive notification about tender offer")
