@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import AnalyticsDashboard from '../analytics/AnalyticsDashboard';
+import PlaceholderDashboard from '../ui/PlaceholderDashboard';
 import PerformanceDashboard from '../performance/PerformanceDashboard';
 import SecurityDashboard from '../security/SecurityDashboard';
 import EnhancedSearchInterface from '../search/EnhancedSearchInterface';
