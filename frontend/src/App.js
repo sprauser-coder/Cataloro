@@ -25,7 +25,7 @@ import CreateListingPage from './features/marketplace/CreateListingPage';
 import EditListingPage from './features/marketplace/EditListingPage';
 import PendingSalesPage from './features/marketplace/PendingSalesPage';
 import ViewAllRequestsPage from './features/marketplace/ViewAllRequestsPage';
-import AdminPanel from './features/admin/AdminPanelFixed';
+import AdminPanel from './features/admin/AdminPanel';
 import FavoritesPage from './features/marketplace/FavoritesPage';
 import NotificationsPage from './features/shared/NotificationsPage';
 import ProfilePage from './features/profile/ProfilePage';
