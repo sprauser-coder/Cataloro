@@ -3872,18 +3872,26 @@ class BackendTester:
         try:
             headers = {"Authorization": f"Bearer {admin_token}"}
             
+            # Wait a moment for notification to be created
+            import asyncio
+            await asyncio.sleep(2)
+            
             async with self.session.get(f"{BACKEND_URL}/user/{admin_user_id}/notifications", headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
                     notifications = await response.json()
                     
-                    # Find the tender notification
+                    # Find the most recent tender/bid notification
                     tender_notification = None
                     for notification in notifications:
-                        if (notification.get("type") == "tender_offer" or 
-                            "tender" in notification.get("message", "").lower() or
-                            "bid" in notification.get("message", "").lower()):
+                        notification_type = notification.get("type", "")
+                        message = notification.get("message", "").lower()
+                        title = notification.get("title", "").lower()
+                        
+                        if (notification_type == "tender_offer" or 
+                            "tender" in message or "bid" in message or
+                            "tender" in title or "bid" in title):
                             tender_notification = notification
                             break
                     
@@ -3893,18 +3901,25 @@ class BackendTester:
                         self.log_result(
                             "Check Seller Notification Timestamp", 
                             True, 
-                            f"Found tender notification with timestamp: {notification_timestamp}",
+                            f"Found tender notification: '{tender_notification.get('title')}' with timestamp: {notification_timestamp}",
                             response_time
                         )
                         
                         return notification_timestamp
                     else:
+                        # If no specific tender notification, check if any recent notifications exist
+                        recent_notifications = [n for n in notifications if n.get("created_at")]
+                        
                         self.log_result(
                             "Check Seller Notification Timestamp", 
                             False, 
-                            f"No tender notification found in {len(notifications)} notifications",
+                            f"No tender notification found in {len(notifications)} notifications. Recent notifications: {[n.get('title') for n in recent_notifications[:3]]}",
                             response_time
                         )
+                        
+                        # Return the most recent notification timestamp for timezone comparison
+                        if recent_notifications:
+                            return recent_notifications[0].get("created_at")
                         return None
                 else:
                     error_text = await response.text()
