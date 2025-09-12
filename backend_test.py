@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend Testing Script for FIXED Messaging/Conversations System
-Testing authentication, authorization, and data quality fixes
+Backend Testing Script for Admin Authentication and Access Control
+Testing admin user authentication and access to admin panel endpoints
 """
 
 import asyncio
