@@ -3602,6 +3602,371 @@ class BackendTester:
             )
             return False
 
+    async def test_timezone_fix_for_tender_notifications(self):
+        """Test the timezone fix for tender notifications - main test method"""
+        print("\n🕐 TIMEZONE FIX FOR TENDER NOTIFICATIONS TESTING")
+        print("=" * 80)
+        print("Testing timezone consistency between tender and registration notifications")
+        print("Fix: datetime.utcnow() → datetime.now(pytz.timezone('Europe/Berlin'))")
+        print("=" * 80)
+        
+        # Step 1: Login as admin (seller) and demo (buyer)
+        print("\n👤 STEP 1: CREATE TWO USERS")
+        admin_info = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        demo_info = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        
+        if not admin_info[0] or not demo_info[0]:
+            self.log_result(
+                "Timezone Test Setup", 
+                False, 
+                "Failed to login both users - cannot proceed with timezone testing"
+            )
+            return False
+        
+        admin_token, admin_user_id, admin_user = admin_info
+        demo_token, demo_user_id, demo_user = demo_info
+        
+        # Step 2: Create a test listing by admin (seller)
+        print("\n📝 STEP 2: CREATE TEST LISTING")
+        listing_id = await self.create_test_listing_for_timezone_test(admin_token)
+        
+        if not listing_id:
+            self.log_result(
+                "Timezone Test Listing Creation", 
+                False, 
+                "Failed to create test listing - cannot proceed with timezone testing"
+            )
+            return False
+        
+        # Step 3: Capture server time before bid submission
+        print("\n⏰ STEP 3: CAPTURE TIMESTAMPS AND PLACE BID")
+        berlin_tz = pytz.timezone('Europe/Berlin')
+        bid_submission_time = datetime.now(berlin_tz)
+        
+        # Place bid from demo user
+        tender_id = await self.place_bid_and_capture_time(listing_id, demo_token, bid_submission_time)
+        
+        if not tender_id:
+            self.log_result(
+                "Timezone Test Bid Placement", 
+                False, 
+                "Failed to place bid - cannot test notification timestamps"
+            )
+            return False
+        
+        # Step 4: Check seller notification timestamp
+        print("\n🔔 STEP 4: CHECK NOTIFICATION TIMESTAMPS")
+        notification_timestamp = await self.check_seller_notification_timestamp(admin_user_id, admin_token, tender_id)
+        
+        if not notification_timestamp:
+            self.log_result(
+                "Timezone Test Notification Check", 
+                False, 
+                "Failed to retrieve seller notification - cannot verify timezone fix"
+            )
+            return False
+        
+        # Step 5: Compare timestamps and verify timezone consistency
+        print("\n🔍 STEP 5: VERIFY TIMEZONE CONSISTENCY")
+        timezone_consistent = await self.verify_timezone_consistency(
+            bid_submission_time, 
+            notification_timestamp, 
+            admin_user_id, 
+            admin_token
+        )
+        
+        return timezone_consistent
+    
+    async def create_test_listing_for_timezone_test(self, admin_token):
+        """Create a test listing for timezone testing"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            listing_data = {
+                "title": "Timezone Test Listing - Tender Notifications",
+                "description": "Test listing created to verify timezone fix for tender notifications",
+                "price": 100.00,
+                "category": "Test",
+                "condition": "New",
+                "has_time_limit": True,
+                "time_limit_hours": 24
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/listings", json=listing_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listing_id = data.get("id")
+                    
+                    self.log_result(
+                        "Create Test Listing for Timezone Test", 
+                        True, 
+                        f"Successfully created test listing {listing_id}",
+                        response_time
+                    )
+                    
+                    return listing_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create Test Listing for Timezone Test", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create Test Listing for Timezone Test", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def place_bid_and_capture_time(self, listing_id, demo_token, bid_submission_time):
+        """Place a bid and capture the exact submission time"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {demo_token}"}
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": 125.00,
+                "message": f"Timezone test bid submitted at {bid_submission_time.isoformat()}"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    tender_id = data.get("id")
+                    
+                    self.log_result(
+                        "Place Bid for Timezone Test", 
+                        True, 
+                        f"Successfully placed bid {tender_id} at {bid_submission_time.strftime('%Y-%m-%d %H:%M:%S %Z')}",
+                        response_time
+                    )
+                    
+                    return tender_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Place Bid for Timezone Test", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Place Bid for Timezone Test", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def check_seller_notification_timestamp(self, admin_user_id, admin_token, tender_id):
+        """Check the seller notification timestamp for the tender"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{admin_user_id}/notifications", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    notifications = await response.json()
+                    
+                    # Find the tender notification
+                    tender_notification = None
+                    for notification in notifications:
+                        if (notification.get("type") == "tender_offer" or 
+                            "tender" in notification.get("message", "").lower() or
+                            "bid" in notification.get("message", "").lower()):
+                            tender_notification = notification
+                            break
+                    
+                    if tender_notification:
+                        notification_timestamp = tender_notification.get("created_at")
+                        
+                        self.log_result(
+                            "Check Seller Notification Timestamp", 
+                            True, 
+                            f"Found tender notification with timestamp: {notification_timestamp}",
+                            response_time
+                        )
+                        
+                        return notification_timestamp
+                    else:
+                        self.log_result(
+                            "Check Seller Notification Timestamp", 
+                            False, 
+                            f"No tender notification found in {len(notifications)} notifications",
+                            response_time
+                        )
+                        return None
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Check Seller Notification Timestamp", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Check Seller Notification Timestamp", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def verify_timezone_consistency(self, bid_submission_time, notification_timestamp, admin_user_id, admin_token):
+        """Verify timezone consistency between bid submission and notification"""
+        try:
+            # Parse notification timestamp
+            if isinstance(notification_timestamp, str):
+                # Handle different timestamp formats
+                if notification_timestamp.endswith('Z'):
+                    # UTC format
+                    notification_dt = datetime.fromisoformat(notification_timestamp.replace('Z', '+00:00'))
+                elif '+' in notification_timestamp or notification_timestamp.endswith(('00:00', '01:00', '02:00')):
+                    # Already has timezone info
+                    notification_dt = datetime.fromisoformat(notification_timestamp)
+                else:
+                    # Assume it's in Europe/Berlin timezone (the fix)
+                    notification_dt = datetime.fromisoformat(notification_timestamp)
+                    if notification_dt.tzinfo is None:
+                        berlin_tz = pytz.timezone('Europe/Berlin')
+                        notification_dt = berlin_tz.localize(notification_dt)
+            else:
+                self.log_result(
+                    "Timezone Consistency Verification", 
+                    False, 
+                    f"Invalid notification timestamp format: {notification_timestamp}"
+                )
+                return False
+            
+            # Convert both times to Europe/Berlin for comparison
+            berlin_tz = pytz.timezone('Europe/Berlin')
+            
+            if bid_submission_time.tzinfo is None:
+                bid_submission_time = berlin_tz.localize(bid_submission_time)
+            else:
+                bid_submission_time = bid_submission_time.astimezone(berlin_tz)
+            
+            if notification_dt.tzinfo is None:
+                notification_dt = berlin_tz.localize(notification_dt)
+            else:
+                notification_dt = notification_dt.astimezone(berlin_tz)
+            
+            # Calculate time difference
+            time_diff = abs((notification_dt - bid_submission_time).total_seconds())
+            
+            # Check if notification timestamp is close to bid submission time (within 10 seconds)
+            timing_accurate = time_diff <= 10.0
+            
+            # Check if notification uses Europe/Berlin timezone (not UTC)
+            timezone_fixed = True
+            if notification_timestamp.endswith('Z') or '+00:00' in notification_timestamp:
+                timezone_fixed = False
+            
+            # Get a registration notification for comparison
+            registration_timestamp = await self.get_registration_notification_timestamp(admin_user_id, admin_token)
+            
+            timezone_consistent = True
+            if registration_timestamp:
+                # Compare timezone formats
+                if (notification_timestamp.endswith('Z')) != (registration_timestamp.endswith('Z')):
+                    timezone_consistent = False
+            
+            # Overall assessment
+            overall_success = timing_accurate and timezone_fixed and timezone_consistent
+            
+            details = []
+            details.append(f"Bid submitted: {bid_submission_time.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+            details.append(f"Notification created: {notification_dt.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+            details.append(f"Time difference: {time_diff:.1f} seconds")
+            details.append(f"Timing accurate (≤10s): {'✅' if timing_accurate else '❌'}")
+            details.append(f"Uses Europe/Berlin timezone: {'✅' if timezone_fixed else '❌'}")
+            details.append(f"Consistent with registration notifications: {'✅' if timezone_consistent else '❌'}")
+            
+            if registration_timestamp:
+                details.append(f"Registration notification format: {registration_timestamp}")
+            
+            self.log_result(
+                "Timezone Fix Verification", 
+                overall_success, 
+                "; ".join(details)
+            )
+            
+            # Additional detailed logging
+            if overall_success:
+                print("✅ TIMEZONE FIX VERIFICATION PASSED:")
+                print(f"   • Tender notifications now use Europe/Berlin timezone")
+                print(f"   • Notification timestamp is accurate (within {time_diff:.1f}s of bid submission)")
+                print(f"   • Timezone consistency maintained with other system notifications")
+                print(f"   • 2-hour difference issue has been resolved")
+            else:
+                print("❌ TIMEZONE FIX VERIFICATION FAILED:")
+                if not timing_accurate:
+                    print(f"   • Timing inaccurate: {time_diff:.1f}s difference (should be ≤10s)")
+                if not timezone_fixed:
+                    print(f"   • Still using UTC timezone instead of Europe/Berlin")
+                if not timezone_consistent:
+                    print(f"   • Inconsistent timezone format with registration notifications")
+            
+            return overall_success
+            
+        except Exception as e:
+            self.log_result(
+                "Timezone Consistency Verification", 
+                False, 
+                f"Verification failed with exception: {str(e)}"
+            )
+            return False
+    
+    async def get_registration_notification_timestamp(self, user_id, token):
+        """Get a registration notification timestamp for comparison"""
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{user_id}/notifications", headers=headers) as response:
+                if response.status == 200:
+                    notifications = await response.json()
+                    
+                    # Find a registration notification
+                    for notification in notifications:
+                        if (notification.get("type") == "registration_approved" or 
+                            "registration" in notification.get("message", "").lower() or
+                            "approved" in notification.get("message", "").lower()):
+                            return notification.get("created_at")
+                    
+                    # If no registration notification, return any notification for format comparison
+                    if notifications:
+                        return notifications[0].get("created_at")
+                    
+                return None
+                
+        except Exception as e:
+            print(f"Error getting registration notification: {e}")
+            return None
+
 async def main():
     """Main test execution function"""
     print("🚀 CATALORO MARKETPLACE - BIDDING UPDATES AND NOTIFICATION FIXES TESTING")
