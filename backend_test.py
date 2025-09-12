@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - SPECIFIC BIDDING FIX TESTING
-Testing the localStorage token key issue fix for bidding
+CATALORO MARKETPLACE - BIDDING UPDATES AND NOTIFICATION FIXES TESTING
+Testing the complete bidding and notification flow
 
 FOCUS AREAS:
-1. LOGIN AS DEMO USER - demo@cataloro.com / demo123 to get valid JWT token
-2. FIND SPECIFIC ITEM "MazdaRF4S2J17" - Locate and verify item status  
-3. TEST BIDDING WITH €35.00 - The exact amount user tried to reproduce scenario
-4. VERIFY BACKEND AUTHENTICATION - No more 401 Unauthorized errors
-5. CHECK BID SUBMISSION SUCCESS - With corrected 'cataloro_token' localStorage key
+1. LOGIN AS TWO USERS - admin@cataloro.com / admin123 (seller) and demo@cataloro.com / demo123 (buyer)
+2. FIND ADMIN'S LISTING - Locate a listing where admin is the seller (not MazdaRF4S2J17)
+3. PLACE BID FROM DEMO USER - Submit a bid on admin's listing
+4. VERIFY LISTING UPDATES - Check bid_info updates (has_bids, highest_bid, highest_bidder_id, total_bids)
+5. VERIFY SELLER NOTIFICATIONS - Check admin gets notification about tender offer
 
-CRITICAL FIX: Changed localStorage.getItem('token') to localStorage.getItem('cataloro_token') in bidding components
+TESTING COMPLETE BIDDING AND NOTIFICATION FLOW
 """
 
 import asyncio
