@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - BIDDING UPDATES AND NOTIFICATION FIXES TESTING
-Testing the complete bidding and notification flow
+CATALORO MARKETPLACE - TIMEZONE FIX FOR TENDER NOTIFICATIONS TESTING
+Testing the timezone consistency between tender notifications and registration notifications
 
 FOCUS AREAS:
-1. LOGIN AS TWO USERS - admin@cataloro.com / admin123 (seller) and demo@cataloro.com / demo123 (buyer)
-2. FIND ADMIN'S LISTING - Locate a listing where admin is the seller (not MazdaRF4S2J17)
-3. PLACE BID FROM DEMO USER - Submit a bid on admin's listing
-4. VERIFY LISTING UPDATES - Check bid_info updates (has_bids, highest_bid, highest_bidder_id, total_bids)
-5. VERIFY SELLER NOTIFICATIONS - Check admin gets notification about tender offer
+1. CREATE TWO USERS - admin@cataloro.com / admin123 (seller) and demo@cataloro.com / demo123 (buyer)
+2. PLACE A BID - Submit a bid and capture exact timestamp when submitted
+3. CHECK NOTIFICATION TIMESTAMP - Compare seller notification timestamp with server time (Europe/Berlin)
+4. VERIFY TIMEZONE CONSISTENCY - Both tender and registration notifications should use Europe/Berlin timezone
+5. TEST TIMING ACCURACY - Notification timestamp should be very close to actual submission time
 
-TESTING COMPLETE BIDDING AND NOTIFICATION FLOW
+TESTING TIMEZONE FIX: datetime.utcnow() → datetime.now(pytz.timezone('Europe/Berlin'))
 """
 
 import asyncio
