@@ -6035,7 +6035,8 @@ async def create_buy_request(order_data: dict):
         
         # Create the order
         order_id = generate_id()
-        current_time = datetime.utcnow()
+        current_time = datetime.now(pytz.timezone('Europe/Berlin'))
+        current_time_utc = datetime.utcnow()
         expires_at = datetime.utcnow().replace(microsecond=0) + timedelta(hours=48)  # 48 hours from now
         
         order = {
