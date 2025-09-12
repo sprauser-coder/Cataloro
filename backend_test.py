@@ -4396,6 +4396,511 @@ class BackendTester:
                     response_time
                 )
 
+    async def test_tender_acceptance_workflow(self):
+        """Test the complete tender acceptance workflow"""
+        print("\n🎯 TENDER ACCEPTANCE WORKFLOW TESTING:")
+        print("=" * 60)
+        
+        # Step 1: Setup test scenario
+        print("\n📋 STEP 1: SETUP TEST SCENARIO")
+        
+        # Login as admin (seller)
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        if not admin_token:
+            self.log_result("Tender Acceptance Workflow", False, "Failed to login as admin (seller)")
+            return False
+        
+        # Login as demo user (buyer)
+        buyer_token, buyer_user_id, buyer_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        if not buyer_token:
+            self.log_result("Tender Acceptance Workflow", False, "Failed to login as demo user (buyer)")
+            return False
+        
+        # Create a test listing by admin
+        listing_id = await self.create_test_listing_for_tender_acceptance(admin_token)
+        if not listing_id:
+            self.log_result("Tender Acceptance Workflow", False, "Failed to create test listing")
+            return False
+        
+        # Place a bid from demo user
+        tender_id = await self.place_bid_for_tender_acceptance(listing_id, buyer_token, buyer_user_id)
+        if not tender_id:
+            self.log_result("Tender Acceptance Workflow", False, "Failed to place bid")
+            return False
+        
+        print(f"\n✅ Setup Complete:")
+        print(f"   - Admin (Seller): {admin_user_id}")
+        print(f"   - Buyer: {buyer_user_id}")
+        print(f"   - Listing: {listing_id}")
+        print(f"   - Tender: {tender_id}")
+        
+        # Step 2: Accept the tender
+        print("\n📋 STEP 2: ACCEPT THE TENDER")
+        acceptance_success = await self.accept_tender_offer(tender_id, admin_user_id)
+        if not acceptance_success:
+            self.log_result("Tender Acceptance Workflow", False, "Failed to accept tender")
+            return False
+        
+        # Step 3: Verify all expected outcomes
+        print("\n📋 STEP 3: VERIFY ALL EXPECTED OUTCOMES")
+        
+        # Give a moment for all database operations to complete
+        import asyncio
+        await asyncio.sleep(2)
+        
+        # Verify buyer receives notification about acceptance
+        notification_success = await self.verify_buyer_notification(buyer_user_id, buyer_token, tender_id)
+        
+        # Verify buyer receives the automated message
+        message_success = await self.verify_buyer_message(buyer_user_id, buyer_token, listing_id)
+        
+        # Verify item status changes to "sold"
+        status_success = await self.verify_item_status_sold(listing_id)
+        
+        # Verify item appears in seller's sold items
+        seller_sold_success = await self.verify_seller_sold_items(admin_user_id, listing_id)
+        
+        # Verify item appears in buyer's bought items
+        buyer_bought_success = await self.verify_buyer_bought_items(buyer_user_id, listing_id)
+        
+        # Overall workflow success
+        all_verifications = [
+            notification_success,
+            message_success, 
+            status_success,
+            seller_sold_success,
+            buyer_bought_success
+        ]
+        
+        success_count = sum(1 for success in all_verifications if success)
+        total_count = len(all_verifications)
+        
+        workflow_success = success_count == total_count
+        
+        self.log_result(
+            "Complete Tender Acceptance Workflow", 
+            workflow_success, 
+            f"Workflow completed: {success_count}/{total_count} verifications passed"
+        )
+        
+        return workflow_success
+    
+    async def create_test_listing_for_tender_acceptance(self, admin_token):
+        """Create a test listing for tender acceptance testing"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            listing_data = {
+                "title": "Tender Acceptance Test Item",
+                "description": "This is a test listing created for tender acceptance workflow testing",
+                "price": 100.00,
+                "category": "Test Category",
+                "condition": "New",
+                "has_time_limit": False  # No time limit for this test
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/listings", json=listing_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listing_id = data.get("id")
+                    
+                    self.log_result(
+                        "Create Test Listing", 
+                        True, 
+                        f"Successfully created test listing {listing_id} for tender acceptance testing",
+                        response_time
+                    )
+                    
+                    return listing_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create Test Listing", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create Test Listing", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def place_bid_for_tender_acceptance(self, listing_id, buyer_token, buyer_user_id):
+        """Place a bid for tender acceptance testing"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {buyer_token}"}
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": 125.00,
+                "message": "Test bid for tender acceptance workflow testing"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    tender_id = data.get("id")
+                    
+                    self.log_result(
+                        "Place Test Bid", 
+                        True, 
+                        f"Successfully placed bid {tender_id} for $125.00 on listing {listing_id}",
+                        response_time
+                    )
+                    
+                    return tender_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Place Test Bid", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Place Test Bid", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def accept_tender_offer(self, tender_id, seller_id):
+        """Accept the tender offer using PUT /api/tenders/{tender_id}/accept"""
+        start_time = datetime.now()
+        
+        try:
+            acceptance_data = {
+                "seller_id": seller_id
+            }
+            
+            async with self.session.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", json=acceptance_data) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    self.log_result(
+                        "Accept Tender Offer", 
+                        True, 
+                        f"Successfully accepted tender {tender_id}: {data.get('message', 'Success')}",
+                        response_time
+                    )
+                    
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Accept Tender Offer", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Accept Tender Offer", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def verify_buyer_notification(self, buyer_user_id, buyer_token, tender_id):
+        """Verify buyer receives notification about tender acceptance"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {buyer_token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{buyer_user_id}/notifications", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    notifications = await response.json()
+                    
+                    # Look for tender acceptance notification
+                    acceptance_notification = None
+                    for notification in notifications:
+                        if (notification.get("type") == "tender_accepted" and 
+                            notification.get("tender_id") == tender_id):
+                            acceptance_notification = notification
+                            break
+                    
+                    if acceptance_notification:
+                        self.log_result(
+                            "Buyer Notification Verification", 
+                            True, 
+                            f"✅ Buyer received tender acceptance notification: '{acceptance_notification.get('title')}'",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Buyer Notification Verification", 
+                            False, 
+                            f"❌ No tender acceptance notification found for tender {tender_id} in {len(notifications)} notifications",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Buyer Notification Verification", 
+                        False, 
+                        f"Failed to get notifications with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Buyer Notification Verification", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def verify_buyer_message(self, buyer_user_id, buyer_token, listing_id):
+        """Verify buyer receives automated message from seller"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {buyer_token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{buyer_user_id}/messages", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    messages = await response.json()
+                    
+                    # Look for automated message about tender acceptance
+                    acceptance_message = None
+                    for message in messages:
+                        subject = message.get("subject", "")
+                        content = message.get("content", "")
+                        if ("Tender Accepted" in subject or 
+                            "accepted your tender" in content.lower()):
+                            acceptance_message = message
+                            break
+                    
+                    if acceptance_message:
+                        self.log_result(
+                            "Buyer Message Verification", 
+                            True, 
+                            f"✅ Buyer received automated message: '{acceptance_message.get('subject')}'",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Buyer Message Verification", 
+                            False, 
+                            f"❌ No automated tender acceptance message found in {len(messages)} messages",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Buyer Message Verification", 
+                        False, 
+                        f"Failed to get messages with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Buyer Message Verification", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def verify_item_status_sold(self, listing_id):
+        """Verify item status changes to 'sold'"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listing = await response.json()
+                    status = listing.get("status")
+                    
+                    if status == "sold":
+                        sold_at = listing.get("sold_at")
+                        sold_price = listing.get("sold_price")
+                        self.log_result(
+                            "Item Status Verification", 
+                            True, 
+                            f"✅ Item status changed to 'sold' (price: ${sold_price}, sold_at: {sold_at})",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Item Status Verification", 
+                            False, 
+                            f"❌ Item status is '{status}', expected 'sold'",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Item Status Verification", 
+                        False, 
+                        f"Failed to get listing with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Item Status Verification", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def verify_seller_sold_items(self, seller_user_id, listing_id):
+        """Verify item appears in seller's sold items"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/user/{seller_user_id}/sold-items") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    sold_items = data.get("items", [])
+                    
+                    # Look for our listing in sold items
+                    found_item = None
+                    for item in sold_items:
+                        if item.get("listing_id") == listing_id:
+                            found_item = item
+                            break
+                    
+                    if found_item:
+                        self.log_result(
+                            "Seller Sold Items Verification", 
+                            True, 
+                            f"✅ Item appears in seller's sold items: '{found_item.get('title')}' (${found_item.get('price')})",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Seller Sold Items Verification", 
+                            False, 
+                            f"❌ Item not found in seller's {len(sold_items)} sold items",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Seller Sold Items Verification", 
+                        False, 
+                        f"Failed to get sold items with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Seller Sold Items Verification", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def verify_buyer_bought_items(self, buyer_user_id, listing_id):
+        """Verify item appears in buyer's bought items"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/user/bought-items/{buyer_user_id}") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    bought_items = data.get("items", [])
+                    
+                    # Look for our listing in bought items
+                    found_item = None
+                    for item in bought_items:
+                        if item.get("listing_id") == listing_id:
+                            found_item = item
+                            break
+                    
+                    if found_item:
+                        self.log_result(
+                            "Buyer Bought Items Verification", 
+                            True, 
+                            f"✅ Item appears in buyer's bought items: '{found_item.get('title')}' (${found_item.get('price')})",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Buyer Bought Items Verification", 
+                            False, 
+                            f"❌ Item not found in buyer's {len(bought_items)} bought items",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Buyer Bought Items Verification", 
+                        False, 
+                        f"Failed to get bought items with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Buyer Bought Items Verification", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
 async def main():
     """Main test execution function"""
     async with BackendTester() as tester:
