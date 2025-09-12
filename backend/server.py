@@ -5366,7 +5366,7 @@ async def delete_user_notification(user_id: str, notification_id: str):
 # ============================================================================
 
 @app.post("/api/tenders/submit")
-async def submit_tender(tender_data: dict):
+async def submit_tender(tender_data: dict, current_user: dict = Depends(get_current_user)):
     """Submit a tender offer for a listing"""
     try:
         listing_id = tender_data.get("listing_id")
