@@ -4953,8 +4953,7 @@ function ListingModal({ listing, onSave, onClose }) {
     title: listing?.title || '',
     price: listing?.price || '',
     category: listing?.category || 'Catalysts',
-        
-        // Handle different response formats - backend returns {listings: [...], total: N}
+    description: listing?.description || '',
         let listingsArray = [];
         if (Array.isArray(backendData)) {
           listingsArray = backendData;
