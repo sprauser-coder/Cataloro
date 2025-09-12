@@ -4952,7 +4952,7 @@ function ListingModal({ listing, onSave, onClose }) {
   const [formData, setFormData] = useState({
     title: listing?.title || '',
     price: listing?.price || '',
-        console.log('📊 Backend listings response:', backendData);
+    category: listing?.category || 'Catalysts',
         
         // Handle different response formats - backend returns {listings: [...], total: N}
         let listingsArray = [];
