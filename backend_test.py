@@ -1510,37 +1510,112 @@ class BackendTester:
             print("   - Review failed tests above for remaining problems")
 
 async def main():
-    """Main test execution"""
-    print("🔍 TESTING ADMIN AUTHENTICATION AND ACCESS CONTROL")
+    """Main test execution - Comprehensive Backend Testing for Cataloro Marketplace"""
+    print("🔍 COMPREHENSIVE BACKEND TESTING FOR CATALORO MARKETPLACE DEPLOYMENT")
     print("=" * 80)
     print(f"Backend URL: {BACKEND_URL}")
     print(f"Test Time: {datetime.now().isoformat()}")
     print()
-    print("TESTING ADMIN AUTHENTICATION:")
-    print("✓ Admin login with admin@cataloro.com / admin123")
-    print("✓ Admin user role/user_role properties verification")
-    print("✓ Admin panel endpoints access control")
-    print("✓ Non-admin user access blocking")
+    print("TESTING AREAS:")
+    print("✓ Authentication System (admin@cataloro.com / admin123, demo@cataloro.com / demo123)")
+    print("✓ Admin Panel APIs (dashboard, users, menu-settings, performance, cache)")
+    print("✓ Marketplace APIs (browse, listings, create, tenders)")
+    print("✓ Messaging System (conversations with authentication)")
+    print("✓ Registration & User Management (first_name/last_name, availability checks)")
+    print("✓ Time Limit & Bidding Features (1 hour, 24 hours, unlimited, highest bidder)")
     print()
     
     async with BackendTester() as tester:
         # Test 1: Database connectivity
+        print("🔌 TESTING DATABASE CONNECTIVITY:")
         await tester.test_database_connectivity()
         
-        # Test 2: Admin authentication
+        # Test 2: Authentication System
+        print("\n🔐 TESTING AUTHENTICATION SYSTEM:")
+        
+        # Admin authentication
         admin_info = await tester.test_admin_login_authentication()
         
+        # Demo user authentication
+        demo_token, demo_user_id, demo_user = await tester.test_login_and_get_token("demo@cataloro.com", "demo123")
+        if demo_token:
+            tester.log_result(
+                "Demo User Login", 
+                True, 
+                f"Successfully logged in as demo user: {demo_user.get('full_name', 'Unknown')}"
+            )
+        
+        # Test 3: Admin Panel APIs
         if admin_info:
-            # Test 3: Admin endpoints access
+            print("\n🛡️ TESTING ADMIN PANEL APIS:")
             await tester.test_admin_endpoints_access(admin_info["token"])
             
-            # Test 4: Non-admin access blocking
+            # Test non-admin access blocking
             await tester.test_non_admin_access_blocked()
         else:
-            print("\n❌ Admin authentication failed - skipping admin endpoint tests")
+            print("\n❌ Admin authentication failed - skipping admin panel tests")
+        
+        # Test 4: Marketplace APIs
+        print("\n🏪 TESTING MARKETPLACE APIS:")
+        user_token = demo_token or (admin_info["token"] if admin_info else None)
+        await tester.test_marketplace_apis(user_token)
+        
+        # Test 5: Messaging System
+        print("\n💬 TESTING MESSAGING SYSTEM:")
+        if admin_info:
+            # Test messaging with admin user
+            admin_user_id = admin_info["user_id"]
+            admin_token = admin_info["token"]
+            
+            # Test authentication requirements
+            await tester.test_messages_endpoint_without_auth(admin_user_id)
+            
+            # Test with authentication
+            messages = await tester.test_messages_endpoint_with_auth(admin_user_id, admin_token)
+            
+            # Test message structure
+            if messages is not None:
+                await tester.test_message_structure(messages)
+            
+            # Test send message functionality
+            message_id = await tester.test_create_test_message(admin_user_id, admin_token)
+            
+            # Test send message without auth (should be blocked)
+            await tester.test_send_message_without_auth(admin_user_id)
+            
+            # Test mark as read functionality
+            if message_id:
+                await tester.test_mark_read_authentication(admin_user_id, admin_token, message_id)
+                await tester.test_mark_read_without_auth(admin_user_id, message_id)
+            
+            # Test cross-user authorization
+            if demo_token and demo_user_id:
+                await tester.test_cross_user_authorization(
+                    {"token": admin_token, "user": admin_info["user"]},
+                    {"token": demo_token, "user_id": demo_user_id, "user": demo_user}
+                )
+        
+        # Test 6: Registration & User Management
+        print("\n👤 TESTING REGISTRATION & USER MANAGEMENT:")
+        await tester.test_registration_system()
+        
+        # Test 7: Time Limit & Bidding Features
+        print("\n⏰ TESTING TIME LIMIT & BIDDING FEATURES:")
+        if user_token:
+            await tester.test_time_limit_and_bidding(user_token)
+        else:
+            tester.log_result(
+                "Time Limit & Bidding Tests", 
+                False, 
+                "No authenticated user available for testing"
+            )
         
         # Print comprehensive summary
-        tester.print_summary()
+        tester.print_comprehensive_summary()
+
+    print("\n" + "=" * 80)
+    print("🚀 BACKEND TESTING COMPLETE - READY FOR DEPLOYMENT ASSESSMENT")
+    print("=" * 80)
 
 if __name__ == "__main__":
     asyncio.run(main())
