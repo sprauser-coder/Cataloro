@@ -4956,7 +4956,7 @@ function ListingModal({ listing, onSave, onClose }) {
     description: listing?.description || '',
     condition: listing?.condition || 'New',
     location: listing?.location || '',
-          listingsArray = backendData;
+    seller: listing?.seller || '',
         } else if (backendData.listings && Array.isArray(backendData.listings)) {
           listingsArray = backendData.listings;
         }
