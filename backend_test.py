@@ -576,7 +576,7 @@ class BackendTester:
             messages = await self.test_messages_endpoint_with_auth(login_info["user_id"], login_info["token"])
             await self.test_message_structure(messages)
         
-        return successful_logins[0]  # Return first successful login for further testing
+        return successful_logins  # Return all successful logins for further testing
     
     def print_summary(self):
         """Print test summary"""
