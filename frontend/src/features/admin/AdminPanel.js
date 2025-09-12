@@ -106,6 +106,7 @@ import BusinessTab from './BusinessTab';
 import PDFExportCenter from './PDFExportCenter';
 import MenuSettings from '../../components/admin/MenuSettings';
 import FooterManagement from '../../components/admin/FooterManagement';
+import ListingsTabComponent from '../../components/admin/ListingsTabComponent';
 
 // System Notifications List Component
 function SystemNotificationsList() {
