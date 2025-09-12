@@ -4845,6 +4845,12 @@ class BackendTester:
                     data = await response.json()
                     sold_items = data.get("items", [])
                     
+                    # Debug: Print some sold items to understand the structure
+                    print(f"   DEBUG: Found {len(sold_items)} sold items")
+                    if sold_items:
+                        print(f"   DEBUG: First sold item: {sold_items[0]}")
+                        print(f"   DEBUG: Looking for listing_id: {listing_id}")
+                    
                     # Look for our listing in sold items
                     found_item = None
                     for item in sold_items:
