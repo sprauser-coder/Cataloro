@@ -185,7 +185,7 @@ class BackendTester:
             return None
     
     async def test_message_structure(self, messages):
-        """Test message data structure"""
+        """Test message data structure and NULL content validation"""
         if not messages:
             self.log_result(
                 "Message Structure Validation", 
@@ -199,6 +199,7 @@ class BackendTester:
             optional_fields = ['subject', 'read', 'sender_name', 'recipient_name', '_id', 'id']
             
             structure_issues = []
+            null_content_count = 0
             
             for i, message in enumerate(messages):
                 # Check required fields
@@ -213,8 +214,27 @@ class BackendTester:
                 if 'recipient_id' in message and not isinstance(message['recipient_id'], str):
                     structure_issues.append(f"Message {i}: recipient_id should be string")
                 
-                if 'content' in message and not isinstance(message['content'], str):
-                    structure_issues.append(f"Message {i}: content should be string")
+                # CRITICAL: Check for NULL content (the main fix)
+                content = message.get('content')
+                if content is None or content == "null" or content == "":
+                    null_content_count += 1
+                    structure_issues.append(f"Message {i}: NULL/empty content detected")
+                elif not isinstance(content, str):
+                    structure_issues.append(f"Message {i}: content should be string, got {type(content)}")
+            
+            # Report NULL content findings
+            if null_content_count > 0:
+                self.log_result(
+                    "NULL Content Data Quality Test", 
+                    False, 
+                    f"❌ DATA QUALITY ISSUE: {null_content_count} messages with NULL/empty content found"
+                )
+            else:
+                self.log_result(
+                    "NULL Content Data Quality Test", 
+                    True, 
+                    f"✅ DATA QUALITY FIX WORKING: No NULL content found in {len(messages)} messages"
+                )
             
             if structure_issues:
                 self.log_result(
