@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - TIMEZONE FIX FOR TENDER NOTIFICATIONS TESTING
-Testing the timezone consistency between tender notifications and registration notifications
+CATALORO MARKETPLACE - SORTING FIX FOR TENDERS > SELL SECTION TESTING
+Testing the sorting fix for seller tenders overview endpoint
 
 FOCUS AREAS:
-1. CREATE TWO USERS - admin@cataloro.com / admin123 (seller) and demo@cataloro.com / demo123 (buyer)
-2. PLACE A BID - Submit a bid and capture exact timestamp when submitted
-3. CHECK NOTIFICATION TIMESTAMP - Compare seller notification timestamp with server time (Europe/Berlin)
-4. VERIFY TIMEZONE CONSISTENCY - Both tender and registration notifications should use Europe/Berlin timezone
-5. TEST TIMING ACCURACY - Notification timestamp should be very close to actual submission time
+1. LOGIN AS ADMIN USER (seller) - admin@cataloro.com / admin123
+2. CREATE MULTIPLE TEST LISTINGS - with different creation times to test sorting
+3. CALL SELLER TENDERS OVERVIEW ENDPOINT - GET /api/tenders/seller/{seller_id}/overview
+4. VERIFY SORTING - check that listings are returned in descending order by created_at (newest first)
+5. TEST WITH BIDS - place bids on some listings and verify sorting still works correctly
 
-TESTING TIMEZONE FIX: datetime.utcnow() → datetime.now(pytz.timezone('Europe/Berlin'))
+TESTING SORTING FIX: Added .sort("created_at", -1) to listings query in get_seller_tenders_overview function
 """
 
 import asyncio
