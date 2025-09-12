@@ -107,7 +107,7 @@ function AdminPanel() {
       case 'users':
         return <UsersTab users={users} onUpdateUser={handleUpdateUser} showToast={showToast} />;
       case 'listings':
-        return <ListingsTab showToast={showToast} />;
+        return <div>Listings tab temporarily disabled</div>;
       case 'business':
         return <BusinessTab showToast={showToast} />;
       default:
