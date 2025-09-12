@@ -5158,7 +5158,7 @@ async def get_user_messages(user_id: str, current_user: dict = Depends(get_curre
         raise HTTPException(status_code=500, detail=f"Failed to fetch messages: {str(e)}")
 
 @app.post("/api/user/{user_id}/messages")
-async def send_message(user_id: str, message_data: dict):
+async def send_message(user_id: str, message_data: dict, current_user: dict = Depends(get_current_user)):
     """Send a message"""
     try:
         message = {
