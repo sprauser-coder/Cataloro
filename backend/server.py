@@ -5370,11 +5370,13 @@ async def submit_tender(tender_data: dict, current_user: dict = Depends(get_curr
     """Submit a tender offer for a listing"""
     try:
         listing_id = tender_data.get("listing_id")
-        buyer_id = tender_data.get("buyer_id")
-        offer_amount = tender_data.get("offer_amount")
+        # Auto-populate buyer_id from authenticated user
+        buyer_id = current_user["id"]
+        # Accept both 'offer_amount' and 'amount' for API flexibility
+        offer_amount = tender_data.get("offer_amount") or tender_data.get("amount")
         
-        if not listing_id or not buyer_id or not offer_amount:
-            raise HTTPException(status_code=400, detail="listing_id, buyer_id, and offer_amount are required")
+        if not listing_id or not offer_amount:
+            raise HTTPException(status_code=400, detail="listing_id and offer_amount (or amount) are required")
         
         # Check if listing exists and is active
         listing = await db.listings.find_one({"id": listing_id, "status": "active"})
