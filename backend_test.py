@@ -3092,14 +3092,421 @@ class BackendTester:
             )
             return None, None
 
-async def main():
-    """Main test execution function - focused on specific bidding fix"""
-    async with BackendTester() as tester:
-        # Run specific bidding fix tests
-        await tester.run_specific_bidding_fix_tests()
+    async def test_bidding_and_notification_flow(self):
+        """Test the complete bidding and notification flow"""
+        print("\n🎯 BIDDING AND NOTIFICATION FLOW TEST:")
         
-        # Print focused summary
-        tester.print_specific_bidding_summary()
+        # Step 1: Login as seller (admin)
+        print("\n👤 STEP 1: Login as Seller (admin@cataloro.com)")
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        
+        if not admin_token:
+            self.log_result("Bidding Flow - Admin Login", False, "Failed to login as admin user")
+            return False
+        
+        # Step 2: Login as buyer (demo)
+        print("\n👤 STEP 2: Login as Buyer (demo@cataloro.com)")
+        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        
+        if not demo_token:
+            self.log_result("Bidding Flow - Demo Login", False, "Failed to login as demo user")
+            return False
+        
+        # Step 3: Find a listing where admin is the seller (not MazdaRF4S2J17)
+        print("\n🔍 STEP 3: Find Admin's Listing (excluding MazdaRF4S2J17)")
+        admin_listing = await self.find_admin_listing(admin_user_id)
+        
+        if not admin_listing:
+            self.log_result("Bidding Flow - Find Admin Listing", False, "No suitable admin listing found")
+            return False
+        
+        listing_id = admin_listing.get('id')
+        listing_title = admin_listing.get('title', 'Unknown')
+        
+        # Step 4: Get initial listing state
+        print(f"\n📊 STEP 4: Get Initial Listing State for {listing_title}")
+        initial_state = await self.get_listing_details(listing_id)
+        
+        if not initial_state:
+            self.log_result("Bidding Flow - Initial State", False, "Failed to get initial listing state")
+            return False
+        
+        # Step 5: Place bid from demo user
+        print(f"\n💰 STEP 5: Place Bid from Demo User on {listing_title}")
+        bid_amount = 150.00  # Use a reasonable bid amount
+        tender_id = await self.place_bid_on_listing(listing_id, demo_token, demo_user_id, bid_amount)
+        
+        if not tender_id:
+            self.log_result("Bidding Flow - Place Bid", False, "Failed to place bid on admin's listing")
+            return False
+        
+        # Step 6: Verify listing updates with new bid_info
+        print(f"\n✅ STEP 6: Verify Listing Updates with New Bid Info")
+        updated_state = await self.verify_listing_bid_updates(listing_id, demo_user_id, bid_amount, initial_state)
+        
+        if not updated_state:
+            self.log_result("Bidding Flow - Listing Updates", False, "Listing bid_info not updated correctly")
+            return False
+        
+        # Step 7: Verify seller gets notification
+        print(f"\n🔔 STEP 7: Verify Seller (Admin) Gets Notification")
+        notification_found = await self.verify_seller_notification(admin_user_id, listing_id, demo_user.get('full_name', 'Demo User'))
+        
+        if not notification_found:
+            self.log_result("Bidding Flow - Seller Notification", False, "Seller did not receive notification about tender offer")
+            return False
+        
+        # All steps completed successfully
+        self.log_result(
+            "Complete Bidding and Notification Flow", 
+            True, 
+            f"✅ All steps completed: Bid placed on '{listing_title}', listing updated, seller notified"
+        )
+        
+        return True
+
+    async def find_admin_listing(self, admin_user_id):
+        """Find a listing where admin is the seller (excluding MazdaRF4S2J17)"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/marketplace/browse?limit=100") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listings = await response.json()
+                    
+                    # Find admin's listings (excluding MazdaRF4S2J17)
+                    admin_listings = []
+                    for listing in listings:
+                        seller_id = listing.get('seller_id')
+                        title = listing.get('title', '')
+                        
+                        if (seller_id == admin_user_id and 
+                            'MazdaRF4S2J17' not in title and
+                            listing.get('status') == 'active'):
+                            admin_listings.append(listing)
+                    
+                    if admin_listings:
+                        # Use the first suitable listing
+                        selected_listing = admin_listings[0]
+                        self.log_result(
+                            "Find Admin Listing", 
+                            True, 
+                            f"Found admin listing: '{selected_listing.get('title')}' (ID: {selected_listing.get('id')})",
+                            response_time
+                        )
+                        return selected_listing
+                    else:
+                        self.log_result(
+                            "Find Admin Listing", 
+                            False, 
+                            f"No suitable admin listings found (searched {len(listings)} listings)",
+                            response_time
+                        )
+                        return None
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Find Admin Listing", 
+                        False, 
+                        f"Failed to browse listings: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Find Admin Listing", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def get_listing_details(self, listing_id):
+        """Get detailed listing information"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listing_data = await response.json()
+                    
+                    bid_info = listing_data.get('bid_info', {})
+                    self.log_result(
+                        "Get Listing Details", 
+                        True, 
+                        f"Retrieved listing details, current bid_info: {bid_info}",
+                        response_time
+                    )
+                    return listing_data
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Get Listing Details", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Get Listing Details", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def place_bid_on_listing(self, listing_id, token, user_id, bid_amount):
+        """Place a bid on a specific listing"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": bid_amount,
+                "message": f"Test bid of ${bid_amount} for bidding and notification flow testing"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    tender_id = data.get("id")
+                    
+                    self.log_result(
+                        "Place Bid on Listing", 
+                        True, 
+                        f"Successfully placed bid: ${bid_amount} (Tender ID: {tender_id})",
+                        response_time
+                    )
+                    return tender_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Place Bid on Listing", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Place Bid on Listing", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def verify_listing_bid_updates(self, listing_id, bidder_user_id, bid_amount, initial_state):
+        """Verify that listing is updated with new bid information"""
+        start_time = datetime.now()
+        
+        try:
+            # Wait a moment for the update to process
+            await asyncio.sleep(1)
+            
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    updated_listing = await response.json()
+                    bid_info = updated_listing.get('bid_info', {})
+                    
+                    # Check required bid_info fields
+                    has_bids = bid_info.get('has_bids', False)
+                    highest_bid = bid_info.get('highest_bid', 0)
+                    highest_bidder_id = bid_info.get('highest_bidder_id')
+                    total_bids = bid_info.get('total_bids', 0)
+                    
+                    # Verify updates
+                    updates_correct = []
+                    
+                    if has_bids:
+                        updates_correct.append("has_bids=True ✅")
+                    else:
+                        updates_correct.append("has_bids=False ❌")
+                    
+                    if abs(highest_bid - bid_amount) < 0.01:  # Allow for floating point precision
+                        updates_correct.append(f"highest_bid=${highest_bid} ✅")
+                    else:
+                        updates_correct.append(f"highest_bid=${highest_bid} (expected ${bid_amount}) ❌")
+                    
+                    if highest_bidder_id == bidder_user_id:
+                        updates_correct.append(f"highest_bidder_id={highest_bidder_id} ✅")
+                    else:
+                        updates_correct.append(f"highest_bidder_id={highest_bidder_id} (expected {bidder_user_id}) ❌")
+                    
+                    if total_bids > 0:
+                        updates_correct.append(f"total_bids={total_bids} ✅")
+                    else:
+                        updates_correct.append(f"total_bids={total_bids} ❌")
+                    
+                    # Check if all updates are correct
+                    all_correct = (has_bids and 
+                                 abs(highest_bid - bid_amount) < 0.01 and 
+                                 highest_bidder_id == bidder_user_id and 
+                                 total_bids > 0)
+                    
+                    self.log_result(
+                        "Verify Listing Bid Updates", 
+                        all_correct, 
+                        f"Bid info updates: {', '.join(updates_correct)}",
+                        response_time
+                    )
+                    
+                    return updated_listing if all_correct else None
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Verify Listing Bid Updates", 
+                        False, 
+                        f"Failed to get updated listing: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Verify Listing Bid Updates", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def verify_seller_notification(self, seller_user_id, listing_id, bidder_name):
+        """Verify that seller receives notification about tender offer"""
+        start_time = datetime.now()
+        
+        try:
+            # Wait a moment for notification to be created
+            await asyncio.sleep(2)
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{seller_user_id}/notifications") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    notifications = await response.json()
+                    
+                    # Look for tender offer notification
+                    tender_notification = None
+                    for notification in notifications:
+                        title = notification.get('title', '').lower()
+                        message = notification.get('message', '').lower()
+                        notif_type = notification.get('type', '')
+                        
+                        # Check if this is a tender/bid notification
+                        if ('tender' in title or 'bid' in title or 'offer' in title or
+                            'tender' in message or 'bid' in message or 'offer' in message or
+                            notif_type in ['tender_received', 'bid_received', 'tender_offer']):
+                            tender_notification = notification
+                            break
+                    
+                    if tender_notification:
+                        self.log_result(
+                            "Verify Seller Notification", 
+                            True, 
+                            f"Seller notification found: '{tender_notification.get('title')}' - '{tender_notification.get('message')[:100]}...'",
+                            response_time
+                        )
+                        
+                        # Log notification details
+                        print(f"   Notification Details:")
+                        print(f"   - Title: {tender_notification.get('title')}")
+                        print(f"   - Message: {tender_notification.get('message')}")
+                        print(f"   - Type: {tender_notification.get('type')}")
+                        print(f"   - Read: {tender_notification.get('read', False)}")
+                        print(f"   - Created: {tender_notification.get('created_at')}")
+                        
+                        return True
+                    else:
+                        self.log_result(
+                            "Verify Seller Notification", 
+                            False, 
+                            f"No tender notification found in {len(notifications)} notifications",
+                            response_time
+                        )
+                        
+                        # Log available notifications for debugging
+                        if notifications:
+                            print(f"   Available notifications:")
+                            for i, notif in enumerate(notifications[:5]):  # Show first 5
+                                print(f"   {i+1}. {notif.get('title')} ({notif.get('type')})")
+                        
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Verify Seller Notification", 
+                        False, 
+                        f"Failed to get notifications: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Verify Seller Notification", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
+async def main():
+    """Main test execution function"""
+    print("🚀 CATALORO MARKETPLACE - BIDDING UPDATES AND NOTIFICATION FIXES TESTING")
+    print("=" * 80)
+    print("Testing complete bidding and notification flow")
+    print("Focus: Verify listing updates and seller notifications when bids are placed")
+    print("=" * 80)
+    
+    async with BackendTester() as tester:
+        # Test 1: Database connectivity
+        print("\n📊 DATABASE CONNECTIVITY TEST:")
+        await tester.test_database_connectivity()
+        
+        # Test 2: Complete bidding and notification flow
+        flow_success = await tester.test_bidding_and_notification_flow()
+        
+        # Print summary
+        print("\n" + "=" * 80)
+        print("🎯 BIDDING AND NOTIFICATION TESTING SUMMARY")
+        print("=" * 80)
+        
+        passed_tests = sum(1 for result in tester.test_results if result['success'])
+        total_tests = len(tester.test_results)
+        success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
+        
+        print(f"📊 Tests Passed: {passed_tests}/{total_tests} ({success_rate:.1f}%)")
+        print(f"🎯 Focus: Complete bidding and notification flow")
+        
+        if flow_success:
+            print("✅ CONCLUSION: Bidding updates and notification fixes are working correctly!")
+            print("✅ Listings are updated with bid_info and sellers receive notifications")
+        else:
+            print("❌ CONCLUSION: Issues found in bidding updates or notification system")
+            print("❌ Some components of the bidding/notification flow need attention")
+        
+        print("\n📋 DETAILED TEST RESULTS:")
+        for result in tester.test_results:
+            status_icon = "✅" if result['success'] else "❌"
+            print(f"{status_icon} {result['test']}: {result['details']}")
 
 if __name__ == "__main__":
     asyncio.run(main())
