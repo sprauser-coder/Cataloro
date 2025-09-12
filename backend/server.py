@@ -5098,7 +5098,7 @@ async def remove_from_cart(user_id: str, item_id: str):
 
 # Messages endpoints
 @app.get("/api/user/{user_id}/messages")
-async def get_user_messages(user_id: str):
+async def get_user_messages(user_id: str, current_user: dict = Depends(get_current_user)):
     """Get user's messages with sender/recipient information (OPTIMIZED)"""
     try:
         # Get messages for user (sorted oldest first for proper mobile display)
