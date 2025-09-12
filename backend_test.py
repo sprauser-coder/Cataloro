@@ -3104,21 +3104,35 @@ class BackendTester:
             self.log_result("Bidding Flow - Admin Login", False, "Failed to login as admin user")
             return False
         
-        # Step 2: Login as buyer (demo)
-        print("\n👤 STEP 2: Login as Buyer (demo@cataloro.com)")
+        # Step 2: Try to login as demo user, if suspended create a new test user
+        print("\n👤 STEP 2: Login as Buyer (demo@cataloro.com or create new user)")
         demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
         
         if not demo_token:
-            self.log_result("Bidding Flow - Demo Login", False, "Failed to login as demo user")
-            return False
+            print("   Demo user suspended, creating new test user...")
+            demo_token, demo_user_id = await self.create_test_user_for_bidding()
+            if demo_token:
+                # Get user details
+                demo_user = {"full_name": "Test Buyer", "id": demo_user_id}
+                self.log_result("Bidding Flow - Create Test User", True, f"Created new test user: {demo_user_id}")
+            else:
+                self.log_result("Bidding Flow - Demo Login", False, "Failed to login as demo user and failed to create test user")
+                return False
         
         # Step 3: Find a listing where admin is the seller (not MazdaRF4S2J17)
         print("\n🔍 STEP 3: Find Admin's Listing (excluding MazdaRF4S2J17)")
         admin_listing = await self.find_admin_listing(admin_user_id)
         
         if not admin_listing:
-            self.log_result("Bidding Flow - Find Admin Listing", False, "No suitable admin listing found")
-            return False
+            # If no admin listing found, create one for testing
+            print("   No admin listing found, creating test listing...")
+            listing_id = await self.create_test_listing_for_bidding(admin_token)
+            if listing_id:
+                admin_listing = {"id": listing_id, "title": "Test Listing for Bidding", "seller_id": admin_user_id}
+                self.log_result("Bidding Flow - Create Test Listing", True, f"Created test listing: {listing_id}")
+            else:
+                self.log_result("Bidding Flow - Find Admin Listing", False, "No suitable admin listing found and failed to create test listing")
+                return False
         
         listing_id = admin_listing.get('id')
         listing_title = admin_listing.get('title', 'Unknown')
@@ -3164,6 +3178,56 @@ class BackendTester:
         )
         
         return True
+
+    async def create_test_listing_for_bidding(self, token):
+        """Create a test listing for bidding tests"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            listing_data = {
+                "title": "Test Listing for Bidding and Notification Flow",
+                "description": "This is a test listing created for bidding and notification flow testing",
+                "price": 100.00,
+                "category": "Test Category",
+                "condition": "New",
+                "has_time_limit": True,
+                "time_limit_hours": 24
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/listings", json=listing_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listing_id = data.get("id")
+                    
+                    self.log_result(
+                        "Create Test Listing for Bidding", 
+                        True, 
+                        f"Successfully created test listing {listing_id}",
+                        response_time
+                    )
+                    return listing_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create Test Listing for Bidding", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create Test Listing for Bidding", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
 
     async def find_admin_listing(self, admin_user_id):
         """Find a listing where admin is the seller (excluding MazdaRF4S2J17)"""
