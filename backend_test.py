@@ -961,51 +961,33 @@ class BackendTester:
 
 async def main():
     """Main test execution"""
-    print("🔍 TESTING FIXED MESSAGING/CONVERSATIONS SYSTEM")
+    print("🔍 TESTING ADMIN AUTHENTICATION AND ACCESS CONTROL")
     print("=" * 80)
     print(f"Backend URL: {BACKEND_URL}")
     print(f"Test Time: {datetime.now().isoformat()}")
     print()
-    print("TESTING SECURITY FIXES:")
-    print("✓ Authentication requirements on all message endpoints")
-    print("✓ Authorization checks to prevent cross-user access")
-    print("✓ NULL content cleanup verification")
-    print("✓ JWT token validation on all operations")
+    print("TESTING ADMIN AUTHENTICATION:")
+    print("✓ Admin login with admin@cataloro.com / admin123")
+    print("✓ Admin user role/user_role properties verification")
+    print("✓ Admin panel endpoints access control")
+    print("✓ Non-admin user access blocking")
     print()
     
     async with BackendTester() as tester:
         # Test 1: Database connectivity
         await tester.test_database_connectivity()
         
-        # Test 2: User authentication and get multiple users for cross-user testing
-        successful_logins = await tester.test_different_user_scenarios()
+        # Test 2: Admin authentication
+        admin_info = await tester.test_admin_login_authentication()
         
-        if successful_logins and len(successful_logins) >= 1:
-            primary_user = successful_logins[0]
+        if admin_info:
+            # Test 3: Admin endpoints access
+            await tester.test_admin_endpoints_access(admin_info["token"])
             
-            # Test 3: Authentication Security Tests
-            print("\n🔒 AUTHENTICATION SECURITY TESTS:")
-            await tester.test_messages_endpoint_without_auth(primary_user["user_id"])
-            await tester.test_send_message_without_auth(primary_user["user_id"])
-            
-            # Test 4: Create test message with authentication
-            message_id = await tester.test_create_test_message(primary_user["user_id"], primary_user["token"])
-            
-            # Test 5: Retrieve messages with authentication and validate structure/content
-            messages = await tester.test_messages_endpoint_with_auth(primary_user["user_id"], primary_user["token"])
-            await tester.test_message_structure(messages)
-            
-            # Test 6: Mark read authentication tests
-            if message_id:
-                await tester.test_mark_read_authentication(primary_user["user_id"], primary_user["token"], message_id)
-                await tester.test_mark_read_without_auth(primary_user["user_id"], message_id)
-            
-            # Test 7: Cross-user authorization test (if we have multiple users)
-            if len(successful_logins) >= 2:
-                print("\n🚫 AUTHORIZATION SECURITY TESTS:")
-                await tester.test_cross_user_authorization(successful_logins[0], successful_logins[1])
-            else:
-                print("\n⚠️ Cross-user authorization test skipped (need 2+ users)")
+            # Test 4: Non-admin access blocking
+            await tester.test_non_admin_access_blocked()
+        else:
+            print("\n❌ Admin authentication failed - skipping admin endpoint tests")
         
         # Print comprehensive summary
         tester.print_summary()
