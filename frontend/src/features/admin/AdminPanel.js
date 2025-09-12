@@ -4945,8 +4945,7 @@ function SiteAdministrationTab({ showToast }) {
   );
 }
 
-// Listings Management Tab Component
-function ListingsTab({ showToast }) {
+// ListingsTab component has been extracted to separate file - This was a duplicate DOUBLE component that needed to be removed
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
