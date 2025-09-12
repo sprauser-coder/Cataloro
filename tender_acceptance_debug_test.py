@@ -349,20 +349,27 @@ class TenderAcceptanceDebugTester:
             # Get tender details - need to use the listing tenders endpoint since individual tender endpoint may not exist
             async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}/tenders") as response:
                 if response.status == 200:
-                    tender_data = await response.json()
-                    tender_listing_id = tender_data.get('listing_id')
+                    tenders_data = await response.json()
                     
-                    if tender_listing_id == listing_id:
+                    # Find our specific tender
+                    our_tender = None
+                    for tender in tenders_data:
+                        if tender.get('id') == tender_id:
+                            our_tender = tender
+                            break
+                    
+                    if our_tender:
+                        # Since this is from the listing tenders endpoint, the listing_id is implicit
                         self.log_result(
                             "Listing-Tender ID Match", 
                             True, 
-                            f"✅ Listing IDs match: tender.listing_id={tender_listing_id}, listing.id={listing_id}"
+                            f"✅ Tender found in listing's tenders: tender_id={tender_id}, listing_id={listing_id}"
                         )
                     else:
                         self.log_result(
                             "Listing-Tender ID Match", 
                             False, 
-                            f"❌ ID MISMATCH: tender.listing_id={tender_listing_id}, listing.id={listing_id}"
+                            f"❌ Tender {tender_id} not found in listing {listing_id} tenders"
                         )
                 else:
                     self.log_result(
