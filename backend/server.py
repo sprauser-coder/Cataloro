@@ -5457,7 +5457,7 @@ async def submit_tender(tender_data: dict, current_user: dict = Depends(get_curr
                         "highest_bid": float(highest_bid),
                         "highest_bidder_id": highest_bidder_id
                     },
-                    "updated_at": current_time.isoformat()
+                    "updated_at": current_time_utc.isoformat()
                 }
             }
         )
