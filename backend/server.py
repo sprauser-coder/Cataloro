@@ -5429,8 +5429,8 @@ async def submit_tender(tender_data: dict, current_user: dict = Depends(get_curr
             "seller_id": seller_id,
             "offer_amount": float(offer_amount),
             "status": "active",  # active, accepted, rejected, withdrawn
-            "created_at": current_time,
-            "updated_at": current_time
+            "created_at": current_time_utc,
+            "updated_at": current_time_utc
         }
         
         await db.tenders.insert_one(tender)
