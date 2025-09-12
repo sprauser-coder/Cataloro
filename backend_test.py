@@ -395,10 +395,15 @@ class BackendTester:
             return False
     
     async def test_cross_user_authorization(self, user1_info, user2_info):
-        """Test that users cannot access other users' messages"""
+        """Test that users cannot access other users' messages (unless admin)"""
         start_time = datetime.now()
         
         try:
+            # Check if user1 is an admin
+            user1_role = user1_info.get('user', {}).get('role', '')
+            user1_user_role = user1_info.get('user', {}).get('user_role', '')
+            is_admin = (user1_role == 'admin' or user1_user_role in ['Admin', 'Admin-Manager'])
+            
             # Try to access user2's messages with user1's token
             headers = {"Authorization": f"Bearer {user1_info['token']}"}
             
@@ -408,21 +413,39 @@ class BackendTester:
                 
                 if response.status == 200:
                     data = await response.json()
-                    self.log_result(
-                        "Cross-User Authorization Test", 
-                        False, 
-                        f"❌ AUTHORIZATION VULNERABILITY: User can access other user's messages ({len(data)} messages)",
-                        response_time
-                    )
-                    return False
+                    if is_admin:
+                        self.log_result(
+                            "Cross-User Authorization Test", 
+                            True, 
+                            f"✅ ADMIN PRIVILEGE WORKING: Admin can access other user's messages ({len(data)} messages)",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Cross-User Authorization Test", 
+                            False, 
+                            f"❌ AUTHORIZATION VULNERABILITY: Non-admin user can access other user's messages ({len(data)} messages)",
+                            response_time
+                        )
+                        return False
                 elif response.status == 403:
-                    self.log_result(
-                        "Cross-User Authorization Test", 
-                        True, 
-                        f"✅ AUTHORIZATION FIX WORKING: Cross-user access properly blocked (Status 403)",
-                        response_time
-                    )
-                    return True
+                    if is_admin:
+                        self.log_result(
+                            "Cross-User Authorization Test", 
+                            False, 
+                            f"❌ ADMIN ACCESS BLOCKED: Admin should be able to access other user's messages",
+                            response_time
+                        )
+                        return False
+                    else:
+                        self.log_result(
+                            "Cross-User Authorization Test", 
+                            True, 
+                            f"✅ AUTHORIZATION FIX WORKING: Non-admin cross-user access properly blocked (Status 403)",
+                            response_time
+                        )
+                        return True
                 else:
                     error_text = await response.text()
                     self.log_result(
