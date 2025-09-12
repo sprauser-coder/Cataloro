@@ -3028,6 +3028,70 @@ class BackendTester:
             )
             return False
 
+    async def create_test_user_for_bidding(self):
+        """Create a test user specifically for bidding tests"""
+        start_time = datetime.now()
+        
+        try:
+            # Generate unique user data
+            timestamp = int(datetime.now().timestamp())
+            registration_data = {
+                "username": f"bidtest_{timestamp}",
+                "email": f"bidtest_{timestamp}@example.com",
+                "full_name": "Bid Test User",
+                "first_name": "Bid",
+                "last_name": "Test",
+                "account_type": "buyer"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/auth/register", json=registration_data) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    user_id = data.get("user_id")
+                    
+                    # Now login as the new user
+                    login_token, login_user_id, login_user = await self.test_login_and_get_token(
+                        registration_data["email"], "demo123"
+                    )
+                    
+                    if login_token:
+                        self.log_result(
+                            "Create Test User for Bidding", 
+                            True, 
+                            f"Successfully created and logged in test user {user_id}",
+                            response_time
+                        )
+                        return login_token, login_user_id
+                    else:
+                        self.log_result(
+                            "Create Test User for Bidding", 
+                            False, 
+                            f"Created user but login failed for {registration_data['email']}",
+                            response_time
+                        )
+                        return None, None
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create Test User for Bidding", 
+                        False, 
+                        f"Failed to create test user: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None, None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create Test User for Bidding", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None, None
+
 async def main():
     """Main test execution function - focused on specific bidding fix"""
     async with BackendTester() as tester:
