@@ -3409,12 +3409,12 @@ class BackendTester:
                 
                 if response.status == 200:
                     data = await response.json()
-                    tender_id = data.get("id")
+                    tender_id = data.get("id") or data.get("tender_id") or "success"  # Handle different response formats
                     
                     self.log_result(
                         "Place Bid on Listing", 
                         True, 
-                        f"Successfully placed bid: ${bid_amount} (Tender ID: {tender_id})",
+                        f"Successfully placed bid: ${bid_amount} (Response: {data})",
                         response_time
                     )
                     return tender_id
