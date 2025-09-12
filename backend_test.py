@@ -565,41 +565,293 @@ class BackendTester:
             )
             return False
     
-    async def test_different_user_scenarios(self):
-        """Test with different user scenarios"""
-        test_users = [
-            {"email": "admin@cataloro.com", "name": "Admin User"},
-            {"email": "demo@cataloro.com", "name": "Demo User"},
-            {"email": "user@cataloro.com", "name": "Regular User"}
-        ]
+    async def test_admin_login_authentication(self):
+        """Test admin login with specific credentials"""
+        print("\n🔐 ADMIN AUTHENTICATION TESTS:")
         
-        successful_logins = []
+        # Test admin login with correct credentials
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         
-        for user_info in test_users:
-            token, user_id, user = await self.test_login_and_get_token(user_info["email"])
-            if token and user_id:
-                successful_logins.append({
-                    "email": user_info["email"],
-                    "name": user_info["name"],
-                    "token": token,
-                    "user_id": user_id,
-                    "user": user
-                })
-        
-        if not successful_logins:
+        if not admin_token:
             self.log_result(
-                "User Scenarios Test", 
+                "Admin Login Test", 
                 False, 
-                "No users could be logged in successfully"
+                "Failed to login with admin@cataloro.com / admin123"
             )
             return None
         
-        # Test messages for each successful login
-        for login_info in successful_logins:
-            messages = await self.test_messages_endpoint_with_auth(login_info["user_id"], login_info["token"])
-            await self.test_message_structure(messages)
+        # Verify admin user properties
+        await self.test_admin_user_properties(admin_user)
         
-        return successful_logins  # Return all successful logins for further testing
+        return {
+            "token": admin_token,
+            "user_id": admin_user_id,
+            "user": admin_user
+        }
+    
+    async def test_admin_user_properties(self, user):
+        """Test that admin user has correct role/user_role properties"""
+        try:
+            role = user.get("role")
+            user_role = user.get("user_role")
+            
+            # Check for admin privileges according to backend logic
+            is_admin = (
+                role == "admin" or 
+                user_role in ["Admin", "Admin-Manager"]
+            )
+            
+            if is_admin:
+                self.log_result(
+                    "Admin User Properties Test", 
+                    True, 
+                    f"✅ Admin user has correct properties: role='{role}', user_role='{user_role}'"
+                )
+                
+                # Log additional user properties for verification
+                additional_props = {
+                    "full_name": user.get("full_name"),
+                    "email": user.get("email"),
+                    "badge": user.get("badge"),
+                    "registration_status": user.get("registration_status")
+                }
+                
+                print(f"   Admin User Details: {additional_props}")
+                return True
+            else:
+                self.log_result(
+                    "Admin User Properties Test", 
+                    False, 
+                    f"❌ User does not have admin privileges: role='{role}', user_role='{user_role}'"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_result(
+                "Admin User Properties Test", 
+                False, 
+                f"Error checking admin properties: {str(e)}"
+            )
+            return False
+    
+    async def test_admin_endpoints_access(self, admin_token):
+        """Test access to various admin panel endpoints"""
+        print("\n🛡️ ADMIN ENDPOINTS ACCESS TESTS:")
+        
+        admin_endpoints = [
+            {"path": "/admin/dashboard", "name": "Admin Dashboard"},
+            {"path": "/admin/users", "name": "Admin Users Management"},
+            {"path": "/admin/menu-settings", "name": "Admin Menu Settings"},
+            {"path": "/admin/performance", "name": "Admin Performance Metrics"},
+            {"path": "/admin/cache/clear", "name": "Admin Cache Clear", "method": "POST"}
+        ]
+        
+        headers = {"Authorization": f"Bearer {admin_token}"}
+        successful_endpoints = 0
+        
+        for endpoint in admin_endpoints:
+            success = await self.test_single_admin_endpoint(
+                endpoint["path"], 
+                endpoint["name"], 
+                headers,
+                endpoint.get("method", "GET")
+            )
+            if success:
+                successful_endpoints += 1
+        
+        self.log_result(
+            "Admin Endpoints Access Summary", 
+            successful_endpoints == len(admin_endpoints), 
+            f"Successfully accessed {successful_endpoints}/{len(admin_endpoints)} admin endpoints"
+        )
+        
+        return successful_endpoints == len(admin_endpoints)
+    
+    async def test_single_admin_endpoint(self, path, name, headers, method="GET"):
+        """Test access to a single admin endpoint"""
+        start_time = datetime.now()
+        
+        try:
+            url = f"{BACKEND_URL}{path}"
+            
+            if method == "GET":
+                async with self.session.get(url, headers=headers) as response:
+                    return await self.process_admin_endpoint_response(response, name, start_time)
+            elif method == "POST":
+                async with self.session.post(url, headers=headers) as response:
+                    return await self.process_admin_endpoint_response(response, name, start_time)
+            else:
+                self.log_result(
+                    f"Admin Endpoint: {name}", 
+                    False, 
+                    f"Unsupported method: {method}"
+                )
+                return False
+                
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"Admin Endpoint: {name}", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def process_admin_endpoint_response(self, response, name, start_time):
+        """Process admin endpoint response"""
+        response_time = (datetime.now() - start_time).total_seconds() * 1000
+        
+        if response.status == 200:
+            try:
+                data = await response.json()
+                data_summary = self.summarize_response_data(data)
+                self.log_result(
+                    f"Admin Endpoint: {name}", 
+                    True, 
+                    f"✅ Access granted, received data: {data_summary}",
+                    response_time
+                )
+                return True
+            except:
+                # Some endpoints might not return JSON
+                text = await response.text()
+                self.log_result(
+                    f"Admin Endpoint: {name}", 
+                    True, 
+                    f"✅ Access granted, received response (non-JSON): {len(text)} chars",
+                    response_time
+                )
+                return True
+        elif response.status == 403:
+            error_text = await response.text()
+            self.log_result(
+                f"Admin Endpoint: {name}", 
+                False, 
+                f"❌ Access denied (403): {error_text}",
+                response_time
+            )
+            return False
+        else:
+            error_text = await response.text()
+            self.log_result(
+                f"Admin Endpoint: {name}", 
+                False, 
+                f"❌ Unexpected status {response.status}: {error_text}",
+                response_time
+            )
+            return False
+    
+    def summarize_response_data(self, data):
+        """Create a summary of response data for logging"""
+        if isinstance(data, dict):
+            keys = list(data.keys())[:5]  # First 5 keys
+            return f"dict with keys: {keys}"
+        elif isinstance(data, list):
+            return f"list with {len(data)} items"
+        else:
+            return f"{type(data).__name__}: {str(data)[:100]}"
+    
+    async def test_non_admin_access_blocked(self):
+        """Test that non-admin users cannot access admin endpoints"""
+        print("\n🚫 NON-ADMIN ACCESS BLOCKING TESTS:")
+        
+        # Try to login as regular user
+        user_token, user_id, user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        
+        if not user_token:
+            self.log_result(
+                "Non-Admin User Login", 
+                False, 
+                "Could not login as regular user for testing"
+            )
+            return False
+        
+        # Verify this is not an admin user
+        role = user.get("role")
+        user_role = user.get("user_role")
+        is_admin = (role == "admin" or user_role in ["Admin", "Admin-Manager"])
+        
+        if is_admin:
+            self.log_result(
+                "Non-Admin User Verification", 
+                False, 
+                f"Test user has admin privileges: role='{role}', user_role='{user_role}'"
+            )
+            return False
+        
+        self.log_result(
+            "Non-Admin User Verification", 
+            True, 
+            f"✅ Test user is non-admin: role='{role}', user_role='{user_role}'"
+        )
+        
+        # Test access to admin endpoints (should be blocked)
+        headers = {"Authorization": f"Bearer {user_token}"}
+        
+        admin_endpoints = [
+            "/admin/dashboard",
+            "/admin/users",
+            "/admin/menu-settings"
+        ]
+        
+        blocked_count = 0
+        for endpoint in admin_endpoints:
+            if await self.test_admin_endpoint_blocked(endpoint, headers):
+                blocked_count += 1
+        
+        success = blocked_count == len(admin_endpoints)
+        self.log_result(
+            "Non-Admin Access Blocking Summary", 
+            success, 
+            f"Properly blocked {blocked_count}/{len(admin_endpoints)} admin endpoints for non-admin user"
+        )
+        
+        return success
+    
+    async def test_admin_endpoint_blocked(self, endpoint, headers):
+        """Test that an admin endpoint is properly blocked for non-admin user"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}{endpoint}", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 403:
+                    self.log_result(
+                        f"Admin Blocking: {endpoint}", 
+                        True, 
+                        f"✅ Properly blocked non-admin access (403)",
+                        response_time
+                    )
+                    return True
+                elif response.status == 200:
+                    self.log_result(
+                        f"Admin Blocking: {endpoint}", 
+                        False, 
+                        f"❌ SECURITY ISSUE: Non-admin user can access admin endpoint",
+                        response_time
+                    )
+                    return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"Admin Blocking: {endpoint}", 
+                        False, 
+                        f"Unexpected status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"Admin Blocking: {endpoint}", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
     
     def print_summary(self):
         """Print test summary"""
