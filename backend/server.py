@@ -5632,10 +5632,30 @@ async def accept_tender(tender_id: str, acceptance_data: dict):
         )
         
         # Update listing status to sold
-        await db.listings.update_one(
+        listing_update_result = await db.listings.update_one(
             {"id": tender["listing_id"]},
-            {"$set": {"status": "sold", "sold_at": current_time, "sold_price": tender["offer_amount"]}}
+            {
+                "$set": {
+                    "status": "sold", 
+                    "sold_at": current_time_utc,  # Use UTC for database consistency
+                    "sold_price": tender["offer_amount"],
+                    "updated_at": current_time_utc.isoformat()
+                }
+            }
         )
+        
+        # Log the update result for debugging
+        logger.info(f"🏷️ Listing status update result: matched={listing_update_result.matched_count}, modified={listing_update_result.modified_count}")
+        
+        if listing_update_result.matched_count == 0:
+            logger.error(f"❌ Failed to find listing {tender['listing_id']} for status update")
+            raise HTTPException(status_code=404, detail="Listing not found for status update")
+        
+        if listing_update_result.modified_count == 0:
+            logger.warning(f"⚠️ Listing {tender['listing_id']} was found but not modified (may already be sold)")
+        
+        # Invalidate cache since listing status has changed
+        await cache_service.invalidate_listings_cache()
         
         # Clean up favorites for sold listing
         try:
