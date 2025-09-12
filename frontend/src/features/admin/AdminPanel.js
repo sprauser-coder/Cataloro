@@ -4947,10 +4947,6 @@ function SiteAdministrationTab({ showToast }) {
 
 // ListingsTab component has been extracted to separate file - This was a duplicate DOUBLE component that needed to be removed
 
-  useEffect(() => {
-    fetchListings();
-  }, []);
-
   const fetchListings = async () => {
     try {
       setLoading(true);
