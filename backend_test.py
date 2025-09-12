@@ -856,7 +856,7 @@ class BackendTester:
     def print_summary(self):
         """Print test summary"""
         print("=" * 80)
-        print("MESSAGING/CONVERSATIONS SECURITY FIXES TEST SUMMARY")
+        print("ADMIN AUTHENTICATION AND ACCESS CONTROL TEST SUMMARY")
         print("=" * 80)
         
         total_tests = len(self.test_results)
@@ -876,82 +876,87 @@ class BackendTester:
                     print(f"❌ {result['test']}: {result['details']}")
             print()
         
-        print("SECURITY FIXES VALIDATION:")
+        print("ADMIN AUTHENTICATION VALIDATION:")
         
-        # Analyze security-specific results
-        auth_security_tests = [r for r in self.test_results if "Security" in r["test"]]
-        auth_tests = [r for r in self.test_results if "Authentication" in r["test"]]
-        authorization_tests = [r for r in self.test_results if "Authorization" in r["test"]]
-        data_quality_tests = [r for r in self.test_results if "NULL Content" in r["test"]]
+        # Analyze admin-specific results
+        admin_login_tests = [r for r in self.test_results if "Admin Login" in r["test"]]
+        admin_properties_tests = [r for r in self.test_results if "Admin User Properties" in r["test"]]
+        admin_endpoint_tests = [r for r in self.test_results if "Admin Endpoint" in r["test"]]
+        admin_blocking_tests = [r for r in self.test_results if "Admin Blocking" in r["test"]]
         
-        # Authentication Security
-        auth_security_passed = all(r["success"] for r in auth_security_tests)
-        if auth_security_passed:
-            print("✅ AUTHENTICATION SECURITY: All endpoints properly require JWT tokens")
+        # Admin Login
+        admin_login_passed = all(r["success"] for r in admin_login_tests)
+        if admin_login_passed:
+            print("✅ ADMIN LOGIN: Successfully authenticated with admin@cataloro.com / admin123")
         else:
-            print("❌ AUTHENTICATION SECURITY: Some endpoints accessible without authentication")
+            print("❌ ADMIN LOGIN: Failed to authenticate admin user")
         
-        # Authorization Security
-        auth_passed = all(r["success"] for r in authorization_tests)
-        if auth_passed:
-            print("✅ AUTHORIZATION SECURITY: Cross-user access properly blocked")
-        elif not authorization_tests:
-            print("⚠️ AUTHORIZATION SECURITY: Not tested (insufficient users)")
+        # Admin Properties
+        admin_props_passed = all(r["success"] for r in admin_properties_tests)
+        if admin_props_passed:
+            print("✅ ADMIN USER PROPERTIES: User object has correct role/user_role properties")
+        elif not admin_properties_tests:
+            print("⚠️ ADMIN USER PROPERTIES: Not tested (admin login failed)")
         else:
-            print("❌ AUTHORIZATION SECURITY: Cross-user access vulnerabilities detected")
+            print("❌ ADMIN USER PROPERTIES: User object missing correct admin properties")
         
-        # Data Quality
-        data_quality_passed = all(r["success"] for r in data_quality_tests)
-        if data_quality_passed:
-            print("✅ DATA QUALITY: No NULL content found in messages")
-        elif not data_quality_tests:
-            print("⚠️ DATA QUALITY: Not tested (no messages found)")
+        # Admin Endpoints Access
+        admin_access_passed = all(r["success"] for r in admin_endpoint_tests if "Summary" not in r["test"])
+        if admin_access_passed and admin_endpoint_tests:
+            print("✅ ADMIN ENDPOINTS ACCESS: All admin panel endpoints accessible to admin user")
+        elif not admin_endpoint_tests:
+            print("⚠️ ADMIN ENDPOINTS ACCESS: Not tested (admin authentication failed)")
         else:
-            print("❌ DATA QUALITY: NULL content still present in messages")
+            print("❌ ADMIN ENDPOINTS ACCESS: Some admin endpoints not accessible")
         
-        # Overall endpoint functionality
-        message_tests = [r for r in self.test_results if "Messages Endpoint (With Auth)" in r["test"]]
-        if any(r["success"] for r in message_tests):
-            print("✅ CONVERSATIONS LOADING: Messages endpoint working with authentication")
+        # Non-Admin Blocking
+        admin_blocking_passed = all(r["success"] for r in admin_blocking_tests)
+        if admin_blocking_passed and admin_blocking_tests:
+            print("✅ NON-ADMIN BLOCKING: Admin endpoints properly blocked for non-admin users")
+        elif not admin_blocking_tests:
+            print("⚠️ NON-ADMIN BLOCKING: Not tested (could not create non-admin user)")
         else:
-            print("❌ CONVERSATIONS LOADING: Messages endpoint not working properly")
+            print("❌ NON-ADMIN BLOCKING: Security issue - non-admin users can access admin endpoints")
         
         print()
-        print("SECURITY FIXES STATUS:")
+        print("ADMIN AUTHENTICATION STATUS:")
         
-        # Overall security assessment
-        critical_security_issues = []
+        # Overall admin authentication assessment
+        critical_admin_issues = []
         
-        if not auth_security_passed:
-            critical_security_issues.append("Authentication not enforced on all endpoints")
+        if not admin_login_passed:
+            critical_admin_issues.append("Admin login credentials not working")
         
-        if not auth_passed and authorization_tests:
-            critical_security_issues.append("Cross-user access vulnerabilities exist")
+        if not admin_props_passed and admin_properties_tests:
+            critical_admin_issues.append("Admin user properties not correctly configured")
         
-        if not data_quality_passed and data_quality_tests:
-            critical_security_issues.append("NULL content data quality issues remain")
+        if not admin_access_passed and admin_endpoint_tests:
+            critical_admin_issues.append("Admin endpoints not accessible to admin user")
         
-        if critical_security_issues:
-            print("❌ CRITICAL SECURITY ISSUES REMAIN:")
-            for issue in critical_security_issues:
+        if not admin_blocking_passed and admin_blocking_tests:
+            critical_admin_issues.append("Admin endpoints accessible to non-admin users (security risk)")
+        
+        if critical_admin_issues:
+            print("❌ CRITICAL ADMIN AUTHENTICATION ISSUES:")
+            for issue in critical_admin_issues:
                 print(f"   - {issue}")
-            print("- RECOMMENDATION: Security fixes need additional work")
+            print("- RECOMMENDATION: Admin authentication system needs fixes")
         else:
-            print("✅ ALL SECURITY FIXES WORKING:")
-            print("   - Authentication required on all message endpoints")
-            print("   - Authorization prevents cross-user access")
-            print("   - NULL content cleaned up from database")
-            print("   - Conversations should now load properly for authenticated users")
+            print("✅ ADMIN AUTHENTICATION WORKING CORRECTLY:")
+            print("   - Admin login with admin@cataloro.com / admin123 successful")
+            print("   - Admin user has correct role/user_role properties")
+            print("   - All admin panel endpoints accessible to admin user")
+            print("   - Admin endpoints properly blocked for non-admin users")
         
         print()
-        print("CONVERSATIONS LOADING STATUS:")
+        print("ADMIN PANEL ACCESS STATUS:")
         if passed_tests >= total_tests * 0.8:  # 80% success rate
-            print("✅ CONVERSATIONS SHOULD NOW LOAD PROPERLY")
-            print("   - All security fixes are working")
-            print("   - Authentication and authorization enforced")
-            print("   - Data quality issues resolved")
+            print("✅ ADMIN PANEL ACCESS WORKING CORRECTLY")
+            print("   - Admin authentication successful")
+            print("   - Admin authorization working")
+            print("   - Security controls in place")
         else:
-            print("❌ CONVERSATIONS MAY STILL HAVE ISSUES")
+            print("❌ ADMIN PANEL ACCESS HAS ISSUES")
             print("   - Review failed tests above for remaining problems")
 
 async def main():
