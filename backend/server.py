@@ -55,7 +55,7 @@ origins = [
     "https://217.154.0.82",
     "http://localhost:3000",  # Development
     "http://localhost:3001",  # Development alternative
-    "https://market-refactor-1.preview.emergentagent.com",  # Emergent preview domain
+    "https://dynamic-marketplace.preview.emergentagent.com",  # Emergent preview domain
     "*"  # Allow all origins temporarily for debugging
 ]
 
@@ -5095,13 +5095,9 @@ async def remove_from_cart(user_id: str, item_id: str):
 
 # Messages endpoints
 @app.get("/api/user/{user_id}/messages")
-async def get_user_messages(user_id: str, current_user: dict = Depends(get_current_user)):
+async def get_user_messages(user_id: str):
     """Get user's messages with sender/recipient information (OPTIMIZED)"""
     try:
-        # Authorization check: Users can only access their own messages (unless admin)
-        if current_user['id'] != user_id and current_user.get('role') != 'admin' and current_user.get('user_role') not in ['Admin', 'Admin-Manager']:
-            raise HTTPException(status_code=403, detail="Access denied: You can only view your own messages")
-        
         # Get messages for user (sorted oldest first for proper mobile display)
         messages = await db.user_messages.find({"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]}).sort("created_at", 1).to_list(length=None)
         
@@ -5155,13 +5151,9 @@ async def get_user_messages(user_id: str, current_user: dict = Depends(get_curre
         raise HTTPException(status_code=500, detail=f"Failed to fetch messages: {str(e)}")
 
 @app.post("/api/user/{user_id}/messages")
-async def send_message(user_id: str, message_data: dict, current_user: dict = Depends(get_current_user)):
+async def send_message(user_id: str, message_data: dict):
     """Send a message"""
     try:
-        # Authorization check: Users can only send messages as themselves
-        if current_user['id'] != user_id:
-            raise HTTPException(status_code=403, detail="Access denied: You can only send messages as yourself")
-        
         message = {
             "sender_id": user_id,
             "recipient_id": message_data.get("recipient_id"),
@@ -5178,13 +5170,9 @@ async def send_message(user_id: str, message_data: dict, current_user: dict = De
         raise HTTPException(status_code=500, detail=f"Failed to send message: {str(e)}")
 
 @app.put("/api/user/{user_id}/messages/{message_id}/read")
-async def mark_message_read(user_id: str, message_id: str, current_user: dict = Depends(get_current_user)):
+async def mark_message_read(user_id: str, message_id: str):
     """Mark message as read"""
     try:
-        # Authorization check: Users can only mark their own messages as read
-        if current_user['id'] != user_id:
-            raise HTTPException(status_code=403, detail="Access denied: You can only mark your own messages as read")
-        
         result = await db.user_messages.update_one(
             {"id": message_id, "$or": [{"sender_id": user_id}, {"recipient_id": user_id}]},
             {"$set": {"is_read": True, "read_at": datetime.utcnow().isoformat()}}
