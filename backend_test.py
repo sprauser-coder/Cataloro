@@ -809,6 +809,556 @@ class BackendTester:
         
         return success
     
+    async def test_marketplace_apis(self, user_token=None):
+        """Test marketplace APIs comprehensively"""
+        print("\n🏪 MARKETPLACE APIS TESTS:")
+        
+        # Test browse listings
+        await self.test_marketplace_browse()
+        
+        # Test individual listing details
+        listing_id = await self.test_individual_listing()
+        
+        # Test create listing (requires authentication)
+        if user_token:
+            await self.test_create_listing(user_token)
+        
+        # Test tenders/bidding system
+        if listing_id:
+            await self.test_listing_tenders(listing_id)
+    
+    async def test_marketplace_browse(self):
+        """Test marketplace browse endpoint"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/marketplace/browse") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check if listings have required fields
+                    required_fields = ['id', 'title', 'price', 'seller_id']
+                    time_fields = ['time_info', 'has_time_limit']
+                    bid_fields = ['bid_info']
+                    
+                    listings_with_time_info = 0
+                    listings_with_bid_info = 0
+                    
+                    for listing in data:
+                        # Check time_info
+                        if any(field in listing for field in time_fields):
+                            listings_with_time_info += 1
+                        
+                        # Check bid_info
+                        if any(field in listing for field in bid_fields):
+                            listings_with_bid_info += 1
+                    
+                    self.log_result(
+                        "Marketplace Browse API", 
+                        True, 
+                        f"Retrieved {len(data)} listings, {listings_with_time_info} with time_info, {listings_with_bid_info} with bid_info",
+                        response_time
+                    )
+                    
+                    return data[0]['id'] if data else None
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Marketplace Browse API", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Marketplace Browse API", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_individual_listing(self):
+        """Test individual listing endpoint"""
+        # First get a listing ID from browse
+        start_time = datetime.now()
+        
+        try:
+            # Get listings first
+            async with self.session.get(f"{BACKEND_URL}/marketplace/browse?limit=1") as response:
+                if response.status == 200:
+                    listings = await response.json()
+                    if not listings:
+                        self.log_result(
+                            "Individual Listing API", 
+                            False, 
+                            "No listings available to test individual listing endpoint"
+                        )
+                        return None
+                    
+                    listing_id = listings[0]['id']
+                    
+                    # Now test individual listing endpoint
+                    async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as detail_response:
+                        response_time = (datetime.now() - start_time).total_seconds() * 1000
+                        
+                        if detail_response.status == 200:
+                            listing_data = await detail_response.json()
+                            
+                            # Check for required fields
+                            has_time_info = 'time_info' in listing_data
+                            has_bid_info = 'bid_info' in listing_data
+                            
+                            self.log_result(
+                                "Individual Listing API", 
+                                True, 
+                                f"Retrieved listing {listing_id}, time_info: {has_time_info}, bid_info: {has_bid_info}",
+                                response_time
+                            )
+                            
+                            return listing_id
+                        else:
+                            error_text = await detail_response.text()
+                            self.log_result(
+                                "Individual Listing API", 
+                                False, 
+                                f"Failed with status {detail_response.status}: {error_text}",
+                                response_time
+                            )
+                            return None
+                else:
+                    self.log_result(
+                        "Individual Listing API", 
+                        False, 
+                        "Could not get listings for testing individual endpoint"
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Individual Listing API", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_create_listing(self, token):
+        """Test create listing functionality"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            listing_data = {
+                "title": "Test Listing for Backend Testing",
+                "description": "This is a test listing created during backend testing",
+                "price": 99.99,
+                "category": "Electronics",
+                "condition": "New",
+                "has_time_limit": True,
+                "time_limit_hours": 24
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/listings", json=listing_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listing_id = data.get("id")
+                    
+                    self.log_result(
+                        "Create Listing API", 
+                        True, 
+                        f"Successfully created listing {listing_id} with time limit",
+                        response_time
+                    )
+                    
+                    return listing_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create Listing API", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create Listing API", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_listing_tenders(self, listing_id):
+        """Test listing tenders/bidding system"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}/tenders") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    tenders = await response.json()
+                    
+                    # Check tender structure
+                    highest_bid = 0
+                    if tenders:
+                        for tender in tenders:
+                            if 'amount' in tender:
+                                highest_bid = max(highest_bid, tender['amount'])
+                    
+                    self.log_result(
+                        "Listing Tenders API", 
+                        True, 
+                        f"Retrieved {len(tenders)} tenders, highest bid: ${highest_bid}",
+                        response_time
+                    )
+                    
+                    return tenders
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Listing Tenders API", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Listing Tenders API", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_registration_system(self):
+        """Test registration and user management APIs"""
+        print("\n👤 REGISTRATION & USER MANAGEMENT TESTS:")
+        
+        # Test username availability
+        await self.test_username_availability()
+        
+        # Test email availability
+        await self.test_email_availability()
+        
+        # Test user registration
+        await self.test_user_registration()
+    
+    async def test_username_availability(self):
+        """Test username availability check"""
+        start_time = datetime.now()
+        
+        try:
+            # Test with existing username
+            async with self.session.get(f"{BACKEND_URL}/check-username?username=admin") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    available = data.get("available", True)
+                    
+                    self.log_result(
+                        "Username Availability Check", 
+                        True, 
+                        f"Username 'admin' availability: {available}",
+                        response_time
+                    )
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Username Availability Check", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Username Availability Check", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+    
+    async def test_email_availability(self):
+        """Test email availability check"""
+        start_time = datetime.now()
+        
+        try:
+            # Test with existing email
+            async with self.session.get(f"{BACKEND_URL}/check-email?email=admin@cataloro.com") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    available = data.get("available", True)
+                    
+                    self.log_result(
+                        "Email Availability Check", 
+                        True, 
+                        f"Email 'admin@cataloro.com' availability: {available}",
+                        response_time
+                    )
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Email Availability Check", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Email Availability Check", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+    
+    async def test_user_registration(self):
+        """Test user registration with first_name/last_name"""
+        start_time = datetime.now()
+        
+        try:
+            registration_data = {
+                "username": f"testuser_{int(datetime.now().timestamp())}",
+                "email": f"test_{int(datetime.now().timestamp())}@example.com",
+                "full_name": "Test User Backend",
+                "first_name": "Test",
+                "last_name": "User",
+                "account_type": "buyer"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/auth/register", json=registration_data) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    user_id = data.get("user_id")
+                    status = data.get("status")
+                    
+                    self.log_result(
+                        "User Registration", 
+                        True, 
+                        f"Successfully registered user {user_id}, status: {status}",
+                        response_time
+                    )
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "User Registration", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "User Registration", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+    
+    async def test_time_limit_and_bidding(self, user_token):
+        """Test time limit and bidding features"""
+        print("\n⏰ TIME LIMIT & BIDDING TESTS:")
+        
+        if not user_token:
+            self.log_result(
+                "Time Limit & Bidding Tests", 
+                False, 
+                "No user token available for testing"
+            )
+            return
+        
+        # Create a listing with time limit
+        listing_id = await self.test_create_time_limited_listing(user_token)
+        
+        if listing_id:
+            # Test bidding functionality
+            await self.test_tender_submission(listing_id, user_token)
+            
+            # Test highest bidder blocking
+            await self.test_highest_bidder_blocking(listing_id, user_token)
+    
+    async def test_create_time_limited_listing(self, token):
+        """Test creating listing with different time limits"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Test 1 hour time limit
+            listing_data = {
+                "title": "1 Hour Time Limited Test Listing",
+                "description": "Testing 1 hour time limit functionality",
+                "price": 50.00,
+                "category": "Test",
+                "condition": "New",
+                "has_time_limit": True,
+                "time_limit_hours": 1
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/listings", json=listing_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    listing_id = data.get("id")
+                    
+                    self.log_result(
+                        "Create 1-Hour Time Limited Listing", 
+                        True, 
+                        f"Successfully created 1-hour time limited listing {listing_id}",
+                        response_time
+                    )
+                    
+                    return listing_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Create 1-Hour Time Limited Listing", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create 1-Hour Time Limited Listing", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_tender_submission(self, listing_id, token):
+        """Test tender submission validation"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": 75.00,
+                "message": "Test bid for backend testing"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    tender_id = data.get("id")
+                    
+                    self.log_result(
+                        "Tender Submission", 
+                        True, 
+                        f"Successfully submitted tender {tender_id} for ${tender_data['amount']}",
+                        response_time
+                    )
+                    
+                    return tender_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Tender Submission", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Tender Submission", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_highest_bidder_blocking(self, listing_id, token):
+        """Test that highest bidder cannot place another bid"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Try to place another bid (should be blocked if user is highest bidder)
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": 100.00,
+                "message": "Attempting second bid as highest bidder"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 400:
+                    error_text = await response.text()
+                    if "highest bidder" in error_text.lower():
+                        self.log_result(
+                            "Highest Bidder Blocking", 
+                            True, 
+                            f"✅ Highest bidder properly blocked from placing another bid",
+                            response_time
+                        )
+                    else:
+                        self.log_result(
+                            "Highest Bidder Blocking", 
+                            False, 
+                            f"Blocked but wrong reason: {error_text}",
+                            response_time
+                        )
+                elif response.status == 200:
+                    self.log_result(
+                        "Highest Bidder Blocking", 
+                        False, 
+                        f"❌ Highest bidder was able to place another bid (should be blocked)",
+                        response_time
+                    )
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Highest Bidder Blocking", 
+                        False, 
+                        f"Unexpected status {response.status}: {error_text}",
+                        response_time
+                    )
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Highest Bidder Blocking", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+    
     async def test_admin_endpoint_blocked(self, endpoint, headers):
         """Test that an admin endpoint is properly blocked for non-admin user"""
         start_time = datetime.now()
