@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PlaceholderDashboard from '../ui/PlaceholderDashboard';
 import PerformanceDashboard from '../performance/PerformanceDashboard';
-import SecurityDashboard from '../security/SecurityDashboard';
+// import SecurityDashboard from '../security/SecurityDashboard'; // Archived
 import EnhancedSearchInterface from '../search/EnhancedSearchInterface';
 
 const DashboardHub = () => {
