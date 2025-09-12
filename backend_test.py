@@ -1737,21 +1737,43 @@ class BackendTester:
                     return
         
         listing_id = target_listing.get('id')
+        seller_id = target_listing.get('seller_id')
         
         # Step 3: Test bidding authentication (without token)
         print("\n🚫 STEP 3: TEST AUTHENTICATION REQUIREMENT")
         await self.test_bidding_authentication_fix(listing_id)
         
-        # Step 4: Test specific bid amount (€30.00)
-        print("\n💰 STEP 4: TEST SPECIFIC BID AMOUNT")
-        await self.test_specific_bid_submission(listing_id, admin_token, 30.00)
+        # Step 4: Determine appropriate user for bidding
+        print("\n👤 STEP 4: DETERMINE BIDDING USER")
+        if seller_id == admin_user_id:
+            print(f"⚠️ Admin user is the seller of this item (seller_id: {seller_id})")
+            print("Switching to demo user for bidding tests...")
+            
+            # Login as demo user for bidding
+            demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+            
+            if not demo_token:
+                print("❌ CRITICAL: Cannot login as demo user for bidding tests")
+                return
+            
+            bidding_token = demo_token
+            bidding_user_id = demo_user_id
+            print(f"✅ Using demo user for bidding (user_id: {demo_user_id})")
+        else:
+            bidding_token = admin_token
+            bidding_user_id = admin_user_id
+            print(f"✅ Using admin user for bidding (user_id: {admin_user_id})")
         
-        # Step 5: Test different bid amounts for validation
-        print("\n🧪 STEP 5: TEST BID VALIDATION")
-        await self.test_bid_validation_amounts(listing_id, admin_token)
+        # Step 5: Test specific bid amount (€30.00)
+        print("\n💰 STEP 5: TEST SPECIFIC BID AMOUNT")
+        await self.test_specific_bid_submission(listing_id, bidding_token, 30.00)
         
-        # Step 6: Check current listing status and bid info
-        print("\n📊 STEP 6: VERIFY LISTING BID INFO")
+        # Step 6: Test different bid amounts for validation
+        print("\n🧪 STEP 6: TEST BID VALIDATION")
+        await self.test_bid_validation_amounts(listing_id, bidding_token)
+        
+        # Step 7: Check current listing status and bid info
+        print("\n📊 STEP 7: VERIFY LISTING BID INFO")
         await self.verify_listing_bid_info(listing_id)
 
     async def verify_listing_bid_info(self, listing_id):
