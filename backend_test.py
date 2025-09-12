@@ -101,7 +101,7 @@ class BackendTester:
             return None, None, None
     
     async def test_messages_endpoint_without_auth(self, user_id):
-        """Test messages endpoint without authentication"""
+        """Test messages endpoint without authentication - should be BLOCKED"""
         start_time = datetime.now()
         
         try:
@@ -111,24 +111,24 @@ class BackendTester:
                 if response.status == 200:
                     data = await response.json()
                     self.log_result(
-                        "Messages Endpoint (No Auth)", 
-                        True, 
-                        f"Endpoint accessible without auth, returned {len(data)} messages",
+                        "Authentication Security Test", 
+                        False, 
+                        f"❌ SECURITY VULNERABILITY: Endpoint accessible without auth, returned {len(data)} messages",
                         response_time
                     )
                     return data
                 elif response.status in [401, 403]:
                     self.log_result(
-                        "Messages Endpoint (No Auth)", 
+                        "Authentication Security Test", 
                         True, 
-                        f"Endpoint properly requires authentication (Status {response.status})",
+                        f"✅ SECURITY FIX WORKING: Endpoint properly requires authentication (Status {response.status})",
                         response_time
                     )
                     return None
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Messages Endpoint (No Auth)", 
+                        "Authentication Security Test", 
                         False, 
                         f"Unexpected status {response.status}: {error_text}",
                         response_time
@@ -138,7 +138,7 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Messages Endpoint (No Auth)", 
+                "Authentication Security Test", 
                 False, 
                 f"Request failed with exception: {str(e)}",
                 response_time
