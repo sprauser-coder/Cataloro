@@ -4948,7 +4948,7 @@ function SiteAdministrationTab({ showToast }) {
 // ListingsTab component has been extracted to separate file - This was a duplicate DOUBLE component that needed to be removed
 
 // Enhanced Listing Creation/Edit Modal Component with Cat Database Integration
-    try {
+function ListingModal({ listing, onSave, onClose }) {
       setLoading(true);
       console.log('🔄 Fetching listings from backend...');
       
