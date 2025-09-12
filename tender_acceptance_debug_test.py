@@ -488,7 +488,10 @@ class TenderAcceptanceDebugTester:
                         # Log all sold items for debugging
                         print(f"   📦 All Sold Items ({len(sold_items)}):")
                         for i, item in enumerate(sold_items[:5]):  # Show first 5
-                            print(f"   - {i+1}: {item.get('title', 'Unknown')} (ID: {item.get('id', 'Unknown')})")
+                            if isinstance(item, dict):
+                                print(f"   - {i+1}: {item.get('title', 'Unknown')} (ID: {item.get('id', 'Unknown')})")
+                            else:
+                                print(f"   - {i+1}: {str(item)} (type: {type(item)})")
                     
                 else:
                     error_text = await response.text()
