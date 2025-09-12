@@ -4482,6 +4482,9 @@ async def create_listing(request: Request, listing_data: dict, current_user: dic
         for field, sanitized_value in validation_result["sanitized_data"].items():
             listing_data[field] = sanitized_value
         
+        # Auto-populate seller_id from authenticated user
+        listing_data["seller_id"] = current_user["id"]
+        
         # Add metadata
         listing_data["id"] = str(uuid.uuid4())
         listing_data["created_at"] = datetime.utcnow().isoformat()
