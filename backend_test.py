@@ -1365,6 +1365,438 @@ class BackendTester:
                 f"Request failed with exception: {str(e)}",
                 response_time
             )
+
+    async def test_find_specific_item(self, item_title="MazdaRF4S2J17"):
+        """Find the specific item reported by user"""
+        print(f"\n🔍 SEARCHING FOR SPECIFIC ITEM: {item_title}")
+        start_time = datetime.now()
+        
+        try:
+            # Search through all listings to find the specific item
+            async with self.session.get(f"{BACKEND_URL}/marketplace/browse?limit=100") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listings = await response.json()
+                    
+                    # Search for the specific item
+                    target_listing = None
+                    for listing in listings:
+                        if item_title.lower() in listing.get('title', '').lower():
+                            target_listing = listing
+                            break
+                    
+                    if target_listing:
+                        self.log_result(
+                            f"Find Specific Item: {item_title}", 
+                            True, 
+                            f"Found item: ID={target_listing.get('id')}, Price=€{target_listing.get('price')}, Status={target_listing.get('status', 'unknown')}",
+                            response_time
+                        )
+                        
+                        # Log additional details
+                        print(f"   Item Details:")
+                        print(f"   - ID: {target_listing.get('id')}")
+                        print(f"   - Title: {target_listing.get('title')}")
+                        print(f"   - Price: €{target_listing.get('price')}")
+                        print(f"   - Seller ID: {target_listing.get('seller_id')}")
+                        print(f"   - Status: {target_listing.get('status', 'unknown')}")
+                        print(f"   - Has Time Limit: {target_listing.get('has_time_limit', False)}")
+                        if target_listing.get('bid_info'):
+                            print(f"   - Bid Info: {target_listing.get('bid_info')}")
+                        
+                        return target_listing
+                    else:
+                        self.log_result(
+                            f"Find Specific Item: {item_title}", 
+                            False, 
+                            f"Item not found in {len(listings)} listings searched",
+                            response_time
+                        )
+                        return None
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"Find Specific Item: {item_title}", 
+                        False, 
+                        f"Failed to browse listings: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"Find Specific Item: {item_title}", 
+                False, 
+                f"Search failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def test_specific_bid_submission(self, listing_id, token, bid_amount=30.00):
+        """Test bidding on specific item with exact user scenario"""
+        print(f"\n💰 TESTING SPECIFIC BID: €{bid_amount} on listing {listing_id}")
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": bid_amount,
+                "message": f"Test bid of €{bid_amount} - reproducing user reported issue"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    tender_id = data.get("id")
+                    
+                    self.log_result(
+                        f"Specific Bid Submission (€{bid_amount})", 
+                        True, 
+                        f"✅ Successfully submitted bid: ID={tender_id}, Amount=€{bid_amount}",
+                        response_time
+                    )
+                    
+                    # Verify the bid was recorded
+                    await self.verify_bid_recorded(listing_id, tender_id, bid_amount)
+                    
+                    return tender_id
+                elif response.status == 403:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"Specific Bid Submission (€{bid_amount})", 
+                        False, 
+                        f"❌ 403 FORBIDDEN ERROR (User reported issue): {error_text}",
+                        response_time
+                    )
+                    return None
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"Specific Bid Submission (€{bid_amount})", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"Specific Bid Submission (€{bid_amount})", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+
+    async def verify_bid_recorded(self, listing_id, tender_id, expected_amount):
+        """Verify that the bid was properly recorded"""
+        start_time = datetime.now()
+        
+        try:
+            # Check if the bid appears in the listing's tenders
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}/tenders") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    tenders = await response.json()
+                    
+                    # Look for our specific tender
+                    our_tender = None
+                    for tender in tenders:
+                        if tender.get('id') == tender_id:
+                            our_tender = tender
+                            break
+                    
+                    if our_tender:
+                        recorded_amount = our_tender.get('amount')
+                        if abs(recorded_amount - expected_amount) < 0.01:  # Allow for floating point precision
+                            self.log_result(
+                                "Bid Recording Verification", 
+                                True, 
+                                f"✅ Bid properly recorded: Amount=€{recorded_amount}, Status={our_tender.get('status')}",
+                                response_time
+                            )
+                        else:
+                            self.log_result(
+                                "Bid Recording Verification", 
+                                False, 
+                                f"❌ Bid amount mismatch: Expected €{expected_amount}, Got €{recorded_amount}",
+                                response_time
+                            )
+                    else:
+                        self.log_result(
+                            "Bid Recording Verification", 
+                            False, 
+                            f"❌ Bid not found in {len(tenders)} tenders for listing",
+                            response_time
+                        )
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Bid Recording Verification", 
+                        False, 
+                        f"Failed to retrieve tenders: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Bid Recording Verification", 
+                False, 
+                f"Verification failed with exception: {str(e)}",
+                response_time
+            )
+
+    async def test_bid_validation_amounts(self, listing_id, token):
+        """Test different bid amounts to ensure validation works"""
+        print(f"\n🧪 TESTING BID VALIDATION WITH DIFFERENT AMOUNTS")
+        
+        test_amounts = [
+            {"amount": 0.01, "should_pass": True, "description": "Minimum valid bid"},
+            {"amount": 0.00, "should_pass": False, "description": "Zero bid (invalid)"},
+            {"amount": -10.00, "should_pass": False, "description": "Negative bid (invalid)"},
+            {"amount": 50.00, "should_pass": True, "description": "Higher valid bid"},
+            {"amount": 999999.99, "should_pass": True, "description": "Very high bid"}
+        ]
+        
+        successful_validations = 0
+        
+        for test_case in test_amounts:
+            success = await self.test_single_bid_validation(
+                listing_id, 
+                token, 
+                test_case["amount"], 
+                test_case["should_pass"], 
+                test_case["description"]
+            )
+            if success:
+                successful_validations += 1
+        
+        self.log_result(
+            "Bid Validation Summary", 
+            successful_validations == len(test_amounts), 
+            f"Validation working correctly for {successful_validations}/{len(test_amounts)} test cases"
+        )
+
+    async def test_single_bid_validation(self, listing_id, token, amount, should_pass, description):
+        """Test a single bid amount validation"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": amount,
+                "message": f"Validation test: {description}"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if should_pass:
+                    if response.status == 200:
+                        self.log_result(
+                            f"Bid Validation: {description}", 
+                            True, 
+                            f"✅ Valid bid accepted: €{amount}",
+                            response_time
+                        )
+                        return True
+                    else:
+                        error_text = await response.text()
+                        self.log_result(
+                            f"Bid Validation: {description}", 
+                            False, 
+                            f"❌ Valid bid rejected: €{amount}, Status {response.status}: {error_text}",
+                            response_time
+                        )
+                        return False
+                else:
+                    if response.status != 200:
+                        self.log_result(
+                            f"Bid Validation: {description}", 
+                            True, 
+                            f"✅ Invalid bid properly rejected: €{amount}, Status {response.status}",
+                            response_time
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            f"Bid Validation: {description}", 
+                            False, 
+                            f"❌ Invalid bid was accepted: €{amount} (should be rejected)",
+                            response_time
+                        )
+                        return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"Bid Validation: {description}", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
+    async def test_bidding_authentication_fix(self, listing_id):
+        """Test that bidding without authentication is properly blocked"""
+        print(f"\n🔐 TESTING BIDDING AUTHENTICATION FIX")
+        start_time = datetime.now()
+        
+        try:
+            # Try to submit bid without authentication token
+            tender_data = {
+                "listing_id": listing_id,
+                "amount": 25.00,
+                "message": "Unauthorized bid attempt - should be blocked"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status in [401, 403]:
+                    self.log_result(
+                        "Bidding Authentication Fix", 
+                        True, 
+                        f"✅ Unauthorized bidding properly blocked: Status {response.status}",
+                        response_time
+                    )
+                    return True
+                elif response.status == 200:
+                    self.log_result(
+                        "Bidding Authentication Fix", 
+                        False, 
+                        f"❌ SECURITY ISSUE: Unauthorized bid was accepted",
+                        response_time
+                    )
+                    return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Bidding Authentication Fix", 
+                        False, 
+                        f"Unexpected response: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Bidding Authentication Fix", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
+    async def run_specific_bidding_tests(self):
+        """Run the specific bidding fix tests requested by user"""
+        print("🎯 CATALORO MARKETPLACE - SPECIFIC BIDDING FIX TESTING")
+        print("=" * 80)
+        print("Testing specific issue: Item 'MazdaRF4S2J17' with €30.00 bid")
+        print("User reported: 'Failed to submit tender offer' with 403 Forbidden")
+        print("=" * 80)
+        
+        # Step 1: Login and get authentication token
+        print("\n🔐 STEP 1: AUTHENTICATION")
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        
+        if not admin_token:
+            print("❌ CRITICAL: Cannot proceed without authentication token")
+            return
+        
+        # Step 2: Find the specific item
+        print("\n🔍 STEP 2: FIND SPECIFIC ITEM")
+        target_listing = await self.test_find_specific_item("MazdaRF4S2J17")
+        
+        if not target_listing:
+            print("⚠️ WARNING: Specific item 'MazdaRF4S2J17' not found")
+            print("Will test with any available listing...")
+            
+            # Get any available listing for testing
+            async with self.session.get(f"{BACKEND_URL}/marketplace/browse?limit=1") as response:
+                if response.status == 200:
+                    listings = await response.json()
+                    if listings:
+                        target_listing = listings[0]
+                        print(f"Using alternative listing: {target_listing.get('title')} (ID: {target_listing.get('id')})")
+                    else:
+                        print("❌ CRITICAL: No listings available for testing")
+                        return
+                else:
+                    print("❌ CRITICAL: Cannot retrieve listings for testing")
+                    return
+        
+        listing_id = target_listing.get('id')
+        
+        # Step 3: Test bidding authentication (without token)
+        print("\n🚫 STEP 3: TEST AUTHENTICATION REQUIREMENT")
+        await self.test_bidding_authentication_fix(listing_id)
+        
+        # Step 4: Test specific bid amount (€30.00)
+        print("\n💰 STEP 4: TEST SPECIFIC BID AMOUNT")
+        await self.test_specific_bid_submission(listing_id, admin_token, 30.00)
+        
+        # Step 5: Test different bid amounts for validation
+        print("\n🧪 STEP 5: TEST BID VALIDATION")
+        await self.test_bid_validation_amounts(listing_id, admin_token)
+        
+        # Step 6: Check current listing status and bid info
+        print("\n📊 STEP 6: VERIFY LISTING BID INFO")
+        await self.verify_listing_bid_info(listing_id)
+
+    async def verify_listing_bid_info(self, listing_id):
+        """Verify the listing shows correct bid information"""
+        start_time = datetime.now()
+        
+        try:
+            async with self.session.get(f"{BACKEND_URL}/listings/{listing_id}") as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    listing_data = await response.json()
+                    
+                    bid_info = listing_data.get('bid_info', {})
+                    has_bids = bid_info.get('has_bids', False)
+                    highest_bid = bid_info.get('highest_bid', 0)
+                    highest_bidder_id = bid_info.get('highest_bidder_id')
+                    
+                    self.log_result(
+                        "Listing Bid Info Verification", 
+                        True, 
+                        f"Bid info retrieved: has_bids={has_bids}, highest_bid=€{highest_bid}, highest_bidder_id={highest_bidder_id}",
+                        response_time
+                    )
+                    
+                    # Log detailed bid info
+                    print(f"   Complete bid_info: {bid_info}")
+                    
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Listing Bid Info Verification", 
+                        False, 
+                        f"Failed to retrieve listing: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Listing Bid Info Verification", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
     
     async def test_admin_endpoint_blocked(self, endpoint, headers):
         """Test that an admin endpoint is properly blocked for non-admin user"""
