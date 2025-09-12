@@ -1403,6 +1403,147 @@ class BackendTester:
             )
             return False
     
+    def print_comprehensive_summary(self):
+        """Print comprehensive test summary for deployment readiness"""
+        print("=" * 80)
+        print("CATALORO MARKETPLACE BACKEND DEPLOYMENT READINESS SUMMARY")
+        print("=" * 80)
+        
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        
+        print(f"Total Tests: {total_tests}")
+        print(f"Passed: {passed_tests}")
+        print(f"Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests*100):.1f}%" if total_tests > 0 else "No tests run")
+        print()
+        
+        # Categorize test results
+        categories = {
+            "Authentication System": ["Login", "Admin Login", "Demo User Login", "Admin User Properties"],
+            "Admin Panel APIs": ["Admin Endpoint", "Admin Dashboard", "Admin Users", "Admin Menu", "Admin Performance", "Admin Cache"],
+            "Marketplace APIs": ["Marketplace Browse", "Individual Listing", "Create Listing", "Listing Tenders"],
+            "Messaging System": ["Messages", "Send Message", "Mark Read", "Cross-User Authorization", "NULL Content"],
+            "Registration & User Management": ["Username Availability", "Email Availability", "User Registration"],
+            "Time Limit & Bidding": ["Time Limited Listing", "Tender Submission", "Highest Bidder Blocking"],
+            "Security & Access Control": ["Authentication Security", "Admin Blocking", "Non-Admin Access"]
+        }
+        
+        print("DEPLOYMENT READINESS BY CATEGORY:")
+        print("-" * 50)
+        
+        overall_critical_issues = []
+        
+        for category, keywords in categories.items():
+            category_tests = [r for r in self.test_results if any(keyword in r["test"] for keyword in keywords)]
+            
+            if category_tests:
+                category_passed = sum(1 for r in category_tests if r["success"])
+                category_total = len(category_tests)
+                category_rate = (category_passed / category_total * 100) if category_total > 0 else 0
+                
+                status = "✅ READY" if category_rate >= 80 else "⚠️ ISSUES" if category_rate >= 60 else "❌ CRITICAL"
+                
+                print(f"{status} {category}: {category_passed}/{category_total} ({category_rate:.1f}%)")
+                
+                # Identify critical failures
+                failed_in_category = [r for r in category_tests if not r["success"]]
+                if failed_in_category and category_rate < 80:
+                    for failure in failed_in_category:
+                        overall_critical_issues.append(f"{category}: {failure['test']} - {failure['details']}")
+            else:
+                print(f"⚠️ NOT TESTED {category}: No tests found")
+        
+        print()
+        print("CRITICAL DEPLOYMENT BLOCKERS:")
+        print("-" * 50)
+        
+        if overall_critical_issues:
+            for issue in overall_critical_issues:
+                print(f"❌ {issue}")
+        else:
+            print("✅ No critical deployment blockers identified")
+        
+        print()
+        print("PRODUCTION READINESS ASSESSMENT:")
+        print("-" * 50)
+        
+        # Calculate overall readiness
+        if passed_tests >= total_tests * 0.9:  # 90% success rate
+            readiness = "🚀 READY FOR PRODUCTION DEPLOYMENT"
+            recommendation = "All systems operational. Deploy with confidence."
+        elif passed_tests >= total_tests * 0.8:  # 80% success rate
+            readiness = "⚠️ READY WITH MINOR ISSUES"
+            recommendation = "Deploy with monitoring. Address minor issues post-deployment."
+        elif passed_tests >= total_tests * 0.6:  # 60% success rate
+            readiness = "🔧 NEEDS FIXES BEFORE DEPLOYMENT"
+            recommendation = "Address critical issues before deploying to production."
+        else:
+            readiness = "❌ NOT READY FOR DEPLOYMENT"
+            recommendation = "Major issues detected. Extensive fixes required."
+        
+        print(f"Status: {readiness}")
+        print(f"Recommendation: {recommendation}")
+        
+        print()
+        print("KEY FUNCTIONALITY STATUS:")
+        print("-" * 50)
+        
+        # Check specific deployment requirements
+        auth_tests = [r for r in self.test_results if "Login" in r["test"] or "Authentication" in r["test"]]
+        admin_tests = [r for r in self.test_results if "Admin" in r["test"]]
+        marketplace_tests = [r for r in self.test_results if "Marketplace" in r["test"] or "Listing" in r["test"]]
+        messaging_tests = [r for r in self.test_results if "Message" in r["test"]]
+        
+        def get_status(tests):
+            if not tests:
+                return "⚠️ NOT TESTED"
+            passed = sum(1 for t in tests if t["success"])
+            total = len(tests)
+            rate = passed / total
+            return "✅ WORKING" if rate >= 0.8 else "⚠️ ISSUES" if rate >= 0.6 else "❌ FAILING"
+        
+        print(f"Authentication System: {get_status(auth_tests)}")
+        print(f"Admin Panel Access: {get_status(admin_tests)}")
+        print(f"Marketplace Functions: {get_status(marketplace_tests)}")
+        print(f"Messaging System: {get_status(messaging_tests)}")
+        
+        print()
+        print("DEPLOYMENT CHECKLIST:")
+        print("-" * 50)
+        
+        checklist_items = [
+            ("Admin login (admin@cataloro.com / admin123)", any("Admin Login" in r["test"] and r["success"] for r in self.test_results)),
+            ("Demo user login (demo@cataloro.com / demo123)", any("Demo User Login" in r["test"] and r["success"] for r in self.test_results)),
+            ("Admin panel endpoints accessible", any("Admin Endpoint" in r["test"] and r["success"] for r in self.test_results)),
+            ("Marketplace browse functionality", any("Marketplace Browse" in r["test"] and r["success"] for r in self.test_results)),
+            ("Listing creation working", any("Create Listing" in r["test"] and r["success"] for r in self.test_results)),
+            ("Messaging system secure", any("Authentication Security" in r["test"] and r["success"] for r in self.test_results)),
+            ("User registration functional", any("User Registration" in r["test"] and r["success"] for r in self.test_results)),
+            ("Time limit features working", any("Time Limited" in r["test"] and r["success"] for r in self.test_results)),
+            ("Bidding system operational", any("Tender Submission" in r["test"] and r["success"] for r in self.test_results))
+        ]
+        
+        for item, status in checklist_items:
+            check = "✅" if status else "❌"
+            print(f"{check} {item}")
+        
+        print()
+        print("NEXT STEPS:")
+        print("-" * 50)
+        
+        if failed_tests == 0:
+            print("🎉 All tests passed! System is ready for production deployment.")
+            print("📋 Recommended: Monitor system performance post-deployment.")
+        elif failed_tests <= 2:
+            print("🔧 Minor issues detected. Review failed tests and fix if critical.")
+            print("📋 Consider deploying with enhanced monitoring.")
+        else:
+            print("⚠️ Multiple issues detected. Review all failed tests.")
+            print("📋 Fix critical issues before production deployment.")
+            print("📋 Consider additional testing after fixes.")
+
     def print_summary(self):
         """Print test summary"""
         print("=" * 80)
