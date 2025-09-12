@@ -262,7 +262,10 @@ class TenderAcceptanceDebugTester:
             before_status = await self.get_listing_status(listing_id)
             print(f"📊 LISTING STATUS BEFORE ACCEPTANCE: {before_status}")
             
-            async with self.session.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", headers=headers) as response:
+            # Prepare acceptance data with seller_id
+            acceptance_data = {"seller_id": "admin_user_1"}
+            
+            async with self.session.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", headers=headers, json=acceptance_data) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
