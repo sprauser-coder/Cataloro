@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - COMPREHENSIVE BACKEND DEPLOYMENT TESTING
-Critical fixes verification for production deployment to https://app.cataloro.com
+CATALORO MARKETPLACE - SPECIFIC BIDDING FIX TESTING
+Testing the specific bidding issue reported by user for item "MazdaRF4S2J17"
 
 FOCUS AREAS:
-1. CRITICAL FIXES VERIFICATION - POST /api/listings seller_id population, messaging authentication
-2. BIDDING SYSTEM TESTING - End-to-end bidding functionality 
-3. COMPREHENSIVE SYSTEM VERIFICATION - Final deployment readiness check
+1. FIND SPECIFIC ITEM "MazdaRF4S2J17" - Locate and verify item status
+2. TEST BIDDING ON SPECIFIC ITEM - €30.00 bid reproduction
+3. VERIFY BIDDING AUTHENTICATION - JWT token validation working
+4. TEST BID VALIDATION - Different bid amounts
+5. CHECK BACKEND LOGS - No more 403 Forbidden errors
 """
 
 import asyncio
