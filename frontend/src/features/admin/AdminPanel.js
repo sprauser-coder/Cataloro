@@ -4950,7 +4950,7 @@ function SiteAdministrationTab({ showToast }) {
 // Enhanced Listing Creation/Edit Modal Component with Cat Database Integration
 function ListingModal({ listing, onSave, onClose }) {
   const [formData, setFormData] = useState({
-      if (response.ok) {
+    title: listing?.title || '',
         const backendData = await response.json();
         console.log('📊 Backend listings response:', backendData);
         
