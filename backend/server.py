@@ -6192,7 +6192,8 @@ async def approve_buy_request(order_id: str, approval_data: dict):
             )
             raise HTTPException(status_code=410, detail="Order has expired")
         
-        current_time = datetime.utcnow()
+        current_time = datetime.now(pytz.timezone('Europe/Berlin'))
+        current_time_utc = datetime.utcnow()
         
         # Get catalyst data from listing before updating order
         listing = await db.listings.find_one({"id": order["listing_id"]})
