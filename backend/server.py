@@ -7667,7 +7667,8 @@ async def cleanup_system_notifications_from_user_notifications(current_user: dic
 async def get_user_system_notifications(user_id: str):
     """Get active system notifications for a specific user"""
     try:
-        current_time = datetime.utcnow().isoformat()
+        current_time = datetime.now(pytz.timezone('Europe/Berlin'))
+        current_time_utc = datetime.utcnow()
         
         # Get all active notifications
         query = {
