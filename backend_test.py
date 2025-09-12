@@ -4398,55 +4398,15 @@ class BackendTester:
 
 async def main():
     """Main test execution function"""
-    print("🚀 CATALORO MARKETPLACE - TIMEZONE FIX FOR TENDER NOTIFICATIONS TESTING")
-    print("=" * 80)
-    print("Testing timezone consistency between tender and registration notifications")
-    print("Focus: Verify 2-hour difference issue has been resolved")
-    print("Fix Applied: datetime.utcnow() → datetime.now(pytz.timezone('Europe/Berlin'))")
-    print("=" * 80)
-    
     async with BackendTester() as tester:
-        # Test 1: Database connectivity
-        print("\n📊 DATABASE CONNECTIVITY TEST:")
+        # Test database connectivity first
         await tester.test_database_connectivity()
         
-        # Test 2: Timezone fix for tender notifications
-        timezone_fix_success = await tester.test_timezone_fix_for_tender_notifications()
+        # Run tender acceptance workflow test
+        await tester.test_tender_acceptance_workflow()
         
         # Print summary
-        print("\n" + "=" * 80)
-        print("🕐 TIMEZONE FIX FOR TENDER NOTIFICATIONS SUMMARY")
-        print("=" * 80)
-        
-        passed_tests = sum(1 for result in tester.test_results if result['success'])
-        total_tests = len(tester.test_results)
-        success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
-        
-        print(f"📊 Tests Passed: {passed_tests}/{total_tests} ({success_rate:.1f}%)")
-        print(f"🎯 Focus: Timezone consistency for tender notifications")
-        
-        if timezone_fix_success:
-            print("✅ CONCLUSION: Timezone fix for tender notifications is working correctly!")
-            print("✅ Tender notifications now use Europe/Berlin timezone consistently")
-            print("✅ 2-hour difference issue has been resolved")
-        else:
-            print("❌ CONCLUSION: Issues found in timezone fix for tender notifications")
-            print("❌ 2-hour difference issue may still exist")
-        
-        print("\n📋 DETAILED TEST RESULTS:")
-        for result in tester.test_results:
-            status_icon = "✅" if result['success'] else "❌"
-            print(f"{status_icon} {result['test']}: {result['details']}")
-        
-        print("\n🔍 TIMEZONE FIX ANALYSIS:")
-        if timezone_fix_success:
-            print("✅ Tender notifications timestamp matches server time (Europe/Berlin)")
-            print("✅ Notification timing is accurate (within seconds of bid submission)")
-            print("✅ Timezone format is consistent with registration notifications")
-            print("✅ The datetime.utcnow() → datetime.now(pytz.timezone('Europe/Berlin')) fix is working")
-        else:
-            print("❌ Timezone fix verification failed - check detailed results above")
-            print("❌ May need to verify the fix was applied correctly in the backend code")
+        tester.print_summary()
 
 if __name__ == "__main__":
     asyncio.run(main())
