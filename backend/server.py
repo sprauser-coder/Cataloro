@@ -5434,6 +5434,36 @@ async def submit_tender(tender_data: dict, current_user: dict = Depends(get_curr
         
         await db.tenders.insert_one(tender)
         
+        # Update listing with new bid information
+        # Get current tender count and highest bid for this listing
+        all_tenders = await db.tenders.find({
+            "listing_id": listing_id,
+            "status": "active"
+        }).sort("offer_amount", -1).to_list(length=None)
+        
+        total_bids = len(all_tenders)
+        highest_bid = all_tenders[0]["offer_amount"] if all_tenders else 0
+        highest_bidder_id = all_tenders[0]["buyer_id"] if all_tenders else None
+        
+        # Update the listing with new bid info
+        await db.listings.update_one(
+            {"id": listing_id},
+            {
+                "$set": {
+                    "bid_info": {
+                        "has_bids": total_bids > 0,
+                        "total_bids": total_bids,
+                        "highest_bid": float(highest_bid),
+                        "highest_bidder_id": highest_bidder_id
+                    },
+                    "updated_at": current_time.isoformat()
+                }
+            }
+        )
+        
+        # Invalidate cache since listing bid info has changed
+        await cache_service.invalidate_listings_cache()
+        
         # Create notification for seller
         notification = {
             "user_id": seller_id,
