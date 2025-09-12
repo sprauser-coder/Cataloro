@@ -542,7 +542,8 @@ function ModernBrowsePage() {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/submit`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({
           listing_id: item.id,
