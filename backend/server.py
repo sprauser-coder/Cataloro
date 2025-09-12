@@ -4553,6 +4553,7 @@ async def create_listing(request: Request, listing_data: dict, current_user: dic
             "message": "Listing created successfully",
             "id": listing_data["id"],  # For compatibility with tests
             "listing_id": listing_data["id"],
+            "seller_id": listing_data["seller_id"],  # Include seller_id in response for verification
             "status": "active",
             "has_time_limit": listing_data.get("has_time_limit", False),
             "time_limit_hours": listing_data.get("time_limit_hours"),
