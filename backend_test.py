@@ -3104,38 +3104,23 @@ class BackendTester:
             self.log_result("Bidding Flow - Admin Login", False, "Failed to login as admin user")
             return False
         
-        # Step 2: Try to login as demo user, if suspended create a new test user
-        print("\n👤 STEP 2: Login as Buyer (demo@cataloro.com or create new user)")
-        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        # Step 2: Create and approve a test user for bidding
+        print("\n👤 STEP 2: Create and Approve Test Buyer User")
+        buyer_token, buyer_user_id, buyer_user = await self.create_and_approve_test_user(admin_token)
         
-        if not demo_token:
-            print("   Demo user suspended, creating new test user...")
-            demo_token, demo_user_id = await self.create_test_user_for_bidding()
-            if demo_token:
-                # Get user details
-                demo_user = {"full_name": "Test Buyer", "id": demo_user_id}
-                self.log_result("Bidding Flow - Create Test User", True, f"Created new test user: {demo_user_id}")
-            else:
-                self.log_result("Bidding Flow - Demo Login", False, "Failed to login as demo user and failed to create test user")
-                return False
+        if not buyer_token:
+            self.log_result("Bidding Flow - Create Buyer", False, "Failed to create and approve test buyer user")
+            return False
         
-        # Step 3: Find a listing where admin is the seller (not MazdaRF4S2J17)
-        print("\n🔍 STEP 3: Find Admin's Listing (excluding MazdaRF4S2J17)")
-        admin_listing = await self.find_admin_listing(admin_user_id)
+        # Step 3: Create a test listing for bidding
+        print("\n🔍 STEP 3: Create Test Listing for Bidding")
+        listing_id = await self.create_test_listing_for_bidding(admin_token)
         
-        if not admin_listing:
-            # If no admin listing found, create one for testing
-            print("   No admin listing found, creating test listing...")
-            listing_id = await self.create_test_listing_for_bidding(admin_token)
-            if listing_id:
-                admin_listing = {"id": listing_id, "title": "Test Listing for Bidding", "seller_id": admin_user_id}
-                self.log_result("Bidding Flow - Create Test Listing", True, f"Created test listing: {listing_id}")
-            else:
-                self.log_result("Bidding Flow - Find Admin Listing", False, "No suitable admin listing found and failed to create test listing")
-                return False
+        if not listing_id:
+            self.log_result("Bidding Flow - Create Test Listing", False, "Failed to create test listing")
+            return False
         
-        listing_id = admin_listing.get('id')
-        listing_title = admin_listing.get('title', 'Unknown')
+        listing_title = "Test Listing for Bidding and Notification Flow"
         
         # Step 4: Get initial listing state
         print(f"\n📊 STEP 4: Get Initial Listing State for {listing_title}")
@@ -3145,10 +3130,10 @@ class BackendTester:
             self.log_result("Bidding Flow - Initial State", False, "Failed to get initial listing state")
             return False
         
-        # Step 5: Place bid from demo user
-        print(f"\n💰 STEP 5: Place Bid from Demo User on {listing_title}")
+        # Step 5: Place bid from buyer user
+        print(f"\n💰 STEP 5: Place Bid from Buyer User on {listing_title}")
         bid_amount = 150.00  # Use a reasonable bid amount
-        tender_id = await self.place_bid_on_listing(listing_id, demo_token, demo_user_id, bid_amount)
+        tender_id = await self.place_bid_on_listing(listing_id, buyer_token, buyer_user_id, bid_amount)
         
         if not tender_id:
             self.log_result("Bidding Flow - Place Bid", False, "Failed to place bid on admin's listing")
@@ -3156,7 +3141,7 @@ class BackendTester:
         
         # Step 6: Verify listing updates with new bid_info
         print(f"\n✅ STEP 6: Verify Listing Updates with New Bid Info")
-        updated_state = await self.verify_listing_bid_updates(listing_id, demo_user_id, bid_amount, initial_state)
+        updated_state = await self.verify_listing_bid_updates(listing_id, buyer_user_id, bid_amount, initial_state)
         
         if not updated_state:
             self.log_result("Bidding Flow - Listing Updates", False, "Listing bid_info not updated correctly")
@@ -3164,7 +3149,7 @@ class BackendTester:
         
         # Step 7: Verify seller gets notification
         print(f"\n🔔 STEP 7: Verify Seller (Admin) Gets Notification")
-        notification_found = await self.verify_seller_notification(admin_user_id, listing_id, demo_user.get('full_name', 'Demo User'))
+        notification_found = await self.verify_seller_notification(admin_user_id, listing_id, buyer_user.get('full_name', 'Test Buyer'))
         
         if not notification_found:
             self.log_result("Bidding Flow - Seller Notification", False, "Seller did not receive notification about tender offer")
@@ -3178,6 +3163,85 @@ class BackendTester:
         )
         
         return True
+
+    async def create_and_approve_test_user(self, admin_token):
+        """Create a test user and approve them using admin privileges"""
+        start_time = datetime.now()
+        
+        try:
+            # Step 1: Create test user
+            timestamp = int(datetime.now().timestamp())
+            registration_data = {
+                "username": f"testbuyer_{timestamp}",
+                "email": f"testbuyer_{timestamp}@example.com",
+                "full_name": "Test Buyer User",
+                "first_name": "Test",
+                "last_name": "Buyer",
+                "account_type": "buyer"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/auth/register", json=registration_data) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    user_id = data.get("user_id")
+                    
+                    # Step 2: Approve the user using admin privileges
+                    admin_headers = {"Authorization": f"Bearer {admin_token}"}
+                    async with self.session.put(f"{BACKEND_URL}/admin/users/{user_id}/approve", headers=admin_headers) as approve_response:
+                        if approve_response.status == 200:
+                            # Step 3: Login as the approved user
+                            login_token, login_user_id, login_user = await self.test_login_and_get_token(
+                                registration_data["email"], "demo123"
+                            )
+                            
+                            if login_token:
+                                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                                self.log_result(
+                                    "Create and Approve Test User", 
+                                    True, 
+                                    f"Successfully created, approved, and logged in test user {user_id}",
+                                    response_time
+                                )
+                                return login_token, login_user_id, login_user
+                            else:
+                                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                                self.log_result(
+                                    "Create and Approve Test User", 
+                                    False, 
+                                    f"Created and approved user but login failed",
+                                    response_time
+                                )
+                                return None, None, None
+                        else:
+                            error_text = await approve_response.text()
+                            response_time = (datetime.now() - start_time).total_seconds() * 1000
+                            self.log_result(
+                                "Create and Approve Test User", 
+                                False, 
+                                f"Failed to approve user: Status {approve_response.status}: {error_text}",
+                                response_time
+                            )
+                            return None, None, None
+                else:
+                    error_text = await response.text()
+                    response_time = (datetime.now() - start_time).total_seconds() * 1000
+                    self.log_result(
+                        "Create and Approve Test User", 
+                        False, 
+                        f"Failed to create user: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None, None, None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Create and Approve Test User", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None, None, None
 
     async def create_test_listing_for_bidding(self, token):
         """Create a test listing for bidding tests"""
