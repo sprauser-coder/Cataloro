@@ -4897,8 +4897,7 @@ class BackendTester:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
-                    data = await response.json()
-                    bought_items = data.get("items", [])
+                    bought_items = await response.json()  # This is a list, not a dict with "items" key
                     
                     # Look for our listing in bought items
                     found_item = None
