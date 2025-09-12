@@ -459,9 +459,16 @@ class TenderAcceptanceDebugTester:
                     # Check if our accepted tender appears in sold items
                     found_item = None
                     for item in sold_items:
-                        if item.get('listing_id') == expected_listing_id or item.get('id') == expected_listing_id:
-                            found_item = item
-                            break
+                        # Handle both dict and string items
+                        if isinstance(item, dict):
+                            if item.get('listing_id') == expected_listing_id or item.get('id') == expected_listing_id:
+                                found_item = item
+                                break
+                        elif isinstance(item, str):
+                            # If item is a string, it might be a listing ID
+                            if item == expected_listing_id:
+                                found_item = {"id": item, "title": "Found by ID", "price": "Unknown"}
+                                break
                     
                     if found_item:
                         self.log_result(
