@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://dynamic-marketplace.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-refactor-1.preview.emergentagent.com/api"
 
 # Admin credentials for testing
 ADMIN_EMAIL = "admin@cataloro.com"
@@ -317,7 +317,7 @@ class AdminAuthMenuTester:
                 "name": "Bearer Token with CORS",
                 "headers": {
                     "Authorization": f"Bearer {self.admin_token}",
-                    "Origin": "https://dynamic-marketplace.preview.emergentagent.com",
+                    "Origin": "https://market-refactor-1.preview.emergentagent.com",
                     "Content-Type": "application/json"
                 }
             },

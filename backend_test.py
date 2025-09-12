@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://dynamic-marketplace.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-refactor-1.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):

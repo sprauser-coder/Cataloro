@@ -16,7 +16,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://dynamic-marketplace.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-refactor-1.preview.emergentagent.com/api"
 
 # User IDs from review request
 ADMIN_USER_ID = "admin_user_1"  # Admin user ID

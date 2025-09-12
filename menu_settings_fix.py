@@ -9,7 +9,7 @@ import asyncio
 import aiohttp
 import json
 
-BACKEND_URL = "https://dynamic-marketplace.preview.emergentagent.com/api"
+BACKEND_URL = "https://market-refactor-1.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@cataloro.com"
 ADMIN_PASSWORD = "admin_password"
 

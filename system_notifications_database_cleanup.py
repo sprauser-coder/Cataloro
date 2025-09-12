@@ -21,7 +21,7 @@ from datetime import datetime
 import sys
 
 # Configuration
-BASE_URL = "https://dynamic-marketplace.preview.emergentagent.com/api"
+BASE_URL = "https://market-refactor-1.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@cataloro.com"
 ADMIN_PASSWORD = "admin123"
 

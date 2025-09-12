@@ -10,7 +10,7 @@ import json
 import time
 
 class DemoDataInvestigator:
-    def __init__(self, base_url="https://dynamic-marketplace.preview.emergentagent.com"):
+    def __init__(self, base_url="https://market-refactor-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
 
