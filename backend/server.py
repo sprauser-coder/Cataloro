@@ -5161,6 +5161,10 @@ async def get_user_messages(user_id: str, current_user: dict = Depends(get_curre
 async def send_message(user_id: str, message_data: dict, current_user: dict = Depends(get_current_user)):
     """Send a message"""
     try:
+        # Authorization check: users can only send messages as themselves
+        if current_user["id"] != user_id:
+            raise HTTPException(status_code=403, detail="Access denied: You can only send messages as yourself")
+        
         message = {
             "sender_id": user_id,
             "recipient_id": message_data.get("recipient_id"),
