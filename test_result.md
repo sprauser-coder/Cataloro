@@ -12548,7 +12548,6 @@ test_plan:
     - "Bulk User Management Operations"
     - "Image Upload Functionality for Ad's Manager"
     - "Backend Notification Timezone Fix for German Time"
-    - "Admin User Authentication and Database Consistency"
   stuck_tasks:
     - "Username Availability Check"
   test_all: false
