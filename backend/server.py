@@ -5181,7 +5181,7 @@ async def send_message(user_id: str, message_data: dict, current_user: dict = De
         raise HTTPException(status_code=500, detail=f"Failed to send message: {str(e)}")
 
 @app.put("/api/user/{user_id}/messages/{message_id}/read")
-async def mark_message_read(user_id: str, message_id: str):
+async def mark_message_read(user_id: str, message_id: str, current_user: dict = Depends(get_current_user)):
     """Mark message as read"""
     try:
         result = await db.user_messages.update_one(
