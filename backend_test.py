@@ -737,59 +737,57 @@ class BackendTester:
             return {'count': 0, 'success': False, 'error': str(e)}
     
     async def test_fixed_my_listings_count(self, admin_user_id, admin_token):
-        """Test the fixed my-listings endpoint - should now default to status='active' and show all active listings"""
+        """Test the fixed my-listings endpoint - should now default to status='all' with limit=1000"""
         headers = {"Authorization": f"Bearer {admin_token}"}
         results = {}
         
-        # Test the default behavior (should now be status="active")
-        print("      Testing default behavior (should now be status='active'):")
-        default_result = await self.test_my_listings_with_status(headers, "default", None)
+        # Test the default behavior (should now be status="all" with limit=1000)
+        print("      Testing default behavior (should now be status='all' with limit=1000):")
+        default_result = await self.test_my_listings_with_status(headers, "default", None, limit=1000)
         results['default'] = default_result
         
-        # Test explicit status="active" (should match default)
-        print("      Testing explicit status='active':")
-        active_result = await self.test_my_listings_with_status(headers, "active", "active")
+        # Test explicit status="all" with limit=1000 (should match default)
+        print("      Testing explicit status='all' with limit=1000:")
+        all_result = await self.test_my_listings_with_status(headers, "all", "all", limit=1000)
+        results['all'] = all_result
+        
+        # Test explicit status="active" with limit=1000 for comparison
+        print("      Testing explicit status='active' with limit=1000:")
+        active_result = await self.test_my_listings_with_status(headers, "active", "active", limit=1000)
         results['active'] = active_result
         
-        # Verify that default now behaves like active (the fix)
-        if default_result['success'] and active_result['success']:
-            default_count = default_result['count']
-            active_count = active_result['count']
+        # Verify that default now behaves like status="all" (the fix)
+        if default_result['success'] and all_result['success']:
+            default_count = default_result.get('total_count', default_result['count'])
+            all_count = all_result.get('total_count', all_result['count'])
             
-            if default_count == active_count:
+            if default_count == all_count:
                 self.log_result(
                     "My-Listings Default Status Fix", 
                     True, 
-                    f"✅ DEFAULT STATUS FIX WORKING: Default ({default_count}) matches active ({active_count}) - default now uses status='active'",
+                    f"✅ DEFAULT STATUS FIX WORKING: Default ({default_count}) matches status='all' ({all_count}) - default now uses status='all'",
                 )
             else:
                 self.log_result(
                     "My-Listings Default Status Fix", 
                     False, 
-                    f"❌ DEFAULT STATUS FIX FAILED: Default ({default_count}) != active ({active_count}) - default should now use status='active'",
+                    f"❌ DEFAULT STATUS FIX FAILED: Default ({default_count}) != status='all' ({all_count}) - default should now use status='all'",
                 )
         
-        # Check if the count matches expected 68 active listings
-        expected_active_count = 68
+        # Check if the limit was increased (should show more than previous 50 limit)
         if default_result['success']:
-            default_count = default_result['count']
-            if default_count == expected_active_count:
-                self.log_result(
-                    "My-Listings Active Count Fix", 
-                    True, 
-                    f"✅ ACTIVE COUNT FIX WORKING: Returns {default_count} active listings (matches expected {expected_active_count})",
-                )
-            elif default_count > 50:  # Previous limit was 50
+            default_count = default_result.get('total_count', default_result['count'])
+            if default_count > 50:  # Previous limit was 50
                 self.log_result(
                     "My-Listings Limit Increase Fix", 
                     True, 
-                    f"✅ LIMIT INCREASE FIX WORKING: Returns {default_count} listings (> previous limit of 50, expected {expected_active_count})",
+                    f"✅ LIMIT INCREASE FIX WORKING: Returns {default_count} listings (> previous limit of 50)",
                 )
             else:
                 self.log_result(
-                    "My-Listings Active Count Fix", 
+                    "My-Listings Limit Increase Fix", 
                     False, 
-                    f"❌ ACTIVE COUNT FIX INCOMPLETE: Returns {default_count} listings (expected {expected_active_count}, difference: {abs(default_count - expected_active_count)})",
+                    f"❌ LIMIT INCREASE FIX INCOMPLETE: Returns {default_count} listings (should be > 50)",
                 )
         
         return results
