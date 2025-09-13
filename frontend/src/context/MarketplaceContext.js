@@ -466,7 +466,15 @@ export function MarketplaceProvider({ children }) {
         reviewCount: 89,
         tags: ['Vintage', 'Authenticated', 'Collector Item'],
         inStock: true,
-        quantity: 1
+        quantity: 1,
+        // Add time_info for hot deals filtering - EXPIRING SOON (36 hours left)
+        time_info: {
+          has_time_limit: true,
+          is_expired: false,
+          time_remaining_seconds: 129600, // 36 hours
+          time_limit_hours: 48,
+          expires_at: new Date(Date.now() + 36 * 60 * 60 * 1000).toISOString()
+        }
       },
       {
         id: '3',
