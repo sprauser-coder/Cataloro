@@ -588,62 +588,46 @@ class BackendTester:
             )
             return False
     
-    async def test_completed_transactions_functionality(self):
-        """Test the completed transactions functionality"""
-        print("\n🔄 COMPLETED TRANSACTIONS FUNCTIONALITY TESTING:")
-        print("   Testing transaction completion, retrieval, undo, and admin overview")
-        print("   Testing dual party completion workflow")
+    async def test_tender_acceptance_workflow(self):
+        """Test the complete tender acceptance workflow"""
+        print("\n🔄 TENDER ACCEPTANCE WORKFLOW TESTING:")
+        print("   Testing new tender acceptance workflow backend endpoints")
+        print("   Testing accepted tenders, listing reactivation, bought items, and complete workflow")
         
         # Step 1: Setup - Login as admin and demo user
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         if not admin_token:
-            self.log_result("Completed Transactions Test Setup", False, "Failed to login as admin")
+            self.log_result("Tender Acceptance Workflow Setup", False, "Failed to login as admin")
             return False
         
         demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
         if not demo_token:
-            self.log_result("Completed Transactions Test Setup", False, "Failed to login as demo user")
+            self.log_result("Tender Acceptance Workflow Setup", False, "Failed to login as demo user")
             return False
         
         print(f"   Testing with admin user ID: {admin_user_id}")
         print(f"   Testing with demo user ID: {demo_user_id}")
         
-        # Step 2: Find an accepted tender for testing
-        print("\n   🔍 Finding Accepted Tender for Testing:")
-        test_tender = await self.find_accepted_tender_for_testing(admin_token)
-        if not test_tender:
-            self.log_result("Completed Transactions Test Setup", False, "No accepted tender found for testing")
-            return False
+        # Step 2: Test Accepted Tenders Endpoint
+        print("\n   📋 Test Accepted Tenders Endpoint:")
+        accepted_tenders_result = await self.test_accepted_tenders_endpoint(admin_user_id, admin_token)
         
-        # Step 3: Test Transaction Completion Endpoint
-        print("\n   ✅ Test Transaction Completion Endpoint:")
-        completion_result = await self.test_complete_transaction_endpoint(
-            admin_token, test_tender, "Meeting completed successfully", "meeting"
-        )
+        # Step 3: Test Bought Item Creation Verification
+        print("\n   🛒 Test Bought Item Creation:")
+        bought_items_result = await self.test_bought_items_creation(admin_user_id, admin_token)
         
-        # Step 4: Test Get Completed Transactions
-        print("\n   📋 Test Get Completed Transactions:")
-        get_transactions_result = await self.test_get_completed_transactions(admin_user_id)
+        # Step 4: Test Complete Transaction Workflow
+        print("\n   ✅ Test Complete Transaction Workflow:")
+        complete_transaction_result = await self.test_complete_transaction_workflow(admin_token, admin_user_id)
         
-        # Step 5: Test Dual Party Completion
-        print("\n   👥 Test Dual Party Completion:")
-        dual_completion_result = await self.test_dual_party_completion(
-            demo_token, test_tender, completion_result
-        )
+        # Step 5: Test Listing Reactivation Endpoint
+        print("\n   🔄 Test Listing Reactivation Endpoint:")
+        reactivation_result = await self.test_listing_reactivation_endpoint(admin_token, admin_user_id)
         
-        # Step 6: Test Admin Overview
-        print("\n   👨‍💼 Test Admin Overview:")
-        admin_overview_result = await self.test_admin_completed_transactions_overview(admin_token)
-        
-        # Step 7: Test Undo Completion
-        print("\n   ↩️ Test Undo Completion:")
-        undo_result = await self.test_undo_completion(admin_token, completion_result)
-        
-        # Step 8: Final Analysis
+        # Step 6: Final Analysis
         print("\n   📈 Final Analysis:")
-        await self.analyze_completed_transactions_functionality(
-            completion_result, get_transactions_result, dual_completion_result, 
-            admin_overview_result, undo_result
+        await self.analyze_tender_acceptance_workflow(
+            accepted_tenders_result, bought_items_result, complete_transaction_result, reactivation_result
         )
         
         return True
