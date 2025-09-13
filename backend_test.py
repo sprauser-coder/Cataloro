@@ -9125,11 +9125,11 @@ class BackendTester:
 
 async def main():
     """Main test execution function"""
-    print("🚀 CATALORO MARKETPLACE - LISTING COUNT CONSISTENCY FIXES TESTING")
+    print("🚀 CATALORO MARKETPLACE - FRONTEND COMPATIBILITY FIX TESTING")
     print("=" * 80)
-    print("Testing the fixes applied to resolve listing count discrepancy between Tenders and My-Listings")
-    print("Focus: Verifying that both endpoints now return consistent active listing counts")
-    print("Expected: Both endpoints should now show the same number of active listings (68)")
+    print("Testing the frontend compatibility fix by verifying the API response format")
+    print("Focus: Resolving 'allListings.filter is not a function' error")
+    print("Expected: API should return {listings: [...], total: X, page: Y, ...} format")
     print("=" * 80)
     
     async with BackendTester() as tester:
@@ -9139,9 +9139,9 @@ async def main():
             print("\n❌ Database connectivity failed - aborting tests")
             return
         
-        # Run my-listings endpoint consistency testing
-        print("\n🎯 STARTING MY-LISTINGS ENDPOINT CONSISTENCY TESTING...")
-        success = await tester.test_my_listings_endpoint_consistency_fixes()
+        # Run frontend compatibility fix testing
+        print("\n🎯 STARTING FRONTEND COMPATIBILITY FIX TESTING...")
+        success = await tester.test_frontend_compatibility_fix()
         
         # Print summary
         print("\n" + "=" * 80)
