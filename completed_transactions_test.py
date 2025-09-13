@@ -284,8 +284,10 @@ class CompletedTransactionsTester:
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
+            # Handle both direct listing_id and nested listing structure
+            listing_id = tender.get('listing_id') or tender.get('listing', {}).get('id')
             completion_data = {
-                "listing_id": tender.get('listing_id'),
+                "listing_id": listing_id,
                 "notes": notes,
                 "method": method
             }
