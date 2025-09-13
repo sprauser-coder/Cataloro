@@ -776,88 +776,144 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
     
-    async def analyze_complete_order_results(self, accepted_result, workflow_result, consistency_result, auth_result):
-        """Analyze the effectiveness of the complete order functionality testing"""
-        print("      Final analysis of complete order functionality testing:")
+    async def analyze_completion_workflow_results(self, results):
+        """Analyze the effectiveness of the completion workflow testing"""
+        print("      Final analysis of independent completion workflow testing:")
         
         working_features = []
         failing_features = []
         
-        # Check seller accepted tenders filtering
-        if accepted_result.get('success') and accepted_result.get('completed_tenders_found', 0) == 0:
-            working_features.append(f"✅ Seller accepted tenders filtering working ({accepted_result.get('accepted_count', 0)} pending tenders)")
+        # Check test data discovery
+        if results.get('test_data', {}).get('success'):
+            working_features.append("✅ Test data discovery successful")
         else:
-            failing_features.append("❌ Seller accepted tenders filtering issues")
+            failing_features.append("❌ Test data discovery failed")
         
-        # Check complete order workflow
-        if workflow_result.get('success'):
-            working_features.append("✅ Complete transaction workflow working")
+        # Check seller completion logic
+        if results.get('seller_first_workflow', {}).get('success'):
+            working_features.append("✅ Seller completion logic working")
         else:
-            failing_features.append("❌ Complete transaction workflow issues")
+            failing_features.append("❌ Seller completion logic issues")
         
-        # Check data consistency
-        if consistency_result.get('success'):
-            working_features.append("✅ Data consistency verification passed")
+        # Check buyer completion logic
+        if results.get('buyer_second_workflow', {}).get('success'):
+            working_features.append("✅ Buyer completion logic working")
         else:
-            failing_features.append("❌ Data consistency issues found")
+            failing_features.append("❌ Buyer completion logic issues")
+        
+        # Check transaction states
+        if results.get('transaction_states', {}).get('success'):
+            working_features.append("✅ Transaction states verification passed")
+        else:
+            failing_features.append("❌ Transaction states issues")
+        
+        # Check API response structure
+        if results.get('api_structure', {}).get('success'):
+            working_features.append("✅ API response structure correct")
+        else:
+            failing_features.append("❌ API response structure issues")
         
         # Check authentication
-        if auth_result.get('success'):
+        if results.get('authentication', {}).get('success'):
             working_features.append("✅ Authentication requirements working")
         else:
-            failing_features.append("❌ Authentication issues found")
+            failing_features.append("❌ Authentication issues")
         
         # Final assessment
         if not failing_features:
             self.log_result(
-                "Complete Order Functionality Analysis", 
+                "Independent Completion Workflow Analysis", 
                 True, 
-                f"✅ ALL COMPLETE ORDER FEATURES WORKING: {'; '.join(working_features)}"
+                f"✅ ALL COMPLETION WORKFLOW FEATURES WORKING: {'; '.join(working_features)}"
             )
         else:
             self.log_result(
-                "Complete Order Functionality Analysis", 
+                "Independent Completion Workflow Analysis", 
                 False, 
-                f"❌ COMPLETE ORDER ISSUES FOUND: {len(working_features)} working, {len(failing_features)} failing. Issues: {'; '.join(failing_features)}"
+                f"❌ COMPLETION WORKFLOW ISSUES FOUND: {len(working_features)} working, {len(failing_features)} failing. Issues: {'; '.join(failing_features)}"
             )
         
         return len(failing_features) == 0
-    
-    async def test_complete_order_functionality(self):
-        """Test the complete order functionality"""
-        print("\n🔄 COMPLETE ORDER FUNCTIONALITY TESTING:")
-        print("   Testing updated Complete Order functionality to verify both fixes are working")
-        print("   Testing seller accepted tenders filtering and complete transaction workflow")
+
+    async def test_independent_completion_workflow(self):
+        """Test the independent completion workflow functionality"""
+        print("\n🔄 INDEPENDENT COMPLETION WORKFLOW TESTING:")
+        print("   Testing fixed completion workflow to ensure buyer and seller completions work independently")
+        print("   Testing separate completion logic, filtering, workflow independence, and transaction states")
         
-        # Step 1: Setup - Login as admin user
+        results = {}
+        
+        # Step 1: Setup - Login as admin user (seller) and demo user (buyer)
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         if not admin_token:
-            self.log_result("Complete Order Functionality Setup", False, "Failed to login as admin")
+            self.log_result("Completion Workflow Setup", False, "Failed to login as admin (seller)")
             return False
         
-        print(f"   Testing with admin user ID: {admin_user_id}")
+        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        if not demo_token:
+            self.log_result("Completion Workflow Setup", False, "Failed to login as demo user (buyer)")
+            return False
+        
+        print(f"   Testing with admin (seller) ID: {admin_user_id}")
+        print(f"   Testing with demo (buyer) ID: {demo_user_id}")
         
         # Step 2: Test Authentication Requirements
         print("\n   🔐 Test Authentication Requirements:")
-        auth_result = await self.test_authentication_requirements(admin_user_id)
+        auth_result = await self.test_authentication_requirements()
+        results['authentication'] = auth_result
         
-        # Step 3: Test Seller Accepted Tenders Filtering
-        print("\n   📋 Test Seller Accepted Tenders Filtering:")
-        accepted_tenders_result = await self.test_seller_accepted_tenders_endpoint(admin_user_id, admin_token)
+        # Step 3: Get Test Data
+        print("\n   📋 Get Test Tender Data:")
+        test_data = await self.get_test_tender_data(admin_token)
+        results['test_data'] = test_data
         
-        # Step 4: Test Complete Transaction Workflow
-        print("\n   🔄 Test Complete Transaction Workflow:")
-        workflow_result = await self.test_complete_order_workflow(admin_user_id, admin_token)
+        if not test_data.get('success'):
+            self.log_result("Completion Workflow Testing", False, "Cannot proceed without test data")
+            return False
         
-        # Step 5: Test Data Consistency
-        print("\n   🔍 Test Data Consistency:")
-        consistency_result = await self.test_data_consistency(workflow_result, admin_user_id, admin_token)
-        
-        # Step 6: Final Analysis
-        print("\n   📈 Final Analysis:")
-        await self.analyze_complete_order_results(
-            accepted_tenders_result, workflow_result, consistency_result, auth_result
+        # Step 4: Test Workflow Independence - Seller First
+        print("\n   🔄 Test Workflow Independence (Seller First):")
+        seller_first_result = await self.test_workflow_independence_seller_first(
+            test_data, admin_token, demo_token
         )
+        results['seller_first_workflow'] = seller_first_result
+        
+        if not seller_first_result.get('success'):
+            self.log_result("Completion Workflow Testing", False, "Seller-first workflow failed")
+            return False
+        
+        # Step 5: Test Workflow Independence - Buyer Second
+        print("\n   🔄 Test Workflow Independence (Buyer Second):")
+        buyer_second_result = await self.test_workflow_independence_buyer_second(
+            test_data, admin_token, demo_token
+        )
+        results['buyer_second_workflow'] = buyer_second_result
+        
+        # Step 6: Test Transaction States
+        print("\n   🔍 Test Transaction States:")
+        states_result = await self.test_transaction_states_verification(
+            test_data, 
+            seller_first_result.get('seller_completion', {}),
+            buyer_second_result.get('buyer_completion', {})
+        )
+        results['transaction_states'] = states_result
+        
+        # Step 7: Test API Response Structure
+        print("\n   📊 Test API Response Structure:")
+        # Get final completed transactions for both users
+        seller_completed = await self.test_completed_transactions_filtering(
+            admin_user_id, admin_token, 'seller', test_data.get('listing_id')
+        )
+        buyer_completed = await self.test_completed_transactions_filtering(
+            demo_user_id, demo_token, 'buyer', test_data.get('listing_id')
+        )
+        
+        structure_result = await self.test_api_response_structure(seller_completed, buyer_completed)
+        results['api_structure'] = structure_result
+        
+        # Step 8: Final Analysis
+        print("\n   📈 Final Analysis:")
+        await self.analyze_completion_workflow_results(results)
         
         return True
     
