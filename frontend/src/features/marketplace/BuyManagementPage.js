@@ -720,7 +720,7 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
 }
 
 // Bought Items Tab Component
-function BoughtItemsTab({ items, baskets, searchTerm, setSearchTerm, assignmentFilter, setAssignmentFilter, onAssignToBasket, onUnassignFromBasket, onCreateBasket, onMarkComplete, loading }) {
+function BoughtItemsTab({ items, baskets, searchTerm, setSearchTerm, assignmentFilter, setAssignmentFilter, onAssignToBasket, onUnassignFromBasket, onCreateBasket, onMarkComplete, isItemCompleted, loading }) {
   return (
     <div className="space-y-6">
       {/* Search and Filters */}
