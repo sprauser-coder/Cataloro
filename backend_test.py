@@ -5521,7 +5521,7 @@ class BackendTester:
                 
                 if response.status == 200:
                     data = await response.json()
-                    tender_id = data.get("id")
+                    tender_id = data.get("tender_id")  # Backend returns "tender_id", not "id"
                     
                     self.log_result(
                         "Place Test Bid", 
