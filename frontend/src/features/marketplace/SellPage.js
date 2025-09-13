@@ -162,13 +162,13 @@ function SellPage() {
 
         {/* Tab Content */}
         <div className="p-6">
-          {activeTab === 'tenders' && (
+          <div style={{ display: activeTab === 'tenders' ? 'block' : 'none' }}>
             <TenderManagementPage showSellTabOnly={true} />
-          )}
+          </div>
           
-          {activeTab === 'listings' && (
+          <div style={{ display: activeTab === 'listings' ? 'block' : 'none' }}>
             <MyListingsPage />
-          )}
+          </div>
           
           {activeTab === 'completed' && (
             <CompletedSalesTab 
