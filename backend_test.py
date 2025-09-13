@@ -6825,13 +6825,15 @@ class BackendTester:
             return False
 
 async def main():
-    """Main test execution function for FAVORITES AND VIEWS COUNTER FIXES"""
+    """Main test execution function for MESSAGE READ FUNCTIONALITY"""
     async with BackendTester() as tester:
-        print("🚀 CATALORO MARKETPLACE - FAVORITES AND VIEWS COUNTER FIXES TESTING")
+        print("🚀 CATALORO MARKETPLACE - MESSAGE READ FUNCTIONALITY TESTING")
         print("=" * 80)
-        print("Testing the critical fixes for favorites and views counter bugs:")
-        print("1. **Favorites Fix**: Field consistency (listing_id), no E11000 errors, all favorites returned")
-        print("2. **Views Counter Fix**: increment_view parameter, no artificial inflation")
+        print("Testing the message read functionality and badge updating:")
+        print("1. **Setup Message Scenario**: Admin sends message to demo user")
+        print("2. **Message Read Workflow**: Test mark read endpoint and verification")
+        print("3. **Unread Count Logic**: Test badge/count updating")
+        print("4. **Debug Issues**: Authorization, ID format, timing issues")
         print("=" * 80)
         print()
         
@@ -6841,15 +6843,12 @@ async def main():
             print("❌ Database connectivity failed - aborting tests")
             return
         
-        # Test favorites fix
-        favorites_success = await tester.test_favorites_fix()
-        
-        # Test views counter fix
-        views_success = await tester.test_views_counter_fix()
+        # Test message read functionality
+        message_read_success = await tester.test_message_read_functionality()
         
         # Summary
         print("\n" + "=" * 80)
-        print("🏁 FAVORITES AND VIEWS COUNTER FIXES TESTING SUMMARY")
+        print("🏁 MESSAGE READ FUNCTIONALITY TESTING SUMMARY")
         print("=" * 80)
         
         total_tests = len(tester.test_results)
@@ -6863,9 +6862,8 @@ async def main():
         print(f"   Success Rate: {(passed_tests/total_tests*100):.1f}%")
         print()
         
-        print(f"🎯 CRITICAL FIXES STATUS:")
-        print(f"   ❤️ Favorites Fix: {'✅ WORKING' if favorites_success else '❌ ISSUES FOUND'}")
-        print(f"   👁️ Views Counter Fix: {'✅ WORKING' if views_success else '❌ ISSUES FOUND'}")
+        print(f"🎯 MESSAGE READ FUNCTIONALITY STATUS:")
+        print(f"   📨 Message Read System: {'✅ WORKING' if message_read_success else '❌ ISSUES FOUND'}")
         print()
         
         if failed_tests > 0:
@@ -6876,20 +6874,20 @@ async def main():
             print()
         
         print("🔍 KEY FINDINGS:")
-        if favorites_success:
-            print("   ✅ Favorites: Field consistency fixed, multiple favorites supported, no E11000 errors")
+        if message_read_success:
+            print("   ✅ Message Read: Complete workflow working - messages can be marked as read and badge updates correctly")
         else:
-            print("   ❌ Favorites: Critical issues remain - check E11000 errors and duplicate endpoint conflicts")
-            
-        if views_success:
-            print("   ✅ Views Counter: increment_view parameter working, no artificial inflation")
-        else:
-            print("   ❌ Views Counter: Issues with increment_view parameter or artificial inflation")
+            print("   ❌ Message Read: Critical issues found - check field consistency, authorization, or timing issues")
+            print("   🔧 POTENTIAL ROOT CAUSES:")
+            print("      - Field name inconsistency: 'read' vs 'is_read' in database")
+            print("      - Authorization header issues with mark read endpoint")
+            print("      - Message ID format problems")
+            print("      - Database timing/async operation issues")
         
         print("\n" + "=" * 80)
         
         # Return success status
-        return favorites_success and views_success
+        return message_read_success
     """Main test execution function"""
     async with BackendTester() as tester:
         print("🚀 CATALORO MARKETPLACE - TENDER ACCEPTANCE TO CLOSED TAB WORKFLOW TESTING")
