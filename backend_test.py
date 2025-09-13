@@ -612,39 +612,40 @@ class BackendTester:
             )
             return False
     
-    async def test_message_field_consistency_fix(self):
-        """Test the critical message field consistency fix"""
-        print("\n📧 MESSAGE FIELD CONSISTENCY FIX TESTS:")
+    async def test_unique_view_tracking_fix(self):
+        """Test the unique view tracking fix"""
+        print("\n👁️ UNIQUE VIEW TRACKING FIX TESTS:")
         
-        # Step 1: Login as admin (sender)
+        # Step 1: Login as admin user
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         if not admin_token:
-            self.log_result("Message Field Consistency Test", False, "Failed to login as admin")
+            self.log_result("Unique View Tracking Test", False, "Failed to login as admin")
             return False
         
-        # Step 2: Login as demo user (recipient)
+        # Step 2: Login as demo user
         demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
         if not demo_token:
-            self.log_result("Message Field Consistency Test", False, "Failed to login as demo user")
+            self.log_result("Unique View Tracking Test", False, "Failed to login as demo user")
             return False
         
-        # Step 3: Send message from admin to demo user
-        message_id = await self.test_send_message_with_field_check(admin_user_id, admin_token, demo_user_id)
-        if not message_id:
+        # Step 3: Get a listing ID to test with
+        listing_id = await self.get_test_listing_id()
+        if not listing_id:
+            self.log_result("Unique View Tracking Test", False, "No listing available for testing")
             return False
         
-        # Step 4: Verify message created with "is_read": false
-        message_data = await self.test_get_message_and_check_field(demo_user_id, demo_token, message_id)
-        if not message_data:
-            return False
-        
-        # Step 5: Mark message as read and verify "is_read": true
-        success = await self.test_mark_read_and_verify_field(demo_user_id, demo_token, message_id)
+        # Step 4: Test same user multiple views (should only increment once)
+        success = await self.test_same_user_multiple_views(admin_token, admin_user_id, listing_id)
         if not success:
             return False
         
-        # Step 6: Test unread count calculation
-        await self.test_unread_count_calculation(demo_user_id, demo_token)
+        # Step 5: Test different users viewing same listing
+        success = await self.test_different_users_same_listing(admin_token, admin_user_id, demo_token, demo_user_id, listing_id)
+        if not success:
+            return False
+        
+        # Step 6: Test edge cases
+        await self.test_view_tracking_edge_cases(listing_id)
         
         return True
     
