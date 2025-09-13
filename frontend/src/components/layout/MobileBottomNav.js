@@ -115,18 +115,18 @@ function MobileBottomNav() {
       key: 'create'
     },
     {
-      label: 'Tenders',
-      path: '/mobile-tenders',
-      icon: DollarSign,
+      label: 'Buy',
+      path: '/buy',
+      icon: ShoppingCart,
       badge: null,
-      key: 'tenders'
+      key: 'buy'
     },
     {
-      label: 'Listings',
-      path: '/mobile-my-listings',
+      label: 'Sell',
+      path: '/sell',
       icon: Package,
       badge: null,
-      key: 'listings'
+      key: 'sell'
     }
   ];
 
