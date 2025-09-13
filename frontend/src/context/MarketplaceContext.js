@@ -450,7 +450,19 @@ export function MarketplaceProvider({ children }) {
       
       // Use real listings even if empty (don't fall back to demo data)
       dispatch({ type: ACTIONS.SET_PRODUCTS, payload: transformedListings });
+      
+      // Dispatch pagination information
+      dispatch({ 
+        type: ACTIONS.SET_PAGINATION_INFO, 
+        payload: {
+          totalPages: paginationInfo.total_pages,
+          totalListings: paginationInfo.total_count,
+          currentPage: paginationInfo.current_page
+        }
+      });
+      
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+      console.log('✅ Updated state with', transformedListings.length, 'listings and pagination:', paginationInfo);
       console.log('🎉 Successfully loaded', transformedListings.length, 'real listings from API');
       return;
         
