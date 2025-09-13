@@ -751,8 +751,16 @@ export function MarketplaceProvider({ children }) {
   };
 
   const applyFiltersAndSearch = (query, filters, sortBy) => {
-    console.log('🔍 applyFiltersAndSearch called with:', { query, filters, sortBy, allProductsCount: state.allProducts.length });
+    console.log('🔍 applyFiltersAndSearch called with:', { 
+      query, 
+      filters, 
+      sortBy, 
+      allProductsCount: state.allProducts.length,
+      hotDealsFilter: filters.hotDeals 
+    });
+    
     let filtered = [...state.allProducts];
+    console.log('🔍 Starting with', filtered.length, 'products');
 
     // Apply search
     if (query) {
@@ -764,6 +772,7 @@ export function MarketplaceProvider({ children }) {
         // Include add_info in search (but don't display it)
         (product.add_info && product.add_info.toLowerCase().includes(query.toLowerCase()))
       );
+      console.log('🔍 After search filter:', filtered.length, 'products');
     }
 
     // Apply filters
