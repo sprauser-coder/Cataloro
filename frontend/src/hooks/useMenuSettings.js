@@ -63,7 +63,9 @@ export function useMenuSettings() {
     if (!menuSection) {
       // For unauthenticated users, hide all items except basic ones
       const publicItems = ['browse', 'about'];
-      return publicItems.includes(itemKey);
+      // For authenticated users, show basic + buy/sell items
+      const authenticatedItems = ['browse', 'about', 'buy', 'sell', 'messages', 'favorites', 'notifications'];
+      return user ? authenticatedItems.includes(itemKey) : publicItems.includes(itemKey);
     }
     
     const menuItem = menuSection[itemKey];
