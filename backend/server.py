@@ -1533,8 +1533,13 @@ async def browse_listings(
         total_count = await db.listings.count_documents(query)
         
         # Calculate pagination info
-        total_pages = (total_count + limit - 1) // limit  # Ceiling division
-        current_page = (offset // limit) + 1
+        if limit <= 0:
+            # Handle edge case: limit=0 or negative limit
+            total_pages = 0
+            current_page = 1
+        else:
+            total_pages = (total_count + limit - 1) // limit  # Ceiling division
+            current_page = (offset // limit) + 1
         
         logger.info(f"📋 Pagination info - total: {total_count}, page: {current_page}/{total_pages}, offset: {offset}, limit: {limit}")
         
