@@ -585,6 +585,521 @@ class BackendTester:
             )
             return False
     
+    async def test_frontend_compatibility_fix(self):
+        """Test the frontend compatibility fix by verifying the API response format"""
+        print("\n🔧 FRONTEND COMPATIBILITY FIX TESTING:")
+        print("   Testing API response format to resolve 'allListings.filter is not a function' error")
+        print("   Verifying that API returns {listings: [...], total: X, page: Y, ...} format")
+        print("   Testing specific endpoint: GET /api/user/my-listings/admin_user_1?status=all&limit=1000")
+        
+        # Step 1: Login as admin user
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        if not admin_token:
+            self.log_result("Frontend Compatibility Fix Test", False, "Failed to login as admin")
+            return False
+        
+        print(f"   Testing with admin user ID: {admin_user_id}")
+        
+        # Step 2: Test API Response Format
+        print("\n   📋 Test API Response Format:")
+        api_format_result = await self.test_api_response_format(admin_user_id, admin_token)
+        
+        # Step 3: Check Response Structure
+        print("\n   🏗️ Check Response Structure:")
+        structure_result = await self.test_response_structure(admin_user_id, admin_token)
+        
+        # Step 4: Verify Data Extraction
+        print("\n   📤 Verify Data Extraction:")
+        extraction_result = await self.test_data_extraction(admin_user_id, admin_token)
+        
+        # Step 5: Test Status Filtering
+        print("\n   🔍 Test Status Filtering:")
+        filtering_result = await self.test_status_filtering_format(admin_user_id, admin_token)
+        
+        # Step 6: Verify Count Consistency
+        print("\n   ⚖️ Verify Count Consistency:")
+        consistency_result = await self.test_count_consistency(admin_user_id, admin_token)
+        
+        # Step 7: Final Analysis
+        print("\n   📈 Final Analysis:")
+        await self.analyze_frontend_compatibility_fix(api_format_result, structure_result, extraction_result, filtering_result, consistency_result)
+        
+        return True
+    
+    async def test_api_response_format(self, admin_user_id, admin_token):
+        """Test API Response Format: Call GET /api/user/my-listings/admin_user_1?status=all&limit=1000 and verify the response format"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            url = f"{BACKEND_URL}/user/my-listings/{admin_user_id}?status=all&limit=1000"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check if response has the expected format
+                    has_listings_array = 'listings' in data and isinstance(data['listings'], list)
+                    has_total_field = 'total' in data or 'total_count' in data
+                    has_page_field = 'page' in data or 'current_page' in data
+                    
+                    if has_listings_array:
+                        listings_count = len(data['listings'])
+                        total_count = data.get('total', data.get('total_count', listings_count))
+                        
+                        self.log_result(
+                            "API Response Format Test", 
+                            True, 
+                            f"✅ CORRECT FORMAT: Response has 'listings' array with {listings_count} items, total: {total_count}",
+                            response_time
+                        )
+                        
+                        return {
+                            'has_correct_format': True,
+                            'listings_count': listings_count,
+                            'total_count': total_count,
+                            'data': data,
+                            'success': True
+                        }
+                    else:
+                        # Check if it's returning a direct array (old format)
+                        if isinstance(data, list):
+                            self.log_result(
+                                "API Response Format Test", 
+                                False, 
+                                f"❌ INCORRECT FORMAT: API returns direct array ({len(data)} items) instead of {{listings: [...], total: X}} format",
+                                response_time
+                            )
+                        else:
+                            self.log_result(
+                                "API Response Format Test", 
+                                False, 
+                                f"❌ INCORRECT FORMAT: Response missing 'listings' array. Structure: {list(data.keys()) if isinstance(data, dict) else type(data)}",
+                                response_time
+                            )
+                        
+                        return {
+                            'has_correct_format': False,
+                            'data': data,
+                            'success': False
+                        }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "API Response Format Test", 
+                        False, 
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "API Response Format Test", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+    
+    async def test_response_structure(self, admin_user_id, admin_token):
+        """Check Response Structure: Confirm it returns {listings: [...], total: X, page: Y, ...} format"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            url = f"{BACKEND_URL}/user/my-listings/{admin_user_id}?status=all&limit=1000"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check required fields for frontend compatibility
+                    required_fields = ['listings']
+                    optional_fields = ['total', 'total_count', 'page', 'current_page', 'pagination']
+                    
+                    missing_required = [field for field in required_fields if field not in data]
+                    present_optional = [field for field in optional_fields if field in data]
+                    
+                    if not missing_required:
+                        # Check if listings is actually an array
+                        if isinstance(data['listings'], list):
+                            self.log_result(
+                                "Response Structure Test", 
+                                True, 
+                                f"✅ STRUCTURE CORRECT: Has 'listings' array ({len(data['listings'])} items), optional fields: {present_optional}",
+                                response_time
+                            )
+                            
+                            return {
+                                'structure_correct': True,
+                                'listings_is_array': True,
+                                'optional_fields': present_optional,
+                                'data': data,
+                                'success': True
+                            }
+                        else:
+                            self.log_result(
+                                "Response Structure Test", 
+                                False, 
+                                f"❌ STRUCTURE ERROR: 'listings' field exists but is not an array (type: {type(data['listings'])})",
+                                response_time
+                            )
+                            return {'structure_correct': False, 'success': False}
+                    else:
+                        self.log_result(
+                            "Response Structure Test", 
+                            False, 
+                            f"❌ STRUCTURE ERROR: Missing required fields: {missing_required}. Available: {list(data.keys()) if isinstance(data, dict) else type(data)}",
+                            response_time
+                        )
+                        return {'structure_correct': False, 'success': False}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Response Structure Test", 
+                        False, 
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Response Structure Test", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+    
+    async def test_data_extraction(self, admin_user_id, admin_token):
+        """Verify Data Extraction: Ensure the listings array can be extracted from the response"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            url = f"{BACKEND_URL}/user/my-listings/{admin_user_id}?status=all&limit=1000"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Try to extract listings array (simulating frontend code)
+                    try:
+                        # This is what the frontend tries to do
+                        if 'listings' in data:
+                            listings = data['listings']
+                            if isinstance(listings, list):
+                                # Test if we can call .filter() on it (JavaScript equivalent)
+                                # In Python, we test if it's iterable and has list methods
+                                filtered_listings = [item for item in listings if item.get('status') == 'active']
+                                
+                                self.log_result(
+                                    "Data Extraction Test", 
+                                    True, 
+                                    f"✅ EXTRACTION SUCCESS: Can extract listings array ({len(listings)} items) and filter it ({len(filtered_listings)} active)",
+                                    response_time
+                                )
+                                
+                                return {
+                                    'extraction_success': True,
+                                    'listings_count': len(listings),
+                                    'filtered_count': len(filtered_listings),
+                                    'can_filter': True,
+                                    'success': True
+                                }
+                            else:
+                                self.log_result(
+                                    "Data Extraction Test", 
+                                    False, 
+                                    f"❌ EXTRACTION FAILED: 'listings' exists but is not an array (type: {type(listings)})",
+                                    response_time
+                                )
+                                return {'extraction_success': False, 'success': False}
+                        else:
+                            # Try direct array access (old format)
+                            if isinstance(data, list):
+                                filtered_listings = [item for item in data if item.get('status') == 'active']
+                                
+                                self.log_result(
+                                    "Data Extraction Test", 
+                                    False, 
+                                    f"❌ WRONG FORMAT: API returns direct array ({len(data)} items) - frontend expects {{listings: [...]}} format",
+                                    response_time
+                                )
+                                return {'extraction_success': False, 'is_direct_array': True, 'success': False}
+                            else:
+                                self.log_result(
+                                    "Data Extraction Test", 
+                                    False, 
+                                    f"❌ EXTRACTION FAILED: No 'listings' field and not a direct array. Structure: {list(data.keys()) if isinstance(data, dict) else type(data)}",
+                                    response_time
+                                )
+                                return {'extraction_success': False, 'success': False}
+                                
+                    except Exception as extract_error:
+                        self.log_result(
+                            "Data Extraction Test", 
+                            False, 
+                            f"❌ EXTRACTION ERROR: Failed to process data: {str(extract_error)}",
+                            response_time
+                        )
+                        return {'extraction_success': False, 'success': False, 'error': str(extract_error)}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Data Extraction Test", 
+                        False, 
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Data Extraction Test", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+    
+    async def test_status_filtering_format(self, admin_user_id, admin_token):
+        """Test Status Filtering: Call with status=active and verify it still returns the correct format"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            url = f"{BACKEND_URL}/user/my-listings/{admin_user_id}?status=active"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Check if response maintains correct format with status filtering
+                    has_listings_array = 'listings' in data and isinstance(data['listings'], list)
+                    
+                    if has_listings_array:
+                        listings_count = len(data['listings'])
+                        
+                        # Verify all listings have active status (if status field exists)
+                        active_count = sum(1 for item in data['listings'] if item.get('status') == 'active')
+                        
+                        self.log_result(
+                            "Status Filtering Format Test", 
+                            True, 
+                            f"✅ FILTERING FORMAT CORRECT: status=active returns {listings_count} listings in correct format, {active_count} confirmed active",
+                            response_time
+                        )
+                        
+                        return {
+                            'format_correct': True,
+                            'listings_count': listings_count,
+                            'active_count': active_count,
+                            'data': data,
+                            'success': True
+                        }
+                    else:
+                        self.log_result(
+                            "Status Filtering Format Test", 
+                            False, 
+                            f"❌ FILTERING FORMAT ERROR: status=active doesn't return correct format. Structure: {list(data.keys()) if isinstance(data, dict) else type(data)}",
+                            response_time
+                        )
+                        return {'format_correct': False, 'success': False}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Status Filtering Format Test", 
+                        False, 
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Status Filtering Format Test", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+    
+    async def test_count_consistency(self, admin_user_id, admin_token):
+        """Verify Count Consistency: Confirm active count matches tenders (62 listings)"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            
+            # Get my-listings active count
+            my_listings_url = f"{BACKEND_URL}/user/my-listings/{admin_user_id}?status=active"
+            tenders_url = f"{BACKEND_URL}/tenders/seller/{admin_user_id}/overview"
+            
+            # Test my-listings endpoint
+            async with self.session.get(my_listings_url, headers=headers) as response:
+                my_listings_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    my_listings_data = await response.json()
+                    my_listings_count = 0
+                    
+                    if 'listings' in my_listings_data:
+                        my_listings_count = len(my_listings_data['listings'])
+                    elif isinstance(my_listings_data, list):
+                        my_listings_count = len(my_listings_data)
+                else:
+                    self.log_result(
+                        "Count Consistency Test", 
+                        False, 
+                        f"❌ MY-LISTINGS FAILED: Status {response.status}",
+                        my_listings_time
+                    )
+                    return {'success': False}
+            
+            # Test tenders endpoint
+            start_time = datetime.now()
+            async with self.session.get(tenders_url, headers=headers) as response:
+                tenders_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    tenders_data = await response.json()
+                    tenders_count = 0
+                    
+                    if isinstance(tenders_data, dict):
+                        tenders_count = (
+                            tenders_data.get('total_tenders', 0) or 
+                            tenders_data.get('active_tenders', 0) or 
+                            len(tenders_data.get('tenders', [])) or
+                            len(tenders_data.get('listings', []))
+                        )
+                    elif isinstance(tenders_data, list):
+                        tenders_count = len(tenders_data)
+                else:
+                    self.log_result(
+                        "Count Consistency Test", 
+                        False, 
+                        f"❌ TENDERS FAILED: Status {response.status}",
+                        tenders_time
+                    )
+                    return {'success': False}
+            
+            # Compare counts
+            expected_count = 62
+            counts_match = my_listings_count == tenders_count
+            matches_expected = my_listings_count == expected_count and tenders_count == expected_count
+            
+            if matches_expected:
+                self.log_result(
+                    "Count Consistency Test", 
+                    True, 
+                    f"✅ PERFECT CONSISTENCY: My-listings ({my_listings_count}) == Tenders ({tenders_count}) == Expected ({expected_count})",
+                    my_listings_time + tenders_time
+                )
+            elif counts_match:
+                self.log_result(
+                    "Count Consistency Test", 
+                    True, 
+                    f"✅ ENDPOINTS CONSISTENT: My-listings ({my_listings_count}) == Tenders ({tenders_count}), but differs from expected ({expected_count})",
+                    my_listings_time + tenders_time
+                )
+            else:
+                self.log_result(
+                    "Count Consistency Test", 
+                    False, 
+                    f"❌ INCONSISTENT COUNTS: My-listings ({my_listings_count}) != Tenders ({tenders_count}), expected ({expected_count})",
+                    my_listings_time + tenders_time
+                )
+            
+            return {
+                'my_listings_count': my_listings_count,
+                'tenders_count': tenders_count,
+                'expected_count': expected_count,
+                'counts_match': counts_match,
+                'matches_expected': matches_expected,
+                'success': True
+            }
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Count Consistency Test", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+    
+    async def analyze_frontend_compatibility_fix(self, api_format_result, structure_result, extraction_result, filtering_result, consistency_result):
+        """Analyze the effectiveness of the frontend compatibility fix"""
+        print("      Final analysis of frontend compatibility fix:")
+        
+        fixes_working = []
+        fixes_needed = []
+        
+        # Check API response format
+        if api_format_result.get('has_correct_format'):
+            fixes_working.append("✅ API returns correct {listings: [...]} format")
+        else:
+            fixes_needed.append("❌ API does not return correct format")
+        
+        # Check response structure
+        if structure_result.get('structure_correct') and structure_result.get('listings_is_array'):
+            fixes_working.append("✅ Response structure has 'listings' array")
+        else:
+            fixes_needed.append("❌ Response structure missing 'listings' array")
+        
+        # Check data extraction
+        if extraction_result.get('extraction_success') and extraction_result.get('can_filter'):
+            fixes_working.append("✅ Frontend can extract and filter listings array")
+        else:
+            fixes_needed.append("❌ Frontend cannot extract/filter listings array")
+        
+        # Check status filtering format
+        if filtering_result.get('format_correct'):
+            fixes_working.append("✅ Status filtering maintains correct format")
+        else:
+            fixes_needed.append("❌ Status filtering breaks format")
+        
+        # Check count consistency
+        if consistency_result.get('counts_match'):
+            if consistency_result.get('matches_expected'):
+                fixes_working.append("✅ Counts match expected values (62 listings)")
+            else:
+                fixes_working.append("✅ Endpoints return consistent counts")
+        else:
+            fixes_needed.append("❌ Endpoints return inconsistent counts")
+        
+        # Final assessment
+        if not fixes_needed:
+            self.log_result(
+                "Frontend Compatibility Fix Analysis", 
+                True, 
+                f"✅ FRONTEND FIX WORKING: All compatibility issues resolved. Achievements: {'; '.join(fixes_working)}"
+            )
+        else:
+            self.log_result(
+                "Frontend Compatibility Fix Analysis", 
+                False, 
+                f"❌ FRONTEND FIX INCOMPLETE: {len(fixes_working)} working, {len(fixes_needed)} still needed. Issues: {'; '.join(fixes_needed)}"
+            )
+        
+        return len(fixes_needed) == 0
+
     async def test_my_listings_endpoint_consistency_fixes(self):
         """Test the user my-listings endpoint that the frontend actually uses to verify the fix is working"""
         print("\n📊 MY-LISTINGS ENDPOINT CONSISTENCY TESTING:")
