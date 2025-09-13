@@ -6275,7 +6275,8 @@ class BackendTester:
                 
                 if response.status == 200:
                     listing = await response.json()
-                    final_views = listing.get('view_count', 0)
+                    # Check both 'views' and 'view_count' fields for compatibility
+                    final_views = listing.get('views', listing.get('view_count', 0))
                     expected_views = initial_views + 1
                     
                     if final_views == expected_views:
