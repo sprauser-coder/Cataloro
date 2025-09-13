@@ -290,9 +290,10 @@ export function MarketplaceProvider({ children }) {
     localStorage.setItem('cataloro_favorites', JSON.stringify(state.favorites));
   }, [state.favorites]);
 
-  const loadInitialProducts = async (filters = null, userId = null) => {
-    // Set loading state
+  const loadInitialProducts = async (filters = null, userId = null, page = 1) => {
+    console.log('🔄 Loading products - page:', page, 'filters:', filters);
     dispatch({ type: ACTIONS.SET_LOADING, payload: true });
+    dispatch({ type: ACTIONS.SET_LOADING_PAGE, payload: true });
     
     try {
       // Use provided filters or current state filters
