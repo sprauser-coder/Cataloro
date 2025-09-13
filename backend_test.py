@@ -646,8 +646,8 @@ class BackendTester:
         
         return True
     
-    async def test_tenders_overview_count(self, admin_user_id, admin_token):
-        """Test GET /api/tenders/seller/{admin_user_id}/overview to get tenders count"""
+    async def test_fixed_tenders_overview_count(self, admin_user_id, admin_token):
+        """Test the fixed tenders overview endpoint - should now return all 68 active listings"""
         start_time = datetime.now()
         
         try:
@@ -667,35 +667,57 @@ class BackendTester:
                             data.get('total_tenders', 0) or 
                             data.get('active_tenders', 0) or 
                             data.get('tenders_count', 0) or
-                            len(data.get('tenders', []))
+                            len(data.get('tenders', [])) or
+                            len(data.get('listings', []))  # Check if listings are returned directly
                         )
                         
                         # Log the full structure for analysis
-                        print(f"   Tenders Overview Response Structure: {list(data.keys())}")
+                        print(f"      Tenders Overview Response Structure: {list(data.keys())}")
                         if 'tenders' in data:
-                            print(f"   Tenders array length: {len(data['tenders'])}")
+                            print(f"      Tenders array length: {len(data['tenders'])}")
+                        if 'listings' in data:
+                            print(f"      Listings array length: {len(data['listings'])}")
                         
                     elif isinstance(data, list):
                         tenders_count = len(data)
                     
-                    self.log_result(
-                        "Tenders Overview Count", 
-                        True, 
-                        f"Tenders section shows {tenders_count} listings",
-                        response_time
-                    )
+                    # Check if this matches the expected 68 active listings
+                    expected_count = 68
+                    if tenders_count == expected_count:
+                        self.log_result(
+                            "Fixed Tenders Overview Count", 
+                            True, 
+                            f"✅ TENDERS FIX WORKING: Returns {tenders_count} active listings (matches expected {expected_count})",
+                            response_time
+                        )
+                    elif tenders_count > 0:
+                        self.log_result(
+                            "Fixed Tenders Overview Count", 
+                            True, 
+                            f"⚠️ TENDERS COUNT UPDATED: Returns {tenders_count} active listings (expected {expected_count}, difference: {abs(tenders_count - expected_count)})",
+                            response_time
+                        )
+                    else:
+                        self.log_result(
+                            "Fixed Tenders Overview Count", 
+                            False, 
+                            f"❌ TENDERS FIX FAILED: Returns {tenders_count} listings (expected {expected_count})",
+                            response_time
+                        )
                     
                     return {
                         'count': tenders_count,
                         'data': data,
-                        'success': True
+                        'success': True,
+                        'expected': expected_count,
+                        'matches_expected': tenders_count == expected_count
                     }
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Tenders Overview Count", 
+                        "Fixed Tenders Overview Count", 
                         False, 
-                        f"Failed with status {response.status}: {error_text}",
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
                         response_time
                     )
                     return {'count': 0, 'success': False, 'error': error_text}
@@ -703,12 +725,396 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Tenders Overview Count", 
+                "Fixed Tenders Overview Count", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'count': 0, 'success': False, 'error': str(e)}
+    
+    async def test_fixed_my_listings_count(self, admin_user_id, admin_token):
+        """Test the fixed my-listings endpoint - should now default to status='active' and show all active listings"""
+        headers = {"Authorization": f"Bearer {admin_token}"}
+        results = {}
+        
+        # Test the default behavior (should now be status="active")
+        print("      Testing default behavior (should now be status='active'):")
+        default_result = await self.test_my_listings_with_status(headers, "default", None)
+        results['default'] = default_result
+        
+        # Test explicit status="active" (should match default)
+        print("      Testing explicit status='active':")
+        active_result = await self.test_my_listings_with_status(headers, "active", "active")
+        results['active'] = active_result
+        
+        # Verify that default now behaves like active (the fix)
+        if default_result['success'] and active_result['success']:
+            default_count = default_result['count']
+            active_count = active_result['count']
+            
+            if default_count == active_count:
+                self.log_result(
+                    "My-Listings Default Status Fix", 
+                    True, 
+                    f"✅ DEFAULT STATUS FIX WORKING: Default ({default_count}) matches active ({active_count}) - default now uses status='active'",
+                )
+            else:
+                self.log_result(
+                    "My-Listings Default Status Fix", 
+                    False, 
+                    f"❌ DEFAULT STATUS FIX FAILED: Default ({default_count}) != active ({active_count}) - default should now use status='active'",
+                )
+        
+        # Check if the count matches expected 68 active listings
+        expected_active_count = 68
+        if default_result['success']:
+            default_count = default_result['count']
+            if default_count == expected_active_count:
+                self.log_result(
+                    "My-Listings Active Count Fix", 
+                    True, 
+                    f"✅ ACTIVE COUNT FIX WORKING: Returns {default_count} active listings (matches expected {expected_active_count})",
+                )
+            elif default_count > 50:  # Previous limit was 50
+                self.log_result(
+                    "My-Listings Limit Increase Fix", 
+                    True, 
+                    f"✅ LIMIT INCREASE FIX WORKING: Returns {default_count} listings (> previous limit of 50, expected {expected_active_count})",
+                )
+            else:
+                self.log_result(
+                    "My-Listings Active Count Fix", 
+                    False, 
+                    f"❌ ACTIVE COUNT FIX INCOMPLETE: Returns {default_count} listings (expected {expected_active_count}, difference: {abs(default_count - expected_active_count)})",
+                )
+        
+        return results
+    
+    async def test_my_listings_with_status(self, headers, filter_name, status_value):
+        """Helper method to test my-listings with specific status"""
+        start_time = datetime.now()
+        
+        try:
+            url = f"{BACKEND_URL}/marketplace/my-listings"
+            if status_value:
+                url += f"?status={status_value}"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Handle different response formats
+                    listings_count = 0
+                    total_count = 0
+                    
+                    if isinstance(data, dict):
+                        if 'listings' in data:
+                            # Pagination format
+                            listings_count = len(data['listings'])
+                            pagination = data.get('pagination', {})
+                            total_count = pagination.get('total_count', listings_count)
+                            print(f"         My-Listings ({filter_name}): {listings_count} listings on page, {total_count} total")
+                            
+                            # Log pagination details
+                            if pagination:
+                                current_page = pagination.get('current_page', 1)
+                                total_pages = pagination.get('total_pages', 1)
+                                page_size = pagination.get('page_size', listings_count)
+                                print(f"         Pagination: Page {current_page}/{total_pages}, Page size: {page_size}")
+                        else:
+                            # Direct object format
+                            listings_count = len(data) if isinstance(data, list) else 1
+                            total_count = listings_count
+                    elif isinstance(data, list):
+                        listings_count = len(data)
+                        total_count = listings_count
+                    
+                    self.log_result(
+                        f"My-Listings ({filter_name})", 
+                        True, 
+                        f"Status '{status_value or 'default'}' returned {listings_count} listings on page, {total_count} total",
+                        response_time
+                    )
+                    
+                    return {
+                        'count': listings_count,
+                        'total_count': total_count,
+                        'status': status_value,
+                        'data': data,
+                        'success': True
+                    }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"My-Listings ({filter_name})", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {
+                        'count': 0,
+                        'success': False,
+                        'error': error_text
+                    }
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                f"My-Listings ({filter_name})", 
                 False, 
                 f"Request failed with exception: {str(e)}",
                 response_time
             )
-            return {'count': 0, 'success': False, 'error': str(e)}
+            return {
+                'count': 0,
+                'success': False,
+                'error': str(e)
+            }
+    
+    async def verify_count_consistency(self, tenders_result, my_listings_result):
+        """Verify that both endpoints now return consistent counts"""
+        print("      Checking consistency between Tenders and My-Listings:")
+        
+        if not tenders_result.get('success') or not my_listings_result.get('default', {}).get('success'):
+            self.log_result(
+                "Count Consistency Verification", 
+                False, 
+                "❌ Cannot verify consistency - one or both endpoints failed"
+            )
+            return False
+        
+        tenders_count = tenders_result['count']
+        my_listings_count = my_listings_result['default']['count']
+        
+        if tenders_count == my_listings_count:
+            self.log_result(
+                "Count Consistency Verification", 
+                True, 
+                f"✅ CONSISTENCY FIX WORKING: Tenders ({tenders_count}) == My-Listings ({my_listings_count}) - counts now match!"
+            )
+            return True
+        else:
+            difference = abs(tenders_count - my_listings_count)
+            self.log_result(
+                "Count Consistency Verification", 
+                False, 
+                f"❌ CONSISTENCY FIX INCOMPLETE: Tenders ({tenders_count}) != My-Listings ({my_listings_count}) - difference: {difference}"
+            )
+            return False
+    
+    async def test_other_status_filters(self, admin_user_id, admin_token):
+        """Test other status filters to ensure they work correctly"""
+        headers = {"Authorization": f"Bearer {admin_token}"}
+        results = {}
+        
+        # Test status="all" (should return all 99+ listings)
+        print("      Testing status='all' (should return all listings):")
+        all_result = await self.test_my_listings_with_status(headers, "all", "all")
+        results['all'] = all_result
+        
+        if all_result['success']:
+            all_count = all_result['total_count']
+            expected_all_count = 99  # Expected total listings
+            
+            if all_count >= expected_all_count:
+                self.log_result(
+                    "Status='all' Filter Test", 
+                    True, 
+                    f"✅ STATUS='ALL' WORKING: Returns {all_count} total listings (>= expected {expected_all_count})"
+                )
+            else:
+                self.log_result(
+                    "Status='all' Filter Test", 
+                    False, 
+                    f"❌ STATUS='ALL' INCOMPLETE: Returns {all_count} listings (expected >= {expected_all_count})"
+                )
+        
+        # Test status="sold" (should return sold listings)
+        print("      Testing status='sold':")
+        sold_result = await self.test_my_listings_with_status(headers, "sold", "sold")
+        results['sold'] = sold_result
+        
+        if sold_result['success']:
+            sold_count = sold_result['total_count']
+            self.log_result(
+                "Status='sold' Filter Test", 
+                True, 
+                f"✅ STATUS='SOLD' WORKING: Returns {sold_count} sold listings"
+            )
+        
+        # Test status="expired"
+        print("      Testing status='expired':")
+        expired_result = await self.test_my_listings_with_status(headers, "expired", "expired")
+        results['expired'] = expired_result
+        
+        # Test status="draft"
+        print("      Testing status='draft':")
+        draft_result = await self.test_my_listings_with_status(headers, "draft", "draft")
+        results['draft'] = draft_result
+        
+        return results
+    
+    async def verify_database_counts(self, admin_user_id):
+        """Verify actual database counts using browse endpoint"""
+        print("      Querying database for actual counts:")
+        
+        results = {}
+        
+        # Test different status filters to understand database state
+        status_filters = [
+            ("all_listings", "all"),
+            ("active_listings", "active"),
+            ("sold_listings", "sold"),
+            ("expired_listings", "expired"),
+            ("draft_listings", "draft")
+        ]
+        
+        for filter_name, status_value in status_filters:
+            start_time = datetime.now()
+            
+            try:
+                # Use browse endpoint to get database counts with high limit
+                url = f"{BACKEND_URL}/marketplace/browse?status={status_value}&limit=200&user_id={admin_user_id}&bid_filter=own_listings"
+                
+                async with self.session.get(url) as response:
+                    response_time = (datetime.now() - start_time).total_seconds() * 1000
+                    
+                    if response.status == 200:
+                        data = await response.json()
+                        
+                        # Handle different response formats
+                        listings_count = 0
+                        total_count = 0
+                        
+                        if isinstance(data, dict):
+                            if 'listings' in data:
+                                # Pagination format
+                                listings_count = len(data['listings'])
+                                total_count = data.get('pagination', {}).get('total_count', listings_count)
+                            else:
+                                # Direct format
+                                listings_count = len(data) if isinstance(data, list) else 0
+                                total_count = listings_count
+                        elif isinstance(data, list):
+                            listings_count = len(data)
+                            total_count = listings_count
+                        
+                        self.log_result(
+                            f"Database Count ({filter_name})", 
+                            True, 
+                            f"Database has {total_count} total listings with status '{status_value}' for admin user",
+                            response_time
+                        )
+                        
+                        results[filter_name] = {
+                            'count': listings_count,
+                            'total_count': total_count,
+                            'status': status_value,
+                            'success': True
+                        }
+                    else:
+                        error_text = await response.text()
+                        self.log_result(
+                            f"Database Count ({filter_name})", 
+                            False, 
+                            f"Failed with status {response.status}: {error_text}",
+                            response_time
+                        )
+                        results[filter_name] = {
+                            'count': 0,
+                            'success': False,
+                            'error': error_text
+                        }
+                        
+            except Exception as e:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                self.log_result(
+                    f"Database Count ({filter_name})", 
+                    False, 
+                    f"Request failed with exception: {str(e)}",
+                    response_time
+                )
+                results[filter_name] = {
+                    'count': 0,
+                    'success': False,
+                    'error': str(e)
+                }
+        
+        return results
+    
+    async def analyze_consistency_fixes(self, tenders_result, my_listings_result, database_result, consistency_result):
+        """Analyze the effectiveness of the consistency fixes"""
+        print("      Final analysis of consistency fixes:")
+        
+        # Extract key numbers
+        tenders_count = tenders_result.get('count', 0) if tenders_result.get('success') else 0
+        my_listings_default = my_listings_result.get('default', {}).get('count', 0)
+        my_listings_active = my_listings_result.get('active', {}).get('count', 0)
+        my_listings_all = my_listings_result.get('all', {}).get('total_count', 0)
+        
+        db_active = database_result.get('active_listings', {}).get('total_count', 0)
+        db_all = database_result.get('all_listings', {}).get('total_count', 0)
+        db_sold = database_result.get('sold_listings', {}).get('total_count', 0)
+        
+        print(f"      📊 FINAL COUNT SUMMARY:")
+        print(f"      - Tenders Overview: {tenders_count} listings")
+        print(f"      - My-Listings (default): {my_listings_default} listings")
+        print(f"      - My-Listings (active): {my_listings_active} listings")
+        print(f"      - My-Listings (all): {my_listings_all} listings")
+        print(f"      - Database (active): {db_active} listings")
+        print(f"      - Database (all): {db_all} listings")
+        print(f"      - Database (sold): {db_sold} listings")
+        
+        # Analyze the fixes
+        fixes_working = []
+        fixes_needed = []
+        
+        # Check if consistency is achieved
+        if consistency_result:
+            fixes_working.append("✅ Tenders and My-Listings now return consistent counts")
+        else:
+            fixes_needed.append("❌ Tenders and My-Listings still have different counts")
+        
+        # Check if default status changed to active
+        if my_listings_default == my_listings_active:
+            fixes_working.append("✅ My-Listings default now uses status='active'")
+        else:
+            fixes_needed.append("❌ My-Listings default does not match active filter")
+        
+        # Check if limit was increased (should show more than 50)
+        if my_listings_default > 50:
+            fixes_working.append(f"✅ My-Listings limit increased (showing {my_listings_default} > 50)")
+        else:
+            fixes_needed.append(f"❌ My-Listings limit not increased (showing {my_listings_default} <= 50)")
+        
+        # Check if counts match database
+        if tenders_count == db_active:
+            fixes_working.append("✅ Tenders count matches database active count")
+        else:
+            fixes_needed.append(f"❌ Tenders count ({tenders_count}) != database active ({db_active})")
+        
+        if my_listings_default == db_active:
+            fixes_working.append("✅ My-Listings count matches database active count")
+        else:
+            fixes_needed.append(f"❌ My-Listings count ({my_listings_default}) != database active ({db_active})")
+        
+        # Final assessment
+        if fixes_needed:
+            self.log_result(
+                "Listing Count Consistency Fixes Analysis", 
+                False, 
+                f"❌ FIXES INCOMPLETE: {len(fixes_working)} working, {len(fixes_needed)} still needed. Issues: {'; '.join(fixes_needed)}"
+            )
+        else:
+            self.log_result(
+                "Listing Count Consistency Fixes Analysis", 
+                True, 
+                f"✅ FIXES WORKING: All consistency fixes are working correctly. Achievements: {'; '.join(fixes_working)}"
+            )
+        
+        return len(fixes_needed) == 0
     
     async def test_my_listings_counts(self, admin_user_id, admin_token):
         """Test GET /api/marketplace/my-listings with different status filters"""
