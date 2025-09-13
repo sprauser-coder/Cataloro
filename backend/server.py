@@ -9049,11 +9049,11 @@ async def get_completed_transactions(user_id: str):
         # Check if user exists and is active
         await check_user_active_status(user_id)
         
-        # Get completed transactions where user is buyer or seller
+        # Get completed transactions where user is buyer or seller AND has confirmed completion
         completed_transactions = await db.completed_transactions.find({
             "$or": [
-                {"buyer_id": user_id},
-                {"seller_id": user_id}
+                {"buyer_id": user_id, "buyer_confirmed_at": {"$exists": True, "$ne": None}},
+                {"seller_id": user_id, "seller_confirmed_at": {"$exists": True, "$ne": None}}
             ]
         }).sort("created_at", -1).to_list(length=None)
         
