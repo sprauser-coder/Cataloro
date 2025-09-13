@@ -288,7 +288,7 @@ function CompletedSalesTab({ transactions, loading, onRefresh }) {
 }
 
 // Accepted Tenders Tab Component
-function AcceptedTendersTab({ user, onRefresh }) {
+function AcceptedTendersTab({ user, onRefresh, onCompleteOrder, onSwitchToCompleted }) {
   const [acceptedTenders, setAcceptedTenders] = useState([]);
   const [loading, setLoading] = useState(false);
   const { showToast } = useNotifications();
@@ -348,15 +348,15 @@ function AcceptedTendersTab({ user, onRefresh }) {
       if (response.ok) {
         showToast('Order marked as completed successfully', 'success');
         loadAcceptedTenders(); // Refresh accepted tenders (should now be empty)
-        loadCompletedTransactions(); // Refresh completed transactions
+        onCompleteOrder(); // Refresh completed transactions in parent
         
         // Redirect to Completed tab
-        handleTabChange('completed');
+        onSwitchToCompleted();
       } else {
         showToast('Failed to complete order', 'error');
       }
     } catch (error) {
-      console.error('Error completing order:', error);
+      console.error('Error completing order', error);
       showToast('Error completing order', 'error');
     }
   };
