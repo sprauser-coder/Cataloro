@@ -606,40 +606,29 @@ class BackendTester:
             )
             return False
     
-    async def test_unique_view_tracking_fix(self):
-        """Test the unique view tracking fix"""
-        print("\n👁️ UNIQUE VIEW TRACKING FIX TESTS:")
+    async def test_listing_count_discrepancy(self):
+        """Test the listing count discrepancy between Tenders and Listings sections"""
+        print("\n📊 LISTING COUNT DISCREPANCY INVESTIGATION:")
         
         # Step 1: Login as admin user
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         if not admin_token:
-            self.log_result("Unique View Tracking Test", False, "Failed to login as admin")
+            self.log_result("Listing Count Discrepancy Test", False, "Failed to login as admin")
             return False
         
-        # Step 2: Login as demo user
-        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
-        if not demo_token:
-            self.log_result("Unique View Tracking Test", False, "Failed to login as demo user")
-            return False
+        print(f"   Testing with admin user ID: {admin_user_id}")
         
-        # Step 3: Get a listing ID to test with
-        listing_id = await self.get_test_listing_id()
-        if not listing_id:
-            self.log_result("Unique View Tracking Test", False, "No listing available for testing")
-            return False
+        # Step 2: Test Tenders Section Count
+        tenders_count = await self.test_tenders_overview_count(admin_user_id, admin_token)
         
-        # Step 4: Test same user multiple views (should only increment once)
-        success = await self.test_same_user_multiple_views(admin_token, admin_user_id, listing_id)
-        if not success:
-            return False
+        # Step 3: Test Listings Section Count with different filters
+        my_listings_counts = await self.test_my_listings_counts(admin_user_id, admin_token)
         
-        # Step 5: Test different users viewing same listing
-        success = await self.test_different_users_same_listing(admin_token, admin_user_id, demo_token, demo_user_id, listing_id)
-        if not success:
-            return False
+        # Step 4: Verify actual database counts
+        database_counts = await self.test_database_listing_counts(admin_user_id)
         
-        # Step 6: Test edge cases
-        await self.test_view_tracking_edge_cases(listing_id)
+        # Step 5: Compare all numbers and identify discrepancy
+        await self.analyze_count_discrepancy(tenders_count, my_listings_counts, database_counts)
         
         return True
     
