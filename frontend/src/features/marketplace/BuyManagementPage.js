@@ -895,28 +895,39 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket,
           )}
         </div>
 
-        {/* Assignment Dropdown - Using simple relative positioning */}
-        <div className="relative z-50">
-          {item.basket_id ? (
-            <button
-              onClick={() => {
-                if (window.confirm('Unassign this item from the basket? This will allow you to reassign it with updated catalyst values.')) {
-                  onUnassignFromBasket(item.id);
-                }
-              }}
-              className="w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all border-red-300 text-red-700 bg-red-50 hover:bg-red-100 focus:ring-red-500 dark:border-red-600 dark:text-red-400 dark:bg-red-900 dark:hover:bg-red-800"
-            >
-              Unassign
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowAssignMenu(!showAssignMenu)}
-              className="w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100 focus:ring-blue-500 dark:border-blue-600 dark:text-blue-400 dark:bg-blue-900 dark:hover:bg-blue-800"
-            >
-              Assign to Basket
-              <MoreHorizontal className="w-4 h-4 ml-2" />
-            </button>
-          )}
+        {/* Action Buttons */}
+        <div className="space-y-2">
+          {/* Mark as Completed Button */}
+          <button
+            onClick={() => setShowCompleteModal(true)}
+            className="w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all border-green-300 text-green-700 bg-green-50 hover:bg-green-100 focus:ring-green-500 dark:border-green-600 dark:text-green-400 dark:bg-green-900 dark:hover:bg-green-800"
+          >
+            <Check className="w-4 h-4 mr-2" />
+            Mark as Completed
+          </button>
+
+          {/* Assignment Dropdown - Using simple relative positioning */}
+          <div className="relative z-50">
+            {item.basket_id ? (
+              <button
+                onClick={() => {
+                  if (window.confirm('Unassign this item from the basket? This will allow you to reassign it with updated catalyst values.')) {
+                    onUnassignFromBasket(item.id);
+                  }
+                }}
+                className="w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all border-red-300 text-red-700 bg-red-50 hover:bg-red-100 focus:ring-red-500 dark:border-red-600 dark:text-red-400 dark:bg-red-900 dark:hover:bg-red-800"
+              >
+                Unassign
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowAssignMenu(!showAssignMenu)}
+                className="w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all border-blue-300 text-blue-700 bg-blue-50 hover:bg-blue-100 focus:ring-blue-500 dark:border-blue-600 dark:text-blue-400 dark:bg-blue-900 dark:hover:bg-blue-800"
+              >
+                Assign to Basket
+                <MoreHorizontal className="w-4 h-4 ml-2" />
+              </button>
+            )}
 
           {/* Simple absolute positioned dropdown */}
           {showAssignMenu && !item.basket_id && (
