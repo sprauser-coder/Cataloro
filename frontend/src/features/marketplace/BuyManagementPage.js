@@ -621,7 +621,8 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
                 Completed
               </button>
             </nav>
-          </div>
+            </div>
+          )}
           
           <div className="p-6">
             {activeTab === 'bought-items' && (
