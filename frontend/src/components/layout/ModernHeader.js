@@ -579,7 +579,8 @@ function ModernHeader({ darkMode, toggleDarkMode, isMobileMenuOpen, setIsMobileM
   const allNavigationItems = [
     { label: 'About', path: '/info', icon: Globe, key: 'about' },
     { label: 'Browse', path: '/browse', icon: Store, key: 'browse' },
-    { label: 'My Listings', path: '/my-listings', icon: Package, key: 'my_listings' },
+    { label: 'Buy', path: '/buy', icon: ShoppingCart, key: 'buy' },
+    { label: 'Sell', path: '/sell', icon: Package, key: 'sell' },
     { label: 'Notifications', path: '/notifications', icon: Bell, key: 'notifications' },
   ];
 
