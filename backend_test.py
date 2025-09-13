@@ -35,7 +35,7 @@ from datetime import datetime, timezone
 import pytz
 
 # Configuration - Use production URL from frontend/.env
-BACKEND_URL = "https://cataloro-marketplace-5.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-6.preview.emergentagent.com/api"
 
 class BackendTester:
     def __init__(self):
@@ -5939,7 +5939,7 @@ class BackendTester:
         print("🌐 PRODUCTION DEPLOYMENT TARGET:")
         print("-" * 50)
         print("   URL: https://app.cataloro.com")
-        print("   Backend: https://cataloro-marketplace-5.preview.emergentagent.com/api")
+        print("   Backend: https://cataloro-marketplace-6.preview.emergentagent.com/api")
         print("   Status: Ready for final deployment verification")
         
         print("=" * 80)

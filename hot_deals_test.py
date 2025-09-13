@@ -45,7 +45,7 @@ from datetime import datetime, timezone, timedelta
 import pytz
 
 # Configuration - Use production URL from frontend/.env
-BACKEND_URL = "https://cataloro-marketplace-5.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-6.preview.emergentagent.com/api"
 
 class HotDealsFilterTester:
     def __init__(self):

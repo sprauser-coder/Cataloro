@@ -48,7 +48,7 @@ import pytz
 import hashlib
 
 # Configuration - Use production URL from frontend/.env
-BACKEND_URL = "https://cataloro-marketplace-5.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-6.preview.emergentagent.com/api"
 
 # Specific listing ID reported by user
 SPECIFIC_LISTING_ID = "ed1b24bb-4e6d-48d5-b54a-8a5780313675"

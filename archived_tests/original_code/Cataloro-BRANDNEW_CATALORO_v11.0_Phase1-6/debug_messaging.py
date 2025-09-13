@@ -7,7 +7,7 @@ import requests
 import json
 
 def debug_messaging():
-    base_url = "https://cataloro-marketplace-5.preview.emergentagent.com"
+    base_url = "https://cataloro-marketplace-6.preview.emergentagent.com"
     
     # Create a test user
     user_data = {

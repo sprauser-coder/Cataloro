@@ -986,7 +986,7 @@ agent_communication:
 #### Authentication Fix with Debug Logging Testing Results (Latest):
 **AUTHENTICATION FIX WITH DEBUG LOGGING VERIFIED:** ✅ COMPLETE SUCCESS - Executed comprehensive testing of the improved authentication fix with debug logging as specifically requested by the user. Successfully verified that the authentication fix is working correctly: login form triggers API calls to backend, debug logging functional, authentication state properly stored, browse page accessible (5/5 test categories completed successfully, 100% success rate, authentication fix working perfectly).
 
-**1. Navigate to Frontend and Monitor Debug Logs** ✅ COMPLETE SUCCESS - Debug logging and frontend access working correctly: Successfully navigated to frontend URL (https://cataloro-marketplace-5.preview.emergentagent.com) ✅, Authentication debug logs detected with 🔐 prefix working correctly ✅, Console shows proper auth state checking ("🔐 Auth check - token: false user: false location: /") ✅, Debug logging implementation is functional and providing detailed authentication flow information ✅.
+**1. Navigate to Frontend and Monitor Debug Logs** ✅ COMPLETE SUCCESS - Debug logging and frontend access working correctly: Successfully navigated to frontend URL (https://cataloro-marketplace-6.preview.emergentagent.com) ✅, Authentication debug logs detected with 🔐 prefix working correctly ✅, Console shows proper auth state checking ("🔐 Auth check - token: false user: false location: /") ✅, Debug logging implementation is functional and providing detailed authentication flow information ✅.
 
 **2. Login Form Interaction and API Monitoring** ✅ COMPLETE SUCCESS - Form submission and API calls working correctly: Login form fields accessible and fillable (email: admin@cataloro.com, password: admin123) ✅, Login button clickable and responsive ✅, **AUTHENTICATION FIX WORKING**: Authentication API requests successfully made to /api/auth/login after form submission ✅, Network monitoring shows successful authentication requests and responses (Status 200) ✅, Form submission handler properly triggering API calls ✅.
 
@@ -1014,7 +1014,7 @@ agent_communication:
 - Form Validation: Working correctly - form submission reaching validation and processing stages ✅
 
 **TECHNICAL VERIFICATION:**
-- Frontend URL Access: ✅ Working (https://cataloro-marketplace-5.preview.emergentagent.com accessible)
+- Frontend URL Access: ✅ Working (https://cataloro-marketplace-6.preview.emergentagent.com accessible)
 - Debug Console Logs: ✅ Working (🔐 authentication debug messages visible and informative)
 - Login Form Elements: ✅ Working (email and password fields functional, login button clickable)
 - Form Submission: ✅ Working (API requests successfully triggered by form submission)
@@ -1023,7 +1023,7 @@ agent_communication:
 - Authentication State Storage: ✅ Working (tokens and user data properly stored in localStorage)
 
 **DEBUG MESSAGES VERIFIED:**
-- "🔐 Login attempt - URL: https://cataloro-marketplace-5.preview.emergentagent.com/api/auth/login Email: admin@cataloro.com" ✅
+- "🔐 Login attempt - URL: https://cataloro-marketplace-6.preview.emergentagent.com/api/auth/login Email: admin@cataloro.com" ✅
 - "🔐 Login response status: 200" ✅
 - "🔐 Auth check - token: true user: true location: /browse" ✅
 - "🔐 Auth success - user: Sash" ✅
@@ -4688,7 +4688,7 @@ agent_communication:
 
 **3. Logo URL Accessibility Testing** ✅ FULLY ACCESSIBLE - Logo URL format validation successful: Data URL format validation passed ✅, Base64 data decodes successfully to 189 bytes ✅, URL length appropriate at 274 characters ✅, Image data integrity confirmed through decode verification ✅, Frontend can process data URL format correctly ✅, No accessibility issues detected ✅.
 
-**4. Frontend Integration Testing** ✅ COMPLETELY WORKING - Frontend logo endpoint fully accessible: Frontend URL accessible at https://cataloro-marketplace-5.preview.emergentagent.com/api/admin/logo ✅, Response time excellent at 50ms ✅, Response contains logo_url field as expected by frontend ✅, URL path corrected (no double /api issue) ✅, Complete frontend-backend integration working ✅, Logo implementation cycle working end-to-end ✅.
+**4. Frontend Integration Testing** ✅ COMPLETELY WORKING - Frontend logo endpoint fully accessible: Frontend URL accessible at https://cataloro-marketplace-6.preview.emergentagent.com/api/admin/logo ✅, Response time excellent at 50ms ✅, Response contains logo_url field as expected by frontend ✅, URL path corrected (no double /api issue) ✅, Complete frontend-backend integration working ✅, Logo implementation cycle working end-to-end ✅.
 
 **CRITICAL FINDINGS:**
 - ✅ LOGO UPLOAD WORKING PERFECTLY - POST endpoint accepts images and stores in database correctly
@@ -6375,7 +6375,7 @@ agent_communication:
 
 **6. Pagination Performance** ✅ EXCELLENT - Pagination working efficiently across pages: Page Success Rate: 5/5 pages successful (100%) ✅, First Page Performance: 1398ms (acceptable for full data load) ✅, Subsequent Pages: 8-14ms (excellent caching/optimization) ✅, Pagination Consistency: Stable performance across pages ✅, Large Result Sets: Proper handling of different page sizes ✅.
 
-**7. URL Configuration Verification** ✅ PERFECT - Production URL working correctly: Target URL: `https://cataloro-marketplace-5.preview.emergentagent.com/api/marketplace/browse` accessible ✅, Response time: 1.02s (within acceptable range) ✅, Status code: 200 (successful) ✅, Data structure: Complete with all required fields ✅, Frontend URL configuration: Fixed and working correctly ✅.
+**7. URL Configuration Verification** ✅ PERFECT - Production URL working correctly: Target URL: `https://cataloro-marketplace-6.preview.emergentagent.com/api/marketplace/browse` accessible ✅, Response time: 1.02s (within acceptable range) ✅, Status code: 200 (successful) ✅, Data structure: Complete with all required fields ✅, Frontend URL configuration: Fixed and working correctly ✅.
 
 **CRITICAL FINDINGS:**
 - ✅ Performance target achieved: 672ms average (well under 1000ms target)
@@ -6395,7 +6395,7 @@ agent_communication:
 - Data Structure: All required fields (seller, bid_info, time_info) properly populated
 - Filter Processing: All filter types (price, seller type, pagination) working correctly
 - Concurrent Handling: System stable under concurrent load with excellent throughput
-- URL Configuration: Production endpoint `https://cataloro-marketplace-5.preview.emergentagent.com/api/marketplace/browse` working correctly
+- URL Configuration: Production endpoint `https://cataloro-marketplace-6.preview.emergentagent.com/api/marketplace/browse` working correctly
 
 **PERFORMANCE ANALYSIS:**
 The hybrid optimization has successfully achieved the performance targets with the browse endpoint consistently responding under 1000ms (672ms average). Redis caching is functional and providing data consistency. The system shows excellent performance for filtered queries, pagination, and concurrent handling. The URL configuration fixes have resolved the frontend connectivity issues.
@@ -8424,7 +8424,7 @@ agent_communication:
     -agent: "testing"
     -message: "✅ UNIFIED CALCULATIONS ENDPOINT COMPREHENSIVE TESTING COMPLETED: Executed comprehensive testing of the new /api/admin/catalyst/unified-calculations endpoint as requested in review. ALL 9/10 TESTS PASSED (90% success rate). KEY FINDINGS: (1) Endpoint accessible and returns unified data combining price and content calculations, (2) All required fields present: catalyst_id, cat_id, name, weight, total_price, pt_g, pd_g, rh_g, is_override, (3) Database_id properly hidden from response, (4) Content calculations accurate using formula (weight * ppm / 1000 * renumeration), (5) Price calculations working for both standard and override scenarios, (6) Handles large datasets efficiently (4496 items), (7) 100% data completeness. Minor issue: 0.01 EUR floating-point precision difference vs old endpoint (acceptable). Unified endpoint provides significant advantages: single request efficiency, enhanced data with content values, security improvement, consistent naming, transparency, override support, scalability. All requirements verified working perfectly."
     -agent: "testing"
-    -message: "✅ CATALYST LISTING CREATION FOR PRODUCTDETAILPAGE VERIFICATION COMPLETED: Executed comprehensive testing of catalyst listing creation to verify ProductDetailPage displays content values correctly as requested in review. ALL 5/5 TESTS PASSED (100% success rate). KEY ACHIEVEMENTS: (1) Successfully logged in as demo admin user (sash_admin) with Admin role permissions, (2) Retrieved comprehensive catalyst data from unified calculations endpoint (4496 entries), (3) Created test listing with comprehensive catalyst data including content values (pt_g: 0.6712, pd_g: 0.0, rh_g: 0.0), (4) Verified all 9 catalyst fields properly stored including catalyst_specs object, (5) Confirmed listing appears in browse endpoint with catalyst data intact. CREATED LISTING ID: 3215645c-64c4-441d-a18b-2aa2c9ce256f for ProductDetailPage testing. Frontend URL: https://cataloro-marketplace-5.preview.emergentagent.com/listing/3215645c-64c4-441d-a18b-2aa2c9ce256f. All requirements from the review request have been successfully verified and are working perfectly."
+    -message: "✅ CATALYST LISTING CREATION FOR PRODUCTDETAILPAGE VERIFICATION COMPLETED: Executed comprehensive testing of catalyst listing creation to verify ProductDetailPage displays content values correctly as requested in review. ALL 5/5 TESTS PASSED (100% success rate). KEY ACHIEVEMENTS: (1) Successfully logged in as demo admin user (sash_admin) with Admin role permissions, (2) Retrieved comprehensive catalyst data from unified calculations endpoint (4496 entries), (3) Created test listing with comprehensive catalyst data including content values (pt_g: 0.6712, pd_g: 0.0, rh_g: 0.0), (4) Verified all 9 catalyst fields properly stored including catalyst_specs object, (5) Confirmed listing appears in browse endpoint with catalyst data intact. CREATED LISTING ID: 3215645c-64c4-441d-a18b-2aa2c9ce256f for ProductDetailPage testing. Frontend URL: https://cataloro-marketplace-6.preview.emergentagent.com/listing/3215645c-64c4-441d-a18b-2aa2c9ce256f. All requirements from the review request have been successfully verified and are working perfectly."
     -agent: "testing"
     -message: "✅ CONTENT DISPLAY FUNCTIONALITY END-TO-END TESTING COMPLETED: Executed comprehensive end-to-end testing of content display functionality as requested in review. ALL 7/7 TESTS PASSED (100% success rate). MAJOR FINDINGS: (1) Found 3971 catalysts with significant content values (Pt g > 0.1 OR Pd g > 0.1 OR Rh g > 0.1), (2) Top catalyst identified: MercedesA0004900514 with Pt=10.161g, Pd=59.331g, Rh=0.000g, Weight=5.04g, Price=€3096.64, (3) Admin permissions fix verified - Admin users can see content values correctly, (4) Created test listing with comprehensive catalyst data saving including catalyst_specs for inventory management, (5) Browse verification confirms data integrity maintained. CATALYST DETAILS FOR FRONTEND TESTING: Primary - MercedesA0004900514 (Cat ID: 36515, Catalyst ID: 5b836436-a558-4282-be4a-ab65c98afe11), Secondary options available. Complete flow from catalyst selection to content display working perfectly. All requirements from the review request have been successfully verified and are working perfectly."
 
@@ -9189,7 +9189,7 @@ The backend time limit functionality is working perfectly. The issue appears to 
 
 **CREATED LISTING DETAILS:**
 - **Listing ID**: 3215645c-64c4-441d-a18b-2aa2c9ce256f
-- **Frontend URL**: https://cataloro-marketplace-5.preview.emergentagent.com/listing/3215645c-64c4-441d-a18b-2aa2c9ce256f
+- **Frontend URL**: https://cataloro-marketplace-6.preview.emergentagent.com/listing/3215645c-64c4-441d-a18b-2aa2c9ce256f
 - **Catalyst Name**: MazdaRF4SOK14
 - **Content Values**: PT: 0.6712g, PD: 0.0g, RH: 0.0g
 - **Weight**: 1.32g ceramic weight
@@ -10117,7 +10117,7 @@ The user reported issue "Can create baskets but cannot assign items" appears to 
 
 **8. Tender Endpoints Discovery** ✅ ENDPOINTS EXIST AND WORKING - Found and tested tender creation workflow: Tender submission endpoint: POST /api/tenders/submit working ✅, Tender acceptance endpoint: PUT /api/tenders/{tender_id}/accept working ✅, Requires seller_id in acceptance data for security ✅, Complete tender workflow functional ✅.
 
-**9. Frontend-Backend URL Consistency** ✅ VERIFIED CORRECT - API endpoints using correct production URL: Backend URL: https://cataloro-marketplace-5.preview.emergentagent.com/api ✅, All API calls successful with proper CORS headers ✅, No URL configuration issues found ✅, Frontend should use same backend URL ✅.
+**9. Frontend-Backend URL Consistency** ✅ VERIFIED CORRECT - API endpoints using correct production URL: Backend URL: https://cataloro-marketplace-6.preview.emergentagent.com/api ✅, All API calls successful with proper CORS headers ✅, No URL configuration issues found ✅, Frontend should use same backend URL ✅.
 
 **10. Complete Workflow Testing** ✅ END-TO-END SUCCESS - Full buy management workflow now functional: Listing creation → Tender submission → Tender acceptance → Bought item creation ✅, All APIs working correctly with proper data flow ✅, Buy Management page should now display real data ✅, Issue resolved through proper test data creation ✅.
 
@@ -11940,7 +11940,7 @@ const formatDate = (listing) => {
 **6. Specific Element Verification** ✅ ALL ELEMENTS PRESENT AND FUNCTIONAL - Individual component testing completed: Pictures display at top of each tile with proper aspect ratio ✅, Titles clearly visible with appropriate font sizing ✅, Prices show current highest bid or starting price correctly ✅, Market Range badges appear for catalyst items (TRPSAK333: €135-€165, VW074131701G: €196-€240) ✅, Seller information with avatars and usernames displayed ✅, Location information shows "Location not specified" appropriately ✅, Input fields with proper placeholders (Min: €150.00, Min: €200.00, etc.) ✅, Dates positioned at bottom of tiles ✅.
 
 **TECHNICAL VERIFICATION:**
-- Browse page URL: https://cataloro-marketplace-5.preview.emergentagent.com/browse accessible and functional
+- Browse page URL: https://cataloro-marketplace-6.preview.emergentagent.com/browse accessible and functional
 - Total listings displayed: 22 results with consistent structure
 - Grid layout: Professional 4-column desktop layout with responsive behavior
 - Visual elements: 54 business/private badges, 39 market range badges, proper color coding
@@ -12911,7 +12911,7 @@ if not seller:
    - All services healthy and responsive
 
 3. **Environment Configuration** ✅ PASSED
-   - Backend URL: https://cataloro-marketplace-5.preview.emergentagent.com ✅ WORKING
+   - Backend URL: https://cataloro-marketplace-6.preview.emergentagent.com ✅ WORKING
    - MongoDB URL: mongodb://localhost:27017 ✅ WORKING
    - All API routes properly prefixed with '/api'
 
@@ -14286,7 +14286,7 @@ backend:
     status_history:
         - working: true
           agent: "testing"
-          comment: "✅ ADMIN LOGO IMPLEMENTATION COMPREHENSIVE TESTING COMPLETED - ALL FUNCTIONALITY WORKING PERFECTLY: Executed complete end-to-end testing of admin logo functionality as specifically requested in review including logo upload, retrieval, and frontend integration verification. ✅ LOGO UPLOAD TESTING: POST /api/admin/logo endpoint working perfectly - successfully uploaded 189-byte test PNG logo with 70ms response time, proper filename (test_logo.png) and size validation, database storage in site_settings collection with type='logo', returns proper data URL format (data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQA...). ✅ LOGO RETRIEVAL TESTING: GET /api/admin/logo endpoint working excellently - retrieves uploaded logo with 14ms response time, returns proper JSON structure with logo_url and mode fields, logo_url contains valid base64 data (274 characters, 189 bytes decoded successfully). ✅ LOGO URL ACCESSIBILITY TESTING: Data URL format validation successful - base64 data decodes correctly to 189 bytes, URL format valid and accessible for frontend integration. ✅ FRONTEND INTEGRATION TESTING: Frontend logo endpoint fully accessible at correct URL (https://cataloro-marketplace-5.preview.emergentagent.com/api/admin/logo) with 50ms response time, response contains logo_url field as expected, frontend URL path corrected (no double /api issue), complete logo implementation cycle working end-to-end. ✅ COMPREHENSIVE TEST RESULTS: 4/4 logo tests passed (100% success rate) - Logo Upload ✅, Logo Retrieval ✅, Logo URL Accessibility ✅, Frontend Integration ✅. The complete logo implementation is working perfectly with proper upload, storage, retrieval, and frontend integration. All review requirements met successfully."
+          comment: "✅ ADMIN LOGO IMPLEMENTATION COMPREHENSIVE TESTING COMPLETED - ALL FUNCTIONALITY WORKING PERFECTLY: Executed complete end-to-end testing of admin logo functionality as specifically requested in review including logo upload, retrieval, and frontend integration verification. ✅ LOGO UPLOAD TESTING: POST /api/admin/logo endpoint working perfectly - successfully uploaded 189-byte test PNG logo with 70ms response time, proper filename (test_logo.png) and size validation, database storage in site_settings collection with type='logo', returns proper data URL format (data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQA...). ✅ LOGO RETRIEVAL TESTING: GET /api/admin/logo endpoint working excellently - retrieves uploaded logo with 14ms response time, returns proper JSON structure with logo_url and mode fields, logo_url contains valid base64 data (274 characters, 189 bytes decoded successfully). ✅ LOGO URL ACCESSIBILITY TESTING: Data URL format validation successful - base64 data decodes correctly to 189 bytes, URL format valid and accessible for frontend integration. ✅ FRONTEND INTEGRATION TESTING: Frontend logo endpoint fully accessible at correct URL (https://cataloro-marketplace-6.preview.emergentagent.com/api/admin/logo) with 50ms response time, response contains logo_url field as expected, frontend URL path corrected (no double /api issue), complete logo implementation cycle working end-to-end. ✅ COMPREHENSIVE TEST RESULTS: 4/4 logo tests passed (100% success rate) - Logo Upload ✅, Logo Retrieval ✅, Logo URL Accessibility ✅, Frontend Integration ✅. The complete logo implementation is working perfectly with proper upload, storage, retrieval, and frontend integration. All review requirements met successfully."
 
 metadata:
   created_by: "testing_agent"

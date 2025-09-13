@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 # Test Configuration
-BACKEND_URL = "https://cataloro-marketplace-5.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-6.preview.emergentagent.com/api"
 
 # Demo User IDs to test (from review request)
 DEMO_USER_ID_1 = "2ae84d11-f762-4462-9467-d283fd719d21"

@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Use the production URL from frontend/.env
-BASE_URL = "https://cataloro-marketplace-5.preview.emergentagent.com/api"
+BASE_URL = "https://cataloro-marketplace-6.preview.emergentagent.com/api"
 
 def analyze_revenue_calculation():
     """Analyze the revenue calculation based on debug log findings"""
