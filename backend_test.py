@@ -1,28 +1,29 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - COMPLETED TRANSACTIONS FUNCTIONALITY TESTING
-Testing the completed transactions functionality in the backend
+CATALORO MARKETPLACE - TENDER ACCEPTANCE WORKFLOW TESTING
+Testing the new tender acceptance workflow backend endpoints
 
 SPECIFIC TESTS REQUESTED:
-1. **Test Transaction Completion Endpoint**: POST /api/user/complete-transaction with valid listing_id, notes, and method
-2. **Test Get Completed Transactions**: GET /api/user/completed-transactions/{user_id} to retrieve user's completed transactions
-3. **Test Undo Completion**: DELETE /api/user/completed-transactions/{completion_id} to undo a completion
-4. **Test Admin Overview**: GET /api/admin/completed-transactions to get admin view of all completions
-5. **Test Dual Party Completion**: Have both buyer and seller mark the same transaction as complete
+1. **Test Accepted Tenders Endpoint**: GET /api/tenders/seller/{seller_id}/accepted - verify enriched data
+2. **Test Listing Reactivation Endpoint**: PUT /api/listings/{listing_id}/reactivate - verify reactivation and notifications
+3. **Test Bought Item Creation**: Verify bought_item records are created when tenders are accepted
+4. **Test Complete Transaction Workflow**: Test marking transactions as complete from seller side
+5. **Test Complete Workflow**: Accept tender → Check accepted tenders → Complete order → Set back online
 
 CRITICAL ENDPOINTS BEING TESTED:
 - POST /api/auth/login (user authentication)
+- GET /api/tenders/seller/{seller_id}/accepted (get accepted tenders with enriched data)
+- PUT /api/listings/{listing_id}/reactivate (reactivate listing and cancel accepted tenders)
 - POST /api/user/complete-transaction (mark transaction as complete)
-- GET /api/user/completed-transactions/{user_id} (get user's completed transactions)
-- DELETE /api/user/completed-transactions/{completion_id} (undo completion)
-- GET /api/admin/completed-transactions (admin view of all completions)
+- GET /api/user/completed-transactions/{user_id} (get completed transactions)
+- GET /api/user/bought-items/{user_id} (verify bought items creation)
 
 EXPECTED RESULTS:
-- Transaction completion creates proper records and sends notifications
-- Users can retrieve their completed transactions with proper role context
-- Users can undo their completion confirmations
-- Admin can view all completions with proper status information
-- Dual party completion sets is_fully_completed to true
+- ✅ Accepted tenders endpoint returns enriched data with listing and buyer info
+- ✅ Listing reactivation works and sends notifications to affected buyers
+- ✅ Bought items are created automatically when tenders are accepted
+- ✅ Complete order workflow functions properly from seller side
+- ✅ Set back online functionality works correctly
 """
 
 import asyncio
