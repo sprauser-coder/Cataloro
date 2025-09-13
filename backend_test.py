@@ -343,8 +343,8 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
     
-    async def test_completed_transactions_endpoint(self, user_id, token):
-        """Test GET /api/user/completed-transactions/{user_id} endpoint"""
+    async def test_completed_transactions_filtering(self, user_id, token, expected_role, test_listing_id):
+        """Test GET /api/user/completed-transactions/{user_id} endpoint with proper filtering"""
         start_time = datetime.now()
         
         try:
@@ -360,61 +360,89 @@ class BackendTester:
                     if isinstance(data, list):
                         completed_count = len(data)
                         
-                        # Check if completed transactions have proper structure
-                        has_proper_structure = True
-                        structure_details = []
-                        has_timestamps = True
+                        # Find our test transaction
+                        test_transaction = None
+                        for transaction in data:
+                            if transaction.get('listing_id') == test_listing_id:
+                                test_transaction = transaction
+                                break
                         
-                        if completed_count > 0:
-                            sample_transaction = data[0]
-                            required_fields = ['id', 'listing_id', 'buyer_id', 'seller_id']
-                            timestamp_fields = ['seller_confirmed_at', 'completed_at']
+                        if test_transaction:
+                            # Verify user role context
+                            user_role_in_transaction = test_transaction.get('user_role_in_transaction')
                             
-                            # Check transaction fields
-                            missing_fields = [field for field in required_fields if field not in sample_transaction]
-                            if missing_fields:
-                                has_proper_structure = False
-                                structure_details.append(f"Missing transaction fields: {missing_fields}")
+                            # Verify confirmation timestamps based on role
+                            seller_confirmed_at = test_transaction.get('seller_confirmed_at')
+                            buyer_confirmed_at = test_transaction.get('buyer_confirmed_at')
                             
-                            # Check timestamp fields
-                            missing_timestamps = [field for field in timestamp_fields if not sample_transaction.get(field)]
-                            if missing_timestamps:
-                                has_timestamps = False
-                                structure_details.append(f"Missing timestamp fields: {missing_timestamps}")
-                        
-                        if has_proper_structure and has_timestamps:
-                            self.log_result(
-                                "Completed Transactions Endpoint", 
-                                True, 
-                                f"✅ WORKING CORRECTLY: Returns {completed_count} completed transactions with proper timestamps",
-                                response_time
-                            )
-                        elif has_proper_structure:
-                            self.log_result(
-                                "Completed Transactions Endpoint", 
-                                True, 
-                                f"✅ MOSTLY WORKING: Returns {completed_count} completed transactions but missing some timestamps",
-                                response_time
-                            )
+                            if expected_role == 'seller':
+                                # For seller, should have seller_confirmed_at
+                                if user_role_in_transaction == 'seller' and seller_confirmed_at:
+                                    self.log_result(
+                                        f"Completed Transactions Filtering ({expected_role.title()})", 
+                                        True, 
+                                        f"✅ SELLER FILTERING WORKING: Found transaction with user_role_in_transaction=seller, seller_confirmed_at present",
+                                        response_time
+                                    )
+                                    return {
+                                        'success': True,
+                                        'completed_count': completed_count,
+                                        'test_transaction': test_transaction,
+                                        'user_role_in_transaction': user_role_in_transaction,
+                                        'seller_confirmed_at': seller_confirmed_at,
+                                        'buyer_confirmed_at': buyer_confirmed_at
+                                    }
+                                else:
+                                    self.log_result(
+                                        f"Completed Transactions Filtering ({expected_role.title()})", 
+                                        False, 
+                                        f"❌ SELLER FILTERING FAILED: user_role_in_transaction={user_role_in_transaction}, seller_confirmed_at={seller_confirmed_at}",
+                                        response_time
+                                    )
+                                    return {'success': False, 'error': 'Seller filtering incorrect'}
+                            
+                            elif expected_role == 'buyer':
+                                # For buyer, should have buyer_confirmed_at
+                                if user_role_in_transaction == 'buyer' and buyer_confirmed_at:
+                                    self.log_result(
+                                        f"Completed Transactions Filtering ({expected_role.title()})", 
+                                        True, 
+                                        f"✅ BUYER FILTERING WORKING: Found transaction with user_role_in_transaction=buyer, buyer_confirmed_at present",
+                                        response_time
+                                    )
+                                    return {
+                                        'success': True,
+                                        'completed_count': completed_count,
+                                        'test_transaction': test_transaction,
+                                        'user_role_in_transaction': user_role_in_transaction,
+                                        'seller_confirmed_at': seller_confirmed_at,
+                                        'buyer_confirmed_at': buyer_confirmed_at
+                                    }
+                                else:
+                                    self.log_result(
+                                        f"Completed Transactions Filtering ({expected_role.title()})", 
+                                        False, 
+                                        f"❌ BUYER FILTERING FAILED: user_role_in_transaction={user_role_in_transaction}, buyer_confirmed_at={buyer_confirmed_at}",
+                                        response_time
+                                    )
+                                    return {'success': False, 'error': 'Buyer filtering incorrect'}
                         else:
+                            # Transaction not found - this might be expected if user hasn't confirmed yet
                             self.log_result(
-                                "Completed Transactions Endpoint", 
-                                False, 
-                                f"❌ STRUCTURE ISSUES: Returns {completed_count} transactions but has structure problems: {'; '.join(structure_details)}",
+                                f"Completed Transactions Filtering ({expected_role.title()})", 
+                                True, 
+                                f"✅ FILTERING WORKING: Transaction not found for {expected_role} (expected if {expected_role} hasn't confirmed yet)",
                                 response_time
                             )
-                        
-                        return {
-                            'success': True,
-                            'completed_count': completed_count,
-                            'data': data,
-                            'has_proper_structure': has_proper_structure,
-                            'has_timestamps': has_timestamps,
-                            'structure_details': structure_details
-                        }
+                            return {
+                                'success': True,
+                                'completed_count': completed_count,
+                                'test_transaction': None,
+                                'transaction_not_found': True
+                            }
                     else:
                         self.log_result(
-                            "Completed Transactions Endpoint", 
+                            f"Completed Transactions Filtering ({expected_role.title()})", 
                             False, 
                             f"❌ WRONG FORMAT: Expected array, got {type(data)}",
                             response_time
@@ -423,7 +451,7 @@ class BackendTester:
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Completed Transactions Endpoint", 
+                        f"Completed Transactions Filtering ({expected_role.title()})", 
                         False, 
                         f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
                         response_time
@@ -433,7 +461,7 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Completed Transactions Endpoint", 
+                f"Completed Transactions Filtering ({expected_role.title()})", 
                 False, 
                 f"❌ REQUEST FAILED: {str(e)}",
                 response_time
