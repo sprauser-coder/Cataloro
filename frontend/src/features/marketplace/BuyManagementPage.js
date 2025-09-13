@@ -455,6 +455,13 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
     }
   };
 
+  // Check if an item is completed
+  const isItemCompleted = (listingId) => {
+    return completedTransactions.some(transaction => 
+      transaction.listing_id === listingId && transaction.user_role_in_transaction === 'buyer'
+    );
+  };
+
   // Undo transaction completion
   const undoTransactionCompletion = async (completionId) => {
     try {
