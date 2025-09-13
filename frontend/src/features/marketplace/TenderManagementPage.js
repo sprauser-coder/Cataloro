@@ -106,6 +106,20 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     }
   }, [searchParams, activeFilter]);
 
+  // Load data when tab changes (only if not restricted to single tab)
+  useEffect(() => {
+    if (!user || showBuyTabOnly || showSellTabOnly) return;
+    
+    if (activeTab === 'buy' && myTenders.length === 0) {
+      fetchMyTenders();
+    } else if ((activeTab === 'sell' || activeTab === 'listings') && tendersOverview.length === 0) {
+      fetchTendersOverview();
+      if (myListings.length === 0) {
+        fetchMyListings();
+      }
+    }
+  }, [activeTab, user, showBuyTabOnly, showSellTabOnly]);
+
   const fetchTendersOverview = async () => {
     if (!user?.id || tendersLoading) return; // Prevent multiple concurrent calls
     
