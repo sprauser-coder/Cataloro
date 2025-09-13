@@ -210,20 +210,27 @@ class CompletedTransactionsTester:
             )
             return None
     
-    async def create_test_tender_for_completion_testing(self, admin_token):
+    async def create_test_tender_for_completion_testing(self, admin_token, admin_user_id):
         """Create a test tender and accept it for completion testing"""
         try:
             headers = {"Authorization": f"Bearer {admin_token}"}
             
-            # First, get a listing to create a tender for
-            async with self.session.get(f"{BACKEND_URL}/marketplace/browse?limit=1", headers=headers) as response:
+            # First, get a listing to create a tender for (not owned by admin user)
+            async with self.session.get(f"{BACKEND_URL}/marketplace/browse?limit=10", headers=headers) as response:
                 if response.status == 200:
                     listings_data = await response.json()
                     listings = listings_data.get('listings', []) if isinstance(listings_data, dict) else listings_data
                     
-                    if listings:
-                        test_listing = listings[0]
+                    # Find a listing not owned by admin user
+                    test_listing = None
+                    for listing in listings:
+                        if listing.get('seller_id') != admin_user_id:
+                            test_listing = listing
+                            break
+                    
+                    if test_listing:
                         listing_id = test_listing.get('id')
+                        seller_id = test_listing.get('seller_id')
                         
                         # Create a tender
                         tender_data = {
@@ -232,13 +239,14 @@ class CompletedTransactionsTester:
                             "message": "Test tender for completion testing"
                         }
                         
-                        async with self.session.post(f"{BACKEND_URL}/tenders", json=tender_data, headers=headers) as tender_response:
+                        async with self.session.post(f"{BACKEND_URL}/tenders/submit", json=tender_data, headers=headers) as tender_response:
                             if tender_response.status == 200:
                                 tender_result = await tender_response.json()
                                 tender_id = tender_result.get('id')
                                 
-                                # Accept the tender
-                                async with self.session.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", headers=headers) as accept_response:
+                                # Accept the tender (need seller_id for acceptance)
+                                accept_data = {"seller_id": seller_id}
+                                async with self.session.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", json=accept_data, headers=headers) as accept_response:
                                     if accept_response.status == 200:
                                         accept_result = await accept_response.json()
                                         
@@ -252,9 +260,16 @@ class CompletedTransactionsTester:
                                             'id': tender_id,
                                             'listing_id': listing_id,
                                             'status': 'accepted',
-                                            'buyer_id': admin_token,  # This will be extracted from token
-                                            'seller_id': test_listing.get('seller_id')
+                                            'buyer_id': admin_user_id,
+                                            'seller_id': seller_id,
+                                            'listing': test_listing
                                         }
+                                    else:
+                                        error_text = await accept_response.text()
+                                        self.log_result("Create Test Tender", False, f"Failed to accept tender: {error_text}")
+                            else:
+                                error_text = await tender_response.text()
+                                self.log_result("Create Test Tender", False, f"Failed to create tender: {error_text}")
             
             self.log_result("Create Test Tender", False, "Could not create test tender for completion testing")
             return None
