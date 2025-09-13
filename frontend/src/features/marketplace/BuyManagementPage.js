@@ -656,6 +656,14 @@ function BuyManagementPage() {
                 exportingBaskets={exportingBaskets}
               />
             )}
+            
+            {activeTab === 'completed' && (
+              <CompletedTab 
+                transactions={completedTransactions}
+                onUndoCompletion={undoTransactionCompletion}
+                loading={loading}
+              />
+            )}
           </div>
         </div>
 
