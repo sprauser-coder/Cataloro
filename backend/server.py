@@ -7500,61 +7500,6 @@ async def update_listing_rating(listing_id: str):
     except Exception as e:
         print(f"Error updating listing rating: {e}")
 
-@app.get("/api/user/{user_id}/favorites")
-async def get_user_favorites(user_id: str):
-    """Get user's favorite catalysts"""
-    try:
-        favorites = await db.user_favorites.find({"user_id": user_id}).to_list(length=50)
-        
-        # Get full listing details for each favorite
-        favorite_listings = []
-        for fav in favorites:
-            listing = await db.listings.find_one({"id": fav["item_id"]})
-            if listing:
-                listing['_id'] = str(listing['_id'])
-                favorite_listings.append(listing)
-        
-        return {"favorites": favorite_listings}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch favorites: {str(e)}")
-
-@app.post("/api/user/{user_id}/favorites/{listing_id}")
-async def add_to_favorites(user_id: str, listing_id: str):
-    """Add catalyst to user's favorites"""
-    try:
-        # Check if already in favorites
-        existing = await db.user_favorites.find_one({"user_id": user_id, "item_id": listing_id})
-        if existing:
-            return {"message": "Already in favorites"}
-        
-        favorite = {
-            "id": str(uuid.uuid4()),
-            "user_id": user_id,
-            "item_id": listing_id,
-            "created_at": datetime.utcnow().isoformat()
-        }
-        
-        await db.user_favorites.insert_one(favorite)
-        return {"message": "Added to favorites"}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to add favorite: {str(e)}")
-
-@app.delete("/api/user/{user_id}/favorites/{listing_id}")
-async def remove_from_favorites(user_id: str, listing_id: str):
-    """Remove catalyst from user's favorites"""
-    try:
-        result = await db.user_favorites.delete_one({"user_id": user_id, "item_id": listing_id})
-        
-        if result.deleted_count > 0:
-            return {"message": "Removed from favorites"}
-        else:
-            return {"message": "Not found in favorites"}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to remove favorite: {str(e)}")
-
 # ============================================================================
 # SYSTEM NOTIFICATIONS MANAGEMENT - FOR GREEN TOAST NOTIFICATIONS
 # ============================================================================
