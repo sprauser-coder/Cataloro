@@ -163,6 +163,7 @@ export const WebSocketProvider = ({ children }) => {
     } catch (error) {
       console.error('Failed to initialize WebSocket:', error);
     }
+    */
   };
 
   const joinRoom = (roomType, roomId) => {
