@@ -562,8 +562,8 @@ class HotDealsFilterTester:
                 time_info = listing.get('time_info')
                 
                 if time_info and time_info.get('has_time_limit') and not time_info.get('is_expired'):
-                    time_remaining_seconds = time_info.get('time_remaining_seconds', 0)
-                    if time_remaining_seconds > 0:
+                    time_remaining_seconds = time_info.get('time_remaining_seconds')
+                    if time_remaining_seconds is not None and time_remaining_seconds > 0:
                         no_time_limit_accurate = False
                         self.log_result(
                             "No Time Limit Category Accuracy", 
