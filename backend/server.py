@@ -5202,7 +5202,7 @@ async def send_message(user_id: str, message_data: dict, current_user: dict = De
             "recipient_id": message_data.get("recipient_id"),
             "subject": message_data.get("subject", ""),
             "content": message_data.get("content"),
-            "read": False,
+            "is_read": False,  # Use consistent field name
             "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "id": str(uuid.uuid4())
         }
