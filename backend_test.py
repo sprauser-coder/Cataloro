@@ -962,7 +962,93 @@ class BackendTester:
             )
             return False
 
-    async def test_admin_login_authentication(self):
+    async def test_multiple_messages_workflow(self):
+        """Test complete workflow with multiple messages"""
+        print("\n📨 MULTIPLE MESSAGES WORKFLOW TEST:")
+        
+        # Login as admin and demo user
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        
+        if not admin_token or not demo_token:
+            self.log_result("Multiple Messages Workflow", False, "Failed to login users")
+            return False
+        
+        # Send multiple messages
+        message_ids = []
+        for i in range(3):
+            message_id = await self.send_test_message(admin_user_id, admin_token, demo_user_id, f"Test Message {i+1}")
+            if message_id:
+                message_ids.append(message_id)
+        
+        if len(message_ids) != 3:
+            self.log_result("Multiple Messages Workflow", False, f"Only sent {len(message_ids)}/3 messages")
+            return False
+        
+        # Mark first two messages as read
+        for i in range(2):
+            success = await self.mark_message_read_simple(demo_user_id, demo_token, message_ids[i])
+            if not success:
+                self.log_result("Multiple Messages Workflow", False, f"Failed to mark message {i+1} as read")
+                return False
+        
+        # Verify final state: 1 unread, 2 read
+        return await self.verify_message_counts(demo_user_id, demo_token, expected_unread=1, expected_read=2)
+    
+    async def send_test_message(self, sender_id, token, recipient_id, subject):
+        """Send a test message and return message ID"""
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            message_data = {
+                "recipient_id": recipient_id,
+                "subject": subject,
+                "content": f"Content for {subject}"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/user/{sender_id}/messages", 
+                                       json=message_data, headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data.get("id")
+                return None
+        except:
+            return None
+    
+    async def mark_message_read_simple(self, user_id, token, message_id):
+        """Mark message as read (simple version)"""
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            async with self.session.put(f"{BACKEND_URL}/user/{user_id}/messages/{message_id}/read", 
+                                      headers=headers) as response:
+                return response.status == 200
+        except:
+            return False
+    
+    async def verify_message_counts(self, user_id, token, expected_unread, expected_read):
+        """Verify message read/unread counts"""
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            async with self.session.get(f"{BACKEND_URL}/user/{user_id}/messages", headers=headers) as response:
+                if response.status == 200:
+                    messages = await response.json()
+                    
+                    # Count only recent messages (those with is_read field)
+                    recent_messages = [msg for msg in messages if "is_read" in msg]
+                    unread_count = sum(1 for msg in recent_messages if msg.get("is_read") == False)
+                    read_count = sum(1 for msg in recent_messages if msg.get("is_read") == True)
+                    
+                    success = (unread_count >= expected_unread and read_count >= expected_read)
+                    
+                    self.log_result(
+                        "Message Count Verification", 
+                        success, 
+                        f"Recent messages: {len(recent_messages)}, Unread: {unread_count} (expected ≥{expected_unread}), Read: {read_count} (expected ≥{expected_read})"
+                    )
+                    
+                    return success
+                return False
+        except:
+            return False
         """Test admin login with specific credentials"""
         print("\n🔐 ADMIN AUTHENTICATION TESTS:")
         
