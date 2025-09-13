@@ -9231,6 +9231,22 @@ async def get_seller_accepted_tenders(seller_id: str):
             "status": "accepted"
         }).sort("created_at", -1).to_list(length=None)
         
+        # Filter out tenders that have been marked as completed by the seller
+        filtered_tenders = []
+        for tender in accepted_tenders:
+            # Check if this tender has been marked as completed by the seller
+            completion_exists = await db.completed_transactions.find_one({
+                "listing_id": tender.get("listing_id"),
+                "seller_id": {"$in": associated_ids},
+                "seller_confirmed_at": {"$exists": True, "$ne": None}
+            })
+            
+            # Only include tenders that haven't been completed by the seller
+            if not completion_exists:
+                filtered_tenders.append(tender)
+        
+        accepted_tenders = filtered_tenders
+        
         # Enrich with listing and buyer information
         enriched_tenders = []
         for tender in accepted_tenders:
