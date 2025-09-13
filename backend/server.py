@@ -5008,8 +5008,14 @@ async def add_to_favorites(user_id: str, listing_id: str):
             "id": str(uuid.uuid4())
         }
         
-        # Check if already exists
-        existing = await db.user_favorites.find_one({"user_id": user_id, "listing_id": listing_id})
+        # Check if already exists (check both field names for compatibility)
+        existing = await db.user_favorites.find_one({
+            "user_id": user_id, 
+            "$or": [
+                {"listing_id": listing_id},
+                {"item_id": listing_id}
+            ]
+        })
         if existing:
             return {"message": "Listing already in favorites"}
         
