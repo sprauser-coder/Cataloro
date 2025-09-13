@@ -236,97 +236,49 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
     
-    async def test_seller_tenders_overview_endpoint(self, seller_id, token):
-        """Test GET /api/tenders/seller/{seller_id}/overview endpoint"""
+    async def test_complete_transaction_endpoint(self, listing_id, token):
+        """Test POST /api/user/complete-transaction endpoint"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/tenders/seller/{seller_id}/overview"
+            url = f"{BACKEND_URL}/user/complete-transaction"
             
-            async with self.session.get(url, headers=headers) as response:
+            transaction_data = {
+                "listing_id": listing_id
+            }
+            
+            async with self.session.post(url, headers=headers, json=transaction_data) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
                     data = await response.json()
                     
-                    if isinstance(data, list):
-                        listing_count = len(data)
-                        total_tenders = 0
-                        
-                        # Check if overview has proper structure
-                        has_proper_structure = True
-                        structure_details = []
-                        
-                        if listing_count > 0:
-                            sample_overview = data[0]
-                            required_fields = ['listing', 'seller', 'tender_count', 'tenders']
-                            listing_fields = ['id', 'title', 'price', 'images']
-                            seller_fields = ['id', 'username', 'full_name']
-                            
-                            # Check overview fields
-                            missing_overview_fields = [field for field in required_fields if field not in sample_overview]
-                            if missing_overview_fields:
-                                has_proper_structure = False
-                                structure_details.append(f"Missing overview fields: {missing_overview_fields}")
-                            
-                            # Check listing enrichment
-                            if 'listing' in sample_overview and isinstance(sample_overview['listing'], dict):
-                                missing_listing_fields = [field for field in listing_fields if field not in sample_overview['listing']]
-                                if missing_listing_fields:
-                                    structure_details.append(f"Missing listing fields: {missing_listing_fields}")
-                            else:
-                                has_proper_structure = False
-                                structure_details.append("Missing or invalid listing enrichment")
-                            
-                            # Check seller enrichment
-                            if 'seller' in sample_overview and isinstance(sample_overview['seller'], dict):
-                                missing_seller_fields = [field for field in seller_fields if field not in sample_overview['seller']]
-                                if missing_seller_fields:
-                                    structure_details.append(f"Missing seller fields: {missing_seller_fields}")
-                            else:
-                                has_proper_structure = False
-                                structure_details.append("Missing or invalid seller enrichment")
-                            
-                            # Count total tenders
-                            for overview in data:
-                                total_tenders += overview.get('tender_count', 0)
-                        
-                        if has_proper_structure:
-                            self.log_result(
-                                "Seller Tenders Overview Endpoint", 
-                                True, 
-                                f"✅ WORKING CORRECTLY: Returns {listing_count} listings with {total_tenders} total tenders, proper enrichment",
-                                response_time
-                            )
-                        else:
-                            self.log_result(
-                                "Seller Tenders Overview Endpoint", 
-                                False, 
-                                f"❌ STRUCTURE ISSUES: Returns {listing_count} listings but has structure problems: {'; '.join(structure_details)}",
-                                response_time
-                            )
-                        
+                    # Check if response indicates successful completion
+                    if data.get('message') and 'complet' in data.get('message', '').lower():
+                        self.log_result(
+                            "Complete Transaction Endpoint", 
+                            True, 
+                            f"✅ TRANSACTION COMPLETED: Successfully completed transaction for listing {listing_id}",
+                            response_time
+                        )
                         return {
                             'success': True,
-                            'listing_count': listing_count,
-                            'total_tenders': total_tenders,
                             'data': data,
-                            'has_proper_structure': has_proper_structure,
-                            'structure_details': structure_details
+                            'listing_id': listing_id
                         }
                     else:
                         self.log_result(
-                            "Seller Tenders Overview Endpoint", 
+                            "Complete Transaction Endpoint", 
                             False, 
-                            f"❌ WRONG FORMAT: Expected array, got {type(data)}",
+                            f"❌ UNEXPECTED RESPONSE: Response doesn't indicate successful completion: {data}",
                             response_time
                         )
-                        return {'success': False, 'error': 'Wrong response format'}
+                        return {'success': False, 'error': 'Unexpected response format', 'data': data}
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Seller Tenders Overview Endpoint", 
+                        "Complete Transaction Endpoint", 
                         False, 
                         f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
                         response_time
@@ -336,7 +288,104 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Seller Tenders Overview Endpoint", 
+                "Complete Transaction Endpoint", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'success': False, 'error': str(e)}
+    
+    async def test_completed_transactions_endpoint(self, user_id, token):
+        """Test GET /api/user/completed-transactions/{user_id} endpoint"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            url = f"{BACKEND_URL}/user/completed-transactions/{user_id}"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    if isinstance(data, list):
+                        completed_count = len(data)
+                        
+                        # Check if completed transactions have proper structure
+                        has_proper_structure = True
+                        structure_details = []
+                        has_timestamps = True
+                        
+                        if completed_count > 0:
+                            sample_transaction = data[0]
+                            required_fields = ['id', 'listing_id', 'buyer_id', 'seller_id']
+                            timestamp_fields = ['seller_confirmed_at', 'completed_at']
+                            
+                            # Check transaction fields
+                            missing_fields = [field for field in required_fields if field not in sample_transaction]
+                            if missing_fields:
+                                has_proper_structure = False
+                                structure_details.append(f"Missing transaction fields: {missing_fields}")
+                            
+                            # Check timestamp fields
+                            missing_timestamps = [field for field in timestamp_fields if not sample_transaction.get(field)]
+                            if missing_timestamps:
+                                has_timestamps = False
+                                structure_details.append(f"Missing timestamp fields: {missing_timestamps}")
+                        
+                        if has_proper_structure and has_timestamps:
+                            self.log_result(
+                                "Completed Transactions Endpoint", 
+                                True, 
+                                f"✅ WORKING CORRECTLY: Returns {completed_count} completed transactions with proper timestamps",
+                                response_time
+                            )
+                        elif has_proper_structure:
+                            self.log_result(
+                                "Completed Transactions Endpoint", 
+                                True, 
+                                f"✅ MOSTLY WORKING: Returns {completed_count} completed transactions but missing some timestamps",
+                                response_time
+                            )
+                        else:
+                            self.log_result(
+                                "Completed Transactions Endpoint", 
+                                False, 
+                                f"❌ STRUCTURE ISSUES: Returns {completed_count} transactions but has structure problems: {'; '.join(structure_details)}",
+                                response_time
+                            )
+                        
+                        return {
+                            'success': True,
+                            'completed_count': completed_count,
+                            'data': data,
+                            'has_proper_structure': has_proper_structure,
+                            'has_timestamps': has_timestamps,
+                            'structure_details': structure_details
+                        }
+                    else:
+                        self.log_result(
+                            "Completed Transactions Endpoint", 
+                            False, 
+                            f"❌ WRONG FORMAT: Expected array, got {type(data)}",
+                            response_time
+                        )
+                        return {'success': False, 'error': 'Wrong response format'}
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Completed Transactions Endpoint", 
+                        False, 
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Completed Transactions Endpoint", 
                 False, 
                 f"❌ REQUEST FAILED: {str(e)}",
                 response_time
