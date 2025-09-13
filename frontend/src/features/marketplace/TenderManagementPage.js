@@ -175,7 +175,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
   }, [user?.id, myTendersLoading]);
 
   // Listings Management Functions (exact duplicate from MyListingsPage)
-  const fetchMyListings = async () => {
+  const fetchMyListings = React.useCallback(async () => {
     if (!user?.id) return;
     
     try {
@@ -188,7 +188,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     } finally {
       setListingsLoading(false);
     }
-  };
+  }, [user?.id, showToast]);
 
   const handleDeleteListing = async (listingId) => {
     if (!window.confirm('Are you sure you want to delete this listing?')) {
