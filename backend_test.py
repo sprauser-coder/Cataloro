@@ -587,44 +587,63 @@ class BackendTester:
             )
             return False
     
-    async def test_frontend_compatibility_fix(self):
-        """Test the frontend compatibility fix by verifying the API response format"""
-        print("\n🔧 FRONTEND COMPATIBILITY FIX TESTING:")
-        print("   Testing API response format to resolve 'allListings.filter is not a function' error")
-        print("   Verifying that API returns {listings: [...], total: X, page: Y, ...} format")
-        print("   Testing specific endpoint: GET /api/user/my-listings/admin_user_1?status=all&limit=1000")
+    async def test_completed_transactions_functionality(self):
+        """Test the completed transactions functionality"""
+        print("\n🔄 COMPLETED TRANSACTIONS FUNCTIONALITY TESTING:")
+        print("   Testing transaction completion, retrieval, undo, and admin overview")
+        print("   Testing dual party completion workflow")
         
-        # Step 1: Login as admin user
+        # Step 1: Setup - Login as admin and demo user
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         if not admin_token:
-            self.log_result("Frontend Compatibility Fix Test", False, "Failed to login as admin")
+            self.log_result("Completed Transactions Test Setup", False, "Failed to login as admin")
+            return False
+        
+        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        if not demo_token:
+            self.log_result("Completed Transactions Test Setup", False, "Failed to login as demo user")
             return False
         
         print(f"   Testing with admin user ID: {admin_user_id}")
+        print(f"   Testing with demo user ID: {demo_user_id}")
         
-        # Step 2: Test API Response Format
-        print("\n   📋 Test API Response Format:")
-        api_format_result = await self.test_api_response_format(admin_user_id, admin_token)
+        # Step 2: Find an accepted tender for testing
+        print("\n   🔍 Finding Accepted Tender for Testing:")
+        test_tender = await self.find_accepted_tender_for_testing(admin_token)
+        if not test_tender:
+            self.log_result("Completed Transactions Test Setup", False, "No accepted tender found for testing")
+            return False
         
-        # Step 3: Check Response Structure
-        print("\n   🏗️ Check Response Structure:")
-        structure_result = await self.test_response_structure(admin_user_id, admin_token)
+        # Step 3: Test Transaction Completion Endpoint
+        print("\n   ✅ Test Transaction Completion Endpoint:")
+        completion_result = await self.test_complete_transaction_endpoint(
+            admin_token, test_tender, "Meeting completed successfully", "meeting"
+        )
         
-        # Step 4: Verify Data Extraction
-        print("\n   📤 Verify Data Extraction:")
-        extraction_result = await self.test_data_extraction(admin_user_id, admin_token)
+        # Step 4: Test Get Completed Transactions
+        print("\n   📋 Test Get Completed Transactions:")
+        get_transactions_result = await self.test_get_completed_transactions(admin_user_id)
         
-        # Step 5: Test Status Filtering
-        print("\n   🔍 Test Status Filtering:")
-        filtering_result = await self.test_status_filtering_format(admin_user_id, admin_token)
+        # Step 5: Test Dual Party Completion
+        print("\n   👥 Test Dual Party Completion:")
+        dual_completion_result = await self.test_dual_party_completion(
+            demo_token, test_tender, completion_result
+        )
         
-        # Step 6: Verify Count Consistency
-        print("\n   ⚖️ Verify Count Consistency:")
-        consistency_result = await self.test_count_consistency(admin_user_id, admin_token)
+        # Step 6: Test Admin Overview
+        print("\n   👨‍💼 Test Admin Overview:")
+        admin_overview_result = await self.test_admin_completed_transactions_overview(admin_token)
         
-        # Step 7: Final Analysis
+        # Step 7: Test Undo Completion
+        print("\n   ↩️ Test Undo Completion:")
+        undo_result = await self.test_undo_completion(admin_token, completion_result)
+        
+        # Step 8: Final Analysis
         print("\n   📈 Final Analysis:")
-        await self.analyze_frontend_compatibility_fix(api_format_result, structure_result, extraction_result, filtering_result, consistency_result)
+        await self.analyze_completed_transactions_functionality(
+            completion_result, get_transactions_result, dual_completion_result, 
+            admin_overview_result, undo_result
+        )
         
         return True
     
