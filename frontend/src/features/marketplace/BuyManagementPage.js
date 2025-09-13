@@ -39,6 +39,13 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
   const { showToast } = useNotifications();
   const { permissions } = usePermissions();
   const [activeTab, setActiveTab] = useState(showOnlyTab || initialTab);
+
+  // Update activeTab when showOnlyTab prop changes
+  useEffect(() => {
+    if (showOnlyTab) {
+      setActiveTab(showOnlyTab);
+    }
+  }, [showOnlyTab]);
   const [completedTransactions, setCompletedTransactions] = useState([]);
   const [boughtItems, setBoughtItems] = useState([]);
   const [baskets, setBaskets] = useState([]);
