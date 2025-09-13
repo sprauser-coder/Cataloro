@@ -4837,14 +4837,14 @@ async def check_listing_expiration(listing_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to check expiration: {str(e)}")
 
 @app.get("/api/listings/{listing_id}")
-async def get_listing(listing_id: str, increment_view: bool = False, current_user: dict = Depends(get_current_user_optional)):
+async def get_listing(listing_id: str, increment_view: bool = False, request: Request = None):
     """Get a specific listing by ID - returns full details including images and bid_info
     
     Args:
         listing_id: The listing ID to fetch
         increment_view: Whether to increment the view counter (default: False)
                        Set to True only when user actually views the listing page
-        current_user: Current authenticated user (optional, for view tracking)
+        request: Request object for extracting user info
     """
     try:
         listing = await db.listings.find_one({"id": listing_id})
@@ -4854,12 +4854,26 @@ async def get_listing(listing_id: str, increment_view: bool = False, current_use
         
         listing['_id'] = str(listing['_id'])
         
-        # Only increment view count when explicitly requested and user is available
-        if increment_view and current_user:
-            user_id = current_user.get("id")
+        # Only increment view count when explicitly requested
+        if increment_view:
+            # Try to get user info for unique view tracking
+            user_id = None
+            
+            try:
+                # Try to extract user from Authorization header
+                if request:
+                    authorization = request.headers.get("Authorization")
+                    if authorization and authorization.startswith("Bearer "):
+                        token = authorization.split(" ")[1]
+                        payload = security_service.verify_token(token)
+                        if payload:
+                            user_id = payload.get("user_id")
+            except Exception as e:
+                logger.debug(f"Could not extract user from request: {e}")
+                user_id = None
             
             if user_id:
-                # Check if this user has already viewed this listing
+                # Authenticated user - check for unique view
                 existing_view = await db.listing_views.find_one({
                     "listing_id": listing_id,
                     "user_id": user_id
@@ -4867,13 +4881,12 @@ async def get_listing(listing_id: str, increment_view: bool = False, current_use
                 
                 if not existing_view:
                     # This is a new unique view from this user
-                    # Record the view
                     await db.listing_views.insert_one({
                         "listing_id": listing_id,
                         "user_id": user_id,
                         "viewed_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
-                        "ip_address": None,  # Could add request IP if needed
-                        "user_agent": None   # Could add user agent if needed
+                        "ip_address": request.client.host if request else None,
+                        "user_agent": request.headers.get("user-agent") if request else None
                     })
                     
                     # Increment the view counter
@@ -4890,9 +4903,42 @@ async def get_listing(listing_id: str, increment_view: bool = False, current_use
                 else:
                     logger.info(f"📊 Duplicate view skipped - User: {user_id} already viewed Listing: {listing_id}")
             else:
-                logger.warning("📊 View increment requested but no user_id available")
-        elif increment_view and not current_user:
-            logger.warning("📊 View increment requested but user not authenticated")
+                # No authenticated user - use session-based tracking with IP address as fallback
+                client_ip = request.client.host if request else "unknown"
+                user_agent = request.headers.get("user-agent", "unknown") if request else "unknown"
+                
+                # Create a session identifier based on IP + User Agent (not perfect but better than nothing)
+                session_id = f"session_{hash(client_ip + user_agent) % 1000000}"
+                
+                existing_view = await db.listing_views.find_one({
+                    "listing_id": listing_id,
+                    "session_id": session_id
+                })
+                
+                if not existing_view:
+                    # This is a new view from this session
+                    await db.listing_views.insert_one({
+                        "listing_id": listing_id,
+                        "user_id": None,
+                        "session_id": session_id,
+                        "viewed_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
+                        "ip_address": client_ip,
+                        "user_agent": user_agent
+                    })
+                    
+                    # Increment the view counter
+                    await db.listings.update_one(
+                        {"id": listing_id},
+                        {"$inc": {"views": 1}}
+                    )
+                    
+                    # Refresh listing data to get updated view count
+                    listing = await db.listings.find_one({"id": listing_id})
+                    listing['_id'] = str(listing['_id'])
+                    
+                    logger.info(f"📊 New session view recorded - Session: {session_id}, Listing: {listing_id}, Total views: {listing.get('views', 0)}")
+                else:
+                    logger.info(f"📊 Duplicate session view skipped - Session: {session_id} already viewed Listing: {listing_id}")
         
         # Add bid_info with highest_bidder_id for individual listing page
         if not listing.get('bid_info'):
