@@ -405,6 +405,81 @@ function BuyManagementPage() {
     }
   };
 
+  // Mark transaction as completed
+  const markTransactionComplete = async (listingId, notes = '', method = 'meeting') => {
+    try {
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/complete-transaction`,
+        {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ 
+            listing_id: listingId,
+            notes: notes,
+            method: method
+          })
+        }
+      );
+      
+      if (response.ok) {
+        const result = await response.json();
+        showToast(
+          result.is_fully_completed 
+            ? 'Transaction fully completed!' 
+            : 'Transaction marked as completed. Waiting for other party confirmation.', 
+          'success'
+        );
+        
+        // Reload data to reflect changes
+        loadBoughtItems();
+        loadCompletedTransactions();
+      } else {
+        const errorText = await response.text();
+        console.error('Mark complete failed:', errorText);
+        showToast('Failed to mark transaction complete', 'error');
+      }
+    } catch (error) {
+      console.error('Error marking transaction complete:', error);
+      showToast('Error marking transaction complete', 'error');
+    }
+  };
+
+  // Undo transaction completion
+  const undoTransactionCompletion = async (completionId) => {
+    try {
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/completed-transactions/${completionId}`,
+        {
+          method: 'DELETE',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      
+      if (response.ok) {
+        showToast('Transaction completion undone successfully', 'success');
+        
+        // Reload data to reflect changes
+        loadCompletedTransactions();
+        loadBoughtItems();
+      } else {
+        const errorText = await response.text();
+        console.error('Undo completion failed:', errorText);
+        showToast('Failed to undo transaction completion', 'error');
+      }
+    } catch (error) {
+      console.error('Error undoing transaction completion:', error);
+      showToast('Error undoing transaction completion', 'error');
+    }
+  };
+
   useEffect(() => {
     loadBoughtItems();
     loadBaskets();
