@@ -135,13 +135,13 @@ class BackendTester:
             )
             return None, None, None
     
-    async def test_buyer_tenders_endpoint(self, buyer_id, token):
-        """Test GET /api/tenders/buyer/{buyer_id} endpoint"""
+    async def test_seller_accepted_tenders_endpoint(self, seller_id, token):
+        """Test GET /api/tenders/seller/{seller_id}/accepted endpoint - should filter out completed tenders"""
         start_time = datetime.now()
         
         try:
             headers = {"Authorization": f"Bearer {token}"}
-            url = f"{BACKEND_URL}/tenders/buyer/{buyer_id}"
+            url = f"{BACKEND_URL}/tenders/seller/{seller_id}/accepted"
             
             async with self.session.get(url, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
@@ -150,17 +150,17 @@ class BackendTester:
                     data = await response.json()
                     
                     if isinstance(data, list):
-                        tender_count = len(data)
+                        accepted_count = len(data)
                         
-                        # Check if tenders have proper structure
+                        # Check if accepted tenders have proper structure
                         has_proper_structure = True
                         structure_details = []
+                        completed_tenders_found = 0
                         
-                        if tender_count > 0:
+                        if accepted_count > 0:
                             sample_tender = data[0]
-                            required_fields = ['id', 'offer_amount', 'status', 'listing', 'seller']
-                            listing_fields = ['id', 'title', 'price', 'images']
-                            seller_fields = ['id', 'username', 'full_name']
+                            required_fields = ['id', 'listing_id', 'buyer_id', 'offer_amount', 'status']
+                            enrichment_fields = ['listing_title', 'listing_image', 'listing_price', 'buyer_name', 'buyer_email']
                             
                             # Check tender fields
                             missing_tender_fields = [field for field in required_fields if field not in sample_tender]
@@ -168,49 +168,49 @@ class BackendTester:
                                 has_proper_structure = False
                                 structure_details.append(f"Missing tender fields: {missing_tender_fields}")
                             
-                            # Check listing enrichment
-                            if 'listing' in sample_tender and isinstance(sample_tender['listing'], dict):
-                                missing_listing_fields = [field for field in listing_fields if field not in sample_tender['listing']]
-                                if missing_listing_fields:
-                                    structure_details.append(f"Missing listing fields: {missing_listing_fields}")
-                            else:
-                                has_proper_structure = False
-                                structure_details.append("Missing or invalid listing enrichment")
+                            # Check enrichment fields
+                            missing_enrichment_fields = [field for field in enrichment_fields if field not in sample_tender]
+                            if missing_enrichment_fields:
+                                structure_details.append(f"Missing enrichment fields: {missing_enrichment_fields}")
                             
-                            # Check seller enrichment
-                            if 'seller' in sample_tender and isinstance(sample_tender['seller'], dict):
-                                missing_seller_fields = [field for field in seller_fields if field not in sample_tender['seller']]
-                                if missing_seller_fields:
-                                    structure_details.append(f"Missing seller fields: {missing_seller_fields}")
-                            else:
-                                has_proper_structure = False
-                                structure_details.append("Missing or invalid seller enrichment")
+                            # Check for completed tenders (should not be present)
+                            for tender in data:
+                                if tender.get('seller_confirmed_at') or tender.get('completed_at'):
+                                    completed_tenders_found += 1
                         
-                        if has_proper_structure:
+                        if completed_tenders_found > 0:
                             self.log_result(
-                                "Buyer Tenders Endpoint", 
+                                "Seller Accepted Tenders Filtering", 
+                                False, 
+                                f"❌ FILTERING FAILED: Found {completed_tenders_found} completed tenders in accepted list (should be filtered out)",
+                                response_time
+                            )
+                        elif has_proper_structure:
+                            self.log_result(
+                                "Seller Accepted Tenders Filtering", 
                                 True, 
-                                f"✅ WORKING CORRECTLY: Returns {tender_count} tenders with proper listing and seller enrichment",
+                                f"✅ FILTERING WORKING: Returns {accepted_count} pending accepted tenders (completed tenders properly filtered out)",
                                 response_time
                             )
                         else:
                             self.log_result(
-                                "Buyer Tenders Endpoint", 
+                                "Seller Accepted Tenders Filtering", 
                                 False, 
-                                f"❌ STRUCTURE ISSUES: Returns {tender_count} tenders but has structure problems: {'; '.join(structure_details)}",
+                                f"❌ STRUCTURE ISSUES: Returns {accepted_count} tenders but has structure problems: {'; '.join(structure_details)}",
                                 response_time
                             )
                         
                         return {
                             'success': True,
-                            'tender_count': tender_count,
+                            'accepted_count': accepted_count,
                             'data': data,
                             'has_proper_structure': has_proper_structure,
-                            'structure_details': structure_details
+                            'structure_details': structure_details,
+                            'completed_tenders_found': completed_tenders_found
                         }
                     else:
                         self.log_result(
-                            "Buyer Tenders Endpoint", 
+                            "Seller Accepted Tenders Filtering", 
                             False, 
                             f"❌ WRONG FORMAT: Expected array, got {type(data)}",
                             response_time
@@ -219,7 +219,7 @@ class BackendTester:
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Buyer Tenders Endpoint", 
+                        "Seller Accepted Tenders Filtering", 
                         False, 
                         f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
                         response_time
@@ -229,7 +229,7 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Buyer Tenders Endpoint", 
+                "Seller Accepted Tenders Filtering", 
                 False, 
                 f"❌ REQUEST FAILED: {str(e)}",
                 response_time
