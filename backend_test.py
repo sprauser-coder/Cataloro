@@ -1,47 +1,48 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - LISTING COUNT DISCREPANCY INVESTIGATION
-Testing to identify the source of listing count discrepancy between Tenders and Listings sections
+CATALORO MARKETPLACE - LISTING COUNT CONSISTENCY FIXES TESTING
+Testing the fixes applied to resolve listing count discrepancy between Tenders and My-Listings sections
 
-CRITICAL ISSUE BEING INVESTIGATED:
-- Tenders section shows 62 active listings
-- Listings section shows 34 listings  
-- Need to identify why there's a discrepancy of 28 listings
+FIXES BEING TESTED:
+The main agent has applied fixes to resolve the listing count discrepancy:
+- Tenders overview: Added logging and verification to ensure accurate count
+- My-listings: Changed default status from "all" to "active" and increased limit from 50 to 100
+- Both endpoints should now show consistent active listing counts
 
 SPECIFIC TESTS REQUESTED:
-1. **Test Tenders Section Count**:
-   - Call GET /api/tenders/seller/{admin_user_id}/overview 
-   - Count the number of listings returned
-   - Verify these are all status="active" listings
+1. **Test Fixed Tenders Overview Count**:
+   - Call GET /api/tenders/seller/{admin_user_id}/overview
+   - Verify it now returns all 68 active listings (should match database count)
+   - Check the backend logs for count verification messages
 
-2. **Test Listings Section Count**:
-   - Call GET /api/marketplace/my-listings with admin user authentication
-   - Check what status filter is being applied by default
-   - Count the total listings returned
-   - Call with explicit status="active" to see active count
-   - Call with status="all" to see total count
+2. **Test Fixed My-Listings Count**:
+   - Call GET /api/marketplace/my-listings with admin authentication (default should now be status="active")
+   - Verify it returns active listings by default (not all statuses)
+   - Verify the count matches the tenders overview count
+   - Test with explicit status="active" parameter to confirm consistency
 
-3. **Verify the Actual Database Counts**:
-   - Query the database directly for admin user's listings:
-     - Total listings: count all regardless of status
-     - Active listings: count only status="active" 
-     - Other statuses: count sold, expired, draft, etc.
+3. **Verify Count Consistency**:
+   - Both endpoints should now return the same number of active listings
+   - Tenders overview: X active listings
+   - My-listings (default): X active listings
+   - Database count: X active listings (all should match)
 
-4. **Compare All Numbers**:
-   - Tenders overview count vs Database active count (should match)
-   - My-listings default count vs Database counts
-   - Identify exactly why the numbers don't match
+4. **Test Other Status Filters**:
+   - Test my-listings with status="all" (should return all 99+ listings)
+   - Test my-listings with status="sold" (should return sold listings)
+   - Verify these different filters work correctly
 
 CRITICAL ENDPOINTS BEING TESTED:
 - POST /api/auth/login (admin user authentication)
-- GET /api/tenders/seller/{admin_user_id}/overview (tenders count)
-- GET /api/marketplace/my-listings (listings with different status filters)
+- GET /api/tenders/seller/{admin_user_id}/overview (fixed tenders count)
+- GET /api/marketplace/my-listings (fixed my-listings with new default status="active")
 - GET /api/marketplace/browse (to verify database counts)
 
 EXPECTED RESULTS:
-- Identify the exact source of the discrepancy
-- Understand what filters are being applied differently
-- Determine if the issue is in frontend logic or backend data
+- Both endpoints now return the same count for active listings
+- Resolves the user's reported discrepancy of 62 vs 34
+- My-listings defaults to status="active" instead of showing all statuses
+- Increased limit ensures all active listings are returned
 """
 
 import asyncio
