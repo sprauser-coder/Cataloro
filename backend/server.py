@@ -5003,18 +5003,18 @@ async def add_to_favorites(user_id: str, listing_id: str):
         # Check if already exists
         existing = await db.user_favorites.find_one({"user_id": user_id, "listing_id": listing_id})
         if existing:
-            return {"message": "Item already in favorites"}
+            return {"message": "Listing already in favorites"}
         
         await db.user_favorites.insert_one(favorite_data)
         return {"message": "Added to favorites successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to add to favorites: {str(e)}")
 
-@app.delete("/api/user/{user_id}/favorites/{item_id}")
-async def remove_from_favorites(user_id: str, item_id: str):
-    """Remove item from user's favorites"""
+@app.delete("/api/user/{user_id}/favorites/{listing_id}")
+async def remove_from_favorites(user_id: str, listing_id: str):
+    """Remove listing from user's favorites"""
     try:
-        result = await db.user_favorites.delete_one({"user_id": user_id, "item_id": item_id})
+        result = await db.user_favorites.delete_one({"user_id": user_id, "listing_id": listing_id})
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Favorite not found")
