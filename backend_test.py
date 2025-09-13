@@ -607,29 +607,42 @@ class BackendTester:
             )
             return False
     
-    async def test_listing_count_discrepancy(self):
-        """Test the listing count discrepancy between Tenders and Listings sections"""
-        print("\n📊 LISTING COUNT DISCREPANCY INVESTIGATION:")
+    async def test_listing_count_consistency_fixes(self):
+        """Test the listing count consistency fixes applied by the main agent"""
+        print("\n📊 LISTING COUNT CONSISTENCY FIXES TESTING:")
+        print("   Testing fixes applied to resolve Tenders vs My-Listings count discrepancy")
         
         # Step 1: Login as admin user
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         if not admin_token:
-            self.log_result("Listing Count Discrepancy Test", False, "Failed to login as admin")
+            self.log_result("Listing Count Consistency Fixes Test", False, "Failed to login as admin")
             return False
         
         print(f"   Testing with admin user ID: {admin_user_id}")
         
-        # Step 2: Test Tenders Section Count
-        tenders_count = await self.test_tenders_overview_count(admin_user_id, admin_token)
+        # Step 2: Test Fixed Tenders Overview Count
+        print("\n   🎯 Testing Fixed Tenders Overview Count:")
+        tenders_result = await self.test_fixed_tenders_overview_count(admin_user_id, admin_token)
         
-        # Step 3: Test Listings Section Count with different filters
-        my_listings_counts = await self.test_my_listings_counts(admin_user_id, admin_token)
+        # Step 3: Test Fixed My-Listings Count (should now default to status="active")
+        print("\n   📋 Testing Fixed My-Listings Count:")
+        my_listings_result = await self.test_fixed_my_listings_count(admin_user_id, admin_token)
         
-        # Step 4: Verify actual database counts
-        database_counts = await self.test_database_listing_counts(admin_user_id)
+        # Step 4: Verify Count Consistency
+        print("\n   ⚖️ Verifying Count Consistency:")
+        consistency_result = await self.verify_count_consistency(tenders_result, my_listings_result)
         
-        # Step 5: Compare all numbers and identify discrepancy
-        await self.analyze_count_discrepancy(tenders_count, my_listings_counts, database_counts)
+        # Step 5: Test Other Status Filters
+        print("\n   🔍 Testing Other Status Filters:")
+        filters_result = await self.test_other_status_filters(admin_user_id, admin_token)
+        
+        # Step 6: Verify Database Counts
+        print("\n   💾 Verifying Database Counts:")
+        database_result = await self.verify_database_counts(admin_user_id)
+        
+        # Step 7: Final Analysis
+        print("\n   📈 Final Analysis:")
+        await self.analyze_consistency_fixes(tenders_result, my_listings_result, database_result, consistency_result)
         
         return True
     
