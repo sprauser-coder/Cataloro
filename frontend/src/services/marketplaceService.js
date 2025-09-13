@@ -56,13 +56,11 @@ class MarketplaceService {
 
   async getMyListings(userId) {
     try {
-      // Get all listings by setting a high limit to match tenders overview behavior
-      // This ensures both "Tenders" tab and "Listings" tab show the same count
+      // Get all listings with high limit to ensure consistency with tenders overview count
       const response = await axios.get(API_ENDPOINTS.USER.MY_LISTINGS.replace('{user_id}', userId), {
         params: {
-          status: 'all', // Get all statuses, let frontend filter
-          limit: 1000, // High limit to get all listings
-          page: 1
+          status: 'all', // Get all statuses for frontend filtering
+          limit: 1000 // High limit to get all listings (matching tenders overview unlimited behavior)
         }
       });
       return response.data;
