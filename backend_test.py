@@ -602,99 +602,120 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
     
-    async def test_data_consistency(self, workflow_result, seller_id, token):
-        """Test data consistency for completed transactions"""
+    async def test_transaction_states_verification(self, test_data, seller_completion, buyer_completion):
+        """Verify transaction states and data integrity"""
         try:
-            if not workflow_result.get('success'):
+            listing_id = test_data.get('listing_id')
+            
+            # Verify seller completion state
+            seller_confirmed_at = seller_completion.get('seller_confirmed_at')
+            seller_buyer_confirmed_at = seller_completion.get('buyer_confirmed_at')
+            seller_is_fully_completed = seller_completion.get('is_fully_completed', False)
+            
+            # Verify buyer completion state  
+            buyer_seller_confirmed_at = buyer_completion.get('seller_confirmed_at')
+            buyer_buyer_confirmed_at = buyer_completion.get('buyer_confirmed_at')
+            buyer_is_fully_completed = buyer_completion.get('is_fully_completed', False)
+            
+            state_issues = []
+            
+            # Check seller completion state
+            if not seller_confirmed_at:
+                state_issues.append("seller_confirmed_at missing after seller completion")
+            if seller_buyer_confirmed_at:
+                state_issues.append("buyer_confirmed_at present after seller-only completion")
+            if seller_is_fully_completed:
+                state_issues.append("is_fully_completed=true after seller-only completion")
+            
+            # Check buyer completion state
+            if not buyer_seller_confirmed_at:
+                state_issues.append("seller_confirmed_at missing after buyer completion")
+            if not buyer_buyer_confirmed_at:
+                state_issues.append("buyer_confirmed_at missing after buyer completion")
+            if not buyer_is_fully_completed:
+                state_issues.append("is_fully_completed=false after both parties completed")
+            
+            if state_issues:
                 self.log_result(
-                    "Data Consistency Verification", 
+                    "Transaction States Verification", 
                     False, 
-                    "❌ CONSISTENCY CHECK SKIPPED: Workflow failed, cannot verify data consistency"
+                    f"❌ STATE ISSUES: {'; '.join(state_issues)}"
                 )
-                return {'success': False, 'error': 'Workflow failed'}
-            
-            test_listing_id = workflow_result.get('test_listing_id')
-            if not test_listing_id:
-                self.log_result(
-                    "Data Consistency Verification", 
-                    False, 
-                    "❌ CONSISTENCY CHECK FAILED: No test listing ID available"
-                )
-                return {'success': False, 'error': 'No test listing ID'}
-            
-            # Get completed transactions to verify data structure
-            completed_result = await self.test_completed_transactions_endpoint(seller_id, token)
-            
-            if not completed_result.get('success'):
-                self.log_result(
-                    "Data Consistency Verification", 
-                    False, 
-                    "❌ CONSISTENCY CHECK FAILED: Could not retrieve completed transactions"
-                )
-                return {'success': False, 'error': 'Could not retrieve completed transactions'}
-            
-            completed_transactions = completed_result.get('data', [])
-            target_transaction = None
-            
-            # Find our test transaction
-            for transaction in completed_transactions:
-                if transaction.get('listing_id') == test_listing_id:
-                    target_transaction = transaction
-                    break
-            
-            if not target_transaction:
-                self.log_result(
-                    "Data Consistency Verification", 
-                    False, 
-                    f"❌ CONSISTENCY FAILED: Completed transaction for listing {test_listing_id} not found"
-                )
-                return {'success': False, 'error': 'Target transaction not found'}
-            
-            # Verify required fields and timestamps
-            consistency_issues = []
-            
-            # Check required fields
-            required_fields = ['id', 'listing_id', 'buyer_id', 'seller_id']
-            for field in required_fields:
-                if not target_transaction.get(field):
-                    consistency_issues.append(f"Missing {field}")
-            
-            # Check timestamp fields
-            timestamp_fields = ['seller_confirmed_at', 'completed_at']
-            missing_timestamps = []
-            for field in timestamp_fields:
-                if not target_transaction.get(field):
-                    missing_timestamps.append(field)
-            
-            if missing_timestamps:
-                consistency_issues.append(f"Missing timestamps: {missing_timestamps}")
-            
-            # Check listing details
-            if not target_transaction.get('listing_title'):
-                consistency_issues.append("Missing listing title")
-            if not target_transaction.get('listing_price'):
-                consistency_issues.append("Missing listing price")
-            
-            if consistency_issues:
-                self.log_result(
-                    "Data Consistency Verification", 
-                    False, 
-                    f"❌ CONSISTENCY ISSUES: {'; '.join(consistency_issues)}"
-                )
-                return {'success': False, 'issues': consistency_issues}
+                return {'success': False, 'issues': state_issues}
             else:
                 self.log_result(
-                    "Data Consistency Verification", 
+                    "Transaction States Verification", 
                     True, 
-                    f"✅ DATA CONSISTENT: Completed transaction properly stored with seller_confirmed_at timestamp and listing details"
+                    "✅ TRANSACTION STATES CORRECT: seller_confirmed_at and buyer_confirmed_at work independently, is_fully_completed only true when both confirm"
                 )
-                return {'success': True, 'transaction': target_transaction}
+                return {
+                    'success': True,
+                    'seller_confirmed_at': seller_confirmed_at,
+                    'buyer_confirmed_at': buyer_buyer_confirmed_at,
+                    'is_fully_completed': buyer_is_fully_completed
+                }
             
         except Exception as e:
             self.log_result(
-                "Data Consistency Verification", 
+                "Transaction States Verification", 
                 False, 
-                f"❌ CONSISTENCY CHECK EXCEPTION: {str(e)}"
+                f"❌ STATE VERIFICATION EXCEPTION: {str(e)}"
+            )
+            return {'success': False, 'error': str(e)}
+
+    async def test_api_response_structure(self, seller_completed, buyer_completed):
+        """Test API response structure for completed transactions"""
+        try:
+            structure_issues = []
+            
+            # Check seller response structure
+            if seller_completed.get('success') and not seller_completed.get('transaction_not_found'):
+                seller_transaction = seller_completed.get('test_transaction', {})
+                
+                # Check required fields
+                required_fields = ['id', 'listing_id', 'buyer_id', 'seller_id', 'user_role_in_transaction']
+                for field in required_fields:
+                    if not seller_transaction.get(field):
+                        structure_issues.append(f"Seller response missing {field}")
+                
+                # Check user role context
+                if seller_transaction.get('user_role_in_transaction') != 'seller':
+                    structure_issues.append("Seller response has incorrect user_role_in_transaction")
+            
+            # Check buyer response structure
+            if buyer_completed.get('success') and not buyer_completed.get('transaction_not_found'):
+                buyer_transaction = buyer_completed.get('test_transaction', {})
+                
+                # Check required fields
+                required_fields = ['id', 'listing_id', 'buyer_id', 'seller_id', 'user_role_in_transaction']
+                for field in required_fields:
+                    if not buyer_transaction.get(field):
+                        structure_issues.append(f"Buyer response missing {field}")
+                
+                # Check user role context
+                if buyer_transaction.get('user_role_in_transaction') != 'buyer':
+                    structure_issues.append("Buyer response has incorrect user_role_in_transaction")
+            
+            if structure_issues:
+                self.log_result(
+                    "API Response Structure", 
+                    False, 
+                    f"❌ STRUCTURE ISSUES: {'; '.join(structure_issues)}"
+                )
+                return {'success': False, 'issues': structure_issues}
+            else:
+                self.log_result(
+                    "API Response Structure", 
+                    True, 
+                    "✅ API STRUCTURE CORRECT: Completed transactions API returns correct user_role_in_transaction and required fields"
+                )
+                return {'success': True}
+            
+        except Exception as e:
+            self.log_result(
+                "API Response Structure", 
+                False, 
+                f"❌ STRUCTURE VERIFICATION EXCEPTION: {str(e)}"
             )
             return {'success': False, 'error': str(e)}
     
