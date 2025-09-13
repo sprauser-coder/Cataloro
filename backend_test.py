@@ -1132,6 +1132,383 @@ class BackendTester:
         
         return len(fixes_needed) == 0
     
+    async def test_old_endpoint_with_new_parameters(self, admin_user_id, admin_token):
+        """Test Old Endpoint with New Parameters: Call GET /api/user/my-listings/admin_user_1 with the new parameters (status=all, limit=1000)"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            url = f"{BACKEND_URL}/user/my-listings/{admin_user_id}?status=all&limit=1000"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Extract count from response
+                    listings_count = 0
+                    total_count = 0
+                    
+                    if isinstance(data, dict):
+                        if 'listings' in data:
+                            listings_count = len(data['listings'])
+                            total_count = data.get('total', listings_count)
+                        else:
+                            listings_count = len(data) if isinstance(data, list) else 0
+                            total_count = listings_count
+                    elif isinstance(data, list):
+                        listings_count = len(data)
+                        total_count = listings_count
+                    
+                    self.log_result(
+                        "Old Endpoint with New Parameters", 
+                        True, 
+                        f"✅ OLD ENDPOINT WORKING: GET /api/user/my-listings/{admin_user_id}?status=all&limit=1000 returned {total_count} listings",
+                        response_time
+                    )
+                    
+                    return {
+                        'count': listings_count,
+                        'total_count': total_count,
+                        'data': data,
+                        'success': True
+                    }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Old Endpoint with New Parameters", 
+                        False, 
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'count': 0, 'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Old Endpoint with New Parameters", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'count': 0, 'success': False, 'error': str(e)}
+    
+    async def test_default_behavior(self, admin_user_id, admin_token):
+        """Test Default Behavior: Call GET /api/user/my-listings/admin_user_1 without parameters to verify defaults work"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            url = f"{BACKEND_URL}/user/my-listings/{admin_user_id}"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Extract count from response
+                    listings_count = 0
+                    total_count = 0
+                    
+                    if isinstance(data, dict):
+                        if 'listings' in data:
+                            listings_count = len(data['listings'])
+                            total_count = data.get('total', listings_count)
+                        else:
+                            listings_count = len(data) if isinstance(data, list) else 0
+                            total_count = listings_count
+                    elif isinstance(data, list):
+                        listings_count = len(data)
+                        total_count = listings_count
+                    
+                    self.log_result(
+                        "Default Behavior Test", 
+                        True, 
+                        f"✅ DEFAULT BEHAVIOR WORKING: GET /api/user/my-listings/{admin_user_id} (no params) returned {total_count} listings",
+                        response_time
+                    )
+                    
+                    return {
+                        'count': listings_count,
+                        'total_count': total_count,
+                        'data': data,
+                        'success': True
+                    }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Default Behavior Test", 
+                        False, 
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'count': 0, 'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Default Behavior Test", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'count': 0, 'success': False, 'error': str(e)}
+    
+    async def test_active_status_filter(self, admin_user_id, admin_token):
+        """Test Active Status Filter: Call GET /api/user/my-listings/admin_user_1?status=active to verify it returns 62 listings (matching tenders)"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            url = f"{BACKEND_URL}/user/my-listings/{admin_user_id}?status=active"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Extract count from response
+                    listings_count = 0
+                    total_count = 0
+                    
+                    if isinstance(data, dict):
+                        if 'listings' in data:
+                            listings_count = len(data['listings'])
+                            total_count = data.get('total', listings_count)
+                        else:
+                            listings_count = len(data) if isinstance(data, list) else 0
+                            total_count = listings_count
+                    elif isinstance(data, list):
+                        listings_count = len(data)
+                        total_count = listings_count
+                    
+                    # Check if it matches expected 62 listings
+                    expected_count = 62
+                    if total_count == expected_count:
+                        self.log_result(
+                            "Active Status Filter Test", 
+                            True, 
+                            f"✅ ACTIVE FILTER PERFECT: GET /api/user/my-listings/{admin_user_id}?status=active returned {total_count} listings (matches expected {expected_count})",
+                            response_time
+                        )
+                    else:
+                        self.log_result(
+                            "Active Status Filter Test", 
+                            True, 
+                            f"⚠️ ACTIVE FILTER WORKING: GET /api/user/my-listings/{admin_user_id}?status=active returned {total_count} listings (expected {expected_count}, difference: {abs(total_count - expected_count)})",
+                            response_time
+                        )
+                    
+                    return {
+                        'count': listings_count,
+                        'total_count': total_count,
+                        'data': data,
+                        'success': True,
+                        'expected': expected_count,
+                        'matches_expected': total_count == expected_count
+                    }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Active Status Filter Test", 
+                        False, 
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'count': 0, 'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Active Status Filter Test", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'count': 0, 'success': False, 'error': str(e)}
+    
+    async def test_tenders_overview_count(self, admin_user_id, admin_token):
+        """Compare with Tenders: Verify the count matches the tenders overview count"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            url = f"{BACKEND_URL}/tenders/seller/{admin_user_id}/overview"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Extract tenders count - could be in different formats
+                    tenders_count = 0
+                    if isinstance(data, dict):
+                        # Check for various possible field names
+                        tenders_count = (
+                            data.get('total_tenders', 0) or 
+                            data.get('active_tenders', 0) or 
+                            data.get('tenders_count', 0) or
+                            len(data.get('tenders', [])) or
+                            len(data.get('listings', []))  # Check if listings are returned directly
+                        )
+                        
+                        # Log the full structure for analysis
+                        print(f"      Tenders Overview Response Structure: {list(data.keys())}")
+                        if 'tenders' in data:
+                            print(f"      Tenders array length: {len(data['tenders'])}")
+                        if 'listings' in data:
+                            print(f"      Listings array length: {len(data['listings'])}")
+                        
+                    elif isinstance(data, list):
+                        tenders_count = len(data)
+                    
+                    # Check if this matches the expected 62 active listings
+                    expected_count = 62
+                    if tenders_count == expected_count:
+                        self.log_result(
+                            "Tenders Overview Count", 
+                            True, 
+                            f"✅ TENDERS COUNT CONFIRMED: GET /api/tenders/seller/{admin_user_id}/overview returns {tenders_count} active listings (matches expected {expected_count})",
+                            response_time
+                        )
+                    else:
+                        self.log_result(
+                            "Tenders Overview Count", 
+                            True, 
+                            f"⚠️ TENDERS COUNT UPDATED: GET /api/tenders/seller/{admin_user_id}/overview returns {tenders_count} active listings (expected {expected_count}, difference: {abs(tenders_count - expected_count)})",
+                            response_time
+                        )
+                    
+                    return {
+                        'count': tenders_count,
+                        'data': data,
+                        'success': True,
+                        'expected': expected_count,
+                        'matches_expected': tenders_count == expected_count
+                    }
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Tenders Overview Count", 
+                        False, 
+                        f"❌ ENDPOINT FAILED: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return {'count': 0, 'success': False, 'error': error_text}
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Tenders Overview Count", 
+                False, 
+                f"❌ REQUEST FAILED: {str(e)}",
+                response_time
+            )
+            return {'count': 0, 'success': False, 'error': str(e)}
+    
+    async def verify_endpoint_consistency(self, active_result, tenders_result):
+        """Verify Consistency: Both endpoints (/api/user/my-listings and /api/tenders/seller/overview) should now return consistent active counts"""
+        print("      Checking consistency between My-Listings Active and Tenders Overview:")
+        
+        if not active_result.get('success') or not tenders_result.get('success'):
+            self.log_result(
+                "Endpoint Consistency Verification", 
+                False, 
+                "❌ Cannot verify consistency - one or both endpoints failed"
+            )
+            return False
+        
+        my_listings_count = active_result.get('total_count', active_result['count'])
+        tenders_count = tenders_result['count']
+        
+        # Check if both endpoints return the same count for active listings
+        if my_listings_count == tenders_count:
+            self.log_result(
+                "Endpoint Consistency Verification", 
+                True, 
+                f"✅ CONSISTENCY ACHIEVED: My-Listings active ({my_listings_count}) == Tenders overview ({tenders_count}) - both endpoints show identical active counts!"
+            )
+            return True
+        else:
+            difference = abs(my_listings_count - tenders_count)
+            self.log_result(
+                "Endpoint Consistency Verification", 
+                False, 
+                f"❌ CONSISTENCY ISSUE: My-Listings active ({my_listings_count}) != Tenders overview ({tenders_count}), difference: {difference}"
+            )
+            return False
+    
+    async def analyze_my_listings_fixes(self, old_endpoint_result, default_result, active_result, tenders_result, consistency_result):
+        """Analyze the effectiveness of the my-listings endpoint fixes"""
+        print("      Final analysis of my-listings endpoint fixes:")
+        
+        # Extract key numbers
+        old_endpoint_count = old_endpoint_result.get('total_count', 0) if old_endpoint_result.get('success') else 0
+        default_count = default_result.get('total_count', 0) if default_result.get('success') else 0
+        active_count = active_result.get('total_count', 0) if active_result.get('success') else 0
+        tenders_count = tenders_result.get('count', 0) if tenders_result.get('success') else 0
+        
+        print(f"      📊 FINAL COUNT SUMMARY:")
+        print(f"      - Old Endpoint (status=all, limit=1000): {old_endpoint_count} listings")
+        print(f"      - Default Behavior (no params): {default_count} listings")
+        print(f"      - Active Status Filter (status=active): {active_count} listings")
+        print(f"      - Tenders Overview: {tenders_count} listings")
+        
+        # Analyze the fixes
+        fixes_working = []
+        fixes_needed = []
+        
+        # Check if consistency is achieved
+        if consistency_result:
+            fixes_working.append("✅ My-Listings active and Tenders overview now return consistent counts")
+        else:
+            fixes_needed.append("❌ My-Listings active and Tenders overview still have different counts")
+        
+        # Check if active count matches expected 62
+        expected_active = 62
+        if active_count == expected_active:
+            fixes_working.append(f"✅ My-Listings active returns expected {expected_active} listings")
+        else:
+            fixes_needed.append(f"❌ My-Listings active returns {active_count} listings (expected {expected_active})")
+        
+        # Check if tenders count matches expected 62
+        if tenders_count == expected_active:
+            fixes_working.append(f"✅ Tenders overview returns expected {expected_active} listings")
+        else:
+            fixes_needed.append(f"❌ Tenders overview returns {tenders_count} listings (expected {expected_active})")
+        
+        # Check if old endpoint with new parameters works
+        if old_endpoint_result.get('success'):
+            fixes_working.append(f"✅ Old endpoint with new parameters working (returns {old_endpoint_count} listings)")
+        else:
+            fixes_needed.append("❌ Old endpoint with new parameters failed")
+        
+        # Check if default behavior works
+        if default_result.get('success'):
+            fixes_working.append(f"✅ Default behavior working (returns {default_count} listings)")
+        else:
+            fixes_needed.append("❌ Default behavior failed")
+        
+        # Final assessment
+        if fixes_needed:
+            self.log_result(
+                "My-Listings Endpoint Fixes Analysis", 
+                False, 
+                f"❌ FIXES INCOMPLETE: {len(fixes_working)} working, {len(fixes_needed)} still needed. Issues: {'; '.join(fixes_needed)}"
+            )
+        else:
+            self.log_result(
+                "My-Listings Endpoint Fixes Analysis", 
+                True, 
+                f"✅ FIXES WORKING: All my-listings endpoint fixes are working correctly. Achievements: {'; '.join(fixes_working)}"
+            )
+        
+        return len(fixes_needed) == 0
+    
     async def test_my_listings_counts(self, admin_user_id, admin_token):
         """Test GET /api/marketplace/my-listings with different status filters"""
         headers = {"Authorization": f"Bearer {admin_token}"}
