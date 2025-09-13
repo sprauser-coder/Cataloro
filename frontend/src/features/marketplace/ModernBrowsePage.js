@@ -1071,6 +1071,10 @@ function ModernBrowsePage() {
 
       {/* Products Grid/List */}
       <div className="mt-6">
+
+      {/* Top Pagination Controls */}
+      <PaginationControls showInfo={true} position="top" />
+
       {filteredListings.length === 0 ? (
         <div className="text-center py-16">
           <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
