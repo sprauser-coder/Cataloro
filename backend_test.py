@@ -1,31 +1,48 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - CRITICAL FIX FOR CLOSED TAB LISTINGS TESTING
-Testing the critical fix for Closed tab listings as specifically requested by the user
+CATALORO MARKETPLACE - FAVORITES AND VIEWS COUNTER BUGS TESTING
+Testing the fixes for favorites and views counter bugs as specifically requested by the user
 
-CRITICAL FIX BEING TESTED:
-- Removed hardcoded `"status": "active"` filter from /api/user/my-listings/{user_id} endpoint
-- This endpoint now returns ALL listing statuses (active, sold, draft, closed)
-- Frontend can now properly filter listings into Active/Closed/Drafts tabs
+CRITICAL FIXES BEING TESTED:
+1. **Favorites Fix**:
+   - Removed duplicate favorites endpoints that were causing data conflicts
+   - Fixed favorites persistence - all favorites should be returned (not just one)
+   - Test that there are no duplicate endpoint conflicts
+
+2. **Views Counter Fix**:
+   - Added increment_view parameter to listings endpoint to control view counting
+   - Views should only increment when increment_view=true is passed
+   - Background calls without increment_view should NOT increase views
 
 FOCUS AREAS:
-1. SETUP TEST SCENARIO - Login as admin (seller), create test listing, login as demo user (buyer), place bid
-2. ACCEPT THE TENDER - Accept tender to change listing status to "sold", verify status update works
-3. TEST THE FIXED MY-LISTINGS ENDPOINT - Call GET /api/user/my-listings/{user_id} for seller, verify listings with status "sold" are returned
-4. VERIFY CLOSED TAB LOGIC - Confirm listings with status "sold" would appear in Closed tab filter
+1. **Test Favorites Fix**:
+   - Login as demo user
+   - Add multiple items to favorites using POST /api/user/{user_id}/favorites/{listing_id}
+   - Verify favorites are added correctly
+   - Get favorites using GET /api/user/{user_id}/favorites
+   - Verify ALL favorites are returned (not just one)
+   - Test edge cases: duplicates, non-existent listings, remove favorites
+
+2. **Test Views Counter Fix**:
+   - Get a test listing's current view count
+   - Call GET /api/listings/{listing_id} WITHOUT increment_view parameter (should NOT increment)
+   - Verify view count stays the same
+   - Call GET /api/listings/{listing_id}?increment_view=true (should increment)
+   - Verify view count increases by 1
+   - Test multiple background calls without increment_view (should not increase views)
 
 TESTING ENDPOINTS:
-- POST /api/auth/login (admin and demo user authentication)
-- POST /api/listings (create test listing)
-- POST /api/tenders/submit (place bid)
-- PUT /api/tenders/{tender_id}/accept (accept tender)
-- GET /api/user/my-listings/{user_id} (THE CRITICAL FIXED ENDPOINT)
-- GET /api/listings/{listing_id} (verify individual listing status)
+- POST /api/auth/login (demo user authentication)
+- POST /api/user/{user_id}/favorites/{listing_id} (add to favorites)
+- GET /api/user/{user_id}/favorites (get favorites)
+- DELETE /api/user/{user_id}/favorites/{listing_id} (remove from favorites)
+- GET /api/listings/{listing_id} (with and without increment_view parameter)
+- GET /api/marketplace/browse (get test listings)
 
 EXPECTED RESULTS:
-- Tender acceptance changes listing status from "active" to "sold"
-- GET /api/user/my-listings/{user_id} returns listings with status "sold" (this was the bug!)
-- Frontend Closed tab filter (status === 'sold' || status === 'closed') would now show the item
+- Multiple favorites can be added and ALL are returned when fetched
+- Views only increment when increment_view=true is explicitly passed
+- Background API calls do not artificially inflate view counts
 """
 
 import asyncio
