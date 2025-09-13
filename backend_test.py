@@ -585,46 +585,40 @@ class BackendTester:
             )
             return False
     
-    async def test_new_tender_acceptance_workflow(self):
-        """Test the new tender acceptance workflow endpoints"""
-        print("\n🔄 NEW TENDER ACCEPTANCE WORKFLOW TESTING:")
-        print("   Testing new tender acceptance workflow backend endpoints")
-        print("   Testing accepted tenders, listing reactivation, bought items, and complete workflow")
+    async def test_tender_management_apis(self):
+        """Test the tender management API endpoints"""
+        print("\n🔄 TENDER MANAGEMENT API TESTING:")
+        print("   Testing tender management API endpoints to verify they are working correctly")
+        print("   Testing buyer tenders and seller tenders overview endpoints")
         
-        # Step 1: Setup - Login as admin and demo user
+        # Step 1: Setup - Login as admin user
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         if not admin_token:
-            self.log_result("New Tender Acceptance Workflow Setup", False, "Failed to login as admin")
-            return False
-        
-        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
-        if not demo_token:
-            self.log_result("New Tender Acceptance Workflow Setup", False, "Failed to login as demo user")
+            self.log_result("Tender Management API Setup", False, "Failed to login as admin")
             return False
         
         print(f"   Testing with admin user ID: {admin_user_id}")
-        print(f"   Testing with demo user ID: {demo_user_id}")
         
-        # Step 2: Test Accepted Tenders Endpoint
-        print("\n   📋 Test Accepted Tenders Endpoint:")
-        accepted_tenders_result = await self.test_accepted_tenders_endpoint(admin_user_id, admin_token)
+        # Step 2: Test Buyer Tenders Endpoint
+        print("\n   📋 Test Buyer Tenders Endpoint:")
+        buyer_tenders_result = await self.test_buyer_tenders_endpoint(admin_user_id, admin_token)
         
-        # Step 3: Test Bought Item Creation Verification
-        print("\n   🛒 Test Bought Item Creation:")
-        bought_items_result = await self.test_bought_items_creation(admin_user_id, admin_token)
+        # Step 3: Test Seller Tenders Overview Endpoint
+        print("\n   🏪 Test Seller Tenders Overview Endpoint:")
+        seller_overview_result = await self.test_seller_tenders_overview_endpoint(admin_user_id, admin_token)
         
-        # Step 4: Test Complete Transaction Workflow
-        print("\n   ✅ Test Complete Transaction Workflow:")
-        complete_transaction_result = await self.test_complete_transaction_workflow(admin_token, admin_user_id)
+        # Step 4: Test Data Structure and Content
+        print("\n   🔍 Test Data Structure and Content:")
+        data_structure_result = await self.test_tender_data_structure(buyer_tenders_result, seller_overview_result)
         
-        # Step 5: Test Listing Reactivation Endpoint
-        print("\n   🔄 Test Listing Reactivation Endpoint:")
-        reactivation_result = await self.test_listing_reactivation_endpoint(admin_token, admin_user_id)
+        # Step 5: Test with Different User IDs
+        print("\n   👥 Test with Different User IDs:")
+        different_users_result = await self.test_different_user_ids(admin_token)
         
         # Step 6: Final Analysis
         print("\n   📈 Final Analysis:")
-        await self.analyze_tender_acceptance_workflow(
-            accepted_tenders_result, bought_items_result, complete_transaction_result, reactivation_result
+        await self.analyze_tender_management_results(
+            buyer_tenders_result, seller_overview_result, data_structure_result, different_users_result
         )
         
         return True
