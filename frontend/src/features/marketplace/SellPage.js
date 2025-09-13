@@ -172,6 +172,13 @@ function SellPage() {
             <TenderManagementPage showSellTabOnly={true} />
           </div>
           
+          {activeTab === 'accepted' && (
+            <AcceptedTendersTab 
+              user={user}
+              onRefresh={loadCompletedTransactions}
+            />
+          )}
+          
           <div style={{ display: activeTab === 'listings' ? 'block' : 'none' }}>
             <MyListingsPage />
           </div>
