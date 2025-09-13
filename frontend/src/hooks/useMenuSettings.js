@@ -58,13 +58,13 @@ export function useMenuSettings() {
     
     const menuSection = menuSettings[menuType];
     
-    // If no menu section found, fallback to default behavior
-    // This happens when user is not logged in or API fails
+    // If no menu section found, fallback to minimal default behavior
+    // This happens when user is not logged in or API completely fails
     if (!menuSection) {
-      // For unauthenticated users, hide all items except basic ones
-      const publicItems = ['browse', 'about'];
-      // For authenticated users, show basic + buy/sell items
-      const authenticatedItems = ['browse', 'about', 'buy', 'sell', 'messages', 'favorites', 'notifications'];
+      // For unauthenticated users, show only browse
+      const publicItems = ['browse'];
+      // For authenticated users, show minimal set + new menu items
+      const authenticatedItems = ['browse', 'buy', 'sell'];
       return user ? authenticatedItems.includes(itemKey) : publicItems.includes(itemKey);
     }
     
