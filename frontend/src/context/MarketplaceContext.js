@@ -326,14 +326,31 @@ export function MarketplaceProvider({ children }) {
       
       // Try to fetch real listings from API using marketplaceService with pagination
       const apiResponse = await marketplaceService.browseListings(apiFilters, currentUserId, page, state.pageSize);
-      console.log('✅ Loaded listings from API - page:', page, 'count:', apiResponse.length, 'filters:', apiFilters);
+      console.log('✅ Loaded listings from API - page:', page, 'response:', apiResponse);
       
-      // The browse endpoint returns array format directly
+      // Handle new API response format {listings: [], pagination: {}}
       let apiListings;
-      if (Array.isArray(apiResponse)) {
+      let paginationInfo;
+      
+      if (apiResponse && apiResponse.listings) {
+        // New API format with pagination metadata
+        apiListings = apiResponse.listings;
+        paginationInfo = apiResponse.pagination;
+        console.log('✅ New API format - listings:', apiListings.length, 'pagination:', paginationInfo);
+      } else if (Array.isArray(apiResponse)) {
+        // Fallback for old API format (just array)
         apiListings = apiResponse;
+        paginationInfo = {
+          current_page: page,
+          total_pages: 1,
+          total_count: apiResponse.length,
+          page_size: state.pageSize,
+          has_next: false,
+          has_prev: false
+        };
+        console.log('✅ Fallback array format - listings:', apiListings.length);
       } else {
-        throw new Error('Invalid API response format: expected array');
+        throw new Error('Invalid API response format');
       }
       
       console.log('📋 Processing listings:', apiListings.length);
