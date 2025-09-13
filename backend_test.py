@@ -600,6 +600,368 @@ class BackendTester:
             )
             return False
     
+    async def test_message_field_consistency_fix(self):
+        """Test the critical message field consistency fix"""
+        print("\n📧 MESSAGE FIELD CONSISTENCY FIX TESTS:")
+        
+        # Step 1: Login as admin (sender)
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        if not admin_token:
+            self.log_result("Message Field Consistency Test", False, "Failed to login as admin")
+            return False
+        
+        # Step 2: Login as demo user (recipient)
+        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        if not demo_token:
+            self.log_result("Message Field Consistency Test", False, "Failed to login as demo user")
+            return False
+        
+        # Step 3: Send message from admin to demo user
+        message_id = await self.test_send_message_with_field_check(admin_user_id, admin_token, demo_user_id)
+        if not message_id:
+            return False
+        
+        # Step 4: Verify message created with "is_read": false
+        message_data = await self.test_get_message_and_check_field(demo_user_id, demo_token, message_id)
+        if not message_data:
+            return False
+        
+        # Step 5: Mark message as read and verify "is_read": true
+        success = await self.test_mark_read_and_verify_field(demo_user_id, demo_token, message_id)
+        if not success:
+            return False
+        
+        # Step 6: Test unread count calculation
+        await self.test_unread_count_calculation(demo_user_id, demo_token)
+        
+        return True
+    
+    async def test_send_message_with_field_check(self, sender_id, token, recipient_id):
+        """Send message and verify it's created with is_read: false"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            message_data = {
+                "recipient_id": recipient_id,
+                "subject": "Message Field Consistency Test",
+                "content": "Testing that messages are created with is_read: false field (not read: false)"
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/user/{sender_id}/messages", 
+                                       json=message_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    message_id = data.get("id")
+                    
+                    self.log_result(
+                        "Send Message (Field Consistency)", 
+                        True, 
+                        f"✅ Message sent successfully (ID: {message_id})",
+                        response_time
+                    )
+                    return message_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Send Message (Field Consistency)", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Send Message (Field Consistency)", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_get_message_and_check_field(self, user_id, token, message_id):
+        """Get message and verify it has is_read: false field"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{user_id}/messages", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    messages = await response.json()
+                    
+                    # Find the specific message
+                    target_message = None
+                    for msg in messages:
+                        if msg.get("id") == message_id:
+                            target_message = msg
+                            break
+                    
+                    if target_message:
+                        # Check field consistency
+                        has_is_read = "is_read" in target_message
+                        has_read = "read" in target_message
+                        is_read_value = target_message.get("is_read")
+                        read_value = target_message.get("read")
+                        
+                        if has_is_read and is_read_value == False:
+                            self.log_result(
+                                "Message Field Check (is_read)", 
+                                True, 
+                                f"✅ FIELD CONSISTENCY FIX WORKING: Message created with 'is_read': false",
+                                response_time
+                            )
+                        else:
+                            self.log_result(
+                                "Message Field Check (is_read)", 
+                                False, 
+                                f"❌ FIELD INCONSISTENCY: is_read={is_read_value}, has_is_read={has_is_read}",
+                                response_time
+                            )
+                        
+                        # Check for old field (should not exist or be ignored)
+                        if has_read:
+                            self.log_result(
+                                "Message Field Check (old read field)", 
+                                False, 
+                                f"⚠️ OLD FIELD DETECTED: Message still has 'read' field with value: {read_value}",
+                                response_time
+                            )
+                        else:
+                            self.log_result(
+                                "Message Field Check (old read field)", 
+                                True, 
+                                f"✅ CLEAN IMPLEMENTATION: No old 'read' field found",
+                                response_time
+                            )
+                        
+                        return target_message
+                    else:
+                        self.log_result(
+                            "Message Field Check", 
+                            False, 
+                            f"Message with ID {message_id} not found in {len(messages)} messages",
+                            response_time
+                        )
+                        return None
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Message Field Check", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Message Field Check", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_mark_read_and_verify_field(self, user_id, token, message_id):
+        """Mark message as read and verify is_read: true"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Mark message as read
+            async with self.session.put(f"{BACKEND_URL}/user/{user_id}/messages/{message_id}/read", 
+                                      headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    self.log_result(
+                        "Mark Message Read", 
+                        True, 
+                        f"✅ Message marked as read successfully",
+                        response_time
+                    )
+                    
+                    # Now verify the field was updated correctly
+                    return await self.verify_message_marked_read(user_id, token, message_id)
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Mark Message Read", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Mark Message Read", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def verify_message_marked_read(self, user_id, token, message_id):
+        """Verify message is marked with is_read: true after mark read operation"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{user_id}/messages", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    messages = await response.json()
+                    
+                    # Find the specific message
+                    target_message = None
+                    for msg in messages:
+                        if msg.get("id") == message_id:
+                            target_message = msg
+                            break
+                    
+                    if target_message:
+                        is_read_value = target_message.get("is_read")
+                        read_value = target_message.get("read")
+                        
+                        if is_read_value == True:
+                            self.log_result(
+                                "Verify Message Marked Read", 
+                                True, 
+                                f"✅ FIELD CONSISTENCY FIX WORKING: Message correctly marked with 'is_read': true",
+                                response_time
+                            )
+                            
+                            # Check for field inconsistency
+                            if "read" in target_message and read_value != True:
+                                self.log_result(
+                                    "Field Consistency Check", 
+                                    False, 
+                                    f"❌ FIELD INCONSISTENCY DETECTED: is_read=true but read={read_value}",
+                                    response_time
+                                )
+                                return False
+                            else:
+                                self.log_result(
+                                    "Field Consistency Check", 
+                                    True, 
+                                    f"✅ FIELD CONSISTENCY MAINTAINED: Both fields consistent or only is_read used",
+                                    response_time
+                                )
+                                return True
+                        else:
+                            self.log_result(
+                                "Verify Message Marked Read", 
+                                False, 
+                                f"❌ MARK READ FAILED: is_read={is_read_value} (should be true)",
+                                response_time
+                            )
+                            return False
+                    else:
+                        self.log_result(
+                            "Verify Message Marked Read", 
+                            False, 
+                            f"Message with ID {message_id} not found",
+                            response_time
+                        )
+                        return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Verify Message Marked Read", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Verify Message Marked Read", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def test_unread_count_calculation(self, user_id, token):
+        """Test unread count calculation using is_read field"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{user_id}/messages", headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    messages = await response.json()
+                    
+                    # Calculate unread count using is_read field
+                    unread_count_is_read = sum(1 for msg in messages if msg.get("is_read") == False)
+                    
+                    # Calculate unread count using old read field (for comparison)
+                    unread_count_read = sum(1 for msg in messages if msg.get("read") == False)
+                    
+                    # Check for field consistency
+                    if unread_count_is_read == unread_count_read or unread_count_read == 0:
+                        self.log_result(
+                            "Unread Count Calculation", 
+                            True, 
+                            f"✅ UNREAD COUNT CONSISTENT: {unread_count_is_read} unread messages using 'is_read' field",
+                            response_time
+                        )
+                    else:
+                        self.log_result(
+                            "Unread Count Calculation", 
+                            False, 
+                            f"❌ UNREAD COUNT INCONSISTENCY: is_read field shows {unread_count_is_read} unread, read field shows {unread_count_read} unread",
+                            response_time
+                        )
+                    
+                    # Log detailed breakdown
+                    total_messages = len(messages)
+                    read_messages = sum(1 for msg in messages if msg.get("is_read") == True)
+                    
+                    print(f"   Message Count Breakdown:")
+                    print(f"   - Total messages: {total_messages}")
+                    print(f"   - Read messages (is_read=true): {read_messages}")
+                    print(f"   - Unread messages (is_read=false): {unread_count_is_read}")
+                    
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Unread Count Calculation", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Unread Count Calculation", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+
     async def test_admin_login_authentication(self):
         """Test admin login with specific credentials"""
         print("\n🔐 ADMIN AUTHENTICATION TESTS:")
