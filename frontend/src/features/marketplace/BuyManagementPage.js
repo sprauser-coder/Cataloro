@@ -34,11 +34,11 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import usePermissions from '../../hooks/usePermissions';
 
-function BuyManagementPage() {
+function BuyManagementPage({ initialTab = 'bought-items' }) {
   const { user } = useAuth();
   const { showToast } = useNotifications();
   const { permissions } = usePermissions();
-  const [activeTab, setActiveTab] = useState('bought-items');
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [completedTransactions, setCompletedTransactions] = useState([]);
   const [boughtItems, setBoughtItems] = useState([]);
   const [baskets, setBaskets] = useState([]);
