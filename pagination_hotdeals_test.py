@@ -765,12 +765,13 @@ class PaginationHotDealsTest:
                 
                 # Check expired flag consistency
                 is_expired = time_info.get('is_expired', False)
-                if time_remaining <= 0 and not is_expired:
-                    quality_stats['with_inconsistent_expired_flag'] += 1
-                    issues_found.append(f"Listing {listing['id'][:8]}... should be expired (time_remaining: {time_remaining}) but is_expired: {is_expired}")
-                elif time_remaining > 0 and is_expired:
-                    quality_stats['with_inconsistent_expired_flag'] += 1
-                    issues_found.append(f"Listing {listing['id'][:8]}... has time remaining ({time_remaining}s) but is_expired: {is_expired}")
+                if time_remaining is not None:
+                    if time_remaining <= 0 and not is_expired:
+                        quality_stats['with_inconsistent_expired_flag'] += 1
+                        issues_found.append(f"Listing {listing['id'][:8]}... should be expired (time_remaining: {time_remaining}) but is_expired: {is_expired}")
+                    elif time_remaining > 0 and is_expired:
+                        quality_stats['with_inconsistent_expired_flag'] += 1
+                        issues_found.append(f"Listing {listing['id'][:8]}... has time remaining ({time_remaining}s) but is_expired: {is_expired}")
         
         # Log quality statistics
         self.log_result(
