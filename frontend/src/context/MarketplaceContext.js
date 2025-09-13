@@ -324,9 +324,9 @@ export function MarketplaceProvider({ children }) {
         }
       })();
       
-      // Try to fetch real listings from API using marketplaceService with higher limit
-      const apiResponse = await marketplaceService.browseListings(apiFilters, currentUserId, 200);
-      console.log('✅ Loaded real listings from API with filters:', apiFilters, 'userId:', currentUserId, 'limit: 200', apiResponse);
+      // Try to fetch real listings from API using marketplaceService with pagination
+      const apiResponse = await marketplaceService.browseListings(apiFilters, currentUserId, page, state.pageSize);
+      console.log('✅ Loaded listings from API - page:', page, 'count:', apiResponse.length, 'filters:', apiFilters);
       
       // The browse endpoint returns array format directly
       let apiListings;
