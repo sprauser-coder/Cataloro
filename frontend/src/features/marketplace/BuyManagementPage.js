@@ -776,6 +776,7 @@ function BoughtItemsTab({ items, baskets, searchTerm, setSearchTerm, assignmentF
               onUnassignFromBasket={onUnassignFromBasket}
               onCreateBasket={onCreateBasket}
               onMarkComplete={onMarkComplete}
+              isCompleted={isItemCompleted(item.listing_id)}
             />
           ))}
         </div>
