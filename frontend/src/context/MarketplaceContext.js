@@ -438,225 +438,257 @@ export function MarketplaceProvider({ children }) {
       return;
         
     } catch (error) {
-      console.error('Failed to load listings from API:', error);
-    }
-    
-    // Fallback to demo data if API fails or returns no data
-    console.log('⚠️ Using demo data - no real listings found');
-    const products = [
-      {
-        id: '1',
-        title: 'MacBook Pro 16-inch M3 Max',
-        description: 'Professional laptop with M3 Max chip, perfect for developers and creators. Includes original box and all accessories.',
-        price: 2499,
-        originalPrice: 2799,
-        category: 'Electronics',
-        subcategory: 'Laptops',
-        seller: {
-          name: 'TechGuru123',
-          username: 'TechGuru123',
-          email: 'techguru123@example.com',
-          rating: 4.9,
-          reviews: 156,
-          verified: true,
-          is_business: false, // Private seller
-          location: 'San Francisco, CA'
-        },
-        images: [
-          'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500',
-          'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=500',
-          'https://images.unsplash.com/photo-1585337701044-7305994ea6fb?w=500'
-        ],
-        condition: 'Like New',
-        views: 234,
-        favorites: 45,
-        createdAt: new Date().toISOString(),
-        features: ['M3 Max Chip', '64GB RAM', '2TB SSD', 'Space Gray', '16-inch Display'],
-        shipping: 'Free shipping',
-        estimatedDelivery: '2-3 business days',
-        rating: 4.8,
-        reviewCount: 156,
-        tags: ['Hot Deal', 'Fast Shipping', 'Professional'],
-        inStock: true,
-        quantity: 1,
-        // Add time_info for hot deals filtering - HOT DEAL (12 hours left)
-        time_info: {
-          has_time_limit: true,
-          is_expired: false,
-          time_remaining_seconds: 43200, // 12 hours
-          time_limit_hours: 24,
-          expires_at: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString()
-        }
-      },
-      {
-        id: '2',
-        title: 'Vintage Gibson Les Paul Standard 1959',
-        description: 'Authentic 1959 Gibson Les Paul in museum-quality condition. This is a collector\'s dream with incredible tone and playability.',
-        price: 45000,
-        originalPrice: 55000,
-        category: 'Music',
-        subcategory: 'Guitars',
-        seller: {
-          name: 'VintageGuitars_Pro',
-          username: 'VintageGuitars_Pro',
-          email: 'vintage.guitars.pro@example.com',
-          rating: 4.9,
-          reviews: 89,
-          verified: true,
-          is_business: true, // Business seller
-          company_name: 'Vintage Guitars Pro LLC',
-          location: 'Nashville, TN'
-        },
-        images: [
-          'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=500',
-          'https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=500',
-          'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500'
-        ],
-        condition: 'Excellent',
-        views: 1289,
-        favorites: 267,
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        features: ['1959 Model', 'Original Case', 'Certificate of Authenticity', 'Museum Quality'],
-        shipping: 'Insured shipping - $150',
-        estimatedDelivery: '3-5 business days',
-        rating: 4.9,
-        reviewCount: 89,
-        tags: ['Vintage', 'Authenticated', 'Collector Item'],
-        inStock: true,
-        quantity: 1,
-        // Add time_info for hot deals filtering - EXPIRING SOON (36 hours left)
-        time_info: {
-          has_time_limit: true,
-          is_expired: false,
-          time_remaining_seconds: 129600, // 36 hours
-          time_limit_hours: 48,
-          expires_at: new Date(Date.now() + 36 * 60 * 60 * 1000).toISOString()
-        }
-      },
-      {
-        id: '3',
-        title: 'Louis Vuitton Neverfull MM',
-        description: 'Authentic Louis Vuitton handbag in pristine condition. Perfect for daily use with elegant design.',
-        price: 1850,
-        originalPrice: 2200,
-        category: 'Fashion',
-        subcategory: 'Handbags',
-        seller: {
-          name: 'LuxuryItems_NYC',
-          username: 'LuxuryItems_NYC',
-          email: 'luxury.items.nyc@example.com',
-          rating: 4.7,
-          reviews: 245,
-          verified: true,
-          is_business: true, // Business seller
-          company_name: 'Luxury Items NYC Inc.',
-          location: 'New York, NY'
-        },
-        images: [
-          'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500',
-          'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500'
-        ],
-        condition: 'Excellent',
-        views: 456,
-        favorites: 189,
-        createdAt: new Date(Date.now() - 172800000).toISOString(),
-        features: ['Authentic', 'Dust Bag Included', 'Care Instructions', 'Serial Number'],
-        shipping: 'Express delivery - $25',
-        estimatedDelivery: '1-2 business days',
-        rating: 4.6,
-        reviewCount: 245,
-        tags: ['Luxury', 'Authentic', 'Designer'],
-        inStock: true,
-        quantity: 1,
-        // Add time_info for hot deals filtering - HOT DEAL (18 hours left)
-        time_info: {
-          has_time_limit: true,
-          is_expired: false,
-          time_remaining_seconds: 64800, // 18 hours
-          time_limit_hours: 24,
-          expires_at: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString()
-        }
-      },
-      {
-        id: '4',
-        title: 'Gaming PC - RTX 4090 Build',
-        description: 'Ultimate gaming PC with RTX 4090, perfect for 4K gaming, streaming, and content creation.',
-        price: 4200,
-        originalPrice: 4800,
-        category: 'Electronics',
-        subcategory: 'Computers',
-        seller: {
-          name: 'PCBuilder_Expert',
-          rating: 4.9,
-          reviews: 78,
-          verified: true,
-          location: 'Austin, TX'
-        },
-        images: [
-          'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=500'
-        ],
-        condition: 'New',
-        views: 698,
-        favorites: 212,
-        createdAt: new Date(Date.now() - 43200000).toISOString(),
-        features: ['RTX 4090', 'Intel i9-13900K', '64GB RAM', 'Custom Cooling'],
-        shipping: 'Free shipping',
-        estimatedDelivery: '3-5 business days',
-        rating: 5.0,
-        reviewCount: 78,
-        tags: ['Gaming', 'Custom Built', 'High Performance'],
-        inStock: true,
-        quantity: 1,
-        // Add time_info for hot deals filtering - NO TIME LIMIT
-        time_info: {
-          has_time_limit: false,
-          is_expired: false,
-          time_remaining_seconds: null,
-          time_limit_hours: null,
-          expires_at: null
-        }
-      },
-      {
-        id: '5',
-        title: 'iPhone 15 Pro Max 1TB',
-        description: 'Latest iPhone 15 Pro Max in Natural Titanium with maximum storage capacity.',
-        price: 1599,
-        category: 'Electronics',
-        subcategory: 'Smartphones',
-        seller: {
-          name: 'AppleStore_Certified',
+      console.error('❌ Failed to load products:', error);
+      
+      // Fallback to demo data on error (for pagination, use a subset)
+      const startIndex = (page - 1) * state.pageSize;
+      const endIndex = startIndex + state.pageSize;
+      
+      const demoProducts = [
+        {
+          id: '1',
+          title: 'MacBook Pro 16-inch M3 Max',
+          description: 'Professional laptop with M3 Max chip, perfect for developers and creators. Includes original box and all accessories.',
+          price: 2499,
+          originalPrice: 2799,
+          category: 'Electronics',
+          subcategory: 'Laptops',
+          seller: {
+            name: 'TechGuru123',
+            username: 'TechGuru123',
+            email: 'techguru123@example.com',
+            rating: 4.9,
+            reviews: 156,
+            verified: true,
+            is_business: false, // Private seller
+            location: 'San Francisco, CA'
+          },
+          images: [
+            'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500',
+            'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=500',
+            'https://images.unsplash.com/photo-1585337701044-7305994ea6fb?w=500'
+          ],
+          condition: 'Like New',
+          views: 234,
+          favorites: 45,
+          createdAt: new Date().toISOString(),
+          features: ['M3 Max Chip', '64GB RAM', '2TB SSD', 'Space Gray', '16-inch Display'],
+          shipping: 'Free shipping',
+          estimatedDelivery: '2-3 business days',
           rating: 4.8,
-          reviews: 324,
-          verified: true,
-          location: 'Cupertino, CA'
+          reviewCount: 156,
+          tags: ['Hot Deal', 'Fast Shipping', 'Professional'],
+          inStock: true,
+          quantity: 1,
+          // Add time_info for hot deals filtering - HOT DEAL (12 hours left)
+          time_info: {
+            has_time_limit: true,
+            is_expired: false,
+            time_remaining_seconds: 43200, // 12 hours
+            time_limit_hours: 24,
+            expires_at: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString()
+          }
         },
-        images: [
-          'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500'
-        ],
-        condition: 'New',
-        views: 1205,
-        favorites: 398,
-        createdAt: new Date(Date.now() - 21600000).toISOString(),
-        features: ['1TB Storage', 'Natural Titanium', 'Pro Camera System', 'A17 Pro Chip'],
-        shipping: 'Free shipping',
-        estimatedDelivery: '1-2 business days',
-        rating: 4.8,
-        reviewCount: 324,
-        tags: ['Latest Model', 'Premium', 'Fast Shipping'],
-        inStock: true,
-        quantity: 1,
-        // Add time_info for hot deals filtering - HOT DEAL (6 hours left)
-        time_info: {
-          has_time_limit: true,
-          is_expired: false,
-          time_remaining_seconds: 21600, // 6 hours
-          time_limit_hours: 24,
-          expires_at: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString()
+        {
+          id: '2',
+          title: 'Vintage Gibson Les Paul Standard 1959',
+          description: 'Authentic 1959 Gibson Les Paul in museum-quality condition. This is a collector\'s dream with incredible tone and playability.',
+          price: 45000,
+          originalPrice: 55000,
+          category: 'Music',
+          subcategory: 'Guitars',
+          seller: {
+            name: 'VintageGuitars_Pro',
+            username: 'VintageGuitars_Pro',
+            email: 'vintage.guitars.pro@example.com',
+            rating: 4.9,
+            reviews: 89,
+            verified: true,
+            is_business: true, // Business seller
+            company_name: 'Vintage Guitars Pro LLC',
+            location: 'Nashville, TN'
+          },
+          images: [
+            'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=500',
+            'https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=500',
+            'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500'
+          ],
+          condition: 'Excellent',
+          views: 1289,
+          favorites: 267,
+          createdAt: new Date(Date.now() - 86400000).toISOString(),
+          features: ['1959 Model', 'Original Case', 'Certificate of Authenticity', 'Museum Quality'],
+          shipping: 'Insured shipping - $150',
+          estimatedDelivery: '3-5 business days',
+          rating: 4.9,
+          reviewCount: 89,
+          tags: ['Vintage', 'Authenticated', 'Collector Item'],
+          inStock: true,
+          quantity: 1,
+          // Add time_info for hot deals filtering - EXPIRING SOON (36 hours left)
+          time_info: {
+            has_time_limit: true,
+            is_expired: false,
+            time_remaining_seconds: 129600, // 36 hours
+            time_limit_hours: 48,
+            expires_at: new Date(Date.now() + 36 * 60 * 60 * 1000).toISOString()
+          }
+        },
+        {
+          id: '3',
+          title: 'Louis Vuitton Neverfull MM',
+          description: 'Authentic Louis Vuitton handbag in pristine condition. Perfect for daily use with elegant design.',
+          price: 1850,
+          originalPrice: 2200,
+          category: 'Fashion',
+          subcategory: 'Handbags',
+          seller: {
+            name: 'LuxuryItems_NYC',
+            username: 'LuxuryItems_NYC',
+            email: 'luxury.items.nyc@example.com',
+            rating: 4.7,
+            reviews: 245,
+            verified: true,
+            is_business: true, // Business seller
+            company_name: 'Luxury Items NYC Inc.',
+            location: 'New York, NY'
+          },
+          images: [
+            'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500',
+            'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500'
+          ],
+          condition: 'Excellent',
+          views: 456,
+          favorites: 189,
+          createdAt: new Date(Date.now() - 172800000).toISOString(),
+          features: ['Authentic', 'Dust Bag Included', 'Care Instructions', 'Serial Number'],
+          shipping: 'Express delivery - $25',
+          estimatedDelivery: '1-2 business days',
+          rating: 4.6,
+          reviewCount: 245,
+          tags: ['Luxury', 'Authentic', 'Designer'],
+          inStock: true,
+          quantity: 1,
+          // Add time_info for hot deals filtering - HOT DEAL (18 hours left)
+          time_info: {
+            has_time_limit: true,
+            is_expired: false,
+            time_remaining_seconds: 64800, // 18 hours
+            time_limit_hours: 24,
+            expires_at: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString()
+          }
+        },
+        {
+          id: '4',
+          title: 'Gaming PC - RTX 4090 Build',
+          description: 'Ultimate gaming PC with RTX 4090, perfect for 4K gaming, streaming, and content creation.',
+          price: 4200,
+          originalPrice: 4800,
+          category: 'Electronics',
+          subcategory: 'Computers',
+          seller: {
+            name: 'PCBuilder_Expert',
+            rating: 4.9,
+            reviews: 78,
+            verified: true,
+            location: 'Austin, TX'
+          },
+          images: [
+            'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=500'
+          ],
+          condition: 'New',
+          views: 698,
+          favorites: 212,
+          createdAt: new Date(Date.now() - 43200000).toISOString(),
+          features: ['RTX 4090', 'Intel i9-13900K', '64GB RAM', 'Custom Cooling'],
+          shipping: 'Free shipping',
+          estimatedDelivery: '3-5 business days',
+          rating: 5.0,
+          reviewCount: 78,
+          tags: ['Gaming', 'Custom Built', 'High Performance'],
+          inStock: true,
+          quantity: 1,
+          // Add time_info for hot deals filtering - NO TIME LIMIT
+          time_info: {
+            has_time_limit: false,
+            is_expired: false,
+            time_remaining_seconds: null,
+            time_limit_hours: null,
+            expires_at: null
+          }
+        },
+        {
+          id: '5',
+          title: 'iPhone 15 Pro Max 1TB',
+          description: 'Latest iPhone 15 Pro Max in Natural Titanium with maximum storage capacity.',
+          price: 1599,
+          category: 'Electronics',
+          subcategory: 'Smartphones',
+          seller: {
+            name: 'AppleStore_Certified',
+            rating: 4.8,
+            reviews: 324,
+            verified: true,
+            location: 'Cupertino, CA'
+          },
+          images: [
+            'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500'
+          ],
+          condition: 'New',
+          views: 1205,
+          favorites: 398,
+          createdAt: new Date(Date.now() - 21600000).toISOString(),
+          features: ['1TB Storage', 'Natural Titanium', 'Pro Camera System', 'A17 Pro Chip'],
+          shipping: 'Free shipping',
+          estimatedDelivery: '1-2 business days',
+          rating: 4.8,
+          reviewCount: 324,
+          tags: ['Latest Model', 'Premium', 'Fast Shipping'],
+          inStock: true,
+          quantity: 1,
+          // Add time_info for hot deals filtering - HOT DEAL (6 hours left)
+          time_info: {
+            has_time_limit: true,
+            is_expired: false,
+            time_remaining_seconds: 21600, // 6 hours
+            time_limit_hours: 24,
+            expires_at: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString()
+          }
         }
-      }
-    ];
+      ];
+      
+      const paginatedDemoData = demoProducts.slice(startIndex, endIndex);
+      
+      dispatch({ type: ACTIONS.SET_PRODUCTS, payload: paginatedDemoData });
+      
+      // Calculate pagination info for demo data
+      const totalDemoPages = Math.ceil(demoProducts.length / state.pageSize);
+      dispatch({ 
+        type: ACTIONS.SET_PAGINATION_INFO, 
+        payload: { 
+          totalPages: totalDemoPages, 
+          totalListings: demoProducts.length,
+          currentPage: page 
+        } 
+      });
+    } finally {
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+      dispatch({ type: ACTIONS.SET_LOADING_PAGE, payload: false });
+    }
+  };
 
-    dispatch({ type: ACTIONS.SET_PRODUCTS, payload: products });
+  // Function to change page
+  const changePage = async (newPage) => {
+    if (newPage < 1 || newPage > state.totalPages || newPage === state.currentPage) {
+      return;
+    }
+
+    console.log('📄 Changing to page:', newPage);
+    dispatch({ type: ACTIONS.SET_CURRENT_PAGE, payload: newPage });
+    
+    // Reload products for the new page
+    await loadInitialProducts(state.activeFilters, null, newPage);
+  };
   };
 
   // Action creators
