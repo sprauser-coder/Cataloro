@@ -85,7 +85,9 @@ function MobileProductDetailPage() {
           console.log('⚠️ Individual listing failed, trying browse endpoint');
           const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/marketplace/browse`);
           if (response.ok) {
-            const allProducts = await response.json();
+            const data = await response.json();
+            // Handle new API response format {listings: [...], pagination: {...}}
+            const allProducts = data.listings || (Array.isArray(data) ? data : []);
             const foundProduct = allProducts.find(p => p.id === productId);
             
             if (foundProduct) {
