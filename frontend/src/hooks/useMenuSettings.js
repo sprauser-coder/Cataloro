@@ -70,9 +70,12 @@ export function useMenuSettings() {
     
     const menuItem = menuSection[itemKey];
     
-    // If item is not in the settings, hide it 
-    // The backend should return all available items for the user's role
-    if (!menuItem) return false;
+    // If item is not in the settings, show default items
+    // This provides fallback for new menu items like buy/sell
+    if (!menuItem) {
+      const defaultVisibleItems = ['browse', 'about', 'buy', 'sell', 'messages', 'favorites', 'notifications'];
+      return defaultVisibleItems.includes(itemKey);
+    }
     
     // Check if item is explicitly enabled
     // Use 'enabled' property from backend API
