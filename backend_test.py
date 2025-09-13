@@ -920,7 +920,7 @@ class BackendTester:
     def print_summary(self):
         """Print test summary"""
         print("\n" + "="*80)
-        print("🎯 COMPLETE ORDER FUNCTIONALITY TESTING SUMMARY")
+        print("🎯 INDEPENDENT COMPLETION WORKFLOW TESTING SUMMARY")
         print("="*80)
         
         passed = sum(1 for result in self.test_results if result["success"])
@@ -941,14 +941,14 @@ class BackendTester:
 
 async def main():
     """Main test execution"""
-    print("🚀 Starting Complete Order Functionality Testing...")
+    print("🚀 Starting Independent Completion Workflow Testing...")
     print(f"🌐 Backend URL: {BACKEND_URL}")
     print("="*80)
     
     async with BackendTester() as tester:
         try:
-            # Run complete order functionality tests
-            await tester.test_complete_order_functionality()
+            # Run independent completion workflow tests
+            await tester.test_independent_completion_workflow()
             
             # Print summary
             tester.print_summary()
