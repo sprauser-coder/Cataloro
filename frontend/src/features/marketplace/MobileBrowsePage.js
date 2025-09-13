@@ -58,7 +58,7 @@ function MobileBrowsePage() {
           const today = new Date();
           return createdDate.toDateString() === today.toDateString();
         }).length,
-        hotDeals: data.filter(item => {
+        hotDeals: listingsArray.filter(item => {
           // Include items that are flagged as hot deals or have discounts
           const isHotDeal = item.isHotDeal || item.discount > 0;
           
