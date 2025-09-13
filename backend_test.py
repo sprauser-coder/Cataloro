@@ -1,41 +1,49 @@
 #!/usr/bin/env python3
 """
-CATALORO MARKETPLACE - COMPLETE ORDER FUNCTIONALITY TESTING
-Testing the updated "Complete Order" functionality to verify both fixes are working
+CATALORO MARKETPLACE - INDEPENDENT COMPLETION WORKFLOW TESTING
+Testing the fixed completion workflow to ensure buyer and seller completions work independently
 
 SPECIFIC TESTS REQUESTED:
-1. **Test Seller Accepted Tenders Filtering**: GET /api/tenders/seller/admin_user_1/accepted 
-   - Verify that tenders marked as completed by the seller are no longer returned
-   - Check that only pending accepted tenders appear in the list
+1. **Test Separate Completion Logic**:
+   - Test POST /api/user/complete-transaction from seller perspective
+   - Test POST /api/user/complete-transaction from buyer perspective  
+   - Verify that each completion only affects that user's view
 
-2. **Test Complete Transaction Workflow**:
-   - Find an accepted tender with a specific listing_id
-   - Call POST /api/user/complete-transaction with that listing_id
-   - Verify the response shows successful completion
-   - Call GET /api/tenders/seller/admin_user_1/accepted again to confirm the tender is no longer in the list
-   - Call GET /api/user/completed-transactions/admin_user_1 to verify the completed transaction appears
+2. **Test Completed Transactions Filtering**:
+   - Test GET /api/user/completed-transactions/admin_user_1 (seller completion only)
+   - Verify seller-completed transactions appear only for seller, not buyer
+   - Test with another user ID to verify buyer-completed transactions
 
-3. **Test Data Consistency**:
-   - Verify that completed transactions are properly stored with seller_confirmed_at timestamp
-   - Check that the tender still exists in the database but is filtered out from accepted tenders
-   - Confirm the listing details are properly captured in the completion record
+3. **Test Workflow Independence**:
+   - Create a scenario where seller completes but buyer does not
+   - Verify seller sees it in completed transactions
+   - Verify buyer does NOT see it in completed transactions
+   - Test the reverse scenario (buyer completes but seller does not)
 
-4. **Test Authentication**:
-   - Verify all endpoints require proper authentication
-   - Test with admin_user_1 credentials
+4. **Test Transaction States**:
+   - Verify seller_confirmed_at and buyer_confirmed_at work independently
+   - Check that is_fully_completed only becomes true when BOTH parties confirm
+   - Verify data integrity with mixed completion states
+
+5. **Test API Response Structure**:
+   - Verify completed transactions API returns correct user_role_in_transaction
+   - Check that only relevant transactions are returned for each user
+   - Ensure proper filtering based on confirmation timestamps
 
 CRITICAL ENDPOINTS BEING TESTED:
 - POST /api/auth/login (user authentication)
-- GET /api/tenders/seller/{seller_id}/accepted (get seller's accepted tenders - should filter out completed)
-- POST /api/user/complete-transaction (complete a transaction from seller side)
-- GET /api/user/completed-transactions/{user_id} (get completed transactions)
+- POST /api/user/complete-transaction (complete a transaction from buyer/seller perspective)
+- GET /api/user/completed-transactions/{user_id} (get completed transactions with proper filtering)
+- GET /api/tenders/buyer/{buyer_id} (get buyer tenders to find test data)
+- GET /api/tenders/seller/{seller_id}/accepted (get seller accepted tenders to find test data)
 
 EXPECTED RESULTS:
-- ✅ Seller accepted tenders endpoint filters out completed transactions
-- ✅ Complete transaction workflow works correctly
-- ✅ Completed transactions appear in completed-transactions endpoint
-- ✅ Data consistency maintained with proper timestamps
-- ✅ Authentication working for all endpoints
+- ✅ Seller and buyer completions work independently
+- ✅ Completed transactions filtering works correctly for each user
+- ✅ seller_confirmed_at and buyer_confirmed_at timestamps work independently
+- ✅ is_fully_completed only true when both parties confirm
+- ✅ API responses include correct user_role_in_transaction
+- ✅ Workflow independence verified in both directions
 """
 
 import asyncio
