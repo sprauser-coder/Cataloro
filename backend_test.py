@@ -8624,9 +8624,9 @@ async def main():
             print("\n❌ Database connectivity failed - aborting tests")
             return
         
-        # Run listing count consistency fixes testing
-        print("\n🎯 STARTING LISTING COUNT CONSISTENCY FIXES TESTING...")
-        success = await tester.test_listing_count_consistency_fixes()
+        # Run my-listings endpoint consistency testing
+        print("\n🎯 STARTING MY-LISTINGS ENDPOINT CONSISTENCY TESTING...")
+        success = await tester.test_my_listings_endpoint_consistency_fixes()
         
         # Print summary
         print("\n" + "=" * 80)
