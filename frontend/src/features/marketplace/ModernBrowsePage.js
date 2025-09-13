@@ -1483,6 +1483,31 @@ function ProductCard({ item, viewMode, onSubmitTender, onFavoriteToggle, onMessa
           <Eye className="w-3 h-3 mr-1" />
           {item.views}
         </div>
+
+        {/* Hot Deal Badge */}
+        {(() => {
+          const timeInfo = item.time_info;
+          if (!timeInfo?.has_time_limit || timeInfo.is_expired) return null;
+          
+          const timeRemainingHours = timeInfo.time_remaining_seconds ? 
+            timeInfo.time_remaining_seconds / 3600 : 0;
+          
+          if (timeRemainingHours > 0 && timeRemainingHours <= 24) {
+            return (
+              <div className="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-bold flex items-center z-20 shadow-lg animate-pulse">
+                🔥 HOT DEAL
+              </div>
+            );
+          } else if (timeRemainingHours > 24 && timeRemainingHours <= 48) {
+            return (
+              <div className="absolute top-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-400 text-white text-xs px-3 py-1 rounded-full font-bold flex items-center z-20 shadow-lg">
+                ⏰ ENDS SOON
+              </div>
+            );
+          }
+          
+          return null;
+        })()}
       </div>
 
       {/* Content Section - Reorganized Structure: Picture, Title, Price, Market Range, Seller, Location, Time Left, Input Field, Date */}
