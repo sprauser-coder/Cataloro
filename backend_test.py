@@ -5839,7 +5839,11 @@ class BackendTester:
         
         # Test removing favorites
         if retrieved_favorites:
-            await self.test_remove_favorite(demo_user_id, retrieved_favorites[0].get('listing_id'), demo_token)
+            # Handle both field names for compatibility
+            first_favorite = retrieved_favorites[0]
+            listing_id_to_remove = first_favorite.get('listing_id') or first_favorite.get('item_id')
+            if listing_id_to_remove:
+                await self.test_remove_favorite(demo_user_id, listing_id_to_remove, demo_token)
         
         # Final verification
         final_favorites = await self.test_get_all_favorites(demo_user_id, demo_token, len(added_favorites) - 1)
