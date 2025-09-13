@@ -198,7 +198,8 @@ function TenderManagementPage() {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/${tenderId}/accept`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('cataloro_token')}`
         },
         body: JSON.stringify({
           seller_id: user.id
