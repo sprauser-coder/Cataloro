@@ -9189,4 +9189,279 @@ function UserEditModal({ user, onClose, onSave }) {
   );
 }
 
+// Completed Transactions Tab Component for Admin
+function CompletedTransactionsTab({ showToast, permissions }) {
+  const [completedTransactions, setCompletedTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all'); // all, pending, completed
+
+  useEffect(() => {
+    fetchCompletedTransactions();
+  }, []);
+
+  const fetchCompletedTransactions = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('cataloro_token');
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/admin/completed-transactions`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setCompletedTransactions(data.transactions || []);
+      } else {
+        showToast('Failed to load completed transactions', 'error');
+        setCompletedTransactions([]);
+      }
+    } catch (error) {
+      console.error('Error fetching completed transactions:', error);
+      showToast('Error loading completed transactions', 'error');
+      setCompletedTransactions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter transactions based on search and status
+  const filteredTransactions = completedTransactions.filter(transaction => {
+    const matchesSearch = transaction.listing_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         transaction.buyer_info?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         transaction.seller_info?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         transaction.buyer_info?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         transaction.seller_info?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || 
+                         (statusFilter === 'completed' && transaction.is_fully_completed) ||
+                         (statusFilter === 'pending' && !transaction.is_fully_completed);
+    
+    return matchesSearch && matchesStatus;
+  });
+
+  const stats = {
+    total: completedTransactions.length,
+    fullyCompleted: completedTransactions.filter(t => t.is_fully_completed).length,
+    pendingConfirmation: completedTransactions.filter(t => !t.is_fully_completed).length
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Completed Transactions</h2>
+        <p className="text-gray-600 dark:text-gray-400">
+          Monitor transactions where both parties confirm physical handover
+        </p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center">
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+              <Package className="w-6 h-6 text-blue-600" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Total Transactions</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center">
+            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.fullyCompleted}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Fully Completed</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center">
+            <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl">
+              <Clock className="w-6 h-6 text-yellow-600" />
+            </div>
+            <div className="ml-4">
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.pendingConfirmation}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Pending Confirmation</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow border border-gray-200 dark:border-gray-700">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search by item, buyer, or seller..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Status</option>
+              <option value="completed">Fully Completed</option>
+              <option value="pending">Pending Confirmation</option>
+            </select>
+            
+            <button
+              onClick={fetchCompletedTransactions}
+              disabled={loading}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Transactions Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+        {loading ? (
+          <div className="text-center py-12">
+            <RefreshCw className="w-8 h-8 animate-spin mx-auto text-gray-400 mb-4" />
+            <p className="text-gray-500">Loading completed transactions...</p>
+          </div>
+        ) : filteredTransactions.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Item & Parties
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Confirmation Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Completion Details
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredTransactions.map((transaction) => (
+                  <tr key={transaction.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        {transaction.listing_image && (
+                          <img
+                            src={transaction.listing_image}
+                            alt={transaction.listing_title}
+                            className="w-12 h-12 rounded-lg object-cover mr-4"
+                          />
+                        )}
+                        <div>
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            {transaction.listing_title}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <div>Buyer: {transaction.buyer_info?.name} ({transaction.buyer_info?.email})</div>
+                            <div>Seller: {transaction.seller_info?.name} ({transaction.seller_info?.email})</div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        €{transaction.tender_amount?.toFixed(2) || transaction.listing_price?.toFixed(2) || '0.00'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="space-y-1">
+                        <div className="flex items-center text-xs">
+                          {transaction.buyer_confirmed_at ? (
+                            <CheckCircle className="w-3 h-3 text-green-600 mr-1" />
+                          ) : (
+                            <X className="w-3 h-3 text-red-500 mr-1" />
+                          )}
+                          <span className={transaction.buyer_confirmed_at ? 'text-green-600' : 'text-gray-500'}>
+                            Buyer
+                          </span>
+                        </div>
+                        <div className="flex items-center text-xs">
+                          {transaction.seller_confirmed_at ? (
+                            <CheckCircle className="w-3 h-3 text-green-600 mr-1" />
+                          ) : (
+                            <X className="w-3 h-3 text-red-500 mr-1" />
+                          )}
+                          <span className={transaction.seller_confirmed_at ? 'text-green-600' : 'text-gray-500'}>
+                            Seller
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div>Method: {transaction.completion_method || 'N/A'}</div>
+                        <div>Date: {new Date(transaction.created_at).toLocaleDateString()}</div>
+                        {transaction.completion_notes && (
+                          <div className="mt-1 italic">"{transaction.completion_notes}"</div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {transaction.is_fully_completed ? (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-600 text-white">
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                          COMPLETED
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-yellow-600 text-white">
+                          <Clock className="w-3 h-3 mr-1" />
+                          PENDING
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <CheckCircle className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No completed transactions</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {searchTerm || statusFilter !== 'all' 
+                ? 'No transactions match your search criteria.' 
+                : 'Completed transactions will appear here when users mark items as physically handed over.'
+              }
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default AdminPanel;
