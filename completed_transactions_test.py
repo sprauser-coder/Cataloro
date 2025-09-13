@@ -314,7 +314,7 @@ class CompletedTransactionsTester:
                         'completion_id': completion_id,
                         'completion': completion,
                         'is_fully_completed': is_fully_completed,
-                        'listing_id': tender.get('listing_id')
+                        'listing_id': listing_id
                     }
                 else:
                     error_text = await response.text()
