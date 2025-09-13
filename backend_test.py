@@ -702,40 +702,40 @@ class BackendTester:
         
         return len(failing_features) == 0
     
-    async def test_tender_management_apis(self):
-        """Test the tender management API endpoints"""
-        print("\n🔄 TENDER MANAGEMENT API TESTING:")
-        print("   Testing tender management API endpoints to verify they are working correctly")
-        print("   Testing buyer tenders and seller tenders overview endpoints")
+    async def test_complete_order_functionality(self):
+        """Test the complete order functionality"""
+        print("\n🔄 COMPLETE ORDER FUNCTIONALITY TESTING:")
+        print("   Testing updated Complete Order functionality to verify both fixes are working")
+        print("   Testing seller accepted tenders filtering and complete transaction workflow")
         
         # Step 1: Setup - Login as admin user
         admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
         if not admin_token:
-            self.log_result("Tender Management API Setup", False, "Failed to login as admin")
+            self.log_result("Complete Order Functionality Setup", False, "Failed to login as admin")
             return False
         
         print(f"   Testing with admin user ID: {admin_user_id}")
         
-        # Step 2: Test Buyer Tenders Endpoint
-        print("\n   📋 Test Buyer Tenders Endpoint:")
-        buyer_tenders_result = await self.test_buyer_tenders_endpoint(admin_user_id, admin_token)
+        # Step 2: Test Authentication Requirements
+        print("\n   🔐 Test Authentication Requirements:")
+        auth_result = await self.test_authentication_requirements(admin_user_id)
         
-        # Step 3: Test Seller Tenders Overview Endpoint
-        print("\n   🏪 Test Seller Tenders Overview Endpoint:")
-        seller_overview_result = await self.test_seller_tenders_overview_endpoint(admin_user_id, admin_token)
+        # Step 3: Test Seller Accepted Tenders Filtering
+        print("\n   📋 Test Seller Accepted Tenders Filtering:")
+        accepted_tenders_result = await self.test_seller_accepted_tenders_endpoint(admin_user_id, admin_token)
         
-        # Step 4: Test Data Structure and Content
-        print("\n   🔍 Test Data Structure and Content:")
-        data_structure_result = await self.test_tender_data_structure(buyer_tenders_result, seller_overview_result)
+        # Step 4: Test Complete Transaction Workflow
+        print("\n   🔄 Test Complete Transaction Workflow:")
+        workflow_result = await self.test_complete_order_workflow(admin_user_id, admin_token)
         
-        # Step 5: Test with Different User IDs
-        print("\n   👥 Test with Different User IDs:")
-        different_users_result = await self.test_different_user_ids(admin_token)
+        # Step 5: Test Data Consistency
+        print("\n   🔍 Test Data Consistency:")
+        consistency_result = await self.test_data_consistency(workflow_result, admin_user_id, admin_token)
         
         # Step 6: Final Analysis
         print("\n   📈 Final Analysis:")
-        await self.analyze_tender_management_results(
-            buyer_tenders_result, seller_overview_result, data_structure_result, different_users_result
+        await self.analyze_complete_order_results(
+            accepted_tenders_result, workflow_result, consistency_result, auth_result
         )
         
         return True
@@ -743,7 +743,7 @@ class BackendTester:
     def print_summary(self):
         """Print test summary"""
         print("\n" + "="*80)
-        print("🎯 TENDER MANAGEMENT API TESTING SUMMARY")
+        print("🎯 COMPLETE ORDER FUNCTIONALITY TESTING SUMMARY")
         print("="*80)
         
         passed = sum(1 for result in self.test_results if result["success"])
