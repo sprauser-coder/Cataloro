@@ -744,6 +744,34 @@ function ModernBrowsePage() {
             <span>Filters</span>
           </button>
 
+          {/* Hot Deals Quick Filter */}
+          <button
+            onClick={() => updateFilters({...filters, hotDeals: filters.hotDeals === 'hot_deals' ? 'all' : 'hot_deals'})}
+            className={`flex items-center space-x-2 px-4 py-3 border rounded-xl transition-all duration-200 ${
+              filters.hotDeals === 'hot_deals'
+                ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white border-red-500 shadow-lg'
+                : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-300'
+            }`}
+          >
+            <span className="text-sm">🔥</span>
+            <span className="hidden sm:inline">Hot Deals</span>
+          </button>
+
+          {/* My Bids Quick Filter */}
+          {user && (
+            <button
+              onClick={() => updateFilters({...filters, bidFilter: filters.bidFilter === 'placed_bid' ? 'all' : 'placed_bid'})}
+              className={`flex items-center space-x-2 px-4 py-3 border rounded-xl transition-all duration-200 ${
+                filters.bidFilter === 'placed_bid'
+                  ? 'bg-blue-500 text-white border-blue-500 shadow-lg'
+                  : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300'
+              }`}
+            >
+              <span className="text-sm">💰</span>
+              <span className="hidden sm:inline">My Bids</span>
+            </button>
+          )}
+
           <select
             value={sortBy}
             onChange={(e) => updateSortBy(e.target.value)}
