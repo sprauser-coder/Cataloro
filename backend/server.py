@@ -9182,6 +9182,116 @@ async def admin_get_all_completed_transactions(current_user: dict = Depends(requ
         logger.error(f"Error fetching admin completed transactions: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch completed transactions: {str(e)}")
 
+@app.get("/api/tenders/seller/{seller_id}/accepted")
+async def get_seller_accepted_tenders(seller_id: str):
+    """Get accepted tenders for a seller - for Accepted Tenders tab"""
+    try:
+        # Check if user exists and is active
+        await check_user_active_status(seller_id)
+        
+        # Get all associated user IDs (current and legacy)
+        associated_ids = await get_user_associated_ids(seller_id)
+        
+        # Get accepted tenders for this seller
+        accepted_tenders = await db.tenders.find({
+            "seller_id": {"$in": associated_ids},
+            "status": "accepted"
+        }).sort("created_at", -1).to_list(length=None)
+        
+        # Enrich with listing and buyer information
+        enriched_tenders = []
+        for tender in accepted_tenders:
+            # Get listing details
+            listing = await db.listings.find_one({"id": tender.get("listing_id")})
+            
+            # Get buyer details
+            buyer = await db.users.find_one({"id": tender.get("buyer_id")})
+            
+            # Create enriched tender data
+            enriched_tender = serialize_doc(tender)
+            enriched_tender.update({
+                "listing_title": listing.get("title", "Unknown Item") if listing else "Unknown Item",
+                "listing_image": listing.get("images", [None])[0] if listing and listing.get("images") else None,
+                "listing_price": listing.get("price", 0) if listing else 0,
+                "buyer_name": buyer.get("full_name", "Unknown User") if buyer else "Unknown User",
+                "buyer_email": buyer.get("email", "") if buyer else ""
+            })
+            
+            enriched_tenders.append(enriched_tender)
+        
+        return enriched_tenders
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching seller accepted tenders: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch accepted tenders: {str(e)}")
+
+@app.put("/api/listings/{listing_id}/reactivate")
+async def reactivate_listing(listing_id: str, current_user: dict = Depends(get_current_user)):
+    """Reactivate a listing - set it back online after tender acceptance"""
+    try:
+        user_id = current_user.get("id")
+        
+        # Get the listing
+        listing = await db.listings.find_one({"id": listing_id})
+        if not listing:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        
+        # Verify ownership
+        if listing.get("seller_id") != user_id:
+            raise HTTPException(status_code=403, detail="You can only reactivate your own listings")
+        
+        # Update listing status to active
+        current_time = datetime.now(timezone.utc).isoformat()
+        await db.listings.update_one(
+            {"id": listing_id},
+            {"$set": {
+                "status": "active",
+                "updated_at": current_time,
+                "reactivated_at": current_time
+            }}
+        )
+        
+        # Update any accepted tenders for this listing to rejected
+        await db.tenders.update_many(
+            {"listing_id": listing_id, "status": "accepted"},
+            {"$set": {
+                "status": "rejected",
+                "rejection_reason": "Listing reactivated by seller",
+                "updated_at": current_time
+            }}
+        )
+        
+        # Create notifications for affected buyers
+        accepted_tenders = await db.tenders.find({
+            "listing_id": listing_id,
+            "status": "rejected",
+            "rejection_reason": "Listing reactivated by seller"
+        }).to_list(length=None)
+        
+        for tender in accepted_tenders:
+            buyer_notification = {
+                "user_id": tender.get("buyer_id"),
+                "title": "Listing Reactivated",
+                "message": f"The seller has reactivated the listing '{listing.get('title', 'Unknown Item')}' and your accepted tender has been cancelled. The item is now available for new tenders.",
+                "type": "tender_cancelled",
+                "read": False,
+                "created_at": current_time,
+                "id": generate_id(),
+                "listing_id": listing_id,
+                "tender_id": tender.get("id")
+            }
+            await db.user_notifications.insert_one(buyer_notification)
+        
+        return {"message": "Listing reactivated successfully", "listing_id": listing_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error reactivating listing: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to reactivate listing: {str(e)}")
+
 # Run server
 if __name__ == "__main__":
     import uvicorn
