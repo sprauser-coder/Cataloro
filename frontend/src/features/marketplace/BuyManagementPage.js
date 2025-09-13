@@ -39,6 +39,7 @@ function BuyManagementPage() {
   const { showToast } = useNotifications();
   const { permissions } = usePermissions();
   const [activeTab, setActiveTab] = useState('bought-items');
+  const [completedTransactions, setCompletedTransactions] = useState([]);
   const [boughtItems, setBoughtItems] = useState([]);
   const [baskets, setBaskets] = useState([]);
   const [selectedBasket, setSelectedBasket] = useState(null);
