@@ -421,7 +421,15 @@ export function MarketplaceProvider({ children }) {
         reviewCount: 156,
         tags: ['Hot Deal', 'Fast Shipping', 'Professional'],
         inStock: true,
-        quantity: 1
+        quantity: 1,
+        // Add time_info for hot deals filtering - HOT DEAL (12 hours left)
+        time_info: {
+          has_time_limit: true,
+          is_expired: false,
+          time_remaining_seconds: 43200, // 12 hours
+          time_limit_hours: 24,
+          expires_at: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString()
+        }
       },
       {
         id: '2',
