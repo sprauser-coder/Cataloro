@@ -8217,10 +8217,11 @@ class BackendTester:
 
 async def main():
     """Main test execution function"""
-    print("🚀 CATALORO MARKETPLACE - LISTING COUNT DISCREPANCY INVESTIGATION")
+    print("🚀 CATALORO MARKETPLACE - LISTING COUNT CONSISTENCY FIXES TESTING")
     print("=" * 80)
-    print("Investigating the listing count discrepancy between Tenders and Listings sections")
-    print("Focus: Understanding why Tenders shows 62 active listings vs Listings shows 34")
+    print("Testing the fixes applied to resolve listing count discrepancy between Tenders and My-Listings")
+    print("Focus: Verifying that both endpoints now return consistent active listing counts")
+    print("Expected: Both endpoints should now show the same number of active listings (68)")
     print("=" * 80)
     
     async with BackendTester() as tester:
@@ -8230,9 +8231,9 @@ async def main():
             print("\n❌ Database connectivity failed - aborting tests")
             return
         
-        # Run listing count discrepancy investigation
-        print("\n🎯 STARTING LISTING COUNT DISCREPANCY INVESTIGATION...")
-        success = await tester.test_listing_count_discrepancy()
+        # Run listing count consistency fixes testing
+        print("\n🎯 STARTING LISTING COUNT CONSISTENCY FIXES TESTING...")
+        success = await tester.test_listing_count_consistency_fixes()
         
         # Print summary
         print("\n" + "=" * 80)
@@ -8247,6 +8248,15 @@ async def main():
         print(f"Passed: {passed_tests}")
         print(f"Failed: {total_tests - passed_tests}")
         print(f"Success Rate: {success_rate:.1f}%")
+        
+        # Show key findings
+        print("\n🔍 KEY FINDINGS:")
+        for result in tester.test_results:
+            if "Fix" in result["test"] or "Consistency" in result["test"]:
+                status_icon = "✅" if result["success"] else "❌"
+                print(f"{status_icon} {result['test']}: {result['details']}")
+        
+        print("\n" + "=" * 80)
         
         if success:
             print("\n✅ LISTING COUNT DISCREPANCY INVESTIGATION: COMPLETE")
