@@ -932,12 +932,6 @@ export function MarketplaceProvider({ children }) {
         const timeRemainingHours = timeInfo.time_remaining_seconds ? 
           timeInfo.time_remaining_seconds / 3600 : 0;
         
-        if (filters.hotDeals === 'hot_deals') {
-          const isHotDeal = timeRemainingHours > 0 && timeRemainingHours <= 24;
-          console.log(`🔥 ${product.title}: ${timeRemainingHours.toFixed(1)}h remaining, isHotDeal=${isHotDeal}`);
-          return isHotDeal;
-        }
-        
         if (filters.hotDeals === 'expiring_soon') {
           const isExpiringSoon = timeRemainingHours > 0 && timeRemainingHours <= 48;
           console.log(`🔥 ${product.title}: ${timeRemainingHours.toFixed(1)}h remaining, isExpiringSoon=${isExpiringSoon}`);
