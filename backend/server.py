@@ -148,6 +148,36 @@ async def get_current_user(token: str = Depends(get_current_user_token)) -> dict
     
     return user
 
+async def get_current_user_optional(request: Request) -> dict:
+    """Get current user information from JWT token (optional - returns None if not authenticated)"""
+    try:
+        # Try to get authorization header
+        authorization = request.headers.get("Authorization")
+        if not authorization or not authorization.startswith("Bearer "):
+            return None
+        
+        # Extract token
+        token = authorization.split(" ")[1]
+        payload = security_service.verify_token(token)
+        
+        if not payload:
+            return None
+        
+        # Get user from database to ensure they still exist and are active
+        user_id = payload.get("user_id")
+        if not user_id:
+            return None
+        
+        user = await db.users.find_one({"id": user_id})
+        if not user or not user.get("is_active", True):
+            return None
+        
+        return user
+        
+    except Exception as e:
+        logger.debug(f"Optional auth failed: {e}")
+        return None
+
 async def require_admin_role(current_user: dict = Depends(get_current_user)) -> dict:
     """Require admin role for accessing admin endpoints"""
     user_role = current_user.get("role")
