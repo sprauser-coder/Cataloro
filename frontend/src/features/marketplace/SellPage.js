@@ -11,7 +11,8 @@ import {
   Package,
   CheckCircle,
   RefreshCw,
-  Plus
+  Plus,
+  User
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
