@@ -7,12 +7,13 @@ import axios from 'axios';
 import { API_ENDPOINTS, ENV_CONFIG } from '../config/directions';
 
 class MarketplaceService {
-  async browseListings(filters = {}, userId = null, limit = 200) {
+  async browseListings(filters = {}, userId = null, page = 1, pageSize = 40) {
     try {
       const params = new URLSearchParams(filters);
       
-      // Add pagination support - increase default limit to show more listings
-      params.append('limit', limit.toString());
+      // Add pagination parameters
+      params.append('limit', pageSize.toString());
+      params.append('offset', ((page - 1) * pageSize).toString());
       
       // Add user_id if provided
       if (userId) {
@@ -24,7 +25,7 @@ class MarketplaceService {
         params.append('bid_filter', filters.bidFilter);
       }
       
-      console.log('🌐 API call to browse with limit:', limit, 'filters:', filters);
+      console.log('🌐 API call to browse - page:', page, 'pageSize:', pageSize, 'filters:', filters);
       
       // Use the browse endpoint that returns array format instead of listings endpoint
       const response = await axios.get(`${ENV_CONFIG.API_BASE_URL}/api/marketplace/browse?${params}`);
