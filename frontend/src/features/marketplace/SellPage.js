@@ -345,8 +345,11 @@ function AcceptedTendersTab({ user, onRefresh }) {
       
       if (response.ok) {
         showToast('Order marked as completed successfully', 'success');
-        loadAcceptedTenders();
-        onRefresh();
+        loadAcceptedTenders(); // Refresh accepted tenders (should now be empty)
+        loadCompletedTransactions(); // Refresh completed transactions
+        
+        // Redirect to Completed tab
+        handleTabChange('completed');
       } else {
         showToast('Failed to complete order', 'error');
       }
