@@ -5967,7 +5967,7 @@ async def get_seller_tenders_overview(seller_id: str):
         logger.info(f"📊 Seller {seller_id} has {len(listings)} active listings (unlimited query)")
         
         # Verify count matches database
-        db_count = await db.listings.count_documents({"seller_id": seller_id, "status": "active"})
+        db_count = await db.listings.count_documents({"seller_id": {"$in": associated_ids}, "status": "active"})
         if len(listings) != db_count:
             logger.warning(f"⚠️ Count mismatch! Query returned {len(listings)} but count_documents returned {db_count}")
         else:
