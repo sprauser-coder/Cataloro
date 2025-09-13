@@ -514,9 +514,10 @@ class HotDealsFilterTester:
             hot_deals_accurate = True
             for listing in filter_results['hot_deals']:
                 time_info = listing.get('time_info', {})
-                time_remaining_seconds = time_info.get('time_remaining_seconds', 0)
+                time_remaining_seconds = time_info.get('time_remaining_seconds')
                 
-                if time_remaining_seconds > 86400:  # More than 24 hours
+                # Handle None values properly
+                if time_remaining_seconds is None or time_remaining_seconds > 86400:  # More than 24 hours
                     hot_deals_accurate = False
                     self.log_result(
                         "Hot Deals Category Accuracy", 
