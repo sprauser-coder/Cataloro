@@ -5958,8 +5958,11 @@ async def reject_tender(tender_id: str, rejection_data: dict):
 async def get_seller_tenders_overview(seller_id: str):
     """Get overview of all tenders for all seller's listings (OPTIMIZED)"""
     try:
+        # Get all associated user IDs (current and legacy) to match my-listings logic
+        associated_ids = await get_user_associated_ids(seller_id)
+        
         # Get all seller's active listings (sorted by newest first) - NO LIMIT for accurate count
-        listings = await db.listings.find({"seller_id": seller_id, "status": "active"}).sort("created_at", -1).to_list(length=None)
+        listings = await db.listings.find({"seller_id": {"$in": associated_ids}, "status": "active"}).sort("created_at", -1).to_list(length=None)
         
         logger.info(f"📊 Seller {seller_id} has {len(listings)} active listings (unlimited query)")
         
