@@ -792,14 +792,20 @@ class BackendTester:
         
         return results
     
-    async def test_my_listings_with_status(self, headers, filter_name, status_value):
-        """Helper method to test my-listings with specific status"""
+    async def test_my_listings_with_status(self, headers, filter_name, status_value, limit=None):
+        """Helper method to test my-listings with specific status and limit"""
         start_time = datetime.now()
         
         try:
             url = f"{BACKEND_URL}/marketplace/my-listings"
+            params = []
             if status_value:
-                url += f"?status={status_value}"
+                params.append(f"status={status_value}")
+            if limit:
+                params.append(f"limit={limit}")
+            
+            if params:
+                url += "?" + "&".join(params)
             
             async with self.session.get(url, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
@@ -836,7 +842,7 @@ class BackendTester:
                     self.log_result(
                         f"My-Listings ({filter_name})", 
                         True, 
-                        f"Status '{status_value or 'default'}' returned {listings_count} listings on page, {total_count} total",
+                        f"Status '{status_value or 'default'}' with limit {limit or 'default'} returned {listings_count} listings on page, {total_count} total",
                         response_time
                     )
                     
@@ -844,6 +850,7 @@ class BackendTester:
                         'count': listings_count,
                         'total_count': total_count,
                         'status': status_value,
+                        'limit': limit,
                         'data': data,
                         'success': True
                     }
