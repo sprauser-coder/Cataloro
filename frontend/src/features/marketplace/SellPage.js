@@ -259,74 +259,11 @@ function CompletedSalesTab({ transactions, loading, onRefresh }) {
       ) : transactions.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {transactions.map((transaction) => (
-            <div
+            <CompletedTransactionCard
               key={transaction.id}
-              className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600 relative"
-            >
-              {/* Completion Status Badge */}
-              <div className="absolute top-4 right-4 z-10">
-                {transaction.is_fully_completed ? (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-600 text-white shadow-lg">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    COMPLETED
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-yellow-600 text-white shadow-lg">
-                    <RefreshCw className="w-3 h-3 mr-1" />
-                    PENDING
-                  </span>
-                )}
-              </div>
-
-              {/* Item Image */}
-              {transaction.listing_image && (
-                <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-t-lg">
-                  <img
-                    src={transaction.listing_image}
-                    alt={transaction.listing_title}
-                    className="w-full h-48 object-cover"
-                  />
-                </div>
-              )}
-              
-              <div className="p-4">
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                    {transaction.listing_title}
-                  </h3>
-                  
-                  <div className="space-y-1 mt-2">
-                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                      <DollarSign className="w-3 h-3 mr-1" />
-                      €{transaction.tender_amount?.toFixed(2) || transaction.listing_price?.toFixed(2) || '0.00'}
-                    </div>
-                    
-                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                      <Package className="w-3 h-3 mr-1" />
-                      Sold to: {transaction.other_party?.name || 'Unknown'}
-                    </div>
-                    
-                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                      <RefreshCw className="w-3 h-3 mr-1" />
-                      Completed: {new Date(transaction.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Undo Button */}
-                <button
-                  onClick={() => {
-                    if (window.confirm('Undo your completion confirmation for this sale?')) {
-                      undoTransactionCompletion(transaction.id);
-                    }
-                  }}
-                  className="w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all border-red-300 text-red-700 bg-red-50 hover:bg-red-100 focus:ring-red-500 dark:border-red-600 dark:text-red-400 dark:bg-red-900 dark:hover:bg-red-800"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Undo My Confirmation
-                </button>
-              </div>
-            </div>
+              transaction={transaction}
+              onUndoCompletion={undoTransactionCompletion}
+            />
           ))}
         </div>
       ) : (
