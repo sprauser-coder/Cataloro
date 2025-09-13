@@ -20,7 +20,9 @@ import {
   Database,
   RefreshCw,
   MessageCircle,
-  Monitor
+  Monitor,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 // Removed unused import
