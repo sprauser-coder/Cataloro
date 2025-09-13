@@ -107,6 +107,34 @@ function BuyManagementPage() {
     }
   };
 
+  // Load completed transactions
+  const loadCompletedTransactions = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/completed-transactions/${user.id}`,
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+      
+      if (response.ok) {
+        const transactionsData = await response.json();
+        setCompletedTransactions(transactionsData);
+      } else {
+        console.error('Failed to load completed transactions');
+        setCompletedTransactions([]);
+      }
+    } catch (error) {
+      console.error('Error loading completed transactions:', error);
+      setCompletedTransactions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Create new basket
   const createBasket = async () => {
     if (!basketForm.name.trim()) {
