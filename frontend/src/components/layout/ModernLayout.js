@@ -21,24 +21,42 @@ function ModernLayout() {
 
   useEffect(() => {
     // Check authentication status
-    const token = localStorage.getItem('cataloro_token');
-    const user = localStorage.getItem('cataloro_user');
-    
-    if (token && user) {
-      try {
-        JSON.parse(user);
-        setIsAuthenticated(true);
-      } catch (error) {
-        localStorage.removeItem('cataloro_token');
-        localStorage.removeItem('cataloro_user');
+    const checkAuth = () => {
+      const token = localStorage.getItem('cataloro_token');
+      const user = localStorage.getItem('cataloro_user');
+      
+      if (token && user) {
+        try {
+          JSON.parse(user);
+          setIsAuthenticated(true);
+        } catch (error) {
+          localStorage.removeItem('cataloro_token');
+          localStorage.removeItem('cataloro_user');
+          setIsAuthenticated(false);
+        }
+      } else {
         setIsAuthenticated(false);
       }
-    } else {
-      setIsAuthenticated(false);
-    }
+      
+      setIsLoading(false);
+    };
     
-    setIsLoading(false);
-  }, []);
+    // Initial check
+    checkAuth();
+    
+    // Listen for storage changes (when user logs in from another tab or after login)
+    const handleStorageChange = (e) => {
+      if (e.key === 'cataloro_token' || e.key === 'cataloro_user') {
+        checkAuth();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [location.pathname]); // Re-check when location changes
 
   // Check for dark mode preference and load site configuration
   useEffect(() => {
