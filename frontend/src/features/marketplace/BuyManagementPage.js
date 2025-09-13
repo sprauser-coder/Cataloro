@@ -408,6 +408,7 @@ function BuyManagementPage() {
   useEffect(() => {
     loadBoughtItems();
     loadBaskets();
+    loadCompletedTransactions();
   }, [user?.id]);
 
   // Filter items based on search and assignment status
