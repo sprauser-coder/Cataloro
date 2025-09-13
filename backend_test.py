@@ -392,103 +392,206 @@ class BackendTester:
             )
             return {'success': False, 'error': str(e)}
     
-    async def test_tender_data_structure(self, buyer_result, seller_result):
-        """Test data structure and content verification"""
+    async def test_complete_order_workflow(self, seller_id, token):
+        """Test the complete order workflow end-to-end"""
         try:
-            structure_issues = []
-            data_quality_issues = []
+            print(f"      Testing complete order workflow for seller: {seller_id}")
             
-            # Verify buyer tenders data structure
-            if buyer_result.get('success') and buyer_result.get('data'):
-                buyer_data = buyer_result['data']
-                if len(buyer_data) > 0:
-                    sample_tender = buyer_data[0]
-                    
-                    # Check tender IDs
-                    if not sample_tender.get('id'):
-                        structure_issues.append("Buyer tender missing ID")
-                    
-                    # Check offer amounts
-                    if 'offer_amount' not in sample_tender or not isinstance(sample_tender['offer_amount'], (int, float)):
-                        structure_issues.append("Buyer tender missing or invalid offer_amount")
-                    
-                    # Check status
-                    if not sample_tender.get('status'):
-                        structure_issues.append("Buyer tender missing status")
-                    
-                    # Check listing details
-                    listing = sample_tender.get('listing', {})
-                    if not listing.get('title'):
-                        data_quality_issues.append("Buyer tender listing missing title")
-                    if 'price' not in listing or not isinstance(listing['price'], (int, float)):
-                        data_quality_issues.append("Buyer tender listing missing or invalid price")
-                    if not isinstance(listing.get('images', []), list):
-                        data_quality_issues.append("Buyer tender listing images not array")
+            # Step 1: Get initial accepted tenders
+            print("      Step 1: Getting initial accepted tenders...")
+            initial_accepted = await self.test_seller_accepted_tenders_endpoint(seller_id, token)
             
-            # Verify seller overview data structure
-            if seller_result.get('success') and seller_result.get('data'):
-                seller_data = seller_result['data']
-                if len(seller_data) > 0:
-                    sample_overview = seller_data[0]
-                    
-                    # Check listing details
-                    listing = sample_overview.get('listing', {})
-                    if not listing.get('id'):
-                        structure_issues.append("Seller overview listing missing ID")
-                    if not listing.get('title'):
-                        data_quality_issues.append("Seller overview listing missing title")
-                    if 'price' not in listing or not isinstance(listing['price'], (int, float)):
-                        data_quality_issues.append("Seller overview listing missing or invalid price")
-                    
-                    # Check tender count
-                    if 'tender_count' not in sample_overview or not isinstance(sample_overview['tender_count'], int):
-                        structure_issues.append("Seller overview missing or invalid tender_count")
-                    
-                    # Check tenders array
-                    tenders = sample_overview.get('tenders', [])
-                    if not isinstance(tenders, list):
-                        structure_issues.append("Seller overview tenders not array")
-                    elif len(tenders) > 0:
-                        sample_tender = tenders[0]
-                        if not sample_tender.get('id'):
-                            structure_issues.append("Seller overview tender missing ID")
-                        if 'offer_amount' not in sample_tender:
-                            structure_issues.append("Seller overview tender missing offer_amount")
-            
-            # Determine overall result
-            has_critical_issues = len(structure_issues) > 0
-            has_quality_issues = len(data_quality_issues) > 0
-            
-            if not has_critical_issues and not has_quality_issues:
+            if not initial_accepted.get('success') or initial_accepted.get('accepted_count', 0) == 0:
                 self.log_result(
-                    "Data Structure and Content Verification", 
-                    True, 
-                    "✅ DATA STRUCTURE CORRECT: All required fields present with proper types and content"
-                )
-            elif not has_critical_issues:
-                self.log_result(
-                    "Data Structure and Content Verification", 
-                    True, 
-                    f"✅ STRUCTURE CORRECT: Minor quality issues: {'; '.join(data_quality_issues)}"
-                )
-            else:
-                self.log_result(
-                    "Data Structure and Content Verification", 
+                    "Complete Order Workflow", 
                     False, 
-                    f"❌ STRUCTURE ISSUES: {'; '.join(structure_issues + data_quality_issues)}"
+                    "❌ WORKFLOW BLOCKED: No accepted tenders found to test completion workflow"
                 )
+                return {'success': False, 'error': 'No accepted tenders available'}
+            
+            # Step 2: Select a tender to complete
+            accepted_tenders = initial_accepted.get('data', [])
+            test_tender = accepted_tenders[0]  # Use first accepted tender
+            test_listing_id = test_tender.get('listing_id')
+            
+            if not test_listing_id:
+                self.log_result(
+                    "Complete Order Workflow", 
+                    False, 
+                    "❌ WORKFLOW BLOCKED: Selected tender missing listing_id"
+                )
+                return {'success': False, 'error': 'Missing listing_id in tender'}
+            
+            print(f"      Step 2: Selected tender for listing {test_listing_id} to complete")
+            
+            # Step 3: Complete the transaction
+            print("      Step 3: Completing the transaction...")
+            completion_result = await self.test_complete_transaction_endpoint(test_listing_id, token)
+            
+            if not completion_result.get('success'):
+                self.log_result(
+                    "Complete Order Workflow", 
+                    False, 
+                    f"❌ WORKFLOW FAILED: Transaction completion failed: {completion_result.get('error', 'Unknown error')}"
+                )
+                return {'success': False, 'error': 'Transaction completion failed'}
+            
+            # Step 4: Verify tender is no longer in accepted list
+            print("      Step 4: Verifying tender removed from accepted list...")
+            updated_accepted = await self.test_seller_accepted_tenders_endpoint(seller_id, token)
+            
+            if updated_accepted.get('success'):
+                updated_tenders = updated_accepted.get('data', [])
+                completed_tender_still_present = any(
+                    tender.get('listing_id') == test_listing_id for tender in updated_tenders
+                )
+                
+                if completed_tender_still_present:
+                    self.log_result(
+                        "Complete Order Workflow", 
+                        False, 
+                        f"❌ FILTERING FAILED: Completed tender for listing {test_listing_id} still appears in accepted tenders list"
+                    )
+                    return {'success': False, 'error': 'Completed tender not filtered out'}
+                else:
+                    print(f"      ✅ Tender for listing {test_listing_id} successfully removed from accepted list")
+            
+            # Step 5: Verify transaction appears in completed transactions
+            print("      Step 5: Verifying transaction appears in completed list...")
+            completed_transactions = await self.test_completed_transactions_endpoint(seller_id, token)
+            
+            if completed_transactions.get('success'):
+                completed_data = completed_transactions.get('data', [])
+                transaction_found = any(
+                    transaction.get('listing_id') == test_listing_id for transaction in completed_data
+                )
+                
+                if not transaction_found:
+                    self.log_result(
+                        "Complete Order Workflow", 
+                        False, 
+                        f"❌ DATA CONSISTENCY FAILED: Completed transaction for listing {test_listing_id} not found in completed transactions"
+                    )
+                    return {'success': False, 'error': 'Completed transaction not found'}
+                else:
+                    print(f"      ✅ Completed transaction for listing {test_listing_id} found in completed list")
+            
+            # Success!
+            self.log_result(
+                "Complete Order Workflow", 
+                True, 
+                f"✅ WORKFLOW SUCCESS: Complete order workflow working correctly - tender filtered from accepted list, transaction recorded in completed list"
+            )
             
             return {
-                'success': not has_critical_issues,
-                'structure_issues': structure_issues,
-                'data_quality_issues': data_quality_issues
+                'success': True,
+                'test_listing_id': test_listing_id,
+                'initial_accepted_count': initial_accepted.get('accepted_count', 0),
+                'final_accepted_count': updated_accepted.get('accepted_count', 0),
+                'completed_transactions_count': completed_transactions.get('completed_count', 0)
             }
             
         except Exception as e:
             self.log_result(
-                "Data Structure and Content Verification", 
+                "Complete Order Workflow", 
                 False, 
-                f"❌ VERIFICATION FAILED: {str(e)}"
+                f"❌ WORKFLOW EXCEPTION: {str(e)}"
+            )
+            return {'success': False, 'error': str(e)}
+    
+    async def test_data_consistency(self, workflow_result, seller_id, token):
+        """Test data consistency for completed transactions"""
+        try:
+            if not workflow_result.get('success'):
+                self.log_result(
+                    "Data Consistency Verification", 
+                    False, 
+                    "❌ CONSISTENCY CHECK SKIPPED: Workflow failed, cannot verify data consistency"
+                )
+                return {'success': False, 'error': 'Workflow failed'}
+            
+            test_listing_id = workflow_result.get('test_listing_id')
+            if not test_listing_id:
+                self.log_result(
+                    "Data Consistency Verification", 
+                    False, 
+                    "❌ CONSISTENCY CHECK FAILED: No test listing ID available"
+                )
+                return {'success': False, 'error': 'No test listing ID'}
+            
+            # Get completed transactions to verify data structure
+            completed_result = await self.test_completed_transactions_endpoint(seller_id, token)
+            
+            if not completed_result.get('success'):
+                self.log_result(
+                    "Data Consistency Verification", 
+                    False, 
+                    "❌ CONSISTENCY CHECK FAILED: Could not retrieve completed transactions"
+                )
+                return {'success': False, 'error': 'Could not retrieve completed transactions'}
+            
+            completed_transactions = completed_result.get('data', [])
+            target_transaction = None
+            
+            # Find our test transaction
+            for transaction in completed_transactions:
+                if transaction.get('listing_id') == test_listing_id:
+                    target_transaction = transaction
+                    break
+            
+            if not target_transaction:
+                self.log_result(
+                    "Data Consistency Verification", 
+                    False, 
+                    f"❌ CONSISTENCY FAILED: Completed transaction for listing {test_listing_id} not found"
+                )
+                return {'success': False, 'error': 'Target transaction not found'}
+            
+            # Verify required fields and timestamps
+            consistency_issues = []
+            
+            # Check required fields
+            required_fields = ['id', 'listing_id', 'buyer_id', 'seller_id']
+            for field in required_fields:
+                if not target_transaction.get(field):
+                    consistency_issues.append(f"Missing {field}")
+            
+            # Check timestamp fields
+            timestamp_fields = ['seller_confirmed_at', 'completed_at']
+            missing_timestamps = []
+            for field in timestamp_fields:
+                if not target_transaction.get(field):
+                    missing_timestamps.append(field)
+            
+            if missing_timestamps:
+                consistency_issues.append(f"Missing timestamps: {missing_timestamps}")
+            
+            # Check listing details
+            if not target_transaction.get('listing_title'):
+                consistency_issues.append("Missing listing title")
+            if not target_transaction.get('listing_price'):
+                consistency_issues.append("Missing listing price")
+            
+            if consistency_issues:
+                self.log_result(
+                    "Data Consistency Verification", 
+                    False, 
+                    f"❌ CONSISTENCY ISSUES: {'; '.join(consistency_issues)}"
+                )
+                return {'success': False, 'issues': consistency_issues}
+            else:
+                self.log_result(
+                    "Data Consistency Verification", 
+                    True, 
+                    f"✅ DATA CONSISTENT: Completed transaction properly stored with seller_confirmed_at timestamp and listing details"
+                )
+                return {'success': True, 'transaction': target_transaction}
+            
+        except Exception as e:
+            self.log_result(
+                "Data Consistency Verification", 
+                False, 
+                f"❌ CONSISTENCY CHECK EXCEPTION: {str(e)}"
             )
             return {'success': False, 'error': str(e)}
     
