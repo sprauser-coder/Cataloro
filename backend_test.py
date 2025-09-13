@@ -9577,20 +9577,20 @@ async def main():
         # Show key findings
         print("\n🔍 KEY FINDINGS:")
         for result in tester.test_results:
-            if "Format" in result["test"] or "Structure" in result["test"] or "Extraction" in result["test"] or "Consistency" in result["test"]:
+            if "Accepted Tenders" in result["test"] or "Bought Items" in result["test"] or "Complete Transaction" in result["test"] or "Reactivation" in result["test"]:
                 status_icon = "✅" if result["success"] else "❌"
                 print(f"{status_icon} {result['test']}: {result['details']}")
         
         print("\n" + "=" * 80)
         
         if success:
-            print("\n✅ FRONTEND COMPATIBILITY FIX TESTING: COMPLETE")
-            print("Successfully verified API response format and frontend compatibility.")
-            print("The 'allListings.filter is not a function' error should be resolved.")
+            print("\n✅ TENDER ACCEPTANCE WORKFLOW TESTING: COMPLETE")
+            print("Successfully verified all tender acceptance workflow endpoints.")
+            print("The new tender acceptance features are working correctly.")
         else:
-            print("\n❌ FRONTEND COMPATIBILITY FIX TESTING: ISSUES FOUND")
-            print("Some API format tests failed or returned unexpected results.")
-            print("The frontend error may still occur - check the detailed test results above.")
+            print("\n❌ TENDER ACCEPTANCE WORKFLOW TESTING: ISSUES FOUND")
+            print("Some tender acceptance workflow tests failed or returned unexpected results.")
+            print("Check the detailed test results above for specific issues.")
         
         # Print failed tests details
         failed_tests = [result for result in tester.test_results if not result["success"]]
