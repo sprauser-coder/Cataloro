@@ -164,6 +164,9 @@ function ModernBrowsePage() {
   // Use marketplace context
   const {
     filteredProducts,
+    allProducts,
+    loadInitialProducts,
+    changePage,
     addToFavorites,
     removeFromFavorites,
     favorites,
@@ -176,6 +179,11 @@ function ModernBrowsePage() {
     sortBy: globalSortBy,
     viewMode: globalViewMode,
     isLoading,
+    currentPage,
+    totalPages,
+    totalListings,
+    isLoadingPage,
+    pageSize,
     refreshListings: contextRefreshListings
   } = useMarketplace();
 
