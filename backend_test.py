@@ -5106,10 +5106,16 @@ class BackendTester:
             listing_before = await self.get_listing_details(listing_id)
             status_before = listing_before.get('status', 'unknown') if listing_before else 'unknown'
             
+            # Get seller_id from JWT token payload (we need to extract it)
+            # For this test, we know admin_user_1 is the seller
+            seller_id = "admin_user_1"
+            
             # Accept the tender
             headers = {"Authorization": f"Bearer {token}"}
+            acceptance_data = {"seller_id": seller_id}
             
-            async with self.session.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", headers=headers) as response:
+            async with self.session.put(f"{BACKEND_URL}/tenders/{tender_id}/accept", 
+                                      json=acceptance_data, headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
