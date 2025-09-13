@@ -6091,21 +6091,35 @@ async def get_listing_tenders(listing_id: str):
 async def get_buyer_tenders(buyer_id: str):
     """Get all tenders submitted by a buyer (OPTIMIZED with seller enrichment)"""
     try:
+        import time
+        start_time = time.time()
+        
         tenders = await db.tenders.find({
             "buyer_id": buyer_id
         }).sort("created_at", -1).to_list(length=None)
+        
+        tenders_time = time.time()
+        logger.info(f"🔍 Buy Tenders - Found {len(tenders)} tenders in {(tenders_time - start_time)*1000:.1f}ms")
         
         # OPTIMIZATION: Collect all listing IDs and seller IDs to minimize database queries
         listing_ids = list(set(tender["listing_id"] for tender in tenders))
         seller_ids = list(set(tender["seller_id"] for tender in tenders))
         
+        logger.info(f"🔍 Buy Tenders - Need to lookup {len(listing_ids)} listings and {len(seller_ids)} sellers")
+        
         # OPTIMIZATION: Single query to get all listing information
         listings_list = await db.listings.find({"id": {"$in": listing_ids}}).to_list(length=None)
         listings_dict = {listing['id']: listing for listing in listings_list}
         
+        listings_time = time.time()
+        logger.info(f"🔍 Buy Tenders - Found {len(listings_list)} listings in {(listings_time - tenders_time)*1000:.1f}ms")
+        
         # OPTIMIZATION: Single query to get all seller information
         sellers_list = await db.users.find({"id": {"$in": seller_ids}}).to_list(length=None)
         sellers_dict = {seller['id']: seller for seller in sellers_list}
+        
+        sellers_time = time.time()
+        logger.info(f"🔍 Buy Tenders - Found {len(sellers_list)} sellers in {(sellers_time - listings_time)*1000:.1f}ms")
         
         # Enrich with listing and seller information from cached lookup
         enriched_tenders = []
