@@ -330,14 +330,38 @@ export function MarketplaceProvider({ children }) {
             highest_bid: parseFloat(listing.price) || 0,
             highest_bidder_id: ''
           },
-          // CRITICAL: Preserve time_info from API for countdown timer display
-          time_info: listing.time_info || {
-            has_time_limit: false,
-            is_expired: false,
-            time_remaining_seconds: null,
-            expires_at: null,
-            status_text: null
-          },
+          // CRITICAL: Create time_info structure from API's flat time fields
+          time_info: (() => {
+            // If API already provides time_info, use it
+            if (listing.time_info) {
+              return listing.time_info;
+            }
+            
+            // Otherwise, construct time_info from flat API fields
+            const has_time_limit = listing.has_time_limit || false;
+            const is_expired = listing.is_expired || false;
+            const expires_at = listing.expires_at;
+            const time_limit_hours = listing.time_limit_hours;
+            
+            let time_remaining_seconds = null;
+            
+            // Calculate time remaining if there's an expiration date
+            if (has_time_limit && expires_at && !is_expired) {
+              const now = new Date();
+              const expirationDate = new Date(expires_at);
+              const diffMs = expirationDate.getTime() - now.getTime();
+              time_remaining_seconds = Math.max(0, Math.floor(diffMs / 1000));
+            }
+            
+            return {
+              has_time_limit,
+              is_expired,
+              time_remaining_seconds,
+              time_limit_hours,
+              expires_at,
+              status_text: is_expired ? 'EXPIRED' : (has_time_limit ? 'ACTIVE' : null)
+            };
+          })(),
           // Preserve complete seller object with business information
           seller: {
             ...listing.seller,
