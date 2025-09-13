@@ -4970,8 +4970,16 @@ async def get_user_favorites(user_id: str):
         if not favorites:
             return []
         
-        # Extract listing IDs from favorites
-        listing_ids = [favorite["listing_id"] for favorite in favorites]
+        # Extract listing IDs from favorites (handle both item_id and listing_id for compatibility)
+        listing_ids = []
+        for favorite in favorites:
+            # Handle field name inconsistency - check both item_id and listing_id
+            if "listing_id" in favorite:
+                listing_ids.append(favorite["listing_id"])
+            elif "item_id" in favorite:
+                listing_ids.append(favorite["item_id"])
+            else:
+                continue  # Skip favorites without proper ID field
         
         # Get full listing details for favorite items
         favorite_listings = []
