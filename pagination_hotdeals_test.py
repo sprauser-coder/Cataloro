@@ -759,7 +759,7 @@ class PaginationHotDealsTest:
                 
                 # Check for negative time remaining
                 time_remaining = time_info.get('time_remaining_seconds', 0)
-                if time_remaining < 0:
+                if time_remaining is not None and time_remaining < 0:
                     quality_stats['with_negative_time_remaining'] += 1
                     issues_found.append(f"Listing {listing['id'][:8]}... has negative time_remaining_seconds: {time_remaining}")
                 
