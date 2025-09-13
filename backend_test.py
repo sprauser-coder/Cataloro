@@ -1697,6 +1697,487 @@ class BackendTester:
             )
             return False
 
+    async def test_message_read_functionality(self):
+        """Test the complete message read functionality and badge updating"""
+        print("\n📨 MESSAGE READ FUNCTIONALITY TESTS:")
+        
+        # Step 1: Setup message scenario
+        admin_info = await self.setup_admin_sender()
+        if not admin_info:
+            return False
+            
+        demo_info = await self.setup_demo_recipient()
+        if not demo_info:
+            return False
+        
+        # Step 2: Send message from admin to demo user
+        message_id = await self.send_test_message(admin_info, demo_info)
+        if not message_id:
+            return False
+        
+        # Step 3: Test message read workflow
+        read_success = await self.test_message_read_workflow(demo_info, message_id)
+        
+        # Step 4: Test unread count logic
+        count_success = await self.test_unread_count_logic(demo_info)
+        
+        # Step 5: Debug potential issues
+        debug_success = await self.debug_message_read_issues(demo_info, message_id)
+        
+        return read_success and count_success and debug_success
+    
+    async def setup_admin_sender(self):
+        """Setup admin user as message sender"""
+        print("\n👤 SETTING UP ADMIN SENDER:")
+        
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        
+        if not admin_token:
+            self.log_result(
+                "Admin Sender Setup", 
+                False, 
+                "Failed to login as admin user"
+            )
+            return None
+        
+        self.log_result(
+            "Admin Sender Setup", 
+            True, 
+            f"Admin user logged in successfully: {admin_user.get('full_name')} (ID: {admin_user_id})"
+        )
+        
+        return {
+            "token": admin_token,
+            "user_id": admin_user_id,
+            "user": admin_user
+        }
+    
+    async def setup_demo_recipient(self):
+        """Setup demo user as message recipient"""
+        print("\n👤 SETTING UP DEMO RECIPIENT:")
+        
+        demo_token, demo_user_id, demo_user = await self.test_login_and_get_token("demo@cataloro.com", "demo123")
+        
+        if not demo_token:
+            self.log_result(
+                "Demo Recipient Setup", 
+                False, 
+                "Failed to login as demo user"
+            )
+            return None
+        
+        self.log_result(
+            "Demo Recipient Setup", 
+            True, 
+            f"Demo user logged in successfully: {demo_user.get('full_name')} (ID: {demo_user_id})"
+        )
+        
+        return {
+            "token": demo_token,
+            "user_id": demo_user_id,
+            "user": demo_user
+        }
+    
+    async def send_test_message(self, admin_info, demo_info):
+        """Send a test message from admin to demo user"""
+        print("\n📤 SENDING TEST MESSAGE:")
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {admin_info['token']}"}
+            message_data = {
+                "recipient_id": demo_info['user_id'],
+                "subject": "Test Message for Read Functionality",
+                "content": "This is a test message to verify the message read functionality and badge updating system."
+            }
+            
+            async with self.session.post(f"{BACKEND_URL}/user/{admin_info['user_id']}/messages", 
+                                       json=message_data, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    message_id = data.get("id")
+                    
+                    self.log_result(
+                        "Send Test Message", 
+                        True, 
+                        f"Message sent successfully from admin to demo user (ID: {message_id})",
+                        response_time
+                    )
+                    
+                    return message_id
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Send Test Message", 
+                        False, 
+                        f"Failed to send message: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Send Test Message", 
+                False, 
+                f"Message sending failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_message_read_workflow(self, demo_info, message_id):
+        """Test the complete message read workflow"""
+        print("\n📖 TESTING MESSAGE READ WORKFLOW:")
+        
+        # Step 1: Get demo user's messages and verify unread status
+        messages = await self.get_user_messages(demo_info)
+        if not messages:
+            return False
+        
+        # Step 2: Find the test message and check its read status
+        test_message = None
+        for msg in messages:
+            if msg.get('id') == message_id:
+                test_message = msg
+                break
+        
+        if not test_message:
+            self.log_result(
+                "Find Test Message", 
+                False, 
+                f"Test message with ID {message_id} not found in user's messages"
+            )
+            return False
+        
+        # Check if message is initially unread
+        is_read_field = test_message.get('is_read', test_message.get('read', None))
+        
+        self.log_result(
+            "Initial Message Read Status", 
+            is_read_field == False, 
+            f"Message read status: is_read={test_message.get('is_read')}, read={test_message.get('read')} (should be False/unread)"
+        )
+        
+        # Step 3: Call mark message read endpoint
+        mark_read_success = await self.mark_message_as_read(demo_info, message_id)
+        if not mark_read_success:
+            return False
+        
+        # Step 4: Verify message is marked as read
+        updated_messages = await self.get_user_messages(demo_info)
+        if not updated_messages:
+            return False
+        
+        # Find the updated message
+        updated_message = None
+        for msg in updated_messages:
+            if msg.get('id') == message_id:
+                updated_message = msg
+                break
+        
+        if not updated_message:
+            self.log_result(
+                "Verify Message Read Update", 
+                False, 
+                f"Updated message with ID {message_id} not found"
+            )
+            return False
+        
+        # Check if message is now marked as read
+        updated_is_read = updated_message.get('is_read', updated_message.get('read', None))
+        
+        self.log_result(
+            "Verify Message Read Update", 
+            updated_is_read == True, 
+            f"Updated message read status: is_read={updated_message.get('is_read')}, read={updated_message.get('read')} (should be True/read)"
+        )
+        
+        return updated_is_read == True
+    
+    async def get_user_messages(self, user_info):
+        """Get user's messages with authentication"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {user_info['token']}"}
+            
+            async with self.session.get(f"{BACKEND_URL}/user/{user_info['user_id']}/messages", 
+                                      headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    messages = await response.json()
+                    
+                    self.log_result(
+                        "Get User Messages", 
+                        True, 
+                        f"Retrieved {len(messages)} messages for user {user_info['user_id']}",
+                        response_time
+                    )
+                    
+                    return messages
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Get User Messages", 
+                        False, 
+                        f"Failed to get messages: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Get User Messages", 
+                False, 
+                f"Get messages failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def mark_message_as_read(self, user_info, message_id):
+        """Mark message as read using the PUT endpoint"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {"Authorization": f"Bearer {user_info['token']}"}
+            
+            async with self.session.put(f"{BACKEND_URL}/user/{user_info['user_id']}/messages/{message_id}/read", 
+                                      headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    self.log_result(
+                        "Mark Message as Read", 
+                        True, 
+                        f"Message marked as read successfully: {data.get('message', 'Success')}",
+                        response_time
+                    )
+                    
+                    return True
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Mark Message as Read", 
+                        False, 
+                        f"Failed to mark message as read: Status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Mark Message as Read", 
+                False, 
+                f"Mark read failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def test_unread_count_logic(self, user_info):
+        """Test unread count logic and badge updating"""
+        print("\n🔢 TESTING UNREAD COUNT LOGIC:")
+        
+        # Get all messages and count unread ones
+        messages = await self.get_user_messages(user_info)
+        if not messages:
+            return False
+        
+        # Count unread messages using both possible field names
+        unread_count_is_read = len([msg for msg in messages if not msg.get('is_read', True)])
+        unread_count_read = len([msg for msg in messages if not msg.get('read', True)])
+        
+        self.log_result(
+            "Unread Count Calculation", 
+            True, 
+            f"Unread messages count: using 'is_read' field = {unread_count_is_read}, using 'read' field = {unread_count_read}"
+        )
+        
+        # Test the field inconsistency issue
+        field_consistency_issue = False
+        for msg in messages:
+            has_is_read = 'is_read' in msg
+            has_read = 'read' in msg
+            
+            if has_is_read and has_read:
+                if msg.get('is_read') != msg.get('read'):
+                    field_consistency_issue = True
+                    break
+            elif not has_is_read and not has_read:
+                field_consistency_issue = True
+                break
+        
+        self.log_result(
+            "Field Consistency Check", 
+            not field_consistency_issue, 
+            f"Message read field consistency: {'✅ Consistent' if not field_consistency_issue else '❌ INCONSISTENT - this is the root cause of badge update issues'}"
+        )
+        
+        return not field_consistency_issue
+    
+    async def debug_message_read_issues(self, user_info, message_id):
+        """Debug potential issues with message read functionality"""
+        print("\n🔍 DEBUGGING MESSAGE READ ISSUES:")
+        
+        # Test 1: Authorization header format
+        auth_success = await self.test_authorization_header_format(user_info, message_id)
+        
+        # Test 2: Message ID format validation
+        id_success = await self.test_message_id_format(message_id)
+        
+        # Test 3: Database timing issues
+        timing_success = await self.test_database_timing_issues(user_info, message_id)
+        
+        return auth_success and id_success and timing_success
+    
+    async def test_authorization_header_format(self, user_info, message_id):
+        """Test if authorization headers are correct for mark read endpoint"""
+        start_time = datetime.now()
+        
+        try:
+            # Test with correct Bearer format
+            headers = {"Authorization": f"Bearer {user_info['token']}"}
+            
+            async with self.session.put(f"{BACKEND_URL}/user/{user_info['user_id']}/messages/{message_id}/read", 
+                                      headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    self.log_result(
+                        "Authorization Header Format", 
+                        True, 
+                        f"✅ Bearer token format working correctly",
+                        response_time
+                    )
+                    return True
+                elif response.status == 401:
+                    self.log_result(
+                        "Authorization Header Format", 
+                        False, 
+                        f"❌ 401 Unauthorized - token may be invalid or expired",
+                        response_time
+                    )
+                    return False
+                elif response.status == 403:
+                    self.log_result(
+                        "Authorization Header Format", 
+                        False, 
+                        f"❌ 403 Forbidden - user may not have permission to mark this message as read",
+                        response_time
+                    )
+                    return False
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        "Authorization Header Format", 
+                        False, 
+                        f"❌ Unexpected status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return False
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Authorization Header Format", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return False
+    
+    async def test_message_id_format(self, message_id):
+        """Test if message ID format is correct"""
+        try:
+            # Check if message_id is a valid UUID format
+            import uuid
+            uuid.UUID(message_id)
+            
+            self.log_result(
+                "Message ID Format Validation", 
+                True, 
+                f"✅ Message ID is valid UUID format: {message_id}"
+            )
+            return True
+            
+        except ValueError:
+            self.log_result(
+                "Message ID Format Validation", 
+                False, 
+                f"❌ Message ID is not valid UUID format: {message_id}"
+            )
+            return False
+        except Exception as e:
+            self.log_result(
+                "Message ID Format Validation", 
+                False, 
+                f"Error validating message ID: {str(e)}"
+            )
+            return False
+    
+    async def test_database_timing_issues(self, user_info, message_id):
+        """Test for database/timing issues with async operations"""
+        print("\n⏱️ TESTING DATABASE TIMING ISSUES:")
+        
+        # Test multiple rapid mark read operations
+        success_count = 0
+        total_attempts = 3
+        
+        for i in range(total_attempts):
+            start_time = datetime.now()
+            
+            try:
+                headers = {"Authorization": f"Bearer {user_info['token']}"}
+                
+                async with self.session.put(f"{BACKEND_URL}/user/{user_info['user_id']}/messages/{message_id}/read", 
+                                          headers=headers) as response:
+                    response_time = (datetime.now() - start_time).total_seconds() * 1000
+                    
+                    if response.status == 200:
+                        success_count += 1
+                        self.log_result(
+                            f"Database Timing Test {i+1}", 
+                            True, 
+                            f"✅ Mark read operation successful",
+                            response_time
+                        )
+                    else:
+                        error_text = await response.text()
+                        self.log_result(
+                            f"Database Timing Test {i+1}", 
+                            False, 
+                            f"❌ Mark read failed: Status {response.status}: {error_text}",
+                            response_time
+                        )
+                        
+            except Exception as e:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                self.log_result(
+                    f"Database Timing Test {i+1}", 
+                    False, 
+                    f"Request failed with exception: {str(e)}",
+                    response_time
+                )
+            
+            # Small delay between attempts
+            await asyncio.sleep(0.1)
+        
+        timing_success = success_count == total_attempts
+        
+        self.log_result(
+            "Database Timing Issues Summary", 
+            timing_success, 
+            f"Timing consistency: {success_count}/{total_attempts} operations successful"
+        )
+        
+        return timing_success
+
     async def test_bidding_authentication_fix(self, listing_id):
         """Test that bidding without authentication is properly blocked"""
         print(f"\n🔐 TESTING BIDDING AUTHENTICATION FIX")
