@@ -549,7 +549,15 @@ export function MarketplaceProvider({ children }) {
         reviewCount: 78,
         tags: ['Gaming', 'Custom Built', 'High Performance'],
         inStock: true,
-        quantity: 1
+        quantity: 1,
+        // Add time_info for hot deals filtering - NO TIME LIMIT
+        time_info: {
+          has_time_limit: false,
+          is_expired: false,
+          time_remaining_seconds: null,
+          time_limit_hours: null,
+          expires_at: null
+        }
       },
       {
         id: '5',
