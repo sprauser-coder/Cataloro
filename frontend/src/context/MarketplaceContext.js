@@ -729,6 +729,8 @@ export function MarketplaceProvider({ children }) {
 
     // Apply hot deals filter
     if (filters.hotDeals && filters.hotDeals !== 'all') {
+      console.log(`🔥 Applying hot deals filter: ${filters.hotDeals}, starting with ${filtered.length} products`);
+      
       filtered = filtered.filter(product => {
         const timeInfo = product.time_info;
         
@@ -745,8 +747,12 @@ export function MarketplaceProvider({ children }) {
         const timeRemainingHours = timeInfo.time_remaining_seconds ? 
           timeInfo.time_remaining_seconds / 3600 : 0;
         
+        console.log(`🔥 Product ${product.title}: timeRemainingHours=${timeRemainingHours}, has_time_limit=${timeInfo.has_time_limit}, is_expired=${timeInfo.is_expired}`);
+        
         if (filters.hotDeals === 'hot_deals') {
-          return timeRemainingHours > 0 && timeRemainingHours <= 24;
+          const isHotDeal = timeRemainingHours > 0 && timeRemainingHours <= 24;
+          console.log(`🔥 ${product.title} is hot deal: ${isHotDeal}`);
+          return isHotDeal;
         }
         
         if (filters.hotDeals === 'expiring_soon') {
@@ -755,6 +761,8 @@ export function MarketplaceProvider({ children }) {
         
         return true;
       });
+      
+      console.log(`🔥 After hot deals filter: ${filtered.length} products remaining`);
     }
 
     // Apply sorting
