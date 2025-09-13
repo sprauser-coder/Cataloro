@@ -150,83 +150,111 @@ class BackendTester:
         try:
             headers = {"Authorization": f"Bearer {token}"}
             
-            # Get buyer tenders for admin_user_1
-            buyer_url = f"{BACKEND_URL}/tenders/buyer/admin_user_1"
-            async with self.session.get(buyer_url, headers=headers) as response:
+            # First try to get demo user's tenders (as buyer)
+            demo_buyer_url = f"{BACKEND_URL}/tenders/buyer/68bfff790e4e46bc28d43631"
+            async with self.session.get(demo_buyer_url, headers=headers) as response:
                 if response.status == 200:
-                    buyer_tenders = await response.json()
+                    demo_tenders = await response.json()
                     
-                    # Find an accepted tender
-                    accepted_tender = None
-                    for tender in buyer_tenders:
+                    # Find an accepted tender that hasn't been completed yet
+                    for tender in demo_tenders:
                         if tender.get('status') == 'accepted':
-                            accepted_tender = tender
-                            break
+                            listing_id = tender.get('listing', {}).get('id')
+                            buyer_id = '68bfff790e4e46bc28d43631'  # Demo user
+                            seller_id = tender.get('seller', {}).get('id')
+                            
+                            # Check if this transaction is already completed
+                            completed_url = f"{BACKEND_URL}/user/completed-transactions/{buyer_id}"
+                            async with self.session.get(completed_url, headers=headers) as completed_response:
+                                if completed_response.status == 200:
+                                    completed_transactions = await completed_response.json()
+                                    already_completed = any(
+                                        ct.get('listing_id') == listing_id for ct in completed_transactions
+                                    )
+                                    
+                                    if not already_completed:
+                                        self.log_result(
+                                            "Test Data Discovery", 
+                                            True, 
+                                            f"✅ Found fresh accepted tender: listing_id={listing_id}, buyer_id={buyer_id}, seller_id={seller_id}",
+                                            (datetime.now() - start_time).total_seconds() * 1000
+                                        )
+                                        return {
+                                            'success': True,
+                                            'tender': tender,
+                                            'listing_id': listing_id,
+                                            'buyer_id': buyer_id,
+                                            'seller_id': seller_id
+                                        }
+            
+            # If no fresh demo user tenders, try admin user tenders
+            admin_buyer_url = f"{BACKEND_URL}/tenders/buyer/admin_user_1"
+            async with self.session.get(admin_buyer_url, headers=headers) as response:
+                if response.status == 200:
+                    admin_tenders = await response.json()
                     
-                    if accepted_tender:
-                        # Extract data from enriched structure
-                        listing_id = accepted_tender.get('listing', {}).get('id')
-                        buyer_id = 'admin_user_1'  # We know this from the endpoint
-                        seller_id = accepted_tender.get('seller', {}).get('id')
+                    # Find an accepted tender that hasn't been completed yet
+                    for tender in admin_tenders:
+                        if tender.get('status') == 'accepted':
+                            listing_id = tender.get('listing', {}).get('id')
+                            buyer_id = 'admin_user_1'
+                            seller_id = tender.get('seller', {}).get('id')
+                            
+                            # Check if this transaction is already completed
+                            completed_url = f"{BACKEND_URL}/user/completed-transactions/{buyer_id}"
+                            async with self.session.get(completed_url, headers=headers) as completed_response:
+                                if completed_response.status == 200:
+                                    completed_transactions = await completed_response.json()
+                                    already_completed = any(
+                                        ct.get('listing_id') == listing_id for ct in completed_transactions
+                                    )
+                                    
+                                    if not already_completed:
+                                        self.log_result(
+                                            "Test Data Discovery", 
+                                            True, 
+                                            f"✅ Found fresh accepted tender: listing_id={listing_id}, buyer_id={buyer_id}, seller_id={seller_id}",
+                                            (datetime.now() - start_time).total_seconds() * 1000
+                                        )
+                                        return {
+                                            'success': True,
+                                            'tender': tender,
+                                            'listing_id': listing_id,
+                                            'buyer_id': buyer_id,
+                                            'seller_id': seller_id
+                                        }
+            
+            # If no fresh accepted tenders, use any accepted tender for testing (even if completed)
+            # This will test the update logic
+            if admin_tenders:
+                for tender in admin_tenders:
+                    if tender.get('status') == 'accepted':
+                        listing_id = tender.get('listing', {}).get('id')
+                        buyer_id = 'admin_user_1'
+                        seller_id = tender.get('seller', {}).get('id')
                         
                         self.log_result(
                             "Test Data Discovery", 
                             True, 
-                            f"✅ Found accepted tender: listing_id={listing_id}, buyer_id={buyer_id}, seller_id={seller_id}",
+                            f"✅ Found accepted tender (may be completed): listing_id={listing_id}, buyer_id={buyer_id}, seller_id={seller_id}",
                             (datetime.now() - start_time).total_seconds() * 1000
                         )
                         return {
                             'success': True,
-                            'tender': accepted_tender,
+                            'tender': tender,
                             'listing_id': listing_id,
                             'buyer_id': buyer_id,
-                            'seller_id': seller_id
+                            'seller_id': seller_id,
+                            'note': 'Using existing tender (may test update logic)'
                         }
-                    else:
-                        # Try to find any tender with status 'active' and create a test scenario
-                        active_tender = None
-                        for tender in buyer_tenders:
-                            if tender.get('status') == 'active':
-                                active_tender = tender
-                                break
-                        
-                        if active_tender:
-                            # Extract data from enriched structure
-                            listing_id = active_tender.get('listing', {}).get('id')
-                            buyer_id = 'admin_user_1'  # We know this from the endpoint
-                            seller_id = active_tender.get('seller', {}).get('id')
-                            
-                            self.log_result(
-                                "Test Data Discovery", 
-                                True, 
-                                f"✅ Found active tender (will use for testing): listing_id={listing_id}, buyer_id={buyer_id}, seller_id={seller_id}",
-                                (datetime.now() - start_time).total_seconds() * 1000
-                            )
-                            return {
-                                'success': True,
-                                'tender': active_tender,
-                                'listing_id': listing_id,
-                                'buyer_id': buyer_id,
-                                'seller_id': seller_id,
-                                'note': 'Using active tender for testing'
-                            }
-                        else:
-                            self.log_result(
-                                "Test Data Discovery", 
-                                False, 
-                                f"❌ No accepted or active tenders found in {len(buyer_tenders)} buyer tenders",
-                                (datetime.now() - start_time).total_seconds() * 1000
-                            )
-                            return {'success': False, 'error': 'No suitable tenders found'}
-                else:
-                    error_text = await response.text()
-                    self.log_result(
-                        "Test Data Discovery", 
-                        False, 
-                        f"❌ Failed to get buyer tenders: {response.status} - {error_text}",
-                        (datetime.now() - start_time).total_seconds() * 1000
-                    )
-                    return {'success': False, 'error': f'Failed to get buyer tenders: {error_text}'}
+            
+            self.log_result(
+                "Test Data Discovery", 
+                False, 
+                "❌ No suitable tenders found for testing",
+                (datetime.now() - start_time).total_seconds() * 1000
+            )
+            return {'success': False, 'error': 'No suitable tenders found'}
                     
         except Exception as e:
             self.log_result(
