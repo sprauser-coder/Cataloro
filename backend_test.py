@@ -764,14 +764,14 @@ class BackendTester:
 
 async def main():
     """Main test execution"""
-    print("🚀 Starting Tender Management API Testing...")
+    print("🚀 Starting Complete Order Functionality Testing...")
     print(f"🌐 Backend URL: {BACKEND_URL}")
     print("="*80)
     
     async with BackendTester() as tester:
         try:
-            # Run tender management API tests
-            await tester.test_tender_management_apis()
+            # Run complete order functionality tests
+            await tester.test_complete_order_functionality()
             
             # Print summary
             tester.print_summary()
