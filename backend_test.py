@@ -649,37 +649,44 @@ class BackendTester:
         
         return True
     
-    async def test_send_message_with_field_check(self, sender_id, token, recipient_id):
-        """Send message and verify it's created with is_read: false"""
+    async def get_test_listing_id(self):
+        """Get a listing ID for testing"""
         start_time = datetime.now()
         
         try:
-            headers = {"Authorization": f"Bearer {token}"}
-            message_data = {
-                "recipient_id": recipient_id,
-                "subject": "Message Field Consistency Test",
-                "content": "Testing that messages are created with is_read: false field (not read: false)"
-            }
-            
-            async with self.session.post(f"{BACKEND_URL}/user/{sender_id}/messages", 
-                                       json=message_data, headers=headers) as response:
+            async with self.session.get(f"{BACKEND_URL}/marketplace/browse?limit=1") as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
                 if response.status == 200:
                     data = await response.json()
-                    message_id = data.get("id")
+                    if isinstance(data, dict) and 'listings' in data:
+                        # New pagination format
+                        listings = data['listings']
+                    else:
+                        # Old format - direct array
+                        listings = data
                     
-                    self.log_result(
-                        "Send Message (Field Consistency)", 
-                        True, 
-                        f"✅ Message sent successfully (ID: {message_id})",
-                        response_time
-                    )
-                    return message_id
+                    if listings and len(listings) > 0:
+                        listing_id = listings[0].get('id')
+                        self.log_result(
+                            "Get Test Listing ID", 
+                            True, 
+                            f"Found test listing ID: {listing_id}",
+                            response_time
+                        )
+                        return listing_id
+                    else:
+                        self.log_result(
+                            "Get Test Listing ID", 
+                            False, 
+                            "No listings available for testing",
+                            response_time
+                        )
+                        return None
                 else:
                     error_text = await response.text()
                     self.log_result(
-                        "Send Message (Field Consistency)", 
+                        "Get Test Listing ID", 
                         False, 
                         f"Failed with status {response.status}: {error_text}",
                         response_time
@@ -689,12 +696,293 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                "Send Message (Field Consistency)", 
+                "Get Test Listing ID", 
                 False, 
                 f"Request failed with exception: {str(e)}",
                 response_time
             )
             return None
+    
+    async def get_listing_with_view_tracking(self, listing_id, token=None, increment_view=False):
+        """Get listing with optional view tracking"""
+        start_time = datetime.now()
+        
+        try:
+            headers = {}
+            if token:
+                headers["Authorization"] = f"Bearer {token}"
+            
+            params = {}
+            if increment_view:
+                params["increment_view"] = "true"
+            
+            url = f"{BACKEND_URL}/listings/{listing_id}"
+            if params:
+                param_str = "&".join([f"{k}={v}" for k, v in params.items()])
+                url += f"?{param_str}"
+            
+            async with self.session.get(url, headers=headers) as response:
+                response_time = (datetime.now() - start_time).total_seconds() * 1000
+                
+                if response.status == 200:
+                    data = await response.json()
+                    view_count = data.get('views', 0)
+                    
+                    auth_status = "authenticated" if token else "unauthenticated"
+                    increment_status = "with increment_view=true" if increment_view else "without increment_view"
+                    
+                    self.log_result(
+                        f"Get Listing ({auth_status}, {increment_status})", 
+                        True, 
+                        f"Retrieved listing {listing_id}, current view count: {view_count}",
+                        response_time
+                    )
+                    return data
+                else:
+                    error_text = await response.text()
+                    self.log_result(
+                        f"Get Listing", 
+                        False, 
+                        f"Failed with status {response.status}: {error_text}",
+                        response_time
+                    )
+                    return None
+                    
+        except Exception as e:
+            response_time = (datetime.now() - start_time).total_seconds() * 1000
+            self.log_result(
+                "Get Listing", 
+                False, 
+                f"Request failed with exception: {str(e)}",
+                response_time
+            )
+            return None
+    
+    async def test_same_user_multiple_views(self, token, user_id, listing_id):
+        """Test that same user viewing multiple times only increments view count once"""
+        print(f"\n🔄 Testing same user multiple views for listing {listing_id}:")
+        
+        # Get initial view count
+        initial_data = await self.get_listing_with_view_tracking(listing_id, token, increment_view=False)
+        if not initial_data:
+            return False
+        
+        initial_view_count = initial_data.get('views', 0)
+        print(f"   Initial view count: {initial_view_count}")
+        
+        # First view with increment_view=true (should increment)
+        first_view_data = await self.get_listing_with_view_tracking(listing_id, token, increment_view=True)
+        if not first_view_data:
+            return False
+        
+        first_view_count = first_view_data.get('views', 0)
+        expected_after_first = initial_view_count + 1
+        
+        if first_view_count == expected_after_first:
+            self.log_result(
+                "First View Increment", 
+                True, 
+                f"✅ View count incremented correctly: {initial_view_count} → {first_view_count}"
+            )
+        else:
+            self.log_result(
+                "First View Increment", 
+                False, 
+                f"❌ View count not incremented correctly: expected {expected_after_first}, got {first_view_count}"
+            )
+            return False
+        
+        # Second view with increment_view=true (should NOT increment - same user)
+        second_view_data = await self.get_listing_with_view_tracking(listing_id, token, increment_view=True)
+        if not second_view_data:
+            return False
+        
+        second_view_count = second_view_data.get('views', 0)
+        
+        if second_view_count == first_view_count:
+            self.log_result(
+                "Duplicate View Prevention", 
+                True, 
+                f"✅ UNIQUE VIEW TRACKING WORKING: View count stayed same {first_view_count} → {second_view_count} (duplicate view from same user)"
+            )
+        else:
+            self.log_result(
+                "Duplicate View Prevention", 
+                False, 
+                f"❌ UNIQUE VIEW TRACKING FAILED: View count changed {first_view_count} → {second_view_count} (should stay same for same user)"
+            )
+            return False
+        
+        # Third view with increment_view=true (should still NOT increment)
+        third_view_data = await self.get_listing_with_view_tracking(listing_id, token, increment_view=True)
+        if not third_view_data:
+            return False
+        
+        third_view_count = third_view_data.get('views', 0)
+        
+        if third_view_count == first_view_count:
+            self.log_result(
+                "Multiple Duplicate Views Prevention", 
+                True, 
+                f"✅ UNIQUE VIEW TRACKING CONSISTENT: View count stayed same after multiple views from same user ({third_view_count})"
+            )
+            return True
+        else:
+            self.log_result(
+                "Multiple Duplicate Views Prevention", 
+                False, 
+                f"❌ UNIQUE VIEW TRACKING INCONSISTENT: View count changed after multiple views {first_view_count} → {third_view_count}"
+            )
+            return False
+    
+    async def test_different_users_same_listing(self, admin_token, admin_user_id, demo_token, demo_user_id, listing_id):
+        """Test that different users viewing same listing increments view count"""
+        print(f"\n👥 Testing different users viewing same listing {listing_id}:")
+        
+        # Get current view count
+        current_data = await self.get_listing_with_view_tracking(listing_id, admin_token, increment_view=False)
+        if not current_data:
+            return False
+        
+        current_view_count = current_data.get('views', 0)
+        print(f"   Current view count: {current_view_count}")
+        
+        # Admin user views (should increment if not viewed before)
+        admin_view_data = await self.get_listing_with_view_tracking(listing_id, admin_token, increment_view=True)
+        if not admin_view_data:
+            return False
+        
+        admin_view_count = admin_view_data.get('views', 0)
+        
+        # Demo user views (should increment)
+        demo_view_data = await self.get_listing_with_view_tracking(listing_id, demo_token, increment_view=True)
+        if not demo_view_data:
+            return False
+        
+        demo_view_count = demo_view_data.get('views', 0)
+        
+        if demo_view_count > admin_view_count:
+            self.log_result(
+                "Different Users View Increment", 
+                True, 
+                f"✅ DIFFERENT USER VIEW TRACKING WORKING: View count incremented from {admin_view_count} to {demo_view_count} when demo user viewed"
+            )
+        else:
+            self.log_result(
+                "Different Users View Increment", 
+                False, 
+                f"❌ DIFFERENT USER VIEW TRACKING FAILED: View count did not increment for different user ({admin_view_count} → {demo_view_count})"
+            )
+            return False
+        
+        # Admin user views again (should NOT increment - already viewed)
+        admin_second_view_data = await self.get_listing_with_view_tracking(listing_id, admin_token, increment_view=True)
+        if not admin_second_view_data:
+            return False
+        
+        admin_second_view_count = admin_second_view_data.get('views', 0)
+        
+        if admin_second_view_count == demo_view_count:
+            self.log_result(
+                "Admin Repeat View Prevention", 
+                True, 
+                f"✅ ADMIN REPEAT VIEW BLOCKED: View count stayed same {demo_view_count} → {admin_second_view_count}"
+            )
+        else:
+            self.log_result(
+                "Admin Repeat View Prevention", 
+                False, 
+                f"❌ ADMIN REPEAT VIEW NOT BLOCKED: View count changed {demo_view_count} → {admin_second_view_count}"
+            )
+            return False
+        
+        # Demo user views again (should NOT increment - already viewed)
+        demo_second_view_data = await self.get_listing_with_view_tracking(listing_id, demo_token, increment_view=True)
+        if not demo_second_view_data:
+            return False
+        
+        demo_second_view_count = demo_second_view_data.get('views', 0)
+        
+        if demo_second_view_count == demo_view_count:
+            self.log_result(
+                "Demo Repeat View Prevention", 
+                True, 
+                f"✅ DEMO REPEAT VIEW BLOCKED: View count stayed same {demo_view_count} → {demo_second_view_count}"
+            )
+            return True
+        else:
+            self.log_result(
+                "Demo Repeat View Prevention", 
+                False, 
+                f"❌ DEMO REPEAT VIEW NOT BLOCKED: View count changed {demo_view_count} → {demo_second_view_count}"
+            )
+            return False
+    
+    async def test_view_tracking_edge_cases(self, listing_id):
+        """Test edge cases for view tracking"""
+        print(f"\n🔍 Testing view tracking edge cases for listing {listing_id}:")
+        
+        # Test 1: Unauthenticated request with increment_view=true (should not increment)
+        unauth_data = await self.get_listing_with_view_tracking(listing_id, token=None, increment_view=True)
+        if unauth_data:
+            self.log_result(
+                "Unauthenticated View Increment Test", 
+                True, 
+                f"✅ UNAUTHENTICATED VIEW HANDLED: Request succeeded but should not increment view count"
+            )
+        else:
+            self.log_result(
+                "Unauthenticated View Increment Test", 
+                False, 
+                "❌ Unauthenticated request failed"
+            )
+        
+        # Test 2: increment_view=false (should never increment)
+        admin_token, admin_user_id, admin_user = await self.test_login_and_get_token("admin@cataloro.com", "admin123")
+        if admin_token:
+            before_data = await self.get_listing_with_view_tracking(listing_id, admin_token, increment_view=False)
+            after_data = await self.get_listing_with_view_tracking(listing_id, admin_token, increment_view=False)
+            
+            if before_data and after_data:
+                before_count = before_data.get('views', 0)
+                after_count = after_data.get('views', 0)
+                
+                if before_count == after_count:
+                    self.log_result(
+                        "increment_view=false Test", 
+                        True, 
+                        f"✅ INCREMENT_VIEW=FALSE WORKING: View count stayed same {before_count} → {after_count}"
+                    )
+                else:
+                    self.log_result(
+                        "increment_view=false Test", 
+                        False, 
+                        f"❌ INCREMENT_VIEW=FALSE FAILED: View count changed {before_count} → {after_count}"
+                    )
+        
+        # Test 3: Default behavior (no increment_view parameter - should not increment)
+        if admin_token:
+            before_data = await self.get_listing_with_view_tracking(listing_id, admin_token, increment_view=False)
+            default_data = await self.get_listing_with_view_tracking(listing_id, admin_token, increment_view=False)
+            
+            if before_data and default_data:
+                before_count = before_data.get('views', 0)
+                default_count = default_data.get('views', 0)
+                
+                if before_count == default_count:
+                    self.log_result(
+                        "Default Behavior Test", 
+                        True, 
+                        f"✅ DEFAULT BEHAVIOR WORKING: View count stayed same {before_count} → {default_count} (no increment_view parameter)"
+                    )
+                else:
+                    self.log_result(
+                        "Default Behavior Test", 
+                        False, 
+                        f"❌ DEFAULT BEHAVIOR FAILED: View count changed {before_count} → {default_count}"
+                    )
+        
+        return True
     
     async def test_get_message_and_check_field(self, user_id, token, message_id):
         """Get message and verify it has is_read: false field"""
