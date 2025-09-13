@@ -812,6 +812,19 @@ export function MarketplaceProvider({ children }) {
     
     setLoading: (loading) => {
       dispatch({ type: ACTIONS.SET_LOADING, payload: loading });
+    },
+    
+    // Function to change page
+    changePage: async (newPage) => {
+      if (newPage < 1 || newPage > state.totalPages || newPage === state.currentPage) {
+        return;
+      }
+
+      console.log('📄 Changing to page:', newPage);
+      dispatch({ type: ACTIONS.SET_CURRENT_PAGE, payload: newPage });
+      
+      // Reload products for the new page
+      await loadInitialProducts(state.activeFilters, null, newPage);
     }
   };
 
