@@ -142,15 +142,11 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
   }, [user?.id]);
 
   const fetchMyTenders = React.useCallback(async () => {
-    if (!user?.id || myTendersLoading) return; // Prevent multiple concurrent calls
+    if (!user?.id) return;
     
     setMyTendersLoading(true);
     try {
-      // eslint-disable-next-line no-undef
-      const controller = new AbortController();
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/buyer/${user.id}`, {
-        signal: controller.signal
-      });
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/buyer/${user.id}`);
       if (response.ok) {
         const data = await response.json();
         setMyTenders(data);
@@ -159,14 +155,12 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
         setMyTenders([]);
       }
     } catch (error) {
-      if (error.name !== 'AbortError') {
-        console.error('Failed to fetch my tenders:', error);
-        setMyTenders([]);
-      }
+      console.error('Failed to fetch my tenders:', error);
+      setMyTenders([]);
     } finally {
       setMyTendersLoading(false);
     }
-  }, [user?.id, myTendersLoading]);
+  }, [user?.id]);
 
   // Listings Management Functions (exact duplicate from MyListingsPage)
   const fetchMyListings = React.useCallback(async () => {
