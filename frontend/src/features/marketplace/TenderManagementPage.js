@@ -90,7 +90,7 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
     if (urlFilter && urlFilter !== activeFilter) {
       setActiveFilter(urlFilter);
     }
-  }, [searchParams]);
+  }, [searchParams, activeFilter]);
 
   const fetchTendersOverview = async () => {
     if (!user) return;
