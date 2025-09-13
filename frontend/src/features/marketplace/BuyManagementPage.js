@@ -551,34 +551,36 @@ function BuyManagementPage({ initialTab = 'bought-items', hideNavigation = false
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-                <ShoppingCart className="w-8 h-8 mr-3 text-blue-600" />
-                Inventory
-              </h1>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                Manage your purchased items and organize them into baskets
-              </p>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => {
-                  loadBoughtItems();
-                  loadBaskets();
-                  loadCompletedTransactions();
-                }}
-                disabled={loading}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
-              </button>
+        {!hideNavigation && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+                  <ShoppingCart className="w-8 h-8 mr-3 text-blue-600" />
+                  Inventory
+                </h1>
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  Manage your purchased items and organize them into baskets
+                </p>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => {
+                    loadBoughtItems();
+                    loadBaskets();
+                    loadCompletedTransactions();
+                  }}
+                  disabled={loading}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  Refresh
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Tabs */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-6">
