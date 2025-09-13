@@ -54,7 +54,7 @@ from datetime import datetime, timezone
 import pytz
 
 # Configuration - Use production URL from frontend/.env
-BACKEND_URL = "https://cataloro-admin-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-5.preview.emergentagent.com/api"
 
 class FavoritesViewsTester:
     def __init__(self):

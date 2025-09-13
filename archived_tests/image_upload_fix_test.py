@@ -10,7 +10,7 @@ import base64
 from datetime import datetime
 
 # Test Configuration
-BACKEND_URL = "https://cataloro-admin-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-5.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@cataloro.com"
 
 class ImageUploadFixTester:

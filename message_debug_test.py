@@ -8,7 +8,7 @@ import aiohttp
 import json
 from datetime import datetime
 
-BACKEND_URL = "https://cataloro-admin-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://cataloro-marketplace-5.preview.emergentagent.com/api"
 
 async def debug_messages():
     """Debug message data structure"""
