@@ -9160,20 +9160,20 @@ async def main():
         # Show key findings
         print("\n🔍 KEY FINDINGS:")
         for result in tester.test_results:
-            if "Fix" in result["test"] or "Consistency" in result["test"]:
+            if "Format" in result["test"] or "Structure" in result["test"] or "Extraction" in result["test"] or "Consistency" in result["test"]:
                 status_icon = "✅" if result["success"] else "❌"
                 print(f"{status_icon} {result['test']}: {result['details']}")
         
         print("\n" + "=" * 80)
         
         if success:
-            print("\n✅ LISTING COUNT DISCREPANCY INVESTIGATION: COMPLETE")
-            print("Successfully analyzed all endpoints and database counts.")
-            print("Check the detailed analysis above to understand the discrepancy source.")
+            print("\n✅ FRONTEND COMPATIBILITY FIX TESTING: COMPLETE")
+            print("Successfully verified API response format and frontend compatibility.")
+            print("The 'allListings.filter is not a function' error should be resolved.")
         else:
-            print("\n❌ LISTING COUNT DISCREPANCY INVESTIGATION: ISSUES FOUND")
-            print("Some endpoints failed or returned unexpected results.")
-            print("Check the detailed test results above for specific issues.")
+            print("\n❌ FRONTEND COMPATIBILITY FIX TESTING: ISSUES FOUND")
+            print("Some API format tests failed or returned unexpected results.")
+            print("The frontend error may still occur - check the detailed test results above.")
         
         # Print failed tests details
         failed_tests = [result for result in tester.test_results if not result["success"]]
@@ -9183,7 +9183,7 @@ async def main():
                 print(f"{i}. {test['test']}: {test['details']}")
         
         print("\n" + "=" * 80)
-        print("🏁 LISTING COUNT DISCREPANCY INVESTIGATION COMPLETED")
+        print("🏁 FRONTEND COMPATIBILITY FIX TESTING COMPLETED")
         print("=" * 80)
 
 
