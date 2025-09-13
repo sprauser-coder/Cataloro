@@ -970,8 +970,21 @@ function BoughtItemCard({ item, baskets, onAssignToBasket, onUnassignFromBasket,
               </div>
             </div>
           )}
+          </div>
         </div>
       </div>
+
+      {/* Completion Modal */}
+      {showCompleteModal && (
+        <CompletionModal
+          item={item}
+          onComplete={(notes, method) => {
+            onMarkComplete(item.listing_id, notes, method);
+            setShowCompleteModal(false);
+          }}
+          onClose={() => setShowCompleteModal(false)}
+        />
+      )}
     </div>
   );
 }
