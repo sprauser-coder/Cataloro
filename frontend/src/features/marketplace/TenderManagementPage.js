@@ -121,15 +121,11 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
   }, [activeTab, user, showBuyTabOnly, showSellTabOnly]);
 
   const fetchTendersOverview = React.useCallback(async () => {
-    if (!user?.id || tendersLoading) return; // Prevent multiple concurrent calls
+    if (!user?.id) return;
     
     setTendersLoading(true);
     try {
-      // eslint-disable-next-line no-undef
-      const controller = new AbortController();
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/seller/${user.id}/overview`, {
-        signal: controller.signal
-      });
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenders/seller/${user.id}/overview`);
       if (response.ok) {
         const data = await response.json();
         setTendersOverview(data);
@@ -138,14 +134,12 @@ function TenderManagementPage({ showBuyTabOnly = false, showSellTabOnly = false 
         setTendersOverview([]);
       }
     } catch (error) {
-      if (error.name !== 'AbortError') {
-        console.error('Failed to fetch tenders overview:', error);
-        setTendersOverview([]);
-      }
+      console.error('Failed to fetch tenders overview:', error);
+      setTendersOverview([]);
     } finally {
       setTendersLoading(false);
     }
-  }, [user?.id, tendersLoading]);
+  }, [user?.id]);
 
   const fetchMyTenders = React.useCallback(async () => {
     if (!user?.id || myTendersLoading) return; // Prevent multiple concurrent calls
