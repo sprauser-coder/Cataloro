@@ -537,9 +537,10 @@ class HotDealsFilterTester:
             expiring_soon_accurate = True
             for listing in filter_results['expiring_soon']:
                 time_info = listing.get('time_info', {})
-                time_remaining_seconds = time_info.get('time_remaining_seconds', 0)
+                time_remaining_seconds = time_info.get('time_remaining_seconds')
                 
-                if time_remaining_seconds > 172800 or time_remaining_seconds <= 86400:  # More than 48h or less than 24h
+                # Handle None values properly
+                if time_remaining_seconds is None or time_remaining_seconds > 172800 or time_remaining_seconds <= 86400:  # More than 48h or less than 24h
                     expiring_soon_accurate = False
                     self.log_result(
                         "Expiring Soon Category Accuracy", 
