@@ -8835,6 +8835,353 @@ async def startup_event():
         print(f"❌ Failed to connect to MongoDB: {e}")
         raise
 
+# ========================================
+# COMPLETED TRANSACTIONS ENDPOINTS
+# ========================================
+
+class CompletedTransaction(BaseModel):
+    id: str = None
+    listing_id: str
+    buyer_id: str
+    seller_id: str
+    buyer_confirmed_at: Optional[str] = None
+    seller_confirmed_at: Optional[str] = None
+    is_fully_completed: bool = False
+    completion_notes: Optional[str] = None
+    completion_method: Optional[str] = None  # "pickup", "delivery", "meeting", etc.
+    created_at: str = None
+    updated_at: str = None
+    
+    # Store complete listing info at time of completion
+    listing_title: str
+    listing_price: float
+    listing_image: Optional[str] = None
+    tender_id: Optional[str] = None
+    tender_amount: Optional[float] = None
+
+@app.post("/api/user/complete-transaction")
+async def mark_transaction_complete(current_user: dict = Depends(get_current_user), completion_data: dict = None):
+    """Mark a transaction as completed by buyer or seller"""
+    try:
+        user_id = current_user.get("id")
+        user_role = current_user.get("user_role", "")
+        
+        if not completion_data:
+            raise HTTPException(status_code=400, detail="Completion data is required")
+        
+        listing_id = completion_data.get("listing_id")
+        notes = completion_data.get("notes", "")
+        method = completion_data.get("method", "meeting")
+        
+        if not listing_id:
+            raise HTTPException(status_code=400, detail="Listing ID is required")
+        
+        # Get the tender/bought item details
+        tender = await db.tenders.find_one({
+            "listing_id": listing_id,
+            "status": "accepted",
+            "$or": [{"buyer_id": user_id}, {"seller_id": user_id}]
+        })
+        
+        if not tender:
+            raise HTTPException(status_code=404, detail="No accepted tender found for this listing")
+        
+        buyer_id = tender.get("buyer_id")
+        seller_id = tender.get("seller_id")
+        
+        # Verify user is either buyer or seller
+        if user_id not in [buyer_id, seller_id]:
+            raise HTTPException(status_code=403, detail="You can only mark your own transactions as completed")
+        
+        # Get listing details
+        listing = await db.listings.find_one({"id": listing_id})
+        if not listing:
+            raise HTTPException(status_code=404, detail="Listing not found")
+        
+        # Check if completion record already exists
+        existing_completion = await db.completed_transactions.find_one({
+            "listing_id": listing_id,
+            "buyer_id": buyer_id,
+            "seller_id": seller_id
+        })
+        
+        current_time = datetime.now(timezone.utc).isoformat()
+        
+        if existing_completion:
+            # Update existing completion record
+            update_data = {
+                "updated_at": current_time,
+                "completion_notes": notes,
+                "completion_method": method
+            }
+            
+            # Mark confirmation based on user role
+            if user_id == buyer_id:
+                update_data["buyer_confirmed_at"] = current_time
+            elif user_id == seller_id:
+                update_data["seller_confirmed_at"] = current_time
+            
+            # Check if both parties have now confirmed
+            buyer_confirmed = existing_completion.get("buyer_confirmed_at") or (user_id == buyer_id and current_time)
+            seller_confirmed = existing_completion.get("seller_confirmed_at") or (user_id == seller_id and current_time)
+            
+            update_data["is_fully_completed"] = bool(buyer_confirmed and seller_confirmed)
+            
+            await db.completed_transactions.update_one(
+                {"id": existing_completion.get("id")},
+                {"$set": update_data}
+            )
+            
+            completion_id = existing_completion.get("id")
+        else:
+            # Create new completion record
+            completion_id = generate_id()
+            
+            completion_record = {
+                "id": completion_id,
+                "listing_id": listing_id,
+                "buyer_id": buyer_id,
+                "seller_id": seller_id,
+                "buyer_confirmed_at": current_time if user_id == buyer_id else None,
+                "seller_confirmed_at": current_time if user_id == seller_id else None,
+                "is_fully_completed": False,  # Only true when both parties confirm
+                "completion_notes": notes,
+                "completion_method": method,
+                "created_at": current_time,
+                "updated_at": current_time,
+                
+                # Store listing details
+                "listing_title": listing.get("title", ""),
+                "listing_price": listing.get("price", 0),
+                "listing_image": listing.get("images", [None])[0],
+                "tender_id": tender.get("id"),
+                "tender_amount": tender.get("offer_amount", 0)
+            }
+            
+            await db.completed_transactions.insert_one(completion_record)
+        
+        # Get updated completion record for response
+        completion = await db.completed_transactions.find_one({"id": completion_id})
+        
+        # Create notifications for the other party
+        other_party_id = seller_id if user_id == buyer_id else buyer_id
+        user_type = "buyer" if user_id == buyer_id else "seller"
+        other_type = "seller" if user_id == buyer_id else "buyer"
+        
+        # Notification to other party
+        notification = {
+            "user_id": other_party_id,
+            "title": "Transaction Marked as Completed",
+            "message": f"The {user_type} has marked the transaction for '{listing.get('title', 'Unknown Item')}' as completed. Please confirm when you've also completed your part.",
+            "type": "transaction_completion",
+            "read": False,
+            "created_at": current_time,
+            "id": generate_id(),
+            "listing_id": listing_id,
+            "completion_id": completion_id
+        }
+        await db.user_notifications.insert_one(notification)
+        
+        # If both parties have now confirmed, send final notifications
+        if completion and completion.get("is_fully_completed"):
+            # Notify both parties of full completion
+            for party_id, party_type in [(buyer_id, "buyer"), (seller_id, "seller")]:
+                final_notification = {
+                    "user_id": party_id,
+                    "title": "Transaction Fully Completed",
+                    "message": f"Both parties have confirmed completion of the transaction for '{listing.get('title', 'Unknown Item')}'. The deal is now fully complete!",
+                    "type": "transaction_fully_completed",
+                    "read": False,
+                    "created_at": current_time,
+                    "id": generate_id(),
+                    "listing_id": listing_id,
+                    "completion_id": completion_id
+                }
+                await db.user_notifications.insert_one(final_notification)
+        
+        return {
+            "message": "Transaction marked as completed successfully",
+            "completion": serialize_doc(completion),
+            "is_fully_completed": completion.get("is_fully_completed", False)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error marking transaction complete: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to mark transaction complete: {str(e)}")
+
+@app.get("/api/user/completed-transactions/{user_id}")
+async def get_completed_transactions(user_id: str):
+    """Get all completed transactions for a user (buyer or seller)"""
+    try:
+        # Check if user exists and is active
+        await check_user_active_status(user_id)
+        
+        # Get completed transactions where user is buyer or seller
+        completed_transactions = await db.completed_transactions.find({
+            "$or": [
+                {"buyer_id": user_id},
+                {"seller_id": user_id}
+            ]
+        }).sort("created_at", -1).to_list(length=None)
+        
+        # Process and enrich the data
+        processed_transactions = []
+        for transaction in completed_transactions:
+            processed_transaction = serialize_doc(transaction)
+            
+            # Add user role context (buyer/seller from user's perspective)
+            processed_transaction["user_role_in_transaction"] = "buyer" if transaction.get("buyer_id") == user_id else "seller"
+            
+            # Get other party info
+            other_party_id = transaction.get("seller_id") if transaction.get("buyer_id") == user_id else transaction.get("buyer_id")
+            other_party = await db.users.find_one({"id": other_party_id})
+            if other_party:
+                processed_transaction["other_party"] = {
+                    "id": other_party.get("id"),
+                    "name": other_party.get("full_name", "Unknown User"),
+                    "role": "seller" if transaction.get("buyer_id") == user_id else "buyer"
+                }
+            
+            processed_transactions.append(processed_transaction)
+        
+        return processed_transactions
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching completed transactions: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch completed transactions: {str(e)}")
+
+@app.delete("/api/user/completed-transactions/{completion_id}")
+async def undo_transaction_completion(completion_id: str, current_user: dict = Depends(get_current_user)):
+    """Undo a transaction completion (remove user's confirmation)"""
+    try:
+        user_id = current_user.get("id")
+        
+        # Get the completion record
+        completion = await db.completed_transactions.find_one({"id": completion_id})
+        if not completion:
+            raise HTTPException(status_code=404, detail="Completion record not found")
+        
+        buyer_id = completion.get("buyer_id")
+        seller_id = completion.get("seller_id")
+        
+        # Verify user is either buyer or seller
+        if user_id not in [buyer_id, seller_id]:
+            raise HTTPException(status_code=403, detail="You can only undo your own completion confirmations")
+        
+        current_time = datetime.now(timezone.utc).isoformat()
+        
+        # Remove user's confirmation
+        update_data = {"updated_at": current_time}
+        
+        if user_id == buyer_id:
+            update_data["buyer_confirmed_at"] = None
+        elif user_id == seller_id:
+            update_data["seller_confirmed_at"] = None
+        
+        # Update completion status
+        buyer_confirmed = completion.get("buyer_confirmed_at") if user_id != buyer_id else None
+        seller_confirmed = completion.get("seller_confirmed_at") if user_id != seller_id else None
+        update_data["is_fully_completed"] = bool(buyer_confirmed and seller_confirmed)
+        
+        # If no confirmations remain, delete the record entirely
+        if not buyer_confirmed and not seller_confirmed:
+            await db.completed_transactions.delete_one({"id": completion_id})
+            return {"message": "Transaction completion undone and record removed"}
+        else:
+            # Update the record
+            await db.completed_transactions.update_one(
+                {"id": completion_id},
+                {"$set": update_data}
+            )
+            
+            # Notify the other party
+            other_party_id = seller_id if user_id == buyer_id else buyer_id
+            user_type = "buyer" if user_id == buyer_id else "seller"
+            
+            notification = {
+                "user_id": other_party_id,
+                "title": "Transaction Completion Undone",
+                "message": f"The {user_type} has undone their completion confirmation for '{completion.get('listing_title', 'Unknown Item')}'.",
+                "type": "transaction_completion_undone",
+                "read": False,
+                "created_at": current_time,
+                "id": generate_id(),
+                "listing_id": completion.get("listing_id"),
+                "completion_id": completion_id
+            }
+            await db.user_notifications.insert_one(notification)
+            
+            return {"message": "Transaction completion undone successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error undoing transaction completion: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to undo transaction completion: {str(e)}")
+
+@app.get("/api/admin/completed-transactions")
+async def admin_get_all_completed_transactions(current_user: dict = Depends(require_admin_role)):
+    """Admin endpoint to view all completed transactions and their status"""
+    try:
+        # Get all completed transactions
+        all_completions = await db.completed_transactions.find({}).sort("created_at", -1).to_list(length=None)
+        
+        # Enrich with user information
+        processed_completions = []
+        for completion in all_completions:
+            processed_completion = serialize_doc(completion)
+            
+            # Get buyer and seller info
+            buyer = await db.users.find_one({"id": completion.get("buyer_id")})
+            seller = await db.users.find_one({"id": completion.get("seller_id")})
+            
+            processed_completion["buyer_info"] = {
+                "id": buyer.get("id") if buyer else None,
+                "name": buyer.get("full_name", "Unknown") if buyer else "Unknown",
+                "email": buyer.get("email", "Unknown") if buyer else "Unknown"
+            }
+            
+            processed_completion["seller_info"] = {
+                "id": seller.get("id") if seller else None,
+                "name": seller.get("full_name", "Unknown") if seller else "Unknown", 
+                "email": seller.get("email", "Unknown") if seller else "Unknown"
+            }
+            
+            # Add completion status summary
+            buyer_confirmed = bool(completion.get("buyer_confirmed_at"))
+            seller_confirmed = bool(completion.get("seller_confirmed_at"))
+            
+            processed_completion["completion_status"] = {
+                "buyer_confirmed": buyer_confirmed,
+                "seller_confirmed": seller_confirmed,
+                "both_confirmed": completion.get("is_fully_completed", False),
+                "pending_confirmation_from": []
+            }
+            
+            if not buyer_confirmed:
+                processed_completion["completion_status"]["pending_confirmation_from"].append("buyer")
+            if not seller_confirmed:
+                processed_completion["completion_status"]["pending_confirmation_from"].append("seller")
+            
+            processed_completions.append(processed_completion)
+        
+        return {
+            "total_transactions": len(processed_completions),
+            "fully_completed": len([c for c in processed_completions if c.get("is_fully_completed")]),
+            "pending_confirmation": len([c for c in processed_completions if not c.get("is_fully_completed")]),
+            "transactions": processed_completions
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching admin completed transactions: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch completed transactions: {str(e)}")
+
 # Run server
 if __name__ == "__main__":
     import uvicorn
