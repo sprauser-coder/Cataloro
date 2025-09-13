@@ -941,7 +941,7 @@ export function MarketplaceProvider({ children }) {
         return true;
       });
       
-      console.log(`🔥 After hot deals filter: ${filtered.length} products remaining`);
+      console.log(`⏰ After time filter: ${filtered.length} products remaining`);
     }
 
     // Apply sorting
