@@ -6056,6 +6056,15 @@ class BackendTester:
         try:
             headers = {"Authorization": f"Bearer {token}"}
             
+            # Handle None listing_id
+            if not listing_id:
+                self.log_result(
+                    "Remove Favorite (no listing_id)", 
+                    False, 
+                    "No listing_id provided for removal"
+                )
+                return False
+            
             async with self.session.delete(f"{BACKEND_URL}/user/{user_id}/favorites/{listing_id}", headers=headers) as response:
                 response_time = (datetime.now() - start_time).total_seconds() * 1000
                 
@@ -6080,7 +6089,7 @@ class BackendTester:
         except Exception as e:
             response_time = (datetime.now() - start_time).total_seconds() * 1000
             self.log_result(
-                f"Remove Favorite (listing {listing_id[:8]}...)", 
+                f"Remove Favorite (listing {listing_id[:8] if listing_id else 'None'}...)", 
                 False, 
                 f"Request failed with exception: {str(e)}",
                 response_time
