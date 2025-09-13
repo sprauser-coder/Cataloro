@@ -196,7 +196,9 @@ function ProductDetailPage() {
           console.log('⚠️ Cached data failed, trying browse endpoint');
           const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/marketplace/browse`);
           if (response.ok) {
-            const allListings = await response.json();
+            const data = await response.json();
+            // Handle new API response format {listings: [...], pagination: {...}}
+            const allListings = data.listings || (Array.isArray(data) ? data : []);
             const apiProduct = allListings.find(p => p.id === productId);
             if (apiProduct) {
               setProduct(apiProduct);
