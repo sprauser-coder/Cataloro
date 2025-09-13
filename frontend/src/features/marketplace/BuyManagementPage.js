@@ -1160,6 +1160,234 @@ function BasketCard({ basket, totals, onEdit, onDelete, onExport, onUnassignFrom
   );
 }
 
+// Completed Tab Component
+function CompletedTab({ transactions, onUndoCompletion, loading }) {
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white">Completed Transactions</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Items that have been physically handed over between buyer and seller
+        </p>
+      </div>
+
+      {/* Transactions List */}
+      {loading ? (
+        <div className="text-center py-8">
+          <RefreshCw className="w-6 h-6 animate-spin mx-auto text-gray-400" />
+          <p className="mt-2 text-sm text-gray-500">Loading completed transactions...</p>
+        </div>
+      ) : transactions.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {transactions.map((transaction) => (
+            <CompletedTransactionCard
+              key={transaction.id}
+              transaction={transaction}
+              onUndoCompletion={onUndoCompletion}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <Check className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No completed transactions</h3>
+          <p className="mt-1 text-sm text-gray-500">Transactions you mark as completed will appear here.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Completed Transaction Card Component
+function CompletedTransactionCard({ transaction, onUndoCompletion }) {
+  const isFullyCompleted = transaction.is_fully_completed;
+  const userRole = transaction.user_role_in_transaction; // "buyer" or "seller"
+  const otherParty = transaction.other_party;
+  
+  const buyerConfirmed = !!transaction.buyer_confirmed_at;
+  const sellerConfirmed = !!transaction.seller_confirmed_at;
+
+  return (
+    <div className="bg-white dark:bg-gray-700 rounded-lg shadow border border-gray-200 dark:border-gray-600 relative">
+      {/* Completion Status Badge */}
+      <div className="absolute top-4 right-4 z-10">
+        {isFullyCompleted ? (
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-600 text-white shadow-lg">
+            <Check className="w-3 h-3 mr-1" />
+            FULLY COMPLETED
+          </span>
+        ) : (
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-yellow-600 text-white shadow-lg">
+            <Clock className="w-3 h-3 mr-1" />
+            PENDING
+          </span>
+        )}
+      </div>
+
+      {/* Item Image */}
+      {transaction.listing_image && (
+        <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-t-lg">
+          <img
+            src={transaction.listing_image}
+            alt={transaction.listing_title}
+            className="w-full h-48 object-cover"
+          />
+        </div>
+      )}
+      
+      <div className="p-4">
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+            {transaction.listing_title}
+          </h3>
+          
+          <div className="space-y-1 mt-2">
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <DollarSign className="w-3 h-3 mr-1" />
+              €{transaction.tender_amount?.toFixed(2) || transaction.listing_price?.toFixed(2) || '0.00'}
+            </div>
+            
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <User className="w-3 h-3 mr-1" />
+              {userRole === 'buyer' ? 'Bought from' : 'Sold to'}: {otherParty?.name || 'Unknown'}
+            </div>
+            
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <Calendar className="w-3 h-3 mr-1" />
+              Completed: {new Date(transaction.created_at).toLocaleDateString()}
+            </div>
+
+            {transaction.completion_method && (
+              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                <MapPin className="w-3 h-3 mr-1" />
+                Method: {transaction.completion_method}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Completion Status */}
+        <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <h4 className="text-xs font-medium text-gray-900 dark:text-white mb-2">Completion Status</h4>
+          <div className="space-y-1">
+            <div className="flex items-center text-xs">
+              {buyerConfirmed ? (
+                <Check className="w-3 h-3 text-green-600 mr-2" />
+              ) : (
+                <X className="w-3 h-3 text-red-500 mr-2" />
+              )}
+              <span className={buyerConfirmed ? 'text-green-600' : 'text-gray-500'}>
+                Buyer confirmed
+              </span>
+            </div>
+            <div className="flex items-center text-xs">
+              {sellerConfirmed ? (
+                <Check className="w-3 h-3 text-green-600 mr-2" />
+              ) : (
+                <X className="w-3 h-3 text-red-500 mr-2" />
+              )}
+              <span className={sellerConfirmed ? 'text-green-600' : 'text-gray-500'}>
+                Seller confirmed
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Notes */}
+        {transaction.completion_notes && (
+          <div className="mb-4 text-xs text-gray-600 dark:text-gray-400">
+            <strong>Notes:</strong> {transaction.completion_notes}
+          </div>
+        )}
+
+        {/* Undo Button */}
+        <button
+          onClick={() => {
+            if (window.confirm('Undo your completion confirmation for this transaction?')) {
+              onUndoCompletion(transaction.id);
+            }
+          }}
+          className="w-full inline-flex items-center justify-center px-3 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all border-red-300 text-red-700 bg-red-50 hover:bg-red-100 focus:ring-red-500 dark:border-red-600 dark:text-red-400 dark:bg-red-900 dark:hover:bg-red-800"
+        >
+          <X className="w-4 h-4 mr-2" />
+          Undo My Confirmation
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Completion Modal Component
+function CompletionModal({ item, onComplete, onClose }) {
+  const [notes, setNotes] = useState('');
+  const [method, setMethod] = useState('meeting');
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+        <div className="mt-3">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white text-center mb-4">
+            Mark Transaction as Completed
+          </h3>
+          
+          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p className="text-sm text-gray-900 dark:text-white font-medium">{item.title}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">€{item.price?.toFixed(2)}</p>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Completion Method
+              </label>
+              <select
+                value={method}
+                onChange={(e) => setMethod(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="meeting">In-person meeting</option>
+                <option value="pickup">Pickup</option>
+                <option value="delivery">Delivery</option>
+                <option value="shipping">Shipping</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Notes (Optional)
+              </label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Add any notes about the completion..."
+                rows="3"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-end space-x-3 mt-6">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => onComplete(notes, method)}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              Mark as Completed
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Basket Modal Component
 function BasketModal({ title, form, setForm, onSave, onClose }) {
   return (
