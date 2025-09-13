@@ -1529,12 +1529,22 @@ async def browse_listings(
         else:
             query = {"status": "active"}  # Default to active
         
-        # Simple query - get listings, sorted by newest first
-        listings = await db.listings.find(query).sort("created_at", -1).limit(limit).to_list(length=None)
+        # First, get total count for pagination (before applying limit)
+        total_count = await db.listings.count_documents(query)
         
-        logger.info(f"📋 Found {len(listings)} listings with status filter: {status}")
+        # Calculate pagination info
+        total_pages = (total_count + limit - 1) // limit  # Ceiling division
+        current_page = (offset // limit) + 1
+        
+        logger.info(f"📋 Pagination info - total: {total_count}, page: {current_page}/{total_pages}, offset: {offset}, limit: {limit}")
+        
+        # Get paginated listings with proper offset and limit
+        listings = await db.listings.find(query).sort("created_at", -1).skip(offset).limit(limit).to_list(length=limit)
+        
+        logger.info(f"📋 Found {len(listings)} listings for current page")
         
         # Apply bid-based filtering if user_id is provided and bid_filter is specified
+        # NOTE: This should ideally be moved to the query level for better performance
         if user_id and bid_filter != "all":
             logger.info(f"📋 Applying bid filter: {bid_filter} for user: {user_id}")
             
