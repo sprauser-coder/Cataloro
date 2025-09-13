@@ -4989,19 +4989,19 @@ async def get_user_favorites(user_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch favorites: {str(e)}")
 
-@app.post("/api/user/{user_id}/favorites/{item_id}")
-async def add_to_favorites(user_id: str, item_id: str):
-    """Add item to user's favorites"""
+@app.post("/api/user/{user_id}/favorites/{listing_id}")
+async def add_to_favorites(user_id: str, listing_id: str):
+    """Add listing to user's favorites"""
     try:
         favorite_data = {
             "user_id": user_id,
-            "item_id": item_id,
+            "listing_id": listing_id,
             "created_at": datetime.now(pytz.timezone('Europe/Berlin')).isoformat(),
             "id": str(uuid.uuid4())
         }
         
         # Check if already exists
-        existing = await db.user_favorites.find_one({"user_id": user_id, "item_id": item_id})
+        existing = await db.user_favorites.find_one({"user_id": user_id, "listing_id": listing_id})
         if existing:
             return {"message": "Item already in favorites"}
         
