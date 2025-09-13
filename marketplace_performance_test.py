@@ -278,7 +278,7 @@ class MarketplacePerformanceTester:
                         self.log_result(
                             "Admin Listings Performance", 
                             False, 
-                            f"❌ WRONG FORMAT: Expected object with 'listings' array, got {type(data)}",
+                            f"❌ WRONG FORMAT: Expected array, got {type(data)}",
                             response_time,
                             response_size
                         )
