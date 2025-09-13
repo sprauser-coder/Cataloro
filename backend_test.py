@@ -995,7 +995,7 @@ class BackendTester:
         # Verify final state: 1 unread, 2 read
         return await self.verify_message_counts(demo_user_id, demo_token, expected_unread=1, expected_read=2)
     
-    async def send_test_message(self, sender_id, token, recipient_id, subject):
+    async def send_simple_message(self, sender_id, token, recipient_id, subject):
         """Send a test message and return message ID"""
         try:
             headers = {"Authorization": f"Bearer {token}"}
