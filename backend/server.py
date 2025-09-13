@@ -6151,6 +6151,10 @@ async def get_buyer_tenders(buyer_id: str):
             }
             enriched_tenders.append(enriched_tender)
         
+        end_time = time.time()
+        total_time = (end_time - start_time) * 1000
+        logger.info(f"🔍 Buy Tenders - Total processing time: {total_time:.1f}ms for {len(enriched_tenders)} enriched tenders")
+        
         return enriched_tenders
         
     except Exception as e:
